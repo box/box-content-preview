@@ -1,0 +1,20 @@
+{
+  "devDependencies": {
+    "babelify": "~6.0.2",
+    "browserify": "~10.1.0",
+    "watchify": "~3.2.1",
+    "react": "~0.13.2",
+    "reactify": "~1.1.0",
+    "bluebird": "^2.9.30",
+    "autobind-decorator": "~1.2.0",
+    "core-js": "^0.9.6"
+  },
+  "scripts": {
+    "watch": "watchify src/image.js -v -t [ babelify --stage 1 ] --outfile dist/dist.js"
+  },
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  }
+}
