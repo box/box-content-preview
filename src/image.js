@@ -3,6 +3,7 @@
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
+import EventEmitter from 'events';
 
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -12,7 +13,7 @@ const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 
 @autobind
-class Image {
+class Image extends EventEmitter {
 
     /**
      * [constructor]
@@ -20,6 +21,7 @@ class Image {
      * @returns {Promise}
      */
     constructor(imageUrl, containerElOrSelector) {
+        super();
         this.imageUrl = imageUrl;
         this.document = global.document;
         this.currentRotationAngle = 0;
@@ -34,6 +36,7 @@ class Image {
             let imageEl = this.document.createElement('img');
             imageEl.addEventListener('load', () => {
                 resolve(this);
+                this.emit('ready');
             });
             imageEl.src = imageUrl;
             this.imageEl = this.containerEl.appendChild(imageEl);
@@ -134,6 +137,7 @@ class Image {
         this.containerEl.scrollLeft = this.panStartScrollLeft - offsetX;
         this.containerEl.scrollTop = this.panStartScrollTop - offsetY;
         this.didPan = true;
+        this.emit('pan');
     }
 
     /**
@@ -146,6 +150,7 @@ class Image {
         this.document.body.removeEventListener('mousemove', this.pan);
         this.document.body.removeEventListener('mouseup', this.stopPanning);
         this.imageEl.classList.remove(CSS_CLASS_PANNING);
+        this.emit('panend');
     }
 
     /**
@@ -166,6 +171,7 @@ class Image {
         this.document.body.addEventListener('mousemove', this.pan);
         this.document.body.addEventListener('mouseup', this.stopPanning);
         this.imageEl.classList.add(CSS_CLASS_PANNING);
+        this.emit('panstart');
     }
 
     /**
@@ -177,6 +183,7 @@ class Image {
         let angle = this.currentRotationAngle - 90;
         this.currentRotationAngle = (angle === -3600) ? 0 : angle;
         this.imageEl.style.transform = 'rotate(' + this.currentRotationAngle + 'deg)';
+        this.emit('rotate');
     }
 
     /**
@@ -286,6 +293,8 @@ class Image {
         // Fix the scroll position of the image to be centered
         this.containerEl.scrollLeft = (this.containerEl.scrollWidth - viewport.width) / 2;
         this.containerEl.scrollTop = (this.containerEl.scrollHeight - viewport.height) / 2;
+
+        this.emit('resize');
 
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);

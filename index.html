@@ -25,7 +25,19 @@
         var boxImage = new Box.Image('http://youngjournalistacademy.com/wp-content/uploads/2015/04/tai-x-wing.jpg', '.image');
         boxImage.then(function(imageInstance) {
             image = imageInstance;
-        })
+            image.on('resize', function() {
+                console.error('resized');
+            });
+            image.on('panstart', function() {
+                console.error('panstart');
+            });
+            image.on('panend', function() {
+                console.error('panend');
+            });
+            image.on('rotate', function() {
+                console.error('rotated');
+            });
+        });
     </script
 </body>
 </html>

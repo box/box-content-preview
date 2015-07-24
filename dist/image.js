@@ -4940,7 +4940,310 @@ module.exports = ret;
 },{"./es5.js":14}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":3}],3:[function(require,module,exports){
+},{"_process":4}],3:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      }
+      throw TypeError('Uncaught, unspecified "error" event.');
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        len = arguments.length;
+        args = new Array(len - 1);
+        for (i = 1; i < len; i++)
+          args[i - 1] = arguments[i];
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    len = arguments.length;
+    args = new Array(len - 1);
+    for (i = 1; i < len; i++)
+      args[i - 1] = arguments[i];
+
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    var m;
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  var ret;
+  if (!emitter._events || !emitter._events[type])
+    ret = 0;
+  else if (isFunction(emitter._events[type]))
+    ret = 1;
+  else
+    ret = emitter._events[type].length;
+  return ret;
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+},{}],4:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -5032,7 +5335,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var $ = require('./$');
 function assert(condition, msg1, msg2){
   if(!condition)throw TypeError(msg2 ? msg1 + msg2 : msg1);
@@ -5051,7 +5354,7 @@ assert.inst = function(it, Constructor, name){
   return it;
 };
 module.exports = assert;
-},{"./$":10}],5:[function(require,module,exports){
+},{"./$":11}],6:[function(require,module,exports){
 var $        = require('./$')
   , TAG      = require('./$.wks')('toStringTag')
   , toString = {}.toString;
@@ -5067,7 +5370,7 @@ cof.set = function(it, tag, stat){
   if(it && !$.has(it = stat ? it : it.prototype, TAG))$.hide(it, TAG, tag);
 };
 module.exports = cof;
-},{"./$":10,"./$.wks":16}],6:[function(require,module,exports){
+},{"./$":11,"./$.wks":17}],7:[function(require,module,exports){
 // Optional / simple context binding
 var assertFunction = require('./$.assert').fn;
 module.exports = function(fn, that, length){
@@ -5087,7 +5390,7 @@ module.exports = function(fn, that, length){
       return fn.apply(that, arguments);
     };
 };
-},{"./$.assert":4}],7:[function(require,module,exports){
+},{"./$.assert":5}],8:[function(require,module,exports){
 var $          = require('./$')
   , global     = $.g
   , core       = $.core
@@ -5130,13 +5433,13 @@ function $def(type, name, source){
   }
 }
 module.exports = $def;
-},{"./$":10,"./$.redef":12}],8:[function(require,module,exports){
+},{"./$":11,"./$.redef":13}],9:[function(require,module,exports){
 module.exports = function($){
   $.FW   = true;
   $.path = $.g;
   return $;
 };
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 var $                 = require('./$')
   , cof               = require('./$.cof')
@@ -5186,7 +5489,7 @@ module.exports = {
     cof.set(Constructor, NAME + ' Iterator');
   }
 };
-},{"./$":10,"./$.assert":4,"./$.cof":5,"./$.shared":14,"./$.wks":16}],10:[function(require,module,exports){
+},{"./$":11,"./$.assert":5,"./$.cof":6,"./$.shared":15,"./$.wks":17}],11:[function(require,module,exports){
 'use strict';
 var global = typeof self != 'undefined' ? self : Function('return this')()
   , core   = {}
@@ -5283,7 +5586,7 @@ var $ = module.exports = require('./$.fw')({
 /* eslint-disable no-undef */
 if(typeof __e != 'undefined')__e = core;
 if(typeof __g != 'undefined')__g = global;
-},{"./$.fw":8}],11:[function(require,module,exports){
+},{"./$.fw":9}],12:[function(require,module,exports){
 var $            = require('./$')
   , assertObject = require('./$.assert').obj;
 module.exports = function ownKeys(it){
@@ -5292,7 +5595,7 @@ module.exports = function ownKeys(it){
     , getSymbols = $.getSymbols;
   return getSymbols ? keys.concat(getSymbols(it)) : keys;
 };
-},{"./$":10,"./$.assert":4}],12:[function(require,module,exports){
+},{"./$":11,"./$.assert":5}],13:[function(require,module,exports){
 var $   = require('./$')
   , tpl = String({}.hasOwnProperty)
   , SRC = require('./$.uid').safe('src')
@@ -5323,7 +5626,7 @@ $.core.inspectSource = function(it){
 };
 
 module.exports = $redef;
-},{"./$":10,"./$.uid":15}],13:[function(require,module,exports){
+},{"./$":11,"./$.uid":16}],14:[function(require,module,exports){
 // Works with __proto__ only. Old v8 can't work with null proto objects.
 /* eslint-disable no-proto */
 var $      = require('./$')
@@ -5349,28 +5652,28 @@ module.exports = {
     : undefined),
   check: check
 };
-},{"./$":10,"./$.assert":4,"./$.ctx":6}],14:[function(require,module,exports){
+},{"./$":11,"./$.assert":5,"./$.ctx":7}],15:[function(require,module,exports){
 var $      = require('./$')
   , SHARED = '__core-js_shared__'
   , store  = $.g[SHARED] || ($.g[SHARED] = {});
 module.exports = function(key){
   return store[key] || (store[key] = {});
 };
-},{"./$":10}],15:[function(require,module,exports){
+},{"./$":11}],16:[function(require,module,exports){
 var sid = 0;
 function uid(key){
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++sid + Math.random()).toString(36));
 }
 uid.safe = require('./$').g.Symbol || uid;
 module.exports = uid;
-},{"./$":10}],16:[function(require,module,exports){
+},{"./$":11}],17:[function(require,module,exports){
 var global = require('./$').g
   , store  = require('./$.shared')('wks');
 module.exports = function(name){
   return store[name] || (store[name] =
     global.Symbol && global.Symbol[name] || require('./$.uid').safe('Symbol.' + name));
 };
-},{"./$":10,"./$.shared":14,"./$.uid":15}],17:[function(require,module,exports){
+},{"./$":11,"./$.shared":15,"./$.uid":16}],18:[function(require,module,exports){
 var $         = require('./$')
   , $def      = require('./$.def')
   , setProto  = require('./$.set-proto')
@@ -5516,15 +5819,19 @@ $def($def.S + $def.F * buggyEnumerate, 'Reflect', {
 });
 
 $def($def.S, 'Reflect', reflect);
-},{"./$":10,"./$.assert":4,"./$.def":7,"./$.iter":9,"./$.own-keys":11,"./$.set-proto":13,"./$.uid":15,"./$.wks":16}],18:[function(require,module,exports){
+},{"./$":11,"./$.assert":5,"./$.def":8,"./$.iter":10,"./$.own-keys":12,"./$.set-proto":14,"./$.uid":16,"./$.wks":17}],19:[function(require,module,exports){
 (function (global){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
 require('core-js/modules/es6.reflect');
 
@@ -5536,12 +5843,17 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
+var _events = require('events');
+
+var _events2 = _interopRequireDefault(_events);
+
 var CSS_CLASS_ZOOMABLE = 'zoomable';
 var CSS_CLASS_PANNABLE = 'pannable';
 var CSS_CLASS_PANNING = 'panning';
 var IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
-var Image = (function () {
+var Image = (function (_EventEmitter) {
+    _inherits(Image, _EventEmitter);
 
     /**
      * [constructor]
@@ -5554,6 +5866,7 @@ var Image = (function () {
 
         _classCallCheck(this, _Image);
 
+        _get(Object.getPrototypeOf(_Image.prototype), 'constructor', this).call(this);
         this.imageUrl = imageUrl;
         this.document = global.document;
         this.currentRotationAngle = 0;
@@ -5568,6 +5881,7 @@ var Image = (function () {
             var imageEl = _this.document.createElement('img');
             imageEl.addEventListener('load', function () {
                 resolve(_this);
+                _this.emit('ready');
             });
             imageEl.src = imageUrl;
             _this.imageEl = _this.containerEl.appendChild(imageEl);
@@ -5679,6 +5993,7 @@ var Image = (function () {
             this.containerEl.scrollLeft = this.panStartScrollLeft - offsetX;
             this.containerEl.scrollTop = this.panStartScrollTop - offsetY;
             this.didPan = true;
+            this.emit('pan');
         }
 
         /**
@@ -5693,6 +6008,7 @@ var Image = (function () {
             this.document.body.removeEventListener('mousemove', this.pan);
             this.document.body.removeEventListener('mouseup', this.stopPanning);
             this.imageEl.classList.remove(CSS_CLASS_PANNING);
+            this.emit('panend');
         }
 
         /**
@@ -5715,6 +6031,7 @@ var Image = (function () {
             this.document.body.addEventListener('mousemove', this.pan);
             this.document.body.addEventListener('mouseup', this.stopPanning);
             this.imageEl.classList.add(CSS_CLASS_PANNING);
+            this.emit('panstart');
         }
 
         /**
@@ -5728,6 +6045,7 @@ var Image = (function () {
             var angle = this.currentRotationAngle - 90;
             this.currentRotationAngle = angle === -3600 ? 0 : angle;
             this.imageEl.style.transform = 'rotate(' + this.currentRotationAngle + 'deg)';
+            this.emit('rotate');
         }
 
         /**
@@ -5851,6 +6169,8 @@ var Image = (function () {
             this.containerEl.scrollLeft = (this.containerEl.scrollWidth - viewport.width) / 2;
             this.containerEl.scrollTop = (this.containerEl.scrollHeight - viewport.height) / 2;
 
+            this.emit('resize');
+
             // Give the browser some time to render before updating pannability
             setTimeout(this.updatePannability, 50);
         })
@@ -5859,7 +6179,7 @@ var Image = (function () {
     var _Image = Image;
     Image = (0, _autobindDecorator2['default'])(Image) || Image;
     return Image;
-})();
+})(_events2['default']);
 
 global.Box = global.Box || {};
 global.Box.Image = Image;
@@ -5867,4 +6187,4 @@ module.exports = Image;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":17}]},{},[18]);
+},{"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":18,"events":3}]},{},[19]);
