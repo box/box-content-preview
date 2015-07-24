@@ -22,6 +22,7 @@ class Image {
     constructor(imageUrl, containerElOrSelector) {
         this.imageUrl = imageUrl;
         this.document = global.document;
+        this.currentRotationAngle = 0;
 
         if (typeof containerElOrSelector === 'string') {
             this.containerEl = this.document.querySelector(containerElOrSelector);
@@ -31,7 +32,9 @@ class Image {
 
         let ready = new Promise((resolve, reject) => {
             let imageEl = this.document.createElement('img');
-            imageEl.onload = resolve;
+            imageEl.addEventListener('load', () => {
+                resolve(this);
+            });
             imageEl.src = imageUrl;
             this.imageEl = this.containerEl.appendChild(imageEl);
 
@@ -81,7 +84,7 @@ class Image {
      * @returns {void}
      */
     handleImageLoad() {
-        this.updatePannability();
+        this.zoom();
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
     }
@@ -164,6 +167,131 @@ class Image {
         this.document.body.addEventListener('mouseup', this.stopPanning);
         this.imageEl.classList.add(CSS_CLASS_PANNING);
     }
+
+    /**
+     * Rotate image anti-clockwise by 90 degrees
+     * @private
+     * @returns {void}
+     */
+    rotateLeft() {
+        let angle = this.currentRotationAngle - 90;
+        this.currentRotationAngle = (angle === -3600) ? 0 : angle;
+        this.imageEl.style.transform = 'rotate(' + this.currentRotationAngle + 'deg)';
+    }
+
+    /**
+     * Handles zoom
+     * @param {string} [type] Type of zoom in|out|fit
+     * @private
+     * @returns {void}
+     */
+    zoom(type) {
+
+        let temp,
+            ratio = 1, // default scaling ratio is 1:1
+            newWidth,
+            newHeight,
+            newMarginLeft,
+            newMarginTop,
+            viewport,
+            widthDifference,
+            heightDifference,
+            overflowingWidth,
+            overflowingHeight,
+            modifyWidthInsteadOfHeight,
+            isRotated = Math.abs(this.currentRotationAngle) % 180 === 90,
+            imageCurrentDimensions = this.imageEl.getBoundingClientRect(), // Getting bounding rect does not ignore transforms / rotates
+            wrapperCurrentDimensions = this.containerEl.getBoundingClientRect(),
+            width = imageCurrentDimensions.width,
+            height = imageCurrentDimensions.height,
+            aspect = width / height;
+
+        // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
+        // For images that are wider than taller we use width. For images that are taller than wider, we use height.
+        modifyWidthInsteadOfHeight = aspect >= 1;
+
+        // getBoundingClientRect() includes scrollbar widths.
+        viewport = {
+            width: wrapperCurrentDimensions.width,
+            height: wrapperCurrentDimensions.height
+        };
+
+
+        // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
+        // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
+        // for the dimension that was cleared out.
+
+        switch (type) {
+
+            case 'in':
+                if (modifyWidthInsteadOfHeight) {
+                    newWidth = width + 100;
+                } else {
+                    newHeight = height + 100;
+                }
+                break;
+
+            case 'out':
+                if (modifyWidthInsteadOfHeight) {
+                    newWidth = width - 100;
+                } else {
+                    newHeight = height - 100;
+                }
+                break;
+
+            case 'reset':
+                // Reset the dimensions to their original values by removing overrides
+                // Doing so will make the browser render the image in its natural size
+                // Then we can proceed by recalculating stuff from that natural size.
+                this.imageEl.style.width = '';
+                this.imageEl.style.height = '';
+
+                // Image may still overflow the page, so do the default zoom by calling zoom again
+                // This will go through the same workflow but end up in another case block.
+                zoom();
+
+                // Kill further execution
+                return;
+
+            default:
+
+                // If the image is overflowing the viewport, figure out by how much
+                // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
+                if (width > viewport.width || height > viewport.height) {
+                    ratio = Math.min(viewport.width / width, viewport.height / height);
+                }
+
+                if (modifyWidthInsteadOfHeight) {
+                    newWidth = width * ratio;
+                } else {
+                    newHeight = height * ratio;
+                }
+        }
+
+        // If the image has been rotated, we need to swap the width and height
+        // getBoundingClientRect always gives values based on how its rendered on the screen
+        // But when setting width or height, transforms / rotates are ignored.
+        if (isRotated) {
+            temp = newWidth;
+            newWidth = newHeight;
+            newHeight = temp;
+        }
+
+        // Set the new dimensions. This ignores rotates, hence we need to swap the dimensions above.
+        // Only one of the below will be set, while the other will get cleared out to let the browser
+        // adjust it automatically based on the images aspect ratio.
+        this.imageEl.style.width = newWidth ? newWidth + 'px' : '';
+        this.imageEl.style.height = newHeight ? newHeight + 'px' : '';
+
+        // Fix the scroll position of the image to be centered
+        this.containerEl.scrollLeft = (this.containerEl.scrollWidth - viewport.width) / 2;
+        this.containerEl.scrollTop = (this.containerEl.scrollHeight - viewport.height) / 2;
+
+        // Give the browser some time to render before updating pannability
+        setTimeout(this.updatePannability, 50);
+    }
+
+        
 }
 
 global.Box = global.Box || {};

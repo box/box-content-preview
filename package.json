@@ -10,7 +10,7 @@
     "core-js": "^0.9.6"
   },
   "scripts": {
-    "watch": "watchify src/image.js -v -t [ babelify --stage 1 ] --outfile dist/dist.js"
+    "watch": "watchify src/image.js -v -t [ babelify --stage 1 ] --outfile dist/image.js"
   },
   "browserify": {
     "transform": [
