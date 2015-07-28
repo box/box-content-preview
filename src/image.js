@@ -3,7 +3,8 @@
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
-import EventEmitter from 'events';
+import Base from './base';
+import Controls from './controls';
 
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -11,32 +12,22 @@ const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_PANNING = 'panning';
 const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
+let document = global.document;
 
 @autobind
-class Image extends EventEmitter {
+class Image extends Base {
 
     /**
      * [constructor]
      * @param {string|HTMLElement} event The mousemove event
+     * @param {object} [options] some options
      * @returns {Image}
      */
-    constructor(container) {
-        super();
-        this.document = global.document;
-        this.currentRotationAngle = 0;
-
-        if (typeof container === 'string') {
-            this.containerEl = this.document.querySelector(container);
-        } else {
-            this.containerEl = container;
-        }
-
-        this.containerEl.innerHTML = '<div class="box-image"><span class="vertical-alignment-helper"></div>';
-        this.containerEl.style.position = 'relative';
-        
+    constructor(container, options) {
+        super(container, options);
+        this.containerEl.innerHTML = '<div class="box-preview-image"><span class="vertical-alignment-helper"></div>';     
         this.wrapperEl = this.containerEl.firstElementChild;
-        
-        this.imageEl = this.wrapperEl.appendChild(this.document.createElement('img'));
+        this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
@@ -45,6 +36,7 @@ class Image extends EventEmitter {
     /**
      * Loads an image.
      * @param {Event} event The mousemove event
+     * @pubic
      * @returns {Promise}
      */
     load(imageUrl) {
@@ -55,6 +47,11 @@ class Image extends EventEmitter {
                 resolve(this);
                 this.loaded = true;
                 this.zoom();
+
+                if (this.options.ui) {
+                    this.loadUI();
+                }
+
                 this.emit('load');
             });
             this.imageEl.src = imageUrl;
@@ -171,8 +168,8 @@ class Image extends EventEmitter {
      */
     stopPanning() {
         this.isPanning = false;
-        this.document.body.removeEventListener('mousemove', this.pan);
-        this.document.body.removeEventListener('mouseup', this.stopPanning);
+        document.body.removeEventListener('mousemove', this.pan);
+        document.body.removeEventListener('mouseup', this.stopPanning);
         this.imageEl.classList.remove(CSS_CLASS_PANNING);
         this.emit('panend');
     }
@@ -192,15 +189,15 @@ class Image extends EventEmitter {
         this.panStartScrollLeft = this.wrapperEl.scrollLeft;
         this.panStartScrollTop = this.wrapperEl.scrollTop;
         this.isPanning = true;
-        this.document.body.addEventListener('mousemove', this.pan);
-        this.document.body.addEventListener('mouseup', this.stopPanning);
+        document.body.addEventListener('mousemove', this.pan);
+        document.body.addEventListener('mouseup', this.stopPanning);
         this.imageEl.classList.add(CSS_CLASS_PANNING);
         this.emit('panstart');
     }
 
     /**
      * Rotate image anti-clockwise by 90 degrees
-     * @private
+     * @public
      * @returns {void}
      */
     rotateLeft() {
@@ -322,7 +319,37 @@ class Image extends EventEmitter {
 
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
-    }        
+    }
+
+    /**
+     * Zooms in
+     * @public
+     * @returns {void}
+     */
+    zoomin() {
+        this.zoom('in');
+    }
+
+    /**
+     * Zooms in
+     * @public
+     * @returns {void}
+     */
+    zoomout() {
+        this.zoom('out');
+    }
+
+    /**
+     * Zooms in
+     * @private
+     * @returns {void}
+     */
+    loadUI() {
+        this.controls = new Controls(this.containerEl);
+        this.controls.add('zoomin', this.zoomin);
+        this.controls.add('zoomout', this.zoomout);
+        this.controls.add('rotate', this.rotateLeft);
+    }
 }
 
 global.Box = global.Box || {};

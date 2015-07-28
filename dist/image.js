@@ -5839,21 +5839,250 @@ var _autobindDecorator = require('autobind-decorator');
 
 var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
 
-var _bluebird = require('bluebird');
+var _events = require('events');
 
-var _bluebird2 = _interopRequireDefault(_bluebird);
+var _events2 = _interopRequireDefault(_events);
+
+var _fullscreen = require('./fullscreen');
+
+var _fullscreen2 = _interopRequireDefault(_fullscreen);
+
+var OPTIONS = {
+    ui: true
+};
+
+var document = global.document;
+
+var Base = (function (_EventEmitter) {
+    _inherits(Base, _EventEmitter);
+
+    /**
+     * [constructor]
+     * @param {string|HTMLElement} event The mousemove event
+     * @param {object} [options] some options
+     * @returns {Image}
+     */
+
+    function Base(container, options) {
+        _classCallCheck(this, _Base);
+
+        _get(Object.getPrototypeOf(_Base.prototype), 'constructor', this).call(this);
+
+        this.options = options || OPTIONS;
+        this.currentRotationAngle = 0;
+
+        if (typeof container === 'string') {
+            this.containerEl = document.querySelector(container);
+        } else {
+            this.containerEl = container;
+        }
+
+        this.containerEl.style.position = 'relative';
+        this.containerEl.setAttribute('tabindex', '-1');
+    }
+
+    /**
+     * Enters fullscreen
+     * @private
+     * @returns {void}
+     */
+
+    _createClass(Base, [{
+        key: 'enterFullscreen',
+        value: function enterFullscreen() {
+            _fullscreen2['default'].enter();
+            this.emit('enterfullscreen');
+        }
+
+        /**
+         * Exits fullscreen
+         * @private
+         * @returns {void}
+         */
+    }, {
+        key: 'exitFullscreen',
+        value: function exitFullscreen() {
+            _fullscreen2['default'].exit();
+            this.emit('exitfullscreen');
+        }
+
+        /**
+         * Destroys the viewer
+         * @private
+         * @returns {void}
+         */
+    }, {
+        key: 'destroy',
+        value: function destroy() {
+            // empty   
+        }
+    }]);
+
+    var _Base = Base;
+    Base = (0, _autobindDecorator2['default'])(Base) || Base;
+    return Base;
+})(_events2['default']);
+
+module.exports = Base;
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./fullscreen":21,"autobind-decorator":1,"core-js/modules/es6.reflect":18,"events":3}],20:[function(require,module,exports){
+(function (global){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+require('core-js/modules/es6.reflect');
+
+var _autobindDecorator = require('autobind-decorator');
+
+var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
+
+var _util = require('./util');
+
+var _util2 = _interopRequireDefault(_util);
+
+var SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
+var PREVIEW_CONTROLS_SELECTOR = '.box-preview-controls';
+var CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
+
+var document = global.document;
+
+var Controls = (function () {
+
+    /**
+     * [constructor]
+     * @param {HTMLElement} event The mousemove event
+     * @returns {Controls}
+     */
+
+    function Controls(container) {
+        var _this = this;
+
+        _classCallCheck(this, _Controls);
+
+        this.containerEl = container;
+
+        this.controlsWrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        this.controlsWrapperEl.className = 'box-preview-controls-wrapper';
+
+        this.controlsEl = this.controlsWrapperEl.appendChild(document.createElement('div'));
+        this.controlsEl.className = 'box-preview-controls';
+
+        this.mouseMoveHandler = _util2['default'].throttle(function () {
+            _this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
+            _this.resetTimeout();
+        }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500, true);
+
+        this.containerEl.addEventListener('mousemove', this.mouseMoveHandler);
+        this.controlsEl.addEventListener('mouseenter', this.mouseEnterHandler);
+        this.controlsEl.addEventListener('mouseleave', this.mouseLeaveHandler);
+    }
+
+    /**
+     * @private
+     * @returns {void}
+     */
+
+    _createClass(Controls, [{
+        key: 'resetTimeout',
+        value: function resetTimeout() {
+            var _this2 = this;
+
+            clearTimeout(this.controlDisplayTimeoutId);
+            this.controlDisplayTimeoutId = setTimeout(function () {
+
+                clearTimeout(_this2.controlDisplayTimeoutId);
+
+                if (_this2.blockHiding) {
+                    _this2.resetTimeout();
+                } else {
+                    _this2.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
+                    _this2.containerEl.focus();
+                }
+            }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
+        }
+
+        /**
+         * @private
+         * @returns {void}
+         */
+    }, {
+        key: 'mouseEnterHandler',
+        value: function mouseEnterHandler() {
+            this.blockHiding = true;
+        }
+
+        /**
+         * @private
+         * @returns {void}
+         */
+    }, {
+        key: 'mouseLeaveHandler',
+        value: function mouseLeaveHandler() {
+            this.blockHiding = false;
+        }
+
+        /**
+         * @private
+         * @returns {void}
+         */
+    }, {
+        key: 'add',
+        value: function add(text, handler) {
+            var cell = document.createElement('div');
+            cell.className = 'box-preview-controls-cell';
+
+            var button = document.createElement('button');
+            button.className = 'box-preview-controls-btn';
+            button.textContent = text;
+            button.addEventListener('click', handler);
+
+            cell.appendChild(button);
+            this.controlsEl.appendChild(cell);
+        }
+    }]);
+
+    var _Controls = Controls;
+    Controls = (0, _autobindDecorator2['default'])(Controls) || Controls;
+    return Controls;
+})();
+
+module.exports = Controls;
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./util":22,"autobind-decorator":1,"core-js/modules/es6.reflect":18}],21:[function(require,module,exports){
+(function (global){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+require('core-js/modules/es6.reflect');
+
+var _autobindDecorator = require('autobind-decorator');
+
+var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
 
 var _events = require('events');
 
 var _events2 = _interopRequireDefault(_events);
 
-var CSS_CLASS_ZOOMABLE = 'zoomable';
-var CSS_CLASS_PANNABLE = 'pannable';
-var CSS_CLASS_PANNING = 'panning';
-var IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
-
-var Image = (function (_EventEmitter) {
-    _inherits(Image, _EventEmitter);
+var Fullscreen = (function (_EventEmitter) {
+    _inherits(Fullscreen, _EventEmitter);
 
     /**
      * [constructor]
@@ -5861,25 +6090,308 @@ var Image = (function (_EventEmitter) {
      * @returns {Image}
      */
 
-    function Image(container) {
-        _classCallCheck(this, _Image);
+    function Fullscreen() {
+        _classCallCheck(this, _Fullscreen);
 
-        _get(Object.getPrototypeOf(_Image.prototype), 'constructor', this).call(this);
-        this.document = global.document;
-        this.currentRotationAngle = 0;
+        _get(Object.getPrototypeOf(_Fullscreen.prototype), 'constructor', this).call(this);
 
-        if (typeof container === 'string') {
-            this.containerEl = this.document.querySelector(container);
-        } else {
-            this.containerEl = container;
+        if (!instance) {
+            instance = this;
         }
 
-        this.containerEl.innerHTML = '<div class="box-image"><span class="vertical-alignment-helper"></div>';
-        this.containerEl.style.position = 'relative';
+        this.document = global.document;
+        this.document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
+        this.document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
+        this.document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
+        this.document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
 
+        return instance;
+    }
+
+    /**
+     * Returns true if the browser supports fullscreen natively
+     * @return {Boolean}
+     * @private
+     */
+
+    _createClass(Fullscreen, [{
+        key: 'isSupported',
+        value: function isSupported() {
+            return this.document.fullscreenEnabled || this.document.webkitFullscreenEnabled || this.document.mozFullScreenEnabled || this.document.msFullscreenEnabled;
+        }
+
+        /**
+         * Return true if full screen is active
+         * @returns {Boolean}
+         * @private
+         */
+    }, {
+        key: 'isFullscreen',
+        value: function isFullscreen() {
+            return this.document.fullscreenElement || this.document.mozFullScreenElement || this.document.webkitFullscreenElement || this.document.msFullscreenElement;
+        }
+
+        /**
+         * Fires events when the fullscreen state changes
+         * @return {void}
+         * @private
+         */
+    }, {
+        key: 'fullscreenchangeHandler',
+        value: function fullscreenchangeHandler() {
+            if (this.isFullscreen()) {
+                this.emit('enter');
+            } else {
+                this.emit('exit');
+            }
+        }
+
+        /**
+         * Toggles fullscreen mode
+         * @param {string} [enter] enter or exit
+         * @return {void}
+         * @private
+         */
+    }, {
+        key: 'toggle',
+        value: function toggle(enter) {
+
+            enter = enter || !this.isFullscreen();
+
+            if (enter) {
+                if (this.document.documentElement.requestFullscreen) {
+                    this.document.documentElement.requestFullscreen();
+                } else if (this.document.documentElement.msRequestFullscreen) {
+                    this.document.documentElement.msRequestFullscreen();
+                } else if (this.document.documentElement.mozRequestFullScreen) {
+                    this.document.documentElement.mozRequestFullScreen();
+                } else if (this.document.documentElement.webkitRequestFullscreen) {
+                    this.document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+            } else {
+                if (this.document.exitFullscreen) {
+                    this.document.exitFullscreen();
+                } else if (this.document.msExitFullscreen) {
+                    this.document.msExitFullscreen();
+                } else if (this.document.mozCancelFullScreen) {
+                    this.document.mozCancelFullScreen();
+                } else if (this.document.webkitExitFullscreen) {
+                    this.document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        /**
+         * Toggles fullscreen mode
+         * @return {void}
+         * @private
+         */
+    }, {
+        key: 'enter',
+        value: function enter() {
+            this.toggle(true);
+        }
+
+        /**
+         * Toggles fullscreen mode
+         * @return {void}
+         * @private
+         */
+    }, {
+        key: 'exit',
+        value: function exit() {
+            this.toggle(false);
+        }
+    }]);
+
+    var _Fullscreen = Fullscreen;
+    Fullscreen = (0, _autobindDecorator2['default'])(Fullscreen) || Fullscreen;
+    return Fullscreen;
+})(_events2['default']);
+
+var instance = new Fullscreen();
+module.exports = instance;
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"autobind-decorator":1,"core-js/modules/es6.reflect":18,"events":3}],22:[function(require,module,exports){
+'use strict';
+
+/**
+ * Adapted from underscore.js http://underscorejs.org/docs/underscore.html
+ *
+ * Returns a function, that, as long as it continues to be invoked, will not be triggered.
+ * The function will be called after it stops being called for N milliseconds.
+ * If immediate is passed, trigger the function on the leading edge, instead of the trailing.
+ *
+ * Use debouncing when dealing with events like window resizing when you want to resize the content
+ * only when the user has stopped resizing the browser. Debouncing can also be used for mousemove and mousescroll
+ * depending upon the use case when you want the user to 1st stop before triggering the function.
+ *
+ * @param {Function} func The function for debounce
+ * @param {number} wait How long should the time out be
+ * @param {boolean} immediate If true, trigger the function on the leading edge, instead of the trailing.
+ * @private
+ * @returns {Function}
+ */
+function debounce(func, wait, immediate) {
+
+    var timeout,
+        args,
+        context,
+        timestamp,
+        result,
+        later = function later() {
+        var last = new Date().getTime() - timestamp;
+
+        if (last < wait && last > 0) {
+            timeout = setTimeout(later, wait - last);
+        } else {
+            timeout = null;
+            if (!immediate) {
+                result = func.apply(context, args);
+                if (!timeout) {
+                    context = args = null;
+                }
+            }
+        }
+    };
+
+    return function () {
+        var callNow = immediate && !timeout;
+
+        context = this;
+        args = arguments;
+        timestamp = new Date().getTime();
+
+        if (!timeout) {
+            timeout = setTimeout(later, wait);
+        }
+
+        if (callNow) {
+            result = func.apply(context, args);
+            context = args = null;
+        }
+
+        return result;
+    };
+}
+
+/**
+ * Adapted from underscore.js http://underscorejs.org/docs/underscore.html
+ *
+ * Returns a function, that, when invoked, will only be triggered at most once during a given window of time.
+ * Normally, the throttled function will run as much as it can, without ever going more than once per wait duration.
+ *
+ * Use throttling when dealing with events like mousemove and mousescroll when you want the events to fire
+ * periodically unlike debouncing where they are fired only when the user has stopped mousemoving or scrolling.
+ *
+ * @param {Function} func The function to throttle
+ * @param {number} wait How long should the time out be
+ * @private
+ * @returns {Function}
+ */
+function throttle(func, wait) {
+
+    var context,
+        args,
+        result,
+        timeout = null,
+        previous = 0,
+        later = function later() {
+        previous = new Date().getTime();
+        timeout = null;
+        result = func.apply(context, args);
+        if (!timeout) {
+            context = args = null;
+        }
+    };
+
+    return function () {
+        var now = new Date().getTime(),
+            remaining = wait - (now - previous);
+
+        context = this;
+        args = arguments;
+
+        if (remaining <= 0 || remaining > wait) {
+            clearTimeout(timeout);
+            timeout = null;
+            previous = now;
+            result = func.apply(context, args);
+            if (!timeout) {
+                context = args = null;
+            }
+        } else if (!timeout) {
+            timeout = setTimeout(later, remaining);
+        }
+
+        return result;
+    };
+}
+
+module.exports = {
+    throttle: throttle,
+    debounce: debounce
+};
+
+
+},{}],23:[function(require,module,exports){
+(function (global){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+require('core-js/modules/es6.reflect');
+
+var _autobindDecorator = require('autobind-decorator');
+
+var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
+
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
+var _base = require('./base');
+
+var _base2 = _interopRequireDefault(_base);
+
+var _controls = require('./controls');
+
+var _controls2 = _interopRequireDefault(_controls);
+
+var CSS_CLASS_ZOOMABLE = 'zoomable';
+var CSS_CLASS_PANNABLE = 'pannable';
+var CSS_CLASS_PANNING = 'panning';
+var IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
+
+var document = global.document;
+
+var Image = (function (_Base) {
+    _inherits(Image, _Base);
+
+    /**
+     * [constructor]
+     * @param {string|HTMLElement} event The mousemove event
+     * @param {object} [options] some options
+     * @returns {Image}
+     */
+
+    function Image(container, options) {
+        _classCallCheck(this, _Image);
+
+        _get(Object.getPrototypeOf(_Image.prototype), 'constructor', this).call(this, container, options);
+        this.containerEl.innerHTML = '<div class="box-preview-image"><span class="vertical-alignment-helper"></div>';
         this.wrapperEl = this.containerEl.firstElementChild;
-
-        this.imageEl = this.wrapperEl.appendChild(this.document.createElement('img'));
+        this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
@@ -5888,6 +6400,7 @@ var Image = (function (_EventEmitter) {
     /**
      * Loads an image.
      * @param {Event} event The mousemove event
+     * @pubic
      * @returns {Promise}
      */
 
@@ -5903,6 +6416,11 @@ var Image = (function (_EventEmitter) {
                     resolve(_this);
                     _this.loaded = true;
                     _this.zoom();
+
+                    if (_this.options.ui) {
+                        _this.loadUI();
+                    }
+
                     _this.emit('load');
                 });
                 _this.imageEl.src = imageUrl;
@@ -6033,8 +6551,8 @@ var Image = (function (_EventEmitter) {
         key: 'stopPanning',
         value: function stopPanning() {
             this.isPanning = false;
-            this.document.body.removeEventListener('mousemove', this.pan);
-            this.document.body.removeEventListener('mouseup', this.stopPanning);
+            document.body.removeEventListener('mousemove', this.pan);
+            document.body.removeEventListener('mouseup', this.stopPanning);
             this.imageEl.classList.remove(CSS_CLASS_PANNING);
             this.emit('panend');
         }
@@ -6056,15 +6574,15 @@ var Image = (function (_EventEmitter) {
             this.panStartScrollLeft = this.wrapperEl.scrollLeft;
             this.panStartScrollTop = this.wrapperEl.scrollTop;
             this.isPanning = true;
-            this.document.body.addEventListener('mousemove', this.pan);
-            this.document.body.addEventListener('mouseup', this.stopPanning);
+            document.body.addEventListener('mousemove', this.pan);
+            document.body.addEventListener('mouseup', this.stopPanning);
             this.imageEl.classList.add(CSS_CLASS_PANNING);
             this.emit('panstart');
         }
 
         /**
          * Rotate image anti-clockwise by 90 degrees
-         * @private
+         * @public
          * @returns {void}
          */
     }, {
@@ -6192,12 +6710,48 @@ var Image = (function (_EventEmitter) {
             // Give the browser some time to render before updating pannability
             setTimeout(this.updatePannability, 50);
         }
+
+        /**
+         * Zooms in
+         * @public
+         * @returns {void}
+         */
+    }, {
+        key: 'zoomin',
+        value: function zoomin() {
+            this.zoom('in');
+        }
+
+        /**
+         * Zooms in
+         * @public
+         * @returns {void}
+         */
+    }, {
+        key: 'zoomout',
+        value: function zoomout() {
+            this.zoom('out');
+        }
+
+        /**
+         * Zooms in
+         * @private
+         * @returns {void}
+         */
+    }, {
+        key: 'loadUI',
+        value: function loadUI() {
+            this.controls = new _controls2['default'](this.containerEl);
+            this.controls.add('zoomin', this.zoomin);
+            this.controls.add('zoomout', this.zoomout);
+            this.controls.add('rotate', this.rotateLeft);
+        }
     }]);
 
     var _Image = Image;
     Image = (0, _autobindDecorator2['default'])(Image) || Image;
     return Image;
-})(_events2['default']);
+})(_base2['default']);
 
 global.Box = global.Box || {};
 global.Box.Image = Image;
@@ -6205,4 +6759,4 @@ module.exports = Image;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":18,"events":3}]},{},[19]);
+},{"./base":19,"./controls":20,"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":18}]},{},[23]);

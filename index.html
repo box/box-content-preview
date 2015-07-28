@@ -3,7 +3,10 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Test</title>
+    
     <link rel="stylesheet" type="text/css" href="dist/image.css"></script>
+    <link rel="stylesheet" type="text/css" href="dist/controls.css"></script>
+    
     <style>
         html, body {
             width: 100%;
@@ -38,6 +41,14 @@
         
         image.on('rotate', function() {
             console.error('rotated');
+        });
+        
+        image.on('enterfullscreen', function() {
+            console.error('enterfullscreen');
+        });
+        
+        image.on('exitfullscreen', function() {
+            console.error('exitfullscreen');
         });
         
         image.load('http://youngjournalistacademy.com/wp-content/uploads/2015/04/tai-x-wing.jpg').then(function() {

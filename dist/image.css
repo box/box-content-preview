@@ -1,43 +1,43 @@
-.box-image {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	padding: 0;
-	margin: 0;
-	border: 0 none;
-	width: 100%;
-	height: 100%;
+.box-preview-image {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border: 0 none;
+    width: 100%;
+    height: 100%;
     overflow: auto;
     white-space: nowrap;
 }
 
-.box-image .vertical-alignment-helper {
-	height: 100%;
-	display: inline-block;
-	vertical-align: middle;
+.box-preview-image .vertical-alignment-helper {
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
 }
 
-.box-image img {
-	vertical-align: middle;
+.box-preview-image img {
+    vertical-align: middle;
 }
 
-.box-image .pannable {
-	cursor: move;
-	cursor: -moz-grab;
-	cursor: -webkit-grab;
+.box-preview-image .pannable {
+    cursor: move;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
 }
 
-.box-image .panning {
-	cursor: move;
-	cursor: -moz-grabbing;
-	cursor: -webkit-grabbing;
+.box-preview-image .panning {
+    cursor: move;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
 }
 
-.box-image .zoomable {
-	cursor: pointer; /* cursor for IE9 */
-	cursor: zoom-in;
-	cursor: -moz-zoom-in;
-	cursor: -webkit-zoom-in;
+.box-preview-image .zoomable {
+    cursor: pointer; /* cursor for IE9 */
+    cursor: zoom-in;
+    cursor: -moz-zoom-in;
+    cursor: -webkit-zoom-in;
 }
