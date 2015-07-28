@@ -17,42 +17,55 @@ class Image extends EventEmitter {
 
     /**
      * [constructor]
-     * @param {Event} event The mousemove event
-     * @returns {Promise}
+     * @param {string|HTMLElement} event The mousemove event
+     * @returns {Image}
      */
-    constructor(imageUrl, containerElOrSelector) {
+    constructor(container) {
         super();
-        this.imageUrl = imageUrl;
         this.document = global.document;
         this.currentRotationAngle = 0;
 
-        if (typeof containerElOrSelector === 'string') {
-            this.containerEl = this.document.querySelector(containerElOrSelector);
+        if (typeof container === 'string') {
+            this.containerEl = this.document.querySelector(container);
         } else {
-            this.containerEl = containerElOrSelector;
-        }        
+            this.containerEl = container;
+        }
 
-        let ready = new Promise((resolve, reject) => {
-            let imageEl = this.document.createElement('img');
-            imageEl.addEventListener('load', () => {
+        this.containerEl.innerHTML = '<div class="box-image"><span class="vertical-alignment-helper"></div>';
+        this.containerEl.style.position = 'relative';
+        
+        this.wrapperEl = this.containerEl.firstElementChild;
+        
+        this.imageEl = this.wrapperEl.appendChild(this.document.createElement('img'));
+        this.imageEl.addEventListener('mousedown', this.handleMouseDown);
+        this.imageEl.addEventListener('mouseup', this.handleMouseUp);
+        this.imageEl.addEventListener('dragstart', this.handleDragStart);
+    }
+
+    /**
+     * Loads an image.
+     * @param {Event} event The mousemove event
+     * @returns {Promise}
+     */
+    load(imageUrl) {
+        this.imageUrl = imageUrl;
+        
+        return new Promise((resolve, reject) => {
+            this.imageEl.addEventListener('load', () => {
                 resolve(this);
-                this.emit('ready');
+                this.loaded = true;
+                this.zoom();
+                this.emit('load');
             });
-            imageEl.src = imageUrl;
-            this.imageEl = this.containerEl.appendChild(imageEl);
+            this.imageEl.src = imageUrl;
 
             setTimeout(() => {
-                if (!ready.isFulfilled()) {
+                if (!this.loaded) {
                     reject();
                 }
             }, IMAGE_LOAD_TIMEOUT_IN_MILLIS);
         });
-
-        ready.then(this.handleImageLoad);
-
-        return ready;
     }
-
 
     /**
      * Handles mouse down event.
@@ -71,6 +84,29 @@ class Image extends EventEmitter {
     }
 
     /**
+     * Handles mouse down event.
+     * @param {Event} event The mousemove event
+     * @returns {void}
+     */
+    handleMouseUp(event) {
+        this.didPan = false;
+
+        // If this is not a left click, then ignore
+        // If this is a CTRL or CMD click, then ignore
+        if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
+            if (!this.isPannable && this.isZoomable) {
+                // If the mouse up was not due to panning, and the image is zoomable, then zoom in.
+                this.zoom('in');
+            } else if (!this.didPan) {
+                // If the mouse up was not due to ending of panning, then assume it was a regular
+                // click mouse up. In that case reset the image size, mimicking single-click-unzoom.
+                this.zoom('reset');
+            }
+            event.preventDefault();
+        }
+    }
+
+    /**
      * Prevents drag events on the image
      * @param {Event} event The mousemove event
      * @returns {void}
@@ -78,18 +114,6 @@ class Image extends EventEmitter {
     handleDragStart(event) {
         event.preventDefault();
         event.stopPropogation();
-    }
-
-
-    /**
-     * Event handler for preview image 'load' event
-     * @private
-     * @returns {void}
-     */
-    handleImageLoad() {
-        this.zoom();
-        this.imageEl.addEventListener('mousedown', this.handleMouseDown);
-        this.imageEl.addEventListener('dragstart', this.handleDragStart);
     }
 
     /**
@@ -116,7 +140,7 @@ class Image extends EventEmitter {
      */
     updatePannability() {
         let imageDimensions = this.imageEl.getBoundingClientRect();
-        let containerDimensions = this.containerEl.getBoundingClientRect();
+        let containerDimensions = this.wrapperEl.getBoundingClientRect();
         this.isPannable = imageDimensions.width > containerDimensions.width || imageDimensions.height > containerDimensions.height;
         this.didPan = false;
         this.updateCursor();
@@ -134,8 +158,8 @@ class Image extends EventEmitter {
         }
         let offsetX = event.clientX - this.panStartX;
         let offsetY = event.clientY - this.panStartY;
-        this.containerEl.scrollLeft = this.panStartScrollLeft - offsetX;
-        this.containerEl.scrollTop = this.panStartScrollTop - offsetY;
+        this.wrapperEl.scrollLeft = this.panStartScrollLeft - offsetX;
+        this.wrapperEl.scrollTop = this.panStartScrollTop - offsetY;
         this.didPan = true;
         this.emit('pan');
     }
@@ -165,8 +189,8 @@ class Image extends EventEmitter {
         }
         this.panStartX = x;
         this.panStartY = y;
-        this.panStartScrollLeft = this.containerEl.scrollLeft;
-        this.panStartScrollTop = this.containerEl.scrollTop;
+        this.panStartScrollLeft = this.wrapperEl.scrollLeft;
+        this.panStartScrollTop = this.wrapperEl.scrollTop;
         this.isPanning = true;
         this.document.body.addEventListener('mousemove', this.pan);
         this.document.body.addEventListener('mouseup', this.stopPanning);
@@ -188,7 +212,7 @@ class Image extends EventEmitter {
 
     /**
      * Handles zoom
-     * @param {string} [type] Type of zoom in|out|fit
+     * @param {string} [type] Type of zoom in|out|reset
      * @private
      * @returns {void}
      */
@@ -208,7 +232,7 @@ class Image extends EventEmitter {
             modifyWidthInsteadOfHeight,
             isRotated = Math.abs(this.currentRotationAngle) % 180 === 90,
             imageCurrentDimensions = this.imageEl.getBoundingClientRect(), // Getting bounding rect does not ignore transforms / rotates
-            wrapperCurrentDimensions = this.containerEl.getBoundingClientRect(),
+            wrapperCurrentDimensions = this.wrapperEl.getBoundingClientRect(),
             width = imageCurrentDimensions.width,
             height = imageCurrentDimensions.height,
             aspect = width / height;
@@ -255,7 +279,7 @@ class Image extends EventEmitter {
 
                 // Image may still overflow the page, so do the default zoom by calling zoom again
                 // This will go through the same workflow but end up in another case block.
-                zoom();
+                this.zoom();
 
                 // Kill further execution
                 return;
@@ -291,16 +315,14 @@ class Image extends EventEmitter {
         this.imageEl.style.height = newHeight ? newHeight + 'px' : '';
 
         // Fix the scroll position of the image to be centered
-        this.containerEl.scrollLeft = (this.containerEl.scrollWidth - viewport.width) / 2;
-        this.containerEl.scrollTop = (this.containerEl.scrollHeight - viewport.height) / 2;
+        this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
+        this.wrapperEl.scrollTop = (this.wrapperEl.scrollHeight - viewport.height) / 2;
 
         this.emit('resize');
 
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
-    }
-
-        
+    }        
 }
 
 global.Box = global.Box || {};

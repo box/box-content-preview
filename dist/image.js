@@ -5825,7 +5825,7 @@ $def($def.S, 'Reflect', reflect);
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -5857,54 +5857,70 @@ var Image = (function (_EventEmitter) {
 
     /**
      * [constructor]
+     * @param {string|HTMLElement} event The mousemove event
+     * @returns {Image}
+     */
+
+    function Image(container) {
+        _classCallCheck(this, _Image);
+
+        _get(Object.getPrototypeOf(_Image.prototype), 'constructor', this).call(this);
+        this.document = global.document;
+        this.currentRotationAngle = 0;
+
+        if (typeof container === 'string') {
+            this.containerEl = this.document.querySelector(container);
+        } else {
+            this.containerEl = container;
+        }
+
+        this.containerEl.innerHTML = '<div class="box-image"><span class="vertical-alignment-helper"></div>';
+        this.containerEl.style.position = 'relative';
+
+        this.wrapperEl = this.containerEl.firstElementChild;
+
+        this.imageEl = this.wrapperEl.appendChild(this.document.createElement('img'));
+        this.imageEl.addEventListener('mousedown', this.handleMouseDown);
+        this.imageEl.addEventListener('mouseup', this.handleMouseUp);
+        this.imageEl.addEventListener('dragstart', this.handleDragStart);
+    }
+
+    /**
+     * Loads an image.
      * @param {Event} event The mousemove event
      * @returns {Promise}
      */
 
-    function Image(imageUrl, containerElOrSelector) {
-        var _this = this;
+    _createClass(Image, [{
+        key: 'load',
+        value: function load(imageUrl) {
+            var _this = this;
 
-        _classCallCheck(this, _Image);
+            this.imageUrl = imageUrl;
 
-        _get(Object.getPrototypeOf(_Image.prototype), 'constructor', this).call(this);
-        this.imageUrl = imageUrl;
-        this.document = global.document;
-        this.currentRotationAngle = 0;
+            return new _bluebird2['default'](function (resolve, reject) {
+                _this.imageEl.addEventListener('load', function () {
+                    resolve(_this);
+                    _this.loaded = true;
+                    _this.zoom();
+                    _this.emit('load');
+                });
+                _this.imageEl.src = imageUrl;
 
-        if (typeof containerElOrSelector === 'string') {
-            this.containerEl = this.document.querySelector(containerElOrSelector);
-        } else {
-            this.containerEl = containerElOrSelector;
+                setTimeout(function () {
+                    if (!_this.loaded) {
+                        reject();
+                    }
+                }, IMAGE_LOAD_TIMEOUT_IN_MILLIS);
+            });
         }
 
-        var ready = new _bluebird2['default'](function (resolve, reject) {
-            var imageEl = _this.document.createElement('img');
-            imageEl.addEventListener('load', function () {
-                resolve(_this);
-                _this.emit('ready');
-            });
-            imageEl.src = imageUrl;
-            _this.imageEl = _this.containerEl.appendChild(imageEl);
-
-            setTimeout(function () {
-                if (!ready.isFulfilled()) {
-                    reject();
-                }
-            }, IMAGE_LOAD_TIMEOUT_IN_MILLIS);
-        });
-
-        ready.then(this.handleImageLoad);
-
-        return ready;
-    }
-
-    /**
-     * Handles mouse down event.
-     * @param {Event} event The mousemove event
-     * @returns {void}
-     */
-
-    _createClass(Image, [{
+        /**
+         * Handles mouse down event.
+         * @param {Event} event The mousemove event
+         * @returns {void}
+         */
+    }, {
         key: 'handleMouseDown',
         value: function handleMouseDown(event) {
             this.didPan = false;
@@ -5913,6 +5929,31 @@ var Image = (function (_EventEmitter) {
             // If this is a CTRL or CMD click, then ignore
             if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
                 this.startPanning(event.clientX, event.clientY);
+                event.preventDefault();
+            }
+        }
+
+        /**
+         * Handles mouse down event.
+         * @param {Event} event The mousemove event
+         * @returns {void}
+         */
+    }, {
+        key: 'handleMouseUp',
+        value: function handleMouseUp(event) {
+            this.didPan = false;
+
+            // If this is not a left click, then ignore
+            // If this is a CTRL or CMD click, then ignore
+            if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
+                if (!this.isPannable && this.isZoomable) {
+                    // If the mouse up was not due to panning, and the image is zoomable, then zoom in.
+                    this.zoom('in');
+                } else if (!this.didPan) {
+                    // If the mouse up was not due to ending of panning, then assume it was a regular
+                    // click mouse up. In that case reset the image size, mimicking single-click-unzoom.
+                    this.zoom('reset');
+                }
                 event.preventDefault();
             }
         }
@@ -5927,19 +5968,6 @@ var Image = (function (_EventEmitter) {
         value: function handleDragStart(event) {
             event.preventDefault();
             event.stopPropogation();
-        }
-
-        /**
-         * Event handler for preview image 'load' event
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'handleImageLoad',
-        value: function handleImageLoad() {
-            this.zoom();
-            this.imageEl.addEventListener('mousedown', this.handleMouseDown);
-            this.imageEl.addEventListener('dragstart', this.handleDragStart);
         }
 
         /**
@@ -5970,7 +5998,7 @@ var Image = (function (_EventEmitter) {
         key: 'updatePannability',
         value: function updatePannability() {
             var imageDimensions = this.imageEl.getBoundingClientRect();
-            var containerDimensions = this.containerEl.getBoundingClientRect();
+            var containerDimensions = this.wrapperEl.getBoundingClientRect();
             this.isPannable = imageDimensions.width > containerDimensions.width || imageDimensions.height > containerDimensions.height;
             this.didPan = false;
             this.updateCursor();
@@ -5990,8 +6018,8 @@ var Image = (function (_EventEmitter) {
             }
             var offsetX = event.clientX - this.panStartX;
             var offsetY = event.clientY - this.panStartY;
-            this.containerEl.scrollLeft = this.panStartScrollLeft - offsetX;
-            this.containerEl.scrollTop = this.panStartScrollTop - offsetY;
+            this.wrapperEl.scrollLeft = this.panStartScrollLeft - offsetX;
+            this.wrapperEl.scrollTop = this.panStartScrollTop - offsetY;
             this.didPan = true;
             this.emit('pan');
         }
@@ -6025,8 +6053,8 @@ var Image = (function (_EventEmitter) {
             }
             this.panStartX = x;
             this.panStartY = y;
-            this.panStartScrollLeft = this.containerEl.scrollLeft;
-            this.panStartScrollTop = this.containerEl.scrollTop;
+            this.panStartScrollLeft = this.wrapperEl.scrollLeft;
+            this.panStartScrollTop = this.wrapperEl.scrollTop;
             this.isPanning = true;
             this.document.body.addEventListener('mousemove', this.pan);
             this.document.body.addEventListener('mouseup', this.stopPanning);
@@ -6050,23 +6078,13 @@ var Image = (function (_EventEmitter) {
 
         /**
          * Handles zoom
-         * @param {string} [type] Type of zoom in|out|fit
+         * @param {string} [type] Type of zoom in|out|reset
          * @private
          * @returns {void}
          */
     }, {
         key: 'zoom',
-        value: (function (_zoom) {
-            function zoom(_x) {
-                return _zoom.apply(this, arguments);
-            }
-
-            zoom.toString = function () {
-                return _zoom.toString();
-            };
-
-            return zoom;
-        })(function (type) {
+        value: function zoom(type) {
 
             var temp = undefined,
                 ratio = 1,
@@ -6084,7 +6102,7 @@ var Image = (function (_EventEmitter) {
                 isRotated = Math.abs(this.currentRotationAngle) % 180 === 90,
                 imageCurrentDimensions = this.imageEl.getBoundingClientRect(),
                 // Getting bounding rect does not ignore transforms / rotates
-            wrapperCurrentDimensions = this.containerEl.getBoundingClientRect(),
+            wrapperCurrentDimensions = this.wrapperEl.getBoundingClientRect(),
                 width = imageCurrentDimensions.width,
                 height = imageCurrentDimensions.height,
                 aspect = width / height;
@@ -6130,7 +6148,7 @@ var Image = (function (_EventEmitter) {
 
                     // Image may still overflow the page, so do the default zoom by calling zoom again
                     // This will go through the same workflow but end up in another case block.
-                    zoom();
+                    this.zoom();
 
                     // Kill further execution
                     return;
@@ -6166,14 +6184,14 @@ var Image = (function (_EventEmitter) {
             this.imageEl.style.height = newHeight ? newHeight + 'px' : '';
 
             // Fix the scroll position of the image to be centered
-            this.containerEl.scrollLeft = (this.containerEl.scrollWidth - viewport.width) / 2;
-            this.containerEl.scrollTop = (this.containerEl.scrollHeight - viewport.height) / 2;
+            this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
+            this.wrapperEl.scrollTop = (this.wrapperEl.scrollHeight - viewport.height) / 2;
 
             this.emit('resize');
 
             // Give the browser some time to render before updating pannability
             setTimeout(this.updatePannability, 50);
-        })
+        }
     }]);
 
     var _Image = Image;
