@@ -11,6 +11,7 @@
     height: 100%;
     overflow: auto;
     white-space: nowrap;
+    text-align: center;
 }
 
 .box-preview-image .vertical-alignment-helper {

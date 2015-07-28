@@ -7,7 +7,8 @@
     "reactify": "~1.1.0",
     "bluebird": "^2.9.30",
     "autobind-decorator": "~1.2.0",
-    "core-js": "^0.9.6"
+    "core-js": "^0.9.6",
+    "lodash": "~3.10.0"
   },
   "scripts": {
     "watch": "watchify src/image.js -v -t [ babelify --stage 1 ] --outfile dist/image.js"

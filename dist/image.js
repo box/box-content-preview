@@ -5820,6 +5820,431 @@ $def($def.S + $def.F * buggyEnumerate, 'Reflect', {
 
 $def($def.S, 'Reflect', reflect);
 },{"./$":11,"./$.assert":5,"./$.def":8,"./$.iter":10,"./$.own-keys":12,"./$.set-proto":14,"./$.uid":16,"./$.wks":17}],19:[function(require,module,exports){
+var getNative = require('../internal/getNative');
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeNow = getNative(Date, 'now');
+
+/**
+ * Gets the number of milliseconds that have elapsed since the Unix epoch
+ * (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @category Date
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => logs the number of milliseconds it took for the deferred function to be invoked
+ */
+var now = nativeNow || function() {
+  return new Date().getTime();
+};
+
+module.exports = now;
+
+},{"../internal/getNative":22}],20:[function(require,module,exports){
+var isObject = require('../lang/isObject'),
+    now = require('../date/now');
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * Creates a debounced function that delays invoking `func` until after `wait`
+ * milliseconds have elapsed since the last time the debounced function was
+ * invoked. The debounced function comes with a `cancel` method to cancel
+ * delayed invocations. Provide an options object to indicate that `func`
+ * should be invoked on the leading and/or trailing edge of the `wait` timeout.
+ * Subsequent calls to the debounced function return the result of the last
+ * `func` invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is invoked
+ * on the trailing edge of the timeout only if the the debounced function is
+ * invoked more than once during the `wait` timeout.
+ *
+ * See [David Corbacho's article](http://drupalmotion.com/article/debounce-and-throttle-visual-explanation)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options] The options object.
+ * @param {boolean} [options.leading=false] Specify invoking on the leading
+ *  edge of the timeout.
+ * @param {number} [options.maxWait] The maximum time `func` is allowed to be
+ *  delayed before it is invoked.
+ * @param {boolean} [options.trailing=true] Specify invoking on the trailing
+ *  edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // avoid costly calculations while the window size is in flux
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // invoke `sendMail` when the click event is fired, debouncing subsequent calls
+ * jQuery('#postbox').on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // ensure `batchLog` is invoked once after 1 second of debounced calls
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', _.debounce(batchLog, 250, {
+ *   'maxWait': 1000
+ * }));
+ *
+ * // cancel a debounced call
+ * var todoChanges = _.debounce(batchLog, 1000);
+ * Object.observe(models.todo, todoChanges);
+ *
+ * Object.observe(models, function(changes) {
+ *   if (_.find(changes, { 'user': 'todo', 'type': 'delete'})) {
+ *     todoChanges.cancel();
+ *   }
+ * }, ['delete']);
+ *
+ * // ...at some point `models.todo` is changed
+ * models.todo.completed = true;
+ *
+ * // ...before 1 second has passed `models.todo` is deleted
+ * // which cancels the debounced `todoChanges` call
+ * delete models.todo;
+ */
+function debounce(func, wait, options) {
+  var args,
+      maxTimeoutId,
+      result,
+      stamp,
+      thisArg,
+      timeoutId,
+      trailingCall,
+      lastCalled = 0,
+      maxWait = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  wait = wait < 0 ? 0 : (+wait || 0);
+  if (options === true) {
+    var leading = true;
+    trailing = false;
+  } else if (isObject(options)) {
+    leading = !!options.leading;
+    maxWait = 'maxWait' in options && nativeMax(+options.maxWait || 0, wait);
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+
+  function cancel() {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    if (maxTimeoutId) {
+      clearTimeout(maxTimeoutId);
+    }
+    lastCalled = 0;
+    maxTimeoutId = timeoutId = trailingCall = undefined;
+  }
+
+  function complete(isCalled, id) {
+    if (id) {
+      clearTimeout(id);
+    }
+    maxTimeoutId = timeoutId = trailingCall = undefined;
+    if (isCalled) {
+      lastCalled = now();
+      result = func.apply(thisArg, args);
+      if (!timeoutId && !maxTimeoutId) {
+        args = thisArg = undefined;
+      }
+    }
+  }
+
+  function delayed() {
+    var remaining = wait - (now() - stamp);
+    if (remaining <= 0 || remaining > wait) {
+      complete(trailingCall, maxTimeoutId);
+    } else {
+      timeoutId = setTimeout(delayed, remaining);
+    }
+  }
+
+  function maxDelayed() {
+    complete(trailing, timeoutId);
+  }
+
+  function debounced() {
+    args = arguments;
+    stamp = now();
+    thisArg = this;
+    trailingCall = trailing && (timeoutId || !leading);
+
+    if (maxWait === false) {
+      var leadingCall = leading && !timeoutId;
+    } else {
+      if (!maxTimeoutId && !leading) {
+        lastCalled = stamp;
+      }
+      var remaining = maxWait - (stamp - lastCalled),
+          isCalled = remaining <= 0 || remaining > maxWait;
+
+      if (isCalled) {
+        if (maxTimeoutId) {
+          maxTimeoutId = clearTimeout(maxTimeoutId);
+        }
+        lastCalled = stamp;
+        result = func.apply(thisArg, args);
+      }
+      else if (!maxTimeoutId) {
+        maxTimeoutId = setTimeout(maxDelayed, remaining);
+      }
+    }
+    if (isCalled && timeoutId) {
+      timeoutId = clearTimeout(timeoutId);
+    }
+    else if (!timeoutId && wait !== maxWait) {
+      timeoutId = setTimeout(delayed, wait);
+    }
+    if (leadingCall) {
+      isCalled = true;
+      result = func.apply(thisArg, args);
+    }
+    if (isCalled && !timeoutId && !maxTimeoutId) {
+      args = thisArg = undefined;
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  return debounced;
+}
+
+module.exports = debounce;
+
+},{"../date/now":19,"../lang/isObject":26}],21:[function(require,module,exports){
+var debounce = require('./debounce'),
+    isObject = require('../lang/isObject');
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a throttled function that only invokes `func` at most once per
+ * every `wait` milliseconds. The throttled function comes with a `cancel`
+ * method to cancel delayed invocations. Provide an options object to indicate
+ * that `func` should be invoked on the leading and/or trailing edge of the
+ * `wait` timeout. Subsequent calls to the throttled function return the
+ * result of the last `func` call.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is invoked
+ * on the trailing edge of the timeout only if the the throttled function is
+ * invoked more than once during the `wait` timeout.
+ *
+ * See [David Corbacho's article](http://drupalmotion.com/article/debounce-and-throttle-visual-explanation)
+ * for details over the differences between `_.throttle` and `_.debounce`.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to throttle.
+ * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
+ * @param {Object} [options] The options object.
+ * @param {boolean} [options.leading=true] Specify invoking on the leading
+ *  edge of the timeout.
+ * @param {boolean} [options.trailing=true] Specify invoking on the trailing
+ *  edge of the timeout.
+ * @returns {Function} Returns the new throttled function.
+ * @example
+ *
+ * // avoid excessively updating the position while scrolling
+ * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
+ *
+ * // invoke `renewToken` when the click event is fired, but not more than once every 5 minutes
+ * jQuery('.interactive').on('click', _.throttle(renewToken, 300000, {
+ *   'trailing': false
+ * }));
+ *
+ * // cancel a trailing throttled call
+ * jQuery(window).on('popstate', throttled.cancel);
+ */
+function throttle(func, wait, options) {
+  var leading = true,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  if (options === false) {
+    leading = false;
+  } else if (isObject(options)) {
+    leading = 'leading' in options ? !!options.leading : leading;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+  return debounce(func, wait, { 'leading': leading, 'maxWait': +wait, 'trailing': trailing });
+}
+
+module.exports = throttle;
+
+},{"../lang/isObject":26,"./debounce":20}],22:[function(require,module,exports){
+var isNative = require('../lang/isNative');
+
+/**
+ * Gets the native function at `key` of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {string} key The key of the method to get.
+ * @returns {*} Returns the function if it's native, else `undefined`.
+ */
+function getNative(object, key) {
+  var value = object == null ? undefined : object[key];
+  return isNative(value) ? value : undefined;
+}
+
+module.exports = getNative;
+
+},{"../lang/isNative":25}],23:[function(require,module,exports){
+/**
+ * Checks if `value` is object-like.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+module.exports = isObjectLike;
+
+},{}],24:[function(require,module,exports){
+var isObject = require('./isObject');
+
+/** `Object#toString` result references. */
+var funcTag = '[object Function]';
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objToString = objectProto.toString;
+
+/**
+ * Checks if `value` is classified as a `Function` object.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ *
+ * _.isFunction(/abc/);
+ * // => false
+ */
+function isFunction(value) {
+  // The use of `Object#toString` avoids issues with the `typeof` operator
+  // in older versions of Chrome and Safari which return 'function' for regexes
+  // and Safari 8 equivalents which return 'object' for typed array constructors.
+  return isObject(value) && objToString.call(value) == funcTag;
+}
+
+module.exports = isFunction;
+
+},{"./isObject":26}],25:[function(require,module,exports){
+var isFunction = require('./isFunction'),
+    isObjectLike = require('../internal/isObjectLike');
+
+/** Used to detect host constructors (Safari > 5). */
+var reIsHostCtor = /^\[object .+?Constructor\]$/;
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var fnToString = Function.prototype.toString;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/** Used to detect if a method is native. */
+var reIsNative = RegExp('^' +
+  fnToString.call(hasOwnProperty).replace(/[\\^$.*+?()[\]{}|]/g, '\\$&')
+  .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+);
+
+/**
+ * Checks if `value` is a native function.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
+ * @example
+ *
+ * _.isNative(Array.prototype.push);
+ * // => true
+ *
+ * _.isNative(_);
+ * // => false
+ */
+function isNative(value) {
+  if (value == null) {
+    return false;
+  }
+  if (isFunction(value)) {
+    return reIsNative.test(fnToString.call(value));
+  }
+  return isObjectLike(value) && reIsHostCtor.test(value);
+}
+
+module.exports = isNative;
+
+},{"../internal/isObjectLike":23,"./isFunction":24}],26:[function(require,module,exports){
+/**
+ * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(1);
+ * // => false
+ */
+function isObject(value) {
+  // Avoid a V8 JIT bug in Chrome 19-20.
+  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+module.exports = isObject;
+
+},{}],27:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -5878,7 +6303,6 @@ var Base = (function (_EventEmitter) {
         }
 
         this.containerEl.style.position = 'relative';
-        this.containerEl.setAttribute('tabindex', '-1');
     }
 
     /**
@@ -5927,7 +6351,7 @@ module.exports = Base;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./fullscreen":21,"autobind-decorator":1,"core-js/modules/es6.reflect":18,"events":3}],20:[function(require,module,exports){
+},{"./fullscreen":29,"autobind-decorator":1,"core-js/modules/es6.reflect":18,"events":3}],28:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -5946,6 +6370,10 @@ var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
 var _util = require('./util');
 
 var _util2 = _interopRequireDefault(_util);
+
+var _lodashFunctionThrottle = require('lodash/function/throttle');
+
+var _lodashFunctionThrottle2 = _interopRequireDefault(_lodashFunctionThrottle);
 
 var SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 var PREVIEW_CONTROLS_SELECTOR = '.box-preview-controls';
@@ -5974,22 +6402,35 @@ var Controls = (function () {
         this.controlsEl = this.controlsWrapperEl.appendChild(document.createElement('div'));
         this.controlsEl.className = 'box-preview-controls';
 
-        this.mouseMoveHandler = _util2['default'].throttle(function () {
+        this.mousemoveHandler = (0, _lodashFunctionThrottle2['default'])(function () {
             _this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
             _this.resetTimeout();
         }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500, true);
 
-        this.containerEl.addEventListener('mousemove', this.mouseMoveHandler);
-        this.controlsEl.addEventListener('mouseenter', this.mouseEnterHandler);
-        this.controlsEl.addEventListener('mouseleave', this.mouseLeaveHandler);
+        this.containerEl.addEventListener('mousemove', this.mousemoveHandler);
+        this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);
+        this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
+        this.controlsEl.addEventListener('focusin', this.focusinHandler);
+        this.controlsEl.addEventListener('focusout', this.focusoutHandler);
     }
 
     /**
      * @private
-     * @returns {void}
+     * @param {HTMLElement|null} element
+     * @returns {boolean} true if element is a preview control button
      */
 
     _createClass(Controls, [{
+        key: 'isPreviewControlButton',
+        value: function isPreviewControlButton(element) {
+            return !!element && element.classList.contains('box-preview-controls-btn');
+        }
+
+        /**
+         * @private
+         * @returns {void}
+         */
+    }, {
         key: 'resetTimeout',
         value: function resetTimeout() {
             var _this2 = this;
@@ -6003,7 +6444,9 @@ var Controls = (function () {
                     _this2.resetTimeout();
                 } else {
                     _this2.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
-                    _this2.containerEl.focus();
+                    if (_util2['default'].closest(document.activeElement, PREVIEW_CONTROLS_SELECTOR)) {
+                        document.activeElement.blur(); // blur out any potential button focuses within preview controls
+                    }
                 }
             }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
         }
@@ -6013,8 +6456,8 @@ var Controls = (function () {
          * @returns {void}
          */
     }, {
-        key: 'mouseEnterHandler',
-        value: function mouseEnterHandler() {
+        key: 'mouseenterHandler',
+        value: function mouseenterHandler() {
             this.blockHiding = true;
         }
 
@@ -6023,9 +6466,37 @@ var Controls = (function () {
          * @returns {void}
          */
     }, {
-        key: 'mouseLeaveHandler',
-        value: function mouseLeaveHandler() {
+        key: 'mouseleaveHandler',
+        value: function mouseleaveHandler() {
             this.blockHiding = false;
+        }
+
+        /**
+         * Handles all focusin events for the module.
+         * @param {Event} event A DOM-normalized event object.
+         * @returns {void}
+         */
+    }, {
+        key: 'focusinHandler',
+        value: function focusinHandler(event) {
+            // When we focus onto a preview control button, show controls
+            if (this.isPreviewControlButton(event.target)) {
+                this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
+            }
+        }
+
+        /**
+         * Handles all focusout events for the module.
+         * @param {Event} event A DOM-normalized event object.
+         * @returns {void}
+         */
+    }, {
+        key: 'focusoutHandler',
+        value: function focusoutHandler(event) {
+            // When we focus out of a control button and aren't focusing onto another control button, hide the controls
+            if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
+                this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
+            }
         }
 
         /**
@@ -6057,7 +6528,7 @@ module.exports = Controls;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./util":22,"autobind-decorator":1,"core-js/modules/es6.reflect":18}],21:[function(require,module,exports){
+},{"./util":30,"autobind-decorator":1,"core-js/modules/es6.reflect":18,"lodash/function/throttle":21}],29:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -6214,129 +6685,34 @@ module.exports = instance;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"autobind-decorator":1,"core-js/modules/es6.reflect":18,"events":3}],22:[function(require,module,exports){
+},{"autobind-decorator":1,"core-js/modules/es6.reflect":18,"events":3}],30:[function(require,module,exports){
 'use strict';
 
 /**
- * Adapted from underscore.js http://underscorejs.org/docs/underscore.html
- *
- * Returns a function, that, as long as it continues to be invoked, will not be triggered.
- * The function will be called after it stops being called for N milliseconds.
- * If immediate is passed, trigger the function on the leading edge, instead of the trailing.
- *
- * Use debouncing when dealing with events like window resizing when you want to resize the content
- * only when the user has stopped resizing the browser. Debouncing can also be used for mousemove and mousescroll
- * depending upon the use case when you want the user to 1st stop before triggering the function.
- *
- * @param {Function} func The function for debounce
- * @param {number} wait How long should the time out be
- * @param {boolean} immediate If true, trigger the function on the leading edge, instead of the trailing.
- * @private
- * @returns {Function}
+ * Element.closest()
+ * @param  {HTMLElement} element
+ * @param  {string} selector
+ * @public
+ * @returns {HTMLElement}
  */
-function debounce(func, wait, immediate) {
-
-    var timeout,
-        args,
-        context,
-        timestamp,
-        result,
-        later = function later() {
-        var last = new Date().getTime() - timestamp;
-
-        if (last < wait && last > 0) {
-            timeout = setTimeout(later, wait - last);
-        } else {
-            timeout = null;
-            if (!immediate) {
-                result = func.apply(context, args);
-                if (!timeout) {
-                    context = args = null;
-                }
-            }
-        }
-    };
-
-    return function () {
-        var callNow = immediate && !timeout;
-
-        context = this;
-        args = arguments;
-        timestamp = new Date().getTime();
-
-        if (!timeout) {
-            timeout = setTimeout(later, wait);
+function closest(element, selector) {
+    while (element) {
+        if (element.matches(selector)) {
+            break;
         }
 
-        if (callNow) {
-            result = func.apply(context, args);
-            context = args = null;
-        }
+        element = element.parentElement;
+    }
 
-        return result;
-    };
-}
-
-/**
- * Adapted from underscore.js http://underscorejs.org/docs/underscore.html
- *
- * Returns a function, that, when invoked, will only be triggered at most once during a given window of time.
- * Normally, the throttled function will run as much as it can, without ever going more than once per wait duration.
- *
- * Use throttling when dealing with events like mousemove and mousescroll when you want the events to fire
- * periodically unlike debouncing where they are fired only when the user has stopped mousemoving or scrolling.
- *
- * @param {Function} func The function to throttle
- * @param {number} wait How long should the time out be
- * @private
- * @returns {Function}
- */
-function throttle(func, wait) {
-
-    var context,
-        args,
-        result,
-        timeout = null,
-        previous = 0,
-        later = function later() {
-        previous = new Date().getTime();
-        timeout = null;
-        result = func.apply(context, args);
-        if (!timeout) {
-            context = args = null;
-        }
-    };
-
-    return function () {
-        var now = new Date().getTime(),
-            remaining = wait - (now - previous);
-
-        context = this;
-        args = arguments;
-
-        if (remaining <= 0 || remaining > wait) {
-            clearTimeout(timeout);
-            timeout = null;
-            previous = now;
-            result = func.apply(context, args);
-            if (!timeout) {
-                context = args = null;
-            }
-        } else if (!timeout) {
-            timeout = setTimeout(later, remaining);
-        }
-
-        return result;
-    };
-}
+    return element;
+};
 
 module.exports = {
-    throttle: throttle,
-    debounce: debounce
+    closest: closest
 };
 
 
-},{}],23:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -6759,4 +7135,4 @@ module.exports = Image;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./base":19,"./controls":20,"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":18}]},{},[23]);
+},{"./base":27,"./controls":28,"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":18}]},{},[31]);

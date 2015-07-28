@@ -34,7 +34,6 @@ class Base extends EventEmitter {
         }
 
         this.containerEl.style.position = 'relative';
-        this.containerEl.setAttribute('tabindex', '-1');
     }
 
     /**

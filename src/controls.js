@@ -3,6 +3,7 @@
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import util from './util';
+import throttle from 'lodash/function/throttle';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const PREVIEW_CONTROLS_SELECTOR = '.box-preview-controls';
@@ -27,14 +28,25 @@ class Controls {
         this.controlsEl = this.controlsWrapperEl.appendChild(document.createElement('div'));
         this.controlsEl.className = 'box-preview-controls';
 
-        this.mouseMoveHandler = util.throttle(() => {
+        this.mousemoveHandler = throttle(() => {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
             this.resetTimeout();
         }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500, true);
 
-        this.containerEl.addEventListener('mousemove', this.mouseMoveHandler)
-        this.controlsEl.addEventListener('mouseenter', this.mouseEnterHandler);
-        this.controlsEl.addEventListener('mouseleave', this.mouseLeaveHandler);
+        this.containerEl.addEventListener('mousemove', this.mousemoveHandler)
+        this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);
+        this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
+        this.controlsEl.addEventListener('focusin', this.focusinHandler);
+        this.controlsEl.addEventListener('focusout', this.focusoutHandler);
+    }
+
+    /**
+     * @private
+     * @param {HTMLElement|null} element
+     * @returns {boolean} true if element is a preview control button
+     */
+    isPreviewControlButton(element) {
+        return !!element && element.classList.contains('box-preview-controls-btn');
     }
 
     /**
@@ -51,7 +63,9 @@ class Controls {
                 this.resetTimeout();
             } else {
                 this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
-                this.containerEl.focus();
+                if (util.closest(document.activeElement, PREVIEW_CONTROLS_SELECTOR)) {
+                    document.activeElement.blur(); // blur out any potential button focuses within preview controls
+                }
             }
 
         }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
@@ -61,7 +75,7 @@ class Controls {
      * @private
      * @returns {void}
      */
-    mouseEnterHandler() {
+    mouseenterHandler() {
         this.blockHiding = true;
     }
 
@@ -69,8 +83,32 @@ class Controls {
      * @private
      * @returns {void}
      */
-    mouseLeaveHandler() {
+    mouseleaveHandler() {
         this.blockHiding = false;
+    }
+
+    /**
+     * Handles all focusin events for the module.
+     * @param {Event} event A DOM-normalized event object.
+     * @returns {void}
+     */
+    focusinHandler(event) {
+        // When we focus onto a preview control button, show controls
+        if (this.isPreviewControlButton(event.target)) {
+            this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
+        }
+    }
+
+    /**
+     * Handles all focusout events for the module.
+     * @param {Event} event A DOM-normalized event object.
+     * @returns {void}
+     */
+    focusoutHandler(event) {
+        // When we focus out of a control button and aren't focusing onto another control button, hide the controls
+        if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
+            this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
+        }
     }
 
     /**
@@ -93,4 +131,3 @@ class Controls {
 }
 
 module.exports = Controls;
-
