@@ -5,6 +5,7 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
 
+const CLASS_FULLSCREEN = 'is-fullscreen';
 const OPTIONS = {
     ui: true
 };
@@ -28,32 +29,31 @@ class Base extends EventEmitter {
         this.currentRotationAngle = 0;
 
         if (typeof container === 'string') {
-            this.containerEl = document.querySelector(container);
-        } else {
-            this.containerEl = container;
+            container = document.querySelector(container);
         }
 
+        container.innerHTML = '<div class="box-preview"></div>';     
+        this.containerEl = container.firstElementChild;
         this.containerEl.style.position = 'relative';
+
+        fullscreen.on('enter', () => {
+            this.containerEl.classList.add(CLASS_FULLSCREEN);
+            this.emit('enterfullscreen');
+        });
+
+        fullscreen.on('exit', () => {
+            this.containerEl.classList.remove(CLASS_FULLSCREEN);
+            this.emit('exitfullscreen');
+        });
     }
 
     /**
-     * Enters fullscreen
+     * Enters or exits fullscreen
      * @private
      * @returns {void}
      */
-    enterFullscreen() {
-        fullscreen.enter();
-        this.emit('enterfullscreen');    
-    }
-
-    /**
-     * Exits fullscreen
-     * @private
-     * @returns {void}
-     */
-    exitFullscreen() {
-        fullscreen.exit();
-        this.emit('exitfullscreen');    
+    toggleFullscreen() {
+        fullscreen.toggle(this.containerEl);    
     }
 
     /**

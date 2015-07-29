@@ -6272,6 +6272,7 @@ var _fullscreen = require('./fullscreen');
 
 var _fullscreen2 = _interopRequireDefault(_fullscreen);
 
+var CLASS_FULLSCREEN = 'is-fullscreen';
 var OPTIONS = {
     ui: true
 };
@@ -6289,6 +6290,8 @@ var Base = (function (_EventEmitter) {
      */
 
     function Base(container, options) {
+        var _this = this;
+
         _classCallCheck(this, _Base);
 
         _get(Object.getPrototypeOf(_Base.prototype), 'constructor', this).call(this);
@@ -6297,37 +6300,34 @@ var Base = (function (_EventEmitter) {
         this.currentRotationAngle = 0;
 
         if (typeof container === 'string') {
-            this.containerEl = document.querySelector(container);
-        } else {
-            this.containerEl = container;
+            container = document.querySelector(container);
         }
 
+        container.innerHTML = '<div class="box-preview"></div>';
+        this.containerEl = container.firstElementChild;
         this.containerEl.style.position = 'relative';
+
+        _fullscreen2['default'].on('enter', function () {
+            _this.containerEl.classList.add(CLASS_FULLSCREEN);
+            _this.emit('enterfullscreen');
+        });
+
+        _fullscreen2['default'].on('exit', function () {
+            _this.containerEl.classList.remove(CLASS_FULLSCREEN);
+            _this.emit('exitfullscreen');
+        });
     }
 
     /**
-     * Enters fullscreen
+     * Enters or exits fullscreen
      * @private
      * @returns {void}
      */
 
     _createClass(Base, [{
-        key: 'enterFullscreen',
-        value: function enterFullscreen() {
-            _fullscreen2['default'].enter();
-            this.emit('enterfullscreen');
-        }
-
-        /**
-         * Exits fullscreen
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'exitFullscreen',
-        value: function exitFullscreen() {
-            _fullscreen2['default'].exit();
-            this.emit('exitfullscreen');
+        key: 'toggleFullscreen',
+        value: function toggleFullscreen() {
+            _fullscreen2['default'].toggle(this.containerEl);
         }
 
         /**
@@ -6500,17 +6500,23 @@ var Controls = (function () {
         }
 
         /**
+         * Adds buttons to controls
+         * @param {string} text
+         * @param {function} handler
+         * @param {string} [classList]
          * @private
          * @returns {void}
          */
     }, {
         key: 'add',
         value: function add(text, handler) {
+            var classList = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
+
             var cell = document.createElement('div');
             cell.className = 'box-preview-controls-cell';
 
             var button = document.createElement('button');
-            button.className = 'box-preview-controls-btn';
+            button.className = 'box-preview-controls-btn ' + classList;
             button.textContent = text;
             button.addEventListener('click', handler);
 
@@ -6552,6 +6558,8 @@ var _events = require('events');
 
 var _events2 = _interopRequireDefault(_events);
 
+var document = global.document;
+
 var Fullscreen = (function (_EventEmitter) {
     _inherits(Fullscreen, _EventEmitter);
 
@@ -6570,11 +6578,11 @@ var Fullscreen = (function (_EventEmitter) {
             instance = this;
         }
 
-        this.document = global.document;
-        this.document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
-        this.document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
-        this.document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
-        this.document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
+        document = global.document;
+        document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
+        document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
+        document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
+        document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
 
         return instance;
     }
@@ -6588,7 +6596,7 @@ var Fullscreen = (function (_EventEmitter) {
     _createClass(Fullscreen, [{
         key: 'isSupported',
         value: function isSupported() {
-            return this.document.fullscreenEnabled || this.document.webkitFullscreenEnabled || this.document.mozFullScreenEnabled || this.document.msFullscreenEnabled;
+            return document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled;
         }
 
         /**
@@ -6599,7 +6607,7 @@ var Fullscreen = (function (_EventEmitter) {
     }, {
         key: 'isFullscreen',
         value: function isFullscreen() {
-            return this.document.fullscreenElement || this.document.mozFullScreenElement || this.document.webkitFullscreenElement || this.document.msFullscreenElement;
+            return document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
         }
 
         /**
@@ -6619,59 +6627,37 @@ var Fullscreen = (function (_EventEmitter) {
 
         /**
          * Toggles fullscreen mode
-         * @param {string} [enter] enter or exit
+         * @param {HTMLElement} element
          * @return {void}
          * @private
          */
     }, {
         key: 'toggle',
-        value: function toggle(enter) {
+        value: function toggle(element) {
 
-            enter = enter || !this.isFullscreen();
+            element = element || document.documentElement;
 
-            if (enter) {
-                if (this.document.documentElement.requestFullscreen) {
-                    this.document.documentElement.requestFullscreen();
-                } else if (this.document.documentElement.msRequestFullscreen) {
-                    this.document.documentElement.msRequestFullscreen();
-                } else if (this.document.documentElement.mozRequestFullScreen) {
-                    this.document.documentElement.mozRequestFullScreen();
-                } else if (this.document.documentElement.webkitRequestFullscreen) {
-                    this.document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            if (!this.isFullscreen()) {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
                 }
             } else {
-                if (this.document.exitFullscreen) {
-                    this.document.exitFullscreen();
-                } else if (this.document.msExitFullscreen) {
-                    this.document.msExitFullscreen();
-                } else if (this.document.mozCancelFullScreen) {
-                    this.document.mozCancelFullScreen();
-                } else if (this.document.webkitExitFullscreen) {
-                    this.document.webkitExitFullscreen();
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
                 }
             }
-        }
-
-        /**
-         * Toggles fullscreen mode
-         * @return {void}
-         * @private
-         */
-    }, {
-        key: 'enter',
-        value: function enter() {
-            this.toggle(true);
-        }
-
-        /**
-         * Toggles fullscreen mode
-         * @return {void}
-         * @private
-         */
-    }, {
-        key: 'exit',
-        value: function exit() {
-            this.toggle(false);
         }
     }]);
 
@@ -6747,6 +6733,7 @@ var _controls2 = _interopRequireDefault(_controls);
 var CSS_CLASS_ZOOMABLE = 'zoomable';
 var CSS_CLASS_PANNABLE = 'pannable';
 var CSS_CLASS_PANNING = 'panning';
+var CSS_CLASS_IMAGE = 'box-preview-image';
 var IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 var document = global.document;
@@ -6765,8 +6752,8 @@ var Image = (function (_Base) {
         _classCallCheck(this, _Image);
 
         _get(Object.getPrototypeOf(_Image.prototype), 'constructor', this).call(this, container, options);
-        this.containerEl.innerHTML = '<div class="box-preview-image"><span class="vertical-alignment-helper"></div>';
-        this.wrapperEl = this.containerEl.firstElementChild;
+        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        this.wrapperEl.className = CSS_CLASS_IMAGE;
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
@@ -7121,6 +7108,7 @@ var Image = (function (_Base) {
             this.controls.add('zoomin', this.zoomin);
             this.controls.add('zoomout', this.zoomout);
             this.controls.add('rotate', this.rotateLeft);
+            this.controls.add('fullscreen', this.toggleFullscreen);
         }
     }]);
 

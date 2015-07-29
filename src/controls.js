@@ -112,15 +112,19 @@ class Controls {
     }
 
     /**
+     * Adds buttons to controls
+     * @param {string} text
+     * @param {function} handler
+     * @param {string} [classList]
      * @private
      * @returns {void}
      */
-    add(text, handler) {
+    add(text, handler, classList = '') {
         let cell = document.createElement('div');
         cell.className = 'box-preview-controls-cell';
 
         let button = document.createElement('button');
-        button.className = 'box-preview-controls-btn';
+        button.className = 'box-preview-controls-btn ' + classList;
         button.textContent = text;
         button.addEventListener('click', handler);
 

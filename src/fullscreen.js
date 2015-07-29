@@ -4,6 +4,8 @@ import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 
+let document = global.document; 
+
 @autobind
 class Fullscreen extends EventEmitter {
 
@@ -19,11 +21,11 @@ class Fullscreen extends EventEmitter {
             instance = this;
         }
 
-        this.document = global.document;
-        this.document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
-        this.document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
-        this.document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
-        this.document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
+        document = global.document;
+        document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
+        document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
+        document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
+        document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
 
         return instance;
     }
@@ -34,7 +36,7 @@ class Fullscreen extends EventEmitter {
      * @private
      */
     isSupported() {
-        return this.document.fullscreenEnabled || this.document.webkitFullscreenEnabled || this.document.mozFullScreenEnabled || this.document.msFullscreenEnabled;
+        return document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled;
     }
 
     /**
@@ -43,7 +45,7 @@ class Fullscreen extends EventEmitter {
      * @private
      */
     isFullscreen() {
-        return this.document.fullscreenElement || this.document.mozFullScreenElement || this.document.webkitFullscreenElement || this.document.msFullscreenElement;
+        return document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
     }
 
     /**
@@ -61,53 +63,35 @@ class Fullscreen extends EventEmitter {
 
     /**
      * Toggles fullscreen mode
-     * @param {string} [enter] enter or exit
+     * @param {HTMLElement} element
      * @return {void}
      * @private
      */
-    toggle(enter) {
+    toggle(element) {
 
-        enter = enter || !this.isFullscreen();
+        element = element || document.documentElement;
 
-        if (enter) {
-            if (this.document.documentElement.requestFullscreen) {
-                this.document.documentElement.requestFullscreen();
-            } else if (this.document.documentElement.msRequestFullscreen) {
-                this.document.documentElement.msRequestFullscreen();
-            } else if (this.document.documentElement.mozRequestFullScreen) {
-                this.document.documentElement.mozRequestFullScreen();
-            } else if (this.document.documentElement.webkitRequestFullscreen) {
-                this.document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        if (!this.isFullscreen()) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
             }    
         } else {
-            if (this.document.exitFullscreen) {
-                this.document.exitFullscreen();
-            } else if (this.document.msExitFullscreen) {
-                this.document.msExitFullscreen();
-            } else if (this.document.mozCancelFullScreen) {
-                this.document.mozCancelFullScreen();
-            } else if (this.document.webkitExitFullscreen) {
-                this.document.webkitExitFullscreen();
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
             }    
         }
-    }
-
-    /**
-     * Toggles fullscreen mode
-     * @return {void}
-     * @private
-     */
-    enter() {
-        this.toggle(true);
-    }
-
-    /**
-     * Toggles fullscreen mode
-     * @return {void}
-     * @private
-     */
-    exit() {
-        this.toggle(false);
     }
 }
 

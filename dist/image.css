@@ -14,7 +14,8 @@
     text-align: center;
 }
 
-.box-preview-image .vertical-alignment-helper {
+.box-preview-image:before {
+    content: "";
     height: 100%;
     display: inline-block;
     vertical-align: middle;

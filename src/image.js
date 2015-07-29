@@ -10,6 +10,7 @@ import Controls from './controls';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_PANNING = 'panning';
+const CSS_CLASS_IMAGE = 'box-preview-image';
 const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 let document = global.document;
@@ -25,8 +26,8 @@ class Image extends Base {
      */
     constructor(container, options) {
         super(container, options);
-        this.containerEl.innerHTML = '<div class="box-preview-image"><span class="vertical-alignment-helper"></div>';     
-        this.wrapperEl = this.containerEl.firstElementChild;
+        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        this.wrapperEl.className = CSS_CLASS_IMAGE;
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
@@ -349,6 +350,7 @@ class Image extends Base {
         this.controls.add('zoomin', this.zoomin);
         this.controls.add('zoomout', this.zoomout);
         this.controls.add('rotate', this.rotateLeft);
+        this.controls.add('fullscreen', this.toggleFullscreen);
     }
 }
 
