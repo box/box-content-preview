@@ -125,7 +125,6 @@ class Controls {
 
         let button = document.createElement('button');
         button.className = 'box-preview-controls-btn ' + classList;
-        button.textContent = text;
         button.addEventListener('click', handler);
 
         cell.appendChild(button);
@@ -134,4 +133,4 @@ class Controls {
 
 }
 
-module.exports = Controls;
+export default Controls;

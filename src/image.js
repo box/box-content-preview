@@ -14,6 +14,7 @@ const CSS_CLASS_IMAGE = 'box-preview-image';
 const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 let document = global.document;
+let Box = global.Box || {};
 
 @autobind
 class Image extends Base {
@@ -87,8 +88,6 @@ class Image extends Base {
      * @returns {void}
      */
     handleMouseUp(event) {
-        this.didPan = false;
-
         // If this is not a left click, then ignore
         // If this is a CTRL or CMD click, then ignore
         if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
@@ -169,8 +168,8 @@ class Image extends Base {
      */
     stopPanning() {
         this.isPanning = false;
-        document.body.removeEventListener('mousemove', this.pan);
-        document.body.removeEventListener('mouseup', this.stopPanning);
+        document.removeEventListener('mousemove', this.pan);
+        document.removeEventListener('mouseup', this.stopPanning);
         this.imageEl.classList.remove(CSS_CLASS_PANNING);
         this.emit('panend');
     }
@@ -190,8 +189,8 @@ class Image extends Base {
         this.panStartScrollLeft = this.wrapperEl.scrollLeft;
         this.panStartScrollTop = this.wrapperEl.scrollTop;
         this.isPanning = true;
-        document.body.addEventListener('mousemove', this.pan);
-        document.body.addEventListener('mouseup', this.stopPanning);
+        document.addEventListener('mousemove', this.pan);
+        document.addEventListener('mouseup', this.stopPanning);
         this.imageEl.classList.add(CSS_CLASS_PANNING);
         this.emit('panstart');
     }
@@ -327,7 +326,7 @@ class Image extends Base {
      * @public
      * @returns {void}
      */
-    zoomin() {
+    zoomIn() {
         this.zoom('in');
     }
 
@@ -336,7 +335,7 @@ class Image extends Base {
      * @public
      * @returns {void}
      */
-    zoomout() {
+    zoomOut() {
         this.zoom('out');
     }
 
@@ -347,13 +346,13 @@ class Image extends Base {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add('zoomin', this.zoomin);
-        this.controls.add('zoomout', this.zoomout);
-        this.controls.add('rotate', this.rotateLeft);
-        this.controls.add('fullscreen', this.toggleFullscreen);
+        this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
+        this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
+        this.controls.add('rotate', this.rotateLeft, 'box-preview-image-rotate-left-icon');
+        this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
     }
 }
 
-global.Box = global.Box || {};
-global.Box.Image = Image;
-module.exports = Image;
+Box.Image = Image;
+global.Box = Box;
+export default Box.Image;

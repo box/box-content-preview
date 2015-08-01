@@ -4,7 +4,8 @@ import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 
-let document = global.document; 
+let document = global.document;
+let singleton = null; 
 
 @autobind
 class Fullscreen extends EventEmitter {
@@ -17,17 +18,18 @@ class Fullscreen extends EventEmitter {
     constructor() {
         super();
 
-        if (!instance) {
-            instance = this;
+        if (singleton) {
+            return singleton;
+        } else {
+            singleton = this;
         }
 
-        document = global.document;
         document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
         document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
         document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
         document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
 
-        return instance;
+        return singleton;
     }
 
     /**
@@ -56,7 +58,7 @@ class Fullscreen extends EventEmitter {
     fullscreenchangeHandler() {
         if (this.isFullscreen()) {
             this.emit('enter');
-        } else {
+        } else {    
             this.emit('exit');
         }
     }
@@ -95,5 +97,4 @@ class Fullscreen extends EventEmitter {
     }
 }
 
-let instance = new Fullscreen();
-module.exports = instance;
+export default new Fullscreen();

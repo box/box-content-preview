@@ -6248,6 +6248,10 @@ module.exports = isObject;
 (function (global){
 'use strict';
 
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -6256,7 +6260,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 require('core-js/modules/es6.reflect');
 
@@ -6347,13 +6351,17 @@ var Base = (function (_EventEmitter) {
     return Base;
 })(_events2['default']);
 
-module.exports = Base;
-
+exports['default'] = Base;
+module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./fullscreen":29,"autobind-decorator":1,"core-js/modules/es6.reflect":18,"events":3}],28:[function(require,module,exports){
 (function (global){
 'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -6517,7 +6525,6 @@ var Controls = (function () {
 
             var button = document.createElement('button');
             button.className = 'box-preview-controls-btn ' + classList;
-            button.textContent = text;
             button.addEventListener('click', handler);
 
             cell.appendChild(button);
@@ -6530,13 +6537,17 @@ var Controls = (function () {
     return Controls;
 })();
 
-module.exports = Controls;
-
+exports['default'] = Controls;
+module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./util":30,"autobind-decorator":1,"core-js/modules/es6.reflect":18,"lodash/function/throttle":21}],29:[function(require,module,exports){
+},{"./util":31,"autobind-decorator":1,"core-js/modules/es6.reflect":18,"lodash/function/throttle":21}],29:[function(require,module,exports){
 (function (global){
 'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -6546,7 +6557,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 require('core-js/modules/es6.reflect');
 
@@ -6559,6 +6570,7 @@ var _events = require('events');
 var _events2 = _interopRequireDefault(_events);
 
 var document = global.document;
+var singleton = null;
 
 var Fullscreen = (function (_EventEmitter) {
     _inherits(Fullscreen, _EventEmitter);
@@ -6574,17 +6586,18 @@ var Fullscreen = (function (_EventEmitter) {
 
         _get(Object.getPrototypeOf(_Fullscreen.prototype), 'constructor', this).call(this);
 
-        if (!instance) {
-            instance = this;
+        if (singleton) {
+            return singleton;
+        } else {
+            singleton = this;
         }
 
-        document = global.document;
         document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
         document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
         document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
         document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
 
-        return instance;
+        return singleton;
     }
 
     /**
@@ -6666,41 +6679,17 @@ var Fullscreen = (function (_EventEmitter) {
     return Fullscreen;
 })(_events2['default']);
 
-var instance = new Fullscreen();
-module.exports = instance;
-
+exports['default'] = new Fullscreen();
+module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"autobind-decorator":1,"core-js/modules/es6.reflect":18,"events":3}],30:[function(require,module,exports){
-'use strict';
-
-/**
- * Element.closest()
- * @param  {HTMLElement} element
- * @param  {string} selector
- * @public
- * @returns {HTMLElement}
- */
-function closest(element, selector) {
-    while (element) {
-        if (element.matches(selector)) {
-            break;
-        }
-
-        element = element.parentElement;
-    }
-
-    return element;
-};
-
-module.exports = {
-    closest: closest
-};
-
-
-},{}],31:[function(require,module,exports){
 (function (global){
 'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -6710,7 +6699,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 require('core-js/modules/es6.reflect');
 
@@ -6737,6 +6726,7 @@ var CSS_CLASS_IMAGE = 'box-preview-image';
 var IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 var document = global.document;
+var Box = global.Box || {};
 
 var Image = (function (_Base) {
     _inherits(Image, _Base);
@@ -6822,8 +6812,6 @@ var Image = (function (_Base) {
     }, {
         key: 'handleMouseUp',
         value: function handleMouseUp(event) {
-            this.didPan = false;
-
             // If this is not a left click, then ignore
             // If this is a CTRL or CMD click, then ignore
             if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
@@ -6914,8 +6902,8 @@ var Image = (function (_Base) {
         key: 'stopPanning',
         value: function stopPanning() {
             this.isPanning = false;
-            document.body.removeEventListener('mousemove', this.pan);
-            document.body.removeEventListener('mouseup', this.stopPanning);
+            document.removeEventListener('mousemove', this.pan);
+            document.removeEventListener('mouseup', this.stopPanning);
             this.imageEl.classList.remove(CSS_CLASS_PANNING);
             this.emit('panend');
         }
@@ -6937,8 +6925,8 @@ var Image = (function (_Base) {
             this.panStartScrollLeft = this.wrapperEl.scrollLeft;
             this.panStartScrollTop = this.wrapperEl.scrollTop;
             this.isPanning = true;
-            document.body.addEventListener('mousemove', this.pan);
-            document.body.addEventListener('mouseup', this.stopPanning);
+            document.addEventListener('mousemove', this.pan);
+            document.addEventListener('mouseup', this.stopPanning);
             this.imageEl.classList.add(CSS_CLASS_PANNING);
             this.emit('panstart');
         }
@@ -7080,8 +7068,8 @@ var Image = (function (_Base) {
          * @returns {void}
          */
     }, {
-        key: 'zoomin',
-        value: function zoomin() {
+        key: 'zoomIn',
+        value: function zoomIn() {
             this.zoom('in');
         }
 
@@ -7091,8 +7079,8 @@ var Image = (function (_Base) {
          * @returns {void}
          */
     }, {
-        key: 'zoomout',
-        value: function zoomout() {
+        key: 'zoomOut',
+        value: function zoomOut() {
             this.zoom('out');
         }
 
@@ -7105,10 +7093,10 @@ var Image = (function (_Base) {
         key: 'loadUI',
         value: function loadUI() {
             this.controls = new _controls2['default'](this.containerEl);
-            this.controls.add('zoomin', this.zoomin);
-            this.controls.add('zoomout', this.zoomout);
-            this.controls.add('rotate', this.rotateLeft);
-            this.controls.add('fullscreen', this.toggleFullscreen);
+            this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
+            this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
+            this.controls.add('rotate', this.rotateLeft, 'box-preview-image-rotate-left-icon');
+            this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
         }
     }]);
 
@@ -7117,10 +7105,40 @@ var Image = (function (_Base) {
     return Image;
 })(_base2['default']);
 
-global.Box = global.Box || {};
-global.Box.Image = Image;
-module.exports = Image;
-
+Box.Image = Image;
+global.Box = Box;
+exports['default'] = Box.Image;
+module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./base":27,"./controls":28,"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":18}]},{},[31]);
+},{"./base":27,"./controls":28,"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":18}],31:[function(require,module,exports){
+'use strict';
+
+/**
+ * Element.closest()
+ * @param  {HTMLElement} element
+ * @param  {string} selector
+ * @public
+ * @returns {HTMLElement}
+ */
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+function closest(element, selector) {
+    while (element) {
+        if (element.matches(selector)) {
+            break;
+        }
+
+        element = element.parentElement;
+    }
+
+    return element;
+};
+
+exports['default'] = {
+    closest: closest
+};
+module.exports = exports['default'];
+
+},{}]},{},[30]);

@@ -19,6 +19,6 @@ function closest(element, selector) {
     return element;
 };
 
-module.exports = {
+export default {
     closest: closest
 };

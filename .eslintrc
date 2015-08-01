@@ -1,28 +1,40 @@
 {
-	"globals": {
-		"window": false,
-		"document": false,
-		"Box": false,
-		"$": false
+	"env": {
+		"browser": true
 	},
+
+	"globals": {
+		"Box": true
+	},
+
 	"rules": {
-		"brace-style": 2,
-		"func-style": [2, "declaration"],
-		"strict": [2, "function"],
-		"guard-for-in": 2,
-		"no-floating-decimal": 2,
-		"no-underscore-dangle": 0,
-		"no-nested-ternary": 2,
-		"quotes": [2, "single"],
-		"radix": 2,
+		"semi": 2,
+		"no-bitwise": 2,
+		"no-cond-assign": 2,
+		"curly": 0,
+		"no-debugger": 2,
+		"no-console": 2,
+		"eqeqeq": 0,
+		"no-eq-null": 2,
+		"no-eval": 2,
 		"wrap-iife": 2,
-		"space-after-keywords": 2,
-		"valid-jsdoc": [2, {
-			"prefer": {
-				"return": "returns"
-			}
-		}],
-		// We allow unused args
-		"no-unused-vars": [2, {"args": "none"}]
+		"no-iterator": 2,
+		"no-use-before-define": 2,
+		"no-loop-func": 0,
+		"no-loop-func-v2": 2,
+		"no-multi-str": 2,
+		"new-cap": 2,
+		"no-caller": 2,
+		"no-new": 2,
+		"no-proto": 2,
+		"quotes": [2, "single"],
+		"no-undef": 0,
+		"no-unused-vars": 2,
+		"no-script-url": 2,
+		"no-queryselector": 2,
+		"strict": 0,
+		"dot-notation": 2,
+		"camelcase": 0,
+		"radix": 2
 	}
 }
