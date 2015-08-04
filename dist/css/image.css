@@ -1,4 +1,5 @@
-.box-preview-image {
+.box-preview-image,
+.box-preview-images {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -37,9 +38,23 @@
     cursor: -webkit-grabbing;
 }
 
+.box-preview-images-wrapper,
 .box-preview-image .zoomable {
     cursor: pointer; /* cursor for IE9 */
     cursor: zoom-in;
     cursor: -moz-zoom-in;
     cursor: -webkit-zoom-in;
+}
+
+
+
+.box-preview-images-wrapper {
+    padding: 0;
+    margin: 0 auto;
+    border: 0 none;
+}
+
+.box-preview-images img {
+    width: 100%;
+    display: block;
 }

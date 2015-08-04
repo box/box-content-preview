@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test</title>
+    
+    <link rel="stylesheet" type="text/css" href="dist/css/preview.css"></script>
+    <link rel="stylesheet" type="text/css" href="dist/css/icons.css"></script>
+    <link rel="stylesheet" type="text/css" href="dist/css/image.css"></script>
+    <link rel="stylesheet" type="text/css" href="dist/css/controls.css"></script>
+    
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+        .container {
+            width: 500px;
+            height: 500px;
+            margin: 200px; 
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class='container'></div>
+    <script src="dist/js/images.js" type="application/javascript"></script>
+
+    <script>
+        var image = new Box.Images('.container');
+
+        image.on('resize', function() {
+            console.error('resized');
+        });
+        
+        image.on('panstart', function() {
+            console.error('panstart');
+        });
+        
+        image.on('panend', function() {
+            console.error('panend');
+        });
+        
+        image.on('rotate', function() {
+            console.error('rotated');
+        });
+        
+        image.on('enterfullscreen', function() {
+            console.error('enterfullscreen');
+        });
+        
+        image.on('exitfullscreen', function() {
+            console.error('exitfullscreen');
+        });
+        
+        image.load(['http://youngjournalistacademy.com/wp-content/uploads/2015/04/tai-x-wing.jpg', 'http://static.comicvine.com/uploads/original/6/68843/3474964-darth-vader.jpg', 'http://static.comicvine.com/uploads/original/11115/111159437/3843219-3764438-8584142469-sw_da.jpg', 'http://static.comicvine.com/uploads/original/11113/111134337/3827757-star-wars-red-darth-maul-lightsabers-darth-vader-dark-side-darth-sidious-count-dooku-1920x1080.jpg']).then(function() {
+            console.error('loaded');    
+        });
+    </script
+</body>
+</html>

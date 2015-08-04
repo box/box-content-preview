@@ -6719,17 +6719,15 @@ var _controls = require('./controls');
 
 var _controls2 = _interopRequireDefault(_controls);
 
-var CSS_CLASS_ZOOMABLE = 'zoomable';
-var CSS_CLASS_PANNABLE = 'pannable';
-var CSS_CLASS_PANNING = 'panning';
-var CSS_CLASS_IMAGE = 'box-preview-image';
-var IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
+var CSS_CLASS_IMAGE = 'box-preview-images';
+var CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
+var IMAGE_LOAD_TIMEOUT_IN_MILLIS = 20000;
 
 var document = global.document;
 var Box = global.Box || {};
 
-var Image = (function (_Base) {
-    _inherits(Image, _Base);
+var Images = (function (_Base) {
+    _inherits(Images, _Base);
 
     /**
      * [constructor]
@@ -6738,34 +6736,38 @@ var Image = (function (_Base) {
      * @returns {Image}
      */
 
-    function Image(container, options) {
-        _classCallCheck(this, _Image);
+    function Images(container, options) {
+        _classCallCheck(this, _Images);
 
-        _get(Object.getPrototypeOf(_Image.prototype), 'constructor', this).call(this, container, options);
-        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
-        this.wrapperEl.className = CSS_CLASS_IMAGE;
-        this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
-        this.imageEl.addEventListener('mousedown', this.handleMouseDown);
-        this.imageEl.addEventListener('mouseup', this.handleMouseUp);
-        this.imageEl.addEventListener('dragstart', this.handleDragStart);
+        _get(Object.getPrototypeOf(_Images.prototype), 'constructor', this).call(this, container, options);
+
+        this.containerEl.appendChild(document.createElement('div'));
+        this.containerEl.firstElementChild.className = CSS_CLASS_IMAGE;
+
+        this.wrapperEl = this.containerEl.firstElementChild.appendChild(document.createElement('div'));
+        this.wrapperEl.className = CSS_CLASS_IMAGE_WRAPPER;
+        this.wrapperEl.addEventListener('mouseup', this.handleMouseUp);
+
+        this.imageEls = [this.wrapperEl.appendChild(document.createElement('img'))];
     }
 
     /**
      * Loads an image.
-     * @param {Event} event The mousemove event
+     * @param {Array} imageUrls
      * @pubic
      * @returns {Promise}
      */
 
-    _createClass(Image, [{
+    _createClass(Images, [{
         key: 'load',
-        value: function load(imageUrl) {
+        value: function load(imageUrls) {
             var _this = this;
 
-            this.imageUrl = imageUrl;
+            this.imageUrls = imageUrls;
 
             return new _bluebird2['default'](function (resolve, reject) {
-                _this.imageEl.addEventListener('load', function () {
+
+                _this.imageEls[0].addEventListener('load', function () {
                     resolve(_this);
                     _this.loaded = true;
                     _this.zoom();
@@ -6776,7 +6778,13 @@ var Image = (function (_Base) {
 
                     _this.emit('load');
                 });
-                _this.imageEl.src = imageUrl;
+
+                _this.imageUrls.forEach(function (imageUrl, index) {
+                    if (index !== 0) {
+                        _this.imageEls[index] = _this.wrapperEl.appendChild(document.createElement('img'));
+                    }
+                    _this.imageEls[index].src = imageUrl;
+                });
 
                 setTimeout(function () {
                     if (!_this.loaded) {
@@ -6787,25 +6795,7 @@ var Image = (function (_Base) {
         }
 
         /**
-         * Handles mouse down event.
-         * @param {Event} event The mousemove event
-         * @returns {void}
-         */
-    }, {
-        key: 'handleMouseDown',
-        value: function handleMouseDown(event) {
-            this.didPan = false;
-
-            // If this is not a left click, then ignore
-            // If this is a CTRL or CMD click, then ignore
-            if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-                this.startPanning(event.clientX, event.clientY);
-                event.preventDefault();
-            }
-        }
-
-        /**
-         * Handles mouse down event.
+         * Handles mouse up event.
          * @param {Event} event The mousemove event
          * @returns {void}
          */
@@ -6815,134 +6805,9 @@ var Image = (function (_Base) {
             // If this is not a left click, then ignore
             // If this is a CTRL or CMD click, then ignore
             if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-                if (!this.isPannable && this.isZoomable) {
-                    // If the mouse up was not due to panning, and the image is zoomable, then zoom in.
-                    this.zoom('in');
-                } else if (!this.didPan) {
-                    // If the mouse up was not due to ending of panning, then assume it was a regular
-                    // click mouse up. In that case reset the image size, mimicking single-click-unzoom.
-                    this.zoom('reset');
-                }
+                this.zoom('in');
                 event.preventDefault();
             }
-        }
-
-        /**
-         * Prevents drag events on the image
-         * @param {Event} event The mousemove event
-         * @returns {void}
-         */
-    }, {
-        key: 'handleDragStart',
-        value: function handleDragStart(event) {
-            event.preventDefault();
-            event.stopPropogation();
-        }
-
-        /**
-         * Updates cursors on image content
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'updateCursor',
-        value: function updateCursor() {
-            if (this.isPannable) {
-                this.isZoomable = false;
-                this.imageEl.classList.add(CSS_CLASS_PANNABLE);
-                this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            } else {
-                this.isZoomable = true;
-                this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-                this.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
-            }
-        }
-
-        /**
-         * Can the viewer currently be panned
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'updatePannability',
-        value: function updatePannability() {
-            var imageDimensions = this.imageEl.getBoundingClientRect();
-            var containerDimensions = this.wrapperEl.getBoundingClientRect();
-            this.isPannable = imageDimensions.width > containerDimensions.width || imageDimensions.height > containerDimensions.height;
-            this.didPan = false;
-            this.updateCursor();
-        }
-
-        /**
-         * Pan the image to the given x/y position
-         * @param {Event} event The mousemove event
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'pan',
-        value: function pan(event) {
-            if (!this.isPanning) {
-                return;
-            }
-            var offsetX = event.clientX - this.panStartX;
-            var offsetY = event.clientY - this.panStartY;
-            this.wrapperEl.scrollLeft = this.panStartScrollLeft - offsetX;
-            this.wrapperEl.scrollTop = this.panStartScrollTop - offsetY;
-            this.didPan = true;
-            this.emit('pan');
-        }
-
-        /**
-         * Stop panning the image
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'stopPanning',
-        value: function stopPanning() {
-            this.isPanning = false;
-            document.removeEventListener('mousemove', this.pan);
-            document.removeEventListener('mouseup', this.stopPanning);
-            this.imageEl.classList.remove(CSS_CLASS_PANNING);
-            this.emit('panend');
-        }
-
-        /**
-         * Start panning the image if the image is pannable
-         * @param {number} x The initial x position of the mouse
-         * @param {number} y The initial y position of the mouse
-         * @returns {void}
-         */
-    }, {
-        key: 'startPanning',
-        value: function startPanning(x, y) {
-            if (!this.isPannable) {
-                return;
-            }
-            this.panStartX = x;
-            this.panStartY = y;
-            this.panStartScrollLeft = this.wrapperEl.scrollLeft;
-            this.panStartScrollTop = this.wrapperEl.scrollTop;
-            this.isPanning = true;
-            document.addEventListener('mousemove', this.pan);
-            document.addEventListener('mouseup', this.stopPanning);
-            this.imageEl.classList.add(CSS_CLASS_PANNING);
-            this.emit('panstart');
-        }
-
-        /**
-         * Rotate image anti-clockwise by 90 degrees
-         * @public
-         * @returns {void}
-         */
-    }, {
-        key: 'rotateLeft',
-        value: function rotateLeft() {
-            var angle = this.currentRotationAngle - 90;
-            this.currentRotationAngle = angle === -3600 ? 0 : angle;
-            this.imageEl.style.transform = 'rotate(' + this.currentRotationAngle + 'deg)';
-            this.emit('rotate');
         }
 
         /**
@@ -6955,98 +6820,30 @@ var Image = (function (_Base) {
         key: 'zoom',
         value: function zoom(type) {
 
-            var temp = undefined,
-                ratio = 1,
-                // default scaling ratio is 1:1
-            newWidth = undefined,
-                newHeight = undefined,
-                modifyWidthInsteadOfHeight = undefined,
-                isRotated = Math.abs(this.currentRotationAngle) % 180 === 90,
-                imageCurrentDimensions = this.imageEl.getBoundingClientRect(),
-                // Getting bounding rect does not ignore transforms / rotates
-            viewport = this.wrapperEl.getBoundingClientRect(),
-                width = imageCurrentDimensions.width,
-                height = imageCurrentDimensions.height,
-                aspect = width / height;
-
-            // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
-            // For images that are wider than taller we use width. For images that are taller than wider, we use height.
-            modifyWidthInsteadOfHeight = aspect >= 1;
-
-            // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
-            // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
-            // for the dimension that was cleared out.
+            var newWidth = undefined,
+                viewportWidth = this.wrapperEl.parentNode.clientWidth,
+                imageContainerWidth = this.wrapperEl.clientWidth;
 
             switch (type) {
-
                 case 'in':
-                    if (modifyWidthInsteadOfHeight) {
-                        newWidth = width + 100;
-                    } else {
-                        newHeight = height + 100;
-                    }
+                    newWidth = imageContainerWidth + 100;
                     break;
 
                 case 'out':
-                    if (modifyWidthInsteadOfHeight) {
-                        newWidth = width - 100;
-                    } else {
-                        newHeight = height - 100;
-                    }
+                    newWidth = imageContainerWidth - 100;
                     break;
 
-                case 'reset':
-                    // Reset the dimensions to their original values by removing overrides
-                    // Doing so will make the browser render the image in its natural size
-                    // Then we can proceed by recalculating stuff from that natural size.
-                    this.imageEl.style.width = '';
-                    this.imageEl.style.height = '';
-
-                    // Image may still overflow the page, so do the default zoom by calling zoom again
-                    // This will go through the same workflow but end up in another case block.
-                    this.zoom();
-
-                    // Kill further execution
-                    return;
-
                 default:
-
-                    // If the image is overflowing the viewport, figure out by how much
-                    // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
-                    if (width > viewport.width || height > viewport.height) {
-                        ratio = Math.min(viewport.width / width, viewport.height / height);
-                    }
-
-                    if (modifyWidthInsteadOfHeight) {
-                        newWidth = width * ratio;
-                    } else {
-                        newHeight = height * ratio;
-                    }
+                    newWidth = viewportWidth;
+                    break;
             }
 
-            // If the image has been rotated, we need to swap the width and height
-            // getBoundingClientRect always gives values based on how its rendered on the screen
-            // But when setting width or height, transforms / rotates are ignored.
-            if (isRotated) {
-                temp = newWidth;
-                newWidth = newHeight;
-                newHeight = temp;
-            }
-
-            // Set the new dimensions. This ignores rotates, hence we need to swap the dimensions above.
-            // Only one of the below will be set, while the other will get cleared out to let the browser
-            // adjust it automatically based on the images aspect ratio.
-            this.imageEl.style.width = newWidth ? newWidth + 'px' : '';
-            this.imageEl.style.height = newHeight ? newHeight + 'px' : '';
+            this.wrapperEl.style.width = newWidth + 'px';
 
             // Fix the scroll position of the image to be centered
-            this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
-            this.wrapperEl.scrollTop = (this.wrapperEl.scrollHeight - viewport.height) / 2;
+            this.wrapperEl.parentNode.scrollLeft = (this.wrapperEl.parentNode.scrollWidth - viewportWidth) / 2;
 
             this.emit('resize');
-
-            // Give the browser some time to render before updating pannability
-            setTimeout(this.updatePannability, 50);
         }
 
         /**
@@ -7082,19 +6879,18 @@ var Image = (function (_Base) {
             this.controls = new _controls2['default'](this.containerEl);
             this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
             this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
-            this.controls.add('rotate', this.rotateLeft, 'box-preview-image-rotate-left-icon');
             this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
         }
     }]);
 
-    var _Image = Image;
-    Image = (0, _autobindDecorator2['default'])(Image) || Image;
-    return Image;
+    var _Images = Images;
+    Images = (0, _autobindDecorator2['default'])(Images) || Images;
+    return Images;
 })(_base2['default']);
 
-Box.Image = Image;
+Box.Images = Images;
 global.Box = Box;
-exports['default'] = Box.Image;
+exports['default'] = Box.Images;
 module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})

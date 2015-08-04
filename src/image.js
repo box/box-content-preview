@@ -219,17 +219,10 @@ class Image extends Base {
             ratio = 1, // default scaling ratio is 1:1
             newWidth,
             newHeight,
-            newMarginLeft,
-            newMarginTop,
-            viewport,
-            widthDifference,
-            heightDifference,
-            overflowingWidth,
-            overflowingHeight,
             modifyWidthInsteadOfHeight,
             isRotated = Math.abs(this.currentRotationAngle) % 180 === 90,
             imageCurrentDimensions = this.imageEl.getBoundingClientRect(), // Getting bounding rect does not ignore transforms / rotates
-            wrapperCurrentDimensions = this.wrapperEl.getBoundingClientRect(),
+            viewport = this.wrapperEl.getBoundingClientRect(),
             width = imageCurrentDimensions.width,
             height = imageCurrentDimensions.height,
             aspect = width / height;
@@ -237,13 +230,6 @@ class Image extends Base {
         // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
         // For images that are wider than taller we use width. For images that are taller than wider, we use height.
         modifyWidthInsteadOfHeight = aspect >= 1;
-
-        // getBoundingClientRect() includes scrollbar widths.
-        viewport = {
-            width: wrapperCurrentDimensions.width,
-            height: wrapperCurrentDimensions.height
-        };
-
 
         // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
