@@ -6,7 +6,6 @@
     
     <link rel="stylesheet" type="text/css" href="dist/css/preview.css"></script>
     <link rel="stylesheet" type="text/css" href="dist/css/icons.css"></script>
-    <link rel="stylesheet" type="text/css" href="dist/css/image.css"></script>
     <link rel="stylesheet" type="text/css" href="dist/css/controls.css"></script>
     
     <style>
@@ -24,38 +23,63 @@
 </head>
 <body>
     <div class='container'></div>
-    <script src="dist/js/image.js" type="application/javascript"></script>
 
+    <script src="dist/js/preview.js"></script>
     <script>
-        var image = new Box.Image('.container');
 
-        image.on('resize', function() {
-            console.error('resized');
+        // Need to get this from the server
+        var file = {
+            type: 'image',
+            representations: [
+                'http://youngjournalistacademy.com/wp-content/uploads/2015/04/tai-x-wing.jpg',
+
+                // Comment out the 3 lines below to load single image viewer otherwise it will load the multiple image viewer
+                'http://static.comicvine.com/uploads/original/6/68843/3474964-darth-vader.jpg',
+                'http://static.comicvine.com/uploads/original/11115/111159437/3843219-3764438-8584142469-sw_da.jpg',
+                'http://static.comicvine.com/uploads/original/11113/111134337/3827757-star-wars-red-darth-maul-lightsabers-darth-vader-dark-side-darth-sidious-count-dooku-1920x1080.jpg'
+            ]
+        };
+
+        // Need to get this from the server too for now
+        var assets = {
+            image: {
+                stylesheets: [
+                    'dist/css/image.css'
+                ],
+                scripts: [
+                    'dist/js/image.js',
+                    'dist/js/images.js'
+                ]
+            }
+        };
+
+        Box.Preview.show(file, '.container', assets).then(function(imageViewer) {
+            
+            imageViewer.on('resize', function() {
+                console.error('resized');
+            });
+            
+            imageViewer.on('panstart', function() {
+                console.error('panstart');
+            });
+            
+            imageViewer.on('panend', function() {
+                console.error('panend');
+            });
+            
+            imageViewer.on('rotate', function() {
+                console.error('rotated');
+            });
+            
+            imageViewer.on('enterfullscreen', function() {
+                console.error('enterfullscreen');
+            });
+            
+            imageViewer.on('exitfullscreen', function() {
+                console.error('exitfullscreen');
+            });
         });
-        
-        image.on('panstart', function() {
-            console.error('panstart');
-        });
-        
-        image.on('panend', function() {
-            console.error('panend');
-        });
-        
-        image.on('rotate', function() {
-            console.error('rotated');
-        });
-        
-        image.on('enterfullscreen', function() {
-            console.error('enterfullscreen');
-        });
-        
-        image.on('exitfullscreen', function() {
-            console.error('exitfullscreen');
-        });
-        
-        image.load('http://youngjournalistacademy.com/wp-content/uploads/2015/04/tai-x-wing.jpg').then(function() {
-            console.error('loaded');    
-        });
-    </script
+
+    </script>
 </body>
 </html>

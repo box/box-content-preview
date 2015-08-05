@@ -6276,6 +6276,10 @@ var _fullscreen = require('./fullscreen');
 
 var _fullscreen2 = _interopRequireDefault(_fullscreen);
 
+var _controls = require('./controls');
+
+var _controls2 = _interopRequireDefault(_controls);
+
 var CLASS_FULLSCREEN = 'is-fullscreen';
 var OPTIONS = {
     ui: true
@@ -6335,6 +6339,42 @@ var Base = (function (_EventEmitter) {
         }
 
         /**
+         * Zooms in
+         * @public
+         * @returns {void}
+         */
+    }, {
+        key: 'zoomIn',
+        value: function zoomIn() {
+            this.zoom('in');
+        }
+
+        /**
+         * Zooms in
+         * @public
+         * @returns {void}
+         */
+    }, {
+        key: 'zoomOut',
+        value: function zoomOut() {
+            this.zoom('out');
+        }
+
+        /**
+         * Zooms in
+         * @private
+         * @returns {void}
+         */
+    }, {
+        key: 'loadUI',
+        value: function loadUI() {
+            this.controls = new _controls2['default'](this.containerEl);
+            this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
+            this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
+            this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
+        }
+
+        /**
          * Destroys the viewer
          * @private
          * @returns {void}
@@ -6355,7 +6395,7 @@ exports['default'] = Base;
 module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./fullscreen":29,"autobind-decorator":1,"core-js/modules/es6.reflect":16,"events":25}],28:[function(require,module,exports){
+},{"./controls":28,"./fullscreen":29,"autobind-decorator":1,"core-js/modules/es6.reflect":16,"events":25}],28:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -6586,16 +6626,14 @@ var Fullscreen = (function (_EventEmitter) {
 
         _get(Object.getPrototypeOf(_Fullscreen.prototype), 'constructor', this).call(this);
 
-        if (singleton) {
-            return singleton;
-        } else {
+        if (!singleton) {
             singleton = this;
-        }
 
-        document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
-        document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
-        document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
-        document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
+            document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
+            document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
+            document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
+            document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
+        }
 
         return singleton;
     }
@@ -6714,10 +6752,6 @@ var _bluebird2 = _interopRequireDefault(_bluebird);
 var _base = require('./base');
 
 var _base2 = _interopRequireDefault(_base);
-
-var _controls = require('./controls');
-
-var _controls2 = _interopRequireDefault(_controls);
 
 var CSS_CLASS_ZOOMABLE = 'zoomable';
 var CSS_CLASS_PANNABLE = 'pannable';
@@ -7051,39 +7085,14 @@ var Image = (function (_Base) {
 
         /**
          * Zooms in
-         * @public
-         * @returns {void}
-         */
-    }, {
-        key: 'zoomIn',
-        value: function zoomIn() {
-            this.zoom('in');
-        }
-
-        /**
-         * Zooms in
-         * @public
-         * @returns {void}
-         */
-    }, {
-        key: 'zoomOut',
-        value: function zoomOut() {
-            this.zoom('out');
-        }
-
-        /**
-         * Zooms in
          * @private
          * @returns {void}
          */
     }, {
         key: 'loadUI',
         value: function loadUI() {
-            this.controls = new _controls2['default'](this.containerEl);
-            this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
-            this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
+            _get(Object.getPrototypeOf(_Image.prototype), 'loadUI', this).call(this);
             this.controls.add('rotate', this.rotateLeft, 'box-preview-image-rotate-left-icon');
-            this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
         }
     }]);
 
@@ -7098,7 +7107,7 @@ exports['default'] = Box.Image;
 module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./base":27,"./controls":28,"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":16}],31:[function(require,module,exports){
+},{"./base":27,"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":16}],31:[function(require,module,exports){
 'use strict';
 
 /**

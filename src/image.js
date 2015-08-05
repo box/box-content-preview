@@ -4,8 +4,6 @@ import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
 import Base from './base';
-import Controls from './controls';
-
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -309,33 +307,12 @@ class Image extends Base {
 
     /**
      * Zooms in
-     * @public
-     * @returns {void}
-     */
-    zoomIn() {
-        this.zoom('in');
-    }
-
-    /**
-     * Zooms in
-     * @public
-     * @returns {void}
-     */
-    zoomOut() {
-        this.zoom('out');
-    }
-
-    /**
-     * Zooms in
      * @private
      * @returns {void}
      */
     loadUI() {
-        this.controls = new Controls(this.containerEl);
-        this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
-        this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
+        super.loadUI();
         this.controls.add('rotate', this.rotateLeft, 'box-preview-image-rotate-left-icon');
-        this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
     }
 }
 

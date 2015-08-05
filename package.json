@@ -34,7 +34,7 @@
   },
   "scripts": {
     "browserify": "browserify src/image.js -v -t [ babelify --stage 1 ] --outfile dist/js/image.js & browserify src/images.js -v -t [ babelify --stage 1 ] --outfile dist/js/images.js",
-    "watchify": "watchify src/image.js -v -t [ babelify --stage 1 ] --outfile dist/js/image.js & watchify src/images.js -v -t [ babelify --stage 1 ] --outfile dist/js/images.js",
+    "watchify": "watchify src/image.js -v -t [ babelify --stage 1 ] --outfile dist/js/image.js & watchify src/images.js -v -t [ babelify --stage 1 ] --outfile dist/js/images.js & watchify src/preview.js -v -t [ babelify --stage 1 ] --outfile dist/js/preview.js",
     "karma": "karma start"
   }
 }

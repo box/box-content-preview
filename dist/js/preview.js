@@ -4940,7 +4940,7 @@ module.exports = ret;
 },{"./es5.js":14}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":26}],3:[function(require,module,exports){
+},{"_process":17}],3:[function(require,module,exports){
 var $ = require('./$');
 function assert(condition, msg1, msg2){
   if(!condition)throw TypeError(msg2 ? msg1 + msg2 : msg1);
@@ -5425,734 +5425,6 @@ $def($def.S + $def.F * buggyEnumerate, 'Reflect', {
 
 $def($def.S, 'Reflect', reflect);
 },{"./$":9,"./$.assert":3,"./$.def":6,"./$.iter":8,"./$.own-keys":10,"./$.set-proto":12,"./$.uid":14,"./$.wks":15}],17:[function(require,module,exports){
-var getNative = require('../internal/getNative');
-
-/* Native method references for those with the same name as other `lodash` methods. */
-var nativeNow = getNative(Date, 'now');
-
-/**
- * Gets the number of milliseconds that have elapsed since the Unix epoch
- * (1 January 1970 00:00:00 UTC).
- *
- * @static
- * @memberOf _
- * @category Date
- * @example
- *
- * _.defer(function(stamp) {
- *   console.log(_.now() - stamp);
- * }, _.now());
- * // => logs the number of milliseconds it took for the deferred function to be invoked
- */
-var now = nativeNow || function() {
-  return new Date().getTime();
-};
-
-module.exports = now;
-
-},{"../internal/getNative":20}],18:[function(require,module,exports){
-var isObject = require('../lang/isObject'),
-    now = require('../date/now');
-
-/** Used as the `TypeError` message for "Functions" methods. */
-var FUNC_ERROR_TEXT = 'Expected a function';
-
-/* Native method references for those with the same name as other `lodash` methods. */
-var nativeMax = Math.max;
-
-/**
- * Creates a debounced function that delays invoking `func` until after `wait`
- * milliseconds have elapsed since the last time the debounced function was
- * invoked. The debounced function comes with a `cancel` method to cancel
- * delayed invocations. Provide an options object to indicate that `func`
- * should be invoked on the leading and/or trailing edge of the `wait` timeout.
- * Subsequent calls to the debounced function return the result of the last
- * `func` invocation.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is invoked
- * on the trailing edge of the timeout only if the the debounced function is
- * invoked more than once during the `wait` timeout.
- *
- * See [David Corbacho's article](http://drupalmotion.com/article/debounce-and-throttle-visual-explanation)
- * for details over the differences between `_.debounce` and `_.throttle`.
- *
- * @static
- * @memberOf _
- * @category Function
- * @param {Function} func The function to debounce.
- * @param {number} [wait=0] The number of milliseconds to delay.
- * @param {Object} [options] The options object.
- * @param {boolean} [options.leading=false] Specify invoking on the leading
- *  edge of the timeout.
- * @param {number} [options.maxWait] The maximum time `func` is allowed to be
- *  delayed before it is invoked.
- * @param {boolean} [options.trailing=true] Specify invoking on the trailing
- *  edge of the timeout.
- * @returns {Function} Returns the new debounced function.
- * @example
- *
- * // avoid costly calculations while the window size is in flux
- * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
- *
- * // invoke `sendMail` when the click event is fired, debouncing subsequent calls
- * jQuery('#postbox').on('click', _.debounce(sendMail, 300, {
- *   'leading': true,
- *   'trailing': false
- * }));
- *
- * // ensure `batchLog` is invoked once after 1 second of debounced calls
- * var source = new EventSource('/stream');
- * jQuery(source).on('message', _.debounce(batchLog, 250, {
- *   'maxWait': 1000
- * }));
- *
- * // cancel a debounced call
- * var todoChanges = _.debounce(batchLog, 1000);
- * Object.observe(models.todo, todoChanges);
- *
- * Object.observe(models, function(changes) {
- *   if (_.find(changes, { 'user': 'todo', 'type': 'delete'})) {
- *     todoChanges.cancel();
- *   }
- * }, ['delete']);
- *
- * // ...at some point `models.todo` is changed
- * models.todo.completed = true;
- *
- * // ...before 1 second has passed `models.todo` is deleted
- * // which cancels the debounced `todoChanges` call
- * delete models.todo;
- */
-function debounce(func, wait, options) {
-  var args,
-      maxTimeoutId,
-      result,
-      stamp,
-      thisArg,
-      timeoutId,
-      trailingCall,
-      lastCalled = 0,
-      maxWait = false,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  wait = wait < 0 ? 0 : (+wait || 0);
-  if (options === true) {
-    var leading = true;
-    trailing = false;
-  } else if (isObject(options)) {
-    leading = !!options.leading;
-    maxWait = 'maxWait' in options && nativeMax(+options.maxWait || 0, wait);
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-
-  function cancel() {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    if (maxTimeoutId) {
-      clearTimeout(maxTimeoutId);
-    }
-    lastCalled = 0;
-    maxTimeoutId = timeoutId = trailingCall = undefined;
-  }
-
-  function complete(isCalled, id) {
-    if (id) {
-      clearTimeout(id);
-    }
-    maxTimeoutId = timeoutId = trailingCall = undefined;
-    if (isCalled) {
-      lastCalled = now();
-      result = func.apply(thisArg, args);
-      if (!timeoutId && !maxTimeoutId) {
-        args = thisArg = undefined;
-      }
-    }
-  }
-
-  function delayed() {
-    var remaining = wait - (now() - stamp);
-    if (remaining <= 0 || remaining > wait) {
-      complete(trailingCall, maxTimeoutId);
-    } else {
-      timeoutId = setTimeout(delayed, remaining);
-    }
-  }
-
-  function maxDelayed() {
-    complete(trailing, timeoutId);
-  }
-
-  function debounced() {
-    args = arguments;
-    stamp = now();
-    thisArg = this;
-    trailingCall = trailing && (timeoutId || !leading);
-
-    if (maxWait === false) {
-      var leadingCall = leading && !timeoutId;
-    } else {
-      if (!maxTimeoutId && !leading) {
-        lastCalled = stamp;
-      }
-      var remaining = maxWait - (stamp - lastCalled),
-          isCalled = remaining <= 0 || remaining > maxWait;
-
-      if (isCalled) {
-        if (maxTimeoutId) {
-          maxTimeoutId = clearTimeout(maxTimeoutId);
-        }
-        lastCalled = stamp;
-        result = func.apply(thisArg, args);
-      }
-      else if (!maxTimeoutId) {
-        maxTimeoutId = setTimeout(maxDelayed, remaining);
-      }
-    }
-    if (isCalled && timeoutId) {
-      timeoutId = clearTimeout(timeoutId);
-    }
-    else if (!timeoutId && wait !== maxWait) {
-      timeoutId = setTimeout(delayed, wait);
-    }
-    if (leadingCall) {
-      isCalled = true;
-      result = func.apply(thisArg, args);
-    }
-    if (isCalled && !timeoutId && !maxTimeoutId) {
-      args = thisArg = undefined;
-    }
-    return result;
-  }
-  debounced.cancel = cancel;
-  return debounced;
-}
-
-module.exports = debounce;
-
-},{"../date/now":17,"../lang/isObject":24}],19:[function(require,module,exports){
-var debounce = require('./debounce'),
-    isObject = require('../lang/isObject');
-
-/** Used as the `TypeError` message for "Functions" methods. */
-var FUNC_ERROR_TEXT = 'Expected a function';
-
-/**
- * Creates a throttled function that only invokes `func` at most once per
- * every `wait` milliseconds. The throttled function comes with a `cancel`
- * method to cancel delayed invocations. Provide an options object to indicate
- * that `func` should be invoked on the leading and/or trailing edge of the
- * `wait` timeout. Subsequent calls to the throttled function return the
- * result of the last `func` call.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is invoked
- * on the trailing edge of the timeout only if the the throttled function is
- * invoked more than once during the `wait` timeout.
- *
- * See [David Corbacho's article](http://drupalmotion.com/article/debounce-and-throttle-visual-explanation)
- * for details over the differences between `_.throttle` and `_.debounce`.
- *
- * @static
- * @memberOf _
- * @category Function
- * @param {Function} func The function to throttle.
- * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
- * @param {Object} [options] The options object.
- * @param {boolean} [options.leading=true] Specify invoking on the leading
- *  edge of the timeout.
- * @param {boolean} [options.trailing=true] Specify invoking on the trailing
- *  edge of the timeout.
- * @returns {Function} Returns the new throttled function.
- * @example
- *
- * // avoid excessively updating the position while scrolling
- * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
- *
- * // invoke `renewToken` when the click event is fired, but not more than once every 5 minutes
- * jQuery('.interactive').on('click', _.throttle(renewToken, 300000, {
- *   'trailing': false
- * }));
- *
- * // cancel a trailing throttled call
- * jQuery(window).on('popstate', throttled.cancel);
- */
-function throttle(func, wait, options) {
-  var leading = true,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  if (options === false) {
-    leading = false;
-  } else if (isObject(options)) {
-    leading = 'leading' in options ? !!options.leading : leading;
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-  return debounce(func, wait, { 'leading': leading, 'maxWait': +wait, 'trailing': trailing });
-}
-
-module.exports = throttle;
-
-},{"../lang/isObject":24,"./debounce":18}],20:[function(require,module,exports){
-var isNative = require('../lang/isNative');
-
-/**
- * Gets the native function at `key` of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {string} key The key of the method to get.
- * @returns {*} Returns the function if it's native, else `undefined`.
- */
-function getNative(object, key) {
-  var value = object == null ? undefined : object[key];
-  return isNative(value) ? value : undefined;
-}
-
-module.exports = getNative;
-
-},{"../lang/isNative":23}],21:[function(require,module,exports){
-/**
- * Checks if `value` is object-like.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- */
-function isObjectLike(value) {
-  return !!value && typeof value == 'object';
-}
-
-module.exports = isObjectLike;
-
-},{}],22:[function(require,module,exports){
-var isObject = require('./isObject');
-
-/** `Object#toString` result references. */
-var funcTag = '[object Function]';
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objToString = objectProto.toString;
-
-/**
- * Checks if `value` is classified as a `Function` object.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
- * @example
- *
- * _.isFunction(_);
- * // => true
- *
- * _.isFunction(/abc/);
- * // => false
- */
-function isFunction(value) {
-  // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in older versions of Chrome and Safari which return 'function' for regexes
-  // and Safari 8 equivalents which return 'object' for typed array constructors.
-  return isObject(value) && objToString.call(value) == funcTag;
-}
-
-module.exports = isFunction;
-
-},{"./isObject":24}],23:[function(require,module,exports){
-var isFunction = require('./isFunction'),
-    isObjectLike = require('../internal/isObjectLike');
-
-/** Used to detect host constructors (Safari > 5). */
-var reIsHostCtor = /^\[object .+?Constructor\]$/;
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to resolve the decompiled source of functions. */
-var fnToString = Function.prototype.toString;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/** Used to detect if a method is native. */
-var reIsNative = RegExp('^' +
-  fnToString.call(hasOwnProperty).replace(/[\\^$.*+?()[\]{}|]/g, '\\$&')
-  .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
-);
-
-/**
- * Checks if `value` is a native function.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
- * @example
- *
- * _.isNative(Array.prototype.push);
- * // => true
- *
- * _.isNative(_);
- * // => false
- */
-function isNative(value) {
-  if (value == null) {
-    return false;
-  }
-  if (isFunction(value)) {
-    return reIsNative.test(fnToString.call(value));
-  }
-  return isObjectLike(value) && reIsHostCtor.test(value);
-}
-
-module.exports = isNative;
-
-},{"../internal/isObjectLike":21,"./isFunction":22}],24:[function(require,module,exports){
-/**
- * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
- * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(1);
- * // => false
- */
-function isObject(value) {
-  // Avoid a V8 JIT bug in Chrome 19-20.
-  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
-  var type = typeof value;
-  return !!value && (type == 'object' || type == 'function');
-}
-
-module.exports = isObject;
-
-},{}],25:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      }
-      throw TypeError('Uncaught, unspecified "error" event.');
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        len = arguments.length;
-        args = new Array(len - 1);
-        for (i = 1; i < len; i++)
-          args[i - 1] = arguments[i];
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    len = arguments.length;
-    args = new Array(len - 1);
-    for (i = 1; i < len; i++)
-      args[i - 1] = arguments[i];
-
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    var m;
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  var ret;
-  if (!emitter._events || !emitter._events[type])
-    ret = 0;
-  else if (isFunction(emitter._events[type]))
-    ret = 1;
-  else
-    ret = emitter._events[type].length;
-  return ret;
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],26:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -6244,7 +5516,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],27:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -6252,492 +5524,13 @@ Object.defineProperty(exports, '__esModule', {
     value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-require('core-js/modules/es6.reflect');
-
-var _autobindDecorator = require('autobind-decorator');
-
-var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
-
-var _events = require('events');
-
-var _events2 = _interopRequireDefault(_events);
-
-var _fullscreen = require('./fullscreen');
-
-var _fullscreen2 = _interopRequireDefault(_fullscreen);
-
-var _controls = require('./controls');
-
-var _controls2 = _interopRequireDefault(_controls);
-
-var CLASS_FULLSCREEN = 'is-fullscreen';
-var OPTIONS = {
-    ui: true
-};
-
-var document = global.document;
-
-var Base = (function (_EventEmitter) {
-    _inherits(Base, _EventEmitter);
-
-    /**
-     * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @param {object} [options] some options
-     * @returns {Image}
-     */
-
-    function Base(container, options) {
-        var _this = this;
-
-        _classCallCheck(this, _Base);
-
-        _get(Object.getPrototypeOf(_Base.prototype), 'constructor', this).call(this);
-
-        this.options = options || OPTIONS;
-        this.currentRotationAngle = 0;
-
-        if (typeof container === 'string') {
-            container = document.querySelector(container);
-        }
-
-        container.innerHTML = '<div class="box-preview"></div>';
-        this.containerEl = container.firstElementChild;
-        this.containerEl.style.position = 'relative';
-
-        _fullscreen2['default'].on('enter', function () {
-            _this.containerEl.classList.add(CLASS_FULLSCREEN);
-            _this.emit('enterfullscreen');
-        });
-
-        _fullscreen2['default'].on('exit', function () {
-            _this.containerEl.classList.remove(CLASS_FULLSCREEN);
-            _this.emit('exitfullscreen');
-        });
-    }
-
-    /**
-     * Enters or exits fullscreen
-     * @private
-     * @returns {void}
-     */
-
-    _createClass(Base, [{
-        key: 'toggleFullscreen',
-        value: function toggleFullscreen() {
-            _fullscreen2['default'].toggle(this.containerEl);
-        }
-
-        /**
-         * Zooms in
-         * @public
-         * @returns {void}
-         */
-    }, {
-        key: 'zoomIn',
-        value: function zoomIn() {
-            this.zoom('in');
-        }
-
-        /**
-         * Zooms in
-         * @public
-         * @returns {void}
-         */
-    }, {
-        key: 'zoomOut',
-        value: function zoomOut() {
-            this.zoom('out');
-        }
-
-        /**
-         * Zooms in
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'loadUI',
-        value: function loadUI() {
-            this.controls = new _controls2['default'](this.containerEl);
-            this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
-            this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
-            this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
-        }
-
-        /**
-         * Destroys the viewer
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'destroy',
-        value: function destroy() {
-            // empty   
-        }
-    }]);
-
-    var _Base = Base;
-    Base = (0, _autobindDecorator2['default'])(Base) || Base;
-    return Base;
-})(_events2['default']);
-
-exports['default'] = Base;
-module.exports = exports['default'];
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./controls":28,"./fullscreen":29,"autobind-decorator":1,"core-js/modules/es6.reflect":16,"events":25}],28:[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-    value: true
-});
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-require('core-js/modules/es6.reflect');
-
-var _autobindDecorator = require('autobind-decorator');
-
-var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
-
-var _util = require('./util');
-
-var _util2 = _interopRequireDefault(_util);
-
-var _lodashFunctionThrottle = require('lodash/function/throttle');
-
-var _lodashFunctionThrottle2 = _interopRequireDefault(_lodashFunctionThrottle);
-
-var SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
-var PREVIEW_CONTROLS_SELECTOR = '.box-preview-controls';
-var CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
-
-var document = global.document;
-
-var Controls = (function () {
-
-    /**
-     * [constructor]
-     * @param {HTMLElement} event The mousemove event
-     * @returns {Controls}
-     */
-
-    function Controls(container) {
-        var _this = this;
-
-        _classCallCheck(this, _Controls);
-
-        this.containerEl = container;
-
-        this.controlsWrapperEl = this.containerEl.appendChild(document.createElement('div'));
-        this.controlsWrapperEl.className = 'box-preview-controls-wrapper';
-
-        this.controlsEl = this.controlsWrapperEl.appendChild(document.createElement('div'));
-        this.controlsEl.className = 'box-preview-controls';
-
-        this.mousemoveHandler = (0, _lodashFunctionThrottle2['default'])(function () {
-            _this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
-            _this.resetTimeout();
-        }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500, true);
-
-        this.containerEl.addEventListener('mousemove', this.mousemoveHandler);
-        this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);
-        this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
-        this.controlsEl.addEventListener('focusin', this.focusinHandler);
-        this.controlsEl.addEventListener('focusout', this.focusoutHandler);
-    }
-
-    /**
-     * @private
-     * @param {HTMLElement|null} element
-     * @returns {boolean} true if element is a preview control button
-     */
-
-    _createClass(Controls, [{
-        key: 'isPreviewControlButton',
-        value: function isPreviewControlButton(element) {
-            return !!element && element.classList.contains('box-preview-controls-btn');
-        }
-
-        /**
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'resetTimeout',
-        value: function resetTimeout() {
-            var _this2 = this;
-
-            clearTimeout(this.controlDisplayTimeoutId);
-            this.controlDisplayTimeoutId = setTimeout(function () {
-
-                clearTimeout(_this2.controlDisplayTimeoutId);
-
-                if (_this2.blockHiding) {
-                    _this2.resetTimeout();
-                } else {
-                    _this2.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
-                    if (_util2['default'].closest(document.activeElement, PREVIEW_CONTROLS_SELECTOR)) {
-                        document.activeElement.blur(); // blur out any potential button focuses within preview controls
-                    }
-                }
-            }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
-        }
-
-        /**
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'mouseenterHandler',
-        value: function mouseenterHandler() {
-            this.blockHiding = true;
-        }
-
-        /**
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'mouseleaveHandler',
-        value: function mouseleaveHandler() {
-            this.blockHiding = false;
-        }
-
-        /**
-         * Handles all focusin events for the module.
-         * @param {Event} event A DOM-normalized event object.
-         * @returns {void}
-         */
-    }, {
-        key: 'focusinHandler',
-        value: function focusinHandler(event) {
-            // When we focus onto a preview control button, show controls
-            if (this.isPreviewControlButton(event.target)) {
-                this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
-            }
-        }
-
-        /**
-         * Handles all focusout events for the module.
-         * @param {Event} event A DOM-normalized event object.
-         * @returns {void}
-         */
-    }, {
-        key: 'focusoutHandler',
-        value: function focusoutHandler(event) {
-            // When we focus out of a control button and aren't focusing onto another control button, hide the controls
-            if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
-                this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
-            }
-        }
-
-        /**
-         * Adds buttons to controls
-         * @param {string} text
-         * @param {function} handler
-         * @param {string} [classList]
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'add',
-        value: function add(text, handler) {
-            var classList = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
-
-            var cell = document.createElement('div');
-            cell.className = 'box-preview-controls-cell';
-
-            var button = document.createElement('button');
-            button.className = 'box-preview-controls-btn ' + classList;
-            button.addEventListener('click', handler);
-
-            cell.appendChild(button);
-            this.controlsEl.appendChild(cell);
-        }
-    }]);
-
-    var _Controls = Controls;
-    Controls = (0, _autobindDecorator2['default'])(Controls) || Controls;
-    return Controls;
-})();
-
-exports['default'] = Controls;
-module.exports = exports['default'];
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./util":31,"autobind-decorator":1,"core-js/modules/es6.reflect":16,"lodash/function/throttle":19}],29:[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-    value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-require('core-js/modules/es6.reflect');
-
-var _autobindDecorator = require('autobind-decorator');
-
-var _autobindDecorator2 = _interopRequireDefault(_autobindDecorator);
-
-var _events = require('events');
-
-var _events2 = _interopRequireDefault(_events);
-
-var document = global.document;
-var singleton = null;
-
-var Fullscreen = (function (_EventEmitter) {
-    _inherits(Fullscreen, _EventEmitter);
-
-    /**
-     * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @returns {Image}
-     */
-
-    function Fullscreen() {
-        _classCallCheck(this, _Fullscreen);
-
-        _get(Object.getPrototypeOf(_Fullscreen.prototype), 'constructor', this).call(this);
-
-        if (!singleton) {
-            singleton = this;
-
-            document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
-            document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
-            document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
-            document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
-        }
-
-        return singleton;
-    }
-
-    /**
-     * Returns true if the browser supports fullscreen natively
-     * @return {Boolean}
-     * @private
-     */
-
-    _createClass(Fullscreen, [{
-        key: 'isSupported',
-        value: function isSupported() {
-            return document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled;
-        }
-
-        /**
-         * Return true if full screen is active
-         * @returns {Boolean}
-         * @private
-         */
-    }, {
-        key: 'isFullscreen',
-        value: function isFullscreen() {
-            return document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-        }
-
-        /**
-         * Fires events when the fullscreen state changes
-         * @return {void}
-         * @private
-         */
-    }, {
-        key: 'fullscreenchangeHandler',
-        value: function fullscreenchangeHandler() {
-            if (this.isFullscreen()) {
-                this.emit('enter');
-            } else {
-                this.emit('exit');
-            }
-        }
-
-        /**
-         * Toggles fullscreen mode
-         * @param {HTMLElement} element
-         * @return {void}
-         * @private
-         */
-    }, {
-        key: 'toggle',
-        value: function toggle(element) {
-
-            element = element || document.documentElement;
-
-            if (!this.isFullscreen()) {
-                if (element.requestFullscreen) {
-                    element.requestFullscreen();
-                } else if (element.msRequestFullscreen) {
-                    element.msRequestFullscreen();
-                } else if (element.mozRequestFullScreen) {
-                    element.mozRequestFullScreen();
-                } else if (element.webkitRequestFullscreen) {
-                    element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
-            }
-        }
-    }]);
-
-    var _Fullscreen = Fullscreen;
-    Fullscreen = (0, _autobindDecorator2['default'])(Fullscreen) || Fullscreen;
-    return Fullscreen;
-})(_events2['default']);
-
-exports['default'] = new Fullscreen();
-module.exports = exports['default'];
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"autobind-decorator":1,"core-js/modules/es6.reflect":16,"events":25}],30:[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-    value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 require('core-js/modules/es6.reflect');
 
@@ -6749,177 +5542,275 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
-
-var CSS_CLASS_IMAGE = 'box-preview-images';
-var CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
-var IMAGE_LOAD_TIMEOUT_IN_MILLIS = 20000;
-
 var document = global.document;
-var Box = global.Box || {};
 
-var Images = (function (_Base) {
-    _inherits(Images, _Base);
-
-    /**
-     * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @param {object} [options] some options
-     * @returns {Image}
-     */
-
-    function Images(container, options) {
-        _classCallCheck(this, _Images);
-
-        _get(Object.getPrototypeOf(_Images.prototype), 'constructor', this).call(this, container, options);
-
-        this.containerEl.appendChild(document.createElement('div'));
-        this.containerEl.firstElementChild.className = CSS_CLASS_IMAGE;
-
-        this.wrapperEl = this.containerEl.firstElementChild.appendChild(document.createElement('div'));
-        this.wrapperEl.className = CSS_CLASS_IMAGE_WRAPPER;
-        this.wrapperEl.addEventListener('mouseup', this.handleMouseUp);
-
-        this.imageEls = [this.wrapperEl.appendChild(document.createElement('img'))];
+var Assets = (function () {
+    function Assets() {
+        _classCallCheck(this, _Assets);
     }
 
-    /**
-     * Loads an image.
-     * @param {Array} imageUrls
-     * @pubic
-     * @returns {Promise}
-     */
+    _createClass(Assets, [{
+        key: 'createStylesheet',
 
-    _createClass(Images, [{
-        key: 'load',
-        value: function load(imageUrls) {
+        /**
+         * Create <link> element to load external stylesheet
+         * @param {string} url
+         * @returns {HTMLElement}
+         */
+        value: function createStylesheet(url) {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = url;
+            return link;
+        }
+
+        /**
+         * Create <script> element to load external script
+         * @param {string} url
+         * @returns {Array}
+         */
+    }, {
+        key: 'createScript',
+        value: function createScript(url) {
+            var script = document.createElement('script');
+            script.src = url;
+
+            return [script, new _bluebird2['default'](function (resolve, reject) {
+                script.addEventListener('load', resolve);
+                script.addEventListener('error', reject);
+            })];
+        }
+
+        /**
+         * Loads external stylsheets by appending a <link> element
+         * @param {Object} hash to urls
+         * @returns {void}
+         */
+    }, {
+        key: 'loadStylesheets',
+        value: function loadStylesheets(urls) {
             var _this = this;
 
-            this.imageUrls = imageUrls;
+            var head = document.getElementsByTagName('head')[0];
 
-            return new _bluebird2['default'](function (resolve, reject) {
-
-                _this.imageEls[0].addEventListener('load', function () {
-                    resolve(_this);
-                    _this.loaded = true;
-                    _this.zoom();
-
-                    if (_this.options.ui) {
-                        _this.loadUI();
-                    }
-
-                    _this.emit('load');
-                });
-
-                _this.imageUrls.forEach(function (imageUrl, index) {
-                    if (index !== 0) {
-                        _this.imageEls[index] = _this.wrapperEl.appendChild(document.createElement('img'));
-                    }
-                    _this.imageEls[index].src = imageUrl;
-                });
-
-                setTimeout(function () {
-                    if (!_this.loaded) {
-                        reject();
-                    }
-                }, IMAGE_LOAD_TIMEOUT_IN_MILLIS);
+            urls.forEach(function (url) {
+                head.appendChild(_this.createStylesheet(url));
             });
         }
 
         /**
-         * Handles mouse up event.
-         * @param {Event} event The mousemove event
-         * @returns {void}
+         * Loads external scripts by appending a <script> element
+         * @param {Object} hash to urls
+         * @returns {Array}
          */
     }, {
-        key: 'handleMouseUp',
-        value: function handleMouseUp(event) {
-            // If this is not a left click, then ignore
-            // If this is a CTRL or CMD click, then ignore
-            if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-                this.zoom('in');
-                event.preventDefault();
-            }
-        }
+        key: 'loadScripts',
+        value: function loadScripts(urls) {
+            var _this2 = this;
 
-        /**
-         * Handles zoom
-         * @param {string} [type] Type of zoom in|out|reset
-         * @private
-         * @returns {void}
-         */
-    }, {
-        key: 'zoom',
-        value: function zoom(type) {
+            var head = document.getElementsByTagName('head')[0];
+            var promises = [];
 
-            var newWidth = undefined,
-                viewportWidth = this.wrapperEl.parentNode.clientWidth,
-                imageContainerWidth = this.wrapperEl.clientWidth;
+            urls.forEach(function (url) {
+                var _createScript = _this2.createScript(url);
 
-            switch (type) {
-                case 'in':
-                    newWidth = imageContainerWidth + 100;
-                    break;
+                var _createScript2 = _slicedToArray(_createScript, 2);
 
-                case 'out':
-                    newWidth = imageContainerWidth - 100;
-                    break;
+                var script = _createScript2[0];
+                var promise = _createScript2[1];
 
-                default:
-                    newWidth = viewportWidth;
-                    break;
-            }
+                promises.push(promise);
+                head.appendChild(script);
+            });
 
-            this.wrapperEl.style.width = newWidth + 'px';
-
-            // Fix the scroll position of the image to be centered
-            this.wrapperEl.parentNode.scrollLeft = (this.wrapperEl.parentNode.scrollWidth - viewportWidth) / 2;
-
-            this.emit('resize');
+            return promises;
         }
     }]);
 
-    var _Images = Images;
-    Images = (0, _autobindDecorator2['default'])(Images) || Images;
-    return Images;
-})(_base2['default']);
+    var _Assets = Assets;
+    Assets = (0, _autobindDecorator2['default'])(Assets) || Assets;
+    return Assets;
+})();
 
-Box.Images = Images;
-global.Box = Box;
-exports['default'] = Box.Images;
+exports['default'] = Assets;
 module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./base":27,"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":16}],31:[function(require,module,exports){
+},{"autobind-decorator":1,"bluebird":2,"core-js/modules/es6.reflect":16}],19:[function(require,module,exports){
 'use strict';
 
-/**
- * Element.closest()
- * @param  {HTMLElement} element
- * @param  {string} selector
- * @public
- * @returns {HTMLElement}
- */
 Object.defineProperty(exports, '__esModule', {
     value: true
 });
-function closest(element, selector) {
-    while (element) {
-        if (element.matches(selector)) {
-            break;
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
+var _assets = require('./assets');
+
+var _assets2 = _interopRequireDefault(_assets);
+
+var singleton = null;
+
+var ImageLoader = (function (_AssetLoader) {
+    _inherits(ImageLoader, _AssetLoader);
+
+    /**
+     * [constructor]
+     * @returns {ImageLoader}
+     */
+
+    function ImageLoader() {
+        _classCallCheck(this, ImageLoader);
+
+        _get(Object.getPrototypeOf(ImageLoader.prototype), 'constructor', this).call(this);
+
+        if (!singleton) {
+            singleton = this;
         }
 
-        element = element.parentElement;
+        return singleton;
     }
 
-    return element;
-};
+    /**
+     * Loads the image previewer
+     * 
+     * @param {Object} file box file
+     * @param {string|HTMLElement} container where to load the preview
+     * @param {Object} assets css and js assets for the viewer
+     * @param {Object} [options] optional options
+     * @return {Promise}
+     */
 
-exports['default'] = {
-    closest: closest
-};
+    _createClass(ImageLoader, [{
+        key: 'load',
+        value: function load(file, container, assets, options) {
+            var _this = this;
+
+            // 1st load the stylesheets needed by this previewer
+            this.loadStylesheets(assets.image.stylesheets);
+
+            return new _bluebird2['default'](function (resolve, reject) {
+
+                var previewer = undefined;
+                var representations = file.representations;
+
+                // Load the scripts for this previewer
+                _bluebird2['default'].all(_this.loadScripts(assets.image.scripts)).then(function () {
+
+                    // Instantiate the previwer
+                    if (representations.length > 1) {
+                        previewer = new Box.Images(container, options);
+                    } else {
+                        previewer = new Box.Image(container, options);
+                        representations = representations[0];
+                    }
+
+                    // Load the representations and return the instantiated previewer object
+                    previewer.load(representations).then(function () {
+                        resolve(previewer);
+                    })['catch'](function (err) {
+                        reject(err);
+                    });
+                })['catch'](function (err) {
+                    reject(err);
+                });
+            });
+        }
+    }]);
+
+    return ImageLoader;
+})(_assets2['default']);
+
+exports['default'] = new ImageLoader();
 module.exports = exports['default'];
 
-},{}]},{},[30]);
+},{"./assets":18,"bluebird":2}],20:[function(require,module,exports){
+(function (global){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
+var _imageLoader = require('./image-loader');
+
+var _imageLoader2 = _interopRequireDefault(_imageLoader);
+
+var Box = global.Box || {};
+
+var Preview = (function () {
+
+    /**
+     * [constructor]
+     * @returns {Box.Preview}
+     */
+
+    function Preview() {
+        _classCallCheck(this, Preview);
+
+        if (!Box.Preview) {
+            Box.Preview = this;
+        }
+        return Box.Preview;
+    }
+
+    /**
+     * Shows a preview
+     * @param {Object} file box file
+     * @param {[string|HTMLElement} container where to load the preview
+     * @param {Object} assets css and js assets for the viewer
+     * @param {Object} [options] optional options
+     * @return {Promise}
+     */
+
+    _createClass(Preview, [{
+        key: 'show',
+        value: function show(file, container, assets) {
+            var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+            var promise = undefined;
+
+            switch (file.type) {
+                case 'image':
+                    promise = _imageLoader2['default'].load(file, container, assets);
+                    break;
+
+            }
+
+            return promise;
+        }
+    }]);
+
+    return Preview;
+})();
+
+Box.Preview = new Preview();
+global.Box = Box;
+exports['default'] = Box.Preview;
+module.exports = exports['default'];
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./image-loader":19,"bluebird":2}]},{},[20]);

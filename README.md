@@ -12,10 +12,39 @@ Clone and compile
 Run
 ---
 
-	var image = new Box.Image('.container');
-	image.load('/url/to/image').then(function() { ... });
+See `image.html` or `images.html`
 
-Example inside `index.html` with required assets.
+    var image = new Box.Image('.container');
+    image.load('/url/to/image').then(function() { ... });
+
+OR
+
+See `index.html`
+
+    Box.Preview.show(file, container, assets, options).then(function(imageViewer) {
+        ...
+    });
+
+where
+
+    file = {
+        type: 'image',
+        representations: [
+                'path/to/representation'
+            ]
+        };
+
+    assets = {
+        image: {
+            stylesheets: [
+                'path/to/css'
+            ],
+            scripts: [
+                'path/to/ja'
+            ]
+        }
+    };
+
 
 API
 ---

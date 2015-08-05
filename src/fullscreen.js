@@ -18,16 +18,14 @@ class Fullscreen extends EventEmitter {
     constructor() {
         super();
 
-        if (singleton) {
-            return singleton;
-        } else {
+        if (!singleton) {
             singleton = this;
-        }
 
-        document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
-        document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
-        document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
-        document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
+            document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
+            document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
+            document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
+            document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
+        }
 
         return singleton;
     }

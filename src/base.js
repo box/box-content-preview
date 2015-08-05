@@ -4,6 +4,7 @@ import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
+import Controls from './controls';
 
 const CLASS_FULLSCREEN = 'is-fullscreen';
 const OPTIONS = {
@@ -54,6 +55,36 @@ class Base extends EventEmitter {
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);    
+    }
+
+    /**
+     * Zooms in
+     * @public
+     * @returns {void}
+     */
+    zoomIn() {
+        this.zoom('in');
+    }
+
+    /**
+     * Zooms in
+     * @public
+     * @returns {void}
+     */
+    zoomOut() {
+        this.zoom('out');
+    }
+
+    /**
+     * Zooms in
+     * @private
+     * @returns {void}
+     */
+    loadUI() {
+        this.controls = new Controls(this.containerEl);
+        this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
+        this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
+        this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
     }
 
     /**
