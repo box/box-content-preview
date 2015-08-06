@@ -12,10 +12,7 @@ module.exports = function(config) {
 
         files: [
             'test/**/*.js',
-            'test/**/*.html',
-
-            'dist/**/*.css',
-            'dist/**/*.png'
+            'test/**/*.html'
         ],
 
        exclude: [],
@@ -37,6 +34,7 @@ module.exports = function(config) {
                             stage: 1
                         }
                     },
+                    
                     {
                         test: [ src, test ],
                         include: src,
@@ -46,6 +44,16 @@ module.exports = function(config) {
                                 stage: 1
                             }
                         }
+                    },
+
+                    {
+                        test: path.join(__dirname, 'src/css'),
+                        loader: 'style-loader!css-loader'
+                    },
+                    
+                    {
+                        test: path.join(__dirname, 'src/img'),
+                        loader: 'url-loader?limit=1'
                     }
                 ]
             }

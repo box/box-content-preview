@@ -1,5 +1,5 @@
 //import sinon from 'sinon';
-import Image from '../src/image';
+import Image from '../src/js/image';
 
 let sandbox = sinon.sandbox.create();
 let imageUrl = 'http://youngjournalistacademy.com/wp-content/uploads/2015/04/tai-x-wing.jpg';
