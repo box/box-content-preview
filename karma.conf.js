@@ -1,5 +1,7 @@
 var path = require('path');
-var src = path.join(__dirname, 'src/js');
+var js = path.join(__dirname, 'src/js');
+var css = path.join(__dirname, 'src/css');
+var img = path.join(__dirname, 'src/img');
 var test = path.join(__dirname, 'test');
 
 module.exports = function(config) {
@@ -28,7 +30,7 @@ module.exports = function(config) {
             module: {
                 preLoaders: [
                     {
-                        test: [ src, test ],
+                        test: [ js, test ],
                         loader: 'babel-loader',
                         query: {
                             stage: 1
@@ -36,23 +38,25 @@ module.exports = function(config) {
                     },
                     
                     {
-                        test: [ src, test ],
-                        include: src,
+                        test: [ js, test ],
+                        include: js,
                         loader: 'isparta',
                         query: {
                             babel: {
                                 stage: 1
                             }
                         }
-                    },
+                    }
+                ],
 
+                loaders: [
                     {
-                        test: path.join(__dirname, 'src/css'),
+                        test: css,
                         loader: 'style-loader!css-loader'
                     },
                     
                     {
-                        test: path.join(__dirname, 'src/img'),
+                        test: img,
                         loader: 'url-loader?limit=1'
                     }
                 ]
@@ -69,10 +73,10 @@ module.exports = function(config) {
         },
 
         thresholdReporter: {
-            statements: 35,
-            branches: 25,
-            functions: 30,
-            lines: 35
+            statements: 80,
+            branches: 80,
+            functions: 80,
+            lines: 80
         },
 
         port: 9876,
