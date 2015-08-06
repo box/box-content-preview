@@ -40,7 +40,7 @@ where
                 'path/to/css'
             ],
             scripts: [
-                'path/to/ja'
+                'path/to/js'
             ]
         }
     };
