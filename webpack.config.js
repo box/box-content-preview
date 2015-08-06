@@ -20,14 +20,17 @@ module.exports = {
                 query: {
                     stage: 1
                 }
-            }, {
+            },
+
+            {
                 test: path.join(__dirname, 'src/css'),
                 loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
             },
+            
             {
                 test: path.join(__dirname, 'src/img'),
                 loader: 'url-loader?limit=1'
-            },
+            }
         ]
     },
     plugins: [

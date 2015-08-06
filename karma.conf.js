@@ -1,5 +1,5 @@
 var path = require('path');
-var src = path.join(__dirname, 'src');
+var src = path.join(__dirname, 'src/js');
 var test = path.join(__dirname, 'test');
 
 module.exports = function(config) {
