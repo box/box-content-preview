@@ -51,7 +51,7 @@ class Images extends Base {
                 this.loaded = true;
                 this.zoom();
 
-                if (this.options.ui) {
+                if (this.options.ui !== false) {
                     this.loadUI();
                 }
 
