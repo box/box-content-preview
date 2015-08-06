@@ -1,5 +1,6 @@
 'use strict';
 
+import '../css/preview.css';
 import Promise from 'bluebird';
 import ImageLoader from './image-loader';
 
@@ -31,7 +32,7 @@ class Preview {
 
         switch (file.type) {
             case 'image':
-                promise = ImageLoader.load(file, container, assets);
+                promise = ImageLoader.load(file, container, assets, options);
                 break;
 
         }

@@ -1,3 +1,8 @@
+.box-preview *,
+.box-preview {
+    box-sizing: border-box !important;
+}
+
 .box-preview {
     position: absolute;
     top: 0;

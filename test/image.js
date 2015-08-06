@@ -1,4 +1,4 @@
-import sinon from 'sinon';
+//import sinon from 'sinon';
 import Image from '../src/image';
 
 let sandbox = sinon.sandbox.create();
