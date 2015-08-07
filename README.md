@@ -7,6 +7,7 @@ Clone and compile
 1. `git clone git@gitenterprise.inside-box.net:Preview/image.git`
 2. `cd image`
 3. `npm install`
+4. `npm run props2js` to generate resource bundles
 4. `npm run webpack` (or `npm run watch`)
 
 Run
