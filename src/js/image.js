@@ -1,5 +1,6 @@
 'use strict';
 
+import '../css/image.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
@@ -312,7 +313,7 @@ class Image extends Base {
      */
     loadUI() {
         super.loadUI();
-        this.controls.add('rotate', this.rotateLeft, 'box-preview-image-rotate-left-icon');
+        this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon');
     }
 }
 

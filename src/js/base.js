@@ -1,6 +1,5 @@
 'use strict';
 
-import '../css/image.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
@@ -83,9 +82,9 @@ class Base extends EventEmitter {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add('zoomin', this.zoomIn, 'box-preview-image-zoom-in-icon');
-        this.controls.add('zoomout', this.zoomOut, 'box-preview-image-zoom-out-icon');
-        this.controls.add('fullscreen', this.toggleFullscreen, 'box-preview-image-expand-icon');
+        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon');
+        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon');
+        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-image-expand-icon');
     }
 
     /**

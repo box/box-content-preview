@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Test</title>
     
-    <link rel="stylesheet" type="text/css" href="dist/preview.css"></script>
+    <link rel="stylesheet" type="text/css" href="dist/en-US/preview.css"></script>
     
     <style>
         html, body {
@@ -22,8 +22,10 @@
 <body>
     <div class='container'></div>
 
-    <script src="dist/preview.js"></script>
+    <script src="dist/en-US/preview.js"></script>
     <script>
+
+        var locale = window.location.search.replace('?', '') || navigator.language;
 
         // Need to get this from the server
         var file = {
@@ -42,11 +44,11 @@
         var assets = {
             image: {
                 stylesheets: [
-                    'dist/image.css'
+                    'dist/' + locale +'/image.css'
                 ],
                 scripts: [
-                    'dist/image.js',
-                    'dist/images.js'
+                    'dist/' + locale +'/image.js',
+                    'dist/' + locale +'/images.js'
                 ]
             }
         };

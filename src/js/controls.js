@@ -124,6 +124,7 @@ class Controls {
         cell.className = 'box-preview-controls-cell';
 
         let button = document.createElement('button');
+        button.setAttribute('aria-label', text);
         button.className = 'box-preview-controls-btn ' + classList;
         button.addEventListener('click', handler);
 

@@ -12,6 +12,7 @@
     "eslint": "^1.0.0",
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
+    "i18n-webpack-plugin": "^0.2.7",
     "isparta-loader": "^0.2.0",
     "karma": "^0.13.3",
     "karma-babel-preprocessor": "^5.2.1",
@@ -40,6 +41,7 @@
     "karma": "karma start",
     "webpack": "./node_modules/.bin/webpack",
     "watch": "./node_modules/.bin/webpack --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist & rm -rf coverage & rm -rf src/i18n/json",
+    "props2js": "java -jar build/props2js-0.1.0.jar -d src/i18n -o src/i18n/json"
   }
 }
