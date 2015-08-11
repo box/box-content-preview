@@ -18,33 +18,26 @@ See `image.html` or `images.html`
     var image = new Box.Image('.container');
     image.load('/url/to/image').then(function() { ... });
 
-OR
+OR see `index.html`
 
-See `index.html`
-
-    Box.Preview.show(file, container, assets, options).then(function(imageViewer) {
+    Box.Preview.show(fileId, container, options).then(function(imageViewer) {
         ...
     });
 
-where
+where the fileId (currently using shared names for anonymous access) fetch will return
 
     file = {
+        locale: 'en-US',
         type: 'image',
         representations: [
-                'path/to/representation'
-            ]
-        };
-
-    assets = {
-        image: {
-            stylesheets: [
-                'path/to/css'
-            ],
-            scripts: [
-                'path/to/js'
-            ]
-        }
+            'path/to/representation'
+        ]
     };
+
+`index.html` is hardcoded to test against `https://app.phora.inside-box.net` where I have a webapp endpoint returning the above `file` structure. You will have to launch chrome by disabling security so that CORS issues don't happen -
+
+    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security
+
 
 
 API

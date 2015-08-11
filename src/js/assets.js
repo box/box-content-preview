@@ -6,6 +6,8 @@ import Promise from 'bluebird';
 
 let document = global.document;
 
+const ASSETROOT = 'dist';
+
 @autobind
 class Assets {
 
@@ -53,7 +55,7 @@ class Assets {
     /**
      * Loads external scripts by appending a <script> element
      * @param {Object} hash to urls
-     * @returns {Array}
+     * @returns {Promise}
      */
     loadScripts(urls) {
         let head = document.getElementsByTagName('head')[0];
@@ -65,9 +67,31 @@ class Assets {
             head.appendChild(script);
         });
 
-        return promises;
+        return Promise.all(promises);
     }
 
+    /**
+     * Returns the asset path
+     * @param {String} locale
+     * @returns {Function}
+     */
+    createRepresentationUrl(host) {
+        return (url) => {
+            return host + '/' + url;
+        };
+    }
+
+    /**
+     * Returns the asset path
+     * @param {String} locale
+     * @param {String} name
+     * @returns {Function}
+     */
+    createAssetUrl(locale) {
+        return (name) => {
+            return ASSETROOT + '/' + locale + '/' + name;
+        };
+    }
 }
 
 export default Assets;

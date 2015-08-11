@@ -13,6 +13,7 @@
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
     "i18n-webpack-plugin": "^0.2.7",
+    "isomorphic-fetch": "^2.1.1",
     "isparta-loader": "^0.2.0",
     "karma": "^0.13.3",
     "karma-babel-preprocessor": "^5.2.1",
