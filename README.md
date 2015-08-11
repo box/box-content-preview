@@ -34,7 +34,7 @@ where the fileId (currently using shared names for anonymous access) fetch will 
         ]
     };
 
-`index.html` is hardcoded to test against `https://app.phora.inside-box.net` where I have a webapp endpoint returning the above `file` structure. You will have to launch chrome by disabling security so that CORS issues don't happen -
+`index.html` is hardcoded to test against `https://app.phora.inside-box.net` where I have a webapp endpoint (http://scm.dev.box.net:8080/#/c/212681/) returning the above `file` structure. You will have to launch chrome by disabling security so that CORS issues don't happen -
 
     /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security
 
