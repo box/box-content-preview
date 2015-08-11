@@ -13,12 +13,12 @@ Clone and compile
 Run
 ---
 
-See `image.html` or `images.html`
+See `image.html` or `images.html` where individual encapsulated viewers are used. This won't be the common use case however and most clients including the webapp will use the preview.js wrapper.
 
     var image = new Box.Image('.container');
     image.load('/url/to/image').then(function() { ... });
 
-OR see `index.html`
+OR see `index.html` where preview.js wrapper is used instead of directly using the individual viewers.
 
     Box.Preview.show(fileId, container, options).then(function(imageViewer) {
         ...
