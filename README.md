@@ -20,7 +20,7 @@ See `image.html` or `images.html` where individual encapsulated viewers are used
 
 OR see `index.html` where preview.js wrapper is used instead of directly using the individual viewers.
 
-    Box.Preview.show(fileId, container, options).then(function(imageViewer) {
+    Box.Preview.show(fileId [or array of file ids], container, options).then(function(imageViewer) {
         ...
     });
 
