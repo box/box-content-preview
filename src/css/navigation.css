@@ -1,0 +1,76 @@
+.is-fullscreen .box-preview-navigate {
+    display: none;
+}
+
+.box-preview-navigate {
+    position: absolute;
+    white-space: nowrap;
+    top: 50%;
+    width: 40px;
+    line-height: 50px;
+    height: 50px;
+    overflow: hidden;
+    display: block;
+    border: 0 none;
+    margin: -25px 0 0 0;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+    color: #fff;
+    text-decoration: none;
+    background-repeat: no-repeat;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+
+    /* Override default animations to only animate opacity since width animation to auto doesn't work */
+    transition-property: opacity;
+}
+
+.is-box-preview-navigation-visible .box-preview-navigate {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+    opacity: 0.6;
+}
+
+.box-preview-navigate:hover {
+    width: auto;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    opacity: 1;
+    text-decoration: none;
+    background-color: #333;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.box-preview-navigate-left {
+    border-radius: 0 3px 3px 0;
+    left: 0;
+}
+
+.box-preview-navigate-right {
+    direction: rtl;
+    border-radius: 3px 0 0 3px;
+    right: 0;
+}
+
+.box-preview-left-arrow:before,
+.box-preview-right-arrow:before {
+    content: "";
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.box-preview-right-arrow:before {
+    -shalam-sprite: '../img/rightarrow.png' dest-size(40px 40px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) 0 0;
+    background: url(../img/sprite.png) 0 0/128px 64px;
+    /* end shalam */
+}
+
+.box-preview-left-arrow:before {
+    -shalam-sprite: '../img/leftarrow.png' dest-size(40px 40px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) -40px 0;
+    background: url(../img/sprite.png) -42px 0/128px 64px;
+    /* end shalam */
+}

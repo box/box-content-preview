@@ -29,14 +29,23 @@ class Base extends EventEmitter {
         this.options = options || OPTIONS;
         this.currentRotationAngle = 0;
 
+        // Get the container dom element if selector was passed
         if (typeof container === 'string') {
             container = document.querySelector(container);
         }
 
-        container.innerHTML = '<div class="box-preview"></div>';     
-        this.containerEl = container.firstElementChild;
-        this.containerEl.style.position = 'relative';
+        // Double check if the layout is accurate and if not create it.
+        // This code should never execute when using the wrapper preview.js
+        if (!container.firstElementChild || !container.firstElementChild.classList.contains('box-preview')) {
+            container.innerHTML = '<div class="box-preview"></div>';
+        }
 
+        // Save handles to the container and make its position relative
+        // so that the childen can be positioned absolute
+        this.containerEl = container.firstElementChild;
+        container.style.position = 'relative';
+
+        // Attach common full screen events
         fullscreen.on('enter', () => {
             this.containerEl.classList.add(CLASS_FULLSCREEN);
             this.emit('enterfullscreen');
@@ -93,7 +102,7 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        // empty    
+        this.containerEl.innerHTML = '';    
     }        
 }
 

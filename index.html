@@ -29,7 +29,7 @@
         var id1 = 'pd21gfu8wb25ekm4xhiryp6aoo9q62em';
         var id2 = 'limlzfzs1q3v3hamjhotil5wrqn8sf0s';
 
-        Box.Preview.show(id1, '.container1', {
+        Box.Preview.show([id1, id2], '.container1', {
             host: 'https://app.phora.inside-box.net'
         }).then(function(imageViewer) {
             
@@ -56,10 +56,6 @@
             imageViewer.on('exitfullscreen', function() {
                 console.error('exitfullscreen');
             });
-        });
-
-        Box.Preview.show(id2, '.container2', {
-            host: 'https://app.phora.inside-box.net'
         });
 
     </script>

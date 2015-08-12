@@ -4,6 +4,7 @@ import Promise from 'bluebird';
 import AssetLoader from './assets';
 
 let singleton = null;
+let document = global.document;
 
 const STYLESHEETS = [
     'image.css'
@@ -65,6 +66,27 @@ class ImageLoader extends AssetLoader {
             // Load the representations and return the instantiated previewer object
             return previewer.load(representations);        
         
+        });
+    }
+
+    /**
+     * Loads the image previewer
+     * 
+     * @param {Object} file box file
+     * @param {Object} [options] optional options
+     * @return {Promise}
+     */
+    prefetch(file, options) {
+
+        // Create an asset path creator function depending upon the locale
+        let assetPathCreator = this.createAssetUrl(file.locale);
+
+        // Fully qualify the representation URLs
+        let representations = file.representations.map(this.createRepresentationUrl(options.host));
+
+        representations.forEach((representation) => {
+            let img = document.createElement('img');
+            img.src = representation;
         });
     }
 }

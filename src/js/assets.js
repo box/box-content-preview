@@ -5,6 +5,7 @@ import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
 
 let document = global.document;
+let loadedAssets = [];
 
 const ASSETROOT = 'dist';
 
@@ -48,7 +49,10 @@ class Assets {
         let head = document.getElementsByTagName('head')[0];
         
         urls.forEach((url) => {
-            head.appendChild(this.createStylesheet(url));
+            if (loadedAssets.indexOf(url) === -1) {
+                loadedAssets.push(url);
+                head.appendChild(this.createStylesheet(url)); 
+            }
         });
     }
 
@@ -62,9 +66,12 @@ class Assets {
         let promises = [];
         
         urls.forEach((url) => {
-            let [script, promise] = this.createScript(url);
-            promises.push(promise);
-            head.appendChild(script);
+            if (loadedAssets.indexOf(url) === -1) {
+                loadedAssets.push(url);
+                let [script, promise] = this.createScript(url);
+                promises.push(promise);
+                head.appendChild(script); 
+            }
         });
 
         return Promise.all(promises);
