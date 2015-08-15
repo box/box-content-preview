@@ -1,10 +1,10 @@
 'use strict';
 
-import '../css/images.css';
+import '../../css/images.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
-import Base from './base';
+import Base from './image-base';
 
 
 const CSS_CLASS_IMAGE = 'box-preview-images';
@@ -123,6 +123,6 @@ class Images extends Base {
     }
 }
 
-Box.Images = Images;
+Box.Preview = Box.Preview || { Images: Images };
 global.Box = Box;
-export default Box.Images;
+export default Images;

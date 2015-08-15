@@ -6,7 +6,8 @@ import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
 import throttle from 'lodash/function/throttle';
 import fetch from 'isomorphic-fetch';
-import ImageLoader from './image-loader';
+import ImageLoader from './image/image-loader';
+import SwfLoader from './swf/swf-loader';
 
 const PREFETCH_COUNT = 5;
 const CLASS_NAVIGATION_VISIBILITY = 'is-box-preview-navigation-visible';
@@ -201,6 +202,9 @@ class Preview {
             case 'image':
                 promise = ImageLoader.load(this.file, this.container, this.options);
                 break;
+            case 'swf':
+                promise = SwfLoader.load(this.file, this.container, this.options);
+                break;
             case 'video':
                 break;
             case 'audio':
@@ -251,6 +255,9 @@ class Preview {
                 switch (file.type) {
                     case 'image':
                         ImageLoader.prefetch(file, this.options);
+                        break;
+                    case 'swf':
+                        SwfLoader.prefetch(file, this.options);
                         break;
                     case 'video':
                         break;

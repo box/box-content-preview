@@ -1,7 +1,8 @@
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var I18nPlugin = require("i18n-webpack-plugin");
+var I18nPlugin = require('i18n-webpack-plugin');
+
 var js = path.join(__dirname, 'src/js');
 var i18n = path.join(__dirname, 'src/i18n/json');
 var css = path.join(__dirname, 'src/css');
@@ -18,8 +19,9 @@ module.exports = Object.keys(languages).map(function(language) {
     return {
         entry: {
             preview: js + '/preview.js',
-            image: js + '/image.js',
-            images: js + '/images.js'
+            image: js + '/image/image.js',
+            images: js + '/image/images.js',
+            swf: js + '/swf/swf.js'
         },
         output: {
             path: path.join(__dirname, 'dist/' + language),

@@ -67,36 +67,6 @@ class Base extends EventEmitter {
     }
 
     /**
-     * Zooms in
-     * @public
-     * @returns {void}
-     */
-    zoomIn() {
-        this.zoom('in');
-    }
-
-    /**
-     * Zooms in
-     * @public
-     * @returns {void}
-     */
-    zoomOut() {
-        this.zoom('out');
-    }
-
-    /**
-     * Zooms in
-     * @private
-     * @returns {void}
-     */
-    loadUI() {
-        this.controls = new Controls(this.containerEl);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon');
-        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon');
-        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-image-expand-icon');
-    }
-
-    /**
      * Destroys the viewer
      * @private
      * @returns {void}

@@ -1,10 +1,10 @@
 'use strict';
 
-import '../css/image.css';
+import '../../css/image.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
-import Base from './base';
+import Base from './image-base';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -317,6 +317,6 @@ class Image extends Base {
     }
 }
 
-Box.Image = Image;
+Box.Preview = Box.Preview || { Image: Image };
 global.Box = Box;
-export default Box.Image;
+export default Image;

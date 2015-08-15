@@ -1,21 +1,17 @@
 'use strict';
 
 import Promise from 'bluebird';
-import AssetLoader from './assets';
+import AssetLoader from '../assets';
 
 let singleton = null;
 let document = global.document;
 
-const STYLESHEETS = [
-    'image.css'
-];
-
 const SCRIPTS = [
-    'image.js',
-    'images.js'
+    'swfobject.js',
+    'swf.js'
 ];
 
-class ImageLoader extends AssetLoader {
+class SwfLoader extends AssetLoader {
 
     /**
      * [constructor]
@@ -47,21 +43,10 @@ class ImageLoader extends AssetLoader {
         // Fully qualify the representation URLs
         let representations = file.representations.map(this.createRepresentationUrl(options.host));
 
-        // 1st load the stylesheets needed by this previewer
-        this.loadStylesheets(STYLESHEETS.map(assetPathCreator));
-
         // Load the scripts for this previewer
         return this.loadScripts(SCRIPTS.map(assetPathCreator)).then(() => {
 
-            let previewer;
-
-            // Instantiate the previwer
-            if (representations.length > 1) {
-                previewer = new Box.Images(container, options);
-            } else {
-                previewer = new Box.Image(container, options);
-                representations = representations[0];
-            }
+            let previewer = Box.Preview.Swf(container, options);
 
             // Load the representations and return the instantiated previewer object
             return previewer.load(representations);        
@@ -85,10 +70,10 @@ class ImageLoader extends AssetLoader {
         let representations = file.representations.map(this.createRepresentationUrl(options.host));
 
         representations.forEach((representation) => {
-            let img = document.createElement('img');
-            img.src = representation;
+            let embed = document.createElement('embed');
+            embed.src = representation;
         });
     }
 }
 
-export default new ImageLoader();
+export default new SwfLoader();
