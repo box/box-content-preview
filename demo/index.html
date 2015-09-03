@@ -34,32 +34,35 @@
         var id3 = 'xvp78gltjz3v6gezgxh6';             // image
         var id4 = 'vr5ndxrfpkdm2z77vkgxxjr618g8z0yt'; // image
         var id5 = 'cfhf8zr60yammmpp2rdu1dojfas44tnu'; // swf
+        var id6 = 'kixun1kow4aftorgp61g9ellpg6816az'; // js
+        var id7 = 'kixun1kow4aftorgp61g9ellpg6816az'; // txt
+        var id8 = 'cme92xyydd37sev270q9yhs82ba0ssbs'; // php
 
         Box.Preview.show([id1, id2, id3, id4], '.container', {
             host: 'https://app.phora.inside-box.net'
-        }).then(function(imageViewer) {
+        }).then(function(viewer) {
             
-            imageViewer.on('resize', function() {
+            viewer.on('resize', function() {
                 console.error('resized');
             });
             
-            imageViewer.on('panstart', function() {
+            viewer.on('panstart', function() {
                 console.error('panstart');
             });
             
-            imageViewer.on('panend', function() {
+            viewer.on('panend', function() {
                 console.error('panend');
             });
             
-            imageViewer.on('rotate', function() {
+            viewer.on('rotate', function() {
                 console.error('rotated');
             });
             
-            imageViewer.on('enterfullscreen', function() {
+            viewer.on('enterfullscreen', function() {
                 console.error('enterfullscreen');
             });
             
-            imageViewer.on('exitfullscreen', function() {
+            viewer.on('exitfullscreen', function() {
                 console.error('exitfullscreen');
             });
         });

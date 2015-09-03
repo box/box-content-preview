@@ -8,6 +8,7 @@ import throttle from 'lodash/function/throttle';
 import fetch from 'isomorphic-fetch';
 import ImageLoader from './image/image-loader';
 import SwfLoader from './swf/swf-loader';
+import TextLoader from './text/text-loader';
 
 const PREFETCH_COUNT = 5;
 const CLASS_NAVIGATION_VISIBILITY = 'is-box-preview-navigation-visible';
