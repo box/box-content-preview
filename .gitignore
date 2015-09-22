@@ -8,3 +8,4 @@ doc
 npm-debug.log
 coverage
 dist
+src/i18n/json

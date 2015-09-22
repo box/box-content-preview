@@ -44,6 +44,7 @@
     "webpack": "./node_modules/.bin/webpack",
     "watch": "./node_modules/.bin/webpack --watch",
     "clean": "rm -rf dist & rm -rf coverage & rm -rf src/i18n/json",
-    "props2js": "java -jar build/props2js-0.1.0.jar -d src/i18n -o src/i18n/json"
+    "props2js": "java -jar build/props2js-0.1.0.jar -d src/i18n -o src/i18n/json",
+    "build": "npm run clean && npm run props2js && npm run webpack"
   }
 }

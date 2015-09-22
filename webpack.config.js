@@ -56,6 +56,9 @@ module.exports = Object.keys(languages).map(function(language) {
                 allChunks: true
             }),
             new I18nPlugin(languages[language])
+            // new webpack.optimize.UglifyJsPlugin({
+            //     minimize: true
+            // })
         ],
         stats: {
             colors: true

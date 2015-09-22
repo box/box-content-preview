@@ -31,9 +31,7 @@ shopt -s dotglob
 #build
 rm -rf node_modules
 npm install
-npm run clean
-npm run props2js
-npm run webpack
+npm run build
 
 # Tar all non-hidden files and directories
 cd dist
