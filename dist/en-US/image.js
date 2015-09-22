@@ -1018,19 +1018,7 @@
 	 */
 	function boundClass(target) {
 	  // (Using reflect to get all keys including symbols)
-	  var keys = undefined;
-	  // Use Reflect if exists
-	  if (typeof Reflect !== 'undefined') {
-	    keys = Reflect.ownKeys(target.prototype);
-	  } else {
-	    keys = Object.getOwnPropertyNames(target.prototype);
-	    // use symbols if support is provided
-	    if (typeof Object.getOwnPropertySymbols === 'function') {
-	      keys = keys.concat(Object.getOwnPropertySymbols(target.prototype));
-	    }
-	  }
-	
-	  keys.forEach(function (key) {
+	  Reflect.ownKeys(target.prototype).forEach(function (key) {
 	    // Ignore special case target method
 	    if (key === 'constructor') {
 	      return;
@@ -1061,10 +1049,6 @@
 	  return {
 	    configurable: true,
 	    get: function get() {
-	      if (this === target.prototype) {
-	        return fn;
-	      }
-	
 	      var boundFn = fn.bind(this);
 	      Object.defineProperty(this, key, {
 	        value: boundFn,
@@ -1085,7 +1069,7 @@
 	/* WEBPACK VAR INJECTION */(function(process, global, setImmediate) {/* @preserve
 	 * The MIT License (MIT)
 	 * 
-	 * Copyright (c) 2013-2015 Petka Antonov
+	 * Copyright (c) 2014 Petka Antonov
 	 * 
 	 * Permission is hereby granted, free of charge, to any person obtaining a copy
 	 * of this software and associated documentation files (the "Software"), to deal
@@ -1107,7 +1091,7 @@
 	 * 
 	 */
 	/**
-	 * bluebird build version 2.10.0
+	 * bluebird build version 2.9.34
 	 * Features enabled: core, race, call_get, generators, map, nodeify, promisify, props, reduce, settle, some, cancel, using, filter, any, each, timers
 	*/
 	!function(e){if(true)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Promise=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -2164,8 +2148,6 @@
 	                    (!!process.env["BLUEBIRD_DEBUG"] ||
 	                     process.env["NODE_ENV"] === "development"));
 	
-	if (util.isNode && process.env["BLUEBIRD_DEBUG"] == 0) debugging = false;
-	
 	if (debugging) {
 	    async.disableTrampolineIfNecessary();
 	}
@@ -2356,8 +2338,6 @@
 	            undefined,
 	            undefined
 	       );
-	    } else if (value instanceof Promise) {
-	        value._ignoreRejections();
 	    }
 	    return this._then(returner, undefined, undefined, value, undefined);
 	};
@@ -3298,7 +3278,6 @@
 	}
 	util.notEnumerableProp(Promise, "_getDomain", getDomain);
 	
-	var UNDEFINED_BINDING = {};
 	var async = _dereq_("./async.js");
 	var errors = _dereq_("./errors.js");
 	var TypeError = Promise.TypeError = errors.TypeError;
@@ -3583,9 +3562,7 @@
 	        ? this._receiver0
 	        : this[
 	            index * 5 - 5 + 4];
-	    if (ret === UNDEFINED_BINDING) {
-	        return undefined;
-	    } else if (ret === undefined && this._isBound()) {
+	    if (ret === undefined && this._isBound()) {
 	        return this._boundValue();
 	    }
 	    return ret;
@@ -3630,7 +3607,6 @@
 	    var promise = follower._promiseAt(index);
 	    var receiver = follower._receiverAt(index);
 	    if (promise instanceof Promise) promise._setIsMigrated();
-	    if (receiver === undefined) receiver = UNDEFINED_BINDING;
 	    this._addCallbacks(fulfill, reject, progress, promise, receiver, null);
 	};
 	
@@ -5556,20 +5532,10 @@
 	                        "you must pass at least 2 arguments to Promise.using");
 	        var fn = arguments[len - 1];
 	        if (typeof fn !== "function") return apiRejection("fn must be a function\u000a\u000a    See http://goo.gl/916lJJ\u000a");
-	
-	        var input;
-	        var spreadArgs = true;
-	        if (len === 2 && Array.isArray(arguments[0])) {
-	            input = arguments[0];
-	            len = input.length;
-	            spreadArgs = false;
-	        } else {
-	            input = arguments;
-	            len--;
-	        }
+	        len--;
 	        var resources = new Array(len);
 	        for (var i = 0; i < len; ++i) {
-	            var resource = input[i];
+	            var resource = arguments[i];
 	            if (Disposer.isDisposer(resource)) {
 	                var disposer = resource;
 	                resource = resource.promise();
@@ -5593,8 +5559,7 @@
 	                promise._pushContext();
 	                var ret;
 	                try {
-	                    ret = spreadArgs
-	                        ? fn.apply(undefined, vals) : fn.call(undefined,  vals);
+	                    ret = fn.apply(undefined, vals);
 	                } finally {
 	                    promise._popContext();
 	                }
@@ -5996,9 +5961,7 @@
 	        currentQueue = queue;
 	        queue = [];
 	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
+	            currentQueue[queueIndex].run();
 	        }
 	        queueIndex = -1;
 	        len = queue.length;
@@ -6050,6 +6013,7 @@
 	    throw new Error('process.binding is not supported');
 	};
 	
+	// TODO(shtylman)
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
