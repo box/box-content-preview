@@ -28,8 +28,15 @@ shopt -s dotglob
 
 [ -e "$KIND-$VERSION" ] || ln -s . "$KIND-$VERSION" # For the rpm prefix
 
+#build
+rm -rf node_modules
+npm install
+npm run clean
+npm run props2js
+npm run webpack
+
 # Tar all non-hidden files and directories
-cd dist/
+cd dist
 fpm -s dir -t rpm --prefix $installDir --rpm-os linux --architecture all --package $rpmDir/$rpm --directories . --name $KIND --version $VERSION --rpm-user box --rpm-group box --rpm-compression none --description 'content experience assets bundle' .
 cd ..
 status=$(curl -s -o /dev/null -w %{http_code} -X POST -u $mavenUser:$mavenPassword -T $rpmDir/$rpm $publishURL)
