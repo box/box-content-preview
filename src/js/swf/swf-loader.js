@@ -40,39 +40,27 @@ class SwfLoader extends AssetLoader {
         // Create an asset path creator function depending upon the locale
         let assetPathCreator = this.createAssetUrl(options.locale);
 
-        // Fully qualify the representation URLs
-        let representations = file.representations.map(this.createRepresentationUrl(options.host));
-
         // Load the scripts for this previewer
         return this.loadScripts(SCRIPTS.map(assetPathCreator)).then(() => {
 
-            let previewer = Box.Preview.Swf(container, options);
+            let previewer = new Box.Preview.Swf(container, options);
 
             // Load the representations and return the instantiated previewer object
-            return previewer.load(representations);        
+            return previewer.load(file.download_url);        
         
         });
     }
 
     /**
-     * Loads the image previewer
+     * Prefetches the swf
      * 
      * @param {Object} file box file
      * @param {Object} [options] optional options
      * @return {Promise}
      */
     prefetch(file, options) {
-
-        // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(options.locale);
-
-        // Fully qualify the representation URLs
-        let representations = file.representations.map(this.createRepresentationUrl(options.host));
-
-        representations.forEach((representation) => {
-            let embed = document.createElement('embed');
-            embed.src = representation;
-        });
+        let img = document.createElement('img');
+        img.src = file.download_url;
     }
 }
 

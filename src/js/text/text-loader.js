@@ -45,9 +45,6 @@ class TextLoader extends AssetLoader {
         // Create an asset path creator function depending upon the locale
         let assetPathCreator = this.createAssetUrl(options.locale);
 
-        // Fully qualify the representation URLs
-        //let representations = file.representations.map(this.createRepresentationUrl(options.host));
-
         // 1st load the stylesheets needed by this previewer
         this.loadStylesheets(STYLESHEETS.map(assetPathCreator));
 
@@ -57,29 +54,23 @@ class TextLoader extends AssetLoader {
             let previewer = new Box.Preview.PlainText(container, options);
 
             // Load the representations and return the instantiated previewer object
-            return previewer.load(file.download_url);        
+            return previewer.load(file);        
         
         });
     }
 
     /**
-     * Loads the image previewer
+     * Prefetches content of a text file
      * 
      * @param {Object} file box file
      * @param {Object} [options] optional options
-     * @return {Promise}
+     * @return {void}
      */
     prefetch(file, options) {
-
-        // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(options.locale);
-
-        // Fully qualify the representation URLs
-        let representations = file.representations.map(this.createRepresentationUrl(options.host));
-
-        representations.forEach((representation) => {
-            let embed = document.createElement('embed');
-            embed.src = representation;
+        fetch(file.download_url).then((response) => {
+            return response.text();
+        }).then((txt) => {
+            file.content = txt; 
         });
     }
 }

@@ -44,29 +44,65 @@ class ImageLoader extends AssetLoader {
         // Create an asset path creator function depending upon the locale
         let assetPathCreator = this.createAssetUrl(options.locale);
 
-        // Fully qualify the representation URLs
-        let representations = file.representations.map(this.createRepresentationUrl(options.host));
-
         // 1st load the stylesheets needed by this previewer
         this.loadStylesheets(STYLESHEETS.map(assetPathCreator));
 
         // Load the scripts for this previewer
         return this.loadScripts(SCRIPTS.map(assetPathCreator)).then(() => {
-
-            let previewer;
-
-            // Instantiate the previwer
-            if (representations.length > 1) {
-                previewer = new Box.Preview.Images(container, options);
-            } else {
-                previewer = new Box.Preview.Image(container, options);
-                representations = representations[0];
+            switch (file.extension) {
+                case 'gif':
+                    return this.loadGif(file, container, options);
+                case 'tif':
+                    return this.loadTiff(file, container, options);
+                default:
+                    return this.loadPng(file, container, options);
             }
-
-            // Load the representations and return the instantiated previewer object
-            return previewer.load(representations);        
-        
         });
+    }
+
+    /**
+     * Loads the gif previewer
+     * 
+     * @param {Object} file box file
+     * @param {string|HTMLElement} container where to load the preview
+     * @param {Object} [options] optional options
+     * @return {Promise}
+     */
+    loadGif(file, container, options) {
+        let previewer = new Box.Preview.Image(container, options);
+        return previewer.load(file.download_url);   
+    }
+
+    /**
+     * Loads the tiff previewer
+     * 
+     * @param {Object} file box file
+     * @param {string|HTMLElement} container where to load the preview
+     * @param {Object} [options] optional options
+     * @return {Promise}
+     */
+    loadTiff(file, container, options) {
+        // Fully qualify the representation URLs
+        let representations = file.representations.map(this.createRepresentationUrl(options.host));
+
+        let previewer = new Box.Preview.Image(container, options);
+        return previewer.load(file.download_url);   
+    }
+
+    /**
+     * Loads the png previewer
+     * 
+     * @param {Object} file box file
+     * @param {string|HTMLElement} container where to load the preview
+     * @param {Object} [options] optional options
+     * @return {Promise}
+     */
+    loadPng(file, container, options) {
+        // Fully qualify the representation URLs
+        let representations = file.representations.map(this.createRepresentationUrl(options.host));
+
+        let previewer = new Box.Preview.Image(container, options);
+        return previewer.load(file.download_url);   
     }
 
     /**

@@ -59,6 +59,7 @@ class Swf extends Base {
     }
 }
 
-Box.Preview = Box.Preview || { Swf: Swf };
+Box.Preview = Box.Preview || {};
+Box.Preview.Swf = Swf;
 global.Box = Box;
 export default Box.Preview.Swf;

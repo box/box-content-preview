@@ -123,6 +123,7 @@ class Images extends Base {
     }
 }
 
-Box.Preview = Box.Preview || { Images: Images };
+Box.Preview = Box.Preview || {};
+Box.Preview.Images = Images;
 global.Box = Box;
 export default Images;

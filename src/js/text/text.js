@@ -30,25 +30,26 @@ class PlainText extends Base {
 
     /**
      * Loads a swf object.
-     * @param {String} textUrl The text to load
+     * 
+     * @param {Object} file The text file to load
      * @public
      * @returns {Promise}
      */
-    load(textUrl) {
+    load(file) {
+
         return new Promise((resolve, reject) => {
+
+            if (file.content) {
+                // The content may have been prefetched,
+                // in that case, use it.
+                this.finishLoading(file.content, resolve);
+                return;
+            }
 
             fetch(textUrl).then((response) => {
                 return response.text();
             }).then((txt) => {
-                this.textEl.textContent = txt;
-                hljs.highlightBlock(this.textEl);
-
-                // Add our class after highlighting otherwise highlightjs doesnt work
-                this.textEl.classList.add('box-preview-text');
-                
-                resolve(this);
-                this.loaded = true;
-                this.emit('load'); 
+                this.finishLoading(txt, resolve); 
             });
             
             setTimeout(() => {
@@ -57,6 +58,26 @@ class PlainText extends Base {
                 }
             }, TEXT_LOAD_TIMEOUT_IN_MILLIS);
         });
+    }
+
+    /**
+     * Loads highlight.js to highlight the file
+     * 
+     * @param {String} txt The text content to load
+     * @param {Function} resolve Resolution handler
+     * @private
+     * @returns {void}
+     */
+    finishLoading(txt, resolve) {
+        this.textEl.textContent = txt;
+        hljs.highlightBlock(this.textEl);
+
+        // Add our class after highlighting otherwise highlightjs doesnt work
+        this.textEl.classList.add('box-preview-text');
+        
+        resolve(this);
+        this.loaded = true;
+        this.emit('load');
     }
 }
 

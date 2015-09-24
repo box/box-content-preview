@@ -127,7 +127,7 @@ class Preview {
         this.setup(container, this.files.length > 1 && this.options.navigation !== false);
 
         // Finally load the 1st preview
-        return this.load(this.files[0]);
+        return this.load(typeof file === 'string' ? file : file.id);
     }
 
     /**
@@ -222,15 +222,12 @@ class Preview {
             case 'txt':
                 promise = TextLoader.load(this.file, this.container, this.options);
                 break;
-            case 'image':
+            case 'gif':
+            case 'tif':
                 promise = ImageLoader.load(this.file, this.container, this.options);
                 break;
             case 'swf':
                 promise = SwfLoader.load(this.file, this.container, this.options);
-                break;
-            case 'video':
-                break;
-            case 'audio':
                 break;
             default:
                 throw 'Unsupported viewer';
@@ -274,7 +271,11 @@ class Preview {
             this.cache[nextId] = {};
 
             // Pre-fetch the file information
-            fetch(this.createUrl(nextId)).then((response) => {
+            fetch(this.createUrl(nextId), {
+                headers: {  
+                    'Authorization': 'Bearer ' + this.getAuthorizationToken()
+                }
+            }).then((response) => {
                 return response.json();
             }).then((file) => {
 
@@ -283,16 +284,16 @@ class Preview {
 
                 // Pre-fetch content if applicable so that the
                 // browser caches the content
-                switch (file.type) {
-                    case 'image':
+                switch (file.extension) {
+                    case 'txt':
+                        TextLoader.prefetch(this.cache[nextId], this.options);
+                        break;
+                    case 'gif':
+                    case 'tif':
                         ImageLoader.prefetch(file, this.options);
                         break;
                     case 'swf':
                         SwfLoader.prefetch(file, this.options);
-                        break;
-                    case 'video':
-                        break;
-                    case 'audio':
                         break;
                 }
             });

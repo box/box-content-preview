@@ -84,7 +84,7 @@ class Assets {
      * @returns {Function}
      */
     createRepresentationUrl(host) {
-        return (url) => {
+        return (file, url) => {
             return host + '/' + url;
         };
     }
