@@ -1,7 +1,7 @@
 #!/bin/bash
 
 declare KIND="content-experience-assets"
-declare VERSION="0.1"
+declare VERSION="0.2"
 declare installDir="/box/www/content-experience-assets"
 declare rpmDir="/tmp"
 # DM looks specifically for artifacts with filenames of the following form:
