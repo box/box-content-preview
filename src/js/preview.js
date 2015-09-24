@@ -46,7 +46,7 @@ class Preview {
      * @returns {String}
      */
     createUrl(id) {
-        return this.options.host + '/filez/' + id + '/preview';
+        return this.options.host + '/api/2.0/files/' + id + '?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,download_url,representations';
     }
 
     /**
@@ -89,28 +89,39 @@ class Preview {
 
     /**
      * Shows a preview
-     * @param {String|Array} files box file id or ids
+     * @param {String|Object} file box file object or id
+     * @param {Array[String]} files ids of files
      * @param {String|HTMLElement} container where to load the preview
      * @param {Object} [options] optional options
      * @returns {Promise}
      */
-    show(files, container, options = {}) {
+    show(file, files, container, options = {}) {
 
-        // Normalize the input array of ids
-        if (Array.isArray(files)) {
+        // Normalize by putting file inside files array if the latter
+        // is empty. If its not empty, then it is assumed that file is
+        // already inside files array.
+        if (files.length > 1) {
             this.files = files;
         } else {
-            this.files = [files];
+            this.files = typeof file === 'string' ? [file] : [file.id];
         }
 
         // Optional options
         this.options = options;
         this.options.host = options.host || location.origin;
-        
-        // Cache the 1st file in the array so that we don't prefetch it.
-        // Currently we don't have the file data, so creating an empty object.
-        this.cache[this.files[0]] = {};
 
+        // Check if file id was passed in or a well formed file object
+        // Cache the file in the files array so that we don't prefetch it.
+        // If we don't have the file data, we create an empty object.
+        // If we have the file data, we use that.
+        if (typeof file === 'string') {
+            // String file id was passed in
+            this.cache[file] = {}
+        } else {
+            // File object was passed in
+            this.cache[file.id] = file;
+        }
+        
         // Setup the UI. Navigation is only shown if we are prevewing a collection
         // and if the client has not prevented us from showing the navigation.
         this.setup(container, this.files.length > 1 && this.options.navigation !== false);
@@ -120,8 +131,8 @@ class Preview {
     }
 
     /**
-     * Shows a preview suing id.
-     * @param {String} id File id to preview
+     * loads the preview for a file
+     * @param {String} id File to preview
      * @returns {Promise}
      */
     load(id) {
@@ -165,7 +176,11 @@ class Preview {
         // a server request to check if something changed aka check
         // for cache being stale.
         if (checkStaleness) {
-            fetch(this.createUrl(file.id)).then((response) => {
+            fetch(this.createUrl(file.id), {
+                headers: {  
+                    'Authorization': 'Bearer ' + this.getAuthorizationToken()
+                }
+            }).then((response) => {
                 return response.json();
             }).then((file) => {
                 this.cache[file.id] = file;
@@ -182,7 +197,11 @@ class Preview {
      * @returns {Promise}
      */
     loadFromServer(id) {
-        return fetch(this.createUrl(id)).then((response) => {
+        return fetch(this.createUrl(id), {
+            headers: {  
+                'Authorization': 'Bearer ' + this.getAuthorizationToken() 
+            }
+        }).then((response) => {
             return response.json();
         }).then((file) => {
             this.cache[id] = file;
@@ -199,7 +218,10 @@ class Preview {
 
         let promise;
             
-        switch (this.file.type) {
+        switch (this.file.extension) {
+            case 'txt':
+                promise = TextLoader.load(this.file, this.container, this.options);
+                break;
             case 'image':
                 promise = ImageLoader.load(this.file, this.container, this.options);
                 break;
@@ -215,6 +237,14 @@ class Preview {
         }
         
         return promise;
+    }
+
+    getAuthorizationToken() {
+        return this.options.authToken;
+    }
+
+    setAuthorizationToken(authToken) {
+        this.options.authToken = authToken;
     }
 
     /**

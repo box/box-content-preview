@@ -15,7 +15,7 @@ let hljs = global.hljs;
 const TEXT_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 @autobind
-class Text extends Base {
+class PlainText extends Base {
 
     /**
      * [constructor]
@@ -60,6 +60,7 @@ class Text extends Base {
     }
 }
 
-Box.Preview = Box.Preview || { Text: Text };
+Box.Preview = Box.Preview || {};
+Box.Preview.PlainText = PlainText;
 global.Box = Box;
-export default Box.Preview.Text;
+export default PlainText;

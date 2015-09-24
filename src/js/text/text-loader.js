@@ -7,6 +7,7 @@ let singleton = null;
 let document = global.document;
 
 const STYLESHEETS = [
+    'text.css',
     'github.css'
 ];
 
@@ -42,10 +43,10 @@ class TextLoader extends AssetLoader {
     load(file, container, options) {
 
         // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(file.locale);
+        let assetPathCreator = this.createAssetUrl(options.locale);
 
         // Fully qualify the representation URLs
-        let representations = file.representations.map(this.createRepresentationUrl(options.host));
+        //let representations = file.representations.map(this.createRepresentationUrl(options.host));
 
         // 1st load the stylesheets needed by this previewer
         this.loadStylesheets(STYLESHEETS.map(assetPathCreator));
@@ -53,10 +54,10 @@ class TextLoader extends AssetLoader {
         // Load the scripts for this previewer
         return this.loadScripts(SCRIPTS.map(assetPathCreator)).then(() => {
 
-            let previewer = Box.Preview.Text(container, options);
+            let previewer = new Box.Preview.PlainText(container, options);
 
             // Load the representations and return the instantiated previewer object
-            return previewer.load(representations[0]);        
+            return previewer.load(file.download_url);        
         
         });
     }
@@ -71,7 +72,7 @@ class TextLoader extends AssetLoader {
     prefetch(file, options) {
 
         // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(file.locale);
+        let assetPathCreator = this.createAssetUrl(options.locale);
 
         // Fully qualify the representation URLs
         let representations = file.representations.map(this.createRepresentationUrl(options.host));

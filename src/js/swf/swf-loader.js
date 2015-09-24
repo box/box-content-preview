@@ -38,7 +38,7 @@ class SwfLoader extends AssetLoader {
     load(file, container, options) {
 
         // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(file.locale);
+        let assetPathCreator = this.createAssetUrl(options.locale);
 
         // Fully qualify the representation URLs
         let representations = file.representations.map(this.createRepresentationUrl(options.host));
@@ -64,7 +64,7 @@ class SwfLoader extends AssetLoader {
     prefetch(file, options) {
 
         // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(file.locale);
+        let assetPathCreator = this.createAssetUrl(options.locale);
 
         // Fully qualify the representation URLs
         let representations = file.representations.map(this.createRepresentationUrl(options.host));

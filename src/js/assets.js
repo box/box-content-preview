@@ -33,6 +33,7 @@ class Assets {
     createScript(url) {
         let script = document.createElement('script');
         script.src = url;
+        script.async = false;
         
         return [script, new Promise((resolve, reject) => {
             script.addEventListener('load', resolve);
