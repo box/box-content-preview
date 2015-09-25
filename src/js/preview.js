@@ -116,10 +116,12 @@ class Preview {
         // If we have the file data, we use that.
         if (typeof file === 'string') {
             // String file id was passed in
-            this.cache[file] = {}
+            this.file = this.cache[file] = {
+                id: file
+            }
         } else {
             // File object was passed in
-            this.cache[file.id] = file;
+            this.file = this.cache[file.id] = file;
         }
         
         // Setup the UI. Navigation is only shown if we are prevewing a collection
@@ -145,7 +147,7 @@ class Preview {
         // Check the cache before making a network request.
         let cached = this.cache[id];
 
-        if (cached && cached.id === id) {
+        if (cached && cached.id === id && cached.representations) {
             // Cache hit, use that.
             promise = this.loadFromCache(cached);
         } else {
@@ -215,25 +217,7 @@ class Preview {
      * @returns {Promise}
      */
     loadViewer() {
-
-        let promise;
-            
-        switch (this.file.extension) {
-            case 'txt':
-                promise = TextLoader.load(this.file, this.container, this.options);
-                break;
-            case 'gif':
-            case 'tif':
-                promise = ImageLoader.load(this.file, this.container, this.options);
-                break;
-            case 'swf':
-                promise = SwfLoader.load(this.file, this.container, this.options);
-                break;
-            default:
-                throw 'Unsupported viewer';
-        }
-        
-        return promise;
+        return this.getLoader(this.file.extension).load(this.file, this.container, this.options);
     }
 
     getAuthorizationToken() {
@@ -284,20 +268,33 @@ class Preview {
 
                 // Pre-fetch content if applicable so that the
                 // browser caches the content
-                switch (file.extension) {
-                    case 'txt':
-                        TextLoader.prefetch(this.cache[nextId], this.options);
-                        break;
-                    case 'gif':
-                    case 'tif':
-                        ImageLoader.prefetch(file, this.options);
-                        break;
-                    case 'swf':
-                        SwfLoader.prefetch(file, this.options);
-                        break;
-                }
+                this.getLoader(file.extension).prefetch(file, this.options);
             });
         }        
+    }
+
+    /**
+     * Determines a loader
+     * @returns {Object}
+     */
+    getLoader(extension) {
+        
+        let loader;
+
+        switch (extension) {
+            case 'txt':
+                loader = TextLoader;
+                break;
+            case 'gif':
+            case 'tif':
+                loader = ImageLoader;
+                break;
+            case 'swf':
+                loader = SwfLoader;
+                break;
+        }
+
+        return loader;
     }
 
     /**
@@ -314,13 +311,14 @@ class Preview {
 
         let right = document.createElement('div');
         let rightSpan = document.createElement('span');
-        right.className = 'box-preview-navigate box-preview-navigate-right';
+        right.className = 'box-preview-navigate box-preview-navigate-right is-hidden';
         rightSpan.className = 'box-preview-right-arrow';
         right.appendChild(rightSpan);
         right.addEventListener('click', this.navigateRight);
 
         this.container.appendChild(left);
         this.container.appendChild(right);
+        this.updateNavigation();
     }
 
     /**
