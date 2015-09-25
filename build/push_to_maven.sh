@@ -1,7 +1,7 @@
 #!/bin/bash
 
 declare KIND="content-experience-assets"
-declare VERSION="0.1"
+declare VERSION="0.2"
 declare installDir="/box/www/content-experience-assets"
 declare rpmDir="/tmp"
 # DM looks specifically for artifacts with filenames of the following form:
@@ -34,6 +34,9 @@ npm install
 npm run build
 
 # Tar all non-hidden files and directories
+mv dist $VERSION
+mkdir dist
+mv $VERSION dist/
 cd dist
 fpm -s dir -t rpm --prefix $installDir --rpm-os linux --architecture all --package $rpmDir/$rpm --directories . --name $KIND --version $VERSION --rpm-user box --rpm-group box --rpm-compression none --description 'content experience assets bundle' .
 cd ..
