@@ -23,7 +23,8 @@ module.exports = Object.keys(languages).map(function(language) {
             images: js + '/image/images.js',
             swf: js + '/swf/swf.js',
             text: js + '/text/text.js',
-            markdown: js + '/text/markdown.js'
+            markdown: js + '/text/markdown.js',
+            scrubber: js + '/media/scrubber.js'
         },
         output: {
             path: path.join(__dirname, 'dist/' + language),
