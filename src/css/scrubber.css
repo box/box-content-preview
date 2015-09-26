@@ -2,7 +2,7 @@
     position: absolute;
     top: 0;
     width: 95%;
-    height: 6px;
+    height: 14px;
     left: 50%;
 }
 
@@ -10,50 +10,66 @@
     position: absolute;
     left: -50%;
     width: 100%;
-    height: 6px;
+    height: 3px;
+    top: 7px;
 }
 
 .box-preview-media-scrubber-converted {
     position: absolute;
-    height: 6px;
+    height: 3px;
     cursor: pointer;
     background-color: #1992D4;
     background-color: rgba(25, 146, 212, 0.2); /* #1992D4 also in box_theme_custom_css.tmpl */
+    transition: transform 0.1s ease-in-out;
 }
 
 .box-preview-media-scrubber-buffered {
     position: absolute;
-    height: 6px;
+    height: 3px;
     background-color: #1992D4;
     background-color: rgba(25, 146, 212, 0.3); /* #1992D4 also in box_theme_custom_css.tmpl */
+    transition: transform 0.1s ease-in-out;
 }
 
 .box-preview-media-scrubber-played {
     position: absolute;
-    height: 6px;
+    height: 3px;
     background-color: #1992D4; /* also in box_theme_custom_css.tmpl */
+    transition: transform 0.1s ease-in-out;
 }
 
 .box-preview-media-scrubber-underlay {
     position: absolute;
     width: 100%;
-    height: 6px;
+    height: 3px;
     cursor: not-allowed;
+    transition: transform 0.1s ease-in-out;
 }
 
 .box-preview-media-scrubber-handle {
     position: absolute;
     top: -5px;
-    width: 16px;
-    height: 16px;
-    border-radius: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
     background-color: #1992D4;
     cursor: pointer;
     transform: scale(0);
-    transition: transform 0.1s linear;
+    transition: transform 0.05s ease-in-out;
 }
 
-.box-preview-media-scrubber-handle:hover,
-.box-preview-media-scrubber:hover .box-preview-media-scrubber-handle {
+.box-preview-media-scrubber-wrapper:hover .box-preview-media-scrubber-handle,
+.box-preview-media-scrubber-wrapper.scrubber-hover .box-preview-media-scrubber-handle {
     transform: scale(1);
+}
+
+.box-preview-media-scrubber-wrapper:hover .box-preview-media-scrubber-converted,
+.box-preview-media-scrubber-wrapper:hover .box-preview-media-scrubber-buffered,
+.box-preview-media-scrubber-wrapper:hover .box-preview-media-scrubber-played,
+.box-preview-media-scrubber-wrapper:hover .box-preview-media-scrubber-underlay,
+.box-preview-media-scrubber-wrapper.scrubber-hover .box-preview-media-scrubber-converted,
+.box-preview-media-scrubber-wrapper.scrubber-hover .box-preview-media-scrubber-buffered,
+.box-preview-media-scrubber-wrapper.scrubber-hover .box-preview-media-scrubber-played,
+.box-preview-media-scrubber-wrapper.scrubber-hover .box-preview-media-scrubber-underlay {
+    transform: scaleY(2);
 }

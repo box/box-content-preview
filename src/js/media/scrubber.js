@@ -51,6 +51,7 @@ class Scrubber extends EventEmitter {
         this.mouseDownOnScrubber = false;
 
         this.containerEl.innerHTML = TEMPLATE.replace('{{accessibilityText}}', accessibilityText);
+        this.scrubberWrapperEl = this.containerEl.querySelector('.box-preview-media-scrubber-wrapper');
         this.scrubberEl = this.containerEl.querySelector('.box-preview-media-scrubber');
         this.bufferedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-buffered');
         this.convertedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-converted');
@@ -109,6 +110,8 @@ class Scrubber extends EventEmitter {
 
         this.handleEl.style.left = handlePosition + '%';
         this.playedEl.style.width = this.value * 100 + '%';
+        
+        this.emit('scrub', this.value);
     }
 
     /**
@@ -125,6 +128,8 @@ class Scrubber extends EventEmitter {
         //  no less than the last buffered value
         this.bufferedValue = Math.max(Math.min(Math.max(value, this.bufferedValue), this.convertedValue), MIN_VALUE);
         this.bufferedEl.style.width = this.bufferedValue * 100 + '%';
+
+        this.emit('buffer', this.bufferedValue);
     }
 
     /**
@@ -141,6 +146,8 @@ class Scrubber extends EventEmitter {
         //  no less than the last converted value
         this.convertedValue = Math.max(Math.min(Math.max(value, this.convertedValue), MAX_VALUE), MIN_VALUE);
         this.convertedEl.style.width = this.convertedValue * 100 + '%';
+
+        this.emit('convert', this.convertedValue);
     }
 
     /**
@@ -156,7 +163,6 @@ class Scrubber extends EventEmitter {
 
         if (this.mouseDownOnScrubber && this.mousePositionWithinScrubberRange(rect, pageX)) {
             this.setScrubberValue((pageX - rect.left) / rect.width);
-            this.emit('slide');
         }
     }
 
@@ -181,6 +187,8 @@ class Scrubber extends EventEmitter {
             document.addEventListener('mouseup', this.mouseUpHandler);
             document.addEventListener('mouseleave', this.mouseUpHandler);
             document.addEventListener('mousemove', this.scrubbingHandler);
+
+            this.scrubberWrapperEl.classList.add('scrubber-hover');
             event.preventDefault();
         }
     }
@@ -193,6 +201,7 @@ class Scrubber extends EventEmitter {
      */
     mouseUpHandler() {
         this.mouseDownOnScrubber = false;
+        this.scrubberWrapperEl.classList.remove('scrubber-hover');
         document.removeEventListener('mouseup', this.mouseUpHandler);
         document.removeEventListener('mouseleave', this.mouseUpHandler);
         document.removeEventListener('mousemove', this.scrubbingHandler);
@@ -217,6 +226,7 @@ class Scrubber extends EventEmitter {
         this.playedEl = undefined;
         this.handleEl = undefined;
         this.scrubberEl = undefined;
+        this.scrubberWrapperEl = undefined;
         this.containerEl = undefined;
     }
 
@@ -229,7 +239,6 @@ class Scrubber extends EventEmitter {
      */
     setValue(value) {
         this.setScrubberValue(this, value);
-        this.emit('value-set');
     }
 
     /**
@@ -241,7 +250,6 @@ class Scrubber extends EventEmitter {
      */
     setBufferedValue(value) {
         this.setScrubberBufferedValue(this, value);
-        this.emit('buffered-value-set');
     }
 
     /**
@@ -253,7 +261,6 @@ class Scrubber extends EventEmitter {
      */
     setConvertedValue(value) {
         this.setScrubberConvertedValue(this, value);
-        this.emit('scrubber-value-set');
     }
 
     /**

@@ -30,7 +30,10 @@
     <script src="dist/en-US/scrubber.js"></script>
 
     <script>
-        var text = new Scrubber('.container');
+        var scrubber = new Scrubber('.container', 'foo', 0.5);
+        scrubber.on('scrub', function(value) {
+            console.error(value);
+        });
     </script
 </body>
 </html>

@@ -29,7 +29,10 @@
     <script src="dist/en-US/scrubber.js"></script>
 
     <script>
-        var text = new Scrubber('.container', 'foo');
+        var scrubber = new Scrubber('.container', 'foo', 0.5, 1, 1);
+        scrubber.on('play', function(value) {
+            console.error(value);
+        });
     </script
 </body>
 </html>
