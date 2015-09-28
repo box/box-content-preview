@@ -4,20 +4,10 @@ import '../../css/scrubber.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
+import scrubberTemplate from 'raw!../../html/media/scrubber.html';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 1;
-const TEMPLATE = '<div class="box-preview-media-scrubber-wrapper">' +
-                    '<div class="box-preview-media-scrubber">' +
-                        '<div class="box-preview-media-scrubber-underlay"></div>' +
-                        '<div class="box-preview-media-scrubber-played"></div>' +
-                        '<div class="box-preview-media-scrubber-buffered"></div>' +
-                        '<div class="box-preview-media-scrubber-converted"></div>' +
-                        '<div class="box-preview-media-scrubber-handle">' +
-                            '<span class="accessibility-hidden">{{accessibilityText}}</span>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>';
 
 let document = global.document;
 
@@ -27,7 +17,7 @@ class Scrubber extends EventEmitter {
     /**
      * Service to handle the position and movement of a slider element
      * 
-     * @constructor
+     * [constructor]
      * @param {HTMLElement} containerEl
      * @param {string} accessibilityText
      * @param {number} value initial value
@@ -39,10 +29,6 @@ class Scrubber extends EventEmitter {
 
         super();
 
-        // Get the container dom element if selector was passed
-        if (typeof containerEl === 'string') {
-            containerEl = document.querySelector(containerEl);
-        }
         this.containerEl = containerEl;
         
         this.value = value || MIN_VALUE;
@@ -50,7 +36,7 @@ class Scrubber extends EventEmitter {
         this.bufferedValue = typeof bufferedValue === 'number' ? bufferedValue : convertedValue;
         this.mouseDownOnScrubber = false;
 
-        this.containerEl.innerHTML = TEMPLATE.replace('{{accessibilityText}}', accessibilityText);
+        this.containerEl.innerHTML = scrubberTemplate.replace('{{accessibilityText}}', accessibilityText).replace(/\>\s*\</g, '><'); // removing new lines
         this.scrubberWrapperEl = this.containerEl.querySelector('.box-preview-media-scrubber-wrapper');
         this.scrubberEl = this.containerEl.querySelector('.box-preview-media-scrubber');
         this.bufferedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-buffered');
@@ -83,7 +69,7 @@ class Scrubber extends EventEmitter {
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      * 
-     * @private
+     * @public
      * @param {number} value the the value to save
      * @returns {void}
      */
@@ -117,7 +103,7 @@ class Scrubber extends EventEmitter {
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      * 
-     * @private
+     * @public
      * @param {number} value the the value to save
      * @returns {void}
      */
@@ -135,7 +121,7 @@ class Scrubber extends EventEmitter {
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      * 
-     * @private
+     * @public
      * @param {number} value the the value to save
      * @returns {void}
      */
@@ -231,39 +217,6 @@ class Scrubber extends EventEmitter {
     }
 
     /**
-     * Sets the value of the scrubber handle position
-     *
-     * @public
-     * @param {number} value the scrubber handle position
-     * @returns {void}
-     */
-    setValue(value) {
-        this.setScrubberValue(this, value);
-    }
-
-    /**
-     * Sets the buffered value for the buffer bar
-     *
-     * @public
-     * @param {number} value the scrubber handle position
-     * @returns {void}
-     */
-    setBufferedValue(value) {
-        this.setScrubberBufferedValue(this, value);
-    }
-
-    /**
-     * Sets the converted value for the buffer bar
-     *
-     * @public
-     * @param {number} value the scrubber handle position
-     * @returns {void}
-     */
-    setConvertedValue(value) {
-        this.setScrubberConvertedValue(this, value);
-    }
-
-    /**
      * Getter for the value of the scrubber handle position
      * @public
      * @returns {number} The scrubber handle position
@@ -293,5 +246,4 @@ class Scrubber extends EventEmitter {
     }
 }
 
-global.Scrubber = Scrubber;
 export default Scrubber;

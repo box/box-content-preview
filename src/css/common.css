@@ -2,8 +2,7 @@
     display: none !important;
 }
 
-.box-preview *,
-.box-preview {
+* {
     box-sizing: border-box !important;
 }
 

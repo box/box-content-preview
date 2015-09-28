@@ -2,7 +2,7 @@
     position: absolute;
     top: 0;
     width: 95%;
-    height: 14px;
+    height: 20px; /* Handle is 16px high + 2px buffer on top and bottom */
     left: 50%;
 }
 
@@ -11,7 +11,7 @@
     left: -50%;
     width: 100%;
     height: 3px;
-    top: 7px;
+    top: 9px; /* Wrapper is 20px high. Bar is 3px high leaving 17px. 9px for top buffer and 8px for bottom. */
 }
 
 .box-preview-media-scrubber-converted {
@@ -20,7 +20,7 @@
     cursor: pointer;
     background-color: #1992D4;
     background-color: rgba(25, 146, 212, 0.2); /* #1992D4 also in box_theme_custom_css.tmpl */
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out; /* timing is double of handle timing since bar scales to 2 instead of 1 */
 }
 
 .box-preview-media-scrubber-buffered {
@@ -28,14 +28,14 @@
     height: 3px;
     background-color: #1992D4;
     background-color: rgba(25, 146, 212, 0.3); /* #1992D4 also in box_theme_custom_css.tmpl */
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out; /* timing is double of handle timing since bar scales to 2 instead of 1 */
 }
 
 .box-preview-media-scrubber-played {
     position: absolute;
     height: 3px;
     background-color: #1992D4; /* also in box_theme_custom_css.tmpl */
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out; /* timing is double of handle timing since bar scales to 2 instead of 1 */
 }
 
 .box-preview-media-scrubber-underlay {
@@ -43,19 +43,19 @@
     width: 100%;
     height: 3px;
     cursor: not-allowed;
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out; /* timing is double of handle timing since bar scales to 2 instead of 1 */
 }
 
 .box-preview-media-scrubber-handle {
     position: absolute;
-    top: -5px;
-    width: 14px;
-    height: 14px;
-    border-radius: 7px;
+    top: -6px; /* bar is 6px high when scaled 2x. handle is 16px high*/
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
     background-color: #1992D4;
     cursor: pointer;
     transform: scale(0);
-    transition: transform 0.05s ease-in-out;
+    transition: transform 0.05s ease-in-out; /* timing is half of bar timing since handle scales to 1 instead of 2 */
 }
 
 .box-preview-media-scrubber-wrapper:hover .box-preview-media-scrubber-handle,
