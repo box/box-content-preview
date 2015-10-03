@@ -30,10 +30,10 @@ OR see `index.html` where preview.js wrapper is used instead of directly using t
     });
 
 where
-    X is either a string file Id OR JSON file object response from https://box-content.readme.io/reference#files
-    Y is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
-    container is either a DOM node or CSS selector where the preview will be shown
-    options is an object listing the CDN, auth token and user's locale
+* `X` is either a string file Id OR JSON file object response from https://box-content.readme.io/reference#files
+* `Y` is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
+* `container` is either a DOM node or CSS selector where the preview will be shown
+* `options` is an object listing the CDN, auth token and user's locale
 
 
 `index.html` is hardcoded to test against `https://app.phora.inside-box.net` where I am usinf the content API endpoint returning the JSON `file` structure. You will have to launch chrome by disabling security so that CORS issues don't happen -
