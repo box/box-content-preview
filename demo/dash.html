@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test</title>
+    
+    <link rel="stylesheet" type="text/css" href="dist/en-US/preview.css"></script>
+    <link rel="stylesheet" type="text/css" href="dist/en-US/dash.css"></script>
+    
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0 none;
+            overflow: hidden;
+        }
+        .container {
+            width: 500px;
+            height: 500px;
+            margin: 100px auto;
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class='container'></div>
+    <script src="dist/en-US/shaka-player.js"></script>
+    <script src="dist/en-US/dash.js"></script>
+
+    <script>
+        var dash = new Box.Preview.Dash('.container', {
+            sharedName: '1dqgdqlcn2cwvfcyomazxm7kpg843c9e'
+        });
+
+        dash.load('https://darth.app.box.com/representation/file_version_37365348374/dash_mpd.mpd?shared_name=1dqgdqlcn2cwvfcyomazxm7kpg843c9e').then(function() {
+            console.error('loaded');    
+        });
+    </script
+</body>
+</html>

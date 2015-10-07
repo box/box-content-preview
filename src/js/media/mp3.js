@@ -7,6 +7,7 @@ import MediaBase from './media-base';
 const CSS_CLASS_MP3 = 'box-preview-media-mp3';
 
 let Box = global.Box || {};
+let document = global.document;
 
 @autobind
 class MP3 extends MediaBase {

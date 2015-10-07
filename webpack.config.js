@@ -25,7 +25,8 @@ module.exports = Object.keys(languages).map(function(language) {
             text: js + '/text/text.js',
             markdown: js + '/text/markdown.js',
             mp4: js + '/media/mp4.js',
-            mp3: js + '/media/mp3.js'
+            mp3: js + '/media/mp3.js',
+            dash: js + '/media/dash.js'
         },
         output: {
             path: path.join(__dirname, 'dist/' + language),

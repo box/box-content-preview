@@ -15,7 +15,6 @@ const OPTIONS = {
 
 let document = global.document;
 
-
 @autobind
 class Base extends EventEmitter {
 
@@ -28,7 +27,7 @@ class Base extends EventEmitter {
     constructor(container, options) {
         super();
 
-        this.options = options || OPTIONS;
+        this.options = Object.assign({}, OPTIONS, options) || OPTIONS;
         this.currentRotationAngle = 0;
 
         // Get the container dom element if selector was passed

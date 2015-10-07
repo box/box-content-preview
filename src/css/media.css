@@ -33,7 +33,7 @@
     height: 60px; /* same as controls */
 }
 
-.box-preview-media-mp3 .box-preview-media-controls-hd,
+.box-preview-media-mp3 .box-preview-media-hd-icon,
 .box-preview-media-mp3 .box-preview-media-expand-icon {
     display: none;
 }
@@ -56,10 +56,28 @@
     width: 100%;
 }
 
-.box-preview-media-mp4 .box-preview-media-controls-hd {
+.box-preview-media-mp4 .box-preview-media-hd-icon {
     display: none;
 }
 
 .box-preview-is-fullscreen .box-preview-media-mp4 .box-preview-media-container {
+    width: 100%;
+}
+
+
+/* ----------- Dash -----------*/
+
+.box-preview-media.box-preview-media-dash {
+    background: #000;
+}
+
+.box-preview-media-dash video {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+}
+
+.box-preview-is-fullscreen .box-preview-media-dash .box-preview-media-container {
     width: 100%;
 }

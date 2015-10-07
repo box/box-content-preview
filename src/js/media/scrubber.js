@@ -107,8 +107,6 @@ class Scrubber extends EventEmitter {
         // The played values should ignore the handle width since we don't care about it.        
         this.playedEl.style.width = this.value * 100 + '%';
         this.adjustScrubberHandle();
-        
-        this.emit('scrub', this.value);
     }
 
     /**
@@ -130,8 +128,6 @@ class Scrubber extends EventEmitter {
         //  no less than the last buffered value
         this.bufferedValue = Math.max(Math.min(Math.max(value, this.bufferedValue || MAX_VALUE), this.convertedValue), MIN_VALUE);
         this.bufferedEl.style.width = this.bufferedValue * 100 + '%';
-
-        this.emit('buffer', this.bufferedValue);
     }
 
     /**
@@ -153,8 +149,6 @@ class Scrubber extends EventEmitter {
         //  no less than the last converted value
         this.convertedValue = Math.max(Math.min(Math.max(value, this.convertedValue || MAX_VALUE), MAX_VALUE), MIN_VALUE);
         this.convertedEl.style.width = this.convertedValue * 100 + '%';
-
-        this.emit('convert', this.convertedValue);
     }
 
     /**
@@ -165,12 +159,14 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     scrubbingHandler(event) {
-        var rect = this.scrubberEl.getBoundingClientRect(),
-            pageX = event.pageX,
-            newValue = (pageX - rect.left) / rect.width;
+        let rect = this.scrubberEl.getBoundingClientRect();
+        let pageX = event.pageX;
+        let newValue = (pageX - rect.left) / rect.width;
 
+        newValue = Math.max(Math.min(newValue, MAX_VALUE), MIN_VALUE);
 
-        this.setValue(Math.max(Math.min(newValue, MAX_VALUE), MIN_VALUE));
+        this.setValue(newValue);
+        this.emit('valuechange', newValue);
     }
 
     /**

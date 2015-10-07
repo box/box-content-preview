@@ -50,7 +50,7 @@ class MediaControls extends EventEmitter  {
         this.durationEl = this.wrapperEl.querySelector('.box-preview-media-controls-duration');
         
         this.fullscreenButtonEl = this.wrapperEl.querySelector('.box-preview-media-expand-icon');
-        this.hdButtonEl = this.wrapperEl.querySelector('.box-preview-media-controls-hd');
+        this.hdButtonEl = this.wrapperEl.querySelector('.box-preview-media-hd-icon');
 
         this.setupScrubbers();
         this.attachEventHandlers();
@@ -63,12 +63,12 @@ class MediaControls extends EventEmitter  {
      */
     setupScrubbers() {
         this.timeScrubber = new Scrubber(this.timeScrubberEl, 'Time');
-        this.timeScrubber.on('scrub', (value) => {
+        this.timeScrubber.on('valuechange', (value) => {
             this.emit('timeupdate', value);
         });
 
         this.volScrubber = new Scrubber(this.volScrubberEl, 'Volume');
-        this.volScrubber.on('scrub', (value) => {
+        this.volScrubber.on('valuechange', (value) => {
             this.emit('volumeupdate', value);
         });        
     }
@@ -124,11 +124,20 @@ class MediaControls extends EventEmitter  {
 
     /**
      * Toggles playback
-     * @emits toggleplayback
+     * @emits togglefullscreen
      * @returns {void}
      */
     toggleFullscreen() {
         this.emit('togglefullscreen');
+    }
+
+    /**
+     * Toggles HD
+     * @emits togglehd
+     * @returns {void}
+     */
+    toggleHD() {
+        this.emit('togglehd');
     }
 
     /**
@@ -170,6 +179,7 @@ class MediaControls extends EventEmitter  {
         this.playButtonEl.addEventListener('click', this.togglePlay);
         this.volButtonEl.addEventListener('click', this.toggleMute);
         this.fullscreenButtonEl.addEventListener('click', this.toggleFullscreen);
+        this.hdButtonEl.addEventListener('click', this.toggleHD);
     }
 
     /**

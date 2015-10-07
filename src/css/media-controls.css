@@ -87,7 +87,7 @@
 }
 
 .box-preview-media-expand-icon,
-.box-preview-media-controls-hd {
+.box-preview-media-hd-icon {
     float: right;
 }
 
@@ -100,4 +100,12 @@
 .box-preview-media-volume-scrubber-container .box-preview-media-scrubber-played,
 .box-preview-media-volume-scrubber-container .box-preview-media-scrubber-underlay {
     transform: scaleY(1) !important;
+}
+
+.box-preview-media-hd-icon {
+    opacity: 0.5;
+}
+
+.box-preview-media-is-hd .box-preview-media-hd-icon {
+    opacity: 1;
 }
