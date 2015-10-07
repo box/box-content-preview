@@ -31,7 +31,7 @@ class Controls {
         this.mousemoveHandler = throttle(() => {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
             this.resetTimeout();
-        }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500, true);
+        }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500);
 
         this.containerEl.addEventListener('mousemove', this.mousemoveHandler)
         this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);

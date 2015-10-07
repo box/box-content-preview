@@ -5,7 +5,7 @@
     <title>Test</title>
     
     <link rel="stylesheet" type="text/css" href="dist/en-US/preview.css"></script>
-    <link rel="stylesheet" type="text/css" href="dist/en-US/media.css"></script>
+    <link rel="stylesheet" type="text/css" href="dist/en-US/mp4.css"></script>
     
     <style>
         html, body {
@@ -26,12 +26,13 @@
 </head>
 <body>
     <div class='container'></div>
-    <script src="dist/en-US/scrubber.js"></script>
+    <script src="dist/en-US/mp4.js"></script>
 
     <script>
-        var scrubber = new Scrubber('.container', 'foo', 0.5, 1, 1);
-        scrubber.on('play', function(value) {
-            console.error(value);
+        var mp4 = new Box.Preview.MP4('.container');
+
+        mp4.load('https://cloud.app.box.com/representation/file_version_37460525222/video_480.mp4?shared_name=mafb6aty2olpmozv2gr15znhglmf929a').then(function() {
+            console.error('loaded');    
         });
     </script
 </body>

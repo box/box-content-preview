@@ -3,14 +3,12 @@
 import '../../css/media.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
-import util from '../util';
 import EventEmitter from 'events';
-import throttle from 'lodash/function/throttle';
 import controlsTemplate from 'raw!../../html/media/controls.html';
 import Scrubber from './Scrubber';
 
-const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
-const PREVIEW_CONTROLS_SELECTOR = '.box-preview-controls';
+const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
+const PLAYING_CLASS = 'box-preview-media-is-playing';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 const VOLUME_LEVEL_CLASS_NAMES = [
     'box-preview-media-volume-icon-mute',
@@ -34,21 +32,25 @@ class MediaControls extends EventEmitter  {
         super();
 
         this.containerEl = containerEl;
-        this.containerEl.innerHTML = controlsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
-        
-        this.timeScrubberEl = this.containerEl.querySelector('.box-preview-media-time-scrubber-container');
-        this.volScrubberEl = this.containerEl.querySelector('.box-preview-media-volume-scrubber-container');
-        
-        this.playButtonEl = this.containerEl.querySelector('.box-preview-media-play-icon');
 
-        this.volButtonEl = this.containerEl.querySelector('.box-preview-media-controls-volume-control');
-        this.volLevelButtonEl = this.containerEl.querySelector('.box-preview-media-volume-level-icon');
+        let template = controlsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        this.containerEl.appendChild(document.createRange().createContextualFragment(template));
 
-        this.timecodeEl = this.containerEl.querySelector('.box-preview-media-controls-timecode');
-        this.durationEl = this.containerEl.querySelector('.box-preview-media-controls-duration');
+        this.wrapperEl = this.containerEl.querySelector('.box-preview-media-controls-wrapper');
+
+        this.timeScrubberEl = this.wrapperEl.querySelector('.box-preview-media-time-scrubber-container');
+        this.volScrubberEl = this.wrapperEl.querySelector('.box-preview-media-volume-scrubber-container');
         
-        this.fullscreenButtonEl = this.containerEl.querySelector('.box-preview-media-fullscreen-icon');
-        this.hdButtonEl = this.containerEl.querySelector('.box-preview-media-controls-hd');
+        this.playButtonEl = this.wrapperEl.querySelector('.box-preview-media-play-icon');
+
+        this.volButtonEl = this.wrapperEl.querySelector('.box-preview-media-controls-volume-control');
+        this.volLevelButtonEl = this.wrapperEl.querySelector('.box-preview-media-volume-level-icon');
+
+        this.timecodeEl = this.wrapperEl.querySelector('.box-preview-media-controls-timecode');
+        this.durationEl = this.wrapperEl.querySelector('.box-preview-media-controls-duration');
+        
+        this.fullscreenButtonEl = this.wrapperEl.querySelector('.box-preview-media-expand-icon');
+        this.hdButtonEl = this.wrapperEl.querySelector('.box-preview-media-controls-hd');
 
         this.setupScrubbers();
         this.attachEventHandlers();
@@ -90,7 +92,7 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     setDuration(time) {
-        this.durationEl.textContent = formatTime(time || 0);
+        this.durationEl.textContent = this.formatTime(time || 0);
     }
 
     /**
@@ -98,12 +100,22 @@ class MediaControls extends EventEmitter  {
      * @param {Number} time current playback position of the media file
      * @returns {void}
      */
-    setTimeCode(time) {
-        this.timecodeEl.textContent = formatTime(time || 0);
+    setTimeCode(time, duration) {
+        this.timeScrubber.setValue(duration ? time / duration : 0);
+        this.timecodeEl.textContent = this.formatTime(time || 0);
+    }
+
+    /**
+     * Toggles mute
+     * @returns {void}
+     */
+    toggleMute() {
+        this.emit('togglemute');
     }
 
     /**
      * Toggles playback
+     * @emits toggleplayback
      * @returns {void}
      */
     togglePlay() {
@@ -111,13 +123,30 @@ class MediaControls extends EventEmitter  {
     }
 
     /**
-     * Returns the class name which should be used for a volume level
-     * @private
-     * @param {Number} volume the volume level
-     * @returns {String} the class name
+     * Toggles playback
+     * @emits toggleplayback
+     * @returns {void}
      */
-    getVolLevelClassName(volume) {
-        return VOLUME_LEVEL_CLASS_NAMES[Math.ceil(volume * 3)];
+    toggleFullscreen() {
+        this.emit('togglefullscreen');
+    }
+
+    /**
+     * Shows the pause icon.
+     * Does not emit any event.
+     * @returns {void}
+     */
+    showPauseIcon() {
+        this.wrapperEl.classList.add(PLAYING_CLASS);
+    }
+
+    /**
+     * Shows the play icon.
+     * Does not emit any event.
+     * @returns {void}
+     */
+    showPlayIcon() {
+        this.wrapperEl.classList.remove(PLAYING_CLASS);
     }
 
     /**
@@ -125,20 +154,12 @@ class MediaControls extends EventEmitter  {
      * @param {Number} volume
      * @returns {void}
      */
-    setVolume(volume) {
-        this.volLevelButtonEl.classList.add(this.getVolLevelClassName(vol));
-        this.volScrubber.setScrubberValue(0);
-    }
-
-    /**
-     * Toggles playback
-     * @returns {void}
-     */
-    toggleMute() {
+    updateVolumeIcon(volume) {
         VOLUME_LEVEL_CLASS_NAMES.forEach((className) => {
             this.volLevelButtonEl.classList.remove(className);
         });
-        this.emit('togglemute');
+        this.volLevelButtonEl.classList.add(VOLUME_LEVEL_CLASS_NAMES[Math.ceil(volume * 3)]);
+        this.volScrubber.setValue(volume);
     }
 
     /**
@@ -148,9 +169,36 @@ class MediaControls extends EventEmitter  {
     attachEventHandlers() {
         this.playButtonEl.addEventListener('click', this.togglePlay);
         this.volButtonEl.addEventListener('click', this.toggleMute);
+        this.fullscreenButtonEl.addEventListener('click', this.toggleFullscreen);
     }
 
+    /**
+     * Shows the media controls
+     * @returns {void}
+     */
+    show() {
+        this.wrapperEl.classList.add(SHOW_CONTROLS_CLASS);
+        clearTimeout(this.autoHideTimeout);
+        this.autoHideTimeout = setTimeout(() => {
+            this.hide();
+        }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
+    }
+
+    /**
+     * Hides the media controls
+     * @returns {void}
+     */
+    hide() {
+        this.wrapperEl.classList.remove(SHOW_CONTROLS_CLASS);
+    }
+
+    /**
+     * Resizes the time scrubber
+     * @returns {void}
+     */
+    resizeTimeScrubber() {
+        this.timeScrubber.resize(32);
+    }
 }
 
-global.MediaControls = MediaControls;
 export default MediaControls;

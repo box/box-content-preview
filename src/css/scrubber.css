@@ -1,7 +1,7 @@
 .box-preview-media-scrubber-wrapper {
     position: absolute;
     top: 0;
-    width: 95%;
+    width: 100%;
     height: 20px; /* Handle is 16px high + 2px buffer on top and bottom */
     left: 50%;
 }
@@ -48,12 +48,13 @@
 
 .box-preview-media-scrubber-handle {
     position: absolute;
-    top: -6px; /* bar is 6px high when scaled 2x. handle is 16px high*/
+    top: -7px; /* bar is 6px high when scaled 2x. handle is 16px high. (16 - 6 + (6 / 2)) */
     width: 16px;
     height: 16px;
     border-radius: 8px;
     background-color: #1992D4;
     cursor: pointer;
+    pointer-events: none;
     transform: scale(0);
     transition: transform 0.05s ease-in-out; /* timing is half of bar timing since handle scales to 1 instead of 2 */
 }

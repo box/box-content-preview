@@ -20,9 +20,9 @@ class Scrubber extends EventEmitter {
      * [constructor]
      * @param {HTMLElement} containerEl
      * @param {string} accessibilityText
-     * @param {number} value initial value
-     * @param {number} bufferedValue initial buffered value
-     * @param {number} convertedValue initial converted value
+     * @param {number} [value] optional initial value
+     * @param {number} [bufferedValue] optional initial buffered value
+     * @param {number} [convertedValue] optional initial converted value
      * @returns {Scrubber}
      */
     constructor(containerEl, accessibilityText, value, bufferedValue, convertedValue) {
@@ -31,11 +31,6 @@ class Scrubber extends EventEmitter {
 
         this.containerEl = containerEl;
         
-        this.value = value || MIN_VALUE;
-        this.convertedValue = typeof convertedValue === 'number' ? convertedValue : MAX_VALUE;
-        this.bufferedValue = typeof bufferedValue === 'number' ? bufferedValue : convertedValue;
-        this.mouseDownOnScrubber = false;
-
         this.containerEl.innerHTML = scrubberTemplate.replace('{{accessibilityText}}', accessibilityText).replace(/\>\s*\</g, '><'); // removing new lines
         this.scrubberWrapperEl = this.containerEl.querySelector('.box-preview-media-scrubber-wrapper');
         this.scrubberEl = this.containerEl.querySelector('.box-preview-media-scrubber');
@@ -44,26 +39,26 @@ class Scrubber extends EventEmitter {
         this.playedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-played');
         this.handleEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-handle');
 
-        // Set the initial values
-        this.setScrubberConvertedValue(this.convertedValue);
-        this.setScrubberBufferedValue(this.bufferedValue);
-        this.setScrubberValue(this.value);
+        // Set the provided initial values
+        this.setConvertedValue(convertedValue);
+        this.setBufferedValue(bufferedValue);
+        this.setValue(value);
 
         this.convertedEl.addEventListener('mousedown', this.mouseDownHandler);
         // On old browsers with no css pointer events we need to attach same handler to the scrubber handle
-        this.handleEl.addEventListener('mousedown', this.mouseDownHandler);
+        //this.handleEl.addEventListener('mousedown', this.mouseDownHandler);
     }
 
     /**
-     * Checks if the mouse position is inside the range of the scrubber
+     * Resizes the scrubber on demand by reducing the size from container
      * 
-     * @private
-     * @param {object} rect The bounding client rectangle of the scrubber
-     * @param {number} pageX position of the mouse on the window
-     * @returns {boolean} is the mouse is within the horizontal range
+     * @public
+     * @param {number} offset the the value to reduce the scrubber length by
+     * @returns {void}
      */
-    mousePositionWithinScrubberRange(rect, pageX) {
-        return pageX >= rect.left && pageX <= rect.right;
+    resize(offset) {
+        this.scrubberWrapperEl.style.width = this.containerEl.clientWidth - offset + 'px';
+        this.adjustScrubberHandle();
     }
 
     /**
@@ -73,11 +68,7 @@ class Scrubber extends EventEmitter {
      * @param {number} value the the value to save
      * @returns {void}
      */
-    setScrubberValue(value) {
-        // Set the new scrubber value. However this value should be
-        //  no less than 0
-        //  no greater than the converted value
-        this.value = Math.max(Math.min(value, this.convertedValue), MIN_VALUE);
+    adjustScrubberHandle() {
 
         // When setting widths and lefts, take into account that the handle is round
         // and has its own width that needs to be accounted for.
@@ -86,16 +77,36 @@ class Scrubber extends EventEmitter {
         // all the way to the left of scrubber and additionally width / 2 so
         // that the scrubber center aligns at position 0 for the bar.
         // to
-        // all the way on the right minus its own width / 2.
-        // 
-        // The played values should ignore the handle width since we don't care about it.        
+        // all the way on the right minus its own width / 2.        
         
         let handleWidth = 16; // 16px from the CSS
-        let scrubberWidth = this.scrubberEl.getBoundingClientRect().width
-        let handlePosition = ((this.value * scrubberWidth) - (handleWidth / 2)) * 100 / scrubberWidth;
+        let scrubberWidth = this.scrubberEl.clientWidth;
+        let handlePosition = (this.value * scrubberWidth - (handleWidth / 2)) * 100 / scrubberWidth;
 
         this.handleEl.style.left = handlePosition + '%';
+    }
+
+    /**
+     * Sets the value of the scrubber handle position and moves the HTML it to this new position
+     * 
+     * @public
+     * @param {number} value the the value to save
+     * @returns {void}
+     */
+    setValue(value = MIN_VALUE) {
+
+        if (value === this.value) {
+            return;
+        }
+
+        // Set the new scrubber value. However this value should be
+        //  no less than 0
+        //  no greater than the converted value
+        this.value = Math.max(Math.min(value, this.convertedValue), MIN_VALUE);
+
+        // The played values should ignore the handle width since we don't care about it.        
         this.playedEl.style.width = this.value * 100 + '%';
+        this.adjustScrubberHandle();
         
         this.emit('scrub', this.value);
     }
@@ -107,12 +118,17 @@ class Scrubber extends EventEmitter {
      * @param {number} value the the value to save
      * @returns {void}
      */
-    setScrubberBufferedValue(value) {
+    setBufferedValue(value = MAX_VALUE) {
+        
+        if (value === this.bufferedValue) {
+            return;
+        }
+        
         // Set the new scrubber buffered value. However this value should be
         //  no more than 1
         //  no less than 0
         //  no less than the last buffered value
-        this.bufferedValue = Math.max(Math.min(Math.max(value, this.bufferedValue), this.convertedValue), MIN_VALUE);
+        this.bufferedValue = Math.max(Math.min(Math.max(value, this.bufferedValue || MAX_VALUE), this.convertedValue), MIN_VALUE);
         this.bufferedEl.style.width = this.bufferedValue * 100 + '%';
 
         this.emit('buffer', this.bufferedValue);
@@ -125,12 +141,17 @@ class Scrubber extends EventEmitter {
      * @param {number} value the the value to save
      * @returns {void}
      */
-    setScrubberConvertedValue(value) {
+    setConvertedValue(value = MAX_VALUE) {
+        
+        if (value === this.convertedValue) {
+            return;
+        }
+        
         // Set the new scrubber converted value. However this value should be
         //  no more than 1
         //  no less than 0
         //  no less than the last converted value
-        this.convertedValue = Math.max(Math.min(Math.max(value, this.convertedValue), MAX_VALUE), MIN_VALUE);
+        this.convertedValue = Math.max(Math.min(Math.max(value, this.convertedValue || MAX_VALUE), MAX_VALUE), MIN_VALUE);
         this.convertedEl.style.width = this.convertedValue * 100 + '%';
 
         this.emit('convert', this.convertedValue);
@@ -145,11 +166,11 @@ class Scrubber extends EventEmitter {
      */
     scrubbingHandler(event) {
         var rect = this.scrubberEl.getBoundingClientRect(),
-            pageX = event.pageX;
+            pageX = event.pageX,
+            newValue = (pageX - rect.left) / rect.width;
 
-        if (this.mouseDownOnScrubber && this.mousePositionWithinScrubberRange(rect, pageX)) {
-            this.setScrubberValue((pageX - rect.left) / rect.width);
-        }
+
+        this.setValue(Math.max(Math.min(newValue, MAX_VALUE), MIN_VALUE));
     }
 
     /**
@@ -165,7 +186,6 @@ class Scrubber extends EventEmitter {
         // If this is not a left click, then ignore
         // If this is a CTRL or CMD click, then ignore
         if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-            this.mouseDownOnScrubber = true;
             this.scrubbingHandler(event);
             // All events are attached to the document so that the user doesn't have to keep the mouse
             // over the scrubber bar and has wiggle room. If the wiggling causes the mouse to leave
@@ -186,11 +206,8 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     mouseUpHandler() {
-        this.mouseDownOnScrubber = false;
         this.scrubberWrapperEl.classList.remove('scrubber-hover');
-        document.removeEventListener('mouseup', this.mouseUpHandler);
-        document.removeEventListener('mouseleave', this.mouseUpHandler);
-        document.removeEventListener('mousemove', this.scrubbingHandler);
+        this.destroyDocumentHandlers();
     }
 
     /**
@@ -199,12 +216,9 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        document.removeEventListener('mousemove', this.scrubbingHandler);
-        document.removeEventListener('mouseup', this.mouseUpHandler);
-        document.removeEventListener('mouseleave', this.mouseUpHandler);
-        
+        this.destroyDocumentHandlers();
         this.convertedEl.removeEventListener('mousedown', this.mouseDownHandler);
-        this.handleEl.removeEventListener('mousedown', this.mouseDownHandler);
+        //this.handleEl.removeEventListener('mousedown', this.mouseDownHandler);
         
         this.containerEl.innerHTML = '';
         this.convertedEl = undefined;
@@ -214,6 +228,17 @@ class Scrubber extends EventEmitter {
         this.scrubberEl = undefined;
         this.scrubberWrapperEl = undefined;
         this.containerEl = undefined;
+    }
+
+    /**
+     * Cleanup method for the Class
+     * @public
+     * @returns {void}
+     */
+    destroyDocumentHandlers() {
+        document.removeEventListener('mousemove', this.scrubbingHandler);
+        document.removeEventListener('mouseup', this.mouseUpHandler);
+        document.removeEventListener('mouseleave', this.mouseUpHandler);
     }
 
     /**

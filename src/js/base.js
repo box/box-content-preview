@@ -5,8 +5,10 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
 import Controls from './controls';
+import debounce from 'lodash/function/debounce';
 
-const CLASS_FULLSCREEN = 'is-fullscreen';
+const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
+const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 const OPTIONS = {
     ui: true
 };
@@ -21,7 +23,7 @@ class Base extends EventEmitter {
      * [constructor]
      * @param {string|HTMLElement} event The mousemove event
      * @param {object} [options] some options
-     * @returns {Image}
+     * @returns {Base}
      */
     constructor(container, options) {
         super();
@@ -45,7 +47,18 @@ class Base extends EventEmitter {
         this.containerEl = container.firstElementChild;
         container.style.position = 'relative';
 
-        // Attach common full screen events
+        // Attach event listeners
+        this.addCommonListeners();
+    }
+
+    /**
+     * Adds common event listeners.
+     * 
+     * @private
+     * @returns {void}
+     */
+    addCommonListeners(container, options) {
+        // Attach common full screen event listeners
         fullscreen.on('enter', () => {
             this.containerEl.classList.add(CLASS_FULLSCREEN);
             this.emit('enterfullscreen');
@@ -55,6 +68,12 @@ class Base extends EventEmitter {
             this.containerEl.classList.remove(CLASS_FULLSCREEN);
             this.emit('exitfullscreen');
         });
+
+        // Add a resize handler for the window
+        document.defaultView.addEventListener('resize', debounce(() => {
+            this.resize();
+            this.emit('resize');
+        }, RESIZE_WAIT_TIME_IN_MILLIS));
     }
 
     /**
@@ -67,7 +86,18 @@ class Base extends EventEmitter {
     }
 
     /**
+     * Resizing logic
+     * 
+     * @private
+     * @returns {void}
+     */
+    resize() {
+        // overriden    
+    }
+
+    /**
      * Destroys the viewer
+     * 
      * @private
      * @returns {void}
      */

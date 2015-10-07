@@ -1,0 +1,103 @@
+@import 'scrubber.css';
+
+.box-preview-media-controls-wrapper.box-preview-media-controls-is-visible,
+.box-preview-media-controls-wrapper:hover,
+.box-preview-media-controls-wrapper:active,
+.box-preview-media-controls-wrapper:focus {
+    opacity: 1;
+}
+
+.box-preview-media-controls-wrapper {
+    width: 100%;
+    height: 60px;
+    bottom: 0;
+    transition: opacity 0.3s;
+    overflow: hidden;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.box-preview-media-time-scrubber-container {
+    position: relative;
+    height: 20px; /* same as scrubber height */
+}
+
+.box-preview-media-volume-scrubber-container {
+    position: relative;
+    height: 31px;
+    display: inline-block;
+    width: 80px;
+}
+
+.box-preview-media-controls-container {
+    margin: 0;
+    padding: 0 10px;
+    height: 40px;
+    text-align: left;
+}
+
+.box-preview-media-controls-label,
+.box-preview-media-controls-btn  {
+    cursor: pointer;
+    font-size: 12px;
+    height: 40px;
+    width: 45px;
+    margin: 0;
+    padding: 0;
+    outline: 0 none;
+    border: none;
+    font-weight: 400;
+    text-align: center;
+    background-color: transparent;
+    display: inline-block;
+    vertical-align: top;
+    color: #fff;
+}
+
+.box-preview-media-controls-volume-control .box-preview-media-controls-btn {
+    width: auto;
+}
+
+.box-preview-media-controls-label {
+    margin: 0 4px;
+    width: auto;
+    line-height: 40px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.box-preview-media-controls-volume-wrapper,
+.box-preview-media-controls-volume-control {
+    width: 45px;
+    height: 40px;
+    margin-right: 5px;
+    overflow: hidden;
+    display: inline-block;
+    transition: width 0.2s ease-in-out;
+}
+
+.box-preview-media-controls-volume-wrapper:hover,
+.box-preview-media-controls-volume-wrapper:focus,
+.box-preview-media-controls-volume-wrapper:active {
+    width: 150px;
+}
+
+.box-preview-media-expand-icon,
+.box-preview-media-controls-hd {
+    float: right;
+}
+
+.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-handle {
+    transform: scale(1);
+}
+
+.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-converted,
+.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-buffered,
+.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-played,
+.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-underlay {
+    transform: scaleY(1) !important;
+}

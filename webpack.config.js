@@ -24,7 +24,7 @@ module.exports = Object.keys(languages).map(function(language) {
             swf: js + '/swf/swf.js',
             text: js + '/text/text.js',
             markdown: js + '/text/markdown.js',
-            'media-controls': js + '/media/media-controls.js'
+            mp4: js + '/media/mp4.js'
         },
         output: {
             path: path.join(__dirname, 'dist/' + language),

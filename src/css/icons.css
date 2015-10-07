@@ -25,8 +25,8 @@
     /* end shalam */
 }
 
-.is-fullscreen .box-preview-image-expand-icon:before,
-.is-fullscreen .box-preview-media-expand-icon:before {
+.box-preview-is-fullscreen .box-preview-image-expand-icon:before,
+.box-preview-is-fullscreen .box-preview-media-expand-icon:before {
     -shalam-sprite: '../img/dark/collapse.png' dest-size(20px, 20px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -60px -40px;
