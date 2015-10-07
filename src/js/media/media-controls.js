@@ -27,11 +27,12 @@ class MediaControls extends EventEmitter  {
      * @param {HTMLElement} containerEl
      * @returns {Controls}
      */
-    constructor(containerEl) {
+    constructor(containerEl, mediaEl) {
 
         super();
 
         this.containerEl = containerEl;
+        this.mediaEl = mediaEl;
 
         let template = controlsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.containerEl.appendChild(document.createRange().createContextualFragment(template));
@@ -100,7 +101,8 @@ class MediaControls extends EventEmitter  {
      * @param {Number} time current playback position of the media file
      * @returns {void}
      */
-    setTimeCode(time, duration) {
+    setTimeCode(time) {
+        let duration = this.mediaEl.duration;
         this.timeScrubber.setValue(duration ? time / duration : 0);
         this.timecodeEl.textContent = this.formatTime(time || 0);
     }
@@ -214,6 +216,147 @@ class MediaControls extends EventEmitter  {
      */
     resizeTimeScrubber() {
         this.timeScrubber.resize(32);
+    }
+
+    /**
+     * Sets the filmstrip
+     * 
+     * @private
+     * @returns {void}
+     */
+    setFilmstrip() {
+        this.filmstripEl.src = this.filmstripUrl;
+    }
+
+    /**
+     * Sets up the filmstrip
+     * 
+     * @private
+     * @returns {void}
+     */
+    initFilmstrip(filmstripUrl) {
+
+        this.filmstripUrl = filmstripUrl;
+
+        this.filmstripContainerEl = this.containerEl.appendChild(document.createElement('div'));
+        this.filmstripContainerEl.className = 'box-preview-media-filmstrip-container';
+
+        this.filmstripEl = this.filmstripContainerEl.appendChild(document.createElement('img'));
+        this.filmstripEl.className = 'box-preview-media-filmstrip';
+
+        this.filmstripTimeEl = this.filmstripContainerEl.appendChild(document.createElement('div'));
+        this.filmstripTimeEl.className = 'box-preview-media-filmstrip-timecode';
+
+        
+        let frameWidth = 90 * this.aspect;
+
+        // Unfortunately the filmstrip is jpg. jpg files have a width limit.
+        // So ffmpeg ends up creating filmstrip elements in seperate rows.
+        // Each row is 90px high. Only 100 frames per row. Each frame is in the
+        // same aspect ratio as the original video.
+
+        this.timeScrubber.getHandleEl().addEventListener('mousedown', this.timeScrubbingStartHandler);
+        this.timeScrubber.getConvertedEl().addEventListener('mousemove', this.filmstripShowHandler);
+        this.timeScrubber.getConvertedEl().addEventListener('mouseleave', this.filmstripHideHandler);
+
+        this.filmstripEl.onload = () => {
+            this.filmstripContainerEl.style.width = frameWidth + 2 + 'px'; // 2px for the borders on each side
+        };
+
+        if (this.filmstripUrl) {
+            this.setFilmstrip();
+        }
+    }
+
+    /**
+     * Called when the user has mouse pressed the scrubbler handler
+     * @private
+     * @returns {void}
+     */
+    timeScrubbingStartHandler() {
+        // Flag that we are scrubbing
+        this.isScrubbing = true;
+
+        // Add event listener for the entire document that when mouse up happens
+        // anywhere, consider scrubbing has stopped. This is added on the document
+        // itself so that the user doesn't have to scrub in a straight line.
+        document.addEventListener('mouseup', this.timeScrubbingStopHandler);
+
+        // Likewise add a mouse move handler to the entire document so that when
+        // the user is scrubbing and they are randomly moving mouse anywhere on the
+        // document, we still continue to show the film strip
+        document.addEventListener('mousemove', this.filmstripShowHandler);
+    }
+
+    /**
+     * Adjusts the video time
+     * 
+     * @param {Event} event
+     * @private
+     * @returns {void}
+     */
+    timeScrubbingStopHandler(event) {
+        // Flag that scrubbing is done
+        this.isScrubbing = false;
+
+        // Remove any even listeners that were added when scrubbing started
+        document.removeEventListener('mouseup', this.timeScrubbingStopHandler);
+        document.removeEventListener('mousemove', this.filmstripShowHandler);
+
+        if (!this.timeScrubberEl.contains(event.target)) {
+            // Don't hide the film strip if we were hovering over the scrubber when
+            // mouse up happened. Since we show film strip on hover. On all other cases
+            // hide the film strip as scrubbing has stopped and no one is hovering over the scrubber.
+            this.filmstripContainerEl.style.display = 'none';
+        }
+    }
+
+    /**
+     * Shows the filmstrip frame
+     * 
+     * @private
+     * @param {Event} event
+     * @returns {void}
+     */
+    filmstripShowHandler(event) {
+        let rect = this.containerEl.getBoundingClientRect();
+        let pageX = event.pageX; // get the mouse X position
+        let time = (pageX - rect.left) * this.mediaEl.duration / rect.width; // given the mouse X position, get the relative time
+        let frame = Math.floor(time); // filmstrip has frames every 1sec, get the frame number to show
+        let frameWidth = this.filmstripEl.naturalWidth / 100; // calculate the frame width based on the filmstrip width with each row having 100 frames
+        let left = -1 * (frame % 100) * frameWidth; // there are 100 frames per row, get the frame position in a given row
+        let top = -90 * Math.floor((frame / 100)); // get the row number if there are more than 1 row. Each row is 90px high.
+
+        // If the filmstrip is not ready yet, we are using a placeholder
+        // which has a fixed dimension of 160 x 90
+        if (!this.filmstripUrl) {
+            left = 0;
+            top = 0;
+            frameWidth = 160;
+        }
+
+        // The filstrip container positioning should fall within the viewport of the video itself. Relative to the video it
+        // should be left positioned 0 <= filmstrip frame <= (video.width - filmstrip frame.width)
+        let minLeft = Math.max(0, pageX - rect.left - (frameWidth / 2)); // don't allow the image to bleed out of the video viewport left edge
+        let maxLeft = Math.min(minLeft, rect.width - frameWidth); // don't allow the image to bleed out of the video viewport right edge
+
+        this.filmstripEl.style.left = left + 'px';
+        this.filmstripEl.style.top = top + 'px';
+        this.filmstripContainerEl.style.display = 'block';
+        this.filmstripContainerEl.style.left = maxLeft + 'px';
+        this.filmstripTimeEl.textContent = this.formatTime(time);
+    }
+
+    /**
+     * Hides the filmstrip frame
+     * @private
+     * @returns {void}
+     */
+    filmstripHideHandler() {
+        if (!this.isScrubbing) {
+            // Don't hide the film strip when we are scrubbing
+            this.filmstripContainerEl.style.display = 'none';
+        }
     }
 }
 

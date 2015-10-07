@@ -88,7 +88,7 @@ class MediaBase extends Base {
      * @returns {void}
      */
     loadUI() {
-        this.mediaControls = new MediaControls(this.mediaContainerEl);
+        this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl);
         this.mediaControls.setDuration(this.mediaEl.duration);
         
         // Add event listeners for the media controls
@@ -141,7 +141,7 @@ class MediaBase extends Base {
      */
     addEventsListenersForMediaElement() {
         this.mediaEl.addEventListener('timeupdate', () => {
-            this.mediaControls.setTimeCode(this.mediaEl.currentTime, this.mediaEl.duration);
+            this.mediaControls.setTimeCode(this.mediaEl.currentTime);
         });
 
         this.mediaEl.addEventListener('volumechange', () => {

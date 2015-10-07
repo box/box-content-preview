@@ -39,8 +39,11 @@ class Dash extends VideoBase {
      * @pubic
      * @returns {Promise}
      */
-    load(mediaUrl) {
+    load(mediaUrl, filmstripUrl, posterUrl) {
+        
         this.mediaUrl = mediaUrl;
+        this.filmstripUrl = filmstripUrl;
+        this.posterUrl = posterUrl;
         
         return new Promise((resolve, reject) => {
             
@@ -50,17 +53,7 @@ class Dash extends VideoBase {
                 this.loadedmetadataHandler();
             });
 
-            this.player = new shaka.player.Player(this.mediaEl);
-
-            this.player.addEventListener('adaptation', this.adaptationHandler);
-            
-            this.player.enableAdaptation(true);
-
-            this.player.configure({
-                streamBufferSize: MAX_BUFFER
-            });
-
-            this.player.load(this.createDashSource());
+            this.loadDashPlayer();
 
             setTimeout(() => {
                 if (!this.loaded) {
@@ -68,6 +61,16 @@ class Dash extends VideoBase {
                 }
             }, MEDIA_LOAD_TIMEOUT_IN_MILLIS);
         });
+    }
+
+    loadDashPlayer() {
+        this.player = new shaka.player.Player(this.mediaEl);
+        this.player.addEventListener('adaptation', this.adaptationHandler);
+        this.player.enableAdaptation(true);
+        this.player.configure({
+            streamBufferSize: MAX_BUFFER
+        });
+        this.player.load(this.createDashSource());    
     }
 
     createEstimator() {
@@ -177,17 +180,6 @@ class Dash extends VideoBase {
     }
 
     /**
-     * Loads the controls
-     * 
-     * @private
-     * @returns {void}
-     */
-    loadUI() {
-        super.loadUI();
-        this.calculateVideoDimensions();
-    }
-
-    /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
      * 
@@ -200,7 +192,23 @@ class Dash extends VideoBase {
         this.mediaControls.on('togglehd', () => {
             this.hdHandler();
         }); 
-    }    
+    }
+
+    /**
+     * Loads the controls
+     * 
+     * @private
+     * @returns {void}
+     */
+    loadUI() {
+        super.loadUI();
+        this.calculateVideoDimensions();
+
+        if (this.options.sharedName) {
+            this.filmstripUrl = this.filmstripUrl + '?' + 'shared_name=' + this.options.sharedName;
+        }
+        this.mediaControls.initFilmstrip(this.filmstripUrl);
+    }
 }
 
 Box.Preview = Box.Preview || {};

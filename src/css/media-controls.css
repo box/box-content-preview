@@ -21,16 +21,10 @@
     background-image: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
-.box-preview-media-time-scrubber-container {
-    position: relative;
-    height: 20px; /* same as scrubber height */
-}
-
 .box-preview-media-volume-scrubber-container {
-    position: relative;
-    height: 31px;
     display: inline-block;
     width: 80px;
+    margin-bottom: 15px;
 }
 
 .box-preview-media-controls-container {
@@ -74,7 +68,6 @@
 .box-preview-media-controls-volume-control {
     width: 45px;
     height: 40px;
-    margin-right: 5px;
     overflow: hidden;
     display: inline-block;
     transition: width 0.2s ease-in-out;

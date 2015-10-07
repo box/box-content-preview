@@ -8,6 +8,7 @@ import scrubberTemplate from 'raw!../../html/media/scrubber.html';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 1;
+const CLASS_SCRUBBER_HOVER = 'box-preview-media-scrubber-hover';
 
 let document = global.document;
 
@@ -32,8 +33,18 @@ class Scrubber extends EventEmitter {
         this.containerEl = containerEl;
         
         this.containerEl.innerHTML = scrubberTemplate.replace('{{accessibilityText}}', accessibilityText).replace(/\>\s*\</g, '><'); // removing new lines
+        
+        // This container provides relative positioning. It also helps with adding hover states.
+        this.scrubberContainerEl = this.containerEl.querySelector('.box-preview-media-scrubber-container');
+        
+        // This wrapper is absolute positioned 50% to the right.
         this.scrubberWrapperEl = this.containerEl.querySelector('.box-preview-media-scrubber-wrapper');
+        
+        // The scrubber is relative positioned 50% to the left. Since its relative parent is
+        // positioned 50% right, it makes this element center aligned.
         this.scrubberEl = this.containerEl.querySelector('.box-preview-media-scrubber');
+        
+        // The actual bars
         this.bufferedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-buffered');
         this.convertedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-converted');
         this.playedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-played');
@@ -190,7 +201,7 @@ class Scrubber extends EventEmitter {
             document.addEventListener('mouseleave', this.mouseUpHandler);
             document.addEventListener('mousemove', this.scrubbingHandler);
 
-            this.scrubberWrapperEl.classList.add('scrubber-hover');
+            this.scrubberWrapperEl.classList.add(CLASS_SCRUBBER_HOVER);
             event.preventDefault();
         }
     }
@@ -202,7 +213,7 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     mouseUpHandler() {
-        this.scrubberWrapperEl.classList.remove('scrubber-hover');
+        this.scrubberWrapperEl.classList.remove(CLASS_SCRUBBER_HOVER);
         this.destroyDocumentHandlers();
     }
 
@@ -252,17 +263,17 @@ class Scrubber extends EventEmitter {
      * @public
      * @returns {HTMLElement} The dom element
      */
-    getScrubberHandleEl() {
+    getHandleEl() {
         return this.handleEl;
     }
-
+    
     /**
      * Returns the dom element for the scrubber conversion bar
      * 
      * @public
      * @returns {HTMLElement} The dom element
      */
-    getConvertedBarEl() {
+    getConvertedEl() {
         return this.convertedEl;
     }
 }
