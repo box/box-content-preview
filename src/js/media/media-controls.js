@@ -174,14 +174,20 @@ class MediaControls extends EventEmitter  {
 
     /**
      * Shows the media controls
+     *
+     * @public
+     * @param {boolean} [preventHiding] Prevents the controls from hiding
      * @returns {void}
      */
-    show() {
+    show(preventHiding = false) {
         this.wrapperEl.classList.add(SHOW_CONTROLS_CLASS);
-        clearTimeout(this.autoHideTimeout);
-        this.autoHideTimeout = setTimeout(() => {
-            this.hide();
-        }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
+
+        if (!preventHiding) {
+            clearTimeout(this.autoHideTimeout);
+            this.autoHideTimeout = setTimeout(() => {
+                this.hide();
+            }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
+        }
     }
 
     /**
