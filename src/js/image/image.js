@@ -1,6 +1,6 @@
 'use strict';
 
-import '../../css/image.css';
+import '../../css/image/image.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';

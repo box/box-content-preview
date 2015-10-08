@@ -1,6 +1,5 @@
 'use strict';
 
-import '../../css/scrubber.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';

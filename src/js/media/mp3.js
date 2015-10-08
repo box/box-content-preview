@@ -1,5 +1,6 @@
 'use strict';
 
+import '../../css/media/mp3.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import MediaBase from './media-base';
@@ -16,7 +17,7 @@ class MP3 extends MediaBase {
      * [constructor]
      * @param {string|HTMLElement} container The container DOM node
      * @param {object} [options] some options
-     * @returns {Image}
+     * @returns {MP3}
      */
     constructor(container, options) {
         super(container, options);

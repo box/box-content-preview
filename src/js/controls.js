@@ -2,7 +2,6 @@
 
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
-import util from './util';
 import throttle from 'lodash/function/throttle';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
@@ -63,7 +62,7 @@ class Controls {
                 this.resetTimeout();
             } else {
                 this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
-                if (util.closest(document.activeElement, PREVIEW_CONTROLS_SELECTOR)) {
+                if (this.controlsEl.contains(document.activeElement)) {
                     document.activeElement.blur(); // blur out any potential button focuses within preview controls
                 }
             }

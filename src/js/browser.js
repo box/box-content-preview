@@ -19,8 +19,6 @@ class Browser {
      * @returns {Image}
      */
     constructor() {
-        super();
-
         if (!singleton) {
             singleton = this;
         }
@@ -155,7 +153,7 @@ class Browser {
         try {
             hasFlash = Boolean(new ActiveXObject('ShockwaveFlash.ShockwaveFlash'));
         } catch (exception) {
-            hasFlash = ('undefined' != typeof navigator.mimeTypes['application/x-shockwave-flash']);
+            hasFlash = ('undefined' != typeof global.navigator.mimeTypes['application/x-shockwave-flash']);
         }
         return hasFlash;
     }
@@ -167,6 +165,6 @@ class Browser {
     hasSVG() {
         return document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
     }
-});
+}
 
 export default new Browser();

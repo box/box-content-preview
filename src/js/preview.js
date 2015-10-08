@@ -9,6 +9,15 @@ import fetch from 'isomorphic-fetch';
 import ImageLoader from './image/image-loader';
 import SwfLoader from './swf/swf-loader';
 import TextLoader from './text/text-loader';
+import MediaLoader from './media/media-loader';
+
+import {
+    audio as AUDIO_FORMATS,
+    video as VIDEO_FORMATS,
+    doc as DOC_FORMATS,
+    image as IMAGE_FORMATS,
+    text as TEXT_FORMATS
+} from './extensions';
 
 const PREFETCH_COUNT = 5;
 const CLASS_NAVIGATION_VISIBILITY = 'is-box-preview-navigation-visible';
@@ -281,20 +290,23 @@ class Preview {
         
         let loader;
 
-        switch (extension) {
-            case 'txt':
-                loader = TextLoader;
-                break;
-            case 'gif':
-            case 'tif':
-                loader = ImageLoader;
-                break;
-            case 'swf':
-                loader = SwfLoader;
-                break;
+        if (AUDIO_FORMATS.indexOf(extension) > -1 || VIDEO_FORMATS.indexOf(extension) > -1) {
+            return MediaLoader;
         }
 
-        return loader;
+        if (IMAGE_FORMATS.indexOf(extension) > -1) {
+            return ImageLoader;
+        }
+
+        if (TEXT_FORMATS.indexOf(extension) > -1) {
+            return TextLoader;
+        }
+
+        if (extension === 'swf') {
+            return SwfLoader;
+        }
+
+        throw 'Unkown loader';
     }
 
     /**

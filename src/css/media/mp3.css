@@ -1,0 +1,15 @@
+@import 'media.css';
+
+.box-preview-media-mp3 .box-preview-media-container {
+    width: 400px;
+    height: 60px; /* same as controls */
+}
+
+.box-preview-media-mp3 .box-preview-media-hd-icon,
+.box-preview-media-mp3 .box-preview-media-expand-icon {
+    display: none;
+}
+
+.box-preview-media-mp3 .box-preview-media-controls-wrapper {
+    background: #000;
+}

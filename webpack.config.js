@@ -67,6 +67,6 @@ module.exports = Object.keys(languages).map(function(language) {
             colors: true
         },
         
-        devtool: 'source-map'
+        devtool: 'inline-source-map'
     };
 });

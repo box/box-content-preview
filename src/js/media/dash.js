@@ -1,5 +1,6 @@
 'use strict';
 
+import '../../css/media/dash.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';

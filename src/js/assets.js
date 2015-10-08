@@ -13,6 +13,17 @@ const ASSETROOT = 'dist';
 class Assets {
 
     /**
+     * Converts a json object to query string
+     * @param {Object} obj Object to change to query string
+     * @returns {String} Query string
+     */
+    generateQueryString(obj) {
+        return '?' + Object.keys(obj).map((key) => {
+            return global.encodeURIComponent(key) + '=' + global.encodeURIComponent(obj[key]);
+        }).join('&');
+    }
+    
+    /**
      * Create <link> element to load external stylesheet
      * @param {string} url
      * @returns {HTMLElement}

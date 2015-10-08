@@ -31,44 +31,18 @@
 
         var id1 = '5011729897'; // gif
         var id2 = '5013326853'; // tiff
-        // var id3 = 'xvp78gltjz3v6gezgxh6';             // image
-        // var id4 = 'vr5ndxrfpkdm2z77vkgxxjr618g8z0yt'; // image
+        var id3 = '5011678769'; // mp4
+        var id4 = '5009226789'; // mp3
         var id5 = '5011623177'; // swf
         // var id6 = 'kixun1kow4aftorgp61g9ellpg6816az'; // js
         var id7 = '5011721289'; // txt
         //var id8 = 'cme92xyydd37sev270q9yhs82ba0ssbs'; // php
 
-        Box.Preview.show(id5, [id1, id2, id5, id7], '.container', {
+        Box.Preview.show(id3, [id1, id2, id3, id4, id5, id7], '.container', {
             host: 'https://app.phora.inside-box.net',
-            authToken: 'oQT62jB5mwz053cW9wspRpNyaZrUWtmB',
+            authToken: 'yySvhdp90iPkyjZHGKMUMQjT7bwqLQHI',
             locale: 'en-US'
-        }).then(function(viewer) {
-            
-            viewer.on('resize', function() {
-                console.error('resized');
-            });
-            
-            viewer.on('panstart', function() {
-                console.error('panstart');
-            });
-            
-            viewer.on('panend', function() {
-                console.error('panend');
-            });
-            
-            viewer.on('rotate', function() {
-                console.error('rotated');
-            });
-            
-            viewer.on('enterfullscreen', function() {
-                console.error('enterfullscreen');
-            });
-            
-            viewer.on('exitfullscreen', function() {
-                console.error('exitfullscreen');
-            });
         });
-
     </script>
 </body>
 </html>

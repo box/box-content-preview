@@ -1,5 +1,6 @@
 'use strict';
 
+import '../../css/media/mp4.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
@@ -15,7 +16,7 @@ class MP4 extends VideoBase {
      * [constructor]
      * @param {string|HTMLElement} container The container DOM node
      * @param {object} [options] some options
-     * @returns {Image}
+     * @returns {MP4}
      */
     constructor(container, options) {
         super(container, options);

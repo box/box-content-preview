@@ -1,0 +1,43 @@
+@import 'media.css';
+
+.box-preview-media.box-preview-media-dash {
+    background: #000;
+}
+
+.box-preview-media-dash video {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+}
+
+.box-preview-is-fullscreen .box-preview-media-dash .box-preview-media-container {
+    width: 100%;
+}
+
+.box-preview-media-filmstrip-container {
+    position: absolute;
+    height: 110px; /* 90px frame height + 20px for timecode */
+    width: 160px;
+    bottom: 60px;
+    left: 0;
+    overflow: hidden;
+    display: none;
+    border: 1px solid;
+}
+
+.box-preview-media-filmstrip {
+    position: relative;
+}
+
+.box-preview-media-filmstrip-timecode {
+    position: absolute;
+    z-index: 1;
+    color: #fff;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+    background-color: #1b1b1b;
+    font-size: 13px;
+    line-height: 1px;
+}
