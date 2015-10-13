@@ -41,9 +41,8 @@ class MediaLoader extends AssetLoader {
      * @returns {ImageLoader}
      */
     constructor() {
-        super();
-
         if (!singleton) {
+            super();
             this.dash = false; //browser.canPlayDash();
             singleton = this;
         }
@@ -75,12 +74,8 @@ class MediaLoader extends AssetLoader {
 
             let previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
 
-            let content = file.representations.content.replace('{representation}', viewer.TYPE);
-            content = content.replace('{asset}', representation.manifest);
-            content += this.generateQueryString(representation.properties);
-
             // Load the representations and return the instantiated previewer object
-            return previewer.load(content);
+            return previewer.load(this.generateContentUrl(file.representations.content, viewer.TYPE, representation.manifest, representation.properties, options));
 
         });
     }

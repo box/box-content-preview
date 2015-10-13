@@ -4,7 +4,7 @@ import '../../css/image/images.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
-import Base from './image-base';
+import ImageBase from './image-base';
 
 
 const CSS_CLASS_IMAGE = 'box-preview-images';
@@ -15,7 +15,7 @@ let document = global.document;
 let Box = global.Box || {};
 
 @autobind
-class Images extends Base {
+class Tiff extends ImageBase {
 
     /**
      * [constructor]
@@ -124,6 +124,6 @@ class Images extends Base {
 }
 
 Box.Preview = Box.Preview || {};
-Box.Preview.Images = Images;
+Box.Preview.Tiff = Tiff;
 global.Box = Box;
-export default Images;
+export default Tiff;

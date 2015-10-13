@@ -24,6 +24,21 @@ class Assets {
     }
     
     /**
+     * Converts a json object to query string
+     * @param {Object} obj Object to change to query string
+     * @returns {String} Query string
+     */
+    generateContentUrl(template, representation, manifest, properties, options) {
+        let contentUrl = options.host + template.replace('{representation}', representation);
+        contentUrl = contentUrl.replace('{asset}', manifest);
+        
+        properties.access_token = options.authToken;
+        let queryParams = this.generateQueryString(properties);
+        
+        return contentUrl + queryParams;
+    }
+    
+    /**
      * Create <link> element to load external stylesheet
      * @param {string} url
      * @returns {HTMLElement}

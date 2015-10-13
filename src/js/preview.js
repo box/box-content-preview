@@ -188,9 +188,7 @@ class Preview {
         // for cache being stale.
         if (checkStaleness) {
             fetch(this.createUrl(file.id), {
-                headers: {  
-                    'Authorization': 'Bearer ' + this.getAuthorizationToken()
-                }
+                headers: this.getRequestHeaders()
             }).then((response) => {
                 return response.json();
             }).then((file) => {
@@ -209,9 +207,7 @@ class Preview {
      */
     loadFromServer(id) {
         return fetch(this.createUrl(id), {
-            headers: {  
-                'Authorization': 'Bearer ' + this.getAuthorizationToken() 
-            }
+            headers: this.getRequestHeaders()
         }).then((response) => {
             return response.json();
         }).then((file) => {
@@ -235,6 +231,12 @@ class Preview {
 
     setAuthorizationToken(authToken) {
         this.options.authToken = authToken;
+    }
+
+    getRequestHeaders() {
+        return {  
+            'Authorization': 'Bearer ' + this.getAuthorizationToken()
+        }
     }
 
     /**
@@ -265,9 +267,7 @@ class Preview {
 
             // Pre-fetch the file information
             fetch(this.createUrl(nextId), {
-                headers: {  
-                    'Authorization': 'Bearer ' + this.getAuthorizationToken()
-                }
+                headers: this.getRequestHeaders()
             }).then((response) => {
                 return response.json();
             }).then((file) => {

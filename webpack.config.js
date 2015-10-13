@@ -20,9 +20,10 @@ module.exports = Object.keys(languages).map(function(language) {
         entry: {
             preview: js + '/preview.js',
             image: js + '/image/image.js',
-            images: js + '/image/images.js',
+            tiff: js + '/image/tiff.js',
             swf: js + '/swf/swf.js',
             text: js + '/text/text.js',
+            csv: js + '/text/csv.js',
             markdown: js + '/text/markdown.js',
             mp4: js + '/media/mp4.js',
             mp3: js + '/media/mp3.js',

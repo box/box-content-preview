@@ -1,0 +1,15 @@
+@import 'text.css';
+
+.box-preview-csv {
+    table-layout: fixed;
+}
+
+.box-preview-csv td {
+    border: 1px solid #ccc;
+    padding: 2px 4px;
+}
+
+.box-preview-csv th {
+    border: 1px solid #888;
+    padding: 2px 4px;
+}

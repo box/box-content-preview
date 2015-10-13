@@ -18,9 +18,8 @@ class SwfLoader extends AssetLoader {
      * @returns {ImageLoader}
      */
     constructor() {
-        super();
-
         if (!singleton) {
+            super();
             singleton = this;
         }
 

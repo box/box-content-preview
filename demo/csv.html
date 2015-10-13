@@ -5,8 +5,7 @@
     <title>Test</title>
     
     <link rel="stylesheet" type="text/css" href="dist/en-US/preview.css"></script>
-    <link rel="stylesheet" type="text/css" href="dist/en-US/text.css"></script>
-    <link rel="stylesheet" type="text/css" href="dist/en-US/github.css"></script>
+    <link rel="stylesheet" type="text/css" href="dist/en-US/csv.css"></script>
     
     <style>
         html, body {
@@ -27,13 +26,12 @@
 </head>
 <body>
     <div class='container'></div>
-    <script src="dist/en-US/highlight.js"></script>
-    <script src="dist/en-US/text.js"></script>
+    <script src="dist/en-US/csv.js"></script>
 
     <script>
-        var text = new Box.Preview.Text('.container');
+        var csv = new Box.Preview.CSV('.container');
 
-        text.load('https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/highlight.js').then(function() {
+        csv.load('https://raw.githubusercontent.com/derekeder/csv-to-html-table/master/data/fatty_acid_profiles.csv').then(function() {
             console.error('loaded');    
         });
     </script>

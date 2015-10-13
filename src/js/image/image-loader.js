@@ -6,14 +6,36 @@ import AssetLoader from '../assets';
 let singleton = null;
 let document = global.document;
 
-const STYLESHEETS = [
-    'image.css'
-];
-
-const SCRIPTS = [
-    'image.js',
-    'images.js'
-];
+const VIEWERS = {
+    png: {
+        TYPE: 'image',
+        EXTENSION: 'png',
+        SCRIPTS: [ 'image.js' ],
+        STYLESHEETS: [ 'image.css' ],
+        CONSTRUCTOR: 'Image'
+    },
+    jpg: {
+        TYPE: 'image',
+        EXTENSION: 'jpg',
+        SCRIPTS: [ 'image.js' ],
+        STYLESHEETS: [ 'image.css' ],
+        CONSTRUCTOR: 'Image'
+    },
+    gif: {
+        TYPE: 'original',
+        EXTENSION: 'gif',
+        SCRIPTS: [ 'image.js' ],
+        STYLESHEETS: [ 'image.css' ],
+        CONSTRUCTOR: 'Image'
+    },
+    tiff: {
+        TYPE: 'tiff',
+        EXTENSION: [ 'tif', 'tiff' ],
+        SCRIPTS: [ 'tiff.js' ],
+        STYLESHEETS: [ 'tiff.css' ],
+        CONSTRUCTOR: 'Tiff'
+    }
+};
 
 class ImageLoader extends AssetLoader {
 
@@ -22,9 +44,8 @@ class ImageLoader extends AssetLoader {
      * @returns {ImageLoader}
      */
     constructor() {
-        super();
-
         if (!singleton) {
+            super();
             singleton = this;
         }
 
@@ -35,7 +56,7 @@ class ImageLoader extends AssetLoader {
      * Loads the image previewer
      * 
      * @param {Object} file box file
-     * @param {string|HTMLElement} container where to load the preview
+     * @param {String|HTMLElement} container where to load the preview
      * @param {Object} [options] optional options
      * @return {Promise}
      */
@@ -44,11 +65,14 @@ class ImageLoader extends AssetLoader {
         // Create an asset path creator function depending upon the locale
         let assetPathCreator = this.createAssetUrl(options.locale);
 
+        // Determine the viewer to use
+        let [viewer, representation] = this.determineViewerAndRepresentation(file);
+
         // 1st load the stylesheets needed by this previewer
-        this.loadStylesheets(STYLESHEETS.map(assetPathCreator));
+        this.loadStylesheets(viewer.STYLESHEETS.map(assetPathCreator));
 
         // Load the scripts for this previewer
-        return this.loadScripts(SCRIPTS.map(assetPathCreator)).then(() => {
+        return this.loadScripts(viewer.SCRIPTS.map(assetPathCreator)).then(() => {
             switch (file.extension) {
                 case 'gif':
                     return this.loadGif(file, container, options);
@@ -58,6 +82,28 @@ class ImageLoader extends AssetLoader {
                     return this.loadPng(file, container, options);
             }
         });
+    }
+
+    /**
+     * Chooses a viewer
+     * 
+     * @param {Object} file box file
+     * @return {Array} the viewer to use and representation to load
+     */
+    determineViewerAndRepresentation(file) {
+        let viewer;
+
+        if (VIEWERS.tiff.EXTENSION.indexOf(file.extension) > -1) {
+            viewer = VIEWERS['tiff'];
+        } else {
+            viewer = VIEWERS['image'];
+        }
+
+        let representation = file.representations.entries.filter((entry) => {
+            return entry.type === viewer.TYPE && entry.properties.extension === viewer.EXTENSION;
+        });
+
+        return [ viewer, representation[0] ];
     }
 
     /**

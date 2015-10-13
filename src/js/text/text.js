@@ -1,6 +1,6 @@
 'use strict';
 
-import '../../css/text.css';
+import '../../css/text/text.css';
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
@@ -31,20 +31,13 @@ class PlainText extends Base {
     /**
      * Loads a swf object.
      * 
-     * @param {Object} file The text file to load
+     * @param {String} textUrl The text file to load
      * @public
      * @returns {Promise}
      */
-    load(file) {
+    load(textUrl) {
 
         return new Promise((resolve, reject) => {
-
-            if (file.content) {
-                // The content may have been prefetched,
-                // in that case, use it.
-                this.finishLoading(file.content, resolve);
-                return;
-            }
 
             fetch(textUrl).then((response) => {
                 return response.text();
@@ -82,6 +75,6 @@ class PlainText extends Base {
 }
 
 Box.Preview = Box.Preview || {};
-Box.Preview.PlainText = PlainText;
+Box.Preview.Text = PlainText;
 global.Box = Box;
 export default PlainText;
