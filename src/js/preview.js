@@ -6,22 +6,12 @@ import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
 import throttle from 'lodash/function/throttle';
 import fetch from 'isomorphic-fetch';
-import ImageLoader from './image/image-loader';
-import SwfLoader from './swf/swf-loader';
-import TextLoader from './text/text-loader';
-import MediaLoader from './media/media-loader';
-
-import {
-    audio as AUDIO_FORMATS,
-    video as VIDEO_FORMATS,
-    doc as DOC_FORMATS,
-    image as IMAGE_FORMATS,
-    text as TEXT_FORMATS
-} from './extensions';
+import browser from './browser';
+import loaders from './loaders';
 
 const PREFETCH_COUNT = 5;
-const CLASS_NAVIGATION_VISIBILITY = 'is-box-preview-navigation-visible';
-const CLASS_HIDDEN = 'is-hidden';
+const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
+const CLASS_HIDDEN = 'box-preview-is-hidden';
 const MOUSEMOVE_THROTTLE = 1500;
 
 let Box = global.Box || {};
@@ -222,7 +212,7 @@ class Preview {
      * @returns {Promise}
      */
     loadViewer() {
-        return this.getLoader(this.file.extension).load(this.file, this.container, this.options);
+        return this.getLoader().load(this.file, this.container, this.options);
     }
 
     getAuthorizationToken() {
@@ -235,7 +225,8 @@ class Preview {
 
     getRequestHeaders() {
         return {  
-            'Authorization': 'Bearer ' + this.getAuthorizationToken()
+            'Authorization': 'Bearer ' + this.getAuthorizationToken(),
+            'X-Rep-Hints': 'crocodoc|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (browser.canPlayDash() ? '|dash' : '')
         }
     }
 
@@ -286,24 +277,14 @@ class Preview {
      * Determines a loader
      * @returns {Object}
      */
-    getLoader(extension) {
+    getLoader() {
         
-        let loader;
+        let loader = loaders.find((loader) => {
+            return loader.canLoad(this.file);
+        });
 
-        if (AUDIO_FORMATS.indexOf(extension) > -1 || VIDEO_FORMATS.indexOf(extension) > -1) {
-            return MediaLoader;
-        }
-
-        if (IMAGE_FORMATS.indexOf(extension) > -1) {
-            return ImageLoader;
-        }
-
-        if (TEXT_FORMATS.indexOf(extension) > -1) {
-            return TextLoader;
-        }
-
-        if (extension === 'swf') {
-            return SwfLoader;
+        if (loader) {
+            return loader;
         }
 
         throw 'Unkown loader';
@@ -316,14 +297,14 @@ class Preview {
     showNavigation() {
         let left = document.createElement('div');
         let leftSpan = document.createElement('span');
-        left.className = 'box-preview-navigate box-preview-navigate-left is-hidden';
+        left.className = 'box-preview-navigate box-preview-navigate-left box-preview-is-hidden';
         leftSpan.className = 'box-preview-left-arrow';
         left.appendChild(leftSpan);
         left.addEventListener('click', this.navigateLeft);
 
         let right = document.createElement('div');
         let rightSpan = document.createElement('span');
-        right.className = 'box-preview-navigate box-preview-navigate-right is-hidden';
+        right.className = 'box-preview-navigate box-preview-navigate-right box-preview-is-hidden';
         rightSpan.className = 'box-preview-right-arrow';
         right.appendChild(rightSpan);
         right.addEventListener('click', this.navigateRight);

@@ -3,36 +3,32 @@
 import Promise from 'bluebird';
 import AssetLoader from '../assets';
 import browser from '../browser';
-import {
-    audio as AUDIO_FORMATS,
-    video as VIDEO_FORMATS
-} from '../extensions';
-
-let singleton = null;
 
 const VIEWERS = {
     dash: {
-        TYPE: 'video',
-        EXTENSION: 'mpd',
+        REPRESENTATION: 'dash',
         SCRIPTS: [ 'shaka-player.js', 'dash.js' ],
         STYLESHEETS: [ 'dash.css' ],
         CONSTRUCTOR: 'Dash'
     },
     mp3: {
-        TYPE: 'audio',
-        EXTENSION: 'mp3',
+        REPRESENTATION: 'mp3',
         SCRIPTS: [ 'mp3.js' ],
         STYLESHEETS: [ 'mp3.css' ],
         CONSTRUCTOR: 'MP3'
     },
     mp4: {
-        TYPE: 'video',
-        EXTENSION: 'mp4',
+        REPRESENTATION: 'mp4',
         SCRIPTS: [ 'mp4.js' ],
         STYLESHEETS: [ 'mp4.css' ],
         CONSTRUCTOR: 'MP4'
     }
 };
+
+const AUDIO_FORMATS = [ 'aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma' ];
+const VIDEO_FORMATS = [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv' ];
+
+let singleton = null;
 
 class MediaLoader extends AssetLoader {
 
@@ -48,6 +44,16 @@ class MediaLoader extends AssetLoader {
         }
 
         return singleton;
+    }
+
+    /**
+     * Determines if this loader can be used
+     * 
+     * @param {Object} file box file
+     * @return {Boolean}
+     */
+    canLoad(file) {
+        return AUDIO_FORMATS.indexOf(file.extension) > -1 || VIDEO_FORMATS.indexOf(file.extension) > -1;
     }
 
     /**
@@ -75,7 +81,7 @@ class MediaLoader extends AssetLoader {
             let previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
 
             // Load the representations and return the instantiated previewer object
-            return previewer.load(this.generateContentUrl(file.representations.content, viewer.TYPE, representation.manifest, representation.properties, options));
+            return previewer.load(this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options));
 
         });
     }
@@ -98,7 +104,7 @@ class MediaLoader extends AssetLoader {
         }
 
         let representation = file.representations.entries.filter((entry) => {
-            return entry.type === viewer.TYPE && entry.properties.extension === viewer.EXTENSION;
+            return entry.representation === viewer.REPRESENTATION;
         });
 
         return [ viewer, representation[0] ];

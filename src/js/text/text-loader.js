@@ -16,6 +16,9 @@ const SCRIPTS = [
     'text.js'
 ];
 
+const TEXT_FORMATS = [ 'as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'csv', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'java', 'js', 'less', 'm', 'make', 'md', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'txt', 'vi', 'vim', 'webdoc', 'yaml' ];
+
+
 class TextLoader extends AssetLoader {
 
     /**
@@ -29,6 +32,16 @@ class TextLoader extends AssetLoader {
         }
 
         return singleton;    
+    }
+
+    /**
+     * Determines if this loader can be used
+     * 
+     * @param {Object} file box file
+     * @return {Boolean}
+     */
+    canLoad(file) {
+        return TEXT_FORMATS.indexOf(file.extension) > -1;
     }
 
     /**

@@ -8,34 +8,34 @@ let document = global.document;
 
 const VIEWERS = {
     png: {
-        TYPE: 'image',
-        EXTENSION: 'png',
+        REPRESENTATION: 'png',
+        DIMENSIONS: '2048x2048',
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
     jpg: {
-        TYPE: 'image',
-        EXTENSION: 'jpg',
+        REPRESENTATION: 'jpg',
+        DIMENSIONS: '2048x2048',
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
     gif: {
-        TYPE: 'original',
-        EXTENSION: 'gif',
+        REPRESENTATION: 'original',
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
     tiff: {
-        TYPE: 'tiff',
-        EXTENSION: [ 'tif', 'tiff' ],
+        REPRESENTATION: 'tiff',
         SCRIPTS: [ 'tiff.js' ],
         STYLESHEETS: [ 'tiff.css' ],
         CONSTRUCTOR: 'Tiff'
     }
 };
+
+const IMAGE_FORMATS = [ 'ai', 'bmp', 'gif', 'eps', 'jpeg', 'jpg', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ];
 
 class ImageLoader extends AssetLoader {
 
@@ -50,6 +50,16 @@ class ImageLoader extends AssetLoader {
         }
 
         return singleton;    
+    }
+
+    /**
+     * Determines if this loader can be used
+     * 
+     * @param {Object} file box file
+     * @return {Boolean}
+     */
+    canLoad(file) {
+        return IMAGE_FORMATS.indexOf(file.extension) > -1;
     }
 
     /**
@@ -93,14 +103,14 @@ class ImageLoader extends AssetLoader {
     determineViewerAndRepresentation(file) {
         let viewer;
 
-        if (VIEWERS.tiff.EXTENSION.indexOf(file.extension) > -1) {
+        if (file.extension === 'tif' || file.extension === 'tiff') {
             viewer = VIEWERS['tiff'];
         } else {
             viewer = VIEWERS['image'];
         }
 
         let representation = file.representations.entries.filter((entry) => {
-            return entry.type === viewer.TYPE && entry.properties.extension === viewer.EXTENSION;
+            return entry.representation === viewer.REPRESENTATION && entry.properties.dimensions === viewer.DIMENSIONS;
         });
 
         return [ viewer, representation[0] ];

@@ -28,14 +28,9 @@ class Assets {
      * @param {Object} obj Object to change to query string
      * @returns {String} Query string
      */
-    generateContentUrl(template, representation, manifest, properties, options) {
-        let contentUrl = options.host + template.replace('{representation}', representation);
-        contentUrl = contentUrl.replace('{asset}', manifest);
-        
+    generateContentUrl(baseUrl, contentPath, properties, options) {
         properties.access_token = options.authToken;
-        let queryParams = this.generateQueryString(properties);
-        
-        return contentUrl + queryParams;
+        return options.host + baseUrl + contentPath + this.generateQueryString(properties);
     }
     
     /**

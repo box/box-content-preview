@@ -27,6 +27,16 @@ class SwfLoader extends AssetLoader {
     }
 
     /**
+     * Determines if this loader can be used
+     * 
+     * @param {Object} file box file
+     * @return {Boolean}
+     */
+    canLoad(file) {
+        return file.extension === 'swf';
+    }
+
+    /**
      * Loads the image previewer
      * 
      * @param {Object} file box file

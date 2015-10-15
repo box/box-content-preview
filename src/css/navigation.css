@@ -25,7 +25,7 @@
     transition-property: opacity;
 }
 
-.is-box-preview-navigation-visible .box-preview-navigate {
+.box-preview-is-navigation-visible .box-preview-navigate {
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
     opacity: 0.6;
 }

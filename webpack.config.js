@@ -24,6 +24,8 @@ module.exports = Object.keys(languages).map(function(language) {
             swf: js + '/swf/swf.js',
             text: js + '/text/text.js',
             csv: js + '/text/csv.js',
+            crocodoc: js + '/doc/crocodoc.js',
+            pdf: js + '/doc/pdf.js',
             markdown: js + '/text/markdown.js',
             mp4: js + '/media/mp4.js',
             mp3: js + '/media/mp3.js',
