@@ -1,6 +1,5 @@
 _site
 node_modules
-doc
 *.swp
 *.iml
 .idea
