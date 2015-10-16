@@ -1,7 +1,7 @@
 #!/bin/bash
 
 declare KIND="content-experience-assets"
-declare VERSION="0.2"
+declare VERSION=$(./build/current_version.sh)
 declare installDir="/box/www/content-experience-assets"
 declare rpmDir="/tmp"
 # DM looks specifically for artifacts with filenames of the following form:
@@ -27,11 +27,6 @@ mavenPassword=$(grep '^password=' $credentialsFile | sed 's/^password=//')
 shopt -s dotglob
 
 [ -e "$KIND-$VERSION" ] || ln -s . "$KIND-$VERSION" # For the rpm prefix
-
-#build
-rm -rf node_modules
-npm install
-npm run build
 
 # Tar all non-hidden files and directories
 mv dist $VERSION
