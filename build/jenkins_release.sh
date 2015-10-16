@@ -11,13 +11,13 @@ increment_version_and_push() {
 
 	release_version=$(./build/current_version.sh)
 
-	if git push origin master; then
+	if git push origin master --tags; then
     echo "----------------------------------------------------"
-		echo "Pushed version " $release_version " to git successfully"
+		echo "Pushed version" $release_version "to git successfully"
     echo "----------------------------------------------------"
 	else
     echo "----------------------------------------------------"
-		echo "Error while pushing version " $release_version " to git"
+		echo "Error while pushing version" $release_version "to git"
     echo "----------------------------------------------------"
 		exit 1
 	fi
