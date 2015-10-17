@@ -62,9 +62,9 @@ class Controls {
                 this.resetTimeout();
             } else {
                 this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
-                if (this.controlsEl.contains(document.activeElement)) {
-                    document.activeElement.blur(); // blur out any potential button focuses within preview controls
-                }
+                // if (this.controlsEl.contains(document.activeElement)) {
+                //     document.activeElement.blur(); // blur out any potential button focuses within preview controls
+                // }
             }
 
         }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);

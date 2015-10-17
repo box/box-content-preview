@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var I18nPlugin = require('i18n-webpack-plugin');
+var exec = require('child_process').exec;
 
 var js = path.join(__dirname, 'src/js');
 var i18n = path.join(__dirname, 'src/i18n/json');
@@ -15,7 +16,35 @@ var languages = {
     'ja-JP': require(i18n + '/ja-JP.json')
 };
 
-module.exports = Object.keys(languages).map(function(language) {
+// Check if webpack was run with a production flag that signifies a release build
+var isRelease = process.env.BUILD_PROD === '1';
+
+// If this is not a release build don't bother building for multiple locales
+var languagesArray = isRelease ? Object.keys(languages) : [ 'en-US' ];
+
+// Rsync plugin that copies things from the dist folder to our dev machine
+function RsyncPlugin() {}
+RsyncPlugin.prototype.apply = function(compiler) {
+    compiler.plugin('done', function() {
+        exec('./build/push_to_dev.sh');
+    });
+};
+
+module.exports = languagesArray.map(function(language, index) {
+
+    // List of plugins used for building our bundles
+    var plugins = [
+        new webpack.NoErrorsPlugin(),
+        new ExtractTextPlugin('[Name].css', { allChunks: true }),
+        new I18nPlugin(languages[language])
+    ];
+
+    // If this is not a release build, add the Rsync plugin for local
+    // development where copying to dev VM is needed.
+    if (!isRelease) {
+        plugins.push(new RsyncPlugin());
+    }
+
     return {
         entry: {
             preview: js + '/preview.js',
@@ -56,16 +85,7 @@ module.exports = Object.keys(languages).map(function(language) {
                 }
             ]
         },
-        plugins: [
-            new webpack.NoErrorsPlugin(),
-            new ExtractTextPlugin('[Name].css', {
-                allChunks: true
-            }),
-            new I18nPlugin(languages[language])
-            // new webpack.optimize.UglifyJsPlugin({
-            //     minimize: true
-            // })
-        ],
+        plugins: plugins,
         stats: {
             colors: true
         },

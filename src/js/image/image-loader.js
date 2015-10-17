@@ -8,27 +8,25 @@ let document = global.document;
 
 const VIEWERS = {
     png: {
-        REPRESENTATION: 'png',
         DIMENSIONS: '2048x2048',
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
     jpg: {
-        REPRESENTATION: 'jpg',
         DIMENSIONS: '2048x2048',
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
-    gif: {
-        REPRESENTATION: 'original',
+    original: {
+        EXTENSIONS: [ 'gif' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
     tiff: {
-        REPRESENTATION: 'tiff',
+        EXTENSIONS: [ 'tif', 'tiff' ],
         SCRIPTS: [ 'tiff.js' ],
         STYLESHEETS: [ 'tiff.css' ],
         CONSTRUCTOR: 'Tiff'
@@ -83,14 +81,11 @@ class ImageLoader extends AssetLoader {
 
         // Load the scripts for this previewer
         return this.loadScripts(viewer.SCRIPTS.map(assetPathCreator)).then(() => {
-            switch (file.extension) {
-                case 'gif':
-                    return this.loadGif(file, container, options);
-                case 'tif':
-                    return this.loadTiff(file, container, options);
-                default:
-                    return this.loadPng(file, container, options);
-            }
+            
+            let previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
+
+            // Load the representations and return the instantiated previewer object
+            return previewer.load(this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options));
         });
     }
 
@@ -101,19 +96,29 @@ class ImageLoader extends AssetLoader {
      * @return {Array} the viewer to use and representation to load
      */
     determineViewerAndRepresentation(file) {
-        let viewer;
+        let viewer, representation;
 
-        if (file.extension === 'tif' || file.extension === 'tiff') {
-            viewer = VIEWERS['tiff'];
-        } else {
-            viewer = VIEWERS['image'];
+        // 1st try an extension and representation match. This is needed
+        // for special cases like gifs and tiffs.
+        representation = file.representations.entries.filter((entry) => {
+            let viewer = VIEWERS[entry.representation];
+            return typeof viewer === 'object' && viewer.EXTENSIONS && viewer.EXTENSIONS.indexOf(file.extension) > -1;
+        })[0];
+
+        // If we found a matching representation, use that viewer.
+        // Otherwise this time try without an extension.
+        if (!representation) {
+            representation = file.representations.entries.filter((entry) => {
+                let viewer = VIEWERS[entry.representation];
+                return typeof viewer === 'object';
+            })[0];
         }
 
-        let representation = file.representations.entries.filter((entry) => {
-            return entry.representation === viewer.REPRESENTATION && entry.properties.dimensions === viewer.DIMENSIONS;
-        });
+        if (representation) {
+            return [ VIEWERS[representation.representation], representation ];
+        }
 
-        return [ viewer, representation[0] ];
+        throw 'No matching representation found';
     }
 
     /**

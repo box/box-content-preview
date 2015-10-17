@@ -38,13 +38,13 @@ build_assets() {
     exit 1;
   fi
 
-	if npm run build; then
+	if npm run release; then
     echo "----------------------------------------------------"
-		echo "Built assets"
+		echo "Built release assets"
     echo "----------------------------------------------------"
 	else
     echo "----------------------------------------------------"
-		echo "Failed to build assets!"
+		echo "Failed to build release assets!"
     echo "----------------------------------------------------"
 		exit 1;
 	fi
