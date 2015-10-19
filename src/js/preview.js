@@ -237,10 +237,13 @@ class Preview {
     prefetch() {
 
         let currentIndex = this.files.indexOf(this.file.id);
+        let count = 0;
         
         // Starting with the next file, prefetch specific numbers of files.
-        for (let i = currentIndex + 1; i < PREFETCH_COUNT; i++) {
+        for (let i = currentIndex + 1; count < PREFETCH_COUNT && i < this.files.length; i++) {
 
+            count++;
+            
             let nextId = this.files[i];
 
             // If no file id left to prefetch then exit

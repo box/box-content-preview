@@ -6,7 +6,7 @@ remoteroot="${USER}@${USER}.dev.box.net:/box/www/assets/content-experience"
 # The local root where remote Box VM files will be synchronized into.
 localroot='./dist'
 
-rsync -v -avz --delete --exclude='.*' "${localroot}/." "${remoteroot}/."
+rsync -avz --delete --exclude='.*' "${localroot}/." "${remoteroot}/."
 if test $? -ne 0 ; then
     echo "Folder sync failed"
     echo ""

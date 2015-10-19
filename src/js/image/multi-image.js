@@ -15,7 +15,7 @@ let document = global.document;
 let Box = global.Box || {};
 
 @autobind
-class Tiff extends ImageBase {
+class MultiImage extends ImageBase {
 
     /**
      * [constructor]
@@ -124,6 +124,6 @@ class Tiff extends ImageBase {
 }
 
 Box.Preview = Box.Preview || {};
-Box.Preview.Tiff = Tiff;
+Box.Preview.MultiImage = MultiImage;
 global.Box = Box;
-export default Tiff;
+export default MultiImage;

@@ -49,7 +49,7 @@ module.exports = languagesArray.map(function(language, index) {
         entry: {
             preview: js + '/preview.js',
             image: js + '/image/image.js',
-            tiff: js + '/image/tiff.js',
+            'multi-image': js + '/image/multi-image.js',
             swf: js + '/swf/swf.js',
             text: js + '/text/text.js',
             csv: js + '/text/csv.js',

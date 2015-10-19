@@ -6,34 +6,36 @@ import AssetLoader from '../assets';
 let singleton = null;
 let document = global.document;
 
-const VIEWERS = {
-    png: {
-        DIMENSIONS: '2048x2048',
+const VIEWERS = [
+    {
+        REPRESENTATION: 'png',
+        EXTENSIONS: [ 'ai', 'bmp', 'eps', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
-    jpg: {
-        DIMENSIONS: '2048x2048',
+    {
+        REPRESENTATION: 'jpg',
+        EXTENSIONS: [ 'jpeg', 'jpg' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
-    original: {
+    {
+        REPRESENTATION: 'original',
         EXTENSIONS: [ 'gif' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
     },
-    tiff: {
+    {
+        REPRESENTATION: '???',
         EXTENSIONS: [ 'tif', 'tiff' ],
-        SCRIPTS: [ 'tiff.js' ],
-        STYLESHEETS: [ 'tiff.css' ],
-        CONSTRUCTOR: 'Tiff'
+        SCRIPTS: [ 'multi-image.js' ],
+        STYLESHEETS: [ 'multi-image.css' ],
+        CONSTRUCTOR: 'MultiImage'
     }
-};
-
-const IMAGE_FORMATS = [ 'ai', 'bmp', 'gif', 'eps', 'jpeg', 'jpg', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ];
+];
 
 class ImageLoader extends AssetLoader {
 
@@ -57,7 +59,7 @@ class ImageLoader extends AssetLoader {
      * @return {Boolean}
      */
     canLoad(file) {
-        return IMAGE_FORMATS.indexOf(file.extension) > -1;
+        return !!this.determineViewer(file);
     }
 
     /**
@@ -74,7 +76,10 @@ class ImageLoader extends AssetLoader {
         let assetPathCreator = this.createAssetUrl(options.locale);
 
         // Determine the viewer to use
-        let [viewer, representation] = this.determineViewerAndRepresentation(file);
+        let viewer = this.determineViewer(file);
+
+        // Determine the representation to use
+        let representation = this.determineRepresentation(file, viewer);
 
         // 1st load the stylesheets needed by this previewer
         this.loadStylesheets(viewer.STYLESHEETS.map(assetPathCreator));
@@ -90,80 +95,32 @@ class ImageLoader extends AssetLoader {
     }
 
     /**
-     * Chooses a viewer
+     * Chooses a viewer based on file extension.
      * 
      * @param {Object} file box file
-     * @return {Array} the viewer to use and representation to load
+     * @return {Object} the viewer to use
      */
-    determineViewerAndRepresentation(file) {
-        let viewer, representation;
-
-        // 1st try an extension and representation match. This is needed
-        // for special cases like gifs and tiffs.
-        representation = file.representations.entries.filter((entry) => {
-            let viewer = VIEWERS[entry.representation];
-            return typeof viewer === 'object' && viewer.EXTENSIONS && viewer.EXTENSIONS.indexOf(file.extension) > -1;
-        })[0];
-
-        // If we found a matching representation, use that viewer.
-        // Otherwise this time try without an extension.
-        if (!representation) {
-            representation = file.representations.entries.filter((entry) => {
-                let viewer = VIEWERS[entry.representation];
-                return typeof viewer === 'object';
-            })[0];
-        }
-
-        if (representation) {
-            return [ VIEWERS[representation.representation], representation ];
-        }
-
-        throw 'No matching representation found';
+    determineViewer(file) {
+        return VIEWERS.find((viewer) => {
+            return viewer.EXTENSIONS.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => {
+                return viewer.REPRESENTATION === entry.representation;
+            });
+        });
     }
 
     /**
-     * Loads the gif previewer
+     * Chooses a representation. Assumes that there will be only
+     * one specific representation. In other words we will not have
+     * two png representation entries with different properties.
      * 
      * @param {Object} file box file
-     * @param {string|HTMLElement} container where to load the preview
-     * @param {Object} [options] optional options
-     * @return {Promise}
+     * @param {Object} viewer the chosen viewer
+     * @return {Object} the representation to load
      */
-    loadGif(file, container, options) {
-        let previewer = new Box.Preview.Image(container, options);
-        return previewer.load(file.download_url);   
-    }
-
-    /**
-     * Loads the tiff previewer
-     * 
-     * @param {Object} file box file
-     * @param {string|HTMLElement} container where to load the preview
-     * @param {Object} [options] optional options
-     * @return {Promise}
-     */
-    loadTiff(file, container, options) {
-        // Fully qualify the representation URLs
-        let representations = file.representations.map(this.createRepresentationUrl(options.host));
-
-        let previewer = new Box.Preview.Image(container, options);
-        return previewer.load(file.download_url);   
-    }
-
-    /**
-     * Loads the png previewer
-     * 
-     * @param {Object} file box file
-     * @param {string|HTMLElement} container where to load the preview
-     * @param {Object} [options] optional options
-     * @return {Promise}
-     */
-    loadPng(file, container, options) {
-        // Fully qualify the representation URLs
-        let representations = file.representations.map(this.createRepresentationUrl(options.host));
-
-        let previewer = new Box.Preview.Image(container, options);
-        return previewer.load(file.download_url);   
+    determineRepresentation(file, viewer) {
+        return file.representations.entries.find((entry) => {
+            return viewer.REPRESENTATION === entry.representation;
+        });
     }
 
     /**
@@ -178,13 +135,14 @@ class ImageLoader extends AssetLoader {
         // Create an asset path creator function depending upon the locale
         let assetPathCreator = this.createAssetUrl(options.locale);
 
-        // Fully qualify the representation URLs
-        let representations = file.representations.map(this.createRepresentationUrl(options.host));
+        // Determine the viewer to use
+        let viewer = this.determineViewer(file);
 
-        representations.forEach((representation) => {
-            let img = document.createElement('img');
-            img.src = representation;
-        });
+        // Determine the representation to use
+        let representation = this.determineRepresentation(file, viewer);
+
+        let img = document.createElement('img');
+        img.src = this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options);
     }
 }
 

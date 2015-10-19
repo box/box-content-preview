@@ -35,7 +35,7 @@
             token = token || window.localStorage.getItem('token');
             window.localStorage.setItem('token', token);
 
-            var id1 = '5011729897'; // gif
+            // var id1 = '5011729897'; // gif
             var id2 = '5013326853'; // tiff
             var id3 = '5011678769'; // mp4
             var id4 = '5009226789'; // mp3
@@ -44,9 +44,10 @@
             var id7 = '5011721289'; // txt
             //var id8 = 'cme92xyydd37sev270q9yhs82ba0ssbs'; // php
             var id9 = '5010393889'; // png
-            var id10 = '5009225077'; // jpg
+            var id10 = '5011729897'; // gif
+            var id11 = '5009225077'; // jpg
 
-            Box.Preview.show(id10, [id1, id2, id3, id4, id5, id7, id9, id10], '.container', {
+            Box.Preview.show(id9, [id2, id3, id4, id5, id7, id9, id10, id11], '.container', {
                 host: 'https://app.phora.inside-box.net',
                 authToken: token,
                 locale: 'en-US'
