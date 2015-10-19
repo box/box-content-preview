@@ -64,6 +64,7 @@ class MarkDown extends Base {
     }
 }
 
-Box.Preview = Box.Preview || { MarkDown: MarkDown };
+Box.Preview = Box.Preview || {};
+Box.Preview.MarkDown = MarkDown;
 global.Box = Box;
-export default Box.Preview.MarkDown;
+export default MarkDown;

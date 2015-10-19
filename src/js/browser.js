@@ -108,6 +108,7 @@ class Browser {
      * @returns {Boolean} true if dash is usable
      */
     canPlayDash() {
+        return false;
         let mse = global.MediaSource;
         if (mse) {
             if (typeof mse.isTypeSupported === 'function') {

@@ -29,7 +29,7 @@ const VIEWERS = [
         CONSTRUCTOR: 'Image'
     },
     {
-        REPRESENTATION: '???',
+        REPRESENTATION: 'multi-image',
         EXTENSIONS: [ 'tif', 'tiff' ],
         SCRIPTS: [ 'multi-image.js' ],
         STYLESHEETS: [ 'multi-image.css' ],
@@ -131,7 +131,6 @@ class ImageLoader extends AssetLoader {
      * @return {Promise}
      */
     prefetch(file, options) {
-
         // Create an asset path creator function depending upon the locale
         let assetPathCreator = this.createAssetUrl(options.locale);
 

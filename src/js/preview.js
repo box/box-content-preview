@@ -226,7 +226,7 @@ class Preview {
     getRequestHeaders() {
         return {  
             'Authorization': 'Bearer ' + this.getAuthorizationToken(),
-            'X-Rep-Hints': 'crocodoc|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (browser.canPlayDash() ? '|dash' : '')
+            'X-Rep-Hints': 'crocodoc|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (browser.canPlayDash() ? '|dash|filmstrip' : '|mp4')
         }
     }
 
@@ -243,7 +243,7 @@ class Preview {
         for (let i = currentIndex + 1; count < PREFETCH_COUNT && i < this.files.length; i++) {
 
             count++;
-            
+
             let nextId = this.files[i];
 
             // If no file id left to prefetch then exit
@@ -271,7 +271,10 @@ class Preview {
 
                 // Pre-fetch content if applicable so that the
                 // browser caches the content
-                this.getLoader(file.extension).prefetch(file, this.options);
+                let loader = this.getLoader(file.extension)
+                if (typeof loader.prefetch === 'function') {
+                    loader.prefetch(file, this.options);
+                }
             });
         }        
     }
