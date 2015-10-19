@@ -7,10 +7,10 @@ declare rpmDir="/tmp"
 # DM looks specifically for artifacts with filenames of the following form:
 declare rpm="$KIND-$VERSION.noarch.rpm"
 declare snapshotsOrReleases=
-    case "${VERSION##*-}" in
-        SNAPSHOT) snapshotsOrReleases="snapshots" ;;
-        *) snapshotsOrReleases="releases" ;;
-    esac
+case "${VERSION##*-}" in
+  SNAPSHOT) snapshotsOrReleases="snapshots" ;;
+  *) snapshotsOrReleases="releases" ;;
+esac
 
 declare MAVEN="maven-vip.dev.box.net"
 declare MAVEN_PORT="8150"
