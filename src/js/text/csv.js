@@ -69,7 +69,7 @@ class CSV extends Base {
         this.csvEl.appendChild(table);
         
         // Split based on new lines
-        var rows = data.split('\n');
+        var rows = data.split(/[\r\n]/);
 
         rows.forEach(function(row, index) {
             
