@@ -1,6 +1,5 @@
 'use strict';
 
-import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 
 const MIME_H264_BASELINE = 'video/mp4; codecs="avc1.42E01E"';

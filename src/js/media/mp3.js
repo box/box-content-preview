@@ -1,7 +1,6 @@
 'use strict';
 
 import '../../css/media/mp3.css';
-import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import MediaBase from './media-base';
 

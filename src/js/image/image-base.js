@@ -1,6 +1,5 @@
 'use strict';
 
-import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Controls from '../controls';
 import Base from '../base';

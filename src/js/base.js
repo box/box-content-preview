@@ -1,6 +1,5 @@
 'use strict';
 
-import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';

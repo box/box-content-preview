@@ -1,7 +1,6 @@
 'use strict';
 
 import '../css/preview.css';
-import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
 import throttle from 'lodash/function/throttle';
