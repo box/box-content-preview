@@ -21,7 +21,7 @@ Run
 ---
 * There is a small barebone express server that can be run as `node server.js`
 * Once the server is running visit http://localhost:9898/ which serves a demo page `demo/index.html`
-* Grab an auth token from https://app.<yourdomain>.inside-box.net/developers/services by creating a dummy box application for yourself and use this token on the demo page. Press the load button. You only need to enter the auth token once every hour, pressing the load button should use a prior entered token.
+* Grab an auth token from `https://app.<yourdomain>.inside-box.net/developers/services` by creating a dummy box application for yourself and use this token on the demo page. Press the load button. You only need to enter the auth token once every hour, pressing the load button should use a prior entered token.
 
 In this demo `index.html` file you will see how preview.js is used:
 
