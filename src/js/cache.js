@@ -3,8 +3,6 @@
 import 'core-js/modules/es6.reflect';
 import autobind from 'autobind-decorator';
 
-let singleton = null; 
-
 @autobind
 class Cache {
 
@@ -13,12 +11,7 @@ class Cache {
      * @returns {Cache}
      */
     constructor() {
-        if (!singleton) {
-            this.cache = {};
-            singleton = this;
-        }
-
-        return singleton;
+        this.cache = {};
     }
 
     /**

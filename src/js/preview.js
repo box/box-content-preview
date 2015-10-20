@@ -6,7 +6,7 @@ import autobind from 'autobind-decorator';
 import Promise from 'bluebird';
 import throttle from 'lodash/function/throttle';
 import fetch from 'isomorphic-fetch';
-import browser from './browser';
+import Browser from './browser';
 import loaders from './loaders';
 
 const PREFETCH_COUNT = 5;
@@ -16,7 +16,6 @@ const MOUSEMOVE_THROTTLE = 1500;
 
 let Box = global.Box || {};
 let location = global.location;
-let singleton = null;
 
 @autobind
 class Preview {
@@ -26,17 +25,11 @@ class Preview {
      * @returns {Preview}
      */
     constructor() {
-        if (!singleton) {
-            // Only allow 1 instance of Preview
-            singleton = this;
+        // Preview cache, stores bunch of file data
+        this.cache = {};
 
-            // Preview cache, stores bunch of file data
-            this.cache = {};
-
-            // Current file being shown
-            this.file = {};
-        }
-        return singleton;
+        // Current file being shown
+        this.file = {};
     }
 
     /**
@@ -212,7 +205,7 @@ class Preview {
      * @returns {Promise}
      */
     loadViewer() {
-        return this.getLoader().load(this.file, this.container, this.options);
+        return this.getLoader(this.file).load(this.file, this.container, this.options);
     }
 
     getAuthorizationToken() {
@@ -226,7 +219,7 @@ class Preview {
     getRequestHeaders() {
         return {  
             'Authorization': 'Bearer ' + this.getAuthorizationToken(),
-            'X-Rep-Hints': 'crocodoc|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (browser.canPlayDash() ? '|dash|filmstrip' : '|mp4')
+            'X-Rep-Hints': 'crocodoc|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (Browser.canPlayDash() ? '|dash|filmstrip' : '|mp4')
         }
     }
 
@@ -270,8 +263,8 @@ class Preview {
                 this.cache[nextId] = file;
 
                 // Pre-fetch content if applicable so that the
-                // browser caches the content
-                let loader = this.getLoader(file.extension)
+                // Browser caches the content
+                let loader = this.getLoader(file)
                 if (typeof loader.prefetch === 'function') {
                     loader.prefetch(file, this.options);
                 }
@@ -281,12 +274,13 @@ class Preview {
 
     /**
      * Determines a loader
+     * @param {Object} file File to preview
      * @returns {Object}
      */
-    getLoader() {
+    getLoader(file) {
         
         let loader = loaders.find((loader) => {
-            return loader.canLoad(this.file);
+            return loader.canLoad(file);
         });
 
         if (loader) {

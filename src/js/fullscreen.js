@@ -5,7 +5,6 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 
 let document = global.document;
-let singleton = null; 
 
 @autobind
 class Fullscreen extends EventEmitter {
@@ -18,16 +17,10 @@ class Fullscreen extends EventEmitter {
     constructor() {
         super();
 
-        if (!singleton) {
-            singleton = this;
-
-            document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
-            document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
-            document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
-            document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
-        }
-
-        return singleton;
+        document.addEventListener('webkitfullscreenchange', this.fullscreenchangeHandler);
+        document.addEventListener('mozfullscreenchange', this.fullscreenchangeHandler);
+        document.addEventListener('MSFullscreenChange', this.fullscreenchangeHandler);
+        document.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
     }
 
     /**

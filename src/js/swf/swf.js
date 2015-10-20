@@ -22,7 +22,7 @@ const SWF_PARAMS = {
 };
 
 @autobind
-class Swf extends Base {
+class SWF extends Base {
 
     /**
      * [constructor]
@@ -60,6 +60,6 @@ class Swf extends Base {
 }
 
 Box.Preview = Box.Preview || {};
-Box.Preview.Swf = Swf;
+Box.Preview.SWF = SWF;
 global.Box = Box;
-export default Box.Preview.Swf;
+export default Box.Preview.SWF;

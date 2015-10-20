@@ -8,23 +8,9 @@ const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
 
 let document = global.document;
-let singleton = null; 
 
 @autobind
 class Browser {
-
-    /**
-     * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @returns {Image}
-     */
-    constructor() {
-        if (!singleton) {
-            singleton = this;
-        }
-
-        return singleton;
-    }
 
     /**
      * Mimicks HTML <audio> <video> canPlayType() and calls the native function.
@@ -35,7 +21,7 @@ class Browser {
      * @param {String} probability Should either be 'maybe' or 'probably'
      * @returns {Boolean} true if browser supports a particular type
      */
-    canPlayType(type, probability) {
+    static canPlayType(type, probability) {
         let elem;
 
         if (type.indexOf('audio/') === 0) {
@@ -55,8 +41,8 @@ class Browser {
      * @param {string} mime information about the AVC profile codec
      * @returns {Boolean} true if browser supports HTML5 H264 main video playback
      */
-    canPlayH264(mime) {
-        return canPlayType(mime, 'maybe') || canPlayType(mime, 'probably');
+    static canPlayH264(mime) {
+        return Browser.canPlayType(mime, 'maybe') || Browser.canPlayType(mime, 'probably');
     }
 
     /**
@@ -65,8 +51,8 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      * @returns {Boolean} true if browser supports HTML5 H264 baseline video playback
      */
-    canPlayH264Baseline() {
-        return canPlayH264(MIME_H264_BASELINE);
+    static canPlayH264Baseline() {
+        return Browser.canPlayH264(MIME_H264_BASELINE);
     }
 
     /**
@@ -75,8 +61,8 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      * @returns {Boolean} true if browser supports HTML5 H264 main video playback
      */
-    canPlayH264Main() {
-        return canPlayH264(MIME_H264_MAIN);
+    static canPlayH264Main() {
+        return Browser.canPlayH264(MIME_H264_MAIN);
     }
 
     /**
@@ -85,8 +71,8 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      * @returns {Boolean} true if browser supports HTML5 H264 high video playback
      */
-    canPlayH264High() {
-        return canPlayH264(MIME_H264_HIGH);
+    static canPlayH264High() {
+        return Browser.canPlayH264(MIME_H264_HIGH);
     }
 
     /**
@@ -96,8 +82,8 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      * @returns {Boolean} true if browser supports HTML5 MP3 audio playback
      */
-    canPlayMP3() {
-        return canPlayType('audio/mpeg', 'maybe') || canPlayType('audio/mpeg', 'probably');
+    static canPlayMP3() {
+        return Browser.canPlayType('audio/mpeg', 'maybe') || Browser.canPlayType('audio/mpeg', 'probably');
     }
 
     /**
@@ -107,14 +93,14 @@ class Browser {
      *
      * @returns {Boolean} true if dash is usable
      */
-    canPlayDash() {
+    static canPlayDash() {
         return false;
         let mse = global.MediaSource;
         if (mse) {
             if (typeof mse.isTypeSupported === 'function') {
                 return mse.isTypeSupported(MIME_H264_HIGH);
             } else {
-                return this.canPlayH264High();
+                return Browser.canPlayH264High();
             }
         }
         return false;
@@ -124,7 +110,7 @@ class Browser {
      * Checks the browser for Media Source Extensions support
      * @returns {Boolean} true if MediaSource extensions are enabled
      */
-    hasMSE() {
+    static hasMSE() {
         return !!global.MediaSource;
     }
 
@@ -132,7 +118,7 @@ class Browser {
      * Returns true if the browser supports webgl or experimental webgl
      * @returns {Boolean} - returns true if the browser supports WebGL
      */
-    hasWebGL() {
+    static hasWebGL() {
         let gl,
             canvas = document.createElement('canvas');
 
@@ -149,7 +135,7 @@ class Browser {
      * Determines if flash is installed.
      * @returns {Boolean} true if browser has flash
      */
-    hasFlash() {
+    static hasFlash() {
         let hasFlash = false;
         try {
             hasFlash = Boolean(new ActiveXObject('ShockwaveFlash.ShockwaveFlash'));
@@ -163,9 +149,9 @@ class Browser {
      * Returns true if the browser supports SVG
      * @returns {Boolean}
      */
-    hasSVG() {
+    static hasSVG() {
         return document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
     }
 }
 
-export default new Browser();
+export default Browser;

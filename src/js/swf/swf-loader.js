@@ -3,12 +3,14 @@
 import Promise from 'bluebird';
 import AssetLoader from '../assets';
 
-let singleton = null;
-let document = global.document;
-
-const SCRIPTS = [
-    'swfobject.js',
-    'swf.js'
+const VIEWERS = [
+    {
+        REPRESENTATION: 'original',
+        EXTENSIONS: [ 'swf' ],
+        SCRIPTS: [ 'swfobject.js', 'swf.js' ],
+        STYLESHEETS: [ ],
+        CONSTRUCTOR: 'SWF'
+    }
 ];
 
 class SwfLoader extends AssetLoader {
@@ -18,58 +20,8 @@ class SwfLoader extends AssetLoader {
      * @returns {ImageLoader}
      */
     constructor() {
-        if (!singleton) {
-            super();
-            singleton = this;
-        }
-
-        return singleton;    
-    }
-
-    /**
-     * Determines if this loader can be used
-     * 
-     * @param {Object} file box file
-     * @return {Boolean}
-     */
-    canLoad(file) {
-        return file.extension === 'swf';
-    }
-
-    /**
-     * Loads the image previewer
-     * 
-     * @param {Object} file box file
-     * @param {string|HTMLElement} container where to load the preview
-     * @param {Object} [options] optional options
-     * @return {Promise}
-     */
-    load(file, container, options) {
-
-        // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(options.locale);
-
-        // Load the scripts for this previewer
-        return this.loadScripts(SCRIPTS.map(assetPathCreator)).then(() => {
-
-            let previewer = new Box.Preview.Swf(container, options);
-
-            // Load the representations and return the instantiated previewer object
-            return previewer.load(file.download_url);        
-        
-        });
-    }
-
-    /**
-     * Prefetches the swf
-     * 
-     * @param {Object} file box file
-     * @param {Object} [options] optional options
-     * @return {Promise}
-     */
-    prefetch(file, options) {
-        let img = document.createElement('img');
-        img.src = file.download_url;
+        super();
+        this.viewers = VIEWERS;
     }
 }
 
