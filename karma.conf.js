@@ -31,21 +31,13 @@ module.exports = function(config) {
                 preLoaders: [
                     {
                         test: [ js, test ],
-                        loader: 'babel-loader',
-                        query: {
-                            stage: 1
-                        }
+                        loader: 'babel-loader'
                     },
                     
                     {
                         test: [ js, test ],
                         include: js,
-                        loader: 'isparta',
-                        query: {
-                            babel: {
-                                stage: 1
-                            }
-                        }
+                        loader: 'isparta'
                     }
                 ],
 

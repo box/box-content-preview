@@ -68,10 +68,7 @@ module.exports = languagesArray.map(function(language, index) {
             loaders: [
                 {
                     test: js,
-                    loader: 'babel-loader',
-                    query: {
-                        stage: 1
-                    }
+                    loader: 'babel-loader'
                 },
 
                 {
