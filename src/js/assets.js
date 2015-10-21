@@ -7,8 +7,6 @@ let document = global.document;
 let loadedAssets = [];
 let prefetchedAssets = [];
 
-const ASSETROOT = 'dist';
-
 @autobind
 class Assets {
 
@@ -146,7 +144,7 @@ class Assets {
      */
     createAssetUrl(locale) {
         return (name) => {
-            return ASSETROOT + '/' + locale + '/' + name;
+            return '/' + locale + '/' + name;
         };
     }
 

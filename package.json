@@ -47,6 +47,7 @@
   },
   "scripts": {
     "karma": "karma start",
+    "sync": "./build/push_to_dev.sh",
     "dev": "./node_modules/.bin/webpack --progress --colors",
     "prod": "BUILD_PROD=1 ./node_modules/.bin/webpack -p",
     "watch": "./node_modules/.bin/webpack --watch",

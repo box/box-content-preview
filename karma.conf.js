@@ -1,3 +1,5 @@
+require('es6-promise').polyfill();
+
 var path = require('path');
 var js = path.join(__dirname, 'src/js');
 var css = path.join(__dirname, 'src/css');

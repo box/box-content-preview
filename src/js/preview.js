@@ -147,9 +147,7 @@ class Preview {
         }
 
         if (this.files.length > 1) {
-            promise.then(() => {
-                this.prefetch();
-            });
+            promise.then(() => this.prefetch());
         }
 
         return promise;
@@ -171,9 +169,9 @@ class Preview {
         if (checkStaleness) {
             fetch(this.createUrl(file.id), {
                 headers: this.getRequestHeaders()
-            }).then((response) => {
-                return response.json();
-            }).then((file) => {
+            })
+            .then((response) => response.json())
+            .then((file) => {
                 this.cache[file.id] = file;
                 // Reload the preview 
             });
@@ -190,9 +188,9 @@ class Preview {
     loadFromServer(id) {
         return fetch(this.createUrl(id), {
             headers: this.getRequestHeaders()
-        }).then((response) => {
-            return response.json();
-        }).then((file) => {
+        })
+        .then((response) => response.json())
+        .then((file) => {
             this.cache[id] = file;
             this.file = file;
             return this.loadViewer(); 
@@ -254,9 +252,9 @@ class Preview {
             // Pre-fetch the file information
             fetch(this.createUrl(nextId), {
                 headers: this.getRequestHeaders()
-            }).then((response) => {
-                return response.json();
-            }).then((file) => {
+            })
+            .then((response) => response.json())
+            .then((file) => {
 
                 // Save the returned file
                 this.cache[nextId] = file;
