@@ -3,7 +3,7 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import controlsTemplate from 'raw!../../html/media/controls.html';
-import Scrubber from './Scrubber';
+import Scrubber from './scrubber';
 
 const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
 const PLAYING_CLASS = 'box-preview-media-is-playing';
