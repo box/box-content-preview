@@ -38,13 +38,15 @@ class Base extends EventEmitter {
         // This code should never execute when using the wrapper preview.js
         if (!container.firstElementChild || !container.firstElementChild.classList.contains('box-preview')) {
             container.innerHTML = '<div class="box-preview"></div>';
+
+            // Make its position relative so that the childen can be positioned absolute
+            container.style.position = 'relative';
         }
 
         // Save handles to the container and make its position relative
         // so that the childen can be positioned absolute
         this.containerEl = container.firstElementChild;
-        container.style.position = 'relative';
-
+        
         // Attach event listeners
         this.addCommonListeners();
     }

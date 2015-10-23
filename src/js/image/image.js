@@ -2,7 +2,6 @@
 
 import '../../css/image/image.css';
 import autobind from 'autobind-decorator';
-import Promise from 'bluebird';
 import Base from './image-base';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -11,6 +10,7 @@ const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_IMAGE = 'box-preview-image';
 const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
+let Promise = global.Promise;
 let document = global.document;
 let Box = global.Box || {};
 

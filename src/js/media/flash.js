@@ -1,7 +1,6 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import Promise from 'bluebird';
 import Base from '../base';
 import 'file?name=swfobject.js!../../third-party/swfobject.js';
 

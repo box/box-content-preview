@@ -2,9 +2,9 @@
 
 import '../../css/doc/doc.css';
 import autobind from 'autobind-decorator';
-import Promise from 'bluebird';
 import Base from '../base';
 
+let Promise = global.Promise;
 let document = global.document;
 let Box = global.Box || {};
 

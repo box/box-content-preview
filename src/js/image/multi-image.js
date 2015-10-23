@@ -2,7 +2,6 @@
 
 import '../../css/image/images.css';
 import autobind from 'autobind-decorator';
-import Promise from 'bluebird';
 import ImageBase from './image-base';
 
 
@@ -10,6 +9,7 @@ const CSS_CLASS_IMAGE = 'box-preview-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
 const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 20000;
 
+let Promise = global.Promise;
 let document = global.document;
 let Box = global.Box || {};
 

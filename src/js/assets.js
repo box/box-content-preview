@@ -1,8 +1,8 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import Promise from 'bluebird';
 
+let Promise = global.Promise;
 let document = global.document;
 let loadedAssets = [];
 let prefetchedAssets = [];
@@ -28,7 +28,7 @@ class Assets {
      */
     generateContentUrl(baseUrl, contentPath, properties, options) {
         properties.access_token = options.authToken;
-        return options.host + baseUrl + contentPath + this.generateQueryString(properties);
+        return options.api + baseUrl + contentPath + this.generateQueryString(properties);
     }
     
     /**
@@ -127,25 +127,12 @@ class Assets {
 
     /**
      * Returns the asset path
-     * @param {String} locale
+     * @param {String} cdn
+     * @param {Boolean} bustCache 
      * @returns {Function}
      */
-    createRepresentationUrl(host) {
-        return (file, url) => {
-            return host + '/' + url;
-        };
-    }
-
-    /**
-     * Returns the asset path
-     * @param {String} locale
-     * @param {String} name
-     * @returns {Function}
-     */
-    createAssetUrl(locale) {
-        return (name) => {
-            return '/' + locale + '/' + name;
-        };
+    createAssetUrl(cdn, bustCache = false) {
+        return (name) => cdn + name + (bustCache ? ('?' + Date.now()) : '');
     }
 
     /**
@@ -166,9 +153,7 @@ class Assets {
      */
     determineViewer(file) {
         return this.viewers.find((viewer) => {
-            return viewer.EXTENSIONS.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => {
-                return viewer.REPRESENTATION === entry.representation;
-            });
+            return viewer.EXTENSIONS.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => viewer.REPRESENTATION === entry.representation);
         });
     }
 
@@ -182,9 +167,7 @@ class Assets {
      * @return {Object} the representation to load
      */
     determineRepresentation(file, viewer) {
-        return file.representations.entries.find((entry) => {
-            return viewer.REPRESENTATION === entry.representation;
-        });
+        return file.representations.entries.find((entry) => viewer.REPRESENTATION === entry.representation);
     }
 
     /**
@@ -197,8 +180,8 @@ class Assets {
      */
     load(file, container, options) {
 
-        // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(options.locale);
+        // Create an asset path creator function
+        let assetPathCreator = this.createAssetUrl(options.cdn, options.bustCache);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
@@ -228,8 +211,8 @@ class Assets {
      * @return {Promise}
      */
     prefetch(file, options) {
-        // Create an asset path creator function depending upon the locale
-        let assetPathCreator = this.createAssetUrl(options.locale);
+        // Create an asset path creator function
+        let assetPathCreator = this.createAssetUrl(options.cdn, options.bustCache);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);

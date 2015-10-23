@@ -1,7 +1,6 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import Promise from 'bluebird';
 import Base from '../base';
 import MediaControls from './media-controls';
 
@@ -10,6 +9,7 @@ const CSS_CLASS_MEDIA = 'box-preview-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'box-preview-media-container';
 const DEFAULT_VOLUME = 0.7;
 
+let Promise = global.Promise;
 let document = global.document;
 
 @autobind

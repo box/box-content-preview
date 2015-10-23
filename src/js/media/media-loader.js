@@ -1,6 +1,5 @@
 'use strict';
 
-import Promise from 'bluebird';
 import AssetLoader from '../assets';
 
 const VIDEO_FORMATS = [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv' ];

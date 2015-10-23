@@ -2,11 +2,11 @@
 
 import '../../css/text/text.css';
 import autobind from 'autobind-decorator';
-import Promise from 'bluebird';
 import Base from '../base';
 import 'file?name=highlight.js!../../third-party/highlight.js';
 import 'file?name=github.css!../../third-party/github.css';
 
+let Promise = global.Promise;
 let document = global.document;
 let Box = global.Box || {};
 let hljs = global.hljs;

@@ -69,6 +69,15 @@ module.exports = languagesArray.map(function(language, index) {
         module: {
             loaders: [
                 {
+                    test: js + '/preview.js',
+                    loader: 'string-replace',
+                    query: {
+                        search: '{{preview_version}}',
+                        replace: isRelease ? require('./package.json').version : ''
+                    }
+                },
+
+                {
                     test: js,
                     loader: 'babel-loader'
                 },
@@ -89,6 +98,6 @@ module.exports = languagesArray.map(function(language, index) {
             colors: true
         },
         
-        devtool: 'inline-source-map'
+        devtool: 'source-map'
     };
 });

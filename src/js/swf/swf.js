@@ -1,11 +1,11 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import Promise from 'bluebird';
 import Base from '../base';
 import 'file?name=swfobject.js!../../third-party/swfobject.js';
 
 let document = global.document;
+let Promise = global.Promise;
 let Box = global.Box || {};
 let swfobject = global.swfobject;
 

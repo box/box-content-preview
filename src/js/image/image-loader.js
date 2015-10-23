@@ -1,6 +1,5 @@
 'use strict';
 
-import Promise from 'bluebird';
 import AssetLoader from '../assets';
 
 const VIEWERS = [
