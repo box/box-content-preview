@@ -29,17 +29,7 @@ build_assets() {
   fi
 }
 
-# Check out latest code from git, build assets, increment version, and push t
-build_pull_request() {
-  git checkout master || exit 1
-  git fetch origin || exit 1
-  git reset --hard origin/master || exit 1
-  sudo git clean -fdX || exit 1
-
-  build_assets
-}
-
-if ! build_pull_request; then
+if ! build_assets; then
   echo "----------------------------------------------------"
   echo "Error: failure in build_pull_request"
   echo "----------------------------------------------------"
