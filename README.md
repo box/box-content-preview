@@ -46,4 +46,4 @@ Test
 1. `npm run karma`
 2. open `index.html` in `coverage\`
 
-foo
+foo bar
