@@ -16,6 +16,7 @@ const PREFETCH_COUNT = 5;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
 const CLASS_HIDDEN = 'box-preview-is-hidden';
 const MOUSEMOVE_THROTTLE = 1500;
+const CRAWLER = '<div class="box-preview-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>'
 
 let Box = global.Box || {};
 let Promise = global.Promise;
@@ -69,7 +70,7 @@ class Preview {
         this.container = container;
 
         // Prepare the container by adding our viewer wrapper.
-        this.container.innerHTML = '<div class="box-preview"></div>';     
+        this.container.innerHTML = '<div class="box-preview"></div>' + CRAWLER;     
         
         // Position the container as absolute so that the children
         // can be positioned absolute, this includes the viewer wrapper
