@@ -1,0 +1,71 @@
+.box-preview-crawler-wrapper {
+    width: 10px;
+    -ms-pointer-events: none;
+    pointer-events: none;
+    transition: 0.25s opacity, 0.25s transform;
+    transform: scale(1.7);
+    -webkit-transform: scale(1.7);
+    left: 50%;
+    margin: -9px 0 0 -5px;
+    position: fixed;
+    top: 50%;
+    display: inline-block;
+}
+
+.box-preview-cawler-crawling.box-preview-crawler-wrapper { /* spinner element itself */
+    display: inline-block;
+}
+
+.box-preview-crawler div {
+    display: inline-block;
+    background-color: #2B90EF;
+    -webkit-animation: crawler .66s infinite ease-in-out;
+    animation: crawler .66s infinite ease-in-out;
+    width: 2px;
+    height: 10px;
+    border-radius: 4px;
+}
+
+.box-preview-crawler-wrapper .box-preview-crawler div {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+.box-preview-crawler div:nth-child(2) {
+    margin-left: 2px;
+    -webkit-animation-delay: 0.1s;
+    animation-delay: 0.1s;
+}
+
+.box-preview-crawler div:last-child {
+    margin-left: 2px;
+    left: 8px;
+    -webkit-animation-delay: 0.2s;
+    animation-delay: 0.2s;
+}
+
+@-webkit-keyframes crawler {
+    0%,
+    80%,
+    100% {
+        -webkit-transform: scaleY(1.2);
+        opacity: 0.5;
+    }
+    40% {
+        -webkit-transform: scaleY(1.6);
+        opacity: 1;
+    }
+}
+
+@keyframes crawler {
+    0%,
+    80%,
+    100% {
+        transform: scaleY(1.2);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scaleY(1.6);
+        opacity: 1;
+    }
+}

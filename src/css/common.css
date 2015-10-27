@@ -17,6 +17,14 @@
     border: 0 none;
     width: 100%;
     height: 100%;
+    display: -webkit-flex;
+    display: flex;
+    -webit-flex-direction: column;
+    flex-direction: column;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
