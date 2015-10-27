@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Demo</title>    
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 50px 100px;
+            padding: 0;
+            border: 0 none;
+            overflow: hidden;
+        }
+        .container {
+            width: 500px;
+            height: 500px;
+            margin: 100px 0;
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <label>Auth Token: <input type="text" placeholder="Enter an auth token"></label>
+    <button type="button" onclick="load()">Load</button>
+    <div class='container'></div>
+
+    <script>
+
+        var bustCache = !!location.search;
+        
+        function load(event) {
+            var token = document.querySelector('input').value;
+            token = token || window.localStorage.getItem('token');
+            window.localStorage.setItem('token', token);
+
+            // var id1 = '5011729897'; // gif
+            var id2 = '5013326853'; // tiff
+            var id3 = '5011678769'; // mp4
+            var id4 = '5009226789'; // mp3
+            var id5 = '5011623177'; // swf
+            // var id6 = 'kixun1kow4aftorgp61g9ellpg6816az'; // js
+            //var id7 = '5011721289'; // txt
+            //var id8 = 'cme92xyydd37sev270q9yhs82ba0ssbs'; // php
+            var id9 = '5010393889'; // png
+            var id10 = '5011729897'; // gif
+            var id11 = '5009225077'; // jpg
+            var id12 = '5015618129'; // txt
+            var id13 = '5015618133'; // csv
+            var id14 = '5015618101'; // md
+            
+            Box.Preview.show(id5, [id2, id3, id4, id5, id9, id10, id11, id12, id13, id14], '.container', {
+                api: 'https://app.phora.inside-box.net/api',
+                cdn: 'https://app.phora.inside-box.net',
+                authToken: token,
+                locale: 'en-US',
+                bustCache: bustCache
+            });
+        }
+
+        function loadAsset(filename){
+            if (filename.endsWith('.js')) {
+                var tag = document.createElement('script')
+                tag.setAttribute('src', filename + (bustCache ? ('?' + Date.now()) : ''))
+                document.getElementsByTagName('head')[0].appendChild(tag);
+            } else if (filename.endsWith('.css')) {
+                var tag = document.createElement('link')
+                tag.setAttribute('rel', 'stylesheet')
+                tag.setAttribute('type', 'text/css')
+                tag.setAttribute('href', filename + (bustCache ? ('?' + Date.now()) : ''))
+                document.getElementsByTagName('head')[0].appendChild(tag);
+            }
+        }
+
+        loadAsset('../en-US/preview.js');
+        loadAsset('../en-US/preview.css');
+    </script>
+</body>
+</html>

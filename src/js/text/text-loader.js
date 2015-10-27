@@ -20,7 +20,7 @@ const VIEWERS = [
     {
         REPRESENTATION: 'original',
         EXTENSIONS: [ 'csv' ],
-        SCRIPTS: [ 'csv.js' ],
+        SCRIPTS: [ 'papaparse.js', 'csv.js' ],
         STYLESHEETS: [ 'csv.css' ],
         CONSTRUCTOR: 'CSV'
     }

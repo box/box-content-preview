@@ -3,7 +3,7 @@
 import '../css/preview.css';
 import autobind from 'autobind-decorator';
 import throttle from 'lodash/function/throttle';
-import fetch from 'isomorphic-fetch';
+//import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import loaders from './loaders';
 import Unsupported from './unsupported';

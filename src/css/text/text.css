@@ -11,4 +11,13 @@
     word-wrap: normal !important;
     white-space: pre !important;
     margin: 0;
+
+    display: -webkit-flex;
+    display: flex;
+    -webit-flex-direction: column;
+    flex-direction: column;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
 }

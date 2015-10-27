@@ -1,14 +1,17 @@
 'use strict';
 
 import '../../css/text/csv.css';
+import 'file?name=papaparse.js!../../third-party/papaparse.js';
 import autobind from 'autobind-decorator';
 import Base from '../base';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import FixedDataTable from 'fixed-data-table';
 
 let Promise = global.Promise;
 let document = global.document;
 let Box = global.Box || {};
-
-const CSV_LOAD_TIMEOUT_IN_MILLIS = 5000;
+let Papa = global.Papa;
 
 @autobind
 class CSV extends Base {
@@ -33,20 +36,20 @@ class CSV extends Base {
      */
     load(csvUrl) {
         return new Promise((resolve, reject) => {
-            fetch(csvUrl).then((response) => {
-                return response.text();
-            }).then((txt) => {
-                this.renderCSV(txt);
-                resolve(this);
-                this.loaded = true;
-                this.emit('load');
-            });
-            
-            setTimeout(() => {
-                if (!this.loaded) {
-                    reject();
+            Papa.SCRIPT_PATH = this.options.scripts[0];
+            Papa.parse(csvUrl, {
+                worker: true,
+                download: true,
+                error: (err, file, inputElem, reason) => {
+                    reject(reason);
+                },
+                complete: (results) => {
+                    resolve(this);
+                    this.loaded = true;
+                    this.emit('load');
+                    this.renderCSV(results.data);
                 }
-            }, CSV_LOAD_TIMEOUT_IN_MILLIS);
+            });
         });
     }
 
@@ -57,43 +60,39 @@ class CSV extends Base {
      * @returns {Promise}
      */
     renderCSV(data) {
+
+
+
+        //console.error(data);
+
+        // let columns = [];
+        // let cols = data[0];
+
+        // Object.keys(cols).forEach((key, index) => {
+        //     columns.push({
+        //         name: index
+        //     });
+        // });
+
+        // ReactDOM.render(<DataGrid dataSource={data} columns={columns}/>, this.csvEl);
+
+
+        // var React = require('react');
+        // var FixedDataTable = require('fixed-data-table');
+
+        let Table = FixedDataTable.Table;
+        let Column = FixedDataTable.Column;
         
-        // Find all commas that are not inside quotes and replace them with our delimiter
-        data = data.replace(/(,)(?=(?:[^"]|"[^"]*")*$)/g, '{{delim}}');
-        
-        let table = document.createElement('table');
-        table.setAttribute('cellspacing', 0);
-        table.setAttribute('cellpadding', 0);
-        table.className = 'box-preview-csv';
-        this.csvEl.appendChild(table);
-        
-        // Split based on new lines
-        var rows = data.split(/[\r\n]/);
+        ReactDOM.render(
+            <Table rowHeight={50} rowGetter={(index) => data[index]} rowsCount={data.length} width={this.csvEl.clientWidth - 100} maxHeight={this.csvEl.clientHeight - 100} headerHeight={10}>
+                {data[0].map((object, index) => {
+                    return <Column width={150} allowCellsRecycling={true} dataKey={index} />;
+                })}
+            </Table>,
+            this.csvEl
+        );
 
-        rows.forEach(function(row, index) {
-            
-            // Create a table row
-            let tr = document.createElement('tr');
-            
-            // Split the columns in the row
-            row = row.trim().split('{{delim}}');
 
-            // Iterate over all rows
-            row.forEach(function(column) {
-
-                // Create a table column or column header
-                let td = index ? document.createElement('td') : document.createElement('th');
-
-                // Append the column to the row
-                tr.appendChild(td);
-
-                // Add the data to the column and remove any quotes
-                td.textContent = column.replace(/\"/g, '').trim();
-            });
-
-            // Append the row to the table
-            table.appendChild(tr);
-        });
     }
 }
 

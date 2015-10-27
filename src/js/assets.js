@@ -189,11 +189,17 @@ class Assets {
         // Determine the representation to use
         let representation = this.determineRepresentation(file, viewer);
 
+        // Save CSS entries as options
+        options.stylesheets = viewer.STYLESHEETS.map(assetPathCreator);
+
+        // Save JS entries as options
+        options.scripts = viewer.SCRIPTS.map(assetPathCreator);
+
         // 1st load the stylesheets needed by this previewer
-        this.loadStylesheets(viewer.STYLESHEETS.map(assetPathCreator));
+        this.loadStylesheets(options.stylesheets);
 
         // Load the scripts for this previewer
-        return this.loadScripts(viewer.SCRIPTS.map(assetPathCreator)).then(() => {
+        return this.loadScripts(options.scripts).then(() => {
 
             let previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
 
