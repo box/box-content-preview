@@ -9,7 +9,7 @@
     margin: -9px 0 0 -5px;
     position: fixed;
     top: 50%;
-    display: inline-block;
+    display: none;
 }
 
 .box-preview-cawler-crawling.box-preview-crawler-wrapper { /* spinner element itself */
