@@ -9,8 +9,16 @@
 
 .box-preview-file-blank:before {
     -shalam-sprite: '../img/files_160/160-zip.png' dest-size(80px, 80px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) 0 0;
+    background: url(../img/sprite.png) 0 0/256px 115px;
+    /* end shalam */
 }
 
 .box-preview-file-zip:before {
     -shalam-sprite: '../img/files_160/160-zip.png' dest-size(80px, 80px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) 0 0;
+    background: url(../img/sprite.png) 0 0/256px 115px;
+    /* end shalam */
 }
