@@ -26,6 +26,8 @@
     -webkit-align-items: center;
     align-items: center;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: rgba(59, 59, 59, 0.95);
+    transform: translateZ(0);
 }
 
 .accessibility-hidden {

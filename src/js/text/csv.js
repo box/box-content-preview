@@ -25,7 +25,7 @@ class CSV extends Base {
     constructor(container, options) {
         super(container, options);
         this.csvEl = this.containerEl.appendChild(document.createElement('div'));
-        this.csvEl.classList.add('box-preview-text');
+        this.csvEl.classList.add('box-preview-text-csv');
     }
 
     /**

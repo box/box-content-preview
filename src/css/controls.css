@@ -10,8 +10,7 @@
 .box-preview-controls {
     position: relative;
     left: -50%;
-    background: #222;
-    background: rgba(59, 59, 59, 0.95);
+    background: rgba(33, 33, 33, 0.95);
     transition: opacity 0.5s;
     opacity: 0;
     display: table;
