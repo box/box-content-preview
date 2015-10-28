@@ -1,0 +1,16 @@
+.box-preview-file-blank:before,
+.box-preview-file-zip:before {
+    content: "";
+    width: 80px;
+    height: 80px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.box-preview-file-blank:before {
+    -shalam-sprite: '../img/files_160/160-zip.png' dest-size(80px, 80px);
+}
+
+.box-preview-file-zip:before {
+    -shalam-sprite: '../img/files_160/160-zip.png' dest-size(80px, 80px);
+}
