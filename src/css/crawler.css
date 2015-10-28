@@ -34,19 +34,19 @@
     left: 50%;
     margin: -9px 0 0 -5px;
     position: fixed;
+    z-index: 1;
     top: 50%;
-    display: none;
 }
 
-.box-preview-cawler-crawling.box-preview-crawler-wrapper { /* spinner element itself */
-    display: inline-block;
+.box-preview-loaded + .box-preview-crawler-wrapper {
+    display: none;
 }
 
 .box-preview-crawler div {
     display: inline-block;
     background-color: #2B90EF;
     -webkit-animation: box-crawler .66s infinite ease-in-out;
-    animation: crawler .66s infinite ease-in-out;
+    animation: box-crawler .66s infinite ease-in-out;
     width: 2px;
     height: 10px;
     border-radius: 4px;

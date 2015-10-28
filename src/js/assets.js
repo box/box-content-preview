@@ -2,6 +2,8 @@
 
 import autobind from 'autobind-decorator';
 
+const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
+
 let Promise = global.Promise;
 let document = global.document;
 let loadedAssets = [];
@@ -202,6 +204,11 @@ class Assets {
         return this.loadScripts(options.scripts).then(() => {
 
             let previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
+
+            // Once the previewer loads, hides loading indicator
+            previewer.on('load', () => {
+                container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
+            });
 
             // Load the representations and return the instantiated previewer object
             return previewer.load(this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options));

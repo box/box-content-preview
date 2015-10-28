@@ -98,6 +98,6 @@ module.exports = languagesArray.map(function(language, index) {
             colors: true
         },
         
-        devtool: 'source-map'
+        devtool: 'inline-source-map'
     };
 });

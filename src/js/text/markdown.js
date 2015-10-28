@@ -25,8 +25,9 @@ class MarkDown extends Base {
      */
     constructor(container, options) {
         super(container, options);
-        this.markDownEl = this.containerEl.appendChild(document.createElement('div'));
-        this.markDownEl.classList.add('box-preview-text');
+        this.containerEl.innerHTML = '<pre class="hljs box-preview-text"><code></code></pre>';
+        this.preEl = this.containerEl.firstElementChild;
+        this.markDownEl = this.preEl.firstElementChild;
     }
 
     /**
@@ -43,9 +44,8 @@ class MarkDown extends Base {
             }).then((txt) => {
 
                 marked.setOptions({
-                    highlight: function (code) {
-                        return hljs.highlightAuto(code).value;
-                    }
+                    highlightClass: 'hljs',
+                    highlight: (code) => hljs.highlightAuto(code).value
                 });
 
                 this.markDownEl.innerHTML = marked(txt);

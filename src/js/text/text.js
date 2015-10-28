@@ -24,7 +24,9 @@ class PlainText extends Base {
      */
     constructor(container, options) {
         super(container, options);
-        this.textEl = this.containerEl.appendChild(document.createElement('pre'));
+        this.containerEl.innerHTML = '<pre><code></code></pre>';
+        this.preEl = this.containerEl.firstElementChild;
+        this.codeEl = this.preEl.firstElementChild;
     }
 
     /**
@@ -35,9 +37,7 @@ class PlainText extends Base {
      * @returns {Promise}
      */
     load(textUrl) {
-
         return new Promise((resolve, reject) => {
-
             fetch(textUrl).then((response) => {
                 return response.text();
             }).then((txt) => {
@@ -61,11 +61,11 @@ class PlainText extends Base {
      * @returns {void}
      */
     finishLoading(txt, resolve) {
-        this.textEl.textContent = txt;
-        hljs.highlightBlock(this.textEl);
+        this.codeEl.textContent = txt;
+        hljs.highlightBlock(this.preEl);
 
         // Add our class after highlighting otherwise highlightjs doesnt work
-        this.textEl.classList.add('box-preview-text');
+        this.preEl.classList.add('box-preview-text');
         
         resolve(this);
         this.loaded = true;
