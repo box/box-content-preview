@@ -24,7 +24,7 @@ class PlainText extends Base {
      */
     constructor(container, options) {
         super(container, options);
-        this.containerEl.innerHTML = '<pre><code></code></pre>';
+        this.containerEl.innerHTML = '<pre class="hljs"><code></code></pre>';
         this.preEl = this.containerEl.firstElementChild;
         this.codeEl = this.preEl.firstElementChild;
     }
@@ -62,7 +62,11 @@ class PlainText extends Base {
      */
     finishLoading(txt, resolve) {
         this.codeEl.textContent = txt;
-        hljs.highlightBlock(this.preEl);
+
+        // Only try to parse files smaller than 50KB otherwise the browser can hang
+        if (this.options.file && this.options.file.size < 50000) {
+            hljs.highlightBlock(this.preEl);
+        }
 
         // Add our class after highlighting otherwise highlightjs doesnt work
         this.preEl.classList.add('box-preview-text');
