@@ -55,8 +55,7 @@ module.exports = languagesArray.map(function(language, index) {
             swf: js + '/swf/swf.js',
             text: js + '/text/text.js',
             csv: js + '/text/csv.js',
-            crocodoc: js + '/doc/crocodoc.js',
-            pdf: js + '/doc/pdf.js',
+            doc: js + '/doc/doc.js',
             markdown: js + '/text/markdown.js',
             mp4: js + '/media/mp4.js',
             mp3: js + '/media/mp3.js',
@@ -86,7 +85,7 @@ module.exports = languagesArray.map(function(language, index) {
                     test: css,
                     loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
                 },
-                
+
                 {
                     test: img,
                     loader: 'url-loader?limit=1'
@@ -97,7 +96,7 @@ module.exports = languagesArray.map(function(language, index) {
         stats: {
             colors: true
         },
-        
+
         devtool: 'inline-source-map'
     };
 });
