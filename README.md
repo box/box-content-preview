@@ -12,7 +12,7 @@ Clone and compile
 While developing
 ----------------
 1. `npm run props2js` to generate resource bundles (only if needed)
-2. `npm run dev` (or `npm run watch`) to generate webpak bundles
+2. `npm run dev` (or `npm run watch`) to generate webpack bundles
 
 
 Release build
