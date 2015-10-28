@@ -197,6 +197,9 @@ class Assets {
         // Save JS entries as options
         options.scripts = viewer.SCRIPTS.map(assetPathCreator);
 
+        // Save file as options as the viewer may use it
+        options.file = file;
+
         // 1st load the stylesheets needed by this previewer
         this.loadStylesheets(options.stylesheets);
 

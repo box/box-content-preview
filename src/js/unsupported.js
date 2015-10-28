@@ -2,6 +2,8 @@
 
 import autobind from 'autobind-decorator';
 import Base from './base';
+import 'file?name=160-zip.png!../img/files_160/160-zip.png';
+import 'file?name=160-blank.png!../img/files_160/160-blank.png';
 
 let document = global.document;
 let Promise = global.Promise;
@@ -31,7 +33,7 @@ class Unsupported extends Base {
     load(extension) {
         return new Promise((resolve, reject) => {
             resolve(this);
-            this.messageEl.innerHTML = 'Not supported';
+            this.messageEl.innerHTML = '<img src="/160-blank.png"/>Not supported';
             this.loaded = true;
             this.emit('load');
         });
