@@ -22,10 +22,12 @@ Release build
 
 Run the demo files app locally
 ------------------------------
-Due to restrictions in the browser as well as the content API, we need to workaround a few things to get everything working, specifically CORS.
+The following steps allow you to run this app locally from your machine without the need of dev VM. Its the best for development too. Due to security restrictions in the browser as well as the content API, we need to workaround a few things to get everything working, specifically CORS.
 
 1. ###### Create a new self-signed SSL certificate for yourself by running the following command in your home directory
 `openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365`
+  * Make sure the generated key and cert are in your home directory as it will be used by step 7 from that location.
+  * SSL cert is needed for https, which in turn is mandatory to enable CORS in step 6 by whitelisting our chosen domain.
 
 2. ###### Remove pass phrase from that above self signed certificate
 `openssl rsa -in key.pem -out newkey.pem && mv newkey.pem key.pem`
@@ -34,18 +36,18 @@ Due to restrictions in the browser as well as the content API, we need to workar
   * This will prevent Chrome from complaining about bad SSL certs.
   * Once you add it to the OSX keychain, open it and change the trust section to `Always Trust` for your cert.
 
-4. ###### Add some custom domain name to /preview/etc/hosts
-  * Add `127.0.0.1 preview.com` or whatever name you want.
+4. ###### Add some custom domain name to /private/etc/hosts
+  * Add `127.0.0.1 preview.com` or whatever domain name you want.
   * This is needed because Chrome does not allow CORS on localhost without disabling its web security
 
 5. ###### Create a new box api application
   1. Go to `https://app.your-dev-domain.inside-box.net/developer/services`
-  2. Create Box Application
+  2. Create a `Box Application`
   3. Give it any name and choose `Box Content`
-  4. Once created make a note of your API key shown at the bottom under Backend Parameters
-  5. Also create a developer token by clicking `Create Developer Token`
-    * You will have to create a fresh new token every hour
-    * Remember to create and use a new token once you end up with a 401 Unauthorized
+  4. Once created make a note of your API key shown at the bottom under `Backend Parameters`
+  5. At the same time create a developer token by clicking `Create Developer Token`
+    * You will have to repeat this step and create a fresh new token every hour.
+    * Use a new token once you end up with a 401 Unauthorized while developing.
 
 6. ###### Add you domain from above to the whitelist for content API
   1. Log into your dev box as `admin_swat` / `12345678!`
@@ -54,7 +56,7 @@ Due to restrictions in the browser as well as the content API, we need to workar
   4. Save.
 
 7. ###### Run the small barebone express server `node server.js`
-  * This will use your certs and serve the demo
+  * This will use your certs from step 1 and serve the demo.
 
 8. ###### Go to `https://preview.com` or whatever domain you chose in step 4.
 
