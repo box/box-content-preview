@@ -6,7 +6,6 @@ import throttle from 'lodash/function/throttle';
 //import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import loaders from './loaders';
-import Unsupported from './unsupported';
 
 const VERSION = '{{preview_version}}';
 const API_HOST = 'https://api.box.com';
@@ -181,9 +180,6 @@ class Preview {
         if (loader && typeof loader.load === 'function') {
             return loader.load(this.file, this.container, this.options);
         }
-
-        let unsupported = new Unsupported(this.container, this.options);
-        return unsupported.load(this.file.extension);
     }
 
     /**
