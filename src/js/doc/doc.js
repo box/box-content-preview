@@ -3,11 +3,11 @@
 import '../../css/doc/doc.css';
 import autobind from 'autobind-decorator';
 import Base from '../base';
-import 'file?name=compatibility.js!../../third-party/pdfjs/1.2.32/compatibility.js';
-import 'file?name=pdf.worker.js!../../third-party/pdfjs/1.2.32/pdf.worker.js';
-import 'file?name=pdf.js!../../third-party/pdfjs/1.2.32/pdf.js';
-import 'file?name=pdf_viewer.js!../../third-party/pdfjs/1.2.32/pdf_viewer.js';
-import 'file?name=pdf_viewer.css!../../third-party/pdfjs/1.2.32/pdf_viewer.css';
+import 'file?name=compatibility.js!../../third-party/pdfjs/1.2.38/compatibility.js';
+import 'file?name=pdf.worker.js!../../third-party/pdfjs/1.2.38/pdf.worker.js';
+import 'file?name=pdf.js!../../third-party/pdfjs/1.2.38/pdf.js';
+import 'file?name=pdf_viewer.js!../../third-party/pdfjs/1.2.38/pdf_viewer.js';
+import 'file?name=pdf_viewer.css!../../third-party/pdfjs/1.2.38/pdf_viewer.css';
 
 let Promise = global.Promise;
 let document = global.document;
@@ -19,7 +19,7 @@ const DOC_LOAD_TIMEOUT_IN_MILLIS = 60000;
 @autobind
 class Doc extends Base {
 
-    /**
+    /**``
      * [constructor]
      * @param {string|HTMLElement} container node
      * @param {object} [options] some options
@@ -49,7 +49,10 @@ class Doc extends Base {
                 container: this.docEl
             });
 
-            PDFJS.getDocument(pdfUrl).then((doc) => {
+            PDFJS.getDocument({
+                url: pdfUrl,
+                rangeChunkSize: 524288
+            }).then((doc) => {
                 this.pdfViewer.setDocument(doc);
 
                 resolve(this);

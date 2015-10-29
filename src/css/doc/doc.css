@@ -9,3 +9,16 @@
     overflow: auto;
     margin: 0;
 }
+
+/*---------- Override CSS from generic PDFJS viewer build ----------*/
+.pdfViewer .page {
+    box-sizing: content-box !important;
+	-moz-box-sizing: content-box !important;
+	-webkit-box-sizing: content-box !important;
+    margin: 0 auto;
+    border-image: none;
+}
+
+.pdfViewer .page .loadingIcon {
+    background: url('../../img/loading-icon.gif') center no-repeat;
+}
