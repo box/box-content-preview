@@ -20,8 +20,8 @@
 .box-preview-media-expand-icon:before {
     -shalam-sprite: '../img/dark/expand.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -40px -40px;
-    background: url(../img/sprite.png) -44px -80px/128px 108px;
+    background: url(../img/sprite.compat.png) -280px -160px;
+    background: url(../img/sprite.png) -22px -137px/256px 158px;
     /* end shalam */
 }
 
@@ -29,8 +29,8 @@
 .box-preview-is-fullscreen .box-preview-media-expand-icon:before {
     -shalam-sprite: '../img/dark/collapse.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -60px -40px;
-    background: url(../img/sprite.png) -44px -50px/128px 108px;
+    background: url(../img/sprite.compat.png) -300px -160px;
+    background: url(../img/sprite.png) -130px -89px/256px 158px;
     /* end shalam */
 }
 
@@ -40,24 +40,24 @@
 .box-preview-image-rotate-left-icon:before {
     -shalam-sprite: '../img/rotateleft.png' dest-size(20px 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -80px 0;
-    background: url(../img/sprite.png) -168px 0/256px 216px;
+    background: url(../img/sprite.compat.png) -100px -160px;
+    background: url(../img/sprite.png) -212px -174px/512px 316px;
     /* end shalam */
 }
 
 .box-preview-image-zoom-in-icon:before {
     -shalam-sprite: '../img/zoomin.png' dest-size(20px 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -100px 0;
-    background: url(../img/sprite.png) -192px 0/256px 216px;
+    background: url(../img/sprite.compat.png) -200px -160px;
+    background: url(../img/sprite.png) -392px -184px/512px 316px;
     /* end shalam */
 }
 
 .box-preview-image-zoom-out-icon:before {
     -shalam-sprite: '../img/zoomout.png' dest-size(20px 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -120px 0;
-    background: url(../img/sprite.png) -216px 0/256px 216px;
+    background: url(../img/sprite.compat.png) -120px -160px;
+    background: url(../img/sprite.png) -236px -176px/512px 316px;
     /* end shalam */
 }
 
@@ -68,55 +68,55 @@
 .box-preview-media-play-icon:before {
     -shalam-sprite: '../img/dark/play.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -140px 0;
-    background: url(../img/sprite.png) 0 -50px/128px 108px;
+    background: url(../img/sprite.compat.png) -140px -160px;
+    background: url(../img/sprite.png) -44px -138px/256px 158px;
     /* end shalam */
 }
 
 .box-preview-media-is-playing .box-preview-media-play-icon:before {
     -shalam-sprite: '../img/dark/pause.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -160px 0;
-    background: url(../img/sprite.png) -22px -50px/128px 108px;
+    background: url(../img/sprite.compat.png) -160px -160px;
+    background: url(../img/sprite.png) -152px -90px/256px 158px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon:before {
     -shalam-sprite: '../img/dark/volumebase.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -180px 0;
-    background: url(../img/sprite.png) -66px -80px/128px 108px;
+    background: url(../img/sprite.compat.png) -180px -160px;
+    background: url(../img/sprite.png) -174px -91px/256px 158px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon-mute:before {
     -shalam-sprite: '../img/dark/volume0.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -200px 0;
-    background: url(../img/sprite.png) -66px -50px/128px 108px;
+    background: url(../img/sprite.compat.png) -80px -160px;
+    background: url(../img/sprite.png) -84px -86px/256px 158px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon-low:before {
     -shalam-sprite: '../img/dark/volume1.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -220px 0;
-    background: url(../img/sprite.png) -88px -50px/128px 108px;
+    background: url(../img/sprite.compat.png) -220px -160px;
+    background: url(../img/sprite.png) -208px -93px/256px 158px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon-medium:before {
     -shalam-sprite: '../img/dark/volume2.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) 0 -40px;
-    background: url(../img/sprite.png) 0 -80px/128px 108px;
+    background: url(../img/sprite.compat.png) -240px -160px;
+    background: url(../img/sprite.png) -230px -94px/256px 158px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon-high:before {
     -shalam-sprite: '../img/dark/volume3.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -20px -40px;
-    background: url(../img/sprite.png) -22px -80px/128px 108px;
+    background: url(../img/sprite.compat.png) -260px -160px;
+    background: url(../img/sprite.png) 0 -136px/256px 158px;
     /* end shalam */
 }

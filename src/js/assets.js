@@ -206,15 +206,15 @@ class Assets {
         // Load the scripts for this previewer
         return this.loadScripts(options.scripts).then(() => {
 
-            let previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
+            this.previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
 
             // Once the previewer loads, hides loading indicator
-            previewer.on('load', () => {
+            this.previewer.on('load', () => {
                 container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
             });
 
             // Load the representations and return the instantiated previewer object
-            return previewer.load(this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options));
+            return this.previewer.load(this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options));
 
         });
     }

@@ -62,15 +62,15 @@
 .box-preview-right-arrow:before {
     -shalam-sprite: '../img/rightarrow.png' dest-size(40px 40px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -40px 0;
-    background: url(../img/sprite.png) -42px 0/128px 108px;
+    background: url(../img/sprite.compat.png) 0 -160px;
+    background: url(../img/sprite.png) 0 -84px/256px 158px;
     /* end shalam */
 }
 
 .box-preview-left-arrow:before {
     -shalam-sprite: '../img/leftarrow.png' dest-size(40px 40px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) 0 0;
-    background: url(../img/sprite.png) 0 0/128px 108px;
+    background: url(../img/sprite.compat.png) -40px -160px;
+    background: url(../img/sprite.png) -42px -85px/256px 158px;
     /* end shalam */
 }

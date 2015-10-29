@@ -1,16 +1,33 @@
 .box-preview-file-blank:before,
-.box-preview-file-zip:before {
+.box-preview-file-zip:before,
+.box-preview-file-flv:before {
     content: "";
-    width: 80px;
-    height: 80px;
+    width: 160px;
+    height: 160px;
     display: inline-block;
     vertical-align: middle;
 }
 
 .box-preview-file-blank:before {
-    -shalam-sprite: '../img/files_160/160-zip.png' dest-size(80px, 80px);
+    -shalam-sprite: '../img/files_160/160-blank.png' dest-size(160px, 160px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) 0 0;
+    background: url(../img/sprite.png) 0 0/512px 316px;
+    /* end shalam */
+}
+
+.box-preview-file-flv:before {
+    -shalam-sprite: '../img/files_160/160-flv.png' dest-size(160px, 160px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) -160px 0;
+    background: url(../img/sprite.png) -328px 0/512px 316px;
+    /* end shalam */
 }
 
 .box-preview-file-zip:before {
-    -shalam-sprite: '../img/files_160/160-zip.png' dest-size(80px, 80px);
+    -shalam-sprite: '../img/files_160/160-zip.png' dest-size(160px, 160px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) -320px 0;
+    background: url(../img/sprite.png) -164px 0/512px 316px;
+    /* end shalam */
 }
