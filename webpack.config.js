@@ -59,7 +59,8 @@ module.exports = languagesArray.map(function(language, index) {
             markdown: js + '/text/markdown.js',
             mp4: js + '/media/mp4.js',
             mp3: js + '/media/mp3.js',
-            dash: js + '/media/dash.js'
+            dash: js + '/media/dash.js',
+            unsupported: js + '/unsupported/unsupported.js'
         },
         output: {
             path: path.join(__dirname, 'dist/' + language),
