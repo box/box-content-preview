@@ -20,13 +20,15 @@ Release build
 `npm run release`
 
 
-Demo
-----
+Demo and testing local changes
+------------------------------
 https://gitenterprise.inside-box.net/Preview/demo
 
 
 Run the demo files app locally
 ------------------------------
+NOTE: Use the above demo link for testing purposes. Only do the stuff below if you really want to go through all the steps. Will remove these steps once https://jira.inside-box.net/browse/SRE-7366 is fixed.
+
 The following steps allow you to run this app locally from your machine without the need of dev VM. Its the best for development too. Due to security restrictions in the browser as well as the content API, we need to workaround a few things to get everything working, specifically CORS.
 
 1. ###### Choose and add some custom domain name to /private/etc/hosts
