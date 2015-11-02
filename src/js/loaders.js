@@ -5,11 +5,12 @@ import MediaLoader from './media/media-loader';
 import DocLoader from './doc/doc-loader';
 import UnsupportedLoader from './unsupported/unsupported-loader';
 
+// Order in this list matters
 export default [
     SwfLoader,
     MediaLoader,
-    DocLoader,
+    TextLoader, // should come before document
+    DocLoader, // should come after text
     ImageLoader,
-    TextLoader,
-    UnsupportedLoader
+    UnsupportedLoader // should be the last loader
 ];

@@ -3,7 +3,18 @@
 import AssetLoader from '../assets';
 
 const VIDEO_FORMATS = [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv' ];
+
+// Order of the viewers matters. Prefer original before others. Go from specific to general.
+// For example, a mp3 file can be previewed both natively (majority use case) using the original
+// representation but can fallback to using the mp3 representation (for watermarked versions).
 const VIEWERS = [
+    {
+        REPRESENTATION: 'original',
+        EXTENSIONS: [ 'mp3' ],
+        SCRIPTS: [ 'mp3.js' ],
+        STYLESHEETS: [ 'mp3.css' ],
+        CONSTRUCTOR: 'MP3'
+    },
     {
         REPRESENTATION: 'dash',
         EXTENSIONS: VIDEO_FORMATS,
@@ -20,17 +31,10 @@ const VIEWERS = [
     },
     {
         REPRESENTATION: 'mp3',
-        EXTENSIONS: [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv' ],
+        EXTENSIONS: [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp3', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
-    },
-    {
-        REPRESENTATION: 'original',
-        EXTENSIONS: [ 'mp3' ],
-        SCRIPTS: [ 'mp3.js' ],
-        STYLESHEETS: [ 'mp3.css' ],
-        CONSTRUCTOR: 'MP3'
     }
 ];
 

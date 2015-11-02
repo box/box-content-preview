@@ -163,9 +163,15 @@ class Preview {
         })
         .then((response) => response.json())
         .then((file) => {
-            this.cache[id] = file;
-            this.file = file;
-            return this.loadViewer(); 
+            if (file.type === 'file') {
+                this.cache[id] = file;
+                this.file = file;
+                return this.loadViewer();
+            } else {
+                return Promise.reject(file.message);
+            }
+        }).catch((err) => {
+            return Promise.reject(err);
         });
     }
 
@@ -238,16 +244,20 @@ class Preview {
             })
             .then((response) => response.json())
             .then((file) => {
+                // Don't bother with non-files
+                if (file.type === 'file') {
+                    // Save the returned file
+                    this.cache[nextId] = file;
 
-                // Save the returned file
-                this.cache[nextId] = file;
-
-                // Pre-fetch content if applicable so that the
-                // Browser caches the content
-                let loader = this.getLoader(file)
-                if (loader && typeof loader.prefetch === 'function') {
-                    loader.prefetch(file, this.options);
+                    // Pre-fetch content if applicable so that the
+                    // Browser caches the content
+                    let loader = this.getLoader(file)
+                    if (loader && typeof loader.prefetch === 'function') {
+                        loader.prefetch(file, this.options);
+                    }
                 }
+            }).catch((err) => {
+                // no-op
             });
         }        
     }
