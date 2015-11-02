@@ -20,6 +20,11 @@ Release build
 `npm run release`
 
 
+Demo
+----
+https://gitenterprise.inside-box.net/Preview/demo
+
+
 Run the demo files app locally
 ------------------------------
 The following steps allow you to run this app locally from your machine without the need of dev VM. Its the best for development too. Due to security restrictions in the browser as well as the content API, we need to workaround a few things to get everything working, specifically CORS.
