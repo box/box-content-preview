@@ -2,14 +2,8 @@
 
 import AssetLoader from '../assets';
 
+// Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
-    {
-        REPRESENTATION: 'original',
-        EXTENSIONS: [ 'as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'm', 'make', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'yaml' ],
-        SCRIPTS: [ 'highlight.js', 'text.js' ],
-        STYLESHEETS: [ 'text.css', 'github.css' ],
-        CONSTRUCTOR: 'Text'
-    },
     {
         REPRESENTATION: 'original',
         EXTENSIONS: [ 'md' ],
@@ -23,6 +17,13 @@ const VIEWERS = [
         SCRIPTS: [ 'papaparse.js', 'csv.js' ],
         STYLESHEETS: [ 'csv.css' ],
         CONSTRUCTOR: 'CSV'
+    },
+    {
+        REPRESENTATION: 'original',
+        EXTENSIONS: [ 'as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'm', 'make', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'yaml' ],
+        SCRIPTS: [ 'highlight.js', 'text.js' ],
+        STYLESHEETS: [ 'text.css', 'github.css' ],
+        CONSTRUCTOR: 'Text'
     }
 ];
 

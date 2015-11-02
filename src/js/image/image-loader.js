@@ -2,21 +2,10 @@
 
 import AssetLoader from '../assets';
 
+// Order of the viewers matters. Prefer original before others. Go from specific to general.
+// For example, a gif file can be previewed both natively (majority use case) using the original
+// representation but can fallback to using the png representation (for watermarked versions).
 const VIEWERS = [
-    {
-        REPRESENTATION: 'png',
-        EXTENSIONS: [ 'ai', 'bmp', 'eps', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
-        SCRIPTS: [ 'image.js' ],
-        STYLESHEETS: [ 'image.css' ],
-        CONSTRUCTOR: 'Image'
-    },
-    {
-        REPRESENTATION: 'jpg',
-        EXTENSIONS: [ 'jpeg', 'jpg' ],
-        SCRIPTS: [ 'image.js' ],
-        STYLESHEETS: [ 'image.css' ],
-        CONSTRUCTOR: 'Image'
-    },
     {
         REPRESENTATION: 'original',
         EXTENSIONS: [ 'gif' ],
@@ -30,6 +19,20 @@ const VIEWERS = [
         SCRIPTS: [ 'multi-image.js' ],
         STYLESHEETS: [ 'multi-image.css' ],
         CONSTRUCTOR: 'MultiImage'
+    },
+    {
+        REPRESENTATION: 'jpg',
+        EXTENSIONS: [ 'jpeg', 'jpg' ],
+        SCRIPTS: [ 'image.js' ],
+        STYLESHEETS: [ 'image.css' ],
+        CONSTRUCTOR: 'Image'
+    },
+    {
+        REPRESENTATION: 'png',
+        EXTENSIONS: [ 'ai', 'bmp', 'eps', 'gif', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
+        SCRIPTS: [ 'image.js' ],
+        STYLESHEETS: [ 'image.css' ],
+        CONSTRUCTOR: 'Image'
     }
 ];
 

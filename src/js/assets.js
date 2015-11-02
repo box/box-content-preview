@@ -224,7 +224,7 @@ class Assets {
      * 
      * @param {Object} file box file
      * @param {Object} [options] optional options
-     * @return {Promise}
+     * @return {void}
      */
     prefetch(file, options) {
         // Create an asset path creator function

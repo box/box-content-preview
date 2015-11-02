@@ -8,7 +8,8 @@
 .box-preview-media-volume-icon-mute:before,
 .box-preview-media-volume-icon-low:before,
 .box-preview-media-volume-icon-medium:before,
-.box-preview-media-volume-icon-high:before {
+.box-preview-media-volume-icon-high:before,
+.box-preview-image-rotate-left-icon:before {
     content: "";
     width: 20px;
     height: 20px;
