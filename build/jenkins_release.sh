@@ -25,7 +25,12 @@ increment_version_and_push() {
 
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
+  
+  echo "----------------------------------------------------"
+  echo "Nuking node modules!"
+  echo "----------------------------------------------------"  
   rm -rf node_modules
+  rm -rf .npm
 
   if npm install; then
     echo "----------------------------------------------------"
@@ -59,8 +64,6 @@ push_new_release() {
 
   build_assets
 
-  increment_version_and_push
-
   # Call the maven push script which will upload the release
   # artifact to maven
   if ! ./build/push_to_maven.sh; then
@@ -69,6 +72,9 @@ push_new_release() {
     echo "----------------------------------------------------"
     exit 1
   fi
+
+  # Finally Bump up the version and push to github
+  increment_version_and_push
 }
 
 # Push new release
