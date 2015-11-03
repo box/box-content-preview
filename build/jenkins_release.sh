@@ -5,11 +5,16 @@ export NODE_PATH=$NODE_PATH:./node_modules
 increment_version_and_push() {
   
   current_version=$(./build/current_version.sh)
+  tag_version="v$current_version"
+  echo "----------------------------------------------------"
+  echo "Release version is" $current_version
+  echo "Tagging version" $tag_version
+  echo "----------------------------------------------------"  
+  git tag -a $tag_version -m $tag_version
 
-  tag="v$current_version"
-
-  git tag -a $tag -m $tag
-
+  echo "----------------------------------------------------"
+  echo "Bumping master version..."
+  echo "----------------------------------------------------"  
   if $major_release; then
     npm version major --no-git-tag-version
   else
@@ -17,6 +22,10 @@ increment_version_and_push() {
   fi
 
   new_version=$(./build/current_version.sh)
+  git commit -am $new_version  
+  echo "----------------------------------------------------"
+  echo "Master version is now at" $new_version
+  echo "----------------------------------------------------"
 
   if git push origin master --tags; then
     echo "----------------------------------------------------"
