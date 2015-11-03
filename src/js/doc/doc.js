@@ -49,24 +49,11 @@ class Doc extends Base {
             fetch(pdfWorkerUrl)
                 .then((response) => response.blob())
                 .then((pdfWorkerBlob) => {
-                    PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
 
                     // TODO(phora) add destroy method so we can URL.revokeObjectURL(pdfworkerBlob);
+                    PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
 
-                    this.pdfViewer = new PDFJS.PDFViewer({
-                        container: this.docEl
-                    });
-
-                    PDFJS.getDocument({
-                        url: pdfUrl,
-                        rangeChunkSize: 524288
-                    }).then((doc) => {
-                        this.pdfViewer.setDocument(doc);
-
-                        resolve(this);
-                        this.loaded = true;
-                        this.emit('load');
-                    });
+                    this.finishLoading(pdfUrl, resolve);
 
                     setTimeout(() => {
                         if (!this.loaded) {
@@ -74,6 +61,32 @@ class Doc extends Base {
                         }
                     }, DOC_LOAD_TIMEOUT_IN_MILLIS);
                 });
+        });
+    }
+
+    /**
+     * Loads PDF.js with provided PDF
+     * @param {String} pdfUrl The URL of the PDF to load
+     * @param {Function} resolve Resolution handler
+     * @private
+     * @returns {void}
+     */
+    finishLoading(pdfUrl, resolve) {
+        // Initialize PDF.js in container
+        this.pdfViewer = new PDFJS.PDFViewer({
+            container: this.docEl
+        });
+
+        // Load PDF from representation URL
+        PDFJS.getDocument({
+            url: pdfUrl,
+            rangeChunkSize: 524288
+        }).then((doc) => {
+            this.pdfViewer.setDocument(doc);
+
+            resolve(this);
+            this.loaded = true;
+            this.emit('load');
         });
     }
 }
