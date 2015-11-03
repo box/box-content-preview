@@ -130,11 +130,11 @@ class Assets {
     /**
      * Returns the asset path
      * @param {String} cdn
-     * @param {Boolean} bustCache 
+     * @param {String} cacheBuster 
      * @returns {Function}
      */
-    createAssetUrl(cdn, bustCache = false) {
-        return (name) => cdn + name + (bustCache ? ('?' + Date.now()) : '');
+    createAssetUrl(cdn, cacheBuster) {
+        return (name) => cdn + name + cacheBuster;
     }
 
     /**
@@ -183,7 +183,7 @@ class Assets {
     load(file, container, options) {
 
         // Create an asset path creator function
-        let assetPathCreator = this.createAssetUrl(options.cdn, options.bustCache);
+        let assetPathCreator = this.createAssetUrl(options.cdn, options.cacheBuster);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
@@ -228,7 +228,7 @@ class Assets {
      */
     prefetch(file, options) {
         // Create an asset path creator function
-        let assetPathCreator = this.createAssetUrl(options.cdn, options.bustCache);
+        let assetPathCreator = this.createAssetUrl(options.cdn, options.cacheBuster);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);

@@ -38,6 +38,9 @@ class Preview {
 
         // Current file being previewed
         this.file = {};
+
+        // Cache buster
+        this.cacheBuster = '?' + Date.now();
     }
 
     /**
@@ -375,7 +378,7 @@ class Preview {
         this.options = options;
         this.options.api = options.api || API_HOST;
         this.options.cdn = (options.cdn || CDN_HOST) + '/' + (VERSION ? (VERSION + '/') : '') + options.locale + '/';
-        this.options.bustCache = options.bustCache || false;
+        this.options.cacheBuster = options.bustCache ? this.cacheBuster : '';
         
         // Normalize by putting file inside files array if the latter
         // is empty. If its not empty, then it is assumed that file is
