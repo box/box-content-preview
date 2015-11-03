@@ -9,15 +9,15 @@ increment_version_and_push() {
     npm version minor
   fi
 
-  release_version=$(./build/current_version.sh)
+  new_version=$(./build/current_version.sh)
 
   if git push origin master --tags; then
     echo "----------------------------------------------------"
-    echo "Pushed version" $release_version "to git successfully"
+    echo "Pushed version" $new_version "to git successfully"
     echo "----------------------------------------------------"
   else
     echo "----------------------------------------------------"
-    echo "Error while pushing version" $release_version "to git"
+    echo "Error while pushing version" $new_version "to git"
     echo "----------------------------------------------------"
     exit 1
   fi
@@ -32,9 +32,12 @@ build_assets() {
   rm -rf node_modules
   rm -rf .npm
 
+  echo "----------------------------------------------------"
+  echo "Installing node modules..."
+  echo "----------------------------------------------------"  
   if npm install; then
     echo "----------------------------------------------------"
-    echo "Installed node modules"
+    echo "Installed node modules."
     echo "----------------------------------------------------"
   else
     echo "----------------------------------------------------"
@@ -43,9 +46,15 @@ build_assets() {
     exit 1;
   fi
 
+  release_version=$(./build/current_version.sh)
+
+  echo "----------------------------------------------------"
+  echo "Starting release build for version" $release_version
+  echo "----------------------------------------------------"
+
   if npm run release; then
     echo "----------------------------------------------------"
-    echo "Built release assets"
+    echo "Built release assets for version" $release_version
     echo "----------------------------------------------------"
   else
     echo "----------------------------------------------------"
