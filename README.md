@@ -7,7 +7,7 @@ Clone and compile
 2. `cd Preview`
 3. `npm install`
 4. `npm run build` (does a clean build)
- 
+
 
 While developing
 ----------------
