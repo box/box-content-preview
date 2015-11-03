@@ -8,7 +8,7 @@ increment_version_and_push() {
 
   tag="v$current_version"
 
-  git tag $tag
+  git tag -a $tag -m $tag
 
   if $major_release; then
     npm version major --no-git-tag-version
