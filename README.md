@@ -7,7 +7,7 @@ Clone and compile
 2. `cd Preview`
 3. `npm install`
 4. `npm run build` (does a clean build)
- 
+
 
 While developing
 ----------------
@@ -103,5 +103,3 @@ Test
 
 1. `npm run karma`
 2. open `index.html` in `coverage\`
-
-Test

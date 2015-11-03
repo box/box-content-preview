@@ -43,28 +43,37 @@ class Doc extends Base {
     load(pdfUrl) {
         return new Promise((resolve, reject) => {
 
-            PDFJS.workerSrc = this.options.scripts[1];
+            // Workers cannot be loaded via XHR when not from the same domain, so we load it as a blob
+            let pdfWorkerUrl = this.options.scripts[1];
 
-            this.pdfViewer = new PDFJS.PDFViewer({
-                container: this.docEl
-            });
+            fetch(pdfWorkerUrl)
+                .then((response) => response.blob())
+                .then((pdfWorkerBlob) => {
+                    PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
 
-            PDFJS.getDocument({
-                url: pdfUrl,
-                rangeChunkSize: 524288
-            }).then((doc) => {
-                this.pdfViewer.setDocument(doc);
+                    // TODO(phora) add destroy method so we can URL.revokeObjectURL(pdfworkerBlob);
 
-                resolve(this);
-                this.loaded = true;
-                this.emit('load');
-            });
+                    this.pdfViewer = new PDFJS.PDFViewer({
+                        container: this.docEl
+                    });
 
-            setTimeout(() => {
-                if (!this.loaded) {
-                    reject();
-                }
-            }, DOC_LOAD_TIMEOUT_IN_MILLIS);
+                    PDFJS.getDocument({
+                        url: pdfUrl,
+                        rangeChunkSize: 524288
+                    }).then((doc) => {
+                        this.pdfViewer.setDocument(doc);
+
+                        resolve(this);
+                        this.loaded = true;
+                        this.emit('load');
+                    });
+
+                    setTimeout(() => {
+                        if (!this.loaded) {
+                            reject();
+                        }
+                    }, DOC_LOAD_TIMEOUT_IN_MILLIS);
+                });
         });
     }
 }
