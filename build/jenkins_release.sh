@@ -3,10 +3,17 @@
 export NODE_PATH=$NODE_PATH:./node_modules
 
 increment_version_and_push() {
+  
+  current_version=$(./build/current_version.sh)
+
+  tag="v$current_version"
+
+  git tag $tag
+
   if $major_release; then
-    npm version major
+    npm version major --no-git-tag-version
   else
-    npm version minor
+    npm version minor --no-git-tag-version
   fi
 
   new_version=$(./build/current_version.sh)
