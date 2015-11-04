@@ -4,8 +4,6 @@ export NODE_PATH=$NODE_PATH:./node_modules
 
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
-  rm -rf node_modules
-
   if npm install; then
     echo "----------------------------------------------------"
     echo "Installed node modules"

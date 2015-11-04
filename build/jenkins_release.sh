@@ -106,13 +106,6 @@ push_to_maven() {
 build_assets() {
   
     echo "----------------------------------------------------"
-    echo "Nuking node modules..."
-    echo "----------------------------------------------------"  
-    rm -rf node_modules
-    rm -rf .npm
-
-
-    echo "----------------------------------------------------"
     echo "Installing node modules..."
     echo "----------------------------------------------------"  
     if npm install; then
