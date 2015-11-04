@@ -377,7 +377,7 @@ class Preview {
         // Options
         this.options = options;
         this.options.api = options.api || API_HOST;
-        this.options.cdn = (options.cdn || CDN_HOST) + '/' + (VERSION ? (VERSION + '/') : '') + options.locale + '/';
+        this.options.cdn = (options.cdn || CDN_HOST) + '/' + VERSION + '/' + options.locale + '/';
         this.options.cacheBuster = options.bustCache ? this.cacheBuster : '';
         
         // Normalize by putting file inside files array if the latter

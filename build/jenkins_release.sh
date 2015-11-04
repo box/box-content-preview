@@ -2,118 +2,184 @@
 
 export NODE_PATH=$NODE_PATH:./node_modules
 
+
+# Asset package name
+KIND="content-experience-assets"
+
+
+# The current version being built
+VERSION=$(./build/current_version.sh)
+
+
+# The static asset path where deploy needs to happen
+installDir="/box/www/content-experience-assets"
+
+
+# Temp directory
+rpmDir="/tmp"
+
+
+# RPM name
+rpm="$KIND-$VERSION.noarch.rpm"
+
+
+# Major or minor release
+major_release=false
+
+
+# Maven info
+MAVEN="maven-vip.dev.box.net"
+MAVEN_PORT="8150"
+MAVEN_PATH="nexus/content/repositories"
+MAVEN_URL="http://$MAVEN:$MAVEN_PORT/$MAVEN_PATH"
+publishURL="$MAVEN_URL/releases/net/box/$KIND/$VERSION/$rpm"
+credentialsFile="/home/jenkins/.ivy2/boxmaven.credentials"
+[ -r "$credentialsFile" ] || (echo "Error: maven credentials file not found" && exit 1)
+mavenUser=$(grep '^user=' $credentialsFile | sed 's/^user=//')
+mavenPassword=$(grep '^password=' $credentialsFile | sed 's/^password=//')
+
+
+
 increment_version_and_push() {
   
-  current_version=$(./build/current_version.sh)
-  tag_version="v$current_version"
-  echo "----------------------------------------------------"
-  echo "Release version is" $current_version
-  echo "Tagging version" $tag_version
-  echo "----------------------------------------------------"  
-  git tag -a $tag_version -m $tag_version
+    tag_version="v$VERSION"
+    echo "----------------------------------------------------"
+    echo "Release version is" $VERSION
+    echo "Tagging version" $tag_version
+    echo "----------------------------------------------------"  
+    git tag -a $tag_version -m $tag_version
 
-  echo "----------------------------------------------------"
-  echo "Bumping master version..."
-  echo "----------------------------------------------------"  
-  if $major_release; then
-    npm version major --no-git-tag-version
-  else
-    npm version minor --no-git-tag-version
-  fi
+    echo "----------------------------------------------------"
+    echo "Bumping master version..."
+    echo "----------------------------------------------------"  
+    if $major_release; then
+        npm version major --no-git-tag-version
+    else
+        npm version minor --no-git-tag-version
+    fi
 
-  new_version=$(./build/current_version.sh)
-  git commit -am $new_version  
-  echo "----------------------------------------------------"
-  echo "Master version is now at" $new_version
-  echo "----------------------------------------------------"
+    new_version=$(./build/current_version.sh)
+    git commit -am $new_version  
+    echo "----------------------------------------------------"
+    echo "Master version is now at" $new_version
+    echo "----------------------------------------------------"
 
-  if git push origin master --tags; then
-    echo "----------------------------------------------------"
-    echo "Pushed version" $new_version "to git successfully"
-    echo "----------------------------------------------------"
-  else
-    echo "----------------------------------------------------"
-    echo "Error while pushing version" $new_version "to git"
-    echo "----------------------------------------------------"
-    exit 1
-  fi
+    if git push origin master --tags; then
+        echo "----------------------------------------------------"
+        echo "Pushed version" $new_version "to git successfully"
+        echo "----------------------------------------------------"
+    else
+        echo "----------------------------------------------------"
+        echo "Error while pushing version" $new_version "to git"
+        echo "----------------------------------------------------"
+        exit 1
+    fi
 }
+
+
+push_to_maven() {
+    
+    echo "----------------------------------------------------"
+    echo "Starting a Maven push for" $KIND-$VERSION
+    echo "----------------------------------------------------"  
+    
+    shopt -s dotglob
+
+    [ -e "$KIND-$VERSION" ] || ln -s . "$KIND-$VERSION" # For the rpm prefix
+
+    # Tar all non-hidden files and directories
+    cd dist
+    fpm -s dir -t rpm --prefix $installDir --rpm-os linux --architecture all --package $rpmDir/$rpm --directories . --name $KIND --version $VERSION --rpm-user box --rpm-group box --rpm-compression none --description 'content experience assets bundle' .
+    cd ..
+    status=$(curl -s -o /dev/null -w %{http_code} -X POST -u $mavenUser:$mavenPassword -T $rpmDir/$rpm $publishURL)
+
+    echo "----------------------------------------------------"
+    echo "Status of Maven push: $status"
+    echo "----------------------------------------------------"  
+    
+    rm $rpmDir/$rpm || exit 1
+    rm $KIND-$VERSION || exit 1
+}
+
 
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
   
-  echo "----------------------------------------------------"
-  echo "Nuking node modules!"
-  echo "----------------------------------------------------"  
-  rm -rf node_modules
-  rm -rf .npm
+    echo "----------------------------------------------------"
+    echo "Nuking node modules..."
+    echo "----------------------------------------------------"  
+    rm -rf node_modules
+    rm -rf .npm
 
-  echo "----------------------------------------------------"
-  echo "Installing node modules..."
-  echo "----------------------------------------------------"  
-  if npm install; then
-    echo "----------------------------------------------------"
-    echo "Installed node modules."
-    echo "----------------------------------------------------"
-  else
-    echo "----------------------------------------------------"
-    echo "Failed to install node modules!"
-    echo "----------------------------------------------------"
-    exit 1;
-  fi
 
-  release_version=$(./build/current_version.sh)
+    echo "----------------------------------------------------"
+    echo "Installing node modules..."
+    echo "----------------------------------------------------"  
+    if npm install; then
+        echo "----------------------------------------------------"
+        echo "Installed node modules."
+        echo "----------------------------------------------------"
+    else
+        echo "----------------------------------------------------"
+        echo "Failed to install node modules!"
+        echo "----------------------------------------------------"
+        exit 1;
+    fi
 
-  echo "----------------------------------------------------"
-  echo "Starting release build for version" $release_version
-  echo "----------------------------------------------------"
 
-  if npm run release; then
     echo "----------------------------------------------------"
-    echo "Built release assets for version" $release_version
+    echo "Starting release build for version" $VERSION
     echo "----------------------------------------------------"
-  else
-    echo "----------------------------------------------------"
-    echo "Failed to build release assets!"
-    echo "----------------------------------------------------"
-    exit 1;
-  fi
+
+    if npm run release; then
+        echo "----------------------------------------------------"
+        echo "Built release assets for version" $VERSION
+        echo "----------------------------------------------------"
+    else
+        echo "----------------------------------------------------"
+        echo "Failed to build release assets!"
+        echo "----------------------------------------------------"
+        exit 1;
+    fi
 }
+
 
 # Check out latest code from git, build assets, increment version, and push t
 push_new_release() {
-  git checkout master || exit 1
-  git fetch origin || exit 1
-  git reset --hard origin/master || exit 1
-  sudo git clean -fdX || exit 1
+    git checkout master || exit 1
+    git fetch origin || exit 1
+    git reset --hard origin/master || exit 1
+    sudo git clean -fdX || exit 1
 
-  build_assets
+    build_assets
 
-  # Call the maven push script which will upload the release
-  # artifact to maven
-  if ! ./build/push_to_maven.sh; then
-    echo "----------------------------------------------------"
-    echo "Error in push_to_maven.sh."
-    echo "----------------------------------------------------"
-    exit 1
-  fi
+    # Pushes artifact to maven
+    if ! push_to_maven; then
+        echo "----------------------------------------------------"
+        echo "Error in push_to_maven.sh!"
+        echo "----------------------------------------------------"
+        exit 1
+    fi
 
-  # Finally Bump up the version and push to github
-  increment_version_and_push
+    # Finally Bump up the version and push to github
+    increment_version_and_push
 }
 
-# Push new release
-major_release=false
+
+# Check if we are doing major or minor release
 while getopts "em" opt; do
-  case "$opt" in
-    m)
-    major_release=true
-    ;;
-  esac
+    case "$opt" in
+        m)
+        major_release=true
+        ;;
+    esac
 done
+
+
+# Execute this entire script
 if ! push_new_release; then
   echo "----------------------------------------------------"
-  echo "Error: failure in push_new_release"
+  echo "Error: failure in push_new_release!"
   echo "----------------------------------------------------"
   exit 1
 fi

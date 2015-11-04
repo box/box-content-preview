@@ -24,11 +24,16 @@ var isRelease = process.env.BUILD_PROD === '1';
 // If this is not a release build don't bother building for multiple locales
 var languagesArray = isRelease ? Object.keys(languages) : [ 'en-US' ];
 
+// Get the version from package.json
+var version = require('./package.json').version;
+
 // Rsync plugin that copies things from the dist folder to our dev machine
 function RsyncPlugin() {}
 RsyncPlugin.prototype.apply = function(compiler) {
     compiler.plugin('done', function() {
+        console.log('---------- Starting Rsync ----------');
         exec('./build/push_to_dev.sh');
+        console.log('---------- Done Rsync ----------');
     });
 };
 
@@ -63,7 +68,7 @@ module.exports = languagesArray.map(function(language, index) {
             unsupported: js + '/unsupported/unsupported.js'
         },
         output: {
-            path: path.join(__dirname, 'dist/' + language),
+            path: path.join(__dirname, 'dist', version, language),
             filename: '[Name].js'
         },
         module: {
@@ -73,7 +78,7 @@ module.exports = languagesArray.map(function(language, index) {
                     loader: 'string-replace',
                     query: {
                         search: '{{preview_version}}',
-                        replace: isRelease ? require('./package.json').version : ''
+                        replace: version
                     }
                 },
 
