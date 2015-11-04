@@ -23,11 +23,11 @@ class MediaBase extends Base {
      */
     constructor(container, options) {
         super(container, options);
-        
+
         // Media Wrapper
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_MEDIA;
-        
+
         // Media Wrapper
         this.mediaContainerEl = this.wrapperEl.appendChild(document.createElement('div'));
         this.mediaContainerEl.className = CSS_CLASS_MEDIA_CONTAINER;
@@ -35,16 +35,16 @@ class MediaBase extends Base {
 
     /**
      * Loads a media source.
-     * 
+     *
      * @param {String} mediaUrl The media url
-     * @pubic
+     * @public
      * @returns {Promise}
      */
     load(mediaUrl) {
         this.mediaUrl = mediaUrl;
-        
+
         return new Promise((resolve, reject) => {
-            
+
             // For media elements meta data load signifies a load event
             this.mediaEl.addEventListener('loadedmetadata', () => {
                 resolve(this);
@@ -64,7 +64,7 @@ class MediaBase extends Base {
 
     /**
      * Handler for meta data load for the media element.
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -76,42 +76,42 @@ class MediaBase extends Base {
         if (this.options.ui) {
             this.loadUI();
             this.resize();
-        }            
+        }
     }
 
     /**
      * Loads the controls
-     * 
+     *
      * @private
      * @returns {void}
      */
     loadUI() {
         this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl);
         this.mediaControls.setDuration(this.mediaEl.duration);
-        
+
         // Add event listeners for the media controls
-        this.addEventsListenersForMediaControls();
+        this.addEventListenersForMediaControls();
 
         // Add event listeners for the media element
-        this.addEventsListenersForMediaElement();
+        this.addEventListenersForMediaElement();
     }
 
     /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
-     * 
+     *
      * @private
      * @returns {void}
      */
-    addEventsListenersForMediaControls() {
+    addEventListenersForMediaControls() {
         this.mediaControls.on('timeupdate', (value) => {
             this.mediaEl.currentTime = value * this.mediaEl.duration;
         });
-        
+
         this.mediaControls.on('volumeupdate', (value) => {
             this.mediaEl.volume = value;
         });
-        
+
         this.mediaControls.on('toggleplayback', () => {
             if (this.mediaEl.paused) {
                 this.mediaEl.play();
@@ -119,7 +119,7 @@ class MediaBase extends Base {
                 this.mediaEl.pause();
             }
         });
-        
+
         this.mediaControls.on('togglemute', () => {
             if (this.mediaEl.volume) {
                 this.oldVolume = this.mediaEl.volume;
@@ -127,17 +127,17 @@ class MediaBase extends Base {
             } else {
                 this.mediaEl.volume = this.oldVolume || DEFAULT_VOLUME;
             }
-        }); 
+        });
     }
 
     /**
      * Adds event listeners to the media element.
-     * Makes changes to the meida controls.
-     * 
+     * Makes changes to the media controls.
+     *
      * @private
      * @returns {void}
      */
-    addEventsListenersForMediaElement() {
+    addEventListenersForMediaElement() {
         this.mediaEl.addEventListener('timeupdate', () => {
             this.mediaControls.setTimeCode(this.mediaEl.currentTime);
         });
@@ -157,7 +157,7 @@ class MediaBase extends Base {
         this.mediaEl.addEventListener('ended', () => {
             this.mediaControls.setTimeCode(0);
             this.mediaControls.showPlayIcon();
-        });            
+        });
     }
 }
 
