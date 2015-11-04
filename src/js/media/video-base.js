@@ -19,7 +19,7 @@ class VideoBase extends MediaBase {
      */
     constructor(container, options) {
         super(container, options);
-        
+
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
     }
@@ -27,13 +27,13 @@ class VideoBase extends MediaBase {
     /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
-     * 
+     *
      * @private
      * @returns {void}
      */
-    addEventsListenersForMediaControls() {
-        super.addEventsListenersForMediaControls();
-        
+    addEventListenersForMediaControls() {
+        super.addEventListenersForMediaControls();
+
         this.mediaControls.on('togglefullscreen', () => {
             this.toggleFullscreen();
         });
@@ -42,25 +42,25 @@ class VideoBase extends MediaBase {
     /**
      * Adds event listeners to the media element.
      * Makes changes to the meida controls.
-     * 
+     *
      * @private
      * @returns {void}
      */
-    addEventsListenersForMediaElement() {
-        super.addEventsListenersForMediaElement();
+    addEventListenersForMediaElement() {
+        super.addEventListenersForMediaElement();
 
         this.mousemoveHandler = throttle(() => {
             this.mediaControls.show();
         }, MOUSE_MOVE_TIMEOUT_IN_MILLIS);
 
-        this.mediaEl.addEventListener('mousemove', this.mousemoveHandler);            
+        this.mediaEl.addEventListener('mousemove', this.mousemoveHandler);
     }
 
     /**
      * Overriden method to handle resizing of the window.
      * Adjusts the size of the time scrubber since its
      * senstive to the containers width.
-     * 
+     *
      * @private
      * @returns {void}
      */
