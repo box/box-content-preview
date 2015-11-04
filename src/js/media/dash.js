@@ -27,26 +27,26 @@ class Dash extends VideoBase {
      */
     constructor(container, options) {
         super(container, options);
-        
+
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
     }
 
     /**
      * Loads a media source.
-     * 
+     *
      * @param {String} mediaUrl The media url
      * @pubic
      * @returns {Promise}
      */
     load(mediaUrl, filmstripUrl, posterUrl) {
-        
+
         this.mediaUrl = mediaUrl;
         this.filmstripUrl = filmstripUrl;
         this.posterUrl = posterUrl;
-        
+
         return new Promise((resolve, reject) => {
-            
+
             // For media elements meta data load signifies a load event
             this.mediaEl.addEventListener('loadedmetadata', () => {
                 resolve(this);
@@ -70,7 +70,7 @@ class Dash extends VideoBase {
         this.player.configure({
             streamBufferSize: MAX_BUFFER
         });
-        this.player.load(this.createDashSource());    
+        this.player.load(this.createDashSource());
     }
 
     createEstimator() {
@@ -78,18 +78,18 @@ class Dash extends VideoBase {
         estimator.supportsCaching = function() {
             return true;
         };
-        return estimator;    
+        return estimator;
     }
 
     createDashSource() {
         let source = new shaka.player.DashVideoSource(this.mediaUrl, null, this.createEstimator());
-        source.setNetworkCallback(this.requestInterceptor()); 
-        return source;   
+        source.setNetworkCallback(this.requestInterceptor());
+        return source;
     }
 
     /**
      * Calculates the video dimension based on representations
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -124,7 +124,7 @@ class Dash extends VideoBase {
 
     /**
      * An extension to fix representation URLs with shared names
-     * 
+     *
      * @private
      * @returns {Function} function to add shared name
      */
@@ -142,7 +142,7 @@ class Dash extends VideoBase {
 
     /**
      * Changes video adaptation
-     * 
+     *
      * @returns {void}
      */
     hdHandler() {
@@ -165,7 +165,7 @@ class Dash extends VideoBase {
 
     /**
      * Handles adaptation changes
-     * 
+     *
      * @param {Object} adaptation
      * @returns {void}
      */
@@ -182,21 +182,21 @@ class Dash extends VideoBase {
     /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
-     * 
+     *
      * @private
      * @returns {void}
      */
-    addEventsListenersForMediaControls() {
-        super.addEventsListenersForMediaControls();
+    addEventListenersForMediaControls() {
+        super.addEventListenersForMediaControls();
 
         this.mediaControls.on('togglehd', () => {
             this.hdHandler();
-        }); 
+        });
     }
 
     /**
      * Loads the controls
-     * 
+     *
      * @private
      * @returns {void}
      */
