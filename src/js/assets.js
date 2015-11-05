@@ -29,7 +29,7 @@ class Assets {
      * @returns {String} Query string
      */
     generateContentUrl(baseUrl, contentPath, properties, options) {
-        properties.access_token = options.authToken;
+        properties.access_token = options.token;
         return options.api + baseUrl + contentPath + this.generateQueryString(properties);
     }
     
@@ -129,12 +129,11 @@ class Assets {
 
     /**
      * Returns the asset path
-     * @param {String} cdn
-     * @param {String} cacheBuster 
+     * @param {String} asset url
      * @returns {Function}
      */
-    createAssetUrl(cdn, cacheBuster) {
-        return (name) => cdn + name + cacheBuster;
+    createAssetUrl(asset) {
+        return (name) => asset.replace('{{asset_name}}', name);
     }
 
     /**
@@ -183,7 +182,7 @@ class Assets {
     load(file, container, options) {
 
         // Create an asset path creator function
-        let assetPathCreator = this.createAssetUrl(options.cdn, options.cacheBuster);
+        let assetPathCreator = this.createAssetUrl(options.asset);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
@@ -228,7 +227,7 @@ class Assets {
      */
     prefetch(file, options) {
         // Create an asset path creator function
-        let assetPathCreator = this.createAssetUrl(options.cdn, options.cacheBuster);
+        let assetPathCreator = this.createAssetUrl(options.asset);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);

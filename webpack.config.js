@@ -25,7 +25,7 @@ var isRelease = process.env.BUILD_PROD === '1';
 var languagesArray = isRelease ? Object.keys(languages) : [ 'en-US' ];
 
 // Get the version from package.json
-var version = require('./package.json').version;
+var version = isRelease ? require('./package.json').version : 'dev';
 
 // Rsync plugin that copies things from the dist folder to our dev machine
 function RsyncPlugin() {}
@@ -73,15 +73,6 @@ module.exports = languagesArray.map(function(language, index) {
         },
         module: {
             loaders: [
-                {
-                    test: js + '/preview.js',
-                    loader: 'string-replace',
-                    query: {
-                        search: '{{preview_version}}',
-                        replace: version
-                    }
-                },
-
                 {
                     test: js,
                     loader: 'babel-loader'
