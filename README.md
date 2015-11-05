@@ -25,8 +25,32 @@ Demo and testing local changes
 https://gitenterprise.inside-box.net/Preview/demo
 
 
-Run the demo files app locally
-------------------------------
+API
+---
+
+```javascript
+Box.Preview.show(file, { options }).then(function(viewer) {
+    // do something with the viewer object if needed
+});
+```
+where
+* `file` is either a string file id OR JSON file object response from https://box-content.readme.io/reference#files
+* `options` is an object with the following attribute
+  * (required) `api` is the api host.
+  * (required) `token` is the api auth token.
+  * (optional) `files` is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
+  * (optional) `container` is the container dom node for preview. Can be a selector or html node.
+
+
+Test
+----
+
+1. `npm run karma`
+2. open `index.html` in `coverage\`
+
+
+Run the demo files app locally (deprecated, use the demo link above)
+--------------------------------------------------------------------
 NOTE: Use the above demo link for testing purposes. Only do the stuff below if you really want to go through all the steps. Will remove these steps once https://jira.inside-box.net/browse/SRE-7366 is fixed.
 
 The following steps allow you to run this app locally from your machine without the need of dev VM. Its the best for development too. Due to security restrictions in the browser as well as the content API, we need to workaround a few things to get everything working, specifically CORS.
@@ -81,9 +105,3 @@ The following steps allow you to run this app locally from your machine without 
   * Public API host is `https://api.box.com`
   * Shared folder url is for any folder whose files you want to fetch.
 
-
-Test
-----
-
-1. `npm run karma`
-2. open `index.html` in `coverage\`
