@@ -2,7 +2,7 @@
 
 import '../../css/text/text.css';
 import autobind from 'autobind-decorator';
-import Base from '../base';
+import TextBase from './text-base';
 import marked from 'marked';
 import 'file?name=highlight.js!../../third-party/highlight.js';
 import 'file?name=github.css!../../third-party/github.css';
@@ -15,7 +15,7 @@ let hljs = global.hljs;
 const TEXT_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 @autobind
-class MarkDown extends Base {
+class MarkDown extends TextBase {
 
     /**
      * [constructor]
@@ -50,6 +50,11 @@ class MarkDown extends Base {
 
                 this.markDownEl.innerHTML = marked(txt);
                 resolve(this);
+
+                if (this.options.ui !== false) {
+                    this.loadUI();
+                }
+                
                 this.loaded = true;
                 this.emit('load'); 
             });

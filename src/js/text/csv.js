@@ -3,10 +3,10 @@
 import '../../css/text/csv.css';
 import 'file?name=papaparse.js!../../third-party/papaparse.js';
 import autobind from 'autobind-decorator';
-import Base from '../base';
+import TextBase from './text-base';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import FixedDataTable from 'fixed-data-table';
+import { Table, Column } from 'fixed-data-table';
 
 let Promise = global.Promise;
 let document = global.document;
@@ -14,7 +14,7 @@ let Box = global.Box || {};
 let Papa = global.Papa;
 
 @autobind
-class CSV extends Base {
+class CSV extends TextBase {
 
     /**
      * [constructor]
@@ -60,29 +60,6 @@ class CSV extends Base {
      * @returns {Promise}
      */
     renderCSV(data) {
-
-
-
-        //console.error(data);
-
-        // let columns = [];
-        // let cols = data[0];
-
-        // Object.keys(cols).forEach((key, index) => {
-        //     columns.push({
-        //         name: index
-        //     });
-        // });
-
-        // ReactDOM.render(<DataGrid dataSource={data} columns={columns}/>, this.csvEl);
-
-
-        // var React = require('react');
-        // var FixedDataTable = require('fixed-data-table');
-
-        let Table = FixedDataTable.Table;
-        let Column = FixedDataTable.Column;
-        
         ReactDOM.render(
             <Table rowHeight={50} rowGetter={(index) => data[index]} rowsCount={data.length} width={this.csvEl.clientWidth - 100} maxHeight={this.csvEl.clientHeight - 100} headerHeight={10}>
                 {data[0].map((object, index) => {
@@ -91,8 +68,6 @@ class CSV extends Base {
             </Table>,
             this.csvEl
         );
-
-
     }
 }
 
