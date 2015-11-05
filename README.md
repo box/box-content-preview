@@ -82,22 +82,6 @@ The following steps allow you to run this app locally from your machine without 
   * Shared folder url is for any folder whose files you want to fetch.
 
 
-Demo details
-------------
-In this demo `demo/index.html` `demo/js/files-app.js` `demo/js/files-app.js` you will see how preview.js is used:
-
-```javascript
-Box.Preview.show(X, Y, container, { options }).then(function(viewer) {
-    // do something with the viewer object if needed
-});
-```
-where
-* `X` is either a string file id OR JSON file object response from https://box-content.readme.io/reference#files
-* `Y` is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
-* `container` is either a DOM node or CSS selector where the preview will be shown
-* `options` is an object listing the API host, CDN, auth token and user's locale
-
-
 Test
 ----
 
