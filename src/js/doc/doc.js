@@ -50,7 +50,7 @@ class Doc extends Base {
         return new Promise((resolve, reject) => {
 
             // Workers cannot be loaded via XHR when not from the same domain, so we load it as a blob
-            let pdfWorkerUrl = this.options.scripts[1];
+            let pdfWorkerUrl = this.options.asset.replace('{{asset_name}}', 'pdf.worker.js');
 
             fetch(pdfWorkerUrl)
                 .then((response) => response.blob())
