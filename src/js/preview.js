@@ -7,10 +7,6 @@ import throttle from 'lodash/function/throttle';
 import Browser from './browser';
 import loaders from './loaders';
 
-const VERSION = '{{preview_version}}';
-const API_HOST = 'https://api.box.com';
-const CDN_HOST = 'https://cdn01.boxcdn.net/content-experience';
-
 const PREFETCH_COUNT = 5;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
 const CLASS_HIDDEN = 'box-preview-is-hidden';
@@ -38,9 +34,6 @@ class Preview {
 
         // Current file being previewed
         this.file = {};
-
-        // Cache buster
-        this.cacheBuster = '?' + Date.now();
     }
 
     /**
@@ -63,9 +56,14 @@ class Preview {
      * @returns {void}
      */
     setup(container, hasNavigation = false) {
-        // Get the container dom element if a selector was passed instead.
+        
         if (typeof container === 'string') {
+            // Get the container dom element if a selector was passed instead.
             container = document.querySelector(container);
+        } else if (!container) {
+            // Create the container if nothing was passed.        
+            container = document.body.appendChild(document.createElement('div'));
+            container.className = 'box-preview-container';
         }
 
         // Save a handle to the container for future references.
@@ -199,7 +197,7 @@ class Preview {
      */
     getRequestHeaders() {
         let headers = {  
-            'Authorization': 'Bearer ' + this.options.authToken,
+            'Authorization': 'Bearer ' + this.options.token,
             'X-Rep-Hints': 'original|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (Browser.canPlayDash() ? '|dash|filmstrip' : '|mp4')
         }
 
@@ -357,6 +355,42 @@ class Preview {
         }
     }
 
+
+    /**
+     * Parses the options
+     * @param {String|Object} file box file object or id
+     * @param {Array[String]} files ids of files
+     * @return {void}
+     */
+    parseOptions(file, options) {
+        // Use all the passed in options
+        this.options = options;
+
+        // API host should be available
+        if (!options.api) {
+            throw 'Missing API Host!';
+        }
+
+        // Auth token should be available
+        if (!options.token) {
+            throw 'Missing Auth Token!';
+        }
+
+        // All preview assets are relative to preview.js
+        // preview.js is loaded by the browser, just query for it and replace
+        // preview.js with whatever asset needs to be fetched.
+        this.options.asset = document.querySelector('script[src*="preview.js"]').src.replace('preview.js', '{{asset_name}}');
+
+        // Normalize by putting file inside files array if the latter
+        // is empty. If its not empty, then it is assumed that file is
+        // already inside files array.
+        let files = options.files || [];
+        if (files.length > 1) {
+            this.files = files;
+        } else {
+            this.files = typeof file === 'string' ? [file] : [file.id];
+        }
+    }
     
 
     //--------------------------------------------------------------------------
@@ -368,27 +402,15 @@ class Preview {
      * 
      * @param {String|Object} file box file object or id
      * @param {Array[String]} files ids of files
-     * @param {String|HTMLElement} container where to load the preview
      * @param {Object} options
      * @public
      * @returns {Promise}
      */
-    show(file, files, container, options) {
-        // Options
-        this.options = options;
-        this.options.api = options.api || API_HOST;
-        this.options.cdn = (options.cdn || CDN_HOST) + '/' + VERSION + '/' + options.locale + '/';
-        this.options.cacheBuster = options.bustCache ? this.cacheBuster : '';
+    show(file, options) {
         
-        // Normalize by putting file inside files array if the latter
-        // is empty. If its not empty, then it is assumed that file is
-        // already inside files array.
-        if (files.length > 1) {
-            this.files = files;
-        } else {
-            this.files = typeof file === 'string' ? [file] : [file.id];
-        }
-
+        // Options
+        this.parseOptions(file, options);
+        
         // Check if file id was passed in or a well formed file object
         // Cache the file in the files array so that we don't prefetch it.
         // If we don't have the file data, we create an empty object.
@@ -405,7 +427,7 @@ class Preview {
         
         // Setup the UI. Navigation is only shown if we are prevewing a collection
         // and if the client has not prevented us from showing the navigation.
-        this.setup(container, this.files.length > 1 && this.options.navigation !== false);
+        this.setup(options.container, this.files.length > 1 && this.options.navigation !== false);
 
         // Finally load the 1st preview
         return this.load(typeof file === 'string' ? file : file.id);
@@ -417,8 +439,8 @@ class Preview {
      * @public
      * @returns {void}
      */
-    setAuthorizationToken(authToken) {
-        this.options.authToken = authToken;
+    setAuthorizationToken(token) {
+        this.options.token = token;
     }
 }
 
