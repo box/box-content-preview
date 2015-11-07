@@ -5,6 +5,9 @@
 .box-preview-text-expand-icon:before,
 .box-preview-text-zoom-in-icon:before,
 .box-preview-text-zoom-out-icon:before,
+.box-preview-doc-expand-icon:before,
+.box-preview-doc-zoom-in-icon:before,
+.box-preview-doc-zoom-out-icon:before,
 .box-preview-media-expand-icon:before,
 .box-preview-media-play-icon:before,
 .box-preview-media-volume-icon:before,
@@ -12,7 +15,8 @@
 .box-preview-media-volume-icon-low:before,
 .box-preview-media-volume-icon-medium:before,
 .box-preview-media-volume-icon-high:before,
-.box-preview-image-rotate-left-icon:before {
+.box-preview-image-rotate-left-icon:before,
+.box-preview-doc-rotate-left-icon:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -22,6 +26,7 @@
 
 .box-preview-image-expand-icon:before,
 .box-preview-text-expand-icon:before,
+.box-preview-doc-expand-icon:before,
 .box-preview-media-expand-icon:before {
     -shalam-sprite: '../img/dark/expand.png' dest-size(20px, 20px);
     /* shalam! */;
@@ -32,6 +37,7 @@
 
 .box-preview-is-fullscreen .box-preview-image-expand-icon:before,
 .box-preview-is-fullscreen .box-preview-text-expand-icon:before,
+.box-preview-is-fullscreen .box-preview-doc-expand-icon:before,
 .box-preview-is-fullscreen .box-preview-media-expand-icon:before {
     -shalam-sprite: '../img/dark/collapse.png' dest-size(20px, 20px);
     /* shalam! */;
@@ -42,32 +48,35 @@
 
 
 
-/*----- Image and Text------*/
+/*----- Image, Text & Doc ------*/
 .box-preview-image-zoom-in-icon:before,
-.box-preview-text-zoom-in-icon:before {
+.box-preview-text-zoom-in-icon:before,
+.box-preview-doc-zoom-in-icon:before {
     -shalam-sprite: '../img/zoomin.png' dest-size(20px 20px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) -100px -160px;
+    background: url(../img/sprite.png) -212px -174px/512px 316px;
+    /* end shalam */
+}
+
+.box-preview-image-zoom-out-icon:before,
+.box-preview-text-zoom-out-icon:before,
+.box-preview-doc-zoom-out-icon:before {
+    -shalam-sprite: '../img/zoomout.png' dest-size(20px 20px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -200px -160px;
     background: url(../img/sprite.png) -392px -184px/512px 316px;
     /* end shalam */
 }
 
-.box-preview-image-zoom-out-icon:before,
-.box-preview-text-zoom-out-icon:before {
-    -shalam-sprite: '../img/zoomout.png' dest-size(20px 20px);
+
+/*----- Image & Doc ------*/
+.box-preview-image-rotate-left-icon:before,
+.box-preview-doc-rotate-left-icon:before {
+    -shalam-sprite: '../img/rotateleft.png' dest-size(20px 20px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -120px -160px;
     background: url(../img/sprite.png) -236px -176px/512px 316px;
-    /* end shalam */
-}
-
-
-/*----- Image ------*/
-.box-preview-image-rotate-left-icon:before {
-    -shalam-sprite: '../img/rotateleft.png' dest-size(20px 20px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -100px -160px;
-    background: url(../img/sprite.png) -212px -174px/512px 316px;
     /* end shalam */
 }
 

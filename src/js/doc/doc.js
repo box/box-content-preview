@@ -92,6 +92,10 @@ class Doc extends Base {
             this.pdfViewer.setDocument(doc);
         });
 
+        this.docEl.addEventListener('pagesinit', () => {
+            this.pdfViewer.currentScaleValue = 'auto';
+        });
+
         this.docEl.addEventListener('pagerendered', () => {
             resolve(this);
             this.loaded = true;
@@ -112,9 +116,20 @@ class Doc extends Base {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon');
-        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon');
-        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-image-expand-icon');
+        this.controls.add(__('zoom_in'), () => {
+            this.zoomIn();
+        }, 'box-preview-doc-zoom-in-icon');
+
+        this.controls.add(__('zoom_out'), () => {
+            this.zoomOut();
+        }, 'box-preview-doc-zoom-out-icon');
+
+        this.controls.add(__('rotate_left'), () => {
+            this.rotateLeft();
+        }, 'box-preview-doc-rotate-left-icon');
+
+
+        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
     }
 
     /**
@@ -139,7 +154,7 @@ class Doc extends Base {
      *
      * @param {number} ticks Number of times to zoom out
      * @private
-     * @returns void
+     * @returns {void}
      */
     zoomOut(ticks = 1) {
         let newScale = this.pdfViewer.currentScale;
@@ -149,6 +164,26 @@ class Doc extends Base {
             newScale = Math.max(MIN_SCALE, newScale);
         } while (--ticks > 0 && newScale > MIN_SCALE);
         this.pdfViewer.currentScaleValue = newScale;
+    }
+
+    /**
+     * Rotates documents by delta degrees
+     *
+     * @param {number} delta Degrees to rotate
+     * @private
+     * @returns {void}
+     */
+    rotateLeft(delta = -90) {
+        let pageNumber = this.page || 1;
+
+        // Calculate and set rotation
+        this.pageRotation = this.pageRotation || 0;
+        this.pageRotation = (this.pageRotation + 360 + delta) % 360;
+        this.pdfViewer.pagesRotation = this.pageRotation;
+
+        // Re-render and scroll to appropriate page
+        this.pdfViewer.forceRendering();
+        this.pdfViewer.scrollPageIntoView(pageNumber);
     }
 }
 
