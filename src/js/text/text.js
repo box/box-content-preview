@@ -3,8 +3,8 @@
 import '../../css/text/text.css';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
-import 'file?name=highlight.js!../../third-party/highlight.js';
-import 'file?name=github.css!../../third-party/github.css';
+import 'file?name=highlight.js!../../third-party/text/highlight.js';
+import 'file?name=github.css!../../third-party/text/github.css';
 
 let Promise = global.Promise;
 let document = global.document;

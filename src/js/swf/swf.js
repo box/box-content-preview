@@ -2,7 +2,7 @@
 
 import autobind from 'autobind-decorator';
 import Base from '../base';
-import 'file?name=swfobject.js!../../third-party/swfobject.js';
+import 'file?name=swfobject.js!../../third-party/swf/swfobject.js';
 
 let document = global.document;
 let Promise = global.Promise;

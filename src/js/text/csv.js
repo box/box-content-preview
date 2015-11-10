@@ -1,7 +1,7 @@
 'use strict';
 
 import '../../css/text/csv.css';
-import 'file?name=papaparse.js!../../third-party/papaparse.js';
+import 'file?name=papaparse.js!../../third-party/text/papaparse.js';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
 import React from 'react';
@@ -51,6 +51,7 @@ class CSV extends TextBase {
                         },
                         complete: (results) => {
                             this.finishLoading(results.data, resolve);
+                            URL.revokeObjectURL(papaWorkerBlob);
                         }
                     });
                 });
@@ -67,8 +68,7 @@ class CSV extends TextBase {
      */
     finishLoading(data, resolve) {
         this.renderCSV(data);
-        URL.revokeObjectURL(papaWorkerBlob);
-
+        
         if (this.options.ui !== false) {
             this.loadUI();
         }

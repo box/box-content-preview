@@ -11,6 +11,7 @@ var i18n = path.join(__dirname, 'src/i18n/json');
 var css = path.join(__dirname, 'src/css');
 var img = path.join(__dirname, 'src/img');
 var test = path.join(__dirname, 'test');
+var static = path.join(__dirname, 'src/third-party/static');
 
 var languages = {
     'en-US': require(i18n + '/en-US.json'),
@@ -28,28 +29,36 @@ var languagesArray = isRelease ? Object.keys(languages) : [ 'en-US' ];
 var version = isRelease ? require('./package.json').version : 'dev';
 
 // Rsync plugin that copies things from the dist folder to our dev machine
-function RsyncPlugin() {}
+function RsyncPlugin(source, destination) {
+    this.source = source;
+    this.destination = destination;
+}
 RsyncPlugin.prototype.apply = function(compiler) {
+    var self = this;
     compiler.plugin('done', function() {
-        console.log('---------- Starting Rsync ----------');
-        exec('./build/push_to_dev.sh');
-        console.log('---------- Done Rsync ----------');
+        console.log('--------- Rsync starting for ' + self.source + ' ---------');
+        exec('rsync -avz --delete --exclude=".*" ' + self.source + ' ' + self.destination);
+        console.log('--------- Rsync done ---------');
     });
 };
 
 module.exports = languagesArray.map(function(language, index) {
 
+    // Output path
+    var dist = path.join(__dirname, 'dist', version, language);
+
     // List of plugins used for building our bundles
     var plugins = [
         new webpack.NoErrorsPlugin(),
         new ExtractTextPlugin('[Name].css', { allChunks: true }),
-        new I18nPlugin(languages[language])
+        new I18nPlugin(languages[language]),
+        new RsyncPlugin('src/third-party/static', dist)
     ];
 
     // If this is not a release build, add the Rsync plugin for local
     // development where copying to dev VM is needed.
     if (!isRelease) {
-        plugins.push(new RsyncPlugin());
+        plugins.push(new RsyncPlugin('dist/.', '${USER}@${USER}.dev.box.net:/box/www/assets/content-experience'));
     }
 
     return {
@@ -68,7 +77,7 @@ module.exports = languagesArray.map(function(language, index) {
             unsupported: js + '/unsupported/unsupported.js'
         },
         output: {
-            path: path.join(__dirname, 'dist', version, language),
+            path: dist,
             filename: '[Name].js'
         },
         module: {
