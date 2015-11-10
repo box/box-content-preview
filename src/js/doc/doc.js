@@ -95,10 +95,12 @@ class Doc extends Base {
             this.pdfViewer.setDocument(doc);
         });
 
+        // When page structure is initialized, set default zoom
         this.docEl.addEventListener('pagesinit', () => {
             this.pdfViewer.currentScaleValue = 'auto';
         });
 
+        // When first page is rendered, load UI
         this.docEl.addEventListener('pagerendered', () => {
             resolve(this);
             this.loaded = true;
@@ -112,7 +114,7 @@ class Doc extends Base {
     }
 
     /**
-     * Loads the Controls
+     * Creates UI for preview controls.
      *
      * @private
      * @returns {void}
@@ -131,7 +133,8 @@ class Doc extends Base {
             this.rotateLeft();
         }, 'box-preview-doc-rotate-left-icon');
 
-
+        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-zoom-in-icon');
+        this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-zoom-out-icon');
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
     }
 
@@ -153,7 +156,7 @@ class Doc extends Base {
     }
 
     /**
-     * Zooms out of document
+     * Zoom out of document
      *
      * @param {number} ticks Number of times to zoom out
      * @private
@@ -177,7 +180,7 @@ class Doc extends Base {
      * @returns {void}
      */
     rotateLeft(delta = -90) {
-        let pageNumber = this.page || 1;
+        let pageNumber = this.pdfViewer.currentPageNumber;
 
         // Calculate and set rotation
         this.pageRotation = this.pageRotation || 0;
@@ -187,6 +190,26 @@ class Doc extends Base {
         // Re-render and scroll to appropriate page
         this.pdfViewer.forceRendering();
         this.pdfViewer.scrollPageIntoView(pageNumber);
+    }
+
+    /**
+     * Navigate to previous page
+     *
+     * @private
+     * @returns {void}
+     */
+    previousPage() {
+        this.pdfViewer.currentPageNumber--;
+    }
+
+    /**
+     * Navigate to next page
+     *
+     * @private
+     * @returns {void}
+     */
+    nextPage() {
+        this.pdfViewer.currentPageNumber++;
     }
 }
 
