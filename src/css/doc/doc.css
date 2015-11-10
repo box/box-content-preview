@@ -16,6 +16,8 @@
 	-moz-box-sizing: content-box !important;
 	-webkit-box-sizing: content-box !important;
     margin: 0 auto;
+    padding: 10px;
+    border: 0;
     border-image: none;
 }
 
