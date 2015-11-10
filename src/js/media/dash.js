@@ -4,7 +4,7 @@ import '../../css/media/dash.css';
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 import cache from '../cache';
-import 'file?name=shaka-player.js!../../third-party/shaka-player.js';
+import 'file?name=shaka-player.js!../../third-party/media/shaka-player.js';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-is-hd';

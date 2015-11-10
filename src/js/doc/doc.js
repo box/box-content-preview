@@ -5,11 +5,11 @@ import autobind from 'autobind-decorator';
 import Controls from '../controls';
 import Base from '../base';
 
-import 'file?name=compatibility.js!../../third-party/pdfjs/1.2.38/compatibility.js';
-import 'file?name=pdf.worker.js!../../third-party/pdfjs/1.2.38/pdf.worker.js';
-import 'file?name=pdf.js!../../third-party/pdfjs/1.2.38/pdf.js';
-import 'file?name=pdf_viewer.js!../../third-party/pdfjs/1.2.38/pdf_viewer.js';
-import 'file?name=pdf_viewer.css!../../third-party/pdfjs/1.2.38/pdf_viewer.css';
+import 'file?name=compatibility.js!../../third-party/doc/compatibility.js';
+import 'file?name=pdf.worker.js!../../third-party/doc/pdf.worker.js';
+import 'file?name=pdf.js!../../third-party/doc/pdf.js';
+import 'file?name=pdf_viewer.js!../../third-party/doc/pdf_viewer.js';
+import 'file?name=pdf_viewer.css!../../third-party/doc/pdf_viewer.css';
 
 let Promise = global.Promise;
 let document = global.document;
