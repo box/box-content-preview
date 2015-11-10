@@ -37,7 +37,7 @@ class CSV extends TextBase {
      */
     load(csvUrl) {
         return new Promise((resolve, reject) => {
-            let papaWorkerUrl = this.options.asset.replace('{{asset_name}}', 'papaparse.js');
+            let papaWorkerUrl = this.options.location.hrefTemplate.replace('{{asset_name}}', 'papaparse.js');
 
             fetch(papaWorkerUrl)
                 .then((response) => response.blob())

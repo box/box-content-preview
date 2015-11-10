@@ -376,10 +376,26 @@ class Preview {
             throw 'Missing Auth Token!';
         }
 
-        // All preview assets are relative to preview.js
-        // preview.js is loaded by the browser, just query for it and replace
-        // preview.js with whatever asset needs to be fetched.
-        this.options.asset = document.querySelector('script[src*="preview.js"]').src.replace('preview.js', '{{asset_name}}');
+        // All preview assets are relative to preview.js. Here we create a location
+        // object that mimics the window location object and points to where
+        // preview.js is loaded from, by the browser.
+        let scriptSrc = document.querySelector('script[src*="preview.js"]').src;
+        let anchor = document.createElement('a');
+        
+        anchor.href = scriptSrc;
+        this.options.location = {
+            origin: anchor.origin,
+            host: anchor.host,
+            hostname: anchor.hostname,
+            pathname: anchor.pathname,
+            search: anchor.search,
+            protocol: anchor.protocol,
+            port: anchor.port,
+            href: anchor.href,
+            hrefTemplate: anchor.href.replace('preview.js', '{{asset_name}}'),
+            baseURI: (anchor.origin + anchor.pathname).replace('preview.js', ''),
+            staticBaseURI: (anchor.origin + anchor.pathname).replace('preview.js', 'static/')
+        };
 
         // Normalize by putting file inside files array if the latter
         // is empty. If its not empty, then it is assumed that file is
