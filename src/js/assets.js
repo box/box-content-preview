@@ -182,7 +182,7 @@ class Assets {
     load(file, container, options) {
 
         // Create an asset path creator function
-        let assetPathCreator = this.createAssetUrl(options.asset);
+        let assetPathCreator = this.createAssetUrl(options.location.hrefTemplate);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
@@ -227,7 +227,7 @@ class Assets {
      */
     prefetch(file, options) {
         // Create an asset path creator function
-        let assetPathCreator = this.createAssetUrl(options.asset);
+        let assetPathCreator = this.createAssetUrl(options.location.hrefTemplate);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
