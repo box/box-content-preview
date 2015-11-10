@@ -95,20 +95,19 @@ class Doc extends Base {
             this.pdfViewer.setDocument(doc);
         });
 
-        // When page structure is initialized, set default zoom
+        // When page structure is initialized, set default zoom and load controls
         this.docEl.addEventListener('pagesinit', () => {
             this.pdfViewer.currentScaleValue = 'auto';
-        });
-
-        // When first page is rendered, load UI
-        this.docEl.addEventListener('pagerendered', () => {
-            resolve(this);
-            this.loaded = true;
 
             if (this.options.ui !== false) {
                 this.loadUI();
             }
+        });
 
+        // When first page is rendered, message that preview has loaded
+        this.docEl.addEventListener('pagerendered', () => {
+            resolve(this);
+            this.loaded = true;
             this.emit('load');
         });
     }
@@ -133,8 +132,8 @@ class Doc extends Base {
             this.rotateLeft();
         }, 'box-preview-doc-rotate-left-icon');
 
-        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-zoom-in-icon');
-        this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-zoom-out-icon');
+        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-previous-page-icon');
+        this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon');
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
     }
 
