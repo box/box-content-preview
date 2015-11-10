@@ -10,6 +10,11 @@
     margin: 0;
 }
 
+/* Hide page loading indicator while preview loading indicator is still active */
+.progress-widget ~ .preview-representation .loadingIcon {
+	display: none;
+}
+
 /*---------- Override CSS from generic PDFJS viewer build ----------*/
 .pdfViewer .page {
     box-sizing: content-box !important;
@@ -23,4 +28,8 @@
 
 .pdfViewer .page .loadingIcon {
     background: url('../../img/loading-icon.gif') center no-repeat;
+}
+
+.textLayer {
+    margin: 10px; /* align text layer with page content */
 }
