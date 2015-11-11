@@ -20,7 +20,7 @@ class MultiImage extends ImageBase {
      * [constructor]
      * @param {string|HTMLElement} event The mousemove event
      * @param {object} [options] some options
-     * @returns {Image}
+     * @returns {MultiImage}
      */
     constructor(container, options) {
         super(container, options);
@@ -33,6 +33,19 @@ class MultiImage extends ImageBase {
         this.wrapperEl.addEventListener('mouseup', this.handleMouseUp);
         
         this.imageEls = [this.wrapperEl.appendChild(document.createElement('img'))];
+    }
+
+    /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        // Remove listeners
+        if (this.wrapperEl) {
+            this.wrapperEl.removeEventListener('mouseup', this.handleMouseUp);
+        }
+
+        super.destroy();
     }
 
     /**
