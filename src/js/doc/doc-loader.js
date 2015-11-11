@@ -9,17 +9,24 @@ const VIEWERS = [
     {
         REPRESENTATION: 'original',
         EXTENSIONS: [ 'pdf' ],
-        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'doc.js' ],
-        STYLESHEETS: [ 'pdf_viewer.css', 'doc.css' ],
-        CONSTRUCTOR: 'Doc'
+        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'document.js' ],
+        STYLESHEETS: [ 'pdf_viewer.css', 'document.css' ],
+        CONSTRUCTOR: 'Document'
     },
     {
         REPRESENTATION: 'pdf',
-        EXTENSIONS: [ 'doc', 'docx', 'gdoc', 'gsheet', 'msg', 'odp', 'odt', 'ods', 'pdf', 'ppt', 'pptx', 'rtf', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl' ],
-        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'doc.js' ],
-        STYLESHEETS: [ 'pdf_viewer.css', 'doc.css' ],
-        CONSTRUCTOR: 'Doc'
-    }
+        EXTENSIONS: [ 'doc', 'docx', 'gdoc', 'gsheet', 'msg', 'odp', 'odt', 'ods', 'pdf', 'rtf', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl' ],
+        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'document.js' ],
+        STYLESHEETS: [ 'pdf_viewer.css', 'document.css' ],
+        CONSTRUCTOR: 'Document'
+    },
+    {
+        REPRESENTATION: 'pdf',
+        EXTENSIONS: [ 'ppt', 'pptx' ],
+        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'presentation.js' ],
+        STYLESHEETS: [ 'pdf_viewer.css', 'presentation.css' ],
+        CONSTRUCTOR: 'Presentation'
+    },
 ];
 
 class DocLoader extends AssetLoader {
