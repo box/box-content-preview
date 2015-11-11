@@ -19,7 +19,7 @@ class MediaBase extends Base {
      * [constructor]
      * @param {string|HTMLElement} container The container DOM node
      * @param {object} [options] some options
-     * @returns {Image}
+     * @returns {MediaBase}
      */
     constructor(container, options) {
         super(container, options);

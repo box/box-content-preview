@@ -1,0 +1,35 @@
+.box-preview-doc {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    margin: 0;
+}
+
+/* Hide page loading indicator while preview loading indicator is still active */
+.progress-widget ~ .preview-representation .loadingIcon {
+	display: none;
+}
+
+/*---------- Override CSS from generic PDFJS viewer build ----------*/
+.pdfViewer .page {
+    box-sizing: content-box !important;
+	-moz-box-sizing: content-box !important;
+	-webkit-box-sizing: content-box !important;
+    margin: 0 auto;
+    padding: 10px;
+    border: 0;
+    border-image: none;
+}
+
+.pdfViewer .page .loadingIcon {
+    background: url('../../img/loading-icon.gif') center no-repeat;
+}
+
+.textLayer {
+    margin: 10px; /* align text layer with page content */
+}

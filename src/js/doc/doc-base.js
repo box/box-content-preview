@@ -1,6 +1,5 @@
 'use strict';
 
-import '../../css/doc/doc.css';
 import autobind from 'autobind-decorator';
 import Controls from '../controls';
 import Base from '../base';
@@ -22,13 +21,13 @@ const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 
 @autobind
-class Doc extends Base {
+class DocBase extends Base {
 
-    /**``
+    /**
      * [constructor]
      * @param {string|HTMLElement} container node
      * @param {object} [options] some options
-     * @returns {Doc}
+     * @returns {DocBase}
      */
     constructor(container, options) {
         super(container, options);
@@ -40,7 +39,7 @@ class Doc extends Base {
     }
 
     /**
-     * Loads a swf object.
+     * Loads a document.
      *
      * @param {String} pdfUrl The pdf to load
      * @public
@@ -212,7 +211,4 @@ class Doc extends Base {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Doc = Doc;
-global.Box = Box;
-export default Doc;
+export default DocBase;
