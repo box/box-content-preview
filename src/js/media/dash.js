@@ -23,13 +23,24 @@ class Dash extends VideoBase {
      * [constructor]
      * @param {string|HTMLElement} container The container DOM node
      * @param {object} [options] some options
-     * @returns {Image}
+     * @returns {Dash}
      */
     constructor(container, options) {
         super(container, options);
 
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
+    }
+
+    /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        if (this.player) {
+            this.player.destroy();
+        }
+        super.destroy();
     }
 
     /**

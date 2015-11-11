@@ -25,6 +25,17 @@ class VideoBase extends MediaBase {
     }
 
     /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        if (this.mediaEl) {
+            this.mediaEl.removeEventListener('mousemove', this.mousemoveHandler);
+        }
+        super.destroy();
+    }
+
+    /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
      *

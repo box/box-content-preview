@@ -8,6 +8,19 @@ import Base from '../base';
 class TextBase extends Base {
 
     /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        // Destroy the controls
+        if (this.controls && typeof this.controls.destroy === 'function') {
+            this.controls.destroy();
+        }
+
+        super.destroy();
+    }
+
+    /**
      * Zooms by increasing or decreasing font size
      * @public
      * @returns {void}
