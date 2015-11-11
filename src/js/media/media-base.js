@@ -34,6 +34,33 @@ class MediaBase extends Base {
     }
 
     /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        if (this.mediaControls) {
+            this.mediaControls.destroy();
+        }
+        
+        if (this.mediaEl) {
+            this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
+            this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
+            this.mediaEl.removeEventListener('playing', this.showPauseIcon);
+            this.mediaEl.removeEventListener('pause', this.showPlayIcon);
+            this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
+
+            this.mediaEl.removeAttribute('src');
+            this.mediaEl.load();
+        }
+
+        if (this.mediaContainerEl) {
+            this.mediaContainerEl.removeChild(this.mediaEl);
+        }   
+
+        super.destroy();
+    }
+
+    /**
      * Loads a media source.
      *
      * @param {String} mediaUrl The media url
@@ -131,6 +158,57 @@ class MediaBase extends Base {
     }
 
     /**
+     * Updates time code.
+     *
+     * @private
+     * @returns {void}
+     */
+    setTimeCode() {
+        this.mediaControls.setTimeCode(this.mediaEl.currentTime);
+    }
+
+    /**
+     * Updates volume icon.
+     *
+     * @private
+     * @returns {void}
+     */
+    updateVolumeIcon() {
+        this.mediaControls.updateVolumeIcon(this.mediaEl.volume);
+    }
+
+    /**
+     * Shows the pause icon.
+     *
+     * @private
+     * @returns {void}
+     */
+    showPauseIcon() {
+        this.mediaControls.showPauseIcon();
+    }
+
+    /**
+     * Shows the play icon.
+     *
+     * @private
+     * @returns {void}
+     */
+    showPlayIcon() {
+        this.mediaControls.showPlayIcon();
+    }
+
+    /**
+     * Resets the play icon and time.
+     *
+     * @private
+     * @returns {void}
+     */
+    resetPlayIcon() {
+        this.mediaControls.setTimeCode(0);
+        this.showPlayIcon();
+    }
+
+    /**
      * Adds event listeners to the media element.
      * Makes changes to the media controls.
      *
@@ -138,26 +216,11 @@ class MediaBase extends Base {
      * @returns {void}
      */
     addEventListenersForMediaElement() {
-        this.mediaEl.addEventListener('timeupdate', () => {
-            this.mediaControls.setTimeCode(this.mediaEl.currentTime);
-        });
-
-        this.mediaEl.addEventListener('volumechange', () => {
-            this.mediaControls.updateVolumeIcon(this.mediaEl.volume);
-        });
-
-        this.mediaEl.addEventListener('playing', () => {
-            this.mediaControls.showPauseIcon();
-        });
-
-        this.mediaEl.addEventListener('pause', () => {
-            this.mediaControls.showPlayIcon();
-        });
-
-        this.mediaEl.addEventListener('ended', () => {
-            this.mediaControls.setTimeCode(0);
-            this.mediaControls.showPlayIcon();
-        });
+        this.mediaEl.addEventListener('timeupdate', this.setTimeCode);
+        this.mediaEl.addEventListener('volumechange', this.updateVolumeIcon);
+        this.mediaEl.addEventListener('playing', this.showPauseIcon);
+        this.mediaEl.addEventListener('pause', this.showPlayIcon);
+        this.mediaEl.addEventListener('ended', this.resetPlayIcon);
     }
 }
 
