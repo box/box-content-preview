@@ -18,6 +18,10 @@ class Controls {
      * @returns {Controls}
      */
     constructor(container) {
+        // Maintain a list of buttons for cleanup
+        this.buttonRefs = [];
+
+        // Container for the buttons
         this.containerEl = container;
 
         this.controlsWrapperEl = this.containerEl.appendChild(document.createElement('div'));
@@ -36,6 +40,22 @@ class Controls {
         this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.addEventListener('focusin', this.focusinHandler);
         this.controlsEl.addEventListener('focusout', this.focusoutHandler);
+    }
+
+    /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        this.containerEl.removeEventListener('mousemove', this.mousemoveHandler)
+        this.controlsEl.removeEventListener('mouseenter', this.mouseenterHandler);
+        this.controlsEl.removeEventListener('mouseleave', this.mouseleaveHandler);
+        this.controlsEl.removeEventListener('focusin', this.focusinHandler);
+        this.controlsEl.removeEventListener('focusout', this.focusoutHandler);
+
+        this.buttonRefs.forEach((ref) => {
+            ref.button.removeEventListener('click', ref.handler);
+        });
     }
 
     /**
@@ -128,6 +148,12 @@ class Controls {
 
         cell.appendChild(button);
         this.controlsEl.appendChild(cell);
+
+        // Maintain a reference for cleanup
+        this.buttonRefs.push({
+            button: button,
+            handler: handler
+        });
     }
 
 }

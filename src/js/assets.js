@@ -219,6 +219,20 @@ class Assets {
     }
 
     /**
+     * Destroys a previewer
+     * 
+     * @param {Object} file box file
+     * @param {string|HTMLElement} container where to load the preview
+     * @param {Object} [options] optional options
+     * @return {void}
+     */
+    destroy() {
+        if (this.previewer && typeof this.previewer.destroy === 'function') {
+            this.previewer.destroy();
+        }
+    }
+
+    /**
      * Prefetches assets
      * 
      * @param {Object} file box file

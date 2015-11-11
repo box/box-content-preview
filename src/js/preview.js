@@ -183,9 +183,18 @@ class Preview {
      * @returns {Promise}
      */
     loadViewer() {
-        let loader = this.getLoader(this.file);
-        if (loader && typeof loader.load === 'function') {
-            return loader.load(this.file, this.container, this.options);
+        // Before loading a new preview check if a prior preview was showing.
+        // If it was showing make sure to destroy it and do any cleanup.
+        if (this.loader && typeof this.loader.destroy === 'function') {
+            this.loader.destroy();
+        }
+
+        // Save the reference to the current loader being used
+        this.loader = this.getLoader(this.file);
+        
+        // Finally load the preview using the above loader
+        if (this.loader && typeof this.loader.load === 'function') {
+            return this.loader.load(this.file, this.container, this.options);
         }
     }
 

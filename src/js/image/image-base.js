@@ -8,6 +8,24 @@ import Base from '../base';
 class ImageBase extends Base {
 
     /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        // Destroy the controls
+        if (this.controls && typeof this.controls.destroy === 'function') {
+            this.controls.destroy();
+        }
+
+        // Remove listeners
+        if (this.imageEl) {
+            this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
+        }
+        
+        super.destroy();
+    }
+
+    /**
      * Zooms in
      * @public
      * @returns {void}

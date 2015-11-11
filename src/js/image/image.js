@@ -34,6 +34,23 @@ class Image extends Base {
     }
 
     /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        // Remove listeners
+        if (this.imageEl) {
+            this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
+            this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
+            this.imageEl.removeEventListener('dragstart', this.handleDragStart);
+        }
+
+        document.removeEventListener('mousemove', this.pan);
+        document.removeEventListener('mouseup', this.stopPanning);
+        super.destroy();
+    }
+
+    /**
      * Loads an image.
      * @param {Event} event The mousemove event
      * @pubic
