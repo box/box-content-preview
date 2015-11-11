@@ -59,6 +59,24 @@ class Scrubber extends EventEmitter {
     }
 
     /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        this.removeAllListeners();
+        this.destroyDocumentHandlers();
+        this.convertedEl.removeEventListener('mousedown', this.mouseDownHandler);
+        this.scrubberContainerEl = undefined;
+        this.scrubberWrapperEl = undefined;
+        this.scrubberEl = undefined;
+        this.bufferedEl = undefined;
+        this.convertedEl = undefined;
+        this.playedEl = undefined;
+        this.handleEl = undefined;
+        this.containerEl.innerHTML = '';
+    }
+
+    /**
      * Resizes the scrubber on demand by reducing the size from container
      * 
      * @public
@@ -213,26 +231,6 @@ class Scrubber extends EventEmitter {
     mouseUpHandler() {
         this.scrubberWrapperEl.classList.remove(CLASS_SCRUBBER_HOVER);
         this.destroyDocumentHandlers();
-    }
-
-    /**
-     * Cleanup method for the Class
-     * @public
-     * @returns {void}
-     */
-    destroy() {
-        this.destroyDocumentHandlers();
-        this.convertedEl.removeEventListener('mousedown', this.mouseDownHandler);
-        //this.handleEl.removeEventListener('mousedown', this.mouseDownHandler);
-        
-        this.containerEl.innerHTML = '';
-        this.convertedEl = undefined;
-        this.bufferedEl = undefined;
-        this.playedEl = undefined;
-        this.handleEl = undefined;
-        this.scrubberEl = undefined;
-        this.scrubberWrapperEl = undefined;
-        this.containerEl = undefined;
     }
 
     /**

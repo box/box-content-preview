@@ -102,6 +102,7 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     destroy() {
+        this.removeAllListeners();
         this.containerEl.innerHTML = '';    
     }        
 }

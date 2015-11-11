@@ -56,6 +56,49 @@ class MediaControls extends EventEmitter  {
     }
 
     /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        this.removeAllListeners();
+        
+        document.removeEventListener('mouseup', this.timeScrubbingStopHandler);
+        document.removeEventListener('mousemove', this.filmstripShowHandler);
+
+        if (this.timeScrubber) {
+            this.timeScrubber.getHandleEl().removeEventListener('mousedown', this.timeScrubbingStartHandler);
+            this.timeScrubber.getConvertedEl().removeEventListener('mousemove', this.filmstripShowHandler);
+            this.timeScrubber.getConvertedEl().removeEventListener('mouseleave', this.filmstripHideHandler);
+            this.timeScrubber.destroy();
+            this.timeScrubber = undefined;
+        }
+        
+        if (this.volScrubber) {
+            this.volScrubber.destroy();
+            this.volScrubber = undefined;
+        }
+
+        this.playButtonEl.removeEventListener('click', this.togglePlay);
+        this.volButtonEl.removeEventListener('click', this.toggleMute);
+        this.fullscreenButtonEl.removeEventListener('click', this.toggleFullscreen);
+        this.hdButtonEl.removeEventListener('click', this.toggleHD);
+
+        this.wrapperEl = undefined;
+        this.timeScrubberEl = undefined;
+        this.volScrubberEl = undefined;        
+        this.playButtonEl = undefined;
+        this.volButtonEl = undefined;
+        this.volLevelButtonEl = undefined;
+        this.timecodeEl = undefined;
+        this.durationEl = undefined;        
+        this.fullscreenButtonEl = undefined;
+        this.hdButtonEl = undefined;
+        this.filmstripContainerEl = undefined;
+        this.filmstripEl = undefined;
+        this.filmstripTimeEl = undefined;
+    }
+
+    /**
      * Attaches scrubbers
      * @private
      * @returns {void}
@@ -190,6 +233,11 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     show(preventHiding = false) {
+
+        if (!this.wrapperEl) {
+            return;
+        }
+
         this.wrapperEl.classList.add(SHOW_CONTROLS_CLASS);
 
         if (!preventHiding) {
@@ -205,7 +253,9 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     hide() {
-        this.wrapperEl.classList.remove(SHOW_CONTROLS_CLASS);
+        if (this.wrapperEl) {
+            this.wrapperEl.classList.remove(SHOW_CONTROLS_CLASS);
+        }
     }
 
     /**
