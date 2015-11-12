@@ -10,9 +10,17 @@
     margin: 0;
 }
 
-/* Hide page loading indicator while preview loading indicator is still active */
-.progress-widget ~ .preview-representation .loadingIcon {
-	display: none;
+/* Fullscreen CSS */
+.box-preview-is-fullscreen .box-preview-doc {
+    overflow: hidden;
+}
+
+.box-preview-is-fullscreen .pdfViewer .page {
+    padding: 0;
+}
+
+.box-preview-is-fullscreen .textLayer {
+    margin: 0;
 }
 
 /*---------- Override CSS from generic PDFJS viewer build ----------*/
@@ -27,6 +35,11 @@
 }
 
 .pdfViewer .page .loadingIcon {
+    background: none;
+}
+
+/* Only show page loading indicator when viewer has loaded */
+.box-preview-loaded .pdfViewer .page .loadingIcon {
     background: url('../../img/loading-icon.gif') center no-repeat;
 }
 

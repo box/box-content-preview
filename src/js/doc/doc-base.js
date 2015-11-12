@@ -20,6 +20,13 @@ const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 
+const PRESENTATION_MODE_STATE = {
+    UNKNOWN: 0,
+    NORMAL: 1,
+    CHANGING: 2,
+    FULLSCREEN: 3
+};
+
 @autobind
 class DocBase extends Base {
 
@@ -119,55 +126,50 @@ class DocBase extends Base {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add(__('zoom_in'), () => {
-            this.zoomIn();
-        }, 'box-preview-doc-zoom-in-icon');
 
-        this.controls.add(__('zoom_out'), () => {
-            this.zoomOut();
-        }, 'box-preview-doc-zoom-out-icon');
-
-        this.controls.add(__('rotate_left'), () => {
-            this.rotateLeft();
-        }, 'box-preview-doc-rotate-left-icon');
-
-        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-previous-page-icon');
-        this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon');
-        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
+        this.addEventListenersForDocControls();
+        this.addEventListenersForDocElement();
     }
 
     /**
-     * Zoom into document
+     * Resizing logic.
      *
-     * @param {number} ticks Number of times to zoom in
      * @private
      * @returns {void}
      */
-    zoomIn(ticks = 1) {
-        let newScale = this.pdfViewer.currentScale;
-        do {
-            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(2);
-            newScale = Math.ceil(newScale * 10) / 10;
-            newScale = Math.min(MAX_SCALE, newScale);
-        } while (--ticks > 0 && newScale < MAX_SCALE);
-        this.pdfViewer.currentScaleValue = newScale;
+    resize() {
+        this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
+        this.pdfViewer.update();
     }
 
     /**
-     * Zoom out of document
+     * Adds event listeners for document controls
      *
-     * @param {number} ticks Number of times to zoom out
      * @private
      * @returns {void}
      */
-    zoomOut(ticks = 1) {
-        let newScale = this.pdfViewer.currentScale;
-        do {
-            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(2);
-            newScale = Math.floor(newScale * 10) / 10;
-            newScale = Math.max(MIN_SCALE, newScale);
-        } while (--ticks > 0 && newScale > MIN_SCALE);
-        this.pdfViewer.currentScaleValue = newScale;
+    addEventListenersForDocControls() {
+        // overriden
+    }
+
+    /**
+     * Navigate to previous page
+     *
+     * @private
+     * @returns {void}
+     */
+    previousPage() {
+        this.pdfViewer.currentPageNumber--;
+    }
+
+    /**
+     * Navigate to next page
+     *
+     * @private
+     * @returns {void}
+     */
+    nextPage() {
+        this.pdfViewer.currentPageNumber++;
     }
 
     /**
@@ -191,23 +193,50 @@ class DocBase extends Base {
     }
 
     /**
-     * Navigate to previous page
+     * Enters or exits fullscreen
      *
      * @private
      * @returns {void}
      */
-    previousPage() {
-        this.pdfViewer.currentPageNumber--;
+    toggleFullscreen() {
+        super.toggleFullscreen();
+
+        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
 
     /**
-     * Navigate to next page
+     * Adds event listeners for document element
      *
      * @private
      * @returns {void}
      */
-    nextPage() {
-        this.pdfViewer.currentPageNumber++;
+    addEventListenersForDocElement() {
+        this.on('enterfullscreen', this.enterfullscreenHandler);
+        this.on('exitfullscreen', this.exitfullscreenHandler);
+    }
+
+    /**
+     * Fullscreen entered handler. Add presentation mode class, set
+     * presentation mode state, and set zoom to fullscreen zoom.
+     *
+     * @private
+     * @returns {void}
+     */
+    enterfullscreenHandler() {
+        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.FULLSCREEN;
+        this.pdfViewer.currentScaleValue = 'page-fit';
+    }
+
+    /**
+     * Fullscreen exited handler. Remove presentation mode class, set
+     * presentation mode state, and reset zoom.
+     *
+     * @private
+     * @returns {void}
+     */
+    exitfullscreenHandler() {
+        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.NORMAL;
+        this.pdfViewer.currentScaleValue = 'auto';
     }
 }
 
