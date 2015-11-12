@@ -28,5 +28,6 @@
 		}],
 		// We allow unused args
 		"no-unused-vars": [2, {"args": "none"}]
-	}
+	},
+	"extends" : "eslint:recommended"
 }
