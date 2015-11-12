@@ -9,7 +9,6 @@ const CSS_CLASS_HIDDEN = 'hidden';
 const CSS_CLASS_CURRENT_RENDER_MODE = 'current-render-mode';
 const RENDER_MODES = {
 	lit: {
-		//@L10N This will update users default render mode setting label, in their 3D settings panel
 		name: 'Lit',
 		key: 'lit',
 		icon: 'icon-rm-lit',
@@ -18,7 +17,6 @@ const RENDER_MODES = {
 		el: null
 	},
 	unlit: {
-		//@L10N This will update users default render mode setting label, in their 3D settings panel
 		name: 'Unlit',
 		key: 'unlit',
 		icon: 'icon-rm-unlit',
@@ -27,7 +25,6 @@ const RENDER_MODES = {
 		el: null
 	},
 	normals: {
-		//@L10N This will update users default render mode setting label, in their 3D settings panel
 		name: 'Normals',
 		key: 'normals',
 		icon: 'icon-rm-normals',
@@ -36,7 +33,6 @@ const RENDER_MODES = {
 		el: null
 	},
 	wireframe: {
-		//@L10N This will update users default render mode setting label, in their 3D settings panel
 		name: 'Wireframe',
 		key: 'wireframe',
 		icon: 'icon-rm-wireframe',
@@ -45,7 +41,6 @@ const RENDER_MODES = {
 		el: null
 	},
 	flatwire: {
-		//@L10N This will update users default render mode setting label, in their 3D settings panel
 		name: 'Untextured Wireframe',
 		key: 'flatwire',
 		icon: 'icon-rm-untexturedwireframe',
@@ -54,7 +49,6 @@ const RENDER_MODES = {
 		el: null
 	},
 	uv: {
-		//@L10N This will update users default render mode setting label, in their 3D settings panel
 		name: 'UV Overlay',
 		key: 'uv',
 		icon: 'icon-rm-uvoverlay',
