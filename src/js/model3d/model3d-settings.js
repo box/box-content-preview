@@ -143,7 +143,7 @@ class Model3dSettings extends EventEmitter  {
 	 * @returns {void}
 	 */
 	rotateOnCurrentAxis(direction) {
-		var axis = {};
+		let axis = {};
 		axis[this.currentAxis] = direction * ROTATION_STEP;
 
 		this.emit(EVENT_ROTATE_ON_AXIS, axis);

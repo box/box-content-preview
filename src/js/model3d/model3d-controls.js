@@ -78,7 +78,7 @@ class Model3dControls extends EventEmitter  {
 
 		this.el = this.containerEl.querySelector('.model3d-controls');
 
-		this.renderModeCurrent = 'Lit';
+		this.renderModeCurrent = RENDER_MODES.lit.name;
 		this.renderModesButtonEl = this.el.querySelector('.icon-rendermodes');
 		this.renderModesSelectorEl = this.el.querySelector('.render-mode-selector');
 		this.renderModeLitButtonEl = this.el.querySelector('.rm-lit');

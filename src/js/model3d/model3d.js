@@ -167,7 +167,7 @@ class Model3d extends Base {
 		}
 
 		//storing in a dictionary due to progressive texture loading using the same name for different resolutions
-		var key = data.fileName || data.assetName;
+		let key = data.fileName || data.assetName;
 		this.missingAssets[key] = this.missingAssets[key] || data;
 	}
 

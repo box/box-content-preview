@@ -75,7 +75,7 @@ class Model3dRenderer extends EventEmitter {
 	 * @returns {void}
 	 */
 	reset() {
-		var camera = this.getCamera();
+		let camera = this.getCamera();
 
 		// Reset camera settings to default.
 		if (camera) {
@@ -121,7 +121,7 @@ class Model3dRenderer extends EventEmitter {
 	 * @returns {Box3DEntity} The camera instance
 	 */
 	getCamera() {
-		var scene = this.getScene();
+		let scene = this.getScene();
 		return scene ? scene.getChildById('CAMERA_ID') : null;
 	}
 
@@ -139,7 +139,7 @@ class Model3dRenderer extends EventEmitter {
 	 * @returns {void} nothing
 	 */
 	initBox3d(options) {
-		var resourceLoader,
+		let resourceLoader,
 		opts = {};
 
 		// Initialize global modules.
@@ -195,7 +195,7 @@ class Model3dRenderer extends EventEmitter {
 				inputSettings: INPUT_SETTINGS,
 				resourceLoader
 			}, () => {
-				var app = box3d.assetRegistry.getAssetById('APP_ASSET_ID');
+				let app = box3d.assetRegistry.getAssetById('APP_ASSET_ID');
 				app.load(() => {
 					Cache.set('box3d', box3d);
 					resolve(box3d);
@@ -210,7 +210,7 @@ class Model3dRenderer extends EventEmitter {
 	 * @returns {void}
 	 */
 	loadBox3dFile(fileUrl) {
-		var loader = new VAPI.JSONLoader(this.box3d, fileUrl);
+		let loader = new VAPI.JSONLoader(this.box3d, fileUrl);
 
 		return new Promise((resolve, reject) => {
 			loader
@@ -231,13 +231,13 @@ class Model3dRenderer extends EventEmitter {
 			return;
 		}
 
-		var prefabEntity = collection.where({ type: 'prefab' }, true);
+		let prefabEntity = collection.where({ type: 'prefab' }, true);
 
 		// Traverse the scene and add IBL to every referenced material
 		this.addIblToMaterials();
 
 		if (prefabEntity) {
-			var prefabAsset = this.box3d.assetRegistry.getAssetById(prefabEntity.id);
+			let prefabAsset = this.box3d.assetRegistry.getAssetById(prefabEntity.id);
 			this.addInstanceToScene(prefabAsset, this.getScene(), this.setupSceneLoadedEvent);
 		} else {
 			this.setupSceneLoadedEvent(this.getScene());
@@ -246,7 +246,7 @@ class Model3dRenderer extends EventEmitter {
 		// make sure we add ALL assets to the asset list to destroy
 		collection.each((entity) => {
 			if (entity.isAsset()) {
-				var asset = this.box3d.assetRegistry.getAssetById(entity.id);
+				let asset = this.box3d.assetRegistry.getAssetById(entity.id);
 				this.assets.push(asset);
 			}
 		});
@@ -258,8 +258,8 @@ class Model3dRenderer extends EventEmitter {
 	* @returns {void}
 	*/
 	addIblToMaterials() {
-		var materials = this.box3d.assetRegistry.Materials.assets;
-		var mat, i;
+		let materials = this.box3d.assetRegistry.Materials.assets;
+		let mat, i;
 		for (i in materials) {
 			if (materials.hasOwnProperty(i)) {
 				mat = materials[i];
@@ -358,7 +358,7 @@ class Model3dRenderer extends EventEmitter {
 	 * @returns {void}
 	 */
 	cleanupIblMaps() {
-		var map;
+		let map;
 		if (!this.box3d) {
 			return;
 		}
@@ -445,7 +445,7 @@ class Model3dRenderer extends EventEmitter {
 
 		this.vrEnabled = true;
 
-		var camera = this.getCamera();
+		let camera = this.getCamera();
 
 		let hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
 		hmdComponent.enable();

@@ -16,7 +16,6 @@
     "bluebird": "^2.9.30",
     "chai": "^3.2.0",
     "chai-as-promised": "^5.1.0",
-    "cors": "^2.7.1",
     "css-loader": "^0.21.0",
     "es6-promise": "^3.0.2",
     "eslint": "^1.0.0",

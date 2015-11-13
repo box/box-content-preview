@@ -38,7 +38,7 @@ class Preview {
 
     /**
      * Returns the box file content api url
-     * 
+     *
      * @param {id} file box file id
      * @private
      * @returns {String}
@@ -49,19 +49,19 @@ class Preview {
 
     /**
      * Initializes the container for preview.
-     * 
+     *
      * @param {String|HTMLElement} container where to load the preview
      * @param {Boolean} hasNavigation If we allow navigation.
      * @private
      * @returns {void}
      */
     setup(container, hasNavigation = false) {
-        
+
         if (typeof container === 'string') {
             // Get the container dom element if a selector was passed instead.
             container = document.querySelector(container);
         } else if (!container) {
-            // Create the container if nothing was passed.        
+            // Create the container if nothing was passed.
             container = document.body.appendChild(document.createElement('div'));
             container.className = 'box-preview-container';
         }
@@ -70,8 +70,8 @@ class Preview {
         this.container = container;
 
         // Prepare the container by adding our viewer wrapper.
-        this.container.innerHTML = '<div class="box-preview"></div>' + CRAWLER;     
-        
+        this.container.innerHTML = '<div class="box-preview"></div>' + CRAWLER;
+
         // Position the container as absolute so that the children
         // can be positioned absolute, this includes the viewer wrapper
         // as well as the left and right navigation arrows.
@@ -93,7 +93,7 @@ class Preview {
 
     /**
      * Loads the preview for a file.
-     * 
+     *
      * @param {String} id File to preview
      * @private
      * @returns {Promise}
@@ -125,7 +125,7 @@ class Preview {
 
     /**
      * Loads a preview from cache.
-     * 
+     *
      * @param {Object} file File to preview
      * @param {Boolean} [checkStaleness] Check for cache staleness
      * @private
@@ -144,7 +144,7 @@ class Preview {
             .then((response) => response.json())
             .then((file) => {
                 this.cache[file.id] = file;
-                // Reload the preview 
+                // Reload the preview
             });
         }
 
@@ -153,7 +153,7 @@ class Preview {
 
     /**
      * Loads a preview from the server.
-     * 
+     *
      * @param {String} id File id to preview
      * @private
      * @returns {Promise}
@@ -178,7 +178,7 @@ class Preview {
 
     /**
      * Loads a viewer.
-     * 
+     *
      * @private
      * @returns {Promise}
      */
@@ -191,7 +191,7 @@ class Preview {
 
         // Save the reference to the current loader being used
         this.loader = this.getLoader(this.file);
-        
+
         // Finally load the preview using the above loader
         if (this.loader && typeof this.loader.load === 'function') {
             return this.loader.load(this.file, this.container, this.options);
@@ -200,14 +200,14 @@ class Preview {
 
     /**
      * Builds a list of required XHR headers.
-     * 
+     *
      * @private
      * @returns {Object}
      */
     getRequestHeaders() {
-        let headers = {  
+        let headers = {
             'Authorization': 'Bearer ' + this.options.token,
-            'X-Rep-Hints': 'original|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (Browser.canPlayDash() ? '|dash|filmstrip' : '|mp4')
+            'X-Rep-Hints': 'original|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (Browser.canPlayDash() ? '|dash|filmstrip' : '|mp4|3d')
         }
 
         if (this.options.sharedLink) {
@@ -219,7 +219,7 @@ class Preview {
 
     /**
      * Prefetches a file and preview assets
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -227,7 +227,7 @@ class Preview {
 
         let currentIndex = this.files.indexOf(this.file.id);
         let count = 0;
-        
+
         // Starting with the next file, prefetch specific numbers of files.
         for (let i = currentIndex + 1; count < PREFETCH_COUNT && i < this.files.length; i++) {
 
@@ -269,12 +269,12 @@ class Preview {
             }).catch((err) => {
                 // no-op
             });
-        }        
+        }
     }
 
     /**
      * Determines a preview loader
-     * 
+     *
      * @param {Object} file File to preview
      * @private
      * @returns {Object}
@@ -287,7 +287,7 @@ class Preview {
 
     /**
      * Shows navigation arrows
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -313,7 +313,7 @@ class Preview {
 
     /**
      * Updates navigation arrows
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -321,7 +321,7 @@ class Preview {
         let currentIndex = this.files.indexOf(this.file.id);
         let left = document.querySelector('.box-preview-navigate-left');
         let right = document.querySelector('.box-preview-navigate-right');
-        
+
         left.classList.add(CLASS_HIDDEN);
         right.classList.add(CLASS_HIDDEN);
 
@@ -336,7 +336,7 @@ class Preview {
 
     /**
      * Shows the prior preview
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -390,7 +390,7 @@ class Preview {
         // preview.js is loaded from, by the browser.
         let scriptSrc = document.querySelector('script[src*="preview.js"]').src;
         let anchor = document.createElement('a');
-        
+
         anchor.href = scriptSrc;
         this.options.location = {
             origin: anchor.origin,
@@ -416,7 +416,7 @@ class Preview {
             this.files = typeof file === 'string' ? [file] : [file.id];
         }
     }
-    
+
 
     //--------------------------------------------------------------------------
     // Public
@@ -424,7 +424,7 @@ class Preview {
 
     /**
      * Primary function to show a preview.
-     * 
+     *
      * @param {String|Object} file box file object or id
      * @param {Array[String]} files ids of files
      * @param {Object} options
@@ -432,10 +432,10 @@ class Preview {
      * @returns {Promise}
      */
     show(file, options) {
-        
+
         // Options
         this.parseOptions(file, options);
-        
+
         // Check if file id was passed in or a well formed file object
         // Cache the file in the files array so that we don't prefetch it.
         // If we don't have the file data, we create an empty object.
@@ -449,7 +449,7 @@ class Preview {
             // File object was passed in
             this.file = this.cache[file.id] = file;
         }
-        
+
         // Setup the UI. Navigation is only shown if we are prevewing a collection
         // and if the client has not prevented us from showing the navigation.
         this.setup(options.container, this.files.length > 1 && this.options.navigation !== false);
@@ -460,7 +460,7 @@ class Preview {
 
     /**
      * Sets the authorization token that may have expired.
-     * 
+     *
      * @public
      * @returns {void}
      */
