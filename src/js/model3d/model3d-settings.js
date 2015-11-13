@@ -12,6 +12,12 @@ const CSS_CLASS_HIDDEN = 'hidden';
 const CSS_CLASS_CURRENT_AXIS = 'current-axis';
 const ROTATION_STEP = 90;
 
+/**
+ * Model3dSettings
+ * This class handles the UI for the 3D model settings. This includes editing of
+ * metadata values for orientation and default render mode.
+ * @class
+ */
 @autobind
 class Model3dSettings extends EventEmitter  {
 	/**

@@ -160,9 +160,9 @@
 
 /*----- Model3D ------*/
 .icon-rendermodes {
-	width: 17px;
-	height: 17px;
-	-shalam-sprite: 'controls/rendermodes.png' dest-size(16px 16px);
+    width: 17px;
+    height: 17px;
+    -shalam-sprite: 'controls/rendermodes.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -211px -500px;
     background: url(../img/sprite.png) -36px -394px/128px 422px;
@@ -170,9 +170,9 @@
 }
 
 .icon-reset {
-	width: 19px;
-	height: 16px;
-	-shalam-sprite: 'controls/reset.png' dest-size(19px 16px);
+    width: 19px;
+    height: 16px;
+    -shalam-sprite: 'controls/reset.png' dest-size(19px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -80px -500px;
     background: url(../img/sprite.png) -22px -360px/128px 422px;
@@ -180,9 +180,9 @@
 }
 
 .icon-rm-lit {
-	width: 17px;
-	height: 17px;
-	-shalam-sprite: 'controls/rendermode-lit.png' dest-size(16px 16px);
+    width: 17px;
+    height: 17px;
+    -shalam-sprite: 'controls/rendermode-lit.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -227px -500px;
     background: url(../img/sprite.png) -54px -394px/128px 422px;
@@ -190,9 +190,9 @@
 }
 
 .icon-rm-unlit {
-	width: 17px;
-	height: 17px;
-	-shalam-sprite: 'controls/rendermode-unlit.png' dest-size(16px 16px);
+    width: 17px;
+    height: 17px;
+    -shalam-sprite: 'controls/rendermode-unlit.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -179px -500px;
     background: url(../img/sprite.png) -43px -360px/128px 422px;
@@ -200,9 +200,9 @@
 }
 
 .icon-rm-normals {
-	width: 17px;
-	height: 17px;
-	-shalam-sprite: 'controls/rendermode-normals.png' dest-size(16px 16px);
+    width: 17px;
+    height: 17px;
+    -shalam-sprite: 'controls/rendermode-normals.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -195px -500px;
     background: url(../img/sprite.png) -18px -394px/128px 422px;
@@ -210,9 +210,9 @@
 }
 
 .icon-rm-wireframe {
-	width: 17px;
-	height: 17px;
-	-shalam-sprite: 'controls/rendermode-wireframe.png' dest-size(16px 16px);
+    width: 17px;
+    height: 17px;
+    -shalam-sprite: 'controls/rendermode-wireframe.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -99px -500px;
     background: url(../img/sprite.png) 0 -394px/128px 422px;
@@ -220,9 +220,9 @@
 }
 
 .icon-rm-untexturedwireframe {
-	width: 17px;
-	height: 17px;
-	-shalam-sprite: 'controls/rendermode-untexturedwireframe.png' dest-size(16px 16px);
+    width: 17px;
+    height: 17px;
+    -shalam-sprite: 'controls/rendermode-untexturedwireframe.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -115px -500px;
     background: url(../img/sprite.png) -61px -360px/128px 422px;
@@ -230,9 +230,9 @@
 }
 
 .icon-rm-uvoverlay {
-	width: 17px;
-	height: 17px;
-	-shalam-sprite: 'controls/rendermode-uvoverlay.png' dest-size(16px 16px);
+    width: 17px;
+    height: 17px;
+    -shalam-sprite: 'controls/rendermode-uvoverlay.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -131px -500px;
     background: url(../img/sprite.png) -79px -360px/128px 422px;
@@ -240,9 +240,9 @@
 }
 
 .icon-fullscreen {
-	width: 18px;
-	height: 18px;
-	-shalam-sprite: 'controls/expand.png' dest-size(16px 16px);
+    width: 18px;
+    height: 18px;
+    -shalam-sprite: 'controls/expand.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -147px -500px;
     background: url(../img/sprite.png) -221.7142857142857px -822.8571428571428px/292.57142857142856px 964.5714285714286px;
@@ -250,9 +250,9 @@
 }
 
 .icon-minimize {
-	width: 16px;
-	height: 20px;
-	-shalam-sprite: 'controls/contract.png' dest-size(16px 16px);
+    width: 16px;
+    height: 20px;
+    -shalam-sprite: 'controls/contract.png' dest-size(16px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -163px -500px;
     background: url(../img/sprite.png) -169.60000000000002px -576px/204.8px 675.2px;
@@ -260,9 +260,9 @@
 }
 
 .icon-vr-toggle {
-	width: 24px;
-	height: 16px;
-	-shalam-sprite: 'controls/controls-vr.png' dest-size(24px 16px);
+    width: 24px;
+    height: 16px;
+    -shalam-sprite: 'controls/controls-vr.png' dest-size(24px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) 0 -480px;
     background: url(../img/sprite.png) -43.826086956521735px -264.5333333333333px/133.56521739130434px 450.1333333333333px;
@@ -270,9 +270,9 @@
 }
 
 .icon-cog {
-	width: 21px;
-	height: 21px;
-	-shalam-sprite: 'controls/settings-cog.png' dest-size(20px 20px);
+    width: 21px;
+    height: 21px;
+    -shalam-sprite: 'controls/settings-cog.png' dest-size(20px 20px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -20px -500px;
     background: url(../img/sprite.png) -110px -410px/160px 527.5px;
@@ -280,9 +280,9 @@
 }
 
 .icon-setting-arrow-left {
-	width: 6px;
-	height: 10px;
-	-shalam-sprite: 'controls/settings-arrowleft.png' dest-size(6px 10px);
+    width: 6px;
+    height: 10px;
+    -shalam-sprite: 'controls/settings-arrowleft.png' dest-size(6px 10px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -249px -500px;
     background: url(../img/sprite.png) -80px -394px/128px 422px;
@@ -290,9 +290,9 @@
 }
 
 .icon-setting-arrow-right {
-	width: 6px;
-	height: 10px;
-	-shalam-sprite: 'controls/settings-arrowright.png' dest-size(6px 10px);
+    width: 6px;
+    height: 10px;
+    -shalam-sprite: 'controls/settings-arrowright.png' dest-size(6px 10px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -243px -500px;
     background: url(../img/sprite.png) -72px -394px/128px 422px;

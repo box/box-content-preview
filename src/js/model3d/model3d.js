@@ -22,6 +22,11 @@ const CSS_CLASS_MODEL3D = 'box-preview-model3d';
 const MODEL3D_LOAD_TIMEOUT_IN_MILLIS = 5000;
 const MISSING_MAX = 4;
 
+/**
+ * Model3d
+ * This is the entry point for the model3d preview.
+ * @class
+ */
 @autobind
 class Model3d extends Base {
 	/**

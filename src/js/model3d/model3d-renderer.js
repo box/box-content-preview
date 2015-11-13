@@ -20,6 +20,12 @@ const INPUT_SETTINGS = {
 	}
 };
 
+/**
+ * Model3dRenderer
+ * This class handles rendering the preview of the 3D model using the Box3D
+ * Runtime library.
+ * @class
+ */
 @autobind
 class Model3dRenderer extends EventEmitter {
 	/**
@@ -256,10 +262,10 @@ class Model3dRenderer extends EventEmitter {
 	*/
 	addIblToMaterials() {
 		let materials = this.box3d.assetRegistry.Materials.assets;
-		let mat, i;
-		for (i in materials) {
+
+		for (let i in materials) {
 			if (materials.hasOwnProperty(i)) {
-				mat = materials[i];
+				let mat = materials[i];
 				mat.setProperty('useSceneLights', false);
 				mat.setProperty('useEnvironmentMap', true);
 				mat.setProperty('diffuseEnvironmentMap2D', 'HDR_DIFF_ENV_MAP');
@@ -355,14 +361,15 @@ class Model3dRenderer extends EventEmitter {
 	 * @returns {void}
 	 */
 	cleanupIblMaps() {
-		let map;
 		if (!this.box3d) {
 			return;
 		}
-		map = this.box3d.getEntityById('HDR_SPEC_ENV_MAP');
+
+		let map = this.box3d.getEntityById('HDR_SPEC_ENV_MAP');
 		if (map) {
 			map.unload();
 		}
+
 		map = this.box3d.getEntityById('HDR_DIFF_ENV_MAP');
 		if (map) {
 			map.unload();
@@ -427,14 +434,26 @@ class Model3dRenderer extends EventEmitter {
 		}
 	}
 
+	/**
+	 * Handles entering fullscreen mode
+	 * @returns {void}
+	 */
 	enterFullscreen() {
 		// Nothing for now
 	}
 
+	/**
+	 * Handles exiting fullscreen mode
+	 * @returns {void}
+	 */
 	exitFullscreen() {
 		this.disableVr();
 	}
 
+	/**
+	 * Enable the VR system (HMD)
+	 * @returns {void}
+	 */
 	enableVr() {
 		if (!this.vrDevice || this.vrEnabled) {
 			return;
@@ -454,6 +473,10 @@ class Model3dRenderer extends EventEmitter {
 		this.box3d.getBaseRenderer().setAttribute('clearColor', 0x000000);
 	}
 
+	/**
+	 * Disable the VR system (HMD)
+	 * @returns {void}
+	 */
 	disableVr() {
 		if (!this.vrDevice || !this.vrEnabled) {
 			return;

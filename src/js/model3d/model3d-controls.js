@@ -58,6 +58,13 @@ const RENDER_MODES = {
 	}
 };
 
+
+/**
+ * Model3dControls
+ * This class handles the UI for 3d preview controls. This includes Reset,
+ * Render Mode selection, VR and fullscreen buttons.
+ * @class
+ */
 @autobind
 class Model3dControls extends EventEmitter  {
 	/**
@@ -96,6 +103,10 @@ class Model3dControls extends EventEmitter  {
 		this.attachEventHandlers();
 	}
 
+	/**
+	 * Destroy handler
+	 * @returns {void}
+	 */
 	destroy() {
 		this.detachEventHandlers();
 	}
@@ -114,7 +125,7 @@ class Model3dControls extends EventEmitter  {
 		this.renderModeUntexturedWireframeButtonEl.addEventListener('click', this.handleSelectRenderModeFlatwire);
 		this.renderModeUVOverlayButtonEl.addEventListener('click', this.handleSelectRenderModeUv);
 		this.resetButtonEl.addEventListener('click', this.handleReset);
-		this.vrButtonEl.addEventListener('click', this.handleToggleVr)
+		this.vrButtonEl.addEventListener('click', this.handleToggleVr);
 	}
 
 	/**
@@ -131,7 +142,7 @@ class Model3dControls extends EventEmitter  {
 		this.renderModeUntexturedWireframeButtonEl.removeEventListener('click', this.handleSelectRenderModeFlatwire);
 		this.renderModeUVOverlayButtonEl.removeEventListener('click', this.handleSelectRenderModeUv);
 		this.resetButtonEl.removeEventListener('click', this.handleReset);
-		this.vrButtonEl.removeEventListener('click', this.handleToggleVr)
+		this.vrButtonEl.removeEventListener('click', this.handleToggleVr);
 	}
 
 	/**
@@ -150,6 +161,10 @@ class Model3dControls extends EventEmitter  {
 		this.renderModesSelectorEl.classList.toggle(CSS_CLASS_HIDDEN);
 	}
 
+	/**
+	 * Handle toggle VR event
+	 * @returns {void}
+	 */
 	handleToggleVr() {
 		if (this.vrEnabled) {
 			this.vrEnabled = false;
