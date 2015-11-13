@@ -34,7 +34,8 @@ var DEFAULT_SCALE = 1.0;
 var UNKNOWN_SCALE = 0;
 var MAX_AUTO_SCALE = 1.25;
 var SCROLLBAR_PADDING = 40;
-var VERTICAL_PADDING = 5;
+// @NOTE(tjin): change vertical padding from 5 to 0
+var VERTICAL_PADDING = 0;
 
 // optimised CSS custom property getter/setter
 var CustomStyle = (function CustomStyleClosure() {
@@ -2509,7 +2510,7 @@ var PDFViewer = (function pdfViewer() {
       if (!this.pdfDocument) {
         return;
       }
-      
+
       var pageView = this._pages[pageNumber - 1];
 
       if (this.isInPresentationMode) {
@@ -3255,4 +3256,3 @@ var PDFHistory = (function () {
   PDFJS.getFileName = getFileName;
   PDFJS.ProgressBar = ProgressBar;
 }).call((typeof window === 'undefined') ? this : window);
-

@@ -12,6 +12,8 @@
 .box-preview-doc-rotate-left-icon:before,
 .box-preview-doc-previous-page-icon:before,
 .box-preview-doc-next-page-icon:before,
+.box-preview-presentation-previous-page-icon:before,
+.box-preview-presentation-next-page-icon:before,
 .box-preview-media-expand-icon:before,
 .box-preview-media-play-icon:before,
 .box-preview-media-volume-icon:before,
@@ -32,8 +34,8 @@
 .box-preview-media-expand-icon:before {
     -shalam-sprite: '../img/dark/expand.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -320px -160px;
-    background: url(../img/sprite.png) -66px -139px/256px 160px;
+    background: url(../img/sprite.compat.png) -360px -160px;
+    background: url(../img/sprite.png) -110px -141px/256px 162px;
     /* end shalam */
 }
 
@@ -43,8 +45,8 @@
 .box-preview-is-fullscreen .box-preview-media-expand-icon:before {
     -shalam-sprite: '../img/dark/collapse.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -340px -160px;
-    background: url(../img/sprite.png) -152px -90px/256px 160px;
+    background: url(../img/sprite.compat.png) -380px -160px;
+    background: url(../img/sprite.png) -174px -91px/256px 162px;
     /* end shalam */
 }
 
@@ -56,7 +58,7 @@
     -shalam-sprite: '../img/zoomin.png' dest-size(20px 20px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -100px -160px;
-    background: url(../img/sprite.png) -212px -174px/512px 320px;
+    background: url(../img/sprite.png) -212px -174px/512px 324px;
     /* end shalam */
 }
 
@@ -65,8 +67,8 @@
 .box-preview-doc-zoom-out-icon:before {
     -shalam-sprite: '../img/zoomout.png' dest-size(20px 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -220px -160px;
-    background: url(../img/sprite.png) -436px -186px/512px 320px;
+    background: url(../img/sprite.compat.png) -240px -160px;
+    background: url(../img/sprite.png) -480px -188px/512px 324px;
     /* end shalam */
 }
 
@@ -77,7 +79,7 @@
     -shalam-sprite: '../img/rotateleft.png' dest-size(20px 20px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -120px -160px;
-    background: url(../img/sprite.png) -236px -176px/512px 320px;
+    background: url(../img/sprite.png) -236px -176px/512px 324px;
     /* end shalam */
 }
 
@@ -87,7 +89,7 @@
     -shalam-sprite: '../img/dark/up.png' dest-size(20px 20px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -140px -160px;
-    background: url(../img/sprite.png) -130px -89px/256px 160px;
+    background: url(../img/sprite.png) -130px -89px/256px 162px;
     /* end shalam */
 }
 
@@ -95,7 +97,23 @@
     -shalam-sprite: '../img/dark/down.png' dest-size(20px 20px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -160px -160px;
-    background: url(../img/sprite.png) -88px -140px/256px 160px;
+    background: url(../img/sprite.png) -152px -90px/256px 162px;
+    /* end shalam */
+}
+
+.box-preview-presentation-previous-page-icon:before {
+    -shalam-sprite: '../img/dark/left.png' dest-size(20px 20px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) -180px -160px;
+    background: url(../img/sprite.png) -132px -142px/256px 162px;
+    /* end shalam */
+}
+
+.box-preview-presentation-next-page-icon:before {
+    -shalam-sprite: '../img/dark/right.png' dest-size(20px 20px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) -200px -160px;
+    background: url(../img/sprite.png) -196px -92px/256px 162px;
     /* end shalam */
 }
 
@@ -104,55 +122,55 @@
 .box-preview-media-play-icon:before {
     -shalam-sprite: '../img/dark/play.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -180px -160px;
-    background: url(../img/sprite.png) -174px -91px/256px 160px;
+    background: url(../img/sprite.compat.png) -220px -160px;
+    background: url(../img/sprite.png) -218px -93px/256px 162px;
     /* end shalam */
 }
 
 .box-preview-media-is-playing .box-preview-media-play-icon:before {
     -shalam-sprite: '../img/dark/pause.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -200px -160px;
-    background: url(../img/sprite.png) -196px -92px/256px 160px;
+    background: url(../img/sprite.compat.png) -80px -160px;
+    background: url(../img/sprite.png) -84px -86px/256px 162px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon:before {
     -shalam-sprite: '../img/dark/volumebase.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -80px -160px;
-    background: url(../img/sprite.png) -84px -86px/256px 160px;
+    background: url(../img/sprite.compat.png) -260px -160px;
+    background: url(../img/sprite.png) 0 -136px/256px 162px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon-mute:before {
     -shalam-sprite: '../img/dark/volume0.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -240px -160px;
-    background: url(../img/sprite.png) -230px -94px/256px 160px;
+    background: url(../img/sprite.compat.png) -280px -160px;
+    background: url(../img/sprite.png) -22px -137px/256px 162px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon-low:before {
     -shalam-sprite: '../img/dark/volume1.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -260px -160px;
-    background: url(../img/sprite.png) 0 -136px/256px 160px;
+    background: url(../img/sprite.compat.png) -300px -160px;
+    background: url(../img/sprite.png) -44px -138px/256px 162px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon-medium:before {
     -shalam-sprite: '../img/dark/volume2.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -280px -160px;
-    background: url(../img/sprite.png) -22px -137px/256px 160px;
+    background: url(../img/sprite.compat.png) -320px -160px;
+    background: url(../img/sprite.png) -66px -139px/256px 162px;
     /* end shalam */
 }
 
 .box-preview-media-volume-icon-high:before {
     -shalam-sprite: '../img/dark/volume3.png' dest-size(20px, 20px);
     /* shalam! */;
-    background: url(../img/sprite.compat.png) -300px -160px;
-    background: url(../img/sprite.png) -44px -138px/256px 160px;
+    background: url(../img/sprite.compat.png) -340px -160px;
+    background: url(../img/sprite.png) -88px -140px/256px 162px;
     /* end shalam */
 }
