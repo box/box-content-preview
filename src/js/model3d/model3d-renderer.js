@@ -66,8 +66,7 @@ class Model3dRenderer extends EventEmitter {
 	 */
 	load(jsonUrl, options) {
 		return this.initBox3d(options)
-			.then(this.loadBox3dFile.bind(this,jsonUrl))
-			.catch(Promise.reject);
+			.then(this.loadBox3dFile.bind(this,jsonUrl));
 	}
 
 	/**
@@ -187,18 +186,16 @@ class Model3dRenderer extends EventEmitter {
 			container: this.containerEl
 		});
 
-		let box3d = this.box3d;
-
 		return new Promise((resolve, reject) => {
-			box3d.initialize({
+			this.box3d.initialize({
 				entities: new VAPI.EntityCollection(sceneEntities(options.location.baseURI)),
 				inputSettings: INPUT_SETTINGS,
 				resourceLoader
 			}, () => {
-				let app = box3d.assetRegistry.getAssetById('APP_ASSET_ID');
+				let app = this.box3d.assetRegistry.getAssetById('APP_ASSET_ID');
 				app.load(() => {
-					Cache.set('box3d', box3d);
-					resolve(box3d);
+					Cache.set('box3d', this.box3d);
+					resolve(this.box3d);
 				});
 			});
 		});
