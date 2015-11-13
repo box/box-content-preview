@@ -46,14 +46,14 @@ class Base extends EventEmitter {
         // Save handles to the container and make its position relative
         // so that the childen can be positioned absolute
         this.containerEl = container.firstElementChild;
-        
+
         // Attach event listeners
         this.addCommonListeners();
     }
 
     /**
      * Adds common event listeners.
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -82,29 +82,29 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     toggleFullscreen() {
-        fullscreen.toggle(this.containerEl);    
+        fullscreen.toggle(this.containerEl);
     }
 
     /**
      * Resizing logic
-     * 
+     *
      * @private
      * @returns {void}
      */
     resize() {
-        // overriden    
+        // overriden
     }
 
     /**
      * Destroys the viewer
-     * 
+     *
      * @private
      * @returns {void}
      */
     destroy() {
         this.removeAllListeners();
-        this.containerEl.innerHTML = '';    
-    }        
+        this.containerEl.innerHTML = '';
+    }
 }
 
 export default Base;

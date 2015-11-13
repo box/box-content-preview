@@ -63,7 +63,7 @@
     -shalam-sprite: '../img/rightarrow.png' dest-size(40px 40px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -160px -320px;
-    background: url(../img/sprite.png) -82px -164px/128px 422px;
+    background: url(../img/sprite.png) -82px -164px/128px 436px;
     /* end shalam */
 }
 
@@ -71,6 +71,6 @@
     -shalam-sprite: '../img/leftarrow.png' dest-size(40px 40px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) -200px -320px;
-    background: url(../img/sprite.png) 0 -248px/128px 422px;
+    background: url(../img/sprite.png) 0 -248px/128px 436px;
     /* end shalam */
 }

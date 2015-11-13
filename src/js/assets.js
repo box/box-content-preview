@@ -140,7 +140,7 @@ class Assets {
      * Determines if this loader can be used
      * 
      * @param {Object} file box file
-     * @return {Boolean}
+     * @returns {Boolean}
      */
     canLoad(file) {
         return !!this.determineViewer(file);
@@ -150,7 +150,7 @@ class Assets {
      * Chooses a viewer based on file extension.
      * 
      * @param {Object} file box file
-     * @return {Object} the viewer to use
+     * @returns {Object} the viewer to use
      */
     determineViewer(file) {
         return this.viewers.find((viewer) => {
@@ -165,7 +165,7 @@ class Assets {
      * 
      * @param {Object} file box file
      * @param {Object} viewer the chosen viewer
-     * @return {Object} the representation to load
+     * @returns {Object} the representation to load
      */
     determineRepresentation(file, viewer) {
         return file.representations.entries.find((entry) => viewer.REPRESENTATION === entry.representation);
@@ -177,7 +177,7 @@ class Assets {
      * @param {Object} file box file
      * @param {string|HTMLElement} container where to load the preview
      * @param {Object} [options] optional options
-     * @return {Promise}
+     * @returns {Promise}
      */
     load(file, container, options) {
 
@@ -219,25 +219,11 @@ class Assets {
     }
 
     /**
-     * Destroys a previewer
-     * 
-     * @param {Object} file box file
-     * @param {string|HTMLElement} container where to load the preview
-     * @param {Object} [options] optional options
-     * @return {void}
-     */
-    destroy() {
-        if (this.previewer && typeof this.previewer.destroy === 'function') {
-            this.previewer.destroy();
-        }
-    }
-
-    /**
      * Prefetches assets
      * 
      * @param {Object} file box file
      * @param {Object} [options] optional options
-     * @return {void}
+     * @returns {void}
      */
     prefetch(file, options) {
         // Create an asset path creator function
@@ -257,6 +243,31 @@ class Assets {
 
         let img = document.createElement('img');
         img.src = this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options);
+    }
+
+    /**
+     * An empty function that can be overriden just incase
+     * some loader wants to do some initialization stuff
+     * 
+     * @param {Object} options
+     * @returns {void}
+     */
+    init(options) {
+        // empty
+    }
+
+    /**
+     * Destroys a previewer
+     * 
+     * @param {Object} file box file
+     * @param {string|HTMLElement} container where to load the preview
+     * @param {Object} [options] optional options
+     * @returns {void}
+     */
+    destroy() {
+        if (this.previewer && typeof this.previewer.destroy === 'function') {
+            this.previewer.destroy();
+        }
     }
 }
 

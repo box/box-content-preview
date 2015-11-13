@@ -15,18 +15,18 @@ const VIEWERS = [
     },
     {
         REPRESENTATION: 'pdf',
-        EXTENSIONS: [ 'doc', 'docx', 'gdoc', 'gsheet', 'msg', 'odp', 'odt', 'ods', 'pdf', 'rtf', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl' ],
-        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'document.js' ],
-        STYLESHEETS: [ 'pdf_viewer.css', 'document.css' ],
-        CONSTRUCTOR: 'Document'
-    },
-    {
-        REPRESENTATION: 'pdf',
         EXTENSIONS: [ 'ppt', 'pptx' ],
         SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'presentation.js' ],
         STYLESHEETS: [ 'pdf_viewer.css', 'presentation.css' ],
         CONSTRUCTOR: 'Presentation'
     },
+    {
+        REPRESENTATION: 'pdf',
+        EXTENSIONS: [ 'doc', 'docx', 'gdoc', 'gsheet', 'msg', 'odp', 'odt', 'ods', 'pdf', 'ppt', 'pptx', 'rtf', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl' ],
+        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'document.js' ],
+        STYLESHEETS: [ 'pdf_viewer.css', 'document.css' ],
+        CONSTRUCTOR: 'Document'
+    }
 ];
 
 class DocLoader extends AssetLoader {
@@ -38,6 +38,19 @@ class DocLoader extends AssetLoader {
     constructor() {
         super();
         this.viewers = VIEWERS;
+    }
+
+    /**
+     * Some initialization stuff
+     *
+     * @override
+     * @param {Object} options
+     * @returns {void}
+     */
+    init(options) {
+        // Since the pdf worker is pretty big, lets prefetch it
+        let pdfWorkerUrl = this.createAssetUrl(options.location.hrefTemplate)('pdf.worker.js');
+        this.prefetchAssets([ pdfWorkerUrl ]);
     }
 }
 

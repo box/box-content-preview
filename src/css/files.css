@@ -12,7 +12,7 @@
     -shalam-sprite: '../img/files_160/160-blank.png' dest-size(160px, 160px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) 0 0;
-    background: url(../img/sprite.png) 0 0/256px 844px;
+    background: url(../img/sprite.png) 0 0/256px 872px;
     /* end shalam */
 }
 
@@ -20,7 +20,7 @@
     -shalam-sprite: '../img/files_160/160-flv.png' dest-size(160px, 160px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) 0 -160px;
-    background: url(../img/sprite.png) 0 -328px/256px 844px;
+    background: url(../img/sprite.png) 0 -328px/256px 872px;
     /* end shalam */
 }
 
@@ -28,6 +28,6 @@
     -shalam-sprite: '../img/files_160/160-zip.png' dest-size(160px, 160px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) 0 -320px;
-    background: url(../img/sprite.png) 0 -164px/256px 844px;
+    background: url(../img/sprite.png) 0 -164px/256px 872px;
     /* end shalam */
 }
