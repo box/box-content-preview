@@ -75,7 +75,8 @@ module.exports = languagesArray.map(function(language, index) {
             mp4: js + '/media/mp4.js',
             mp3: js + '/media/mp3.js',
             dash: js + '/media/dash.js',
-            unsupported: js + '/unsupported/unsupported.js'
+            unsupported: js + '/unsupported/unsupported.js',
+            model3d: js + '/model3d/model3d.js'
         },
         output: {
             path: dist,
@@ -103,7 +104,6 @@ module.exports = languagesArray.map(function(language, index) {
         stats: {
             colors: true
         },
-
         devtool: 'inline-source-map'
     };
 });
