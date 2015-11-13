@@ -16,6 +16,7 @@ const CRAWLER = '<div class="box-preview-crawler-wrapper"><div class="box-previe
 let Box = global.Box || {};
 let Promise = global.Promise;
 let location = global.location;
+let document = global.document;
 
 @autobind
 class Preview {
@@ -34,6 +35,52 @@ class Preview {
 
         // Current file being previewed
         this.file = {};
+
+        // Options
+        this.options = {};
+
+        // Determine the location of preview.js since all
+        // other files are relative to it.
+        this.determinePreviewLocation();
+
+        // Call init of loaders
+        this.initLoaders();        
+    }
+
+    /**
+     * All preview assets are relative to preview.js. Here we create a location
+     * object that mimics the window location object and points to where
+     * preview.js is loaded from, by the browser.
+     * @returns {void}
+     */
+    determinePreviewLocation() {
+        let scriptSrc = document.querySelector('script[src*="preview.js"]').src;
+        let anchor = document.createElement('a');
+        
+        anchor.href = scriptSrc;
+        this.options.location = {
+            origin: anchor.origin,
+            host: anchor.host,
+            hostname: anchor.hostname,
+            pathname: anchor.pathname,
+            search: anchor.search,
+            protocol: anchor.protocol,
+            port: anchor.port,
+            href: anchor.href,
+            hrefTemplate: anchor.href.replace('preview.js', '{{asset_name}}'),
+            baseURI: (anchor.origin + anchor.pathname).replace('preview.js', ''),
+            staticBaseURI: (anchor.origin + anchor.pathname).replace('preview.js', 'static/')
+        };
+
+        anchor = undefined;    
+    }
+
+    initLoaders() {
+        loaders.forEach((loader) => {
+            if (typeof loader.init === 'function') {
+                loader.init(this.options);
+            }
+        });
     }
 
     /**
@@ -372,9 +419,7 @@ class Preview {
      * @return {void}
      */
     parseOptions(file, options) {
-        // Use all the passed in options
-        this.options = options;
-
+        
         // API host should be available
         if (!options.api) {
             throw 'Missing API Host!';
@@ -385,26 +430,14 @@ class Preview {
             throw 'Missing Auth Token!';
         }
 
-        // All preview assets are relative to preview.js. Here we create a location
-        // object that mimics the window location object and points to where
-        // preview.js is loaded from, by the browser.
-        let scriptSrc = document.querySelector('script[src*="preview.js"]').src;
-        let anchor = document.createElement('a');
-        
-        anchor.href = scriptSrc;
-        this.options.location = {
-            origin: anchor.origin,
-            host: anchor.host,
-            hostname: anchor.hostname,
-            pathname: anchor.pathname,
-            search: anchor.search,
-            protocol: anchor.protocol,
-            port: anchor.port,
-            href: anchor.href,
-            hrefTemplate: anchor.href.replace('preview.js', '{{asset_name}}'),
-            baseURI: (anchor.origin + anchor.pathname).replace('preview.js', ''),
-            staticBaseURI: (anchor.origin + anchor.pathname).replace('preview.js', 'static/')
-        };
+        // Save the reference to the api endpoint
+        this.options.api = options.api;
+
+        // Save the reference to the auth token
+        this.options.token = options.token;
+
+        // Save the reference to any additional custom options
+        this.options.viewerOptions = options.viewerOptions;
 
         // Normalize by putting file inside files array if the latter
         // is empty. If its not empty, then it is assumed that file is
