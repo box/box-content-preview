@@ -39,7 +39,7 @@ class MediaControls extends EventEmitter  {
 
         this.timeScrubberEl = this.wrapperEl.querySelector('.box-preview-media-time-scrubber-container');
         this.volScrubberEl = this.wrapperEl.querySelector('.box-preview-media-volume-scrubber-container');
-        
+
         this.playButtonEl = this.wrapperEl.querySelector('.box-preview-media-play-icon');
 
         this.volButtonEl = this.wrapperEl.querySelector('.box-preview-media-controls-volume-control');
@@ -47,7 +47,7 @@ class MediaControls extends EventEmitter  {
 
         this.timecodeEl = this.wrapperEl.querySelector('.box-preview-media-controls-timecode');
         this.durationEl = this.wrapperEl.querySelector('.box-preview-media-controls-duration');
-        
+
         this.fullscreenButtonEl = this.wrapperEl.querySelector('.box-preview-media-expand-icon');
         this.hdButtonEl = this.wrapperEl.querySelector('.box-preview-media-hd-icon');
 
@@ -61,7 +61,7 @@ class MediaControls extends EventEmitter  {
      */
     destroy() {
         this.removeAllListeners();
-        
+
         document.removeEventListener('mouseup', this.timeScrubbingStopHandler);
         document.removeEventListener('mousemove', this.filmstripShowHandler);
 
@@ -72,7 +72,7 @@ class MediaControls extends EventEmitter  {
             this.timeScrubber.destroy();
             this.timeScrubber = undefined;
         }
-        
+
         if (this.volScrubber) {
             this.volScrubber.destroy();
             this.volScrubber = undefined;
@@ -85,12 +85,12 @@ class MediaControls extends EventEmitter  {
 
         this.wrapperEl = undefined;
         this.timeScrubberEl = undefined;
-        this.volScrubberEl = undefined;        
+        this.volScrubberEl = undefined;
         this.playButtonEl = undefined;
         this.volButtonEl = undefined;
         this.volLevelButtonEl = undefined;
         this.timecodeEl = undefined;
-        this.durationEl = undefined;        
+        this.durationEl = undefined;
         this.fullscreenButtonEl = undefined;
         this.hdButtonEl = undefined;
         this.filmstripContainerEl = undefined;
@@ -112,7 +112,7 @@ class MediaControls extends EventEmitter  {
         this.volScrubber = new Scrubber(this.volScrubberEl, 'Volume');
         this.volScrubber.on('valuechange', (value) => {
             this.emit('volumeupdate', value);
-        });        
+        });
     }
 
     /**
@@ -263,12 +263,14 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     resizeTimeScrubber() {
-        this.timeScrubber.resize(32);
+        if (this.timeScrubber) {
+            this.timeScrubber.resize(32);
+        }
     }
 
     /**
      * Sets the filmstrip
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -278,11 +280,13 @@ class MediaControls extends EventEmitter  {
 
     /**
      * Sets up the filmstrip
-     * 
+     *
      * @private
+     * @param {String} filmstripUrl
+     * @param {Number} aspect
      * @returns {void}
      */
-    initFilmstrip(filmstripUrl) {
+    initFilmstrip(filmstripUrl, aspect) {
 
         this.filmstripUrl = filmstripUrl;
 
@@ -295,8 +299,8 @@ class MediaControls extends EventEmitter  {
         this.filmstripTimeEl = this.filmstripContainerEl.appendChild(document.createElement('div'));
         this.filmstripTimeEl.className = 'box-preview-media-filmstrip-timecode';
 
-        
-        let frameWidth = 90 * this.aspect;
+
+        let frameWidth = 90 * aspect;
 
         // Unfortunately the filmstrip is jpg. jpg files have a width limit.
         // So ffmpeg ends up creating filmstrip elements in seperate rows.
@@ -338,7 +342,7 @@ class MediaControls extends EventEmitter  {
 
     /**
      * Adjusts the video time
-     * 
+     *
      * @param {Event} event
      * @private
      * @returns {void}
@@ -361,7 +365,7 @@ class MediaControls extends EventEmitter  {
 
     /**
      * Shows the filmstrip frame
-     * 
+     *
      * @private
      * @param {Event} event
      * @returns {void}

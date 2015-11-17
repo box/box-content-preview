@@ -82,9 +82,9 @@ class Dash extends VideoBase {
     loadDashPlayer() {
         this.player = new shaka.player.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
-        this.player.enableAdaptation(true);
         this.player.configure({
-            streamBufferSize: MAX_BUFFER
+            streamBufferSize: MAX_BUFFER,
+            enableAdaptation: true
         });
         this.player.load(this.createDashSource());
     }
@@ -138,7 +138,9 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     hdHandler() {
-        this.player.enableAdaptation(false);
+        this.player.configure({
+            enableAdaptation: false
+        });
 
         let potentiallyCachedHDVideos = cache.get('potentiallyCachedHDVideos') || {};
 
@@ -210,7 +212,7 @@ class Dash extends VideoBase {
         let filmstrip = this.options.file.representations.entries.find((entry) => 'filmstrip' === entry.representation)
         if (filmstrip) {
             this.filmstripUrl = this.options.contentUrlFactory(this.options.api, this.options.file.representations.content_base_url, filmstrip.content, filmstrip.properties, this.options.token);
-            this.mediaControls.initFilmstrip(this.filmstripUrl);
+            this.mediaControls.initFilmstrip(this.filmstripUrl, this.aspect);
         }
     }
 
@@ -243,8 +245,10 @@ class Dash extends VideoBase {
             // If this file was flagged for HD in a prior preview, then force HD
             // This takes advantage of the fact that some segments may be cached
             if (potentiallyCachedHDVideos[this.mediaUrl]) {
-                this.player.enableAdaptation(false);
-                this.player.selectVideoTrack(largestRepresentationId);
+                this.player.configure({
+                    enableAdaptation: false
+                });
+                this.player.selectVideoTrack(this.largestRepresentationId);
             }
         }
     }

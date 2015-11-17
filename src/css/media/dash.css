@@ -17,7 +17,7 @@
 
 .box-preview-media-filmstrip-container {
     position: absolute;
-    height: 110px; /* 90px frame height + 20px for timecode */
+    height: 110px; /* 90px filmstrip frame height + 20px for timecode */
     width: 160px;
     bottom: 60px;
     left: 0;
@@ -39,4 +39,5 @@
     width: 100%;
     background-color: #1b1b1b;
     font-size: 13px;
+    line-height: 18px; /* 110px container height - 2px border - 90px filmstrip frame height */
 }
