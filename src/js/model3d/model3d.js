@@ -10,9 +10,9 @@ import Model3dRenderer from './model3d-renderer';
 import {EVENT_ENABLE_VR, EVENT_DISABLE_VR, EVENT_LOAD, EVENT_MISSING_ASSET, EVENT_RESET,
 	EVENT_ROTATE_ON_AXIS, EVENT_SET_RENDER_MODE, EVENT_SCENE_LOADED, EVENT_SHOW_VR_BUTTON,
 	EVENT_TOGGLE_FULLSCREEN, EVENT_ENTER_FULLSCREEN, EVENT_EXIT_FULLSCREEN} from './model3d-constants';
-import 'file?name=boxsdk-0.0.2.js!../../third-party/boxsdk-0.0.2.js';
-import 'file?name=box3d-resource-loader-0.0.3.js!../../third-party/box3d-resource-loader-0.0.3.js';
-import 'file?name=box3d-runtime-0.7.8.js!../../third-party/box3d-runtime-0.7.8.js';
+import 'file?name=boxsdk-0.0.2.js!../../third-party/model3d/boxsdk-0.0.2.js';
+import 'file?name=box3d-resource-loader-0.0.3.js!../../third-party/model3d/box3d-resource-loader-0.0.3.js';
+import 'file?name=box3d-runtime-0.7.8.js!../../third-party/model3d/box3d-runtime-0.7.8.js';
 
 let Promise = global.Promise;
 let document = global.document;
