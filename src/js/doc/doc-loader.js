@@ -49,7 +49,7 @@ class DocLoader extends AssetLoader {
      */
     init(options) {
         // Since the pdf worker is pretty big, lets prefetch it
-        let pdfWorkerUrl = this.createAssetUrl(options.location.hrefTemplate)('pdf.worker.js');
+        let pdfWorkerUrl = this.assetUrlFactory(options.location.hrefTemplate)('pdf.worker.js');
         this.prefetchAssets([ pdfWorkerUrl ]);
     }
 }

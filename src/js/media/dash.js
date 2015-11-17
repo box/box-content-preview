@@ -4,6 +4,7 @@ import '../../css/media/dash.css';
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 import cache from '../cache';
+import fullscreen from '../fullscreen';
 import 'file?name=shaka-player.js!../../third-party/media/shaka-player.js';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
@@ -50,11 +51,9 @@ class Dash extends VideoBase {
      * @pubic
      * @returns {Promise}
      */
-    load(mediaUrl, filmstripUrl, posterUrl) {
+    load(mediaUrl) {
 
         this.mediaUrl = mediaUrl;
-        this.filmstripUrl = filmstripUrl;
-        this.posterUrl = posterUrl;
 
         return new Promise((resolve, reject) => {
 
@@ -74,6 +73,12 @@ class Dash extends VideoBase {
         });
     }
 
+    /**
+     * Creates a new shaka player
+     *
+     * @private
+     * @returns {void}
+     */
     loadDashPlayer() {
         this.player = new shaka.player.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
@@ -84,6 +89,12 @@ class Dash extends VideoBase {
         this.player.load(this.createDashSource());
     }
 
+    /**
+     * Creates a new dash bandwidth estimator
+     *
+     * @private
+     * @returns {void}
+     */
     createEstimator() {
         let estimator = new shaka.util.EWMABandwidthEstimator();
         estimator.supportsCaching = function() {
@@ -92,10 +103,115 @@ class Dash extends VideoBase {
         return estimator;
     }
 
+    /**
+     * Creates a new dash player source
+     *
+     * @private
+     * @returns {void}
+     */
     createDashSource() {
         let source = new shaka.player.DashVideoSource(this.mediaUrl, null, this.createEstimator());
         source.setNetworkCallback(this.requestInterceptor());
         return source;
+    }
+
+    /**
+     * An extension to fix representation URLs with shared names
+     *
+     * @private
+     * @returns {Function} function to add shared name
+     */
+    requestInterceptor() {
+        let token = this.options.token;
+
+        return (url, headers) => {
+            if (url && url.indexOf(token) === -1) {
+                headers.authorization = 'Bearer ' + token;
+            }
+        };
+    }
+
+    /**
+     * Handler for hd video
+     *
+     * @private
+     * @returns {void}
+     */
+    hdHandler() {
+        this.player.enableAdaptation(false);
+
+        let potentiallyCachedHDVideos = cache.get('potentiallyCachedHDVideos') || {};
+
+        if (this.wrapperEl.classList.contains(CSS_CLASS_HD)) {
+            this.player.selectVideoTrack(this.largestRepresentationId + 1);
+            // If we are switching to SD, unflag this file to be HD on subsequent views
+            delete potentiallyCachedHDVideos[this.mediaUrl];
+        } else {
+            this.player.selectVideoTrack(this.largestRepresentationId);
+            // If we are switching to HD, flag this file to be HD on subsequent views as we may have cached segments
+            potentiallyCachedHDVideos[this.mediaUrl] = true;
+        }
+
+        cache.set('potentiallyCachedHDVideos', potentiallyCachedHDVideos);
+    }
+
+    /**
+     * Handles adaptation changes
+     *
+     * @private
+     * @param {Object} adaptation
+     * @returns {void}
+     */
+    adaptationHandler(adaptation) {
+        if (adaptation.contentType === 'video') {
+            if (adaptation.bandwidth === this.maxBandwidth) {
+                this.wrapperEl.classList.add(CSS_CLASS_HD);
+            } else {
+                this.wrapperEl.classList.remove(CSS_CLASS_HD);
+            }
+        }
+    }
+
+    /**
+     * Adds event listeners to the media controls.
+     * Makes changes to the media element.
+     *
+     * @private
+     * @returns {void}
+     */
+    addEventListenersForMediaControls() {
+        super.addEventListenersForMediaControls();
+
+        this.mediaControls.on('togglehd', () => {
+            this.hdHandler();
+        });
+    }
+
+    /**
+     * Loads the UI
+     *
+     * @private
+     * @returns {void}
+     */
+    loadUI() {
+        super.loadUI();
+        this.calculateVideoDimensions();
+        this.resize();
+        this.loadFilmStrip();
+    }
+
+    /**
+     * Loads the film strip
+     *
+     * @private
+     * @returns {void}
+     */
+    loadFilmStrip() {
+        let filmstrip = this.options.file.representations.entries.find((entry) => 'filmstrip' === entry.representation)
+        if (filmstrip) {
+            this.filmstripUrl = this.options.contentUrlFactory(this.options.api, this.options.file.representations.content_base_url, filmstrip.content, filmstrip.properties, this.options.token);
+            this.mediaControls.initFilmstrip(this.filmstripUrl);
+        }
     }
 
     /**
@@ -134,91 +250,77 @@ class Dash extends VideoBase {
     }
 
     /**
-     * An extension to fix representation URLs with shared names
-     *
+     * Resizes the video to be of fixed dimensions.
+     * Should work in most common scenarios.
+     * 
      * @private
-     * @returns {Function} function to add shared name
-     */
-    requestInterceptor() {
-        let query;
-
-        if (this.options.sharedName) {
-            query = 'shared_name=' + this.options.sharedName;
-        }
-
-        return (url, headers) => {
-            return (!query || url.indexOf(query) > -1) ? url : url + '?' + query;
-        };
-    }
-
-    /**
-     * Changes video adaptation
-     *
      * @returns {void}
      */
-    hdHandler() {
-        this.player.enableAdaptation(false);
+    resize() {
 
-        let potentiallyCachedHDVideos = cache.get('potentiallyCachedHDVideos') || {};
+        let width = this.videoWidth || 0;
+        let height = this.videoHeight || 0;
+        let viewport = this.wrapperEl.getBoundingClientRect();
 
-        if (this.wrapperEl.classList.contains(CSS_CLASS_HD)) {
-            this.player.selectVideoTrack(this.largestRepresentationId + 1);
-            // If we are switching to SD, unflag this file to be HD on subsequent views
-            delete potentiallyCachedHDVideos[this.mediaUrl];
-        } else {
-            this.player.selectVideoTrack(this.largestRepresentationId);
-            // If we are switching to HD, flag this file to be HD on subsequent views as we may have cached segments
-            potentiallyCachedHDVideos[this.mediaUrl] = true;
+        // We need the width to be atleast wide enough for the controls
+        // to not overflow and fit properly
+        if (width < 420) {
+            width = 420;
+            height = width / this.aspect;
         }
 
-        cache.set('potentiallyCachedHDVideos', potentiallyCachedHDVideos);
-    }
+        // Reset any prior set widths and heights
+        this.mediaEl.style.width = '';
+        this.mediaEl.style.height = '';
 
-    /**
-     * Handles adaptation changes
-     *
-     * @param {Object} adaptation
-     * @returns {void}
-     */
-    adaptationHandler(adaptation) {
-        if (adaptation.contentType === 'video') {
-            if (adaptation.bandwidth === this.maxBandwidth) {
-                this.wrapperEl.classList.add(CSS_CLASS_HD);
+        // Add a new width or height. Don't need to add both
+        // since the video will auto adjust the other dimension accordingly.
+        if (fullscreen.isFullscreen()) {
+
+            // Case 1: Full screen mode, stretch the video
+            // to fit the whole screen irrespective of its width and height.
+
+            if (this.aspect >= 1) {
+                this.mediaEl.style.width = viewport.width + 'px';
             } else {
-                this.wrapperEl.classList.remove(CSS_CLASS_HD);
+                this.mediaEl.style.height = viewport.height + 'px';
+            }
+
+        } else if (width <= viewport.width && height <= viewport.height) {
+
+            // Case 2: The video ends up fitting within the viewport of preview
+            // For this case, just set the video player dimensions to match the
+            // actual video's dimenstions.
+
+            if (this.aspect >= 1) {
+                this.mediaEl.style.width = width + 'px';
+            } else {
+                this.mediaEl.style.height = height + 'px';
+            }
+
+        } else {
+
+            // Case 3: The video overflows the viewport of preview
+            // For this case, try fitting in the video by reducing
+            // either its width or its height.
+
+            // If video were to be stretched vertically, then figure out by how much and if that causes the width to overflow
+            let percentIncreaseInHeightToFitViewport = (viewport.height - height) / height;
+            let newWidthIfHeightUsed = width + (width * percentIncreaseInHeightToFitViewport);
+
+            // If video were to be stretched horizontally, then figure out how much and if that causes the height to overflow
+            let percentIncreaseInWidthToFitViewport = (viewport.width - width) / width;
+            let newHeightIfWidthUsed = height + (height * percentIncreaseInWidthToFitViewport);
+
+            // One of the two cases will end up fitting
+            if (newHeightIfWidthUsed <= viewport.height) {
+                this.mediaEl.style.width = viewport.width + 'px';
+            } else if (newWidthIfHeightUsed <= viewport.width) {
+                this.mediaEl.style.height = viewport.height + 'px';
             }
         }
-    }
 
-    /**
-     * Adds event listeners to the media controls.
-     * Makes changes to the media element.
-     *
-     * @private
-     * @returns {void}
-     */
-    addEventListenersForMediaControls() {
-        super.addEventListenersForMediaControls();
-
-        this.mediaControls.on('togglehd', () => {
-            this.hdHandler();
-        });
-    }
-
-    /**
-     * Loads the controls
-     *
-     * @private
-     * @returns {void}
-     */
-    loadUI() {
-        super.loadUI();
-        this.calculateVideoDimensions();
-
-        if (this.options.sharedName) {
-            this.filmstripUrl = this.filmstripUrl + '?' + 'shared_name=' + this.options.sharedName;
-        }
-        this.mediaControls.initFilmstrip(this.filmstripUrl);
+        super.resize();
     }
 }
 

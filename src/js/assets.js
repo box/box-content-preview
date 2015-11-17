@@ -24,13 +24,12 @@ class Assets {
     }
     
     /**
-     * Converts a json object to query string
-     * @param {Object} obj Object to change to query string
-     * @returns {String} Query string
+     * Creates the content URLs
+     * @returns {String} content urls
      */
-    generateContentUrl(baseUrl, contentPath, properties, options) {
-        properties.access_token = options.token;
-        return options.api + baseUrl + contentPath + this.generateQueryString(properties);
+    contentUrlFactory(host, baseUrl, contentPath, properties, token) {
+        properties.access_token = token;
+        return host + baseUrl + contentPath + this.generateQueryString(properties);
     }
     
     /**
@@ -128,12 +127,12 @@ class Assets {
     }
 
     /**
-     * Returns the asset path
-     * @param {String} asset url
+     * Factory to create asset URLs
+     * @param {String} template url
      * @returns {Function}
      */
-    createAssetUrl(asset) {
-        return (name) => asset.replace('{{asset_name}}', name);
+    assetUrlFactory(template) {
+        return (name) => template.replace('{{asset_name}}', name);
     }
 
     /**
@@ -182,13 +181,19 @@ class Assets {
     load(file, container, options) {
 
         // Create an asset path creator function
-        let assetPathCreator = this.createAssetUrl(options.location.hrefTemplate);
+        let assetPathCreator = this.assetUrlFactory(options.location.hrefTemplate);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
 
         // Determine the representation to use
         let representation = this.determineRepresentation(file, viewer);
+
+        // Save the factory for creating content urls
+        options.contentUrlFactory = this.contentUrlFactory;
+
+        // Save the factory for creating asset urls
+        options.assetUrlFactory = assetPathCreator;
 
         // Save CSS entries as options
         options.stylesheets = viewer.STYLESHEETS.map(assetPathCreator);
@@ -213,7 +218,7 @@ class Assets {
             });
 
             // Load the representations and return the instantiated previewer object
-            return this.previewer.load(this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options));
+            return this.previewer.load(this.contentUrlFactory(options.api, file.representations.content_base_url, representation.content, representation.properties, options.token));
 
         });
     }
@@ -227,7 +232,7 @@ class Assets {
      */
     prefetch(file, options) {
         // Create an asset path creator function
-        let assetPathCreator = this.createAssetUrl(options.location.hrefTemplate);
+        let assetPathCreator = this.assetUrlFactory(options.location.hrefTemplate);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
@@ -242,7 +247,7 @@ class Assets {
         this.prefetchAssets(viewer.SCRIPTS.map(assetPathCreator));
 
         let img = document.createElement('img');
-        img.src = this.generateContentUrl(file.representations.content_base_url, representation.content, representation.properties, options);
+        img.src = this.contentUrlFactory(options.api, file.representations.content_base_url, representation.content, representation.properties, options.token);
     }
 
     /**
