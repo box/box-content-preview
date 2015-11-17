@@ -254,7 +254,7 @@ class Preview {
     getRequestHeaders() {
         let headers = {
             'Authorization': 'Bearer ' + this.options.token,
-            'X-Rep-Hints': 'original|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048' + (Browser.canPlayDash() ? '|dash|filmstrip' : '|mp4|3d')
+            'X-Rep-Hints': '3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3' + (Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4')
         }
 
         if (this.options.sharedLink) {

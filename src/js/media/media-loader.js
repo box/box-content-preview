@@ -31,10 +31,10 @@ const VIEWERS = [
     },
     {
         REPRESENTATION: 'mp3',
-        EXTENSIONS: [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp3', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv' ],
-        SCRIPTS: [ 'image.js' ],
-        STYLESHEETS: [ 'image.css' ],
-        CONSTRUCTOR: 'Image'
+        EXTENSIONS: [ 'aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma' ],
+        SCRIPTS: [ 'mp3.js' ],
+        STYLESHEETS: [ 'mp3.css' ],
+        CONSTRUCTOR: 'MP3'
     }
 ];
 
