@@ -7,6 +7,10 @@ import DocBase from './doc-base';
 let Box = global.Box || {};
 let document = global.document;
 
+const DEFAULT_SCALE_DELTA = 1.1;
+const MAX_SCALE = 10.0;
+const MIN_SCALE = 0.1;
+
 /**
  * Presentation viewer for PowerPoint presentations
  *
@@ -27,6 +31,18 @@ class Presentation extends DocBase {
 
         // Document specific class
         this.docEl.classList.add('box-preview-doc-presentation');
+    }
+
+    /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        if (this.docEl) {
+            this.docEl.removeEventListener('mousewheel', this.mousewheelHandler);
+        }
+
+        super.destroy();
     }
 
     /**

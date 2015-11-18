@@ -1,8 +1,9 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import Controls from '../controls';
 import Base from '../base';
+import Controls from '../controls';
+import fullscreen from '../fullscreen';
 
 import 'file?name=compatibility.js!../../third-party/doc/compatibility.js';
 import 'file?name=pdf.worker.js!../../third-party/doc/pdf.worker.js';
@@ -16,9 +17,6 @@ let Box = global.Box || {};
 let PDFJS = global.PDFJS;
 
 const DOC_LOAD_TIMEOUT_IN_MILLIS = 60000;
-const DEFAULT_SCALE_DELTA = 1.1;
-const MAX_SCALE = 10.0;
-const MIN_SCALE = 0.1;
 
 const PRESENTATION_MODE_STATE = {
     UNKNOWN: 0,
@@ -43,6 +41,29 @@ class DocBase extends Base {
 
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
+    }
+
+    /**
+     * [destructor]
+     * @returns {void}
+     */
+    destroy() {
+        // Remove object event listeners
+        fullscreen.removeListener('enter', this.enterfullscreenHandler);
+        fullscreen.removeListener('exit', this.exitfullscreenHandler);
+
+        // Remove DOM event listeners
+        if (this.docEl) {
+            this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
+            this.docEl.removeEventListener('pagesrendered', this.pagesrenderedHandler);
+        }
+
+        // Destroy the controls
+        if (this.controls && typeof this.controls.destroy === 'function') {
+            this.controls.destroy();
+        }
+
+        super.destroy();
     }
 
     /**
@@ -80,6 +101,92 @@ class DocBase extends Base {
     }
 
     /**
+     * Re-sizing logic.
+     *
+     * @public
+     * @returns {void}
+     */
+    resize() {
+        this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
+        this.pdfViewer.update();
+    }
+
+    /**
+     * Go to previous page
+     *
+     * @public
+     * @returns {void}
+     */
+    previousPage() {
+        this.pdfViewer.currentPageNumber--;
+    }
+
+    /**
+     * Go to next page
+     *
+     * @public
+     * @returns {void}
+     */
+    nextPage() {
+        this.pdfViewer.currentPageNumber++;
+    }
+
+    /**
+     * Rotates documents by delta degrees
+     *
+     * @param {number} delta Degrees to rotate
+     * @public
+     * @returns {void}
+     */
+    rotateLeft(delta = -90) {
+        let pageNumber = this.pdfViewer.currentPageNumber;
+
+        // Calculate and set rotation
+        this.pageRotation = this.pageRotation || 0;
+        this.pageRotation = (this.pageRotation + 360 + delta) % 360;
+        this.pdfViewer.pagesRotation = this.pageRotation;
+
+        // Re-render and scroll to appropriate page
+        this.pdfViewer.forceRendering();
+        this.pdfViewer.scrollPageIntoView(pageNumber);
+    }
+
+    /**
+     * Enters or exits fullscreen
+     *
+     * @public
+     * @returns {void}
+     */
+    toggleFullscreen() {
+        super.toggleFullscreen();
+
+        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
+    }
+
+    /**
+     * Adds event listeners for document controls
+     *
+     * @public
+     * @returns {void}
+     */
+    addEventListenersForDocControls() {
+        // overriden
+    }
+
+    /**
+     * Adds event listeners for document element
+     *
+     * @public
+     * @returns {void}
+     */
+    addEventListenersForDocElement() {
+        fullscreen.addListener('enter', this.enterfullscreenHandler);
+        fullscreen.addListener('exit', this.exitfullscreenHandler);
+    }
+
+    /*----- Private Helpers -----*/
+
+    /**
      * Loads PDF.js with provided PDF
      *
      * @param {String} pdfUrl The URL of the PDF to load
@@ -102,20 +209,10 @@ class DocBase extends Base {
         });
 
         // When page structure is initialized, set default zoom and load controls
-        this.docEl.addEventListener('pagesinit', () => {
-            this.pdfViewer.currentScaleValue = 'auto';
-
-            if (this.options.ui !== false) {
-                this.loadUI();
-            }
-        });
+        this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
 
         // When first page is rendered, message that preview has loaded
-        this.docEl.addEventListener('pagerendered', () => {
-            resolve(this);
-            this.loaded = true;
-            this.emit('load');
-        });
+        this.docEl.addEventListener('pagerendered', this.pagesrenderedHandler(resolve));
     }
 
     /**
@@ -131,88 +228,33 @@ class DocBase extends Base {
         this.addEventListenersForDocElement();
     }
 
+    /*----- Event Handlers -----*/
+
     /**
-     * Resizing logic.
+     * Handler for 'pagesinit' event
      *
      * @private
      * @returns {void}
      */
-    resize() {
-        this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
-        this.pdfViewer.update();
+    pagesinitHandler() {
+        this.pdfViewer.currentScaleValue = 'auto';
+
+        if (this.options.ui !== false) {
+            this.loadUI();
+        }
     }
 
     /**
-     * Adds event listeners for document controls
+     * Handler for 'pagesrendered' event
      *
+     * @param {Function} resolve Resolution handler
      * @private
      * @returns {void}
      */
-    addEventListenersForDocControls() {
-        // overriden
-    }
-
-    /**
-     * Navigate to previous page
-     *
-     * @private
-     * @returns {void}
-     */
-    previousPage() {
-        this.pdfViewer.currentPageNumber--;
-    }
-
-    /**
-     * Navigate to next page
-     *
-     * @private
-     * @returns {void}
-     */
-    nextPage() {
-        this.pdfViewer.currentPageNumber++;
-    }
-
-    /**
-     * Rotates documents by delta degrees
-     *
-     * @param {number} delta Degrees to rotate
-     * @private
-     * @returns {void}
-     */
-    rotateLeft(delta = -90) {
-        let pageNumber = this.pdfViewer.currentPageNumber;
-
-        // Calculate and set rotation
-        this.pageRotation = this.pageRotation || 0;
-        this.pageRotation = (this.pageRotation + 360 + delta) % 360;
-        this.pdfViewer.pagesRotation = this.pageRotation;
-
-        // Re-render and scroll to appropriate page
-        this.pdfViewer.forceRendering();
-        this.pdfViewer.scrollPageIntoView(pageNumber);
-    }
-
-    /**
-     * Enters or exits fullscreen
-     *
-     * @private
-     * @returns {void}
-     */
-    toggleFullscreen() {
-        super.toggleFullscreen();
-
-        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
-    }
-
-    /**
-     * Adds event listeners for document element
-     *
-     * @private
-     * @returns {void}
-     */
-    addEventListenersForDocElement() {
-        this.on('enterfullscreen', this.enterfullscreenHandler);
-        this.on('exitfullscreen', this.exitfullscreenHandler);
+    pagesrenderedHandler(resolve) {
+        resolve(this);
+        this.loaded = true;
+        this.emit('load');
     }
 
     /**
