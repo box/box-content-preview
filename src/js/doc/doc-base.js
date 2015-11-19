@@ -18,6 +18,7 @@ let Box = global.Box || {};
 let PDFJS = global.PDFJS;
 
 const DOC_LOAD_TIMEOUT_IN_MILLIS = 60000;
+const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 
 const PRESENTATION_MODE_STATE = {
     UNKNOWN: 0,
@@ -25,6 +26,8 @@ const PRESENTATION_MODE_STATE = {
     CHANGING: 2,
     FULLSCREEN: 3
 };
+
+
 
 @autobind
 class DocBase extends Base {
@@ -134,6 +137,17 @@ class DocBase extends Base {
     }
 
     /**
+     * Go to specified page
+     *
+     * @param {number} pageNum Page to navigate to
+     * @public
+     * @returns {void}
+     */
+    setPage(pageNum) {
+        this.pdfViewer.currentPageNumber = pageNum;
+    }
+
+    /**
      * Rotates documents by delta degrees
      *
      * @param {number} delta Degrees to rotate
@@ -165,27 +179,6 @@ class DocBase extends Base {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
 
-    /**
-     * Adds event listeners for document controls
-     *
-     * @public
-     * @returns {void}
-     */
-    addEventListenersForDocControls() {
-        // overriden
-    }
-
-    /**
-     * Adds event listeners for document element
-     *
-     * @public
-     * @returns {void}
-     */
-    addEventListenersForDocElement() {
-        fullscreen.addListener('enter', this.enterfullscreenHandler);
-        fullscreen.addListener('exit', this.exitfullscreenHandler);
-    }
-
     /*----- Private Helpers -----*/
 
     /**
@@ -214,7 +207,10 @@ class DocBase extends Base {
         this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
 
         // When first page is rendered, message that preview has loaded
-        this.docEl.addEventListener('pagerendered', this.pagesrenderedHandler(resolve));
+        this.docEl.addEventListener('pagerendered', this.pagerenderedHandler(resolve));
+
+        // Update page number when page changes
+        this.docEl.addEventListener('pagechange', this.pagechangeHandler);
     }
 
     /**
@@ -228,6 +224,98 @@ class DocBase extends Base {
 
         this.addEventListenersForDocControls();
         this.addEventListenersForDocElement();
+
+        this.initPageNumEl();
+    }
+
+    initPageNumEl() {
+        let pageNumEl = this.controls.controlsEl.querySelector('.box-preview-doc-page-num');
+
+        // Update total page number
+        let totalPageEl = pageNumEl.querySelector('.box-preview-doc-total-pages');
+        totalPageEl.textContent = this.pdfViewer.pagesCount;
+
+        // Keep reference to page number input and current page elements
+        this.pageNumInputEl = pageNumEl.querySelector('.box-preview-doc-page-num-input');
+        this.currentPageEl = pageNumEl.querySelector('.box-preview-doc-current-page');
+    }
+
+    /**
+     * Adds event listeners for document controls
+     *
+     * @private
+     * @returns {void}
+     */
+    addEventListenersForDocControls() {
+        // overriden
+    }
+
+    /**
+     * Adds event listeners for document element
+     *
+     * @private
+     * @returns {void}
+     */
+    addEventListenersForDocElement() {
+        fullscreen.addListener('enter', this.enterfullscreenHandler);
+        fullscreen.addListener('exit', this.exitfullscreenHandler);
+    }
+
+	/**
+	 * Replaces the page number display with an input box that allows the user to type in a page number
+     *
+     * @private
+	 * @returns {void}
+	 */
+	showPageNumInput() {
+		// show the input box with the current page number selected within it
+        this.controls.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
+
+		this.pageNumInputEl.value = this.currentPageEl.textContent;
+		this.pageNumInputEl.focus();
+		this.pageNumInputEl.select();
+
+		// finish input when input is blurred or enter key is pressed
+        this.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler);
+        this.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler);
+	}
+
+    /**
+	 * Hide the page number input
+	 *
+     * @private
+	 * @returns {void}
+	 */
+	hidePageNumInput() {
+        this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
+        this.pageNumInputEl.removeEventListener('blur', this.pageNumInputBlurHandler);
+        this.pageNumInputEl.removeEventListener('keydown', this.pageNumInputKeydownHandler);
+	}
+
+    /**
+     * Update page number in page control widget
+     *
+     * @param {number} pageNum Nubmer of page to update to
+     * @private
+     * @returns {void}
+     */
+    updateCurrentPage(pageNum) {
+        let pagesCount = this.pdfViewer.pagesCount;
+
+        // refine the page number to fall within bounds
+		if (pageNum > pagesCount) {
+			pageNum = pagesCount;
+		} else if (pageNum < 1) {
+			pageNum = 1;
+		}
+
+        if (this.pageNumInputEl) {
+            this.pageNumInputEl.value = pageNum;
+        }
+
+        if (this.currentPageEl) {
+            this.currentPageEl.textContent = pageNum;
+        }
     }
 
     /*----- Event Handlers -----*/
@@ -253,7 +341,7 @@ class DocBase extends Base {
      * @private
      * @returns {void}
      */
-    pagesrenderedHandler(resolve) {
+    pagerenderedHandler(resolve) {
         if (this.loaded) {
             return;
         }
@@ -262,6 +350,60 @@ class DocBase extends Base {
         this.loaded = true;
         this.emit('load');
     }
+
+    /**
+     * Handler for 'pagechange' event
+     *
+     * @param {Event} event
+     * @private
+     * @returns {void}
+     */
+    pagechangeHandler(event) {
+        let pageNum = event.pageNumber;
+        this.updateCurrentPage(pageNum);
+    }
+
+    /**
+	 * Blur handler for page number input
+	 *
+	 * @param  {Event} event
+     * @private
+	 * @returns {void}
+	 */
+	pageNumInputBlurHandler(event) {
+		let target = event.target,
+			pageNum = parseInt(target.value, 10);
+
+		if (!isNaN(pageNum)) {
+			this.setPage(pageNum);
+		}
+
+		this.hidePageNumInput();
+	}
+
+	/**
+	 * Keydown handler for page number input
+	 *
+	 * @param {Event} event
+     * @private
+	 * @returns {void}
+	 */
+	pageNumInputKeydownHandler(event) {
+		switch(event.which) {
+			case 13: // ENTER
+				this.pageNumInputBlurHandler(event);
+				break;
+
+			case 27: // ESC
+				this.hidePageNumInput();
+
+				event.preventDefault();
+				event.stopPropagation();
+				break;
+
+			// No default
+		}
+	}
 
     /**
      * Fullscreen entered handler. Add presentation mode class, set

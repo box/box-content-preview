@@ -3,6 +3,7 @@
 import '../../css/doc/presentation.css';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
+import pageNumTemplate from 'raw!../../html/doc/page-num-button-content.html';
 
 let Box = global.Box || {};
 let document = global.document;
@@ -45,6 +46,8 @@ class Presentation extends DocBase {
         super.destroy();
     }
 
+    /*----- Private Helpers -----*/
+
     /**
      * Adds event listeners for presentation controls
      *
@@ -55,6 +58,10 @@ class Presentation extends DocBase {
         super.addEventListenersForDocControls();
 
         this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon');
+
+        let buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
+
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon');
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
     }

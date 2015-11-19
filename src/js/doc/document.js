@@ -3,6 +3,7 @@
 import '../../css/doc/document.css';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
+import pageNumTemplate from 'raw!../../html/doc/page-num-button-content.html';
 
 let Box = global.Box || {};
 let document = global.document;
@@ -46,6 +47,42 @@ class Document extends DocBase {
     }
 
     /**
+     * Zoom into document
+     *
+     * @param {number} ticks Number of times to zoom in
+     * @public
+     * @returns {void}
+     */
+    zoomIn(ticks = 1) {
+        let newScale = this.pdfViewer.currentScale;
+        do {
+            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(2);
+            newScale = Math.ceil(newScale * 10) / 10;
+            newScale = Math.min(MAX_SCALE, newScale);
+        } while (--ticks > 0 && newScale < MAX_SCALE);
+        this.pdfViewer.currentScaleValue = newScale;
+    }
+
+    /**
+     * Zoom out of document
+     *
+     * @param {number} ticks Number of times to zoom out
+     * @public
+     * @returns {void}
+     */
+    zoomOut(ticks = 1) {
+        let newScale = this.pdfViewer.currentScale;
+        do {
+            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(2);
+            newScale = Math.floor(newScale * 10) / 10;
+            newScale = Math.max(MIN_SCALE, newScale);
+        } while (--ticks > 0 && newScale > MIN_SCALE);
+        this.pdfViewer.currentScaleValue = newScale;
+    }
+
+    /*----- Private Helpers -----*/
+
+    /**
      * Adds event listeners for document controls
      *
      * @private
@@ -63,42 +100,12 @@ class Document extends DocBase {
         }, 'box-preview-doc-zoom-out-icon');
 
         this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-previous-page-icon');
+
+        let buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
+
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon');
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
-    }
-
-    /**
-     * Zoom into document
-     *
-     * @param {number} ticks Number of times to zoom in
-     * @private
-     * @returns {void}
-     */
-    zoomIn(ticks = 1) {
-        let newScale = this.pdfViewer.currentScale;
-        do {
-            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(2);
-            newScale = Math.ceil(newScale * 10) / 10;
-            newScale = Math.min(MAX_SCALE, newScale);
-        } while (--ticks > 0 && newScale < MAX_SCALE);
-        this.pdfViewer.currentScaleValue = newScale;
-    }
-
-    /**
-     * Zoom out of document
-     *
-     * @param {number} ticks Number of times to zoom out
-     * @private
-     * @returns {void}
-     */
-    zoomOut(ticks = 1) {
-        let newScale = this.pdfViewer.currentScale;
-        do {
-            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(2);
-            newScale = Math.floor(newScale * 10) / 10;
-            newScale = Math.max(MIN_SCALE, newScale);
-        } while (--ticks > 0 && newScale > MIN_SCALE);
-        this.pdfViewer.currentScaleValue = newScale;
     }
 
     /**

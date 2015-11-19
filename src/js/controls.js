@@ -134,10 +134,11 @@ class Controls {
      * @param {string} text
      * @param {function} handler
      * @param {string} [classList]
+     * @param {string} [buttonContent] Optional button content HTML
      * @private
-     * @returns {void}
+     * @returns {HTMLElement} Returns reference to button added
      */
-    add(text, handler, classList = '') {
+    add(text, handler, classList = '', buttonContent = '') {
         let cell = document.createElement('div');
         cell.className = 'box-preview-controls-cell';
 
@@ -145,6 +146,10 @@ class Controls {
         button.setAttribute('aria-label', text);
         button.className = 'box-preview-controls-btn ' + classList;
         button.addEventListener('click', handler);
+
+        if (buttonContent) {
+            button.innerHTML = buttonContent;
+        }
 
         cell.appendChild(button);
         this.controlsEl.appendChild(cell);
@@ -154,6 +159,8 @@ class Controls {
             button: button,
             handler: handler
         });
+
+        return button;
     }
 
 }
