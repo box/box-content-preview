@@ -63,6 +63,9 @@ class DocBase extends Base {
             this.controls.destroy();
         }
 
+        // Release blob
+        URL.revokeObjectURL(this.pdfWorkerBlob);
+
         super.destroy();
     }
 
@@ -80,12 +83,10 @@ class DocBase extends Base {
             let pdfWorkerUrl = this.options.location.hrefTemplate.replace('{{asset_name}}', 'pdf.worker.js');
             let pdfCMapBaseURI = this.options.location.staticBaseURI + 'cmaps/';
 
-            fetch(pdfWorkerUrl)
-                .then((response) => response.blob())
+            fetch(pdfWorkerUrl).then((response) => response.blob())
                 .then((pdfWorkerBlob) => {
-
-                    // TODO(phora) add destroy method so we can URL.revokeObjectURL(pdfworkerBlob);
-                    PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
+                    this.pdfWorkerBlob = pdfWorkerBlob;
+                    PDFJS.workerSrc = URL.createObjectURL(this.pdfWorkerBlob);
                     PDFJS.cMapUrl = pdfCMapBaseURI;
                     PDFJS.cMapPacked = true;
 
@@ -252,6 +253,10 @@ class DocBase extends Base {
      * @returns {void}
      */
     pagesrenderedHandler(resolve) {
+        if (this.loaded) {
+            return;
+        }
+
         resolve(this);
         this.loaded = true;
         this.emit('load');
