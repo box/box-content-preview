@@ -1,6 +1,7 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
+import fetch from 'isomorphic-fetch';
 import Base from '../base';
 import Controls from '../controls';
 import fullscreen from '../fullscreen';

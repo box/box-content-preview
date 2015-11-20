@@ -2,6 +2,7 @@
 
 import '../../css/text/text.css';
 import autobind from 'autobind-decorator';
+import fetch from 'isomorphic-fetch';
 import TextBase from './text-base';
 import 'file?name=highlight.js!../../third-party/text/highlight.js';
 import 'file?name=github.css!../../third-party/text/github.css';
@@ -31,7 +32,7 @@ class PlainText extends TextBase {
 
     /**
      * Loads a swf object.
-     * 
+     *
      * @param {String} textUrl The text file to load
      * @public
      * @returns {Promise}
@@ -41,9 +42,9 @@ class PlainText extends TextBase {
             fetch(textUrl).then((response) => {
                 return response.text();
             }).then((txt) => {
-                this.finishLoading(txt, resolve); 
+                this.finishLoading(txt, resolve);
             });
-            
+
             setTimeout(() => {
                 if (!this.loaded) {
                     reject();
@@ -54,7 +55,7 @@ class PlainText extends TextBase {
 
     /**
      * Loads highlight.js to highlight the file
-     * 
+     *
      * @param {String} txt The text content to load
      * @param {Function} resolve Resolution handler
      * @private
@@ -70,13 +71,13 @@ class PlainText extends TextBase {
 
         // Add our class after highlighting otherwise highlightjs doesnt work
         this.preEl.classList.add('box-preview-text');
-        
+
         resolve(this);
 
         if (this.options.ui !== false) {
             this.loadUI();
         }
-        
+
         this.loaded = true;
         this.emit('load');
     }

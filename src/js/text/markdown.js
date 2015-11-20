@@ -3,6 +3,7 @@
 import '../../css/text/text.css';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
+import fetch from 'isomorphic-fetch';
 import marked from 'marked';
 import 'file?name=highlight.js!../../third-party/text/highlight.js';
 import 'file?name=github.css!../../third-party/text/github.css';
@@ -54,11 +55,11 @@ class MarkDown extends TextBase {
                 if (this.options.ui !== false) {
                     this.loadUI();
                 }
-                
+
                 this.loaded = true;
-                this.emit('load'); 
+                this.emit('load');
             });
-            
+
             setTimeout(() => {
                 if (!this.loaded) {
                     reject();
