@@ -26,12 +26,16 @@
 /* Page num input CSS */
 .box-preview-doc-page-num span {
     display: inline;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .box-preview-doc-page-num-input {
     display: none;
     text-align: center;
+}
+
+.box-preview-controls.show-page-number-input .box-preview-doc-page-num {
+    opacity: 1;
 }
 
 .box-preview-controls.show-page-number-input .box-preview-doc-current-page,

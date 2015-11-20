@@ -67,8 +67,7 @@ class DocBase extends Base {
             this.controls.destroy();
         }
 
-        // Release blob
-        URL.revokeObjectURL(this.pdfWorkerBlob);
+        this.pdfViewer.cleanup();
 
         super.destroy();
     }
@@ -89,12 +88,13 @@ class DocBase extends Base {
 
             fetch(pdfWorkerUrl).then((response) => response.blob())
                 .then((pdfWorkerBlob) => {
-                    this.pdfWorkerBlob = pdfWorkerBlob;
-                    PDFJS.workerSrc = URL.createObjectURL(this.pdfWorkerBlob);
+                    PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
                     PDFJS.cMapUrl = pdfCMapBaseURI;
                     PDFJS.cMapPacked = true;
 
                     this.initViewer(pdfUrl, resolve);
+
+                    URL.revokeObjectURL(pdfWorkerBlob);
 
                     setTimeout(() => {
                         if (!this.loaded) {
@@ -335,20 +335,22 @@ class DocBase extends Base {
     }
 
     /**
-     * Handler for 'pagesrendered' event
+     * Returns handler for 'pagesrendered' event
      *
      * @param {Function} resolve Resolution handler
      * @private
-     * @returns {void}
+     * @returns {Function} Handler
      */
     pagerenderedHandler(resolve) {
-        if (this.loaded) {
-            return;
-        }
+        return () => {
+            if (this.loaded) {
+                return;
+            }
 
-        resolve(this);
-        this.loaded = true;
-        this.emit('load');
+            resolve(this);
+            this.loaded = true;
+            this.emit('load');
+        };
     }
 
     /**
