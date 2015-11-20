@@ -23,6 +23,27 @@
     margin: 0;
 }
 
+/* Page num input CSS */
+.box-preview-doc-page-num span {
+    display: inline;
+    font-size: 12px;
+}
+
+.box-preview-doc-page-num-input {
+    display: none;
+    text-align: center;
+}
+
+.box-preview-controls.show-page-number-input .box-preview-doc-current-page,
+.box-preview-controls.show-page-number-input .box-preview-doc-page-num-divider,
+.box-preview-controls.show-page-number-input .box-preview-doc-total-pages {
+    display: none;
+}
+
+.box-preview-controls.show-page-number-input .box-preview-doc-page-num-input {
+    display: block;
+}
+
 /*---------- Override CSS from generic PDFJS viewer build ----------*/
 .pdfViewer .page {
     box-sizing: content-box !important;
