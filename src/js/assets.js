@@ -1,6 +1,7 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
+import fetch from 'isomorphic-fetch';
 
 const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 
@@ -22,7 +23,7 @@ class Assets {
             return global.encodeURIComponent(key) + '=' + global.encodeURIComponent(obj[key]);
         }).join('&');
     }
-    
+
     /**
      * Creates the content URLs
      * @returns {String} content urls
@@ -31,7 +32,7 @@ class Assets {
         properties.access_token = token;
         return host + baseUrl + contentPath + this.generateQueryString(properties);
     }
-    
+
     /**
      * Create <link> element to prefetch external resource
      * @param {string} url
@@ -66,7 +67,7 @@ class Assets {
         let script = document.createElement('script');
         script.src = url;
         script.async = false;
-        
+
         return [script, new Promise((resolve, reject) => {
             script.addEventListener('load', resolve);
             script.addEventListener('error', reject);
@@ -80,11 +81,11 @@ class Assets {
      */
     prefetchAssets(urls) {
         let head = document.getElementsByTagName('head')[0];
-        
+
         urls.forEach((url) => {
             if (prefetchedAssets.indexOf(url) === -1) {
                 prefetchedAssets.push(url);
-                head.appendChild(this.createPrefetchLink(url)); 
+                head.appendChild(this.createPrefetchLink(url));
             }
         });
     }
@@ -96,11 +97,11 @@ class Assets {
      */
     loadStylesheets(urls) {
         let head = document.getElementsByTagName('head')[0];
-        
+
         urls.forEach((url) => {
             if (loadedAssets.indexOf(url) === -1) {
                 loadedAssets.push(url);
-                head.appendChild(this.createStylesheet(url)); 
+                head.appendChild(this.createStylesheet(url));
             }
         });
     }
@@ -113,13 +114,13 @@ class Assets {
     loadScripts(urls) {
         let head = document.getElementsByTagName('head')[0];
         let promises = [];
-        
+
         urls.forEach((url) => {
             if (loadedAssets.indexOf(url) === -1) {
                 loadedAssets.push(url);
                 let [script, promise] = this.createScript(url);
                 promises.push(promise);
-                head.appendChild(script); 
+                head.appendChild(script);
             }
         });
 
@@ -137,7 +138,7 @@ class Assets {
 
     /**
      * Determines if this loader can be used
-     * 
+     *
      * @param {Object} file box file
      * @returns {Boolean}
      */
@@ -147,7 +148,7 @@ class Assets {
 
     /**
      * Chooses a viewer based on file extension.
-     * 
+     *
      * @param {Object} file box file
      * @returns {Object} the viewer to use
      */
@@ -161,7 +162,7 @@ class Assets {
      * Chooses a representation. Assumes that there will be only
      * one specific representation. In other words we will not have
      * two png representation entries with different properties.
-     * 
+     *
      * @param {Object} file box file
      * @param {Object} viewer the chosen viewer
      * @returns {Object} the representation to load
@@ -172,7 +173,7 @@ class Assets {
 
     /**
      * Loads a previewer
-     * 
+     *
      * @param {Object} file box file
      * @param {string|HTMLElement} container where to load the preview
      * @param {Object} [options] optional options
@@ -225,7 +226,7 @@ class Assets {
 
     /**
      * Prefetches assets
-     * 
+     *
      * @param {Object} file box file
      * @param {Object} [options] optional options
      * @returns {void}
@@ -253,7 +254,7 @@ class Assets {
     /**
      * An empty function that can be overriden just incase
      * some loader wants to do some initialization stuff
-     * 
+     *
      * @param {Object} options
      * @returns {void}
      */
@@ -263,7 +264,7 @@ class Assets {
 
     /**
      * Destroys a previewer
-     * 
+     *
      * @param {Object} file box file
      * @param {string|HTMLElement} container where to load the preview
      * @param {Object} [options] optional options

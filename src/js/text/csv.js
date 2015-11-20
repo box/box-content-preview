@@ -4,6 +4,7 @@ import '../../css/text/csv.css';
 import 'file?name=papaparse.js!../../third-party/text/papaparse.js';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
+import fetch from 'isomorphic-fetch';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Table, Column } from 'fixed-data-table';
@@ -68,7 +69,7 @@ class CSV extends TextBase {
      */
     finishLoading(data, resolve) {
         this.renderCSV(data);
-        
+
         if (this.options.ui !== false) {
             this.loadUI();
         }

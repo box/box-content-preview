@@ -3,7 +3,7 @@
 import '../css/preview.css';
 import autobind from 'autobind-decorator';
 import throttle from 'lodash/function/throttle';
-//import fetch from 'isomorphic-fetch';
+import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import loaders from './loaders';
 
@@ -75,6 +75,14 @@ class Preview {
         anchor = undefined;
     }
 
+
+    /**
+     * Initializes the loaders which may have
+     * an optional init method.
+     *
+     * @private
+     * @returns {void}
+     */
     initLoaders() {
         loaders.forEach((loader) => {
             if (typeof loader.init === 'function') {
