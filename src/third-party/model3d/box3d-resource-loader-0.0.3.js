@@ -69,12 +69,23 @@
 	var _runmodeLoader2 = _interopRequireDefault(_runmodeLoader);
 
 	var Box3DResourceLoader = (function () {
+
+	  /**
+	  * Abstraction of Box asset loading for Box3D
+	  * @param {string} fileId The file id of the model we are viewing
+	  * @param {string} fileVersionId The file version id of the model we are viewing
+	  * @param {object} opts Additional properties to add to the loader.
+	  *  {BoxSDK} boxSdk and {string} apiBase can be added. If {string} token is provided
+	  *  V2 API will be accessible
+	  * @returns {void}
+	  */
+
 	  function Box3DResourceLoader(fileId, fileVersionId) {
 	    var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
 	    _classCallCheck(this, Box3DResourceLoader);
 
-	    if (opts.hasOwnProperty('boxSdk')) {
+	    if (opts.hasOwnProperty('boxSdk') && opts.boxSdk) {
 	      this.boxSdk = opts.boxSdk;
 	    } else {
 	      opts.boxSdk = this.boxSdk = new BoxSDK(opts);
@@ -96,10 +107,10 @@
 	  /**
 	   * Load the specified Box3DAsset.
 	   * @method load
-	   * @param Box3DAsset asset The Box3DAsset that is being loaded
-	   * @param Object params The criteria for determining which representation to load
-	   * @param Function progress The progress callback
-	   * @returns Promise a promise that resolves the asset data
+	   * @param {Box3DAsset} asset The Box3DAsset that is being loaded
+	   * @param {Object} params The criteria for determining which representation to load
+	   * @param {Function} progress The progress callback
+	   * @returns {Promise} a promise that resolves the asset data
 	   */
 
 	  _createClass(Box3DResourceLoader, [{
@@ -118,7 +129,7 @@
 	    * Interface with BoxSDK to halt a single request
 	    * @method abortRequest
 	    * @param {string} key The key of the XHR that we want to abort
-	    * @return {void}
+	    * @returns {void}
 	    */
 	  }, {
 	    key: 'abortRequest',
@@ -130,7 +141,7 @@
 	    /**
 	    * Interface with BoxSDK to halt all requests currently loading
 	    * @method abortAllRequests
-	    * @return {void}
+	    * @returns {void}
 	    */
 	  }, {
 	    key: 'abortAllRequests',
@@ -192,6 +203,16 @@
 	var V2Loader = (function (_BaseLoader) {
 	  _inherits(V2Loader, _BaseLoader);
 
+	  /**
+	  * Used for loading Box3D Representations from Box V2 Content API
+	  * @param {string} fileId The file id of the model we are viewing
+	  * @param {string} fileVersionId The file version id of the model we are viewing
+	  * @param {object} opts Additional properties to add to the loader.
+	  *   {BoxSDK} boxSdk and {string} apiBase can be added and {string} parentId is used
+	  *   for file search. {string} token MUST be added
+	  * @returns {void}
+	  */
+
 	  function V2Loader(fileId, fileVersionId) {
 	    var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -214,22 +235,63 @@
 	  }
 
 	  /**
-	  * See base-loader.js for base functionality. Additionally, we add parentId to the params object
-	  * @param {object} asset The verold asset to load
-	  * @param {object} params The parameters we want to pass to the BoxSDK and base loader.
-	  * Used for things like xhr key, progress id, and parentId
-	  * @param {function|null} progress The progress callback, on xhr load progress
-	  * @returns {Promise} a promise that resolves in the loaded and parsed data for Box3D
-	  */
+	   * Load a "remote" (dynamically resolved) Box3DAsset. Overridden to supply getFileIds()
+	   * with a parentFolderId, instead of a file id
+	   * @method loadRemoteAsset
+	   * @param {object} asset The box3d asset to load
+	   * @param {object} params The parameters we want to pass to the BoxSDK and base loader.
+	   * Used for things like xhr key, progress id, and parentId
+	   * @param {function|null} progress The progress callback, on xhr load progress
+	   * @returns {Promise} a promise that resolves in the loaded and parsed data for Box3D
+	   */
 
 	  _createClass(V2Loader, [{
 	    key: 'loadRemoteAsset',
 	    value: function loadRemoteAsset(asset, params, progress) {
-	      if (params === undefined) params = {};
+	      var _this = this;
 
-	      params.parentId = this.parentId;
+	      var idPromise = undefined,
+	          loadFunc = undefined;
 
-	      return _get(Object.getPrototypeOf(V2Loader.prototype), 'loadRemoteAsset', this).call(this, asset, params, progress);
+	      switch (asset.type) {
+	        case 'texture2D':
+	          var fileName = asset.getProperty('filename'),
+	              ext = 'png';
+	          // Dynamically resolve texture filenames at load time.
+	          idPromise = this.sdkLoader.getFileIds(fileName, this.parentId);
+	          //need to check file extension to know which representation we need to get
+	          if (fileName.match(/(.jpg|.jpeg|.gif|.bmp)$/i)) {
+	            ext = 'jpg';
+	          }
+	          params.extension = ext;
+
+	          loadFunc = this.loadRemoteImage.bind(this);
+	          break;
+
+	        case 'animation':
+	        case 'meshGeometry':
+	          // Mesh geometry and animation data are part of the 3dcg representation,
+	          // so we use the same fileVersionId to fetch them.
+	          idPromise = _lie2['default'].resolve({
+	            fileId: this.fileId,
+	            fileVersionId: this.fileVersionId
+	          });
+	          loadFunc = this.loadArrayBuffer.bind(this);
+	          break;
+
+	        default:
+	          return _lie2['default'].reject(new Error('Asset type not supported for loading: ' + asset.type));
+	      }
+
+	      // First, resolve the fileVersionId, then load the representation.
+	      return new _lie2['default'](function (resolve, reject) {
+	        idPromise.then(function (fileIds) {
+	          return loadFunc(fileIds.fileId, fileIds.fileVersionId, params, progress);
+	        }).then(resolve)['catch'](function (err) {
+	          _this.onAssetNotFound(asset);
+	          reject(err);
+	        });
+	      });
 	    }
 
 	    /**
@@ -237,87 +299,84 @@
 	     * png representation via new Representations API.
 	     * #TODO: Refactor once all Representations && conversion available
 	     * @method findImageRepresentation
-	     * @param Object params The criteria for determining which representation to load
-	     * @returns Object the representation that best matches the search criteria
+	     * @param {Object} fileId The id of the file to load
+	     * @returns {Object} the representation that best matches the search criteria
 	     */
 	  }, {
 	    key: 'findImageRepresentation',
 	    value: function findImageRepresentation(fileId /*, params = {}*/) {
-	      var _this = this;
+	      var _this2 = this;
 
+	      // TODO: Expand functionality for 32x32 representations, and eventually conversion
 	      // We are going to hack into here the represntation we want to get for images
 	      return new _lie2['default'](function (resolve, reject) {
-	        _this.sdkLoader.xhr.get(_this.apiBase + '/2.0/files/' + fileId + '?fields=representations').then(function (resp) {
+	        _this2.sdkLoader.xhr.get(_this2.apiBase + '/2.0/files/' + fileId + '?fields=representations', null, { responseType: 'json' }).then(function (resp) {
 	          if (resp.status !== 200) {
 	            return reject(new Error('File Not Found: ' + fileId));
 	          }
 
-	          var info = JSON.parse(resp.response),
+	          var info = resp.response,
 	              representationPath = undefined;
 
 	          if (info.representations && info.representations.entries) {
-
 	            info.representations.entries.forEach(function (entry) {
-
 	              // for now, only check representations that are ready :D
 	              if (entry.status === 'success' && entry.properties && entry.properties.dimensions === '2048x2048') {
-
-	                representationPath = _this.apiBase + info.representations.content_base_url + entry.content + '?dimensions=2048x2048';
+	                representationPath = _this2.apiBase + info.representations.content_base_url + entry.content + '?dimensions=2048x2048';
 	              }
 	            });
 	          }
 	          resolve(representationPath);
 	        })['catch'](reject);
 	      });
-	      // params can include size, width, height, compressed, or anything else we want
 	    }
 
 	    /**
 	     * Load an image representation.
 	     * @method loadRemoteImage
 	     * @param {string} fileId The ID of the file we are going to load
-	     * @param string fileVersionId The file version ID of the file to load
-	     * @param Object params The criteria for determining which representation to load
-	     * @param Function progress The progress callback
-	     * @returns Promise a promise that resolves the image data
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @param {Function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the image data
 	     */
 	  }, {
 	    key: 'loadRemoteImage',
 	    value: function loadRemoteImage(fileId, fileVersionId, params, progress) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      return new _lie2['default'](function (resolve, reject) {
 
-	        _this2.findImageRepresentation(fileId, params).then(function (url) {
+	        _this3.findImageRepresentation(fileId, params).then(function (url) {
 
 	          if (!url) {
 	            reject(new Error('No representation available for: ' + fileId));
 	          }
 
 	          if (progress) {
-	            _this2.addProgressListener(url, progress);
+	            _this3.addProgressListener(url, progress);
 	          }
 
-	          if (!_this2.cache[url]) {
+	          if (!_this3.cache[url]) {
 
-	            _this2.cache[url] = new _lie2['default'](function (resolve, reject) {
-	              _this2.sdkLoader.fetchRepresentation(url, _this2.onAssetLoadProgress.bind(_this2), { responseType: 'blob', info: { progressKey: url } }).then(function (response) {
-	                return _this2.parseImage(response, {
+	            _this3.cache[url] = new _lie2['default'](function (resolve, reject) {
+	              _this3.sdkLoader.getRepresentation(url, _this3.onAssetLoadProgress.bind(_this3), { responseType: 'blob', info: { progressKey: url } }).then(function (response) {
+	                return _this3.parseImage(response, {
 	                  size: 2048,
 	                  pixelFormat: params.extension === 'png' ? 'rgba' : 'rgb',
 	                  compression: 'none'
 	                });
 	              }).then(function (imgData) {
-	                _this2.removeProgressListeners(url);
+	                _this3.removeProgressListeners(url);
 	                resolve(imgData);
 	              })['catch'](function (err) {
-	                _this2.removeProgressListeners(url);
+	                _this3.removeProgressListeners(url);
 	                reject(err);
 	              });
 	            });
 	          }
 
-	          resolve(_this2.cache[url]);
+	          resolve(_this3.cache[url]);
 	        })['catch'](reject);
 	      });
 	    }
@@ -328,6 +387,7 @@
 	    * @param {string} fileVersionId The version we want to get a representation for
 	    * @param {object} params Additional parameters to pass to the request.
 	    * @param {function} progress The progress callback called on XHR load progress
+	    * @returns {Promise} a promise that resolves in usable geometry data (for Box3DRuntime)
 	    */
 	  }, {
 	    key: 'loadArrayBuffer',
@@ -838,12 +898,23 @@
 	};
 
 	var BaseLoader = (function () {
+
+	  /**
+	  * Provides base functionality for all loaders that need to load assets from Box
+	  * That need to work with the Box3DRuntime
+	  * @param {string} fileId The file id of the model we are viewing
+	  * @param {string} fileVersionId The file version id of the model we are viewing
+	  * @param {object} opts Additional properties to add to the loader.
+	  *   {BoxSDK} boxSdk and {string} apiBase can be added
+	  * @returns {void}
+	  */
+
 	  function BaseLoader(fileId, fileVersionId) {
 	    var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
 	    _classCallCheck(this, BaseLoader);
 
-	    if (opts.hasOwnProperty('boxSdk')) {
+	    if (opts.hasOwnProperty('boxSdk') && opts.boxSdk) {
 	      this.boxSdk = opts.boxSdk;
 	    } else {
 	      throw new Error('No Box SDK Provided to Loader!');
@@ -869,10 +940,10 @@
 	  /**
 	   * Load a "remote" (dynamically resolved) Box3DAsset.
 	   * @method loadRemoteAsset
-	   * @param Box3DAsset asset The asset that is being loaded
-	   * @param Object params The criteria for determining which representation to load
-	   * @param Function progress The progress callback
-	   * @returns Promise a promise that resolves the asset data
+	   * @param {Box3DAsset} asset The asset that is being loaded
+	   * @param {Object} params The criteria for determining which representation to load
+	   * @param {Function} progress The progress callback
+	   * @returns {Promise} a promise that resolves the asset data
 	   */
 
 	  _createClass(BaseLoader, [{
@@ -880,7 +951,7 @@
 	    value: function loadRemoteAsset(asset, params, progress) {
 	      var _this = this;
 
-	      var idFetchPromise = undefined,
+	      var idPromise = undefined,
 	          loadFunc = undefined;
 
 	      switch (asset.type) {
@@ -888,7 +959,7 @@
 	          var fileName = asset.getProperty('filename'),
 	              ext = 'png';
 	          // Dynamically resolve texture filenames at load time.
-	          idFetchPromise = this.sdkLoader.fetchFileIds(fileName, this.fileId, params);
+	          idPromise = this.sdkLoader.getFileIds(fileName, this.fileId);
 	          //need to check file extension to know which representation we need to get
 	          if (fileName.match(/(.jpg|.jpeg|.gif|.bmp)$/i)) {
 	            ext = 'jpg';
@@ -902,7 +973,7 @@
 	        case 'meshGeometry':
 	          // Mesh geometry and animation data are part of the 3dcg representation,
 	          // so we use the same fileVersionId to fetch them.
-	          idFetchPromise = _lie2['default'].resolve({
+	          idPromise = _lie2['default'].resolve({
 	            fileId: this.fileId,
 	            fileVersionId: this.fileVersionId
 	          });
@@ -915,7 +986,7 @@
 
 	      // First, resolve the fileVersionId, then load the representation.
 	      return new _lie2['default'](function (resolve, reject) {
-	        idFetchPromise.then(function (fileIds) {
+	        idPromise.then(function (fileIds) {
 	          return loadFunc(fileIds.fileId, fileIds.fileVersionId, params, progress);
 	        }).then(resolve)['catch'](function (err) {
 	          _this.onAssetNotFound(asset);
@@ -927,14 +998,16 @@
 	    /**
 	     * Load a "local" (statically resolved) Box3DAsset.
 	     * @method loadLocalAsset
-	     * @param Box3DAsset asset The asset that is being loaded
-	     * @param Object params The criteria for determining which representation to load
-	     * @param Function progress The progress callback
-	     * @returns Promise a promise that resolves the asset data
+	     * @param {Box3DAsset} asset The asset that is being loaded
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @param {Function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the asset data
 	     */
 	  }, {
 	    key: 'loadLocalAsset',
 	    value: function loadLocalAsset(asset, params, progress) {
+	      if (params === undefined) params = {};
+
 	      var loadFunc = undefined;
 
 	      switch (asset.type) {
@@ -953,12 +1026,13 @@
 	    /**
 	     * Called when an asset cannot be resolved to a Box fileVersionId.
 	     * @method onAssetNotFound
-	     * @param Box3DAsset asset The asset that failed to resolve
-	     * @returns void
+	     * @param {Box3DAsset} asset The asset that failed to resolve
+	     * @returns {void}
 	     */
 	  }, {
 	    key: 'onAssetNotFound',
 	    value: function onAssetNotFound(asset) {
+
 	      var filename = '';
 
 	      switch (asset.type) {
@@ -977,12 +1051,14 @@
 	    /**
 	    * Update all registered progress listeners
 	    * @private
+	    * @param {string} url The url associated with loading callback to call
 	    * @param {object} status The status object to propogate to listeners
 	    * @returns {void}
 	    */
 	  }, {
 	    key: 'updateLoadProgress',
 	    value: function updateLoadProgress(url, status) {
+
 	      if (this.progressListeners.hasOwnProperty(url)) {
 	        this.progressListeners[url].forEach(function (progress) {
 	          progress(status);
@@ -992,7 +1068,7 @@
 
 	    /**
 	    * Get the content length of a gzipped asset
-	    * @param {xhr} response The response xhr with the appropriate headers
+	    * @param {object} xhr The response xhr with the appropriate headers
 	    * @param {string} url The key to store the total size at
 	    * @returns {int} The byte size of the asset, with applied compression factor
 	    */
@@ -1021,9 +1097,9 @@
 	    * On a progress event, we need to update progressListeners
 	    * @method onAssetLoadProgress
 	    * @private
-	    * @param Object status The status object containing the XHR and loading progress
+	    * @param {object} status The status object containing the XHR and loading progress
 	    * of the XHR request
-	    * @returns void
+	    * @returns {void}
 	    */
 	  }, {
 	    key: 'onAssetLoadProgress',
@@ -1057,13 +1133,14 @@
 	    * to the same URL, each one will recieve updates.
 	    * @method addProgressListener
 	    * @private
-	    * @param string url The url to register the callback with
-	    * @param Function progress The callback to call when recieving updates
-	    * @returns void
+	    * @param {string} url The url to register the callback with
+	    * @param {function} progress The callback to call when recieving updates
+	    * @returns {void}
 	    */
 	  }, {
 	    key: 'addProgressListener',
 	    value: function addProgressListener(url, progress) {
+
 	      if (!this.progressListeners.hasOwnProperty(url)) {
 	        this.progressListeners[url] = [];
 	      }
@@ -1075,12 +1152,13 @@
 	    * Remove all progress listeners for a given url
 	    * @method removeProgressListeners
 	    * @private
-	    * @param string url The url that the listeners are registered with
-	    * @returns void
+	    * @param {string} url The url that the listeners are registered with
+	    * @returns {void}
 	    */
 	  }, {
 	    key: 'removeProgressListeners',
 	    value: function removeProgressListeners(url) {
+
 	      if (this.progressListeners.hasOwnProperty(url)) {
 	        delete this.progressListeners[url];
 	      }
@@ -1090,10 +1168,10 @@
 	     * Load an image representation.
 	     * @method loadRemoteImage
 	     * @param {string} fileId The ID of the file we are going to load
-	     * @param string fileVersionId The file version ID of the file to load
-	     * @param Object params The criteria for determining which representation to load
-	     * @param Function progress The progress callback
-	     * @returns Promise a promise that resolves the image data
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {object} params The criteria for determining which representation to load
+	     * @param {function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the image data
 	     */
 	  }, {
 	    key: 'loadRemoteImage',
@@ -1106,10 +1184,10 @@
 	     * Load a binary file and return an array buffer.
 	     * @method loadArrayBuffer
 	     * @param {string} fileId The ID of the file we are going to load
-	     * @param string fileVersionId The file version ID of the file to load
-	     * @param Object params The criteria for determining which representation to load
-	     * @param Function progress The progress callback
-	     * @returns Promise a promise that resolves the array buffer
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {object} params The criteria for determining which representation to load
+	     * @param {function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the array buffer
 	     */
 	  }, {
 	    key: 'loadArrayBuffer',
@@ -1129,10 +1207,10 @@
 	        this.addProgressListener(url, progress);
 	      }
 	      // If the representation is cached, return the cached data; otherwise,
-	      // fetch the representation.
+	      // get the representation.
 	      if (!this.cache.hasOwnProperty(url)) {
 	        this.cache[url] = new _lie2['default'](function (resolve, reject) {
-	          _this4.sdkLoader.fetchRepresentation(url, _this4.onAssetLoadProgress.bind(_this4), { responseType: 'arraybuffer', info: { progressKey: url } }).then(function (response) {
+	          _this4.sdkLoader.getRepresentation(url, _this4.onAssetLoadProgress.bind(_this4), { responseType: 'arraybuffer', info: { progressKey: url } }).then(function (response) {
 	            _this4.removeProgressListeners(url);
 	            resolve({
 	              data: response.response,
@@ -1151,10 +1229,10 @@
 	    /**
 	     * Load a "local" image. Local images are statically resolved using the asset's "resources".
 	     * @method loadLocalImage
-	     * @param Box3DAsset asset The asset being loaded
-	     * @param Object params The criteria for deciding which resource to load
-	     * @param Function progress The progress callback
-	     * @returns Promise a promise that resolves the image data
+	     * @param {Box3DAsset} asset The asset being loaded
+	     * @param {object} params The criteria for deciding which resource to load
+	     * @param {function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the image data
 	     */
 	  }, {
 	    key: 'loadLocalImage',
@@ -1176,7 +1254,8 @@
 	      }
 
 	      return new _lie2['default'](function (resolve, reject) {
-	        _this5.sdkLoader.fetch(url, { responseType: 'blob', info: { progressKey: url } }, _this5.onAssetLoadProgress.bind(_this5)).then(function (response) {
+	        _this5.sdkLoader.get(url, { responseType: 'blob', sendToken: false, withCredentials: false,
+	          info: { progressKey: url } }, _this5.onAssetLoadProgress.bind(_this5)).then(function (response) {
 	          _this5.removeProgressListeners(url);
 	          return _this5.parseImage(response, resource.properties);
 	        }).then(resolve)['catch'](function (err) {
@@ -1189,15 +1268,16 @@
 	    /**
 	     * Finds an image resource based on the specified criteria.
 	     * @method findImageResource
-	     * @param Box3DAsset asset The asset that is being loaded
-	     * @param Object params The criteria for determining which representation to load
-	     * @returns Object the resource that best matches the search criteria
+	     * @param {Box3DAsset} asset The asset that is being loaded
+	     * @param {object} params The criteria for determining which representation to load
+	     * @returns {object} the resource that best matches the search criteria
 	     */
 	  }, {
 	    key: 'findImageResource',
 	    value: function findImageResource(asset /*, params*/) {
+
 	      // TODO: intelligently find a resource based on params.
-	      var resources = asset.entityModel.get('resources');
+	      var resources = asset.get('resources');
 
 	      if (!resources || resources.length === 0) {
 	        throw new Error('Box3DAsset has no resources: ' + asset.getName());
@@ -1209,8 +1289,8 @@
 	    /**
 	     * Finds an image representation based on the specified criteria.
 	     * @method findImageRepresentation
-	     * @param Object params The criteria for determining which representation to load
-	     * @returns Object the representation that best matches the search criteria
+	     * @param {object} params The criteria for determining which representation to load
+	     * @returns {object} the representation that best matches the search criteria
 	     */
 	  }, {
 	    key: 'findImageRepresentation',
@@ -1222,13 +1302,14 @@
 	    /**
 	     * Parses the response and resolves with the correct image tag and image properties.
 	     * @method parseImage
-	     * @param Object response A fetch response with the requested image data
-	     * @param Object representation The representation that was loaded
-	     * @returns Promise a promise that resolves the image data
+	     * @param {object} response A response with the requested image data
+	     * @param {object} representation The representation that was loaded
+	     * @returns {Promise} a promise that resolves the image data
 	     */
 	  }, {
 	    key: 'parseImage',
 	    value: function parseImage(response, representation) {
+
 	      return new _lie2['default'](function (resolve, reject) {
 	        try {
 	          (function () {
@@ -1242,7 +1323,8 @@
 	                  width: img.width,
 	                  height: img.height,
 	                  compression: representation.compression || 'none',
-	                  pixelFormat: representation.pixelFormat || 'rgb'
+	                  pixelFormat: representation.pixelFormat || 'rgb',
+	                  packingFormat: representation.packingFormat
 	                }
 	              };
 
@@ -1261,11 +1343,12 @@
 	    * Interface with BoxSDK to halt a single request
 	    * @method abortRequest
 	    * @param {string} key The key of the XHR that we want to abort
-	    * @return {void}
+	    * @returns {void}
 	    */
 	  }, {
 	    key: 'abortRequest',
 	    value: function abortRequest(key) {
+
 	      var request = this.sdkLoader.xhr.abortRequest(key);
 	      // need to also kill listeners on this request
 	      if (request && request.srcElement.info) {
@@ -1276,7 +1359,7 @@
 	    /**
 	    * Interface with BoxSDK to halt all requests currently loading
 	    * @method abortAllRequests
-	    * @return {void}
+	    * @returns {void}
 	    */
 	  }, {
 	    key: 'abortAllRequests',
@@ -1292,6 +1375,7 @@
 	  }, {
 	    key: 'destroy',
 	    value: function destroy() {
+
 	      this.abortAllRequests();
 	      this.boxSdk.destroy();
 	      delete this.sdkLoader;
@@ -1688,6 +1772,15 @@
 	var RunmodeLoader = (function (_BaseLoader) {
 	  _inherits(RunmodeLoader, _BaseLoader);
 
+	  /**
+	  * Used for loading Box3D Representations from Box Runmodes
+	  * @param {string} fileId The file id of the model we are viewing
+	  * @param {string} fileVersionId The file version id of the model we are viewing
+	  * @param {object} opts Additional properties to add to the loader.
+	  *   {BoxSDK} boxSdk and {string} apiBase can be added
+	  * @returns {void}
+	  */
+
 	  function RunmodeLoader(fileId, fileVersionId) {
 	    var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -1719,10 +1812,10 @@
 	     * Load an image representation.
 	     * @method loadRemoteImage
 	     * @param {string} fileId The ID of the file we are going to load
-	     * @param string fileVersionId The file version ID of the file to load
-	     * @param Object params The criteria for determining which representation to load
-	     * @param Function progress The progress callback
-	     * @returns Promise a promise that resolves the image data
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @param {Function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the image data
 	     */
 	  }, {
 	    key: 'loadRemoteImage',
@@ -1747,10 +1840,10 @@
 	      }
 
 	      // If the representation is cached, return the cached data; otherwise,
-	      // fetch the representation.
+	      // get the representation.
 	      if (!this.cache.hasOwnProperty(url)) {
 	        this.cache[url] = new _lie2['default'](function (resolve, reject) {
-	          _this.sdkLoader.fetchRepresentation(url, _this.onAssetLoadProgress.bind(_this), { responseType: 'blob', info: { progressKey: url } }).then(function (response) {
+	          _this.sdkLoader.getRepresentation(url, _this.onAssetLoadProgress.bind(_this), { responseType: 'blob', info: { progressKey: url } }).then(function (response) {
 	            return _this.parseImage(response, representation);
 	          }).then(function (imgData) {
 	            if (params.width && imgData.properties.width > params.width || params.height && imgData.properties.height > params.height) {
@@ -1778,6 +1871,7 @@
 	    * @param {string} fileVersionId The version we want to get a representation for
 	    * @param {object} params Additional parameters to pass to the request.
 	    * @param {function} progress The progress callback called on XHR load progress
+	    * @returns {Promise} a promise that resolves in usable geometry data (for Box3DRuntime)
 	    */
 	  }, {
 	    key: 'loadArrayBuffer',
@@ -1791,8 +1885,8 @@
 	    /**
 	     * Finds an image representation based on the specified criteria.
 	     * @method findImageRepresentation
-	     * @param Object params The criteria for determining which representation to load
-	     * @returns Object the representation that best matches the search criteria
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @returns {Object} the representation that best matches the search criteria
 	     */
 	  }, {
 	    key: 'findImageRepresentation',

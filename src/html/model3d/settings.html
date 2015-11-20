@@ -3,23 +3,40 @@
 		<span class="icon-cog"></span>
 	</div>
 	<div class="preview-overlay preview-pullup settings-panel hidden">
+		<!--RENDER MODE SETTINGS-->
+		<div class="settings-panel-row">
+			<div class="settings-panel-label">Default Render Mode</div>
+			<div class="default-render-mode-selector">
+				<span class="settings-panel-btn render-mode-selected" data-type="defaultrendermodeselector">Lit</span>
+				<ul class="render-mode-list hidden">
+					<li class="render-mode-lit">Lit</li>
+					<li class="render-mode-unlit">Unlit</li>
+					<li class="render-mode-normals">Normals</li>
+					<li class="render-mode-wire">Wireframe</li>
+					<li class="render-mode-wire-untextured">Untextured Wireframe</li>
+					<li class="render-mode-uv">UV Overlay</li>
+				</ul>
+			</div>
+		</div>
+		<!--ROTATION AXIS SETTINGS-->
 		<div class="settings-panel-row">
 			<div class="settings-panel-label">Rotation Axis</div>
 			<div class="orientation-controls orientation-prev" data-type="rotatenegative">
 				<span class="icon-setting-arrow-left"></span>
 			</div>
 			<ul class="orientation-selector settings-panel-btn">
-				<li class="orientation-x" data-type="orientationx">X</li>
-				<li class="orientation-y current-axis" data-type="orientationy">Y</li>
-				<li class="orientation-z" data-type="orientationz">Z</li>
+				<li class="orientation-x">X</li>
+				<li class="orientation-y current-axis">Y</li>
+				<li class="orientation-z">Z</li>
 			</ul>
-			<div class="orientation-controls orientation-next" data-type="rotatepositive">
+			<div class="orientation-controls orientation-next">
 				<span class="icon-setting-arrow-right"></span>
 			</div>
 		</div>
-
+		<!--SAVE/RESET SETTINGS-->
 		<div class="settings-panel-row">
-			<button class="settings-panel-btn settings-reset-btn" data-type="settings-reset">Reset</button>
+			<button class="settings-panel-btn settings-save-btn">Save</button>
+			<button class="settings-panel-btn settings-reset-btn">Reset</button>
 		</div>
 	</div>
 </div>

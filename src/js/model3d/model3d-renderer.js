@@ -31,14 +31,16 @@ class Model3dRenderer extends EventEmitter {
 	/**
 	 * [constructor]
 	 * @param {HTMLElement} containerEl the container element
+	 * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
 	 * @returns {Model3dRenderer} Model3dRenderer instance
 	 */
-	constructor(containerEl) {
+	constructor(containerEl, boxSdk) {
 		super();
 		this.containerEl = containerEl;
 		this.instances = [];
 		this.assets = [];
 		this.vrEnabled = false;
+		this.boxSdk = boxSdk;
 	}
 
 	/**
@@ -163,6 +165,7 @@ class Model3dRenderer extends EventEmitter {
 		opts.token = options.token;
 		opts.apiBase = options.api;
 		opts.parentId = options.file.parent.id;
+		opts.boxSdk = this.boxSdk;
 		resourceLoader = new Box3DResourceLoader(options.file.id, options.file.file_version.id, opts);
 
 		//if the event bus is available from the Resource loader, listen for missing asset notification
@@ -327,6 +330,16 @@ class Model3dRenderer extends EventEmitter {
 	}
 
 	/**
+	 * REquest from the engine, the up and forward axes
+	 * @returns {Promise} Resolves with the up and forward axes
+	 */
+	getAxes() {
+		return new Promise((resolve) => {
+			this.box3d.trigger('get_axes', resolve);
+		});
+	}
+
+	/**
 	 * The event that finalizes the model being loaded and broadcasts that the preview is loaded
 	 * @param {Box3DEntity} entity The entity to listen for the load event, on
 	 * @returns {void}
@@ -432,6 +445,21 @@ class Model3dRenderer extends EventEmitter {
 		if (this.box3d) {
 			this.box3d.trigger('rotate_on_axis', axis, true);
 		}
+	}
+
+	/**
+	 * Given a set of up and forward axis keys, rotate the model
+	 * @param {string} upAxis The axis key for the models up vector
+	 * @param {string} forwardAxis The axis key for the models forward facing vector
+	 * @param {bool} useTransition Whether or not to smoothly rotate
+	 * @returns {void}
+	 */
+	setAxisRotation(upAxis, forwardAxis, useTransition) {
+
+		this.box3d.trigger('set_axes', upAxis, forwardAxis, useTransition);
+		//save these values back to forward and up, for metadata save
+		this.axisUp = upAxis;
+		this.axisForward = forwardAxis;
 	}
 
 	/**
