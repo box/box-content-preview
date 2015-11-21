@@ -11,7 +11,7 @@ class Fullscreen extends EventEmitter {
     /**
      * [constructor]
      * @param {string|HTMLElement} event The mousemove event
-     * @returns {Image}
+     * @returns {Fullscreen} Fullscreen instance
      */
     constructor() {
         super();
@@ -24,8 +24,9 @@ class Fullscreen extends EventEmitter {
 
     /**
      * Returns true if the browser supports fullscreen natively
-     * @return {Boolean}
+     *
      * @private
+     * @returns {Boolean} Fullscreen supported or not
      */
     isSupported() {
         return document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled;
@@ -33,8 +34,9 @@ class Fullscreen extends EventEmitter {
 
     /**
      * Return true if full screen is active
-     * @returns {Boolean}
-     * @private
+     *
+     * @public
+     * @returns {Boolean} In fullscreen or not
      */
     isFullscreen() {
         return document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
@@ -42,22 +44,23 @@ class Fullscreen extends EventEmitter {
 
     /**
      * Fires events when the fullscreen state changes
-     * @return {void}
+     * @returns {void}
      * @private
      */
     fullscreenchangeHandler() {
         if (this.isFullscreen()) {
             this.emit('enter');
-        } else {    
+        } else {
             this.emit('exit');
         }
     }
 
     /**
      * Toggles fullscreen mode
-     * @param {HTMLElement} element
-     * @return {void}
+     *
      * @private
+     * @param {HTMLElement} element fullscreen element
+     * @returns {void}
      */
     toggle(element) {
 
@@ -72,7 +75,7 @@ class Fullscreen extends EventEmitter {
                 element.mozRequestFullScreen();
             } else if (element.webkitRequestFullscreen) {
                 element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-            }    
+            }
         } else {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
@@ -82,7 +85,7 @@ class Fullscreen extends EventEmitter {
                 document.mozCancelFullScreen();
             } else if (document.webkitExitFullscreen) {
                 document.webkitExitFullscreen();
-            }    
+            }
         }
     }
 }

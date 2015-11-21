@@ -1,9 +1,5 @@
 @import 'media.css';
 
-.box-preview-media.box-preview-media-dash {
-    background: #000;
-}
-
 .box-preview-media-dash video {
     display: block;
     max-width: 100%;

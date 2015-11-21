@@ -1,9 +1,5 @@
 @import 'media.css';
 
-.box-preview-media.box-preview-media-mp4 {
-    background: #000;
-}
-
 .box-preview-media-mp4 video {
     display: block;
     max-width: 100%;
