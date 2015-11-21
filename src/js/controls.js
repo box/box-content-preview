@@ -4,7 +4,6 @@ import autobind from 'autobind-decorator';
 import throttle from 'lodash/function/throttle';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
-const PREVIEW_CONTROLS_SELECTOR = '.box-preview-controls';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
 let document = global.document;
@@ -14,8 +13,9 @@ class Controls {
 
     /**
      * [constructor]
-     * @param {HTMLElement} event The mousemove event
-     * @returns {Controls}
+     *
+     * @param {HTMLElement} container The container
+     * @returns {Controls} Instance of controls
      */
     constructor(container) {
         // Maintain a list of buttons for cleanup
@@ -35,7 +35,7 @@ class Controls {
             this.resetTimeout();
         }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500);
 
-        this.containerEl.addEventListener('mousemove', this.mousemoveHandler)
+        this.containerEl.addEventListener('mousemove', this.mousemoveHandler);
         this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);
         this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.addEventListener('focusin', this.focusinHandler);
@@ -47,7 +47,7 @@ class Controls {
      * @returns {void}
      */
     destroy() {
-        this.containerEl.removeEventListener('mousemove', this.mousemoveHandler)
+        this.containerEl.removeEventListener('mousemove', this.mousemoveHandler);
         this.controlsEl.removeEventListener('mouseenter', this.mouseenterHandler);
         this.controlsEl.removeEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.removeEventListener('focusin', this.focusinHandler);
@@ -59,9 +59,11 @@ class Controls {
     }
 
     /**
+     * Checks if the button is a preview controls button
+     *
      * @private
-     * @param {HTMLElement|null} element
-     * @returns {boolean} true if element is a preview control button
+     * @param {HTMLElement|null} element button element
+     * @returns {Boolean} true if element is a preview control button
      */
     isPreviewControlButton(element) {
         return !!element && element.classList.contains('box-preview-controls-btn');
@@ -132,12 +134,13 @@ class Controls {
 
     /**
      * Adds buttons to controls
-     * @param {string} text
-     * @param {function} handler
-     * @param {string} [classList]
-     * @param {string} [buttonContent] Optional button content HTML
+     *
      * @private
-     * @returns {HTMLElement} Returns reference to button added
+     * @param {String} text button text
+     * @param {Function} handler button handler
+     * @param {String} [classList] optional class list
+     * @param {String} [buttonContent] Optional button content HTML
+     * @returns {void}
      */
     add(text, handler, classList = '', buttonContent = '') {
         let cell = document.createElement('div');

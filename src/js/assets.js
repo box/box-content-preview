@@ -1,7 +1,6 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import fetch from 'isomorphic-fetch';
 
 const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 
@@ -26,6 +25,13 @@ class Assets {
 
     /**
      * Creates the content URLs
+     *
+     * @protected
+     * @param {String} host hostname
+     * @param {String} baseUrl base url
+     * @param {String} contentPath content path
+     * @param {Object} properties properties
+     * @param {String} token auth token
      * @returns {String} content urls
      */
     contentUrlFactory(host, baseUrl, contentPath, properties, token) {
@@ -35,8 +41,9 @@ class Assets {
 
     /**
      * Create <link> element to prefetch external resource
-     * @param {string} url
-     * @returns {HTMLElement}
+     *
+     * @param {string} url  asset urls
+     * @returns {HTMLElement} link element
      */
     createPrefetchLink(url) {
         let link = document.createElement('link');
@@ -47,8 +54,9 @@ class Assets {
 
     /**
      * Create <link> element to load external stylesheet
-     * @param {string} url
-     * @returns {HTMLElement}
+     *
+     * @param {string} url  asset urls
+     * @returns {HTMLElement} link element
      */
     createStylesheet(url) {
         let link = document.createElement('link');
@@ -60,8 +68,9 @@ class Assets {
 
     /**
      * Create <script> element to load external script
-     * @param {String} url
-     * @returns {Array}
+     *
+     * @param {String} url  asset url
+     * @returns {Array} script element
      */
     createScript(url) {
         let script = document.createElement('script');
@@ -76,7 +85,8 @@ class Assets {
 
     /**
      * Prefetches external stylsheets or js by appending a <link rel="prefetch"> element
-     * @param {Array} urls
+     *
+     * @param {Array} urls asset urls
      * @returns {void}
      */
     prefetchAssets(urls) {
@@ -92,7 +102,8 @@ class Assets {
 
     /**
      * Loads external stylsheets by appending a <link> element
-     * @param {Array} urls
+     *
+     * @param {Array} urls asset urls
      * @returns {void}
      */
     loadStylesheets(urls) {
@@ -108,8 +119,9 @@ class Assets {
 
     /**
      * Loads external scripts by appending a <script> element
-     * @param {Array} urls
-     * @returns {Promise}
+     *
+     * @param {Array} urls asset urls
+     * @returns {Promise} Promise to load scripts
      */
     loadScripts(urls) {
         let head = document.getElementsByTagName('head')[0];
@@ -130,7 +142,7 @@ class Assets {
     /**
      * Factory to create asset URLs
      * @param {String} template url
-     * @returns {Function}
+     * @returns {Function} factory for creating asset url
      */
     assetUrlFactory(template) {
         return (name) => template.replace('{{asset_name}}', name);
@@ -140,7 +152,7 @@ class Assets {
      * Determines if this loader can be used
      *
      * @param {Object} file box file
-     * @returns {Boolean}
+     * @returns {Boolean} Is file supported
      */
     canLoad(file) {
         return !!this.determineViewer(file);
@@ -177,7 +189,7 @@ class Assets {
      * @param {Object} file box file
      * @param {string|HTMLElement} container where to load the preview
      * @param {Object} [options] optional options
-     * @returns {Promise}
+     * @returns {Promise} Promise to load a preview
      */
     load(file, container, options) {
 
@@ -255,7 +267,7 @@ class Assets {
      * An empty function that can be overriden just incase
      * some loader wants to do some initialization stuff
      *
-     * @param {Object} options
+     * @param {Object} options options
      * @returns {void}
      */
     init(options) {

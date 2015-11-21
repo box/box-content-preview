@@ -7,7 +7,7 @@ class Cache {
 
     /**
      * [constructor]
-     * @returns {Cache}
+     * @returns {Cache} Cache instance
      */
     constructor() {
         this.cache = {};

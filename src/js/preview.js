@@ -11,11 +11,10 @@ const PREFETCH_COUNT = 5;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
 const CLASS_HIDDEN = 'box-preview-is-hidden';
 const MOUSEMOVE_THROTTLE = 1500;
-const CRAWLER = '<div class="box-preview-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>'
+const CRAWLER = '<div class="box-preview-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
 
 let Box = global.Box || {};
 let Promise = global.Promise;
-let location = global.location;
 let document = global.document;
 
 @autobind
@@ -27,7 +26,7 @@ class Preview {
 
     /**
      * [constructor]
-     * @returns {Preview}
+     * @returns {Preview} Returns a preview
      */
     constructor() {
         // Preview cache, stores a bunch of file data
@@ -94,9 +93,9 @@ class Preview {
     /**
      * Returns the box file content api url
      *
-     * @param {id} file box file id
+     * @param {String} id box file id
      * @private
-     * @returns {String}
+     * @returns {String} API url
      */
     createUrl(id) {
         return this.options.api + '/2.0/files/' + id + '?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,download_url,representations';
@@ -151,7 +150,7 @@ class Preview {
      *
      * @param {String} id File to preview
      * @private
-     * @returns {Promise}
+     * @returns {Promise} Promise to load a preview
      */
     load(id) {
 
@@ -184,7 +183,7 @@ class Preview {
      * @param {Object} file File to preview
      * @param {Boolean} [checkStaleness] Check for cache staleness
      * @private
-     * @returns {Promise}
+     * @returns {Promise} Promise to load a preview from cache
      */
     loadFromCache(file, checkStaleness = true) {
         this.file = file;
@@ -211,7 +210,7 @@ class Preview {
      *
      * @param {String} id File id to preview
      * @private
-     * @returns {Promise}
+     * @returns {Promise} Promise to load a preview from server
      */
     loadFromServer(id) {
         return fetch(this.createUrl(id), {
@@ -235,7 +234,7 @@ class Preview {
      * Loads a viewer.
      *
      * @private
-     * @returns {Promise}
+     * @returns {Promise} Promise to load a viewer
      */
     loadViewer() {
         // Before loading a new preview check if a prior preview was showing.
@@ -257,16 +256,16 @@ class Preview {
      * Builds a list of required XHR headers.
      *
      * @private
-     * @returns {Object}
+     * @returns {Object} Headers
      */
     getRequestHeaders() {
         let headers = {
             'Authorization': 'Bearer ' + this.options.token,
             'X-Rep-Hints': '3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3' + (Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4')
-        }
+        };
 
         if (this.options.sharedLink) {
-            headers.BoxApi = 'shared_link=' + sharedLink;
+            headers.BoxApi = 'shared_link=' + this.options.sharedLink;
         }
 
         return headers;
@@ -316,7 +315,7 @@ class Preview {
 
                     // Pre-fetch content if applicable so that the
                     // Browser caches the content
-                    let loader = this.getLoader(file)
+                    let loader = this.getLoader(file);
                     if (loader && typeof loader.prefetch === 'function') {
                         loader.prefetch(file, this.options);
                     }
@@ -332,7 +331,7 @@ class Preview {
      *
      * @param {Object} file File to preview
      * @private
-     * @returns {Object}
+     * @returns {Object} Loader
      */
     getLoader(file) {
         return loaders.find((loader) => {
@@ -423,8 +422,8 @@ class Preview {
     /**
      * Parses the options
      * @param {String|Object} file box file object or id
-     * @param {Array[String]} files ids of files
-     * @return {void}
+     * @param {Object} options options
+     * @returns {void}
      */
     parseOptions(file, options) {
 
@@ -467,10 +466,9 @@ class Preview {
      * Primary function to show a preview.
      *
      * @param {String|Object} file box file object or id
-     * @param {Array[String]} files ids of files
-     * @param {Object} options
+     * @param {Object} options options
      * @public
-     * @returns {Promise}
+     * @returns {Promise} Promise to show a preview
      */
     show(file, options) {
 
@@ -485,7 +483,7 @@ class Preview {
             // String file id was passed in
             this.file = this.cache[file] = {
                 id: file
-            }
+            };
         } else {
             // File object was passed in
             this.file = this.cache[file.id] = file;
@@ -503,6 +501,7 @@ class Preview {
      * Sets the authorization token that may have expired.
      *
      * @public
+     * @param {String} token auth token
      * @returns {void}
      */
     setAuthorizationToken(token) {

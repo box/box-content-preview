@@ -3,7 +3,6 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
-import Controls from './controls';
 import debounce from 'lodash/function/debounce';
 
 const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
@@ -19,9 +18,9 @@ class Base extends EventEmitter {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
+     * @param {string|HTMLElement} container The container
      * @param {object} [options] some options
-     * @returns {Base}
+     * @returns {Base} Instance of base
      */
     constructor(container, options) {
         super();
@@ -51,13 +50,23 @@ class Base extends EventEmitter {
         this.addCommonListeners();
     }
 
+    debouncedResizeHandler() {
+        if (!this.resizeHandler) {
+            this.resizeHandler = debounce(() => {
+                this.resize();
+                this.emit('resize');
+            }, RESIZE_WAIT_TIME_IN_MILLIS);
+        }
+        return this.resizeHandler;
+    }
+
     /**
      * Adds common event listeners.
      *
      * @private
      * @returns {void}
      */
-    addCommonListeners(container, options) {
+    addCommonListeners() {
         // Attach common full screen event listeners
         fullscreen.on('enter', () => {
             this.containerEl.classList.add(CLASS_FULLSCREEN);
@@ -70,10 +79,7 @@ class Base extends EventEmitter {
         });
 
         // Add a resize handler for the window
-        document.defaultView.addEventListener('resize', debounce(() => {
-            this.resize();
-            this.emit('resize');
-        }, RESIZE_WAIT_TIME_IN_MILLIS));
+        document.defaultView.addEventListener('resize', this.resizeHandler);
     }
 
     /**
@@ -102,6 +108,8 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     destroy() {
+        fullscreen.removeAllListeners();
+        document.defaultView.removeEventListener('resize', this.resizeHandler);
         this.removeAllListeners();
         this.containerEl.innerHTML = '';
     }

@@ -13,9 +13,11 @@ class Browser {
 
     /**
      * Mimicks HTML <audio> <video> canPlayType() and calls the native function.
+     *
      * @NOTE some older browsers return a "no"
      * Also see {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement|MDN}
      *
+     * @public
      * @param {String} type The mime type to check.
      * @param {String} probability Should either be 'maybe' or 'probably'
      * @returns {Boolean} true if browser supports a particular type
@@ -35,8 +37,11 @@ class Browser {
 
     /**
      * Checks if browser supports HTML5 <video> with H264 playback
+     *
      * Also see {@link https://wiki.whatwg.org/wiki/Video_type_parameters#Video_Codecs_3|W3C}
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
+     *
+     * @public
      * @param {string} mime information about the AVC profile codec
      * @returns {Boolean} true if browser supports HTML5 H264 main video playback
      */
@@ -46,8 +51,11 @@ class Browser {
 
     /**
      * Checks if browser supports HTML5 <video> with H264 baseline playback
+     *
      * Also see {@link https://wiki.whatwg.org/wiki/Video_type_parameters#Video_Codecs_3|W3C}
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
+     *
+     * @public
      * @returns {Boolean} true if browser supports HTML5 H264 baseline video playback
      */
     static canPlayH264Baseline() {
@@ -56,8 +64,11 @@ class Browser {
 
     /**
      * Checks if browser supports HTML5 <video> with H264 main playback
+     *
      * Also see {@link https://wiki.whatwg.org/wiki/Video_type_parameters#Video_Codecs_3|W3C}
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
+     *
+     * @public
      * @returns {Boolean} true if browser supports HTML5 H264 main video playback
      */
     static canPlayH264Main() {
@@ -66,8 +77,11 @@ class Browser {
 
     /**
      * Checks if browser supports HTML5 <video> with H264 high playback
+     *
      * Also see {@link https://wiki.whatwg.org/wiki/Video_type_parameters#Video_Codecs_3|W3C}
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
+     *
+     * @public
      * @returns {Boolean} true if browser supports HTML5 H264 high video playback
      */
     static canPlayH264High() {
@@ -76,9 +90,12 @@ class Browser {
 
     /**
      * Checks if browser supports HTML5 <audio> with MP3 playback.
+     *
      * @NOTE Unfortunately MP3 still requires a 'maybe' probablity check for some browsers
      * Also see {@link https://github.com/Modernizr/Modernizr/blob/master/feature-detects/audio.js|Modernizr}
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
+     *
+     * @public
      * @returns {Boolean} true if browser supports HTML5 MP3 audio playback
      */
     static canPlayMP3() {
@@ -90,6 +107,7 @@ class Browser {
      * Dash requires MediaSource extensions to exist and be applicable
      * to the H264 container (since we use H264 and not webm)
      *
+     * @public
      * @returns {Boolean} true if dash is usable
      */
     static canPlayDash() {
@@ -106,6 +124,8 @@ class Browser {
 
     /**
      * Checks the browser for Media Source Extensions support
+     *
+     * @public
      * @returns {Boolean} true if MediaSource extensions are enabled
      */
     static hasMSE() {
@@ -114,6 +134,8 @@ class Browser {
 
     /**
      * Returns true if the browser supports webgl or experimental webgl
+     *
+     * @public
      * @returns {Boolean} - returns true if the browser supports WebGL
      */
     static hasWebGL() {
@@ -131,6 +153,8 @@ class Browser {
 
     /**
      * Determines if flash is installed.
+     *
+     * @public
      * @returns {Boolean} true if browser has flash
      */
     static hasFlash() {
@@ -145,7 +169,9 @@ class Browser {
 
     /**
      * Returns true if the browser supports SVG
-     * @returns {Boolean}
+     *
+     * @public
+     * @returns {Boolean} is svg supported
      */
     static hasSVG() {
         return document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
