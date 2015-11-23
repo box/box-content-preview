@@ -182,7 +182,7 @@
 	padding: 0 18px;
 	right: 0;
 	line-height: 34px;
-	width: 175px;
+	width: 220px;
 }
 
 .box-preview-model3d .settings-panel button {
@@ -192,12 +192,12 @@
 	outline: 0;
 }
 
-.box-preview-model3d .settings-panel .save-btn {
+.box-preview-model3d .settings-panel .settings-save-btn {
 	background: #929292;
 }
 
 .box-preview-model3d .settings-panel .settings-reset-btn {
-	background: #929292;
+	background: transparent;
 }
 
 .box-preview-model3d .settings-panel:after {
@@ -253,7 +253,6 @@
 
 .box-preview-model3d .default-render-mode-selector span {
 	display: block;
-	width: 200px;
 	position: relative;
 	height: 34px;
 }

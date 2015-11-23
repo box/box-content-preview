@@ -242,6 +242,25 @@ class Model3dControls extends EventEmitter  {
 	}
 
 	/**
+	 * Set a the render mode, from a key in the Render Modes dictionary
+	 * @param {string} mode The key in the dictionary to use
+	 * @returns {void}
+	 */
+	setRenderModeUI(mode) {
+		if (typeof mode === 'string') {
+			mode = RENDER_MODES[mode];
+		}
+
+		this.renderModeIconEl.className = mode.icon;
+		mode.el = mode.el || this.el.querySelector(mode.elQuery);
+
+		this.renderModeMenuItemEl.classList.remove(CSS_CLASS_CURRENT_RENDER_MODE);
+		mode.el.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
+
+		this.renderModeMenuItemEl = mode.el;
+	}
+
+	/**
 	 * Set the render mode.
 	 * @private
 	 * @param {string} mode The render mode
@@ -250,15 +269,10 @@ class Model3dControls extends EventEmitter  {
 	setRenderMode(mode) {
 		this.emit('setRenderMode', mode.renderMode);
 
-		this.renderModeIconEl.className = mode.icon;
 		this.renderModesSelectorEl.classList.add(CSS_CLASS_HIDDEN);
 
-		mode.el = mode.el || this.el.querySelector(mode.elQuery);
+		this.setRenderModeUI(mode);
 
-		this.renderModeMenuItemEl.classList.remove(CSS_CLASS_CURRENT_RENDER_MODE);
-		mode.el.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
-
-		this.renderModeMenuItemEl = mode.el;
 		this.renderModeCurrent = mode.key;
 	}
 }

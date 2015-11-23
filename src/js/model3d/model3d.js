@@ -1,4 +1,5 @@
 /* eslint no-console:0 */
+/* global BoxSDK */
 'use strict';
 
 import '../../css/model3d/model3d.css';
@@ -9,7 +10,8 @@ import Model3dSettings from './model3d-settings';
 import Model3dRenderer from './model3d-renderer';
 import {EVENT_ENABLE_VR, EVENT_DISABLE_VR, EVENT_LOAD, EVENT_MISSING_ASSET, EVENT_RESET,
 	EVENT_ROTATE_ON_AXIS, EVENT_SET_RENDER_MODE, EVENT_SCENE_LOADED, EVENT_SHOW_VR_BUTTON,
-	EVENT_TOGGLE_FULLSCREEN, EVENT_ENTER_FULLSCREEN, EVENT_EXIT_FULLSCREEN} from './model3d-constants';
+	EVENT_TOGGLE_FULLSCREEN, EVENT_ENTER_FULLSCREEN, EVENT_EXIT_FULLSCREEN, EVENT_SAVE_SCENE_DEFAULTS,
+	EVENT_METADATA_UPDATE_SUCCESS, EVENT_METADATA_UPDATE_FAILURE, EVENT_RESET_SCENE_DEFAULTS } from './model3d-constants';
 import 'file?name=boxsdk-0.0.2.js!../../third-party/model3d/boxsdk-0.0.2.js';
 import 'file?name=box3d-resource-loader-0.0.3.js!../../third-party/model3d/box3d-resource-loader-0.0.3.js';
 import 'file?name=box3d-runtime-0.7.8.js!../../third-party/model3d/box3d-runtime-0.7.8.js';
@@ -21,6 +23,14 @@ let Box = global.Box || {};
 const CSS_CLASS_MODEL3D = 'box-preview-model3d';
 const MODEL3D_LOAD_TIMEOUT_IN_MILLIS = 5000;
 const MISSING_MAX = 4;
+const RENDER_MODE_MAP = {
+	'Lit': 'lit',
+	'Unlit': 'unlit',
+	'Normals': 'normals',
+	'Wireframe': 'wireframe',
+	'Untextured Wireframe': 'flatwire',
+	'UV Overlay': 'uv'
+};
 
 /**
  * Model3d
@@ -41,13 +51,21 @@ class Model3d extends Base {
 		this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
 		this.wrapperEl.className = CSS_CLASS_MODEL3D;
 
+		let sdkOpts = { token: options.token, apiBase: options.api };
+		this.boxSdk = new BoxSDK(sdkOpts);
+
 		this.controls = new Model3dControls(this.wrapperEl);
 		this.settings = new Model3dSettings(this.wrapperEl);
-		this.renderer = new Model3dRenderer(this.wrapperEl);
+		this.renderer = new Model3dRenderer(this.wrapperEl, this.boxSdk);
 
 		this.attachEventHandlers();
 		this.instances = [];
 		this.assets = [];
+
+		this.axes = {
+			up: null,
+			forward: null
+		};
 	}
 
 	/**
@@ -64,6 +82,8 @@ class Model3d extends Base {
 		this.renderer.on(EVENT_SCENE_LOADED, this.handleSceneLoaded);
 		this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
 		this.settings.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
+		this.settings.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
+		this.settings.on(EVENT_RESET_SCENE_DEFAULTS, this.handleSceneReset);
 		this.on(EVENT_ENTER_FULLSCREEN, this.handleEnterFullscreen);
 		this.on(EVENT_EXIT_FULLSCREEN, this.handleExitFullscreen);
 	}
@@ -82,6 +102,8 @@ class Model3d extends Base {
 		this.renderer.removeListener(EVENT_SCENE_LOADED, this.handleSceneLoaded);
 		this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
 		this.settings.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
+		this.settings.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
+		this.settings.removeListener(EVENT_RESET_SCENE_DEFAULTS, this.handleSceneReset);
 		this.removeListener(EVENT_ENTER_FULLSCREEN, this.handleEnterFullscreen);
 		this.removeListener(EVENT_EXIT_FULLSCREEN, this.handleExitFullscreen);
 	}
@@ -194,14 +216,81 @@ class Model3d extends Base {
 	}
 
 	/**
+	 * Handle hard set of axes
+	 * @param {string} upAxis Up axis for model
+	 * @param {[type]} forwardAxis Forward axis for model
+	 * @param {[type]} transition True to trigger a smooth rotationd transition, false for snap to rotation
+	 * @returns {void}
+	 */
+	handleRotationAxisSet(upAxis, forwardAxis, transition = true) {
+		this.renderer.setAxisRotation(upAxis, forwardAxis, transition);
+	}
+
+	/**
 	 * Handle scene loaded event
 	 * @returns {void}
 	 */
 	handleSceneLoaded() {
-		this.notifyAssetsMissing();
+		//@TODO: implememnt notifyAssetsMissing()
+		//this.notifyAssetsMissing();
 
-		// @TODO: Set forward/up axis
-		// this.renderer.setAixRotation(axisUp, axisForward, false);
+		// Get scene defaults for up/forward axes, and render mode
+		this.boxSdk.getMetadataClient().get(this.options.file.id, 'global', 'box3d')
+			.then((resp) => {
+
+				if (resp.status !== 200) {
+					throw new Error('Error loading template for ' + this.options.file.id);
+				}
+
+				let defaults = resp.response;
+
+				this.axes.up = defaults.upAxis;
+				this.axes.forward = defaults.forwardAxis;
+
+				this.handleRotationAxisSet(defaults.upAxis, defaults.forwardAxis, false);
+				this.handleSetRenderMode(defaults.defaultRenderMode);
+				this.settings.setDefaultRenderMode(defaults.defaultRenderMode);
+
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	}
+
+	/**
+	 * Handle a scene save. Save defaults to metadata
+	 * @param {string} renderMode The default render mode to save
+	 * @returns {void}
+	 */
+	handleSceneSave(renderMode) {
+
+		let metadata = this.boxSdk.getMetadataClient(),
+			operations = [];
+
+		operations.push(metadata.createOperation('replace', '/defaultRenderMode', renderMode));
+
+		this.renderer.getAxes().then((axes) => {
+			operations.push(metadata.createOperation('replace', '/upAxis', axes.up));
+			operations.push(metadata.createOperation('replace', '/forwardAxis', axes.forward));
+
+			this.axes.up = axes.up;
+			this.axes.forward = axes.forward;
+
+			metadata.update(this.options.file.id, 'global', 'box3d', operations)
+				.then((resp) => {
+					let event = resp.status === '200' ? EVENT_METADATA_UPDATE_SUCCESS : EVENT_METADATA_UPDATE_FAILURE;
+					this.emit(event, resp);
+				});
+		});
+
+	}
+
+	/**
+	 * Spin the 3D model to the default orientation
+	 * @returns {void}
+	 */
+	handleSceneReset() {
+		this.handleRotationAxisSet(this.axes.up, this.axes.forward, true);
 	}
 
 	/**
@@ -219,6 +308,7 @@ class Model3d extends Base {
 	 */
 	handleSetRenderMode(mode) {
 		this.renderer.setRenderMode(mode);
+		this.controls.setRenderModeUI(RENDER_MODE_MAP[mode]);
 	}
 }
 
