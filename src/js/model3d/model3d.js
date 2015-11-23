@@ -231,6 +231,7 @@ class Model3d extends Base {
 	 * @returns {void}
 	 */
 	handleSceneLoaded() {
+		//@TODO: implememnt notifyAssetsMissing()
 		//this.notifyAssetsMissing();
 
 		// Get scene defaults for up/forward axes, and render mode
