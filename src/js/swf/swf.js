@@ -25,9 +25,10 @@ class SWF extends Base {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @param {object} [options] some options
-     * @returns {Image}
+     *
+     * @param {String|HTMLElement} container The container
+     * @param {Object} options some options
+     * @returns {SWF} SWF instance
      */
     constructor(container, options) {
         super(container, options);
@@ -37,9 +38,10 @@ class SWF extends Base {
 
     /**
      * Loads a swf object.
-     * @param {String} swfUrl The swf to load
+     *
      * @public
-     * @returns {Promise}
+     * @param {String} swfUrl The swf to load
+     * @returns {Promise} Promise to load a swf
      */
     load(swfUrl) {
         return new Promise((resolve, reject) => {
@@ -61,4 +63,4 @@ class SWF extends Base {
 Box.Preview = Box.Preview || {};
 Box.Preview.SWF = SWF;
 global.Box = Box;
-export default Box.Preview.SWF;
+export default SWF;

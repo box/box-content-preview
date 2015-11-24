@@ -1,6 +1,6 @@
 'use strict';
 
-import AssetLoader from '../assets';
+import AssetLoader from '../asset-loader';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
@@ -17,7 +17,7 @@ class SwfLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {ImageLoader}
+     * @returns {SwfLoader} SwfLoader instance
      */
     constructor() {
         super();

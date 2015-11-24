@@ -4,7 +4,7 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import MediaControls from './media-controls';
 
-const MEDIA_LOAD_TIMEOUT_IN_MILLIS = 10000;
+const MEDIA_LOAD_TIMEOUT_IN_MILLIS = 100000;
 const CSS_CLASS_MEDIA = 'box-preview-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'box-preview-media-container';
 const DEFAULT_VOLUME = 0.7;
@@ -17,9 +17,10 @@ class MediaBase extends Base {
 
     /**
      * [constructor]
+     *
      * @param {string|HTMLElement} container The container DOM node
      * @param {object} [options] some options
-     * @returns {MediaBase}
+     * @returns {MediaBase} MediaBase instance
      */
     constructor(container, options) {
         super(container, options);
@@ -41,7 +42,7 @@ class MediaBase extends Base {
         if (this.mediaControls) {
             this.mediaControls.destroy();
         }
-        
+
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
             this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
@@ -55,7 +56,7 @@ class MediaBase extends Base {
 
         if (this.mediaContainerEl) {
             this.mediaContainerEl.removeChild(this.mediaEl);
-        }   
+        }
 
         super.destroy();
     }
@@ -65,7 +66,7 @@ class MediaBase extends Base {
      *
      * @param {String} mediaUrl The media url
      * @public
-     * @returns {Promise}
+     * @returns {Promise} Promise to load media
      */
     load(mediaUrl) {
         this.mediaUrl = mediaUrl;

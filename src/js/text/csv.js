@@ -20,9 +20,10 @@ class CSV extends TextBase {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @param {object} [options] some options
-     * @returns {Image}
+     *
+     * @param {String|HTMLElement} container The container
+     * @param {Object} options some options
+     * @returns {CSV} CSV instance
      */
     constructor(container, options) {
         super(container, options);
@@ -32,9 +33,10 @@ class CSV extends TextBase {
 
     /**
      * Loads a csv file.
-     * @param {String} csvUrl The text to load
+     *
      * @public
-     * @returns {Promise}
+     * @param {String} csvUrl The text to load
+     * @returns {Promise} Promise to load a CSV
      */
     load(csvUrl) {
         return new Promise((resolve, reject) => {
@@ -81,9 +83,10 @@ class CSV extends TextBase {
 
     /**
      * Renders CSV into an html table
+     *
+     * @private
      * @param {String} data The csv text to load
-     * @public
-     * @returns {Promise}
+     * @returns {void}
      */
     renderCSV(data) {
         ReactDOM.render(

@@ -1,6 +1,6 @@
 'use strict';
 
-import AssetLoader from '../assets';
+import AssetLoader from '../asset-loader';
 
 const VIDEO_FORMATS = [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv' ];
 
@@ -39,10 +39,10 @@ const VIEWERS = [
 ];
 
 class MediaLoader extends AssetLoader {
-    
+
     /**
      * [constructor]
-     * @returns {MediaLoader}
+     * @returns {MediaLoader} MediaLoader instance
      */
     constructor() {
         super();

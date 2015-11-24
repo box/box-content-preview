@@ -19,7 +19,7 @@ let document = global.document;
 let Box = global.Box || {};
 
 const CSS_CLASS_MODEL3D = 'box-preview-model3d';
-const MODEL3D_LOAD_TIMEOUT_IN_MILLIS = 5000;
+const MODEL3D_LOAD_TIMEOUT_IN_MILLIS = 100000;
 const MISSING_MAX = 4;
 
 /**
