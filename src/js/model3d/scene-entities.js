@@ -9,11 +9,11 @@ import hdrEnvSpecUrl from '../../img/model3d/hdr_env_spec.png';
  */
 function sceneEntities(prefix) {
 	return [{
-		_id: 'CAMERA_ID',
+		id: 'CAMERA_ID',
 		type: 'camera',
 		parentId: 'SCENE_ID',
 		parentAssetId: 'SCENE_ID',
-		payload: {
+		properties: {
 			position: {x: 49.0, y: 35.3, z: 70.3}, // Default position of camera
 			quaternion: {x: -0.185, y: 0.294, z: 0.058, w: 0.936}, // Default position of camera
 			near: 1, // Camera near-plane distance
@@ -53,7 +53,7 @@ function sceneEntities(prefix) {
 			}
 		}
 	}, {
-		_id: 'SCENE_ID',
+		id: 'SCENE_ID',
 		type: 'scene',
 		parentAssetId: 'SCENE_ID',
 		// The scene contains the lights and camera
@@ -62,17 +62,17 @@ function sceneEntities(prefix) {
 			'AMBIENT_LIGHT_ID'
 		]
 	}, {
-		_id: 'AMBIENT_LIGHT_ID',
+		id: 'AMBIENT_LIGHT_ID',
 		type: 'light',
 		parentAssetId: 'SCENE_ID',
-		payload: {
+		properties: {
 			type: 'AmbientLight'
 		}
 	}, {
-		_id: 'APP_ASSET_ID',
+		id: 'APP_ASSET_ID',
 		type: 'application',
 		parentAssetId: 'APP_ASSET_ID',
-		payload: {
+		properties: {
 			loadStartupScene: 'SCENE_ID' // The scene to load
 		},
 		components: {
@@ -95,10 +95,10 @@ function sceneEntities(prefix) {
 			}
 		}
 	}, {
-		_id: 'HDR_SPEC_ENV_MAP',
+		id: 'HDR_SPEC_ENV_MAP',
 		name: 'HDR Specular Env Map',
 		type: 'texture2D',
-		payload: {
+		properties: {
 			isLocal: true,
 			isHdr: true,
 			originalWidth: 1024,
@@ -113,14 +113,14 @@ function sceneEntities(prefix) {
 				width: 1024,
 				height: 512,
 				compression: 'none',
-				pixelFormat: 'rgbe'
+				packingFormat: 'rgbe'
 			}
 		}]
 	}, {
-		_id: 'HDR_DIFF_ENV_MAP',
+		id: 'HDR_DIFF_ENV_MAP',
 		name: 'HDR Diffuse Env Map',
 		type: 'texture2D',
-		payload: {
+		properties: {
 			isLocal: true,
 			isHdr: true,
 			filtering: 'Linear',
@@ -135,7 +135,7 @@ function sceneEntities(prefix) {
 				width: 512,
 				height: 256,
 				compression: 'none',
-				pixelFormat: 'rgbe'
+				packingFormat: 'rgbe'
 			}
 		}]
 	}];

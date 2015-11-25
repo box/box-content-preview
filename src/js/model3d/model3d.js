@@ -12,9 +12,9 @@ import {EVENT_ENABLE_VR, EVENT_DISABLE_VR, EVENT_LOAD, EVENT_MISSING_ASSET, EVEN
 	EVENT_ROTATE_ON_AXIS, EVENT_SET_RENDER_MODE, EVENT_SCENE_LOADED, EVENT_SHOW_VR_BUTTON,
 	EVENT_TOGGLE_FULLSCREEN, EVENT_ENTER_FULLSCREEN, EVENT_EXIT_FULLSCREEN, EVENT_SAVE_SCENE_DEFAULTS,
 	EVENT_METADATA_UPDATE_SUCCESS, EVENT_METADATA_UPDATE_FAILURE, EVENT_RESET_SCENE_DEFAULTS } from './model3d-constants';
-import 'file?name=boxsdk-0.0.2.js!../../third-party/model3d/boxsdk-0.0.2.js';
-import 'file?name=box3d-resource-loader-0.0.3.js!../../third-party/model3d/box3d-resource-loader-0.0.3.js';
-import 'file?name=box3d-runtime-0.7.8.js!../../third-party/model3d/box3d-runtime-0.7.8.js';
+import 'file?name=boxsdk-0.0.2.js!../../third-party/model3d/boxsdk-0.1.0.js';
+import 'file?name=box3d-resource-loader-0.0.3.js!../../third-party/model3d/box3d-resource-loader-0.1.0.js';
+import 'file?name=box3d-runtime-0.7.8.js!../../third-party/model3d/box3d-runtime-0.8.1.js';
 
 let Promise = global.Promise;
 let document = global.document;
@@ -149,11 +149,11 @@ class Model3d extends Base {
 		// 	this.missingAssets.length = 0;
 		// }
 		//
-		// this.detachEventHandlers();
+		this.detachEventHandlers();
 		//
-		// this.controls.destroy();
-		// this.settings.destroy();
-		// this.renderer.destroy();
+		this.controls.destroy();
+		this.settings.destroy();
+		this.renderer.destroy();
 	}
 
 	handleEnterFullscreen() {
