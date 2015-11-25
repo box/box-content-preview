@@ -153,8 +153,8 @@
 	    key: 'destroy',
 	    value: function destroy() {
 
+	      // loader calls box SDK destroy
 	      this.loader.destroy();
-	      this.boxSdk.destroy();
 
 	      this.loader = null;
 	      this.boxSdk = null;
@@ -235,17 +235,30 @@
 	  }
 
 	  /**
-	   * Load a "remote" (dynamically resolved) Box3DAsset. Overridden to supply getFileIds()
-	   * with a parentFolderId, instead of a file id
-	   * @method loadRemoteAsset
-	   * @param {object} asset The box3d asset to load
-	   * @param {object} params The parameters we want to pass to the BoxSDK and base loader.
-	   * Used for things like xhr key, progress id, and parentId
-	   * @param {function|null} progress The progress callback, on xhr load progress
-	   * @returns {Promise} a promise that resolves in the loaded and parsed data for Box3D
+	   * Override for getting gzipped length, with credentials passing disabled
+	   * @param {object} xhr The response xhr with the appropriate headers
+	   * @param {string} url The key to store the total size at
+	   * @returns {int} The byte size of the asset, with applied compression factor
 	   */
 
 	  _createClass(V2Loader, [{
+	    key: 'getGzippedLength',
+	    value: function getGzippedLength(xhr, url) {
+
+	      return Promise.resolve({ total: 1, loaded: 1 });
+	    }
+
+	    /**
+	     * Load a "remote" (dynamically resolved) Box3DAsset. Overridden to supply getFileIds()
+	     * with a parentFolderId, instead of a file id
+	     * @method loadRemoteAsset
+	     * @param {object} asset The box3d asset to load
+	     * @param {object} params The parameters we want to pass to the BoxSDK and base loader.
+	     * Used for things like xhr key, progress id, and parentId
+	     * @param {function|null} progress The progress callback, on xhr load progress
+	     * @returns {Promise} a promise that resolves in the loaded and parsed data for Box3D
+	     */
+	  }, {
 	    key: 'loadRemoteAsset',
 	    value: function loadRemoteAsset(asset, params, progress) {
 	      var _this = this;
@@ -914,7 +927,7 @@
 
 	    _classCallCheck(this, BaseLoader);
 
-	    if (opts.hasOwnProperty('boxSdk') && opts.boxSdk) {
+	    if (opts.boxSdk) {
 	      this.boxSdk = opts.boxSdk;
 	    } else {
 	      throw new Error('No Box SDK Provided to Loader!');
@@ -951,6 +964,8 @@
 	    value: function loadRemoteAsset(asset, params, progress) {
 	      var _this = this;
 
+	      if (params === undefined) params = {};
+
 	      var idPromise = undefined,
 	          loadFunc = undefined;
 
@@ -959,7 +974,7 @@
 	          var fileName = asset.getProperty('filename'),
 	              ext = 'png';
 	          // Dynamically resolve texture filenames at load time.
-	          idPromise = this.sdkLoader.getFileIds(fileName, this.fileId);
+	          idPromise = this.sdkLoader.getFileIds(fileName, this.fileId, { looseMatch: params.looseMatch });
 	          //need to check file extension to know which representation we need to get
 	          if (fileName.match(/(.jpg|.jpeg|.gif|.bmp)$/i)) {
 	            ext = 'jpg';
@@ -1070,11 +1085,12 @@
 	    * Get the content length of a gzipped asset
 	    * @param {object} xhr The response xhr with the appropriate headers
 	    * @param {string} url The key to store the total size at
+	    * @param {object} params Additional parameters to configure the XHR request
 	    * @returns {int} The byte size of the asset, with applied compression factor
 	    */
 	  }, {
 	    key: 'getGzippedLength',
-	    value: function getGzippedLength(xhr, url) {
+	    value: function getGzippedLength(xhr, url, params) {
 	      var _this2 = this;
 
 	      if (!this.gzipSizes[url]) {
@@ -1083,7 +1099,7 @@
 	          var factor = CompressionFactors[xhr.getResponseHeader('Content-Type')] || 1;
 
 	          // make the HEAD request for content length
-	          _this2.sdkLoader.xhr.makeRequest(xhr.responseURL, 'HEAD').then(function (resp) {
+	          _this2.sdkLoader.xhr.makeRequest(xhr.responseURL, 'HEAD', null, null, params).then(function (resp) {
 	            var total = resp.getResponseHeader('Content-Length');
 	            resolve(total ? total * factor : 0);
 	          })['catch'](reject);
@@ -1863,6 +1879,19 @@
 	      }
 
 	      return this.cache[url];
+	    }
+
+	    /**
+	    * Override of getGzippedLenght, with credentials passing enabled
+	    * @param {object} xhr The response xhr with the appropriate headers
+	    * @param {string} url The key to store the total size at
+	    * @returns {int} The byte size of the asset, with applied compression factor
+	    */
+	  }, {
+	    key: 'getGzippedLength',
+	    value: function getGzippedLength(xhr, url) {
+
+	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: true });
 	    }
 
 	    /**

@@ -281,7 +281,7 @@
 
 	      params.withCredentials = true;
 
-	      return _get(Object.getPrototypeOf(RepresentationLoaderRM.prototype), 'get', this).call(this, url, progress, params);
+	      return _get(Object.getPrototypeOf(RepresentationLoaderRM.prototype), 'get', this).call(this, url, params, progress);
 	    }
 
 	    /**
@@ -816,7 +816,7 @@
 	  function BaseRepresentationLoader(opts) {
 	    _classCallCheck(this, BaseRepresentationLoader);
 
-	    this.apiBase = opts.apiBase || DEFAULT_API_BASE;
+	    this.apiBase = opts.hasOwnProperty('apiBase') ? opts.apiBase : DEFAULT_API_BASE;
 
 	    //cache of file and version ids!
 	    this.idCache = {};
@@ -1799,8 +1799,8 @@
 	  /**
 	  * Client for using Box Metadata
 	  * See https://box-content.readme.io/reference#searching-for-content
-	  * @param {string} token []
-	  * @param {string} apiBase []
+	  * @param {string} [token] Oauth2 token used for authorization
+	  * @param {string} [apiBase] Base url to make all API calls to
 	  * @returns {void}
 	  */
 
@@ -1808,7 +1808,7 @@
 	    _classCallCheck(this, Metadata);
 
 	    this.xhr = new _xhr2['default'](token);
-	    this.apiBase = apiBase || API_BASE;
+	    this.apiBase = apiBase !== undefined ? apiBase : API_BASE;
 	  }
 
 	  /**

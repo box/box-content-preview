@@ -187,17 +187,17 @@ class Model3dRenderer extends EventEmitter {
 
 		if (this.box3d) {
 			this.box3d.resourceLoader = resourceLoader;
+			this.showBox3d();
 			return Promise.resolve(this.box3d);
 		}
 
-		this.box3d = new VAPI.Engine({
-			engineName: 'Default',
-			container: this.containerEl
-		});
+		this.box3d = new VAPI.Engine();
 
 		return new Promise((resolve, reject) => {
 			this.box3d.initialize({
-				entities: new VAPI.EntityCollection(sceneEntities(options.location.baseURI)),
+				container: this.containerEl,
+				engineName: 'Default',
+				entities: sceneEntities(options.location.baseURI),
 				inputSettings: INPUT_SETTINGS,
 				resourceLoader
 			}, () => {
@@ -206,7 +206,7 @@ class Model3dRenderer extends EventEmitter {
 					Cache.set('box3d', this.box3d);
 					resolve(this.box3d);
 				});
-			});
+			}.bind(this));
 		});
 	}
 
@@ -229,15 +229,22 @@ class Model3dRenderer extends EventEmitter {
 
 	/**
 	* Create instances of a prefabs and add them to the scene
-	* @param {object} collection A collection of entities
+	* @param {object} entities A list of entities
 	* @returns {void}
 	*/
-	createPrefabInstances(collection) {
+	createPrefabInstances(entities) {
+		let prefabEntity;
+
 		if (!this.box3d) {
 			return;
 		}
 
-		let prefabEntity = collection.where({ type: 'prefab' }, true);
+		// Find the prefab in the newly imported entities
+		entities.forEach(function checkForPrefab(entityDesc) {
+			if (entityDesc.type === 'prefab') {
+				prefabEntity = entityDesc;
+			}
+		});
 
 		// Traverse the scene and add IBL to every referenced material
 		this.addIblToMaterials();
@@ -250,8 +257,8 @@ class Model3dRenderer extends EventEmitter {
 		}
 
 		// make sure we add ALL assets to the asset list to destroy
-		collection.each((entity) => {
-			if (entity.isAsset()) {
+		entities.forEach((entity) => {
+			if (entity.id === entity.parentAssetId) {
 				let asset = this.box3d.assetRegistry.getAssetById(entity.id);
 				this.assets.push(asset);
 			}
