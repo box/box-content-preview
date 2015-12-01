@@ -89,7 +89,7 @@ push_to_maven() {
 
     # Tar all non-hidden files and directories
     cd dist
-    fpm -s dir -t rpm --prefix $installDir --rpm-os linux --architecture all --package $rpmDir/$rpm --directories . --name $KIND --version $VERSION --rpm-user box --rpm-group box --rpm-compression none --description 'content experience assets bundle' .
+    fpm -s dir -t rpm --prefix $installDir --rpm-os linux --architecture all --package $rpmDir/$rpm --directories . --name "$KIND-$VERSION" --version $VERSION --rpm-user box --rpm-group box --rpm-compression none --description 'content experience assets bundle' .
     cd ..
     status=$(curl -s -o /dev/null -w %{http_code} -X POST -u $mavenUser:$mavenPassword -T $rpmDir/$rpm $publishURL)
 
