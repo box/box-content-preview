@@ -1,6 +1,7 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
+import RepLoader from './rep-loader';
 
 const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 
@@ -10,34 +11,7 @@ let loadedAssets = [];
 let prefetchedAssets = [];
 
 @autobind
-class Assets {
-
-    /**
-     * Converts a json object to query string
-     * @param {Object} obj Object to change to query string
-     * @returns {String} Query string
-     */
-    generateQueryString(obj) {
-        return '?' + Object.keys(obj).map((key) => {
-            return global.encodeURIComponent(key) + '=' + global.encodeURIComponent(obj[key]);
-        }).join('&');
-    }
-
-    /**
-     * Creates the content URLs
-     *
-     * @protected
-     * @param {String} host hostname
-     * @param {String} baseUrl base url
-     * @param {String} contentPath content path
-     * @param {Object} properties properties
-     * @param {String} token auth token
-     * @returns {String} content urls
-     */
-    contentUrlFactory(host, baseUrl, contentPath, properties, token) {
-        properties.access_token = token;
-        return host + baseUrl + contentPath + this.generateQueryString(properties);
-    }
+class AssetLoader {
 
     /**
      * Create <link> element to prefetch external resource
@@ -171,19 +145,6 @@ class Assets {
     }
 
     /**
-     * Chooses a representation. Assumes that there will be only
-     * one specific representation. In other words we will not have
-     * two png representation entries with different properties.
-     *
-     * @param {Object} file box file
-     * @param {Object} viewer the chosen viewer
-     * @returns {Object} the representation to load
-     */
-    determineRepresentation(file, viewer) {
-        return file.representations.entries.find((entry) => viewer.REPRESENTATION === entry.representation);
-    }
-
-    /**
      * Loads a previewer
      *
      * @param {Object} file box file
@@ -193,17 +154,17 @@ class Assets {
      */
     load(file, container, options) {
 
+        // Create a new representation loader
+        let repLoader = new RepLoader();
+
         // Create an asset path creator function
         let assetPathCreator = this.assetUrlFactory(options.location.hrefTemplate);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
 
-        // Determine the representation to use
-        let representation = this.determineRepresentation(file, viewer);
-
         // Save the factory for creating content urls
-        options.contentUrlFactory = this.contentUrlFactory;
+        options.contentUrlFactory = RepLoader.generateContentUrl;
 
         // Save the factory for creating asset urls
         options.assetUrlFactory = assetPathCreator;
@@ -226,13 +187,13 @@ class Assets {
             this.previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
 
             // Once the previewer loads, hides loading indicator
-            this.previewer.on('load', () => {
+            this.previewer.addListener('load', () => {
                 container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
             });
 
-            // Load the representations and return the instantiated previewer object
-            return this.previewer.load(this.contentUrlFactory(options.api, file.representations.content_base_url, representation.content, representation.properties, options.token));
-
+            repLoader.addListener('ready', (rep) => this.previewer.load(rep));
+            repLoader.addListener('error', (rep) => Promise.reject('Failed to load ' + rep));
+            repLoader.load(file, viewer, options);
         });
     }
 
@@ -251,7 +212,7 @@ class Assets {
         let viewer = this.determineViewer(file);
 
         // Determine the representation to use
-        let representation = this.determineRepresentation(file, viewer);
+        let representation = RepLoader.determineRepresentation(file, viewer);
 
         // Prefetch the stylesheets needed by this previewer
         this.prefetchAssets(viewer.STYLESHEETS.map(assetPathCreator));
@@ -260,7 +221,7 @@ class Assets {
         this.prefetchAssets(viewer.SCRIPTS.map(assetPathCreator));
 
         let img = document.createElement('img');
-        img.src = this.contentUrlFactory(options.api, file.representations.content_base_url, representation.content, representation.properties, options.token);
+        img.src = RepLoader.generateContentUrl(options.api, file.representations.content_base_url, representation.content, representation.properties, options.token);
     }
 
     /**
@@ -289,4 +250,4 @@ class Assets {
     }
 }
 
-export default Assets;
+export default AssetLoader;

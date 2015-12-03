@@ -8,7 +8,7 @@ const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_IMAGE = 'box-preview-image';
-const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 5000;
+const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 10000;
 
 let Promise = global.Promise;
 let document = global.document;
@@ -19,9 +19,10 @@ class Image extends Base {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @param {object} [options] some options
-     * @returns {Image}
+     *
+     * @param {String|HTMLElement} container The container
+     * @param {Object} options some options
+     * @returns {Image} Image instance
      */
     constructor(container, options) {
         super(container, options);
@@ -52,13 +53,14 @@ class Image extends Base {
 
     /**
      * Loads an image.
-     * @param {Event} event The mousemove event
+     *
      * @pubic
-     * @returns {Promise}
+     * @param {String} imageUrl The image url
+     * @returns {Promise} Promise to load image
      */
     load(imageUrl) {
         this.imageUrl = imageUrl;
-        
+
         return new Promise((resolve, reject) => {
             this.imageEl.addEventListener('load', () => {
                 resolve(this);

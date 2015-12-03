@@ -1,6 +1,6 @@
 'use strict';
 
-import AssetLoader from '../assets';
+import AssetLoader from '../asset-loader';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 // For example, a gif file can be previewed both natively (majority use case) using the original
@@ -40,7 +40,7 @@ class ImageLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {ImageLoader}
+     * @returns {ImageLoader} ImageLoader instance
      */
     constructor() {
         super();

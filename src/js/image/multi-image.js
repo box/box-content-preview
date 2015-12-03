@@ -7,7 +7,7 @@ import ImageBase from './image-base';
 
 const CSS_CLASS_IMAGE = 'box-preview-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
-const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 20000;
+const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 60000;
 
 let Promise = global.Promise;
 let document = global.document;
@@ -18,9 +18,10 @@ class MultiImage extends ImageBase {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @param {object} [options] some options
-     * @returns {MultiImage}
+     *
+     * @param {String|HTMLElement} container The container
+     * @param {Object} options some options
+     * @returns {MultiImage} MultiImage instance
      */
     constructor(container, options) {
         super(container, options);
@@ -31,7 +32,7 @@ class MultiImage extends ImageBase {
         this.wrapperEl = this.containerEl.firstElementChild.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_IMAGE_WRAPPER;
         this.wrapperEl.addEventListener('mouseup', this.handleMouseUp);
-        
+
         this.imageEls = [this.wrapperEl.appendChild(document.createElement('img'))];
     }
 
@@ -50,13 +51,14 @@ class MultiImage extends ImageBase {
 
     /**
      * Loads an image.
-     * @param {Array} imageUrls
+     *
      * @pubic
-     * @returns {Promise}
+     * @param {Array} imageUrls urls for images
+     * @returns {Promise} Promise to load bunch of images
      */
     load(imageUrls) {
         this.imageUrls = imageUrls;
-        
+
         return new Promise((resolve, reject) => {
 
             this.imageEls[0].addEventListener('load', () => {
@@ -73,7 +75,7 @@ class MultiImage extends ImageBase {
 
             this.imageUrls.forEach((imageUrl, index) => {
                 if (index !== 0) {
-                    this.imageEls[index] = this.wrapperEl.appendChild(document.createElement('img'));    
+                    this.imageEls[index] = this.wrapperEl.appendChild(document.createElement('img'));
                 }
                 this.imageEls[index].src = imageUrl;
             });
@@ -127,7 +129,7 @@ class MultiImage extends ImageBase {
         }
 
         this.wrapperEl.style.width = newWidth + 'px';
-        
+
         // Fix the scroll position of the image to be centered
         this.wrapperEl.parentNode.scrollLeft = (this.wrapperEl.parentNode.scrollWidth - viewportWidth) / 2;
 

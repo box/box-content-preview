@@ -1,6 +1,6 @@
 'use strict';
 
-import AssetLoader from '../assets';
+import AssetLoader from '../asset-loader';
 
 const VIEWER = {
     REPRESENTATION: 'original',
@@ -14,17 +14,17 @@ class UnsupportedLoader extends AssetLoader {
 
     /**
      * Determines if this loader can be used
-     * 
+     *
      * @override
      * @return {Boolean}
      */
     canLoad() {
-        return true;    
+        return true;
     }
 
     /**
      * Chooses a viewer based on file extension.
-     * 
+     *
      * @override
      * @return {Object} the viewer to use
      */

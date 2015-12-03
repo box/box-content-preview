@@ -14,7 +14,6 @@ import 'file?name=pdf_viewer.css!../../third-party/doc/pdf_viewer.css';
 
 let Promise = global.Promise;
 let document = global.document;
-let Box = global.Box || {};
 let PDFJS = global.PDFJS;
 
 const DOC_LOAD_TIMEOUT_IN_MILLIS = 60000;
@@ -27,16 +26,15 @@ const PRESENTATION_MODE_STATE = {
     FULLSCREEN: 3
 };
 
-
-
 @autobind
 class DocBase extends Base {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} container node
-     * @param {object} [options] some options
-     * @returns {DocBase}
+     *
+     * @param {String|HTMLElement} container node
+     * @param {Object} [options] some options
+     * @returns {DocBase} DocBase instance
      */
     constructor(container, options) {
         super(container, options);
@@ -75,9 +73,9 @@ class DocBase extends Base {
     /**
      * Loads a document.
      *
-     * @param {String} pdfUrl The pdf to load
      * @public
-     * @returns {Promise}
+     * @param {String} pdfUrl The pdf to load
+     * @returns {Promise} Promise to load a pdf
      */
     load(pdfUrl) {
         return new Promise((resolve, reject) => {
@@ -356,7 +354,7 @@ class DocBase extends Base {
     /**
      * Handler for 'pagechange' event
      *
-     * @param {Event} event
+     * @param {Event} event pagechange
      * @private
      * @returns {void}
      */
@@ -368,7 +366,7 @@ class DocBase extends Base {
     /**
 	 * Blur handler for page number input
 	 *
-	 * @param  {Event} event
+	 * @param  {Event} event blur event
      * @private
 	 * @returns {void}
 	 */
@@ -386,12 +384,12 @@ class DocBase extends Base {
 	/**
 	 * Keydown handler for page number input
 	 *
-	 * @param {Event} event
+	 * @param {Event} event key event
      * @private
 	 * @returns {void}
 	 */
 	pageNumInputKeydownHandler(event) {
-		switch(event.which) {
+		switch (event.which) {
 			case 13: // ENTER
 				this.pageNumInputBlurHandler(event);
 				break;

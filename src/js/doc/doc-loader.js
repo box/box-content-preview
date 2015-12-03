@@ -1,6 +1,6 @@
 'use strict';
 
-import AssetLoader from '../assets';
+import AssetLoader from '../asset-loader';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 // For example, a pdf file can be previewed both natively (majority use case) using the original
@@ -33,7 +33,7 @@ class DocLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {DocLoader}
+     * @returns {DocLoader} DocLoader instance
      */
     constructor() {
         super();
@@ -44,7 +44,7 @@ class DocLoader extends AssetLoader {
      * Some initialization stuff
      *
      * @override
-     * @param {Object} options
+     * @param {Object} options some options
      * @returns {void}
      */
     init(options) {
