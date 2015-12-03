@@ -14,23 +14,23 @@ class MP3 extends MediaBase {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} container The container DOM node
-     * @param {object} [options] some options
-     * @returns {MP3}
+     * @param {String|HTMLElement} container The container DOM node
+     * @param {Object} [options] some options
+     * @returns {MP3} MP3 instance
      */
     constructor(container, options) {
         super(container, options);
-        
+
         // mp3 specific class
         this.wrapperEl.classList.add(CSS_CLASS_MP3);
-        
+
         // Audio element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('audio'));
     }
 
     /**
      * Loads the controls
-     * 
+     *
      * @private
      * @returns {void}
      */

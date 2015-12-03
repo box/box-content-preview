@@ -59,7 +59,7 @@ class Image extends Base {
      * @returns {Promise} Promise to load image
      */
     load(imageUrl) {
-        this.imageUrl = imageUrl;
+        this.imageUrl = this.appendAuthParam(imageUrl);
 
         return new Promise((resolve, reject) => {
             this.imageEl.addEventListener('load', () => {
@@ -73,7 +73,7 @@ class Image extends Base {
 
                 this.emit('load');
             });
-            this.imageEl.src = imageUrl;
+            this.imageEl.src = this.imageUrl;
 
             setTimeout(() => {
                 if (!this.loaded) {

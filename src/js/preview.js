@@ -6,6 +6,7 @@ import throttle from 'lodash/function/throttle';
 import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import loaders from './loaders';
+import cache from './cache';
 
 const PREFETCH_COUNT = 5;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
@@ -29,9 +30,6 @@ class Preview {
      * @returns {Preview} Returns a preview
      */
     constructor() {
-        // Preview cache, stores a bunch of file data
-        this.cache = {};
-
         // Current file being previewed
         this.file = {};
 
@@ -160,7 +158,7 @@ class Preview {
         this.container.firstElementChild.innerHTML = '';
 
         // Check the cache before making a network request.
-        let cached = this.cache[id];
+        let cached = cache.get(id);
 
         if (cached && cached.id === id && cached.representations) {
             // Cache hit, use that.
@@ -197,7 +195,7 @@ class Preview {
             })
             .then((response) => response.json())
             .then((file) => {
-                this.cache[file.id] = file;
+                cache.set(file.id, file);
                 // Reload the preview
             });
         }
@@ -219,7 +217,7 @@ class Preview {
         .then((response) => response.json())
         .then((file) => {
             if (file.type === 'file') {
-                this.cache[id] = file;
+                cache.set(id, file);
                 this.file = file;
                 return this.loadViewer();
             } else {
@@ -295,12 +293,12 @@ class Preview {
             }
 
             // If the file was already prefetched then try the next file
-            if (this.cache[nextId]) {
+            if (cache.has(nextId)) {
                 continue;
             }
 
             // Create an empty object to prevent further prefetches
-            this.cache[nextId] = {};
+            cache.set(nextId, {});
 
             // Pre-fetch the file information
             fetch(this.createUrl(nextId), {
@@ -311,7 +309,7 @@ class Preview {
                 // Don't bother with non-files
                 if (file.type === 'file') {
                     // Save the returned file
-                    this.cache[nextId] = file;
+                    cache.set(nextId, file);
 
                     // Pre-fetch content if applicable so that the
                     // Browser caches the content
@@ -441,7 +439,7 @@ class Preview {
         this.options.api = options.api;
 
         // Save the reference to the auth token
-        this.options.token = options.token;
+        this.setAuthorizationToken(options.token);
 
         // Save the reference to any additional custom options
         this.options.viewerOptions = options.viewerOptions;
@@ -481,13 +479,16 @@ class Preview {
         // If we have the file data, we use that.
         if (typeof file === 'string') {
             // String file id was passed in
-            this.file = this.cache[file] = {
+            this.file = {
                 id: file
             };
         } else {
             // File object was passed in
-            this.file = this.cache[file.id] = file;
+            this.file = file;
         }
+
+        // Cache the file
+        cache.set(file.id, this.file);
 
         // Setup the UI. Navigation is only shown if we are prevewing a collection
         // and if the client has not prevented us from showing the navigation.

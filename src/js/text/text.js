@@ -8,7 +8,6 @@ import 'file?name=highlight.js!../../third-party/text/highlight.js';
 import 'file?name=github.css!../../third-party/text/github.css';
 
 let Promise = global.Promise;
-let document = global.document;
 let Box = global.Box || {};
 let hljs = global.hljs;
 
@@ -19,9 +18,9 @@ class PlainText extends TextBase {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @param {object} [options] some options
-     * @returns {Image}
+     * @param {String|HTMLElement} container The container
+     * @param {Object} options some options
+     * @returns {PlainText} PlainText instance
      */
     constructor(container, options) {
         super(container, options);
@@ -31,15 +30,18 @@ class PlainText extends TextBase {
     }
 
     /**
-     * Loads a swf object.
+     * Loads a text file.
      *
      * @param {String} textUrl The text file to load
      * @public
-     * @returns {Promise}
+     * @returns {Promise} Promise to load a text file
      */
     load(textUrl) {
         return new Promise((resolve, reject) => {
-            fetch(textUrl).then((response) => {
+
+            fetch(textUrl, {
+                headers: this.appendAuthHeader()
+            }).then((response) => {
                 return response.text();
             }).then((txt) => {
                 this.finishLoading(txt, resolve);
@@ -50,6 +52,7 @@ class PlainText extends TextBase {
                     reject();
                 }
             }, TEXT_LOAD_TIMEOUT_IN_MILLIS);
+
         });
     }
 

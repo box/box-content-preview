@@ -74,7 +74,7 @@ class Model3dRenderer extends EventEmitter {
 	 */
 	load(jsonUrl, options) {
 		return this.initBox3d(options)
-			.then(this.loadBox3dFile.bind(this,jsonUrl));
+			.then(this.loadBox3dFile.bind(this, jsonUrl));
 	}
 
 	/**

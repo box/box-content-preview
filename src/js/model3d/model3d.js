@@ -117,7 +117,7 @@ class Model3d extends Base {
 		// Temp hack
 		return new Promise((resolve, reject) => {
 			this.renderer
-				.load(model3dJsonUrl, this.options)
+				.load(this.appendAuthParam(model3dJsonUrl), this.options)
 				.then(() => {
 					this.emit(EVENT_LOAD);
 					this.loaded = true;

@@ -50,6 +50,11 @@ class Base extends EventEmitter {
         this.addCommonListeners();
     }
 
+    /**
+     * Resize handler
+     * @private
+     * @returns {Function} debounced resize handler
+     */
     debouncedResizeHandler() {
         if (!this.resizeHandler) {
             this.resizeHandler = debounce(() => {
@@ -58,6 +63,35 @@ class Base extends EventEmitter {
             }, RESIZE_WAIT_TIME_IN_MILLIS);
         }
         return this.resizeHandler;
+    }
+
+    /**
+     * Headers for fetch
+     *
+     * @protected
+     * @param {String} url url to attach param to
+     * @returns {Object} fetch headers
+     */
+    appendAuthParam(url) {
+        let prefix = '?';
+
+        if (url.indexOf('?') > 0) {
+            prefix = '&';
+        }
+
+        return url + prefix + 'access_token=' + this.options.token;
+    }
+
+    /**
+     * Headers for fetch
+     *
+     * @protected
+     * @param {Object} [headers] optional existing headers
+     * @returns {Object} fetch headers
+     */
+    appendAuthHeader(headers = {}) {
+        headers.Authorization = 'Bearer ' + this.options.token;
+        return headers;
     }
 
     /**

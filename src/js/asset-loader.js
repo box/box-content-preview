@@ -2,6 +2,7 @@
 
 import autobind from 'autobind-decorator';
 import RepLoader from './rep-loader';
+import { generateContentUrl } from './util';
 
 const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 
@@ -164,7 +165,7 @@ class AssetLoader {
         let viewer = this.determineViewer(file);
 
         // Save the factory for creating content urls
-        options.contentUrlFactory = RepLoader.generateContentUrl;
+        options.contentUrlFactory = generateContentUrl;
 
         // Save the factory for creating asset urls
         options.assetUrlFactory = assetPathCreator;
@@ -188,7 +189,9 @@ class AssetLoader {
 
             // Once the previewer loads, hides loading indicator
             this.previewer.addListener('load', () => {
-                container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
+                if (container) {
+                    container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
+                }
             });
 
             repLoader.addListener('ready', (rep) => this.previewer.load(rep));
@@ -221,7 +224,10 @@ class AssetLoader {
         this.prefetchAssets(viewer.SCRIPTS.map(assetPathCreator));
 
         let img = document.createElement('img');
-        img.src = RepLoader.generateContentUrl(options.api, file.representations.content_base_url, representation.content, representation.properties, options.token);
+        let properties = Object.assign({}, representation.properties, {
+            'access_token': options.token
+        });
+        img.src = generateContentUrl(file.representations.content_base_url, representation.content, properties);
     }
 
     /**
@@ -247,6 +253,8 @@ class AssetLoader {
         if (this.previewer && typeof this.previewer.destroy === 'function') {
             this.previewer.destroy();
         }
+
+        this.previewer = undefined;
     }
 }
 

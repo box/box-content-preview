@@ -13,13 +13,13 @@ class MP4 extends VideoBase {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} container The container DOM node
-     * @param {object} [options] some options
-     * @returns {MP4}
+     * @param {String|HTMLElement} container The container DOM node
+     * @param {Object} [options] some options
+     * @returns {MP4} MP4 instance
      */
     constructor(container, options) {
         super(container, options);
-        
+
         // mp4 specific class
         this.wrapperEl.classList.add(CSS_CLASS_MP4);
     }
