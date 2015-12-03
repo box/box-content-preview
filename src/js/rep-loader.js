@@ -27,16 +27,15 @@ class RepLoader extends EventEmitter {
      * Creates the content URLs
      *
      * @protected
-     * @param {String} host hostname
      * @param {String} baseUrl base url
      * @param {String} contentPath content path
      * @param {Object} properties properties
      * @param {String} token auth token
      * @returns {String} content urls
      */
-    static generateContentUrl(host, baseUrl, contentPath, properties, token) {
+    static generateContentUrl(baseUrl, contentPath, properties, token) {
         properties.access_token = token;
-        return host + baseUrl + contentPath + RepLoader.generateQueryString(properties);
+        return baseUrl + contentPath + RepLoader.generateQueryString(properties);
     }
 
     /**
@@ -92,12 +91,11 @@ class RepLoader extends EventEmitter {
         // Determine the representation to use
         let representation = RepLoader.determineRepresentation(file, viewer);
 
-        let host = options.api;
         let baseUrl = file.representations.content_base_url;
         let contentPath = representation.content;
         let properties = representation.properties;
         let token = options.token;
-        let repUrl = RepLoader.generateContentUrl(host, baseUrl, contentPath, properties, token);
+        let repUrl = RepLoader.generateContentUrl(baseUrl, contentPath, properties, token);
 
         switch (representation.status) {
             case STATUS_SUCCESS:
