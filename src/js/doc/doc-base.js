@@ -195,7 +195,7 @@ class DocBase extends Base {
 
         // Load PDF from representation URL
         PDFJS.getDocument({
-            url: pdfUrl,
+            url: this.appendAuthParam(pdfUrl),
             rangeChunkSize: 524288
         }).then((doc) => {
             this.pdfViewer.setDocument(doc);

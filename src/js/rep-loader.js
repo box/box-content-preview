@@ -2,6 +2,7 @@
 
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
+import { generateContentUrl } from './util';
 
 const STATUS_PENDING = 'pending';
 const STATUS_NONE = 'none';
@@ -11,33 +12,6 @@ const STATUS_READY = 'ready';
 
 @autobind
 class RepLoader extends EventEmitter {
-
-    /**
-     * Converts a json object to query string
-     * @param {Object} obj Object to change to query string
-     * @returns {String} Query string
-     */
-    static generateQueryString(obj) {
-        return '?' + Object.keys(obj).map((key) => {
-            return global.encodeURIComponent(key) + '=' + global.encodeURIComponent(obj[key]);
-        }).join('&');
-    }
-
-    /**
-     * Creates the content URLs
-     *
-     * @protected
-     * @param {String} host hostname
-     * @param {String} baseUrl base url
-     * @param {String} contentPath content path
-     * @param {Object} properties properties
-     * @param {String} token auth token
-     * @returns {String} content urls
-     */
-    static generateContentUrl(host, baseUrl, contentPath, properties, token) {
-        properties.access_token = token;
-        return host + baseUrl + contentPath + RepLoader.generateQueryString(properties);
-    }
 
     /**
      * Chooses a representation. Assumes that there will be only
@@ -56,10 +30,15 @@ class RepLoader extends EventEmitter {
      * Loads a representation asset
      *
      * @param {String} url rep url
+     * @param {String} token auth token
      * @returns {void}
      */
-    updateStatus(url) {
-        fetch(url).then((response) => {
+    updateStatus(url, token) {
+        fetch(url, {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        }).then((response) => {
             clearTimeout(this.statusTimeout);
             switch (response.status) {
                 case 200:
@@ -69,7 +48,7 @@ class RepLoader extends EventEmitter {
                 case 202:
                     this.emit(STATUS_PENDING, url);
                     this.statusTimeout = setTimeout(() => {
-                        this.updateStatus(url);
+                        this.updateStatus(url, token);
                     }, 3000);
                     break;
                 default:
@@ -92,12 +71,10 @@ class RepLoader extends EventEmitter {
         // Determine the representation to use
         let representation = RepLoader.determineRepresentation(file, viewer);
 
-        let host = options.api;
         let baseUrl = file.representations.content_base_url;
         let contentPath = representation.content;
         let properties = representation.properties;
-        let token = options.token;
-        let repUrl = RepLoader.generateContentUrl(host, baseUrl, contentPath, properties, token);
+        let repUrl = generateContentUrl(baseUrl, contentPath, properties);
 
         switch (representation.status) {
             case STATUS_SUCCESS:
@@ -109,7 +86,7 @@ class RepLoader extends EventEmitter {
                 this.emit(STATUS_ERROR, repUrl);
                 break;
             case STATUS_PENDING:
-                this.updateStatus(repUrl);
+                this.updateStatus(repUrl, options.token);
                 break;
         }
     }

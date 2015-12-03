@@ -26,6 +26,17 @@ class Cache {
     }
 
     /**
+     * Caches a simple object in memory cache.
+     *
+     * @param {string} key The cache key
+     * @public
+     * @returns {Boolean} whether the cache has key
+     */
+    has(key) {
+        return !!this.cache[key];
+    }
+
+    /**
      * Fetches a cached object from memory cache.
      *
      * @param {string} key the key of the cached object

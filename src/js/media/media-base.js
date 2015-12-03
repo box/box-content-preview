@@ -69,7 +69,7 @@ class MediaBase extends Base {
      * @returns {Promise} Promise to load media
      */
     load(mediaUrl) {
-        this.mediaUrl = mediaUrl;
+        this.mediaUrl = this.appendAuthParam(mediaUrl);
 
         return new Promise((resolve, reject) => {
 
@@ -80,7 +80,7 @@ class MediaBase extends Base {
             });
 
             // Attach the media source
-            this.mediaEl.src = mediaUrl;
+            this.mediaEl.src = this.mediaUrl;
 
             setTimeout(() => {
                 if (!this.loaded) {

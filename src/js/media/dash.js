@@ -11,10 +11,9 @@ const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-is-hd';
 const MEDIA_LOAD_TIMEOUT_IN_MILLIS = 10000;
 const SEGMENT_SIZE = 5;
-const MAX_BUFFER = SEGMENT_SIZE * 3
+const MAX_BUFFER = SEGMENT_SIZE * 3;
 
 let Box = global.Box || {};
-let document = global.document;
 let shaka = global.shaka;
 
 @autobind
@@ -22,9 +21,9 @@ class Dash extends VideoBase {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} container The container DOM node
-     * @param {object} [options] some options
-     * @returns {Dash}
+     * @param {String|HTMLElement} container The container DOM node
+     * @param {Object} [options] some options
+     * @returns {Dash} Dash instance
      */
     constructor(container, options) {
         super(container, options);
@@ -49,7 +48,7 @@ class Dash extends VideoBase {
      *
      * @param {String} mediaUrl The media url
      * @pubic
-     * @returns {Promise}
+     * @returns {Promise} Promise to load the media
      */
     load(mediaUrl) {
 
@@ -161,7 +160,7 @@ class Dash extends VideoBase {
      * Handles adaptation changes
      *
      * @private
-     * @param {Object} adaptation
+     * @param {Object} adaptation video rep
      * @returns {void}
      */
     adaptationHandler(adaptation) {
@@ -209,9 +208,9 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     loadFilmStrip() {
-        let filmstrip = this.options.file.representations.entries.find((entry) => 'filmstrip' === entry.representation)
+        let filmstrip = this.options.file.representations.entries.find((entry) => 'filmstrip' === entry.representation);
         if (filmstrip) {
-            this.filmstripUrl = this.options.contentUrlFactory(this.options.api, this.options.file.representations.content_base_url, filmstrip.content, filmstrip.properties, this.options.token);
+            this.filmstripUrl = this.appendAuthParam(this.options.contentUrlFactory(this.options.file.representations.content_base_url, filmstrip.content, filmstrip.properties));
             this.mediaControls.initFilmstrip(this.filmstripUrl, this.aspect);
         }
     }
@@ -256,7 +255,7 @@ class Dash extends VideoBase {
     /**
      * Resizes the video to be of fixed dimensions.
      * Should work in most common scenarios.
-     * 
+     *
      * @private
      * @returns {void}
      */
