@@ -6,11 +6,17 @@ import Base from '../base';
 import Controls from '../controls';
 import fullscreen from '../fullscreen';
 
+// PDFJS
 import 'file?name=compatibility.js!../../third-party/doc/compatibility.js';
 import 'file?name=pdf.worker.js!../../third-party/doc/pdf.worker.js';
 import 'file?name=pdf.js!../../third-party/doc/pdf.js';
 import 'file?name=pdf_viewer.js!../../third-party/doc/pdf_viewer.js';
 import 'file?name=pdf_viewer.css!../../third-party/doc/pdf_viewer.css';
+
+// AnnotatorJS
+import 'file?name=jquery-2.1.4.min.js!../../third-party/annotatorjs/jquery-2.1.4.min.js';
+import 'file?name=annotator.min.js!../../third-party/annotatorjs/annotator.min.js';
+import 'file?name=annotator.min.css!../../third-party/annotatorjs/annotator.min.css';
 
 let Promise = global.Promise;
 let document = global.document;
@@ -227,6 +233,22 @@ class DocBase extends Base {
         this.initPageNumEl();
     }
 
+    /**
+     * Initializes Annotator annotations
+     *
+     * @private
+     * @returns {void}
+     */
+    loadAnnotations() {
+        $('.pdfViewer').annotator();
+    }
+
+    /**
+     * Initializes page number selector
+     *
+     * @private
+     * @returns {void}
+     */
     initPageNumEl() {
         let pageNumEl = this.controls.controlsEl.querySelector('.box-preview-doc-page-num');
 
@@ -330,6 +352,10 @@ class DocBase extends Base {
 
         if (this.options.ui !== false) {
             this.loadUI();
+        }
+
+        if (this.options.viewerOptions && this.options.viewerOptions.annotations === true) {
+            this.loadAnnotations();
         }
     }
 

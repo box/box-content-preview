@@ -9,8 +9,8 @@ const VIEWERS = [
     {
         REPRESENTATION: 'original',
         EXTENSIONS: [ 'pdf' ],
-        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'document.js' ],
-        STYLESHEETS: [ 'pdf_viewer.css', 'document.css' ],
+        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'document.js', 'jquery-2.1.4.min.js', 'annotator.min.js' ],
+        STYLESHEETS: [ 'pdf_viewer.css', 'document.css', 'annotator.min.css' ],
         CONSTRUCTOR: 'Document'
     },
     {
@@ -23,8 +23,8 @@ const VIEWERS = [
     {
         REPRESENTATION: 'pdf',
         EXTENSIONS: [ 'doc', 'docx', 'gdoc', 'gsheet', 'msg', 'odp', 'odt', 'ods', 'pdf', 'ppt', 'pptx', 'rtf', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl' ],
-        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'document.js' ],
-        STYLESHEETS: [ 'pdf_viewer.css', 'document.css' ],
+        SCRIPTS: [ 'compatibility.js', 'pdf.js', 'pdf_viewer.js', 'document.js', 'jquery-2.1.4.min.js', 'annotator.min.js' ],
+        STYLESHEETS: [ 'pdf_viewer.css', 'document.css', 'annotator.min.css' ],
         CONSTRUCTOR: 'Document'
     }
 ];
