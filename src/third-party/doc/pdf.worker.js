@@ -20,8 +20,8 @@ if (typeof PDFJS === 'undefined') {
   (typeof window !== 'undefined' ? window : this).PDFJS = {};
 }
 
-PDFJS.version = '1.3.32';
-PDFJS.build = 'c2dfe9e';
+PDFJS.version = '1.3.56';
+PDFJS.build = 'e2aca38';
 
 (function pdfjsWrapper() {
   // Use strict in our context only - users might not want it
@@ -248,7 +248,6 @@ function error(msg) {
     console.log('Error: ' + msg);
     console.log(backtrace());
   }
-  UnsupportedManager.notify(UNSUPPORTED_FEATURES.unknown);
   throw new Error(msg);
 }
 
@@ -274,22 +273,6 @@ var UNSUPPORTED_FEATURES = PDFJS.UNSUPPORTED_FEATURES = {
   shadingPattern: 'shadingPattern',
   font: 'font'
 };
-
-var UnsupportedManager = PDFJS.UnsupportedManager =
-  (function UnsupportedManagerClosure() {
-  var listeners = [];
-  return {
-    listen: function (cb) {
-      listeners.push(cb);
-    },
-    notify: function (featureId) {
-      warn('Unsupported feature "' + featureId + '"');
-      for (var i = 0, ii = listeners.length; i < ii; i++) {
-        listeners[i](featureId);
-      }
-    }
-  };
-})();
 
 // Combines two URLs. The baseUrl shall be absolute URL. If the url is an
 // absolute URL, it will be returned as is.
@@ -2447,7 +2430,6 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
 })();
 
 
-// TODO(mack): Make use of PDFJS.Util.inherit() when it becomes available
 var BasePdfManager = (function BasePdfManagerClosure() {
   function BasePdfManager() {
     throw new Error('Cannot initialize BaseManagerManager');
@@ -2474,7 +2456,7 @@ var BasePdfManager = (function BasePdfManagerClosure() {
       return this.ensure(this.pdfDocument.catalog, prop, args);
     },
 
-    getPage: function BasePdfManager_pagePage(pageIndex) {
+    getPage: function BasePdfManager_getPage(pageIndex) {
       return this.pdfDocument.getPage(pageIndex);
     },
 
@@ -2486,7 +2468,7 @@ var BasePdfManager = (function BasePdfManagerClosure() {
       return new NotImplementedException();
     },
 
-    requestRange: function BasePdfManager_ensure(begin, end) {
+    requestRange: function BasePdfManager_requestRange(begin, end) {
       return new NotImplementedException();
     },
 
@@ -2527,45 +2509,40 @@ var LocalPdfManager = (function LocalPdfManagerClosure() {
     this._loadedStreamCapability.resolve(stream);
   }
 
-  LocalPdfManager.prototype = Object.create(BasePdfManager.prototype);
-  LocalPdfManager.prototype.constructor = LocalPdfManager;
-
-  LocalPdfManager.prototype.ensure =
-      function LocalPdfManager_ensure(obj, prop, args) {
-    return new Promise(function (resolve, reject) {
-      try {
-        var value = obj[prop];
-        var result;
-        if (typeof value === 'function') {
-          result = value.apply(obj, args);
-        } else {
-          result = value;
+  Util.inherit(LocalPdfManager, BasePdfManager, {
+    ensure: function LocalPdfManager_ensure(obj, prop, args) {
+      return new Promise(function (resolve, reject) {
+        try {
+          var value = obj[prop];
+          var result;
+          if (typeof value === 'function') {
+            result = value.apply(obj, args);
+          } else {
+            result = value;
+          }
+          resolve(result);
+        } catch (e) {
+          reject(e);
         }
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  };
+      });
+    },
 
-  LocalPdfManager.prototype.requestRange =
-      function LocalPdfManager_requestRange(begin, end) {
-    return Promise.resolve();
-  };
+    requestRange: function LocalPdfManager_requestRange(begin, end) {
+      return Promise.resolve();
+    },
 
-  LocalPdfManager.prototype.requestLoadedStream =
-      function LocalPdfManager_requestLoadedStream() {
-  };
+    requestLoadedStream: function LocalPdfManager_requestLoadedStream() {
+      return;
+    },
 
-  LocalPdfManager.prototype.onLoadedStream =
-      function LocalPdfManager_getLoadedStream() {
-    return this._loadedStreamCapability.promise;
-  };
+    onLoadedStream: function LocalPdfManager_onLoadedStream() {
+      return this._loadedStreamCapability.promise;
+    },
 
-  LocalPdfManager.prototype.terminate =
-      function LocalPdfManager_terminate() {
-    return;
-  };
+    terminate: function LocalPdfManager_terminate() {
+      return;
+    }
+  });
 
   return LocalPdfManager;
 })();
@@ -2586,67 +2563,60 @@ var NetworkPdfManager = (function NetworkPdfManagerClosure() {
     this.streamManager = new ChunkedStreamManager(args.length,
                                                   args.rangeChunkSize,
                                                   args.url, params);
-
     this.pdfDocument = new PDFDocument(this, this.streamManager.getStream(),
-                                    args.password);
+                                       args.password);
   }
 
-  NetworkPdfManager.prototype = Object.create(BasePdfManager.prototype);
-  NetworkPdfManager.prototype.constructor = NetworkPdfManager;
+  Util.inherit(NetworkPdfManager, BasePdfManager, {
+    ensure: function NetworkPdfManager_ensure(obj, prop, args) {
+      var pdfManager = this;
 
-  NetworkPdfManager.prototype.ensure =
-      function NetworkPdfManager_ensure(obj, prop, args) {
-    var pdfManager = this;
-
-    return new Promise(function (resolve, reject) {
-      function ensureHelper() {
-        try {
-          var result;
-          var value = obj[prop];
-          if (typeof value === 'function') {
-            result = value.apply(obj, args);
-          } else {
-            result = value;
+      return new Promise(function (resolve, reject) {
+        function ensureHelper() {
+          try {
+            var result;
+            var value = obj[prop];
+            if (typeof value === 'function') {
+              result = value.apply(obj, args);
+            } else {
+              result = value;
+            }
+            resolve(result);
+          } catch(e) {
+            if (!(e instanceof MissingDataException)) {
+              reject(e);
+              return;
+            }
+            pdfManager.streamManager.requestRange(e.begin, e.end).
+              then(ensureHelper, reject);
           }
-          resolve(result);
-        } catch(e) {
-          if (!(e instanceof MissingDataException)) {
-            reject(e);
-            return;
-          }
-          pdfManager.streamManager.requestRange(e.begin, e.end).
-            then(ensureHelper, reject);
         }
-      }
 
-      ensureHelper();
-    });
-  };
+        ensureHelper();
+      });
+    },
 
-  NetworkPdfManager.prototype.requestRange =
-      function NetworkPdfManager_requestRange(begin, end) {
-    return this.streamManager.requestRange(begin, end);
-  };
+    requestRange: function NetworkPdfManager_requestRange(begin, end) {
+      return this.streamManager.requestRange(begin, end);
+    },
 
-  NetworkPdfManager.prototype.requestLoadedStream =
-      function NetworkPdfManager_requestLoadedStream() {
-    this.streamManager.requestAllChunks();
-  };
+    requestLoadedStream: function NetworkPdfManager_requestLoadedStream() {
+      this.streamManager.requestAllChunks();
+    },
 
-  NetworkPdfManager.prototype.sendProgressiveData =
-      function NetworkPdfManager_sendProgressiveData(chunk) {
-    this.streamManager.onReceiveData({ chunk: chunk });
-  };
+    sendProgressiveData:
+        function NetworkPdfManager_sendProgressiveData(chunk) {
+      this.streamManager.onReceiveData({ chunk: chunk });
+    },
 
-  NetworkPdfManager.prototype.onLoadedStream =
-      function NetworkPdfManager_getLoadedStream() {
-    return this.streamManager.onLoadedStream();
-  };
+    onLoadedStream: function NetworkPdfManager_onLoadedStream() {
+      return this.streamManager.onLoadedStream();
+    },
 
-  NetworkPdfManager.prototype.terminate =
-      function NetworkPdfManager_terminate() {
-    this.streamManager.abort();
-  };
+    terminate: function NetworkPdfManager_terminate() {
+      this.streamManager.abort();
+    }
+  });
 
   return NetworkPdfManager;
 })();
@@ -2841,7 +2811,7 @@ var Page = (function PageClosure() {
         }
 
         var annotationsReadyPromise = Annotation.appendToOperatorList(
-          annotations, pageOpList, pdfManager, partialEvaluator, task, intent);
+          annotations, pageOpList, partialEvaluator, task, intent);
         return annotationsReadyPromise.then(function () {
           pageOpList.flush(true);
           return pageOpList;
@@ -2849,7 +2819,8 @@ var Page = (function PageClosure() {
       });
     },
 
-    extractTextContent: function Page_extractTextContent(task) {
+    extractTextContent: function Page_extractTextContent(task,
+                                                         normalizeWhitespace) {
       var handler = {
         on: function nullHandlerOn() {},
         send: function nullHandlerSend() {}
@@ -2879,7 +2850,9 @@ var Page = (function PageClosure() {
 
         return partialEvaluator.getTextContent(contentStream,
                                                task,
-                                               self.resources);
+                                               self.resources,
+                                               /* stateManager = */ null,
+                                               normalizeWhitespace);
       });
     },
 
@@ -5111,25 +5084,22 @@ var Annotation = (function AnnotationClosure() {
 
   function Annotation(params) {
     var dict = params.dict;
-    var data = this.data = {};
-
-    data.subtype = dict.get('Subtype').name;
 
     this.setFlags(dict.get('F'));
-    data.annotationFlags = this.flags;
-
     this.setRectangle(dict.get('Rect'));
-    data.rect = this.rectangle;
-
     this.setColor(dict.get('C'));
-    data.color = this.color;
-
-    this.borderStyle = data.borderStyle = new AnnotationBorderStyle();
     this.setBorderStyle(dict);
-
     this.appearance = getDefaultAppearance(dict);
-    data.hasAppearance = !!this.appearance;
-    data.id = params.ref.num;
+
+    // Expose public properties using a data object.
+    this.data = {};
+    this.data.id = params.ref.num;
+    this.data.subtype = dict.get('Subtype').name;
+    this.data.annotationFlags = this.flags;
+    this.data.rect = this.rectangle;
+    this.data.color = this.color;
+    this.data.borderStyle = this.borderStyle;
+    this.data.hasAppearance = !!this.appearance;
   }
 
   Annotation.prototype = {
@@ -5256,6 +5226,7 @@ var Annotation = (function AnnotationClosure() {
      * @param {Dict} borderStyle - The border style dictionary
      */
     setBorderStyle: function Annotation_setBorderStyle(borderStyle) {
+      this.borderStyle = new AnnotationBorderStyle();
       if (!isDict(borderStyle)) {
         return;
       }
@@ -5308,13 +5279,11 @@ var Annotation = (function AnnotationClosure() {
     },
 
     getOperatorList: function Annotation_getOperatorList(evaluator, task) {
-
       if (!this.appearance) {
         return Promise.resolve(new OperatorList());
       }
 
       var data = this.data;
-
       var appearanceDict = this.appearance.dict;
       var resourcesPromise = this.loadResources([
         'ExtGState',
@@ -5346,33 +5315,22 @@ var Annotation = (function AnnotationClosure() {
   };
 
   Annotation.appendToOperatorList = function Annotation_appendToOperatorList(
-      annotations, opList, pdfManager, partialEvaluator, task, intent) {
-
-    function reject(e) {
-      annotationsReadyCapability.reject(e);
-    }
-
-    var annotationsReadyCapability = createPromiseCapability();
-
+      annotations, opList, partialEvaluator, task, intent) {
     var annotationPromises = [];
     for (var i = 0, n = annotations.length; i < n; ++i) {
-      if (intent === 'display' && annotations[i].viewable ||
-          intent === 'print' && annotations[i].printable) {
+      if ((intent === 'display' && annotations[i].viewable) ||
+          (intent === 'print' && annotations[i].printable)) {
         annotationPromises.push(
           annotations[i].getOperatorList(partialEvaluator, task));
       }
     }
-    Promise.all(annotationPromises).then(function(datas) {
+    return Promise.all(annotationPromises).then(function(operatorLists) {
       opList.addOp(OPS.beginAnnotations, []);
-      for (var i = 0, n = datas.length; i < n; ++i) {
-        var annotOpList = datas[i];
-        opList.addOpList(annotOpList);
+      for (var i = 0, n = operatorLists.length; i < n; ++i) {
+        opList.addOpList(operatorLists[i]);
       }
       opList.addOp(OPS.endAnnotations, []);
-      annotationsReadyCapability.resolve();
-    }, reject);
-
-    return annotationsReadyCapability.promise;
+    });
   };
 
   return Annotation;
@@ -5517,7 +5475,6 @@ var AnnotationBorderStyle = (function AnnotationBorderStyleClosure() {
 })();
 
 var WidgetAnnotation = (function WidgetAnnotationClosure() {
-
   function WidgetAnnotation(params) {
     Annotation.call(this, params);
 
@@ -5641,7 +5598,7 @@ var TextAnnotation = (function TextAnnotationClosure() {
     }
   }
 
-  Util.inherit(TextAnnotation, Annotation, { });
+  Util.inherit(TextAnnotation, Annotation, {});
 
   return TextAnnotation;
 })();
@@ -5717,7 +5674,7 @@ var LinkAnnotation = (function LinkAnnotationClosure() {
     return url;
   }
 
-  Util.inherit(LinkAnnotation, Annotation, { });
+  Util.inherit(LinkAnnotation, Annotation, {});
 
   return LinkAnnotation;
 })();
@@ -10135,7 +10092,7 @@ var Pattern = (function PatternClosure() {
   };
 
   Pattern.parseShading = function Pattern_parseShading(shading, matrix, xref,
-                                                       res) {
+                                                       res, handler) {
 
     var dict = isStream(shading) ? shading.dict : shading;
     var type = dict.get('ShadingType');
@@ -10158,7 +10115,8 @@ var Pattern = (function PatternClosure() {
       if (ex instanceof MissingDataException) {
         throw ex;
       }
-      UnsupportedManager.notify(UNSUPPORTED_FEATURES.shadingPattern);
+      handler.send('UnsupportedFeature',
+                   {featureId: UNSUPPORTED_FEATURES.shadingPattern});
       warn(ex);
       return new Shadings.Dummy();
     }
@@ -11195,6 +11153,12 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         return translated.loadType3Data(self, resources, operatorList, task).
           then(function () {
           return translated;
+        }, function (reason) {
+          // Error in the font data -- sending unsupported feature notification.
+          self.handler.send('UnsupportedFeature',
+                            {featureId: UNSUPPORTED_FEATURES.font});
+          return new TranslatedFont('g_font_error',
+            new ErrorFont('Type3 font load error: ' + reason), translated.font);
         });
       }).then(function (translated) {
         state.font = translated.font;
@@ -11417,6 +11381,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         translatedPromise = Promise.reject(e);
       }
 
+      var self = this;
       translatedPromise.then(function (translatedFont) {
         if (translatedFont.fontType !== undefined) {
           var xrefFontStats = xref.stats.fontTypes;
@@ -11427,7 +11392,9 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
           translatedFont, font));
       }, function (reason) {
         // TODO fontCapability.reject?
-        UnsupportedManager.notify(UNSUPPORTED_FEATURES.font);
+        // Error in the font data -- sending unsupported feature notification.
+        self.handler.send('UnsupportedFeature',
+                          {featureId: UNSUPPORTED_FEATURES.font});
 
         try {
           // error, but it's still nice to have font type reported
@@ -11480,7 +11447,8 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         } else if (typeNum === SHADING_PATTERN) {
           var shading = dict.get('Shading');
           var matrix = dict.get('Matrix');
-          pattern = Pattern.parseShading(shading, matrix, xref, resources);
+          pattern = Pattern.parseShading(shading, matrix, xref, resources,
+                                         this.handler);
           operatorList.addOp(fn, pattern.getIR());
           return Promise.resolve();
         } else {
@@ -11717,7 +11685,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
               }
 
               var shadingFill = Pattern.parseShading(shading, null, xref,
-                resources);
+                resources, self.handler);
               var patternIR = shadingFill.getIR();
               args = [patternIR];
               fn = OPS.shadingFill;
@@ -11782,11 +11750,14 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
       });
     },
 
-    getTextContent: function PartialEvaluator_getTextContent(stream, task,
-                                                             resources,
-                                                             stateManager) {
+    getTextContent:
+        function PartialEvaluator_getTextContent(stream, task, resources,
+                                                 stateManager,
+                                                 normalizeWhitespace) {
 
       stateManager = (stateManager || new StateManager(new TextState()));
+
+      var WhitespaceRegexp = /\s/g;
 
       var textContent = {
         items: [],
@@ -11901,11 +11872,23 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         return textContentItem;
       }
 
+      function replaceWhitespace(str) {
+        // Replaces all whitespaces with standard spaces (0x20), to avoid
+        // alignment issues between the textLayer and the canvas if the text
+        // contains e.g. tabs (fixes issue6612.pdf).
+        var i = 0, ii = str.length, code;
+        while (i < ii && (code = str.charCodeAt(i)) >= 0x20 && code <= 0x7F) {
+          i++;
+        }
+        return (i < ii ? str.replace(WhitespaceRegexp, ' ') : str);
+      }
+
       function runBidiTransform(textChunk) {
         var str = textChunk.str.join('');
         var bidiResult = PDFJS.bidi(str, -1, textChunk.vertical);
         return {
-          str: bidiResult.str,
+          str: (normalizeWhitespace ? replaceWhitespace(bidiResult.str) :
+                                      bidiResult.str),
           dir: bidiResult.dir,
           width: textChunk.width,
           height: textChunk.height,
@@ -12226,8 +12209,8 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
               }
 
               return self.getTextContent(xobj, task,
-                xobj.dict.get('Resources') || resources, stateManager).
-                then(function (formTextContent) {
+                xobj.dict.get('Resources') || resources, stateManager,
+                normalizeWhitespace).then(function (formTextContent) {
                   Util.appendToArray(textContent.items, formTextContent.items);
                   Util.extendObj(textContent.styles, formTextContent.styles);
                   stateManager.restore();
@@ -17479,11 +17462,15 @@ var Font = (function FontClosure() {
     };
   }
 
-  function getRanges(glyphs) {
+  function getRanges(glyphs, numGlyphs) {
     // Array.sort() sorts by characters, not numerically, so convert to an
     // array of characters.
     var codes = [];
     for (var charCode in glyphs) {
+      // Remove an invalid glyph ID mappings to make OTS happy.
+      if (glyphs[charCode] >= numGlyphs) {
+        continue;
+      }
       codes.push({ fontCharCode: charCode | 0, glyphId: glyphs[charCode] });
     }
     codes.sort(function fontGetRangesSort(a, b) {
@@ -17512,8 +17499,8 @@ var Font = (function FontClosure() {
     return ranges;
   }
 
-  function createCmapTable(glyphs) {
-    var ranges = getRanges(glyphs);
+  function createCmapTable(glyphs, numGlyphs) {
+    var ranges = getRanges(glyphs, numGlyphs);
     var numTables = ranges[ranges.length - 1][1] > 0xFFFF ? 2 : 1;
     var cmap = '\x00\x00' + // version
                string16(numTables) +  // numTables
@@ -19016,7 +19003,7 @@ var Font = (function FontClosure() {
       this.toFontChar = newMapping.toFontChar;
       tables.cmap = {
         tag: 'cmap',
-        data: createCmapTable(newMapping.charCodeToGlyphId)
+        data: createCmapTable(newMapping.charCodeToGlyphId, numGlyphs)
       };
 
       if (!tables['OS/2'] || !validateOS2Table(tables['OS/2'])) {
@@ -19154,7 +19141,8 @@ var Font = (function FontClosure() {
       builder.addTable('OS/2', createOS2Table(properties,
                                               newMapping.charCodeToGlyphId));
       // Character to glyphs mapping
-      builder.addTable('cmap', createCmapTable(newMapping.charCodeToGlyphId));
+      builder.addTable('cmap', createCmapTable(newMapping.charCodeToGlyphId,
+                       numGlyphs));
       // Font header
       builder.addTable('head',
             '\x00\x01\x00\x00' + // Version number
@@ -31557,17 +31545,32 @@ var Lexer = (function LexerClosure() {
       return strBuf.join('');
     },
     getName: function Lexer_getName() {
-      var ch;
+      var ch, previousCh;
       var strBuf = this.strBuf;
       strBuf.length = 0;
       while ((ch = this.nextChar()) >= 0 && !specialChars[ch]) {
         if (ch === 0x23) { // '#'
           ch = this.nextChar();
+          if (specialChars[ch]) {
+            warn('Lexer_getName: ' +
+                 'NUMBER SIGN (#) should be followed by a hexadecimal number.');
+            strBuf.push('#');
+            break;
+          }
           var x = toHexDigit(ch);
           if (x !== -1) {
-            var x2 = toHexDigit(this.nextChar());
+            previousCh = ch;
+            ch = this.nextChar();
+            var x2 = toHexDigit(ch);
             if (x2 === -1) {
-              error('Illegal digit in hex char in name: ' + x2);
+              warn('Lexer_getName: Illegal digit (' +
+                   String.fromCharCode(ch) +') in hexadecimal number.');
+              strBuf.push('#', String.fromCharCode(previousCh));
+              if (specialChars[ch]) {
+                break;
+              }
+              strBuf.push(String.fromCharCode(ch));
+              continue;
             }
             strBuf.push(String.fromCharCode((x << 4) | x2));
           } else {
@@ -34503,7 +34506,7 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
       return WorkerMessageHandler.createDocumentHandler(data, port);
     });
   },
-  createDocumentHandler: function wphCreateDocumentHandler(data, port) {
+  createDocumentHandler: function wphCreateDocumentHandler(docParams, port) {
     // This context is actually holds references on pdfManager and handler,
     // until the latter is destroyed.
     var pdfManager;
@@ -34511,8 +34514,8 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
     var cancelXHRs = null;
     var WorkerTasks = [];
 
-    var docId = data.docId;
-    var workerHandlerName = data.docId + '_worker';
+    var docId = docParams.docId;
+    var workerHandlerName = docParams.docId + '_worker';
     var handler = new MessageHandler(workerHandlerName, docId, port);
 
     function ensureNotTerminated() {
@@ -34765,7 +34768,6 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         }
 
         pdfManager = newPdfManager;
-
         handler.send('PDFManagerReady', null);
         pdfManager.onLoadedStream().then(function(stream) {
           handler.send('DataLoaded', { length: stream.bytes.byteLength });
@@ -34902,6 +34904,11 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
             return; // ignoring errors from the terminated thread
           }
 
+          // For compatibility with older behavior, generating unknown
+          // unsupported feature notification on errors.
+          handler.send('UnsupportedFeature',
+                       {featureId: UNSUPPORTED_FEATURES.unknown});
+
           var minimumStackMessage =
             'worker.js: while trying to getPage() and getOperatorList()';
 
@@ -34936,12 +34943,14 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
 
     handler.on('GetTextContent', function wphExtractText(data) {
       var pageIndex = data.pageIndex;
+      var normalizeWhitespace = data.normalizeWhitespace;
       return pdfManager.getPage(pageIndex).then(function(page) {
         var task = new WorkerTask('GetTextContent: page ' + pageIndex);
         startWorkerTask(task);
         var pageNum = pageIndex + 1;
         var start = Date.now();
-        return page.extractTextContent(task).then(function(textContent) {
+        return page.extractTextContent(task, normalizeWhitespace).then(
+            function(textContent) {
           finishWorkerTask(task);
           info('text indexing: page=' + pageNum + ' - time=' +
                (Date.now() - start) + 'ms');
@@ -34984,7 +34993,10 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
       });
     });
 
-    setupDoc(data);
+    handler.on('Ready', function wphReady(data) {
+      setupDoc(docParams);
+      docParams = null; // we don't need docParams anymore -- saving memory.
+    });
     return workerHandlerName;
   }
 };
@@ -35030,15 +35042,6 @@ if (typeof window === 'undefined') {
   if (!('console' in globalScope)) {
     globalScope.console = workerConsole;
   }
-
-  // Listen for unsupported features so we can pass them on to the main thread.
-  PDFJS.UnsupportedManager.listen(function (msg) {
-    globalScope.postMessage({
-      targetName: 'main',
-      action: '_unsupported_feature',
-      data: msg
-    });
-  });
 
   var handler = new MessageHandler('worker', 'main', this);
   WorkerMessageHandler.setup(handler, this);

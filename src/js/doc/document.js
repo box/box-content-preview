@@ -6,7 +6,6 @@ import DocBase from './doc-base';
 import pageNumTemplate from 'raw!../../html/doc/page-num-button-content.html';
 
 let Box = global.Box || {};
-let document = global.document;
 
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
@@ -22,10 +21,9 @@ const MIN_SCALE = 0.1;
 class Document extends DocBase {
 
     /**
-     * [constructor]
-     * @param {string|HTMLElement} container node
-     * @param {object} [options] some options
-     * @returns {Document}
+     * @constructor
+     * @param {string|HTMLElement} container Container node
+     * @param {object} [options] Configuration options
      */
     constructor(container, options) {
         super(container, options);
@@ -35,7 +33,9 @@ class Document extends DocBase {
     }
 
     /**
-     * [destructor]
+     * Destructor
+     *
+     * @public
      * @returns {void}
      */
     destroy() {
@@ -123,7 +123,7 @@ class Document extends DocBase {
     /**
      * Mousewheel handler, scroll documents by page when in full screen mode.
      *
-     * @param {Event} event
+     * @param {Event} event Mousewheel event
      * @private
      * @returns {void}
      */

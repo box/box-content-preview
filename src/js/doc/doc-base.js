@@ -30,11 +30,9 @@ const PRESENTATION_MODE_STATE = {
 class DocBase extends Base {
 
     /**
-     * [constructor]
-     *
-     * @param {String|HTMLElement} container node
-     * @param {Object} [options] some options
-     * @returns {DocBase} DocBase instance
+     * @constructor
+     * @param {string|HTMLElement} container Container node
+     * @param {object} [options] Some options
      */
     constructor(container, options) {
         super(container, options);
@@ -65,7 +63,9 @@ class DocBase extends Base {
             this.controls.destroy();
         }
 
-        this.pdfViewer.cleanup();
+        if (this.pdfViewer) {
+            this.pdfViewer.cleanup();
+        }
 
         super.destroy();
     }
@@ -195,7 +195,8 @@ class DocBase extends Base {
 
         // Load PDF from representation URL
         PDFJS.getDocument({
-            url: this.appendAuthParam(pdfUrl),
+            url: pdfUrl,
+            httpHeaders: this.appendAuthHeader(),
             rangeChunkSize: 524288
         }).then((doc) => {
             this.pdfViewer.setDocument(doc);
@@ -354,7 +355,7 @@ class DocBase extends Base {
     /**
      * Handler for 'pagechange' event
      *
-     * @param {Event} event pagechange
+     * @param {Event} event Pagechange event
      * @private
      * @returns {void}
      */
@@ -366,7 +367,7 @@ class DocBase extends Base {
     /**
 	 * Blur handler for page number input
 	 *
-	 * @param  {Event} event blur event
+	 * @param  {Event} event Blur event
      * @private
 	 * @returns {void}
 	 */
@@ -384,7 +385,7 @@ class DocBase extends Base {
 	/**
 	 * Keydown handler for page number input
 	 *
-	 * @param {Event} event key event
+	 * @param {Event} event Keydown event
      * @private
 	 * @returns {void}
 	 */
