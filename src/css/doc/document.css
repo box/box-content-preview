@@ -53,8 +53,9 @@
     box-sizing: content-box !important;
 	-moz-box-sizing: content-box !important;
 	-webkit-box-sizing: content-box !important;
+    position: relative;
     margin: 0 auto;
-    padding: 10px;
+    padding: 10px 0;
     border: 0;
     border-image: none;
 }
@@ -68,6 +69,7 @@
     background: url('../../img/loading-icon.gif') center no-repeat;
 }
 
+/* Match text layer offset to .page padding */
 .textLayer {
-    margin: 10px; /* align text layer with page content */
+    margin: 10px 0;
 }
