@@ -22,10 +22,9 @@ const MIN_SCALE = 0.1;
 class Presentation extends DocBase {
 
     /**
-     * [constructor]
-     * @param {string|HTMLElement} container node
-     * @param {object} [options] some options
-     * @returns {Presentation}
+     * @constructor
+     * @param {string|HTMLElement} container Container node
+     * @param {object} [options] Configuration options
      */
     constructor(container, options) {
         super(container, options);
@@ -35,7 +34,9 @@ class Presentation extends DocBase {
     }
 
     /**
-     * [destructor]
+     * Destructor
+     *
+     * @public
      * @returns {void}
      */
     destroy() {
@@ -81,7 +82,7 @@ class Presentation extends DocBase {
     /**
      * Mousewheel handler, scroll presentations by page.
      *
-     * @param {Event} event
+     * @param {Event} event Mousewheel event
      * @private
      * @returns {void}
      */
