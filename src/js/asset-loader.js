@@ -223,11 +223,15 @@ class AssetLoader {
         // Prefetch the scripts for this previewer
         this.prefetchAssets(viewer.SCRIPTS.map(assetPathCreator));
 
-        let img = document.createElement('img');
+        //let img = document.createElement('img');
         let properties = Object.assign({}, representation.properties, {
             'access_token': options.token
         });
-        img.src = generateContentUrl(file.representations.content_base_url, representation.content, properties);
+        //img.src = generateContentUrl(representation.links.content.url, properties);
+
+        this.prefetchAssets([generateContentUrl(representation.links.content.url, properties)]);
+
+
     }
 
     /**

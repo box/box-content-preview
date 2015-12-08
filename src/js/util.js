@@ -19,11 +19,10 @@ export function generateQueryString(obj) {
  * Creates the content URLs
  *
  * @protected
- * @param {String} baseUrl base url
- * @param {String} contentPath content path
+ * @param {String} url content url
  * @param {Object} query query
  * @returns {String} content urls
  */
-export function generateContentUrl(baseUrl, contentPath, query) {
-    return baseUrl + contentPath + generateQueryString(query);
+export function generateContentUrl(url, query) {
+    return url + generateQueryString(query);
 }
