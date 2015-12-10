@@ -70,7 +70,7 @@ class RepLoader extends EventEmitter {
 
         // Determine the representation to use
         let representation = RepLoader.determineRepresentation(file, viewer);
-        let repUrl = generateContentUrl(representation.links.content.url, representation.properties);
+        let repUrl = generateContentUrl(representation.links.content.url, options.token);
 
         switch (representation.status) {
             case STATUS_SUCCESS:
