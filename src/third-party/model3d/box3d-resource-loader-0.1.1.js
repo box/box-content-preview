@@ -56,19 +56,28 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var _v2Loader = __webpack_require__(2);
 
 	var _v2Loader2 = _interopRequireDefault(_v2Loader);
 
-	var _runmodeLoader = __webpack_require__(9);
+	var _runmodeLoader = __webpack_require__(8);
 
 	var _runmodeLoader2 = _interopRequireDefault(_runmodeLoader);
 
-	var Box3DResourceLoader = (function () {
+	var _events = __webpack_require__(7);
+
+	var _events2 = _interopRequireDefault(_events);
+
+	var Box3DResourceLoader = (function (_EventEmitter) {
+	  _inherits(Box3DResourceLoader, _EventEmitter);
 
 	  /**
 	  * Abstraction of Box asset loading for Box3D
@@ -85,6 +94,8 @@
 
 	    _classCallCheck(this, Box3DResourceLoader);
 
+	    _get(Object.getPrototypeOf(Box3DResourceLoader.prototype), 'constructor', this).call(this);
+
 	    if (opts.hasOwnProperty('boxSdk') && opts.boxSdk) {
 	      this.boxSdk = opts.boxSdk;
 	    } else {
@@ -100,8 +111,8 @@
 	      this.loader = new _runmodeLoader2['default'](fileId, fileVersionId, opts);
 	    }
 
-	    // 3DCG Preview can hook into this.
-	    this.eventBus = this.loader.eventBus;
+	    // delegate all notifcations to the external application
+	    this.loader.on('missingAsset', this.onMissingAsset.bind(this));
 	  }
 
 	  /**
@@ -140,14 +151,28 @@
 
 	    /**
 	    * Interface with BoxSDK to halt all requests currently loading
-	    * @method abortAllRequests
+	    * @method abortRequests
 	    * @returns {void}
 	    */
 	  }, {
-	    key: 'abortAllRequests',
-	    value: function abortAllRequests() {
+	    key: 'abortRequests',
+	    value: function abortRequests() {
 
-	      this.loader.abortAllRequests();
+	      this.loader.abortRequests();
+	    }
+
+	    /**
+	     * Tell the application using this that an asset is missing
+	     * @param {object} assetDescription A descriptor for the missing asset.
+	     * See base-loader.js onAssetNotFound()
+	     * @returns {void}
+	     */
+	  }, {
+	    key: 'onMissingAsset',
+	    value: function onMissingAsset(assetDescription) {
+
+	      // As of right now, not modifying the outgoing data
+	      this.emit('missingAsset', assetDescription);
 	    }
 	  }, {
 	    key: 'destroy',
@@ -155,15 +180,14 @@
 
 	      // loader calls box SDK destroy
 	      this.loader.destroy();
-
+	      this.removeAllListeners();
 	      this.loader = null;
 	      this.boxSdk = null;
-	      this.eventBus = null;
 	    }
 	  }]);
 
 	  return Box3DResourceLoader;
-	})();
+	})(_events2['default']);
 
 	global.Box3DResourceLoader = Box3DResourceLoader;
 	module.exports = Box3DResourceLoader;
@@ -245,7 +269,7 @@
 	    key: 'getGzippedLength',
 	    value: function getGzippedLength(xhr, url) {
 
-	      return Promise.resolve({ total: 1, loaded: 1 });
+	      return _get(Object.getPrototypeOf(V2Loader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: false });
 	    }
 
 	    /**
@@ -395,23 +419,105 @@
 	    }
 
 	    /**
-	    * Load An array buffer for geometry assets
-	    * @param {string} fileId The file's id we want to load
-	    * @param {string} fileVersionId The version we want to get a representation for
-	    * @param {object} params Additional parameters to pass to the request.
-	    * @param {function} progress The progress callback called on XHR load progress
-	    * @returns {Promise} a promise that resolves in usable geometry data (for Box3DRuntime)
-	    */
+	     * Load a binary file and return an array buffer.
+	     * @method loadArrayBuffer
+	     * @param {string} fileId The ID of the file we are going to load
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {object} params The criteria for determining which representation to load.
+	     * @param {function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the array buffer
+	     */
 	  }, {
 	    key: 'loadArrayBuffer',
 	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
+	      var _this4 = this;
+
+	      if (params === undefined) params = {};
 
 	      params.repParams = {
 	        type: '3d',
 	        asset: 'geometry.bin'
 	      };
 
-	      return _get(Object.getPrototypeOf(V2Loader.prototype), 'loadArrayBuffer', this).call(this, fileId, fileVersionId, params, progress);
+	      // We need to fetch file info for a content path (it can be a cached url)
+	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
+
+	        if (progress) {
+	          _this4.addProgressListener(url, progress);
+	        }
+
+	        // If the representation is cached, return the cached data; otherwise,
+	        // get the representation.
+	        if (!_this4.cache.hasOwnProperty(url)) {
+
+	          _this4.cache[url] = new _lie2['default'](function (resolve, reject) {
+	            _this4.sdkLoader.getRepresentation(url, _this4.onAssetLoadProgress.bind(_this4), { responseType: 'arraybuffer', info: { progressKey: url } }).then(function (response) {
+	              _this4.removeProgressListeners(url);
+	              resolve({
+	                data: response.response,
+	                properties: {}
+	              });
+	            })['catch'](function (err) {
+	              _this4.removeProgressListeners(url);
+	              reject(err);
+	            });
+	          });
+	        }
+
+	        return _this4.cache[url];
+	      });
+	    }
+
+	    /**
+	     * Load a JSON file and return a JavaScript Object.
+	     * @method loadJson
+	     * @param {string} fileId The ID of the file we are going to load
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @param {Function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the JSON data
+	     */
+	  }, {
+	    key: 'loadJson',
+	    value: function loadJson(fileId, fileVersionId, params, progress) {
+	      var _this5 = this;
+
+	      if (params === undefined) params = {};
+
+	      params.repParams = {
+	        type: '3d',
+	        asset: 'entities.json'
+	      };
+
+	      // Get the representation URL.
+	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
+
+	        if (progress) {
+	          _this5.addProgressListener(url, progress);
+	        }
+
+	        // If the representation is cached, return the cached data; otherwise,
+	        // get the representation.
+	        if (!_this5.cache.hasOwnProperty(url)) {
+	          _this5.cache[url] = new _lie2['default'](function (resolve, reject) {
+	            _this5.sdkLoader.getRepresentation(url, _this5.onAssetLoadProgress.bind(_this5), {
+	              responseType: 'json',
+	              info: { progressKey: url }
+	            }).then(function (response) {
+	              _this5.removeProgressListeners(url);
+	              resolve({
+	                data: response.response,
+	                properties: {}
+	              });
+	            })['catch'](function (err) {
+	              _this5.removeProgressListeners(url);
+	              reject(err);
+	            });
+	          });
+	        }
+
+	        return _this5.cache[url];
+	      });
 	    }
 	  }]);
 
@@ -894,9 +1000,13 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var _lie = __webpack_require__(3);
 
@@ -910,7 +1020,8 @@
 	  'application/vnd.box.box3d+bin': 1.0
 	};
 
-	var BaseLoader = (function () {
+	var BaseLoader = (function (_EventEmitter) {
+	  _inherits(BaseLoader, _EventEmitter);
 
 	  /**
 	  * Provides base functionality for all loaders that need to load assets from Box
@@ -927,6 +1038,8 @@
 
 	    _classCallCheck(this, BaseLoader);
 
+	    _get(Object.getPrototypeOf(BaseLoader.prototype), 'constructor', this).call(this);
+
 	    if (opts.boxSdk) {
 	      this.boxSdk = opts.boxSdk;
 	    } else {
@@ -938,16 +1051,13 @@
 	    this.fileId = fileId;
 	    this.fileVersionId = fileVersionId;
 
-	    // 3DCG Preview can hook into this.
-	    this.eventBus = _events2['default'];
-
 	    this.cache = {};
 	    //for tracking progress callbacks
 	    this.progressListeners = {};
 	    //for caching gzipped asset sizes
 	    this.gzipSizes = {};
 
-	    this.apiBase = opts.apiBase || undefined;
+	    this.apiBase = opts.apiBase !== undefined ? opts.apiBase : undefined;
 	  }
 
 	  /**
@@ -970,18 +1080,33 @@
 	          loadFunc = undefined;
 
 	      switch (asset.type) {
-	        case 'texture2D':
-	          var fileName = asset.getProperty('filename'),
-	              ext = 'png';
-	          // Dynamically resolve texture filenames at load time.
-	          idPromise = this.sdkLoader.getFileIds(fileName, this.fileId, { looseMatch: params.looseMatch });
-	          //need to check file extension to know which representation we need to get
-	          if (fileName.match(/(.jpg|.jpeg|.gif|.bmp)$/i)) {
-	            ext = 'jpg';
-	          }
-	          params.extension = ext;
+	        case 'document':
+	          {
+	            var fileName = asset.getProperty('filename');
 
-	          loadFunc = this.loadRemoteImage.bind(this);
+	            // Dynamically resolve document filenames at load time.
+	            idPromise = this.sdkLoader.getFileIds(fileName, this.fileId, {
+	              looseMatch: params.looseMatch
+	            });
+
+	            loadFunc = this.loadJson.bind(this);
+	          }
+	          break;
+
+	        case 'texture2D':
+	          {
+	            var fileName = asset.getProperty('filename');
+
+	            // Dynamically resolve texture filenames at load time.
+	            idPromise = this.sdkLoader.getFileIds(fileName, this.fileId, {
+	              looseMatch: params.looseMatch
+	            });
+
+	            // Check the file extension to know which representation we need.
+	            params.extension = fileName.match(/(.jpg|.jpeg|.gif|.bmp)$/i) ? 'jpg' : 'png';
+
+	            loadFunc = this.loadRemoteImage.bind(this);
+	          }
 	          break;
 
 	        case 'animation':
@@ -992,6 +1117,7 @@
 	            fileId: this.fileId,
 	            fileVersionId: this.fileVersionId
 	          });
+
 	          loadFunc = this.loadArrayBuffer.bind(this);
 	          break;
 
@@ -1057,9 +1183,11 @@
 	      }
 
 	      // Broadcast that the asset is missing.
-	      this.eventBus.emit('missingAsset::' + asset.type, {
+	      this.emit('missingAsset', {
 	        assetName: asset.getName(),
-	        fileName: filename
+	        fileName: filename,
+	        type: asset.type,
+	        asset: asset
 	      });
 	    }
 
@@ -1181,6 +1309,22 @@
 	    }
 
 	    /**
+	     * Load a JSON file and return a JavaScript Object.
+	     * @method loadJson
+	     * @param {string} fileId The ID of the file we are going to load
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @param {Function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the JSON data
+	     */
+	  }, {
+	    key: 'loadJson',
+	    value: function loadJson() /*fileId, fileVersionId, params = {}, progress*/{
+
+	      throw new Error('loadJson() Not Implemented');
+	    }
+
+	    /**
 	     * Load an image representation.
 	     * @method loadRemoteImage
 	     * @param {string} fileId The ID of the file we are going to load
@@ -1193,7 +1337,7 @@
 	    key: 'loadRemoteImage',
 	    value: function loadRemoteImage() /*fileId, fileVersionId, params, progress*/{
 
-	      throw new Error('loadRemoteImage Not Implemented');
+	      throw new Error('loadRemoteImage() Not Implemented');
 	    }
 
 	    /**
@@ -1201,45 +1345,15 @@
 	     * @method loadArrayBuffer
 	     * @param {string} fileId The ID of the file we are going to load
 	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {object} params The criteria for determining which representation to load
+	     * @param {object} params The criteria for determining which representation to load.
 	     * @param {function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the array buffer
 	     */
 	  }, {
 	    key: 'loadArrayBuffer',
-	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
-	      var _this4 = this;
+	    value: function loadArrayBuffer() /*fileId, fileVersionId, params = {}, progress*/{
 
-	      if (params === undefined) params = {};
-
-	      if (!params.repParams) {
-	        throw new Error('No repParams supplied in loadArrayBuffer(). Add .repParams to params');
-	      }
-
-	      // Get the representation URL.
-	      var url = this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams);
-
-	      if (progress) {
-	        this.addProgressListener(url, progress);
-	      }
-	      // If the representation is cached, return the cached data; otherwise,
-	      // get the representation.
-	      if (!this.cache.hasOwnProperty(url)) {
-	        this.cache[url] = new _lie2['default'](function (resolve, reject) {
-	          _this4.sdkLoader.getRepresentation(url, _this4.onAssetLoadProgress.bind(_this4), { responseType: 'arraybuffer', info: { progressKey: url } }).then(function (response) {
-	            _this4.removeProgressListeners(url);
-	            resolve({
-	              data: response.response,
-	              properties: {}
-	            });
-	          })['catch'](function (err) {
-	            _this4.removeProgressListeners(url);
-	            reject(err);
-	          });
-	        });
-	      }
-
-	      return this.cache[url];
+	      throw new Error('loadArrayBuffer() not implemented');
 	    }
 
 	    /**
@@ -1253,7 +1367,7 @@
 	  }, {
 	    key: 'loadLocalImage',
 	    value: function loadLocalImage(asset, params, progress) {
-	      var _this5 = this;
+	      var _this4 = this;
 
 	      var resource = undefined;
 
@@ -1270,12 +1384,12 @@
 	      }
 
 	      return new _lie2['default'](function (resolve, reject) {
-	        _this5.sdkLoader.get(url, { responseType: 'blob', sendToken: false, withCredentials: false,
-	          info: { progressKey: url } }, _this5.onAssetLoadProgress.bind(_this5)).then(function (response) {
-	          _this5.removeProgressListeners(url);
-	          return _this5.parseImage(response, resource.properties);
+	        _this4.sdkLoader.get(url, { responseType: 'blob', sendToken: false, withCredentials: false,
+	          info: { progressKey: url } }, _this4.onAssetLoadProgress.bind(_this4)).then(function (response) {
+	          _this4.removeProgressListeners(url);
+	          return _this4.parseImage(response, resource.properties);
 	        }).then(resolve)['catch'](function (err) {
-	          _this5.removeProgressListeners(url);
+	          _this4.removeProgressListeners(url);
 	          reject(err);
 	        });
 	      });
@@ -1374,17 +1488,17 @@
 
 	    /**
 	    * Interface with BoxSDK to halt all requests currently loading
-	    * @method abortAllRequests
+	    * @method abortRequests
 	    * @returns {void}
 	    */
 	  }, {
-	    key: 'abortAllRequests',
-	    value: function abortAllRequests() {
-	      var _this6 = this;
+	    key: 'abortRequests',
+	    value: function abortRequests() {
+	      var _this5 = this;
 
 	      // clear all progress listeners
 	      Object.keys(this.progressListeners).forEach(function (key) {
-	        _this6.removeProgressListeners(key);
+	        _this5.removeProgressListeners(key);
 	      });
 	      this.sdkLoader.xhr.abortRequests();
 	    }
@@ -1392,36 +1506,26 @@
 	    key: 'destroy',
 	    value: function destroy() {
 
-	      this.abortAllRequests();
+	      this.removeAllListeners();
+	      this.abortRequests();
 	      this.boxSdk.destroy();
 	      delete this.sdkLoader;
 	      delete this.boxSdk;
 	      delete this.id;
 	      delete this.fileVersionId;
-	      this.eventBus.removeAllListeners();
-	      delete this.eventBus;
 	      delete this.cache;
 	      delete this.gzipSizes;
 	    }
 	  }]);
 
 	  return BaseLoader;
-	})();
+	})(_events2['default']);
 
 	exports['default'] = BaseLoader;
 	module.exports = exports['default'];
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var events = __webpack_require__(8);
-	module.exports = new events.EventEmitter();
-
-/***/ },
-/* 8 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -1728,7 +1832,7 @@
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1882,6 +1986,51 @@
 	    }
 
 	    /**
+	     * Load a binary file and return an array buffer.
+	     * @method loadArrayBuffer
+	     * @param {string} fileId The ID of the file we are going to load
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {object} params The criteria for determining which representation to load.
+	     * @param {function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the array buffer
+	     */
+	  }, {
+	    key: 'loadArrayBuffer',
+	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
+	      var _this2 = this;
+
+	      if (params === undefined) params = {};
+
+	      params.repParams = '3dcg_bin.bin';
+
+	      // Get the representation URL.
+	      var url = this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams);
+
+	      if (progress) {
+	        this.addProgressListener(url, progress);
+	      }
+
+	      // If the representation is cached, return the cached data; otherwise,
+	      // get the representation.
+	      if (!this.cache.hasOwnProperty(url)) {
+	        this.cache[url] = new _lie2['default'](function (resolve, reject) {
+	          _this2.sdkLoader.getRepresentation(url, _this2.onAssetLoadProgress.bind(_this2), { responseType: 'arraybuffer', info: { progressKey: url } }).then(function (response) {
+	            _this2.removeProgressListeners(url);
+	            resolve({
+	              data: response.response,
+	              properties: {}
+	            });
+	          })['catch'](function (err) {
+	            _this2.removeProgressListeners(url);
+	            reject(err);
+	          });
+	        });
+	      }
+
+	      return this.cache[url];
+	    }
+
+	    /**
 	    * Override of getGzippedLenght, with credentials passing enabled
 	    * @param {object} xhr The response xhr with the appropriate headers
 	    * @param {string} url The key to store the total size at
@@ -1906,9 +2055,55 @@
 	    key: 'loadArrayBuffer',
 	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
 
-	      params.repParams = '3dcg_bin.bin';
-
 	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'loadArrayBuffer', this).call(this, fileId, fileVersionId, params, progress);
+	    }
+
+	    /**
+	     * Load a JSON file and return a JavaScript Object.
+	     * @method loadJson
+	     * @param {string} fileId The ID of the file we are going to load
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @param {Function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the JSON data
+	     */
+	  }, {
+	    key: 'loadJson',
+	    value: function loadJson(fileId, fileVersionId, params, progress) {
+	      var _this3 = this;
+
+	      if (params === undefined) params = {};
+
+	      params.repParams = '3dcg_json.json';
+
+	      // Get the representation URL.
+	      var url = this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams);
+
+	      if (progress) {
+	        this.addProgressListener(url, progress);
+	      }
+
+	      // If the representation is cached, return the cached data; otherwise,
+	      // get the representation.
+	      if (!this.cache.hasOwnProperty(url)) {
+	        this.cache[url] = new _lie2['default'](function (resolve, reject) {
+	          _this3.sdkLoader.getRepresentation(url, _this3.onAssetLoadProgress.bind(_this3), {
+	            responseType: 'json',
+	            info: { progressKey: url }
+	          }).then(function (response) {
+	            _this3.removeProgressListeners(url);
+	            resolve({
+	              data: response.response,
+	              properties: {}
+	            });
+	          })['catch'](function (err) {
+	            _this3.removeProgressListeners(url);
+	            reject(err);
+	          });
+	        });
+	      }
+
+	      return this.cache[url];
 	    }
 
 	    /**
