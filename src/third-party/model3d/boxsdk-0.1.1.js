@@ -1667,14 +1667,27 @@
 	          if (!info.representations) {
 	            throw new Error('No representations for current file');
 	          }
-	          /*eslint-disable*/
-	          return '' + info.representations.content_base_url;
-	          /*eslint-enable*/
+
+	          // iterate over the represetantations to get the one for 3d
+	          var entries = info.representations.entries,
+	              length = entries.length,
+	              url = undefined;
+
+	          for (var i = 0; i < length; ++i) {
+	            // if it's a 3d represntation, breakout and grab the info
+	            var entry = entries[i];
+	            if (entry.representation === repParams.type) {
+	              url = entry.links.info.url + 'content/';
+	              break;
+	            }
+	          }
+
+	          return url;
 	        });
 	      }
 
 	      return this.contentBaseCache[fileId].then(function (contentBase) {
-	        return '' + contentBase + repParams.type + '/content/' + (repParams.asset || '') + props;
+	        return '' + contentBase + (repParams.asset || '') + props;
 	      });
 	    }
 

@@ -359,7 +359,7 @@
 	            info.representations.entries.forEach(function (entry) {
 	              // for now, only check representations that are ready :D
 	              if (entry.status === 'success' && entry.properties && entry.properties.dimensions === '2048x2048') {
-	                representationPath = info.representations.content_base_url + entry.content + '?dimensions=2048x2048';
+	                representationPath = entry.links.content.url;
 	              }
 	            });
 	          }
@@ -2041,21 +2041,6 @@
 	    value: function getGzippedLength(xhr, url) {
 
 	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: true });
-	    }
-
-	    /**
-	    * Load An array buffer for geometry assets
-	    * @param {string} fileId The file's id we want to load
-	    * @param {string} fileVersionId The version we want to get a representation for
-	    * @param {object} params Additional parameters to pass to the request.
-	    * @param {function} progress The progress callback called on XHR load progress
-	    * @returns {Promise} a promise that resolves in usable geometry data (for Box3DRuntime)
-	    */
-	  }, {
-	    key: 'loadArrayBuffer',
-	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
-
-	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'loadArrayBuffer', this).call(this, fileId, fileVersionId, params, progress);
 	    }
 
 	    /**
