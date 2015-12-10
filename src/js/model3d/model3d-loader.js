@@ -6,8 +6,8 @@ const VIEWERS = [
     {
         REPRESENTATION: '3d',
         EXTENSIONS: [ 'fbx', 'obj', 'dae', '3ds', 'ply'  ],
-        SCRIPTS: [ 'boxsdk-0.0.2.js', 'box3d-resource-loader-0.0.3.js',
-            'box3d-runtime-0.7.8.js', 'model3d.js' ],
+        SCRIPTS: [ 'boxsdk-0.1.1.js', 'box3d-resource-loader-0.1.1.js',
+            'box3d-runtime-0.8.1.js', 'model3d.js' ],
         STYLESHEETS: [ 'model3d.css' ],
         CONSTRUCTOR: 'Model3d'
     }
