@@ -11,7 +11,7 @@ Clone and compile
 
 While developing
 ----------------
-1. `npm run props2js` to generate resource bundles (only if needed)
+1. `npm run mojito-rb-gen` to generate resource bundles (only if needed, `npm run watch` will re-generate resource bundles automatically)
 2. `npm run dev` (or `npm run watch`) to generate webpack bundles
 
 
