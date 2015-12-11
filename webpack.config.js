@@ -76,7 +76,8 @@ module.exports = languagesArray.map(function(language, index) {
             mp3: js + '/media/mp3.js',
             dash: js + '/media/dash.js',
             unsupported: js + '/unsupported/unsupported.js',
-            model3d: js + '/model3d/model3d.js'
+            model3d: js + '/model3d/model3d.js',
+            image360: js + '/image360/image360.js'
         },
         output: {
             path: dist,
