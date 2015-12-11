@@ -237,9 +237,7 @@ class Preview {
     loadViewer() {
         // Before loading a new preview check if a prior preview was showing.
         // If it was showing make sure to destroy it and do any cleanup.
-        if (this.loader && typeof this.loader.destroy === 'function') {
-            this.loader.destroy();
-        }
+        this.destroy();
 
         // Save the reference to the current loader being used
         this.loader = this.getLoader(this.file);
@@ -507,6 +505,18 @@ class Preview {
      */
     setAuthorizationToken(token) {
         this.options.token = token;
+    }
+
+    /**
+     * Destroys the preview
+     *
+     * @public
+     * @returns {void}
+     */
+    destroy() {
+        if (this.loader && typeof this.loader.destroy === 'function') {
+            this.loader.destroy();
+        }
     }
 }
 
