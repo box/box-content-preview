@@ -224,6 +224,7 @@ class AssetLoader {
         this.prefetchAssets(viewer.SCRIPTS.map(assetPathCreator));
 
         let img = document.createElement('img');
+        img.crossOrigin = 'anonymous';
         img.src = generateContentUrl(representation.links.content.url, options.token);
     }
 
