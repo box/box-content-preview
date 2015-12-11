@@ -14,9 +14,28 @@ var test = path.join(__dirname, 'test');
 var static = path.join(__dirname, 'src/third-party/static');
 
 var languages = {
+    'en-AU': require(i18n + '/en-AU.json'),
+    'en-CA': require(i18n + '/en-CA.json'),
+    'en-GB': require(i18n + '/en-GB.json'),
     'en-US': require(i18n + '/en-US.json'),
+    'da-DK': require(i18n + '/da-DK.json'),
+    'de-DE': require(i18n + '/de-DE.json'),
+    'es-ES': require(i18n + '/es-ES.json'),
+    'fi-FI': require(i18n + '/fi-FI.json'),
     'fr-CA': require(i18n + '/fr-CA.json'),
-    'ja-JP': require(i18n + '/ja-JP.json')
+    'fr-FR': require(i18n + '/fr-FR.json'),
+    'it-IT': require(i18n + '/it-IT.json'),
+    'ja-JP': require(i18n + '/ja-JP.json'),
+    'ko-KR': require(i18n + '/ko-KR.json'),
+    'nb-NO': require(i18n + '/nb-NO.json'),
+    'nl-NL': require(i18n + '/nl-NL.json'),
+    'pl-PL': require(i18n + '/pl-PL.json'),
+    'pt-BR': require(i18n + '/pt-BR.json'),
+    'ru-RU': require(i18n + '/ru-RU.json'),
+    'sv-SE': require(i18n + '/sv-SE.json'),
+    'tr-TR': require(i18n + '/tr-TR.json'),
+    'zh-CN': require(i18n + '/zh-CN.json'),
+    'zh-TW': require(i18n + '/zh-TW.json')
 };
 
 // Check if webpack was run with a production flag that signifies a release build
