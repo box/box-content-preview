@@ -41,6 +41,16 @@ where
   * (optional) `files` is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
   * (optional) `container` is the container dom node for preview. Can be a selector or html node.
 
+```javascript
+Box.Preview.destroy();
+```
+to cleanup the preview.
+
+
+```javascript
+Box.Preview.setAuthorizationToken(/* string */ token);
+```
+to update the auth token.
 
 Test
 ----
