@@ -4,6 +4,7 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
 import debounce from 'lodash/function/debounce';
+import { generateContentUrl } from './util';
 
 const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
@@ -73,13 +74,7 @@ class Base extends EventEmitter {
      * @returns {Object} fetch headers
      */
     appendAuthParam(url) {
-        let prefix = '?';
-
-        if (url.indexOf('?') > 0) {
-            prefix = '&';
-        }
-
-        return url + prefix + 'access_token=' + this.options.token;
+        return generateContentUrl(url, this.options.token);
     }
 
     /**
