@@ -1,9 +1,10 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import fetch from 'isomorphic-fetch';
 import Base from '../base';
 import Controls from '../controls';
+//import DocAnnotator from './doc-annotator';
+import fetch from 'isomorphic-fetch';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator } from '../util';
 
@@ -13,11 +14,6 @@ import 'file?name=pdf.worker.js!../../third-party/doc/pdf.worker.js';
 import 'file?name=pdf.js!../../third-party/doc/pdf.js';
 import 'file?name=pdf_viewer.js!../../third-party/doc/pdf_viewer.js';
 import 'file?name=pdf_viewer.css!../../third-party/doc/pdf_viewer.css';
-
-// AnnotatorJS
-import 'file?name=jquery-2.1.4.min.js!../../third-party/annotatorjs/jquery-2.1.4.min.js';
-import 'file?name=annotator.min.js!../../third-party/annotatorjs/annotator.min.js';
-import 'file?name=annotator.min.css!../../third-party/annotatorjs/annotator.min.css';
 
 let PDFJS = global.PDFJS;
 
@@ -66,6 +62,11 @@ class DocBase extends Base {
         // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
+        }
+
+        // Destroy the annotator
+        if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.destroy();
         }
 
         if (this.pdfViewer) {
@@ -182,6 +183,15 @@ class DocBase extends Base {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
 
+    /**
+     * Returns current zoom scale of PDF.js
+     *
+     * @returns {number} Zoom scale, defaults to 1
+     */
+    getScale() {
+        return this.pdfViewer.currentScale || 1;
+    }
+
     /*----- Private Helpers -----*/
 
     /**
@@ -232,13 +242,18 @@ class DocBase extends Base {
     }
 
     /**
-     * Initializes Annotator annotations
+     * Initializes annotations
      *
      * @private
      * @returns {void}
      */
     loadAnnotations() {
-        $('.pdfViewer').annotator();
+        /*
+        let fileID = this.options.file.id;
+        this.annotator = new DocAnnotator(fileID, {
+            getScale: this.getScale
+        });
+        this.annotator.init();*/
     }
 
     /**
