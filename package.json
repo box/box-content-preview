@@ -45,6 +45,7 @@
     "lodash": "^3.10.0",
     "marked": "^0.3.5",
     "mocha": "^2.2.5",
+    "mojito-rb-gen": "0.0.1",
     "raw-loader": "^0.5.1",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
@@ -60,10 +61,11 @@
     "sync": "./build/push_to_dev.sh",
     "dev": "./node_modules/.bin/webpack --progress --colors",
     "prod": "BUILD_PROD=1 ./node_modules/.bin/webpack -p",
-    "watch": "./node_modules/.bin/webpack --watch",
+    "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
+    "watch": "npm run watch-rb & ./node_modules/.bin/webpack --watch",
     "clean": "rm -rf dist & rm -rf coverage & rm -rf src/i18n/json",
-    "props2js": "java -jar build/props2js-0.1.0.jar -d src/i18n -o src/i18n/json",
-    "build": "npm run clean && npm run props2js && npm run dev",
-    "release": "npm run clean && npm run props2js && npm run prod"
+    "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
+    "build": "npm run clean && npm run build-rb && npm run dev",
+    "release": "npm run clean && npm run build-rb && npm run prod"
   }
 }
