@@ -8,7 +8,7 @@ import Browser from './browser';
 import loaders from './loaders';
 import cache from './cache';
 
-const PREFETCH_COUNT = 5;
+const PREFETCH_COUNT = 3;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
 const CLASS_HIDDEN = 'box-preview-is-hidden';
 const MOUSEMOVE_THROTTLE = 1500;
@@ -42,6 +42,19 @@ class Preview {
 
         // Call init of loaders
         this.initLoaders();
+
+        // Throttled mousemove for navigation visibility
+        this.throttledMousemoveHandler = throttle(() => {
+            clearTimeout(this.timeoutHandler);
+            if (this.container) {
+                this.container.classList.add(CLASS_NAVIGATION_VISIBILITY);
+            }
+            this.timeoutHandler = setTimeout(() => {
+                if (this.container) {
+                    this.container.classList.add(CLASS_NAVIGATION_VISIBILITY);
+                }
+            }, MOUSEMOVE_THROTTLE);
+        }, MOUSEMOVE_THROTTLE - 500, true);
     }
 
     /**
@@ -128,18 +141,13 @@ class Preview {
         // can be positioned absolute, this includes the viewer wrapper
         // as well as the left and right navigation arrows.
         this.container.style.position = 'absolute';
+        this.container.style.display = 'block';
 
         // If we are showing navigation, create arrows and attach
         // mouse move handler to show or hide them.
         if (hasNavigation) {
             this.showNavigation();
-            this.container.addEventListener('mousemove', throttle(() => {
-                clearTimeout(this.timeoutHandler);
-                this.container.classList.add(CLASS_NAVIGATION_VISIBILITY);
-                this.timeoutHandler = setTimeout(() => {
-                    this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
-                }, MOUSEMOVE_THROTTLE);
-            }, MOUSEMOVE_THROTTLE - 500, true));
+            this.container.addEventListener('mousemove', this.throttledMousemoveHandler);
         }
     }
 
@@ -437,7 +445,7 @@ class Preview {
         this.options.api = options.api;
 
         // Save the reference to the auth token
-        this.setAuthorizationToken(options.token);
+        this.updateAuthToken(options.token);
 
         // Save the reference to any additional custom options
         this.options.viewerOptions = options.viewerOptions;
@@ -450,6 +458,18 @@ class Preview {
             this.files = files;
         } else {
             this.files = typeof file === 'string' ? [file] : [file.id];
+        }
+    }
+
+    /**
+     * Destroys the preview
+     *
+     * @private
+     * @returns {void}
+     */
+    destroy() {
+        if (this.loader && typeof this.loader.destroy === 'function') {
+            this.loader.destroy();
         }
     }
 
@@ -503,19 +523,25 @@ class Preview {
      * @param {String} token auth token
      * @returns {void}
      */
-    setAuthorizationToken(token) {
+    updateAuthToken(token) {
         this.options.token = token;
     }
 
     /**
-     * Destroys the preview
+     * Destroys and hides the preview
      *
      * @public
+     * @param {Boolean} destroy destroys the container contents
      * @returns {void}
      */
-    destroy() {
-        if (this.loader && typeof this.loader.destroy === 'function') {
-            this.loader.destroy();
+    hide(destroy = false) {
+        this.destroy();
+        if (this.container) {
+            this.container.style.display = 'none';
+            this.container.removeEventListener('mousemove', this.throttledMousemoveHandler);
+            if (destroy) {
+                this.container.innerHTML = '';
+            }
         }
     }
 }

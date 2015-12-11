@@ -2,7 +2,6 @@
 
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import { generateContentUrl } from './util';
 
 const STATUS_PENDING = 'pending';
 const STATUS_NONE = 'none';
