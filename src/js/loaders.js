@@ -1,6 +1,7 @@
 'use strict';
 
 import ImageLoader from './image/image-loader';
+import Image360Loader from './image360/image360-loader';
 import SwfLoader from './swf/swf-loader';
 import TextLoader from './text/text-loader';
 import MediaLoader from './media/media-loader';
@@ -15,6 +16,7 @@ export default [
     TextLoader, // should come before document
     DocLoader, // should come after text
     ImageLoader,
+    Image360Loader,
     Model3dLoader,
     UnsupportedLoader // should be the last loader
 ];

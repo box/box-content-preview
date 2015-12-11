@@ -216,11 +216,11 @@ class Model3dRenderer extends EventEmitter {
 	 * @returns {void}
 	 */
 	loadBox3dFile(fileUrl) {
-		let loader = new VAPI.JSONLoader(this.box3d, fileUrl);
+		let loader = new VAPI.JSONLoader(this.box3d);
 
 		return new Promise((resolve, reject) => {
 			loader
-				.load({ withCredentials: false })
+				.loadFromUrl(fileUrl, { withCredentials: false })
 				.then(this.createPrefabInstances, this.onUnsupportedRepresentation)
 				.then(resolve)
 				.catch(reject);
