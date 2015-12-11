@@ -36,21 +36,22 @@ Box.Preview.show(file, { options }).then(function(viewer) {
 where
 * `file` is either a string file id OR JSON file object response from https://box-content.readme.io/reference#files
 * `options` is an object with the following attribute
-  * (required) `api` is the api host.
+  * (required) `api` is the api host like `https://api.box.com`.
   * (required) `token` is the api auth token.
   * (optional) `files` is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
   * (optional) `container` is the container dom node for preview. Can be a selector or html node.
+  * (optional) `viewerOptions` json object to pass on to the viewer.
 
 ```javascript
-Box.Preview.destroy();
+Box.Preview.hide();
 ```
-to cleanup the preview.
+to hide and cleanup the preview.
 
 
 ```javascript
-Box.Preview.setAuthorizationToken(/* string */ token);
+Box.Preview.updateAuthToken(/* string */ token);
 ```
-to update the auth token.
+to update the auth token if needed, when it expires.
 
 Test
 ----
