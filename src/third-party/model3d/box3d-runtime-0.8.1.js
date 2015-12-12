@@ -54,15 +54,15 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(14), __webpack_require__(72), __webpack_require__(144), __webpack_require__(145), __webpack_require__(146), __webpack_require__(147), __webpack_require__(148), __webpack_require__(150), __webpack_require__(151), __webpack_require__(152), __webpack_require__(2), __webpack_require__(153), __webpack_require__(65), __webpack_require__(154), __webpack_require__(155), __webpack_require__(156), __webpack_require__(66), __webpack_require__(157), __webpack_require__(85), __webpack_require__(158)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, RuntimeEvents, Box3DRuntime) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(14), __webpack_require__(72), __webpack_require__(145), __webpack_require__(146), __webpack_require__(147), __webpack_require__(148), __webpack_require__(149), __webpack_require__(151), __webpack_require__(152), __webpack_require__(153), __webpack_require__(2), __webpack_require__(154), __webpack_require__(65), __webpack_require__(155), __webpack_require__(156), __webpack_require__(157), __webpack_require__(66), __webpack_require__(158), __webpack_require__(85), __webpack_require__(159)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, RuntimeEvents, Box3DRuntime) {
 	  'use strict';
 
 	  _.noConflict();
 
 	  var VAPI = window.VAPI;
 
-	  VAPI.require = __webpack_require__(159);
-	  VAPI.define = __webpack_require__(163);
+	  VAPI.require = __webpack_require__(160);
+	  VAPI.define = __webpack_require__(164);
 
 	  VAPI.getBrowser = function () {
 	    var ua = navigator.userAgent,
@@ -58310,7 +58310,7 @@
 			strength = ( strength !== undefined ) ? strength : 1;
 			kernelSize = ( kernelSize !== undefined ) ? kernelSize : 25;
 			sigma = ( sigma !== undefined ) ? sigma : 4.0;
-
+					
 			// render targets
 			this.setSize( resolutionX, resolutionY );
 
@@ -58520,7 +58520,7 @@
 		if ( THREE.BokehShader === undefined ) {
 			console.error( "THREE.BokehPass relies on THREE.BokehShader" );
 		}
-
+		
 		var bokehShader = THREE.BokehShader;
 		var bokehUniforms = THREE.UniformsUtils.clone( bokehShader.uniforms );
 
@@ -59160,7 +59160,7 @@
 			"uniform vec2 resolution;",
 			THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
 			THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
-
+			
 			"void main() {",
 				"vec2 offset = 0.5 / resolution;",
 				"vec4 colour;",
@@ -59190,9 +59190,9 @@
 				"}",
 
 				"gl_FragColor = colour * 0.25;",
-
+				
 				THREE.ShaderChunk[ "hdr_encode_fragment" ],
-
+				
 			"}",
 		].join('\n')
 
@@ -60942,7 +60942,7 @@
 			"#endif",
 
 			"uniform sampler2D tDiffuse;",
-
+			
 			"varying vec2 vUv;",
 
 			THREE.ShaderChunk['hdr_decode_pars_fragment'],
@@ -60951,7 +60951,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-
+				
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"gl_FragColor = vec4( HDRDecodeLOGLUV( texel ), 1.0 );",
@@ -61247,7 +61247,7 @@
 			"uniform sampler2D tDiffuse;",
 			"uniform float sides;",
 			"uniform float angle;",
-
+			
 			"varying vec2 vUv;",
 
 			"void main() {",
@@ -61319,7 +61319,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-
+				
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"texel.xyz = HDRDecodeLOGLUV( texel );",
@@ -61391,7 +61391,7 @@
 
 			"uniform sampler2D tDiffuse;",
 			"uniform int side;",
-
+			
 			"varying vec2 vUv;",
 
 			"void main() {",
@@ -61646,7 +61646,7 @@
 			"opacity": { type: "f", value: 1.0 }
 		},
 			// ] ),
-
+		
 
 		vertexShader: [
 
@@ -62034,7 +62034,7 @@
 			"varying vec2 vUv;",
 
 			"uniform float exposureBias;",
-
+			
 			"#ifdef SAMPLE_LUMINANCE",
 				"uniform sampler2D luminanceMap;",
 			"#else",
@@ -62058,12 +62058,12 @@
 		      "return ( ( x * ( A * x + C * B ) + D * E ) / ( x * ( A * x + B ) + D * F ) ) - E / F;",
 		    "}",
 		  // #endif
-
+			
 			"const vec3 LUM_CONVERT = vec3(0.299, 0.587, 0.114);",
 
 			"vec3 ToneMap( vec3 vColor ) {",
 				"#ifdef SAMPLE_LUMINANCE",
-					// Get the calculated average luminance
+					// Get the calculated average luminance 
 					"vec4 lumAvg = texture2D(luminanceMap, vUv);",
 					"float fLumAvg = lumAvg.r;",
 					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
@@ -62080,7 +62080,7 @@
 				"#else",
 					"float fLumAvg = averageLuminance;",
 				"#endif",
-
+				
 				// "#if defined( FILMIC_UC2 )",
 				"#ifdef ADAPT_WHITE_BALANCE",
 					"vec3 maxLum = texture2D( maxLuminanceRT, vUv ).rgb;",
@@ -62093,9 +62093,9 @@
 				"vec3 curr = UC2Tonemap( (exposureBias / (fLumAvg + 0.025)) * vColor );",
 				// "vec3 curr = UC2Tonemap( exposureBias * vColor );",
 				// "vec3 whiteScale = 1.0 / UC2Tonemap(white);",
-
+				
 				"return curr * white;",
-
+	            
 				// "#else",//Reinhard Tonemapping
 				// 	// Calculate the luminance of the current pixel
 				// 	"float fLumPixel = dot(vColor, LUM_CONVERT);",
@@ -62111,7 +62111,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-
+				
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"gl_FragColor = vec4( ToneMap( HDRDecodeLOGLUV( texel ) ), 1.0 );",
@@ -64208,7 +64208,7 @@
 	  BaseMeshObject.prototype._applyPropertiesLoaded = function (changes) {
 	    Box3DObject.prototype._applyPropertiesLoaded.call(this, changes);
 
-	    var materialType, prevMaterialIds, newMaterialIds, prevDepthMaterialId, newDepthMaterialId, prevGeometryId, newGeometryId;
+	    var geometryAsset, index, materialType, maxMaterialIndex, prevMaterialIds, newMaterialIds, prevDepthMaterialId, newDepthMaterialId, prevGeometryId, newGeometryId;
 
 	    if (changes && changes.hasOwnProperty('materials')) {
 	      materialType = this._getMaterialType();
@@ -64221,21 +64221,33 @@
 	      }, this);
 
 	      // Allocate the MeshFaceMaterial (container for other materials).
-	      if (newMaterialIds.length > 1) {
-	        if (!(this.runtimeData.material instanceof THREE.MeshFaceMaterial)) {
-	          this.runtimeData.material = new THREE.MeshFaceMaterial();
-	        }
-	        // Reset the MeshFaceMaterial's material list.
-	        this.runtimeData.material.materials = [];
+	      if (!(this.runtimeData.material instanceof THREE.MeshFaceMaterial)) {
+	        this.runtimeData.material = new THREE.MeshFaceMaterial();
+	      }
 
-	        // Assign the new materials and listen for changes.
-	        newMaterialIds.forEach(function (materialId, index) {
-	          this.registerChangeListener(materialId, this.onMaterialChanged, true);
-	          this.loadAndAssignMaterial(this.runtimeData.material.materials, index, materialId, materialType);
-	        }, this);
+	      // Reset the MeshFaceMaterial's material list.
+	      this.runtimeData.material.materials = [];
+
+	      // Assign the new materials and listen for changes.
+	      newMaterialIds.forEach(function (materialId, index) {
+	        this.registerChangeListener(materialId, this.onMaterialChanged, true);
+	        this.loadAndAssignMaterial(this.runtimeData.material.materials, index, materialId, materialType);
+	      }, this);
+
+	      // Assign the "missing" material to any additional material "slots" used
+	      // by the geometry. In other words, if the geometry references more
+	      // materials than the mesh has assigned to it, extend the material array
+	      // with "missing" materials.
+	      geometryAsset = this.getGeometryAsset();
+
+	      if (geometryAsset) {
+	        maxMaterialIndex = geometryAsset.getMaxMaterialIndex('triangles');
 	      } else {
-	        this.registerChangeListener(newMaterialIds[0], this.onMaterialChanged, true);
-	        this.loadAndAssignMaterial(this.runtimeData, 'material', newMaterialIds[0], materialType);
+	        maxMaterialIndex = -1;
+	      }
+
+	      for (index = newMaterialIds.length; index <= maxMaterialIndex; ++index) {
+	        this.loadAndAssignMaterial(this.runtimeData.material.materials, index, null, materialType);
 	      }
 	    }
 
@@ -64609,36 +64621,84 @@
 /* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+	'use strict'
 
 	/**
 	* @module VAPI
 	*/
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(13), __webpack_require__(14), __webpack_require__(74), __webpack_require__(77)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, uuid, RuntimeEvents, EntityDispatcher, AssetRegistry) {
-	  'use strict';
 
-	  var VAPI = window.VAPI = window.VAPI || {};
+	;
 
-	  function getElement(obj) {
-	    var els;
-	    if (obj && obj.jquery) {
-	      return obj.get(0);
-	    } else if (_.isString(obj)) {
-	      els = document.querySelectorAll(obj);
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	// requstAnimationFrame polyfill only used in cases where native version is not
+	// available.
 
-	      return els.length && els[0];
-	    } else {
-	      return obj;
-	    }
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _log = __webpack_require__(7);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _lodash = __webpack_require__(3);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(5);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _uuid = __webpack_require__(13);
+
+	var _uuid2 = _interopRequireDefault(_uuid);
+
+	var _RuntimeEvents = __webpack_require__(14);
+
+	var _RuntimeEvents2 = _interopRequireDefault(_RuntimeEvents);
+
+	var _EntityDispatcher = __webpack_require__(73);
+
+	var _EntityDispatcher2 = _interopRequireDefault(_EntityDispatcher);
+
+	var _AssetRegistry = __webpack_require__(77);
+
+	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
+
+	var _raf = __webpack_require__(143);
+
+	var _raf2 = _interopRequireDefault(_raf);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var VAPI = window.VAPI = window.VAPI || {};
+
+	function getElement(obj) {
+	  var els = undefined;
+	  if (obj && obj.jquery) {
+	    return obj.get(0);
+	  } else if (_lodash2.default.isString(obj)) {
+	    els = document.querySelectorAll(obj);
+
+	    return els.length && els[0];
+	  } else {
+	    return obj;
 	  }
+	}
 
-	  /**
-	   * This is the Box3D Engine object.
-	   * @class Engine
-	   * @param {Object} properties Engine properties
-	   * @constructor
-	   */
-	  var Engine = function Engine(properties) {
+	/**
+	 * This is the Box3D Engine object.
+	 * @class Engine
+	 * @param {Object} properties Engine properties
+	 * @constructor
+	 */
+
+	var Engine = (function () {
+	  function Engine(properties) {
+	    _classCallCheck(this, Engine);
+
 	    if (!Math.log2) {
 	      Math.log2 = function (val) {
 	        return Math.log(val) / Math.LN2;
@@ -64649,7 +64709,7 @@
 
 	    this.global = properties.global || window;
 	    this.engineName = 'Unnamed Instance of Box3D Engine';
-	    this.applicationName = properties.applicationName || uuid();
+	    this.applicationName = properties.applicationName || (0, _uuid2.default)();
 
 	    this.isEditor = properties.isEditor ? true : false;
 	    this.assetRegistry = undefined;
@@ -64665,39 +64725,39 @@
 	    this.caps = {};
 	    this.entities = {};
 	    this.initTimeoutId = undefined;
-	  };
+	  }
 
-	  Engine.prototype = {
-	    constructor: Engine,
+	  /**
+	   * Initialize the engine with the provided properties.
+	   * @method initialize
+	   * @param {Object} properties The engine properties
+	   * @param {Object} properties.resourceLoader Used to load resources like
+	   * geometry, textures and animation.
+	   * @param {String} [properties.engineName] The name of the engine.
+	   * @param {HTMLElement|jQuery|String} properties.container The container
+	   * for the canvas element. If a string is passed, it is assumed to be a
+	   * jQuery selector string.
+	   * @param {HTMLCanvasElement|jQuery|String} [properties.canvas] The
+	   * element that the engine will draw into. If a string is passed, it is
+	   * assumed to be a jQuery selector string. If no canvas is supplied, a new
+	   * one will be created and added to the container.
+	   * @param {EntityDispatcher} [properties.entityDispatcher] Used for
+	   * synchronizing entities when multiple engines are used. If no entity
+	   * dispatcher is supplied, a new one will be created.
+	   * @param {Object} [properties.componentSettings]
+	   * @param {Boolean} [properties.componentSettings.enabled] Enable or
+	   * disable components (default is enabled).
+	   * @param {Array} [properties.entities] An initial list of entities to be
+	   * added to the engine.
+	   * @param {RuntimeEvents} [properties.globalEvents] Used to trigger and
+	   * listen to global events.
+	   * @param {Function} [callback] Called when initialization is complete.
+	   */
 
-	    /**
-	     * Initialize the engine with the provided properties.
-	     * @method initialize
-	     * @param {Object} properties The engine properties
-	     * @param {Object} properties.resourceLoader Used to load resources like
-	     * geometry, textures and animation.
-	     * @param {String} [properties.engineName] The name of the engine.
-	     * @param {HTMLElement|jQuery|String} properties.container The container
-	     * for the canvas element. If a string is passed, it is assumed to be a
-	     * jQuery selector string.
-	     * @param {HTMLCanvasElement|jQuery|String} [properties.canvas] The
-	     * element that the engine will draw into. If a string is passed, it is
-	     * assumed to be a jQuery selector string. If no canvas is supplied, a new
-	     * one will be created and added to the container.
-	     * @param {EntityDispatcher} [properties.entityDispatcher] Used for
-	     * synchronizing entities when multiple engines are used. If no entity
-	     * dispatcher is supplied, a new one will be created.
-	     * @param {Object} [properties.componentSettings]
-	     * @param {Boolean} [properties.componentSettings.enabled] Enable or
-	     * disable components (default is enabled).
-	     * @param {Array} [properties.entities] An initial list of entities to be
-	     * added to the engine.
-	     * @param {RuntimeEvents} [properties.globalEvents] Used to trigger and
-	     * listen to global events.
-	     * @param {Function} [callback] Called when initialization is complete.
-	     */
-	    initialize: function initialize(properties, callback) {
-	      log.info('Engine Initialization');
+	  _createClass(Engine, [{
+	    key: 'initialize',
+	    value: function initialize(properties, callback) {
+	      _log2.default.info('Engine Initialization');
 
 	      // Get and validate global events.
 	      function initGlobalEvents(done) {
@@ -64745,10 +64805,10 @@
 	        done();
 	      }
 
-	      // Initialize member variables.
+	      // Initialize member letiables.
 	      function initState(done) {
 	        this.engineName = properties.engineName || this.engineName;
-	        this.clock = new THREE.Clock();
+	        this.clock = new _three2.default.Clock();
 	        this.elapsedSinceRender = 0.0;
 	        this.frameDelta = 0;
 	        this.updateTime = 0;
@@ -64762,16 +64822,16 @@
 	        this.documentVisible = true;
 	        this.state = 'initializing';
 
-	        this.componentSettings = _.extend({
+	        this.componentSettings = _lodash2.default.extend({
 	          enabled: true,
 	          editor: false,
 	          runtime: true
 	        }, properties.componentSettings || {});
 
-	        log.info('Components settings:', JSON.stringify(this.componentSettings));
+	        _log2.default.info('Components settings:', JSON.stringify(this.componentSettings));
 
 	        // Initialize the entity dispatcher.
-	        this.entityDispatcher = properties.entityDispatcher || new VAPI.EntityDispatcher();
+	        this.entityDispatcher = properties.entityDispatcher || new _EntityDispatcher2.default();
 
 	        this.entityDispatcher.addEngine(this);
 
@@ -64779,7 +64839,7 @@
 	      }
 
 	      function initAssetRegistry(done) {
-	        this.assetRegistry = new AssetRegistry();
+	        this.assetRegistry = new _AssetRegistry2.default();
 	        this.assetRegistry.initialize(this);
 	        done();
 	      }
@@ -64880,13 +64940,16 @@
 	      promise.then(function () {
 	        callback();
 	      }, callback).catch(callback);
-	    },
+	    }
 
 	    /**
 	     * Uninitialize the engine
 	     * @method uninitialize
 	     */
-	    uninitialize: function uninitialize() {
+
+	  }, {
+	    key: 'uninitialize',
+	    value: function uninitialize() {
 	      delete window[this.engineName];
 
 	      if (this.initTimeoutId) {
@@ -64918,13 +64981,13 @@
 	      this.entities = {};
 	      this.globalEvents.off('requestBox3DEngine', this.onRequestEngine, this);
 
-	      window.cancelAnimationFrame(this.animationRequestID);
+	      _raf2.default.cancel(this.animationRequestID);
 
 	      if (this.canvasCreatedByEngine) {
 	        this.canvas.parentNode.removeChild(this.canvas);
 	      }
 
-	      log.info(this.engineName + ' - Uninitializing engine.');
+	      _log2.default.info(this.engineName + ' - Uninitializing engine.');
 
 	      if (this.assetRegistry) {
 	        this.assetRegistry.uninitialize();
@@ -64945,15 +65008,18 @@
 	      this.resourceLoader = undefined;
 	      this.entityDispatcher = undefined;
 	      this.state = 'uninitialized';
-	    },
+	    }
 
 	    /**
 	     * Return the name of the engine
 	     * @return {String} The name of this engine.
 	     */
-	    getName: function getName() {
+
+	  }, {
+	    key: 'getName',
+	    value: function getName() {
 	      return this.engineName;
-	    },
+	    }
 
 	    /**
 	     * Register all entities in the given collection into the runtime.
@@ -64962,9 +65028,12 @@
 	     * @return {Promise} A promise that resolves with an array of entities
 	     * that were added to the engine.
 	     */
-	    addEntities: function addEntities(entityArray) {
+
+	  }, {
+	    key: 'addEntities',
+	    value: function addEntities(entityArray) {
 	      return this.entityDispatcher.addEntities(entityArray);
-	    },
+	    }
 
 	    /**
 	     * Load the entities given by an array of entity ID's.
@@ -64975,12 +65044,15 @@
 	     * @param {String} loadEvent The name of the loading event to listen for on each entity.
 	     * Default is 'load'.
 	     */
-	    loadEntities: function loadEntities(entityArray, callback, loadEvent) {
+
+	  }, {
+	    key: 'loadEntities',
+	    value: function loadEntities(entityArray, callback, loadEvent) {
 	      var _this3 = this;
 
 	      loadEvent = loadEvent || 'load';
 	      Promise.all(entityArray.map(function (id) {
-	        if (_.isObject(id)) {
+	        if (_lodash2.default.isObject(id)) {
 	          id = id.id;
 	        }
 	        return new Promise(function (resolve, reject) {
@@ -64997,38 +65069,44 @@
 	          }
 	        });
 	      })).then(function () {
-	        if (_.isFunction(callback)) {
+	        if (_lodash2.default.isFunction(callback)) {
 	          callback.call(_this3);
 	        }
 	      }).catch(function (err) {
-	        if (_.isFunction(callback)) {
-	          log.error('loadEntities error: ' + err);
+	        if (_lodash2.default.isFunction(callback)) {
+	          _log2.default.error('loadEntities error: ' + err);
 	          callback.call(_this3, err);
 	        }
 	      });
-	    },
+	    }
 
 	    /**
 	     * Returns the current active application.
 	     * @method getApplication
 	     * @return {Asset} The application asset
 	     */
-	    getApplication: function getApplication() {
+
+	  }, {
+	    key: 'getApplication',
+	    value: function getApplication() {
 	      var assets = this.assetRegistry.Applications.getAssets();
 	      for (var appId in assets) {
 	        if (assets[appId].stateBase === 'loaded') {
 	          return assets[appId];
 	        }
 	      }
-	    },
+	    }
 
 	    /**
 	     * Return the rendering component currently assigned to the engine.
 	     * @return {Object} The rendering component.
 	     */
-	    getRenderer: function getRenderer() {
+
+	  }, {
+	    key: 'getRenderer',
+	    value: function getRenderer() {
 	      return this._baseRenderer;
-	    },
+	    }
 
 	    /**
 	     * Assign a new component that will serve as the main renderer in this engine.
@@ -65036,17 +65114,21 @@
 	     * call or from the engine with the same call.
 	     * @param {Object} newRenderer The renderer component.
 	     */
-	    setRenderer: function setRenderer(newRenderer) {
-	      if (this._baseRenderer && _.isFunction(this._baseRenderer.shutdown)) {
+
+	  }, {
+	    key: 'setRenderer',
+	    value: function setRenderer(newRenderer) {
+	      if (this._baseRenderer && _lodash2.default.isFunction(this._baseRenderer.shutdown)) {
 	        this._baseRenderer.shutdown();
 	      }
 	      this._baseRenderer = newRenderer;
 	      this._threeRenderer = newRenderer.threeRenderer;
-	    },
-
-	    getThreeRenderer: function getThreeRenderer() {
+	    }
+	  }, {
+	    key: 'getThreeRenderer',
+	    value: function getThreeRenderer() {
 	      return this._baseRenderer.threeRenderer;
-	    },
+	    }
 
 	    /**
 	     * Given the name of a GPU device capability (e.g. MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
@@ -65054,21 +65136,27 @@
 	     * @param  {String} cap The capability name
 	     * @return {Integer}     The value of the capability
 	     */
-	    getGPUCapability: function getGPUCapability(cap) {
+
+	  }, {
+	    key: 'getGPUCapability',
+	    value: function getGPUCapability(cap) {
 	      return this._baseRenderer.caps[cap];
-	    },
-
-	    supportsCompressedTextureS3TC: function supportsCompressedTextureS3TC() {
+	    }
+	  }, {
+	    key: 'supportsCompressedTextureS3TC',
+	    value: function supportsCompressedTextureS3TC() {
 	      return this._baseRenderer.caps.compressedTextureFormats['S3TC'];
-	    },
-
-	    supportsCompressedTexturePVRTC: function supportsCompressedTexturePVRTC() {
+	    }
+	  }, {
+	    key: 'supportsCompressedTexturePVRTC',
+	    value: function supportsCompressedTexturePVRTC() {
 	      return this._baseRenderer.caps.compressedTextureFormats['S3TC'];
-	    },
-
-	    supportsCompressedTextureATC: function supportsCompressedTextureATC() {
+	    }
+	  }, {
+	    key: 'supportsCompressedTextureATC',
+	    value: function supportsCompressedTextureATC() {
 	      return this._baseRenderer.caps.compressedTextureFormats['S3TC'];
-	    },
+	    }
 
 	    /**
 	     * Returns the entity with the provided Id. This includes ALL entities,
@@ -65077,19 +65165,25 @@
 	     * @param  {String} entityId The ID of the entity.
 	     * @return {Object} The entity or null if not found.
 	     */
-	    getEntityById: function getEntityById(entityId) {
+
+	  }, {
+	    key: 'getEntityById',
+	    value: function getEntityById(entityId) {
 
 	      if (this.entities[entityId]) {
 	        return this.entities[entityId];
 	      }
 	      return null;
-	    },
+	    }
 
 	    /**
 	     * @method getAudioContext
 	     * @return {AudioContext}
 	     */
-	    getAudioContext: function getAudioContext() {
+
+	  }, {
+	    key: 'getAudioContext',
+	    value: function getAudioContext() {
 
 	      if (!this.audioContext) {
 	        //moved this from engine startup to here this stops the engine
@@ -65099,35 +65193,43 @@
 	        if (audioContext) {
 	          this.audioContext = new audioContext();
 	          if (!this.audioContext) {
-	            log.warn(this.engineName + ' - Failed to create Web Audio API context');
+	            _log2.default.warn(this.engineName + ' - Failed to create Web Audio API context');
 	          }
 	        }
 	      }
 
 	      return this.audioContext;
-	    },
-
-	    onRequestEngine: function onRequestEngine() {
+	    }
+	  }, {
+	    key: 'onRequestEngine',
+	    value: function onRequestEngine() {
 	      this.globalEvents.trigger('sendBox3DEngine', this);
-	    },
+	    }
 
 	    /**
 	     * Pause the engine
 	     * @method pause
 	     */
-	    pause: function pause() {
+
+	  }, {
+	    key: 'pause',
+	    value: function pause() {
 	      if (!this.paused) {
 	        this.paused = true;
 	        this.clock.stop();
-	        log.info(this.engineName + ' engine has been paused.');
+	        window.cancelAnimationFrame(this.animationRequestID);
+	        _log2.default.info(this.engineName + ' engine has been paused.');
 	      }
-	    },
+	    }
 
 	    /**
 	     * Unpause the engine
 	     * @method unpause
 	     */
-	    unpause: function unpause() {
+
+	  }, {
+	    key: 'unpause',
+	    value: function unpause() {
 	      if (this.paused) {
 	        this.paused = false;
 	        this.elapsedSinceRender = 0.0;
@@ -65135,37 +65237,42 @@
 	        this.updateTime = 0;
 	        this.lastFrameDelta = this.getTimeNow();
 	        this.clock.start();
-	        log.info(this.engineName + ' engine has been unpaused.');
+	        _log2.default.info(this.engineName + ' engine has been unpaused.');
 	        this.update();
 	      }
-	    },
-
-	    onUpdate: function onUpdate(delta) {
+	    }
+	  }, {
+	    key: 'onUpdate',
+	    value: function onUpdate(delta) {
 	      if (this.assetRegistry) {
 	        this.assetRegistry.update(delta);
 	      }
-	    },
-
-	    setCurrentApp: function setCurrentApp(appId) {
+	    }
+	  }, {
+	    key: 'setCurrentApp',
+	    value: function setCurrentApp(appId) {
 	      var app = this.assetRegistry.Applications.getAssetById(appId);
 	      if (app) {
 	        if (this.currentApplication) {
-	          log.warn('Already an application running in this engine. Stop it before starting the ' + app.getName() + ' application.');
+	          _log2.default.warn('Already an application running in this engine. Stop it before starting the ' + app.getName() + ' application.');
 	          this.currentApplication.unload();
 	        }
 	        this.currentApplication = app;
 	      }
-	    },
-
-	    getTimeNow: function getTimeNow() {
+	    }
+	  }, {
+	    key: 'getTimeNow',
+	    value: function getTimeNow() {
 	      return (!!window.performance && !!window.performance.now ? window.performance.now() : Date.now()) * 0.001;
-	    },
-
-	    getApplicationContext: function getApplicationContext() {
+	    }
+	  }, {
+	    key: 'getApplicationContext',
+	    value: function getApplicationContext() {
 	      return VAPI.getApplicationContext(this.applicationName);
-	    },
-
-	    update: function update() {
+	    }
+	  }, {
+	    key: 'update',
+	    value: function update() {
 	      var _this4 = this;
 
 	      // Remember to put visible check.
@@ -65173,15 +65280,9 @@
 	        return;
 	      }
 
-	      if (window && window.requestAnimationFrame) {
-	        this.animationRequestID = window.requestAnimationFrame(function () {
-	          _this4.update();
-	        });
-	      } else if (process && process.nextTick) {
-	        process.nextTick(function () {
-	          _this4.update();
-	        });
-	      }
+	      this.animationRequestID = (0, _raf2.default)(function () {
+	        _this4.update();
+	      });
 
 	      if (!this.documentVisible) {
 	        return;
@@ -65216,116 +65317,20 @@
 	        this.trigger('postRender', this.frameDelta);
 	      }
 	    }
-	  };
-
-	  _.extend(Engine.prototype, RuntimeEvents);
-
-	  window.VAPI = window.VAPI || {};
-	  window.VAPI.Engine = Engine;
+	  }]);
 
 	  return Engine;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(73)))
+	})();
+
+	_lodash2.default.extend(Engine.prototype, _RuntimeEvents2.default);
+
+	window.VAPI = window.VAPI || {};
+	window.VAPI.Engine = Engine;
+
+	exports.default = Engine;
 
 /***/ },
 /* 73 */
-/***/ function(module, exports) {
-
-	// shim for using process in browser
-
-	var process = module.exports = {};
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-
-	function cleanUpNextTick() {
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = setTimeout(cleanUpNextTick);
-	    draining = true;
-
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    clearTimeout(timeout);
-	}
-
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
-	    }
-	};
-
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-
-	function noop() {}
-
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ },
-/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -65335,7 +65340,7 @@
 	;
 	var _ = __webpack_require__(3);
 	var log = __webpack_require__(7);
-	var Promise = __webpack_require__(75);
+	var Promise = __webpack_require__(74);
 
 	var VAPI = window.VAPI = window.VAPI || {};
 
@@ -65452,9 +65457,7 @@
 	    });
 	    // Don't do a Promise.all if the array is empty.
 	    if (!assets.length) {
-	      return new Promise(function (resolve) {
-	        resolve();
-	      });
+	      return Promise.resolve();
 	    }
 	    return new Promise.all(allEngineAssets.map(function (asset) {
 	      return new Promise(function (resolveAsset) {
@@ -65930,7 +65933,7 @@
 	module.exports = EntityDispatcher;
 
 /***/ },
-/* 75 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -66212,7 +66215,104 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(73)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(75)))
+
+/***/ },
+/* 75 */
+/***/ function(module, exports) {
+
+	// shim for using process in browser
+
+	var process = module.exports = {};
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = setTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    clearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        setTimeout(drainQueue, 0);
+	    }
+	};
+
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
 
 /***/ },
 /* 76 */
@@ -66292,7 +66392,7 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(73)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(75)))
 
 /***/ },
 /* 77 */
@@ -66303,7 +66403,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(13), __webpack_require__(14), __webpack_require__(80), __webpack_require__(81), __webpack_require__(86), __webpack_require__(78), __webpack_require__(87), __webpack_require__(88), __webpack_require__(89), __webpack_require__(90), __webpack_require__(91), __webpack_require__(136), __webpack_require__(143)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, uuid, RuntimeEvents, ApplicationRegistry, DocumentRegistry, SceneRegistry, PrefabRegistry, GeometryRegistry, MaterialRegistry, TextureRegistry, AnimationRegistry, ScriptRegistry, ShaderRegistry, AudioRegistry) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(13), __webpack_require__(14), __webpack_require__(80), __webpack_require__(81), __webpack_require__(86), __webpack_require__(78), __webpack_require__(87), __webpack_require__(88), __webpack_require__(89), __webpack_require__(90), __webpack_require__(91), __webpack_require__(135), __webpack_require__(142)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, uuid, RuntimeEvents, ApplicationRegistry, DocumentRegistry, SceneRegistry, PrefabRegistry, GeometryRegistry, MaterialRegistry, TextureRegistry, AnimationRegistry, ScriptRegistry, ShaderRegistry, AudioRegistry) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -68746,7 +68846,7 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(75), __webpack_require__(83)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Promise, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(74), __webpack_require__(83)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Promise, Box3DShim) {
 	  'use strict'
 
 	  /**
@@ -69333,7 +69433,7 @@
 /* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(95),__webpack_require__(115),__webpack_require__(96),__webpack_require__(97),__webpack_require__(98),__webpack_require__(99),__webpack_require__(100),__webpack_require__(101),__webpack_require__(102),__webpack_require__(103),__webpack_require__(104),__webpack_require__(105),__webpack_require__(106),__webpack_require__(107),__webpack_require__(108),__webpack_require__(109),__webpack_require__(110),__webpack_require__(111),__webpack_require__(112),__webpack_require__(113),__webpack_require__(114),__webpack_require__(93),__webpack_require__(116),__webpack_require__(117),__webpack_require__(118),__webpack_require__(119),__webpack_require__(120),__webpack_require__(121),__webpack_require__(122),__webpack_require__(123),__webpack_require__(124),__webpack_require__(125),__webpack_require__(126),__webpack_require__(127),__webpack_require__(128),__webpack_require__(129),__webpack_require__(130),__webpack_require__(131),__webpack_require__(132),__webpack_require__(133),__webpack_require__(134),__webpack_require__(135)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Component2DTextLabel,ComponentAnnotation,ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentCustomControl,ComponentDebugConsoleDisplay,ComponentDebugTextureRender,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentImportanceSamplerConvolver,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderTargetViewer,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentShots,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentSphereMapCapture,ComponentTextRenderer){return function(VAPI){VAPI.ScriptRegistry.registerScript({"id":"text_label_component","name":"2D Text Label","properties":{"description":"Simply render some text to the screen using HTML.","attributes":{"text":{"name":"text","type":"s","default":"2D Font Label","description":"The text to render"}},"attributesOrder":["text"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Text","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/2DTextLabel"}},Component2DTextLabel);VAPI.ScriptRegistry.registerScript({"id":"annotation_component","name":"Annotation","properties":{"description":"A way of putting notes or descriptions into your scenes. Places a pin and tag. Hides when obscured by other objects","attributes":{"Title":{"name":"Title","type":"s","default":"Annotation Title","description":"Title to display on the annotation tag"},"Description":{"name":"Description","type":"s","default":"A description for your Annotation","description":"The description to display on your tag"},"ShowDescription":{"name":"ShowDescription","type":"b","default":false,"description":"whether or not we show the description for the tag"},"ShowLine":{"name":"ShowLine","type":"b","default":true,"description":"Whether or not we show the line"},"Pin":{"name":"Pin","type":"custom","description":"properties of the pin","attributes":{"visible":{"type":"b","name":"Visible","description":"If enabled, a pin object exists in the scene","default":false},"autoScale":{"type":"b","name":"Visible","description":"If enabled, the pin will scale to always be easily selected","default":true},"material":{"type":"asset","name":"Material","description":"The material to color the pin with.","default":null,"filter":{"material":true}}}},"Colors":{"name":"Colors","type":"custom","description":"Use some preset styles created by us, or use your own!","attributes":{"styles":{"type":"dd","default":2,"options":{"Light 1":0,"Light 2":1,"Dark 1":2,"Dark 2":3,"Vibrant 1":4,"Vibrant 2":5},"description":"Pick the style you want the Annotation to use","advanced":false}}}},"attributesOrder":["Title","Description","ShowDescription","ShowLine","Pin","Colors"],"events":{"showAnnotation":{"scope":"local","name":"showAnnotation","action":true,"category":"Annotation","parameters":[]},"showAnnotationPin":{"scope":"local","name":"showAnnotationPin","action":true,"category":"Annotation","parameters":[]},"showAnnotationLine":{"scope":"local","name":"showAnnotationLine","action":true,"category":"Annotation","parameters":[]},"showAnnotationDescription":{"scope":"local","name":"showAnnotationDescription","action":true,"category":"Annotation","parameters":[]},"showAnnotationTag":{"scope":"local","name":"showAnnotationTag","action":true,"category":"Annotation","parameters":[]},"hideAnnotation":{"scope":"local","name":"hideAnnotation","action":true,"category":"Annotation","parameters":[]},"hideAnnotationPin":{"scope":"local","name":"hideAnnotationPin","action":true,"category":"Annotation","parameters":[]},"hideAnnotationLine":{"scope":"local","name":"hideAnnotationLine","action":true,"category":"Annotation","parameters":[]},"hideAnnotationDescription":{"scope":"local","name":"hideAnnotationDescription","action":true,"category":"Annotation","parameters":[]},"hideAnnotationTag":{"scope":"local","name":"hideAnnotationTag","action":true,"category":"Annotation","parameters":[]},"toggleAnnotation":{"scope":"local","name":"toggleAnnotation","action":true,"category":"Annotation","parameters":[]},"enableAnnotation":{"scope":"local","name":"enableAnnotation","action":true,"category":"Annotation","parameters":[]},"disableAnnotation":{"scope":"local","name":"disableAnnotation","action":true,"category":"Annotation","parameters":[]},"changeAnnotationPinMaterial":{"scope":"local","name":"changeAnnotationPinMaterial","action":true,"category":"Annotation","parameters":[{"name":"MaterialAsset","type":"asset","description":"The material to color the pin head with.","default":null,"filter":{"material":true}}]}},"externalDependencies":[],"filter":["object"],"category":"Annotation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Annotation"}},ComponentAnnotation);VAPI.ScriptRegistry.registerScript({"id":"audio_listener","name":"Audio Listener","properties":{"description":"Audio listener for 3D, positional sound effects","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/AudioListener"}},ComponentAudioListener);VAPI.ScriptRegistry.registerScript({"id":"audio_source","name":"Audio Source","properties":{"description":"Controls playback of audio assets","attributes":{"gain":{"name":"gain","type":"f","description":"Volume control","default":1,"min":0,"max":100},"autoPlay":{"name":"autoPlay","type":"b","description":"Play the audio once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the audio","default":true},"preload":{"name":"preload","type":"b","description":"Load the audio when the component is initialized","default":true},"positional":{"name":"positional","type":"b","description":"Enable/disable 3D, positional audio effects","default":false},"stream":{"name":"stream","type":"b","description":"Stream the audio","default":false},"asset":{"name":"asset","type":"asset","description":"Audio or video asset","default":null,"filter":{"audio":true,"textureVideo":true}}},"attributesOrder":["gain","autoPlay","loop","preload","positional","stream","asset"],"events":{"playAudio":{"scope":"local","name":"playAudio","action":true,"category":"Audio","parameters":[{"name":"offset","type":"f","description":"Defined in seconds","default":0}]},"pauseAudio":{"scope":"local","name":"pauseAudio","action":true,"category":"Audio","parameters":[]},"stopAudio":{"scope":"local","name":"stopAudio","action":true,"category":"Audio","parameters":[]},"toggleAudio":{"scope":"local","name":"toggleAudio","action":true,"category":"Audio","parameters":[]}},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/AudioSource"}},ComponentAudioSource);VAPI.ScriptRegistry.registerScript({"id":"cubemap_capture","name":"Cube-Map Capture","properties":{"attributes":{"cubeTexture":{"name":"cubeTexture","type":"asset","description":"The RenderTextureCube to render the reflection to.","filter":{"renderTextureCube":true},"default":null},"near":{"name":"near","type":"f","description":"The closest distance to this object to render. Adjust this to avoid   rendering local geometry to the texture.","default":25},"far":{"name":"far","type":"f","description":"The furthest distance from this object to render.","default":160000},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection.   Default is 0.","default":0},"renderPosX":{"name":"renderPosX","type":"b","description":"Render this side of the cube.","default":true},"renderNegX":{"name":"renderNegX","type":"b","description":"Render this side of the cube.","default":true},"renderPosY":{"name":"renderPosY","type":"b","description":"Render this side of the cube.","default":true},"renderNegY":{"name":"renderNegY","type":"b","description":"Render this side of the cube.","default":true},"renderPosZ":{"name":"renderPosZ","type":"b","description":"Render this side of the cube.","default":true},"renderNegZ":{"name":"renderNegZ","type":"b","description":"Render this side of the cube.","default":true}},"attributesOrder":["cubeTexture","near","far","updateFrameInterval","renderPosX","renderNegX","renderPosY","renderNegY","renderPosZ","renderNegZ"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/CubeMapCapture"}},ComponentCubeMapCapture);VAPI.ScriptRegistry.registerScript({"id":"curve_component","name":"Curve","properties":{"description":"Creates a spline curve that can be used for various things, including making objects follow it. Add controls points to shape the curve.","attributes":{"controlPoints":{"name":"controlPoints","type":"a","subType":{"type":"object"},"description":"The list of objects that define the curve shape."},"closed":{"name":"closed","type":"b","description":"If toggled, the start and end of the curve will be smoothly joined.","default":false}},"attributesOrder":["controlPoints","closed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Curve"}},ComponentCurve);VAPI.ScriptRegistry.registerScript({"id":"custom_control_component","name":"Custom Control","properties":{"attributes":{"name":{"name":"name","type":"s"},"control":{"name":"control","type":"control","default":"","options":{"Button":"button","Toggle":"toggle","List":"list"},"subType":{"type":"s"}}},"attributesOrder":["name","control"],"events":{},"externalDependencies":[],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/CustomControl"}},ComponentCustomControl);VAPI.ScriptRegistry.registerScript({"id":"debug_console_display","name":"Debug Console Display","properties":{"attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugConsoleDisplay"}},ComponentDebugConsoleDisplay);VAPI.ScriptRegistry.registerScript({"id":"debug_texture_render","name":"Debug Texture Render","properties":{"attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"0px"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"100%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"100%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":0}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup"],"events":{},"externalDependencies":[],"filter":["Texture2D","RenderTexture2D"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugTextureRender"}},ComponentDebugTextureRender);VAPI.ScriptRegistry.registerScript({"id":"render_filters_component","name":"Default Filters","properties":{"description":"Stores the default filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false,"description":"Enable tone-mapping."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the 'Adaptive' feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DefaultFilters"}},ComponentDefaultFilters);VAPI.ScriptRegistry.registerScript({"id":"environment","name":"Environment","properties":{"attributes":{"enableSceneLights":{"name":"enableSceneLights","type":"b","description":"","default":true},"envDiffuseTexture":{"name":"envDiffuseTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":null},"envSpecularTexture":{"name":"envSpecularTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":null}},"attributesOrder":["enableSceneLights","envDiffuseTexture","envSpecularTexture"],"events":{},"externalDependencies":[],"filter":["scene"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Environment"}},ComponentEnvironment);VAPI.ScriptRegistry.registerScript({"id":"event_handler_component","name":"Event Handler","properties":{"attributes":{"listen":{"name":"listen","type":"event","description":"The event to listen for. When this event is captured, all of the defined trigger events will be fired."},"triggers":{"name":"triggers","type":"a","subType":{"type":"event"},"description":"Fire each of these events in response to the captured listen event."}},"attributesOrder":["listen","triggers"],"events":{},"externalDependencies":[],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/EventHandler"}},ComponentEventHandler);VAPI.ScriptRegistry.registerScript({"id":"exploder_component","name":"Exploder","properties":{"description":"Explodes your objects and their hierarchies into different formations. Great for showing off parts in a model!","attributes":{"Time":{"name":"Time","type":"f","default":1.5,"description":"The amount of time to explode and contract the child meshes"},"Scale":{"name":"Scale","type":"v3","default":{"x":2,"y":2,"z":2},"description":"The scale of the explosion"},"Formation":{"name":"Formation","type":"dd","description":"Formation to use when exploding the hierarchy of this object.","default":"Scale","options":{"Circle":"Circle","Square Grid":"Grid","Scale Out":"Scale"}}},"attributesOrder":["Time","Scale","Formation"],"events":{"playExplode":{"scope":"local","name":"playExplode","action":true,"category":"Exploder","parameters":[]},"playContract":{"scope":"local","name":"playContract","action":true,"category":"Exploder","parameters":[]},"toggleExploder":{"scope":"local","name":"toggleExploder","action":true,"category":"Exploder","parameters":[]},"resetExploder":{"scope":"local","name":"resetExploder","action":true,"category":"Exploder","parameters":[]},"useCircleExplode":{"scope":"local","name":"useCircleExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useGridExplode":{"scope":"local","name":"useGridExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useScaleOutExplode":{"scope":"local","name":"useScaleOutExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":2,"y":2,"z":2}}]},"beginExplode":{"scope":"other","name":"beginExplode","action":false,"category":"Exploder","parameters":[]},"endExplode":{"scope":"other","name":"endExplode","action":false,"category":"Exploder","parameters":[]},"beginContract":{"scope":"other","name":"beginContract","action":false,"category":"Exploder","parameters":[]},"endContract":{"scope":"other","name":"endContract","action":false,"category":"Exploder","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Exploder"}},ComponentExploder);VAPI.ScriptRegistry.registerScript({"id":"free_camera_controller","name":"Free Camera Controller","properties":{"attributes":{"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"min":0,"max":1},"usePointerLock":{"name":"usePointerLock","type":"b","description":"","default":false},"invertX":{"name":"invertX","type":"b","default":false},"invertY":{"name":"invertY","type":"b","default":false},"invertZoom":{"name":"invertZoom","type":"b","default":false},"lookSpeed":{"name":"lookSpeed","type":"f","default":1,"min":0.0001,"max":1000},"movementSpeed":{"name":"movementSpeed","type":"f","default":300,"max":1000,"min":0.01},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.01}},"enablePan":{"name":"enablePan","type":"b","default":true},"enableZoom":{"name":"enableZoom","type":"b","default":true}},"attributesOrder":["inertialDamping","usePointerLock","invertX","invertY","invertZoom","lookSpeed","movementSpeed","pitchAngleBounds","enablePan","enableZoom"],"events":{"enableFreeCameraController":{"scope":"local","name":"enableFreeCameraController","parameters":[]},"disableFreeCameraController":{"scope":"local","name":"disableFreeCameraController","parameters":[]},"toggleFreeCameraController":{"scope":"local","name":"toggleFreeCameraController","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera-Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/FreeCamera"}},ComponentFreeCamera);VAPI.ScriptRegistry.registerScript({"id":"fullscreen_script","name":"Fullscreen","properties":{"description":"Uses fullscreen API to make your app fullscreen! This will fullscreen the canvas' parent element, so your UI can be fullscreened as well! If a selector is provided, then we will fullscreen that element, instead","attributes":{"Selector":{"name":"Selector","type":"s","default":"","description":"used to fullscreen a desired element"}},"attributesOrder":["Selector"],"events":{"toggleFullscreen":{"scope":"local","name":"toggleFullscreen","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Fullscreen"}},ComponentFullscreen);VAPI.ScriptRegistry.registerScript({"id":"hmd_renderer_script","name":"HMD Effect","properties":{"description":"Enables a head-mounted display effect (e.g. for Oculus Rift) on this camera.","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/HMDEffect"}},ComponentHMDEffect);VAPI.ScriptRegistry.registerScript({"id":"importance_sampler_convolver","name":"Importance Sampling Convolver","properties":{"attributes":{"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["autoLoad"],"events":{},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ImportanceSamplerConvolver"}},ComponentImportanceSamplerConvolver);VAPI.ScriptRegistry.registerScript({"id":"input_controller_component","name":"Input Controller","properties":{"attributes":{"mouseEvents":{"name":"mouseEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable mouse events?"},"scroll":{"type":"b","default":true,"description":"Listen to scroll events?"},"scroll_preventDefault":{"type":"b","default":false,"description":"Prevent default scroll behaviour?"},"move":{"type":"b","default":true,"description":"Listen to mouse move events?"},"down":{"type":"b","default":true,"description":"Listen to mouse down event?"},"down_preventDefault":{"type":"b","default":false,"description":"Prevent default mouse down behaviour?"},"up":{"type":"b","default":true,"description":"Listen to mouse up event?"},"double_click":{"type":"b","default":true,"description":"Listen to double click event?"},"leave":{"type":"b","default":true,"description":"Listen to mouse leave event"},"contextMenu":{"type":"b","default":true,"description":"Listen for the context menu event? (ie, right click)"},"contextMenu_preventDefault":{"type":"b","default":true,"description":"Prevent context menu default behaviour (ie, the context menu popping open)"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the mouse are picked up by the Event Handler"}}},"touchEvents":{"name":"touchEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable touch events?"},"start":{"type":"b","default":true,"description":"Listen for Touch Start"},"start_preventDefault":{"type":"b","default":true,"description":"Prevent default behaviour of touch start event"},"end":{"type":"b","default":true,"description":"Listen for touch end event"},"cancel":{"type":"b","default":true,"description":"Listen for touch cancel event"},"leave":{"type":"b","default":true,"description":"Listen for touch leave event"},"move":{"type":"b","default":true,"description":"Listen for touch move event"},"move_preventDefault":{"type":"b","default":true,"description":"Prevent default move behaviour (ie, dragging the window)"},"dragBufferDistance":{"type":"f","default":4,"name":"Drag Buffer Distance","description":"The distance from initial touch down that you need to move your finger before a drag event is fired, in pixels"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the touches are picked up by the Event Handler"}}},"keyEvents":{"name":"keyEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable keyboard events"},"down":{"type":"b","default":true,"description":"Listen to key down events"},"up":{"type":"b","default":true,"description":"Listen to key up events"},"preventDefault":{"type":"b","default":false,"description":"Prevent default keypress behaviour"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the keys are picked up by the Event Handler"}}},"vrEvents":{"name":"vrEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable events from VR devices"},"position":{"type":"b","default":true,"description":"Enable events for sensor position changes (when available from device)"},"orientation":{"type":"b","default":true,"description":"Enable events for sensor orientation changes"}}}},"attributesOrder":["mouseEvents","touchEvents","keyEvents","vrEvents"],"events":{"mouse_down_left":{"scope":"global","name":"mouse_down_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_right":{"scope":"global","name":"mouse_down_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_middle":{"scope":"global","name":"mouse_down_middle","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_left":{"scope":"global","name":"mouse_up_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_right":{"scope":"global","name":"mouse_up_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_middle":{"scope":"global","name":"mouse_up_middle","action":false,"category":"Input - Mouse","parameters":[]},"keypress_a":{"scope":"global","name":"keypress_a","action":false,"category":"Input - Keys","parameters":[]},"keypress_b":{"scope":"global","name":"keypress_b","action":false,"category":"Input - Keys","parameters":[]},"keypress_c":{"scope":"global","name":"keypress_c","action":false,"category":"Input - Keys","parameters":[]},"keypress_d":{"scope":"global","name":"keypress_d","action":false,"category":"Input - Keys","parameters":[]},"keypress_f":{"scope":"global","name":"keypress_f","action":false,"category":"Input - Keys","parameters":[]},"keypress_g":{"scope":"global","name":"keypress_g","action":false,"category":"Input - Keys","parameters":[]},"keypress_e":{"scope":"global","name":"keypress_e","action":false,"category":"Input - Keys","parameters":[]},"keypress_h":{"scope":"global","name":"keypress_h","action":false,"category":"Input - Keys","parameters":[]},"keypress_i":{"scope":"global","name":"keypress_i","action":false,"category":"Input - Keys","parameters":[]},"keypress_j":{"scope":"global","name":"keypress_j","action":false,"category":"Input - Keys","parameters":[]},"keypress_k":{"scope":"global","name":"keypress_k","action":false,"category":"Input - Keys","parameters":[]},"keypress_l":{"scope":"global","name":"keypress_l","action":false,"category":"Input - Keys","parameters":[]},"keypress_m":{"scope":"global","name":"keypress_m","action":false,"category":"Input - Keys","parameters":[]},"keypress_n":{"scope":"global","name":"keypress_n","action":false,"category":"Input - Keys","parameters":[]},"keypress_o":{"scope":"global","name":"keypress_o","action":false,"category":"Input - Keys","parameters":[]},"keypress_p":{"scope":"global","name":"keypress_p","action":false,"category":"Input - Keys","parameters":[]},"keypress_q":{"scope":"global","name":"keypress_q","action":false,"category":"Input - Keys","parameters":[]},"keypress_r":{"scope":"global","name":"keypress_r","action":false,"category":"Input - Keys","parameters":[]},"keypress_s":{"scope":"global","name":"keypress_s","action":false,"category":"Input - Keys","parameters":[]},"keypress_t":{"scope":"global","name":"keypress_t","action":false,"category":"Input - Keys","parameters":[]},"keypress_u":{"scope":"global","name":"keypress_u","action":false,"category":"Input - Keys","parameters":[]},"keypress_v":{"scope":"global","name":"keypress_v","action":false,"category":"Input - Keys","parameters":[]},"keypress_w":{"scope":"global","name":"keypress_w","action":false,"category":"Input - Keys","parameters":[]},"keypress_x":{"scope":"global","name":"keypress_x","action":false,"category":"Input - Keys","parameters":[]},"keypress_y":{"scope":"global","name":"keypress_y","action":false,"category":"Input - Keys","parameters":[]},"keypress_z":{"scope":"global","name":"keypress_z","action":false,"category":"Input - Keys","parameters":[]},"keypress_up_arrow":{"scope":"global","name":"keypress_up_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_down_arrow":{"scope":"global","name":"keypress_down_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_left_arrow":{"scope":"global","name":"keypress_left_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_right_arrow":{"scope":"global","name":"keypress_right_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_space":{"scope":"global","name":"keypress_space","action":false,"category":"Input - Keys","parameters":[]},"touch_start":{"scope":"global","name":"touch_start","action":false,"category":"Input - Touch","parameters":[]},"touch_end":{"scope":"global","name":"touch_end","action":false,"category":"Input - Touch","parameters":[]},"vr_orientation":{"scope":"global","name":"vr_orientation","action":false,"category":"Input - VR","parameters":[]},"vr_position":{"scope":"global","name":"vr_position","action":false,"category":"Input - VR","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Input","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/InputController"}},ComponentInputController);VAPI.ScriptRegistry.registerScript({"id":"animation","name":"Keyframe Animation","properties":{"attributes":{"autoPlay":{"name":"autoPlay","type":"b","description":"Play the animation once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the animation","default":true},"speed":{"name":"speed","type":"f","description":"Playback speed","default":1,"min":0,"max":100},"startTime":{"name":"startTime","type":"f","description":"Begin playback at this time offset","default":0,"min":0},"weight":{"name":"weight","type":"f","description":"Blending weight","default":1,"min":0,"max":1},"asset":{"name":"asset","type":"asset","description":"Animation asset","default":null,"filter":{"animation":true}},"take":{"name":"take","type":"ddfn","description":"The name of the animation take","default":null,"optionsFn":"getTakes"}},"attributesOrder":["autoPlay","loop","speed","startTime","weight","asset","take"],"events":{"playKeyframeAnimation":{"scope":"local","name":"playKeyframeAnimation","action":true,"category":"Animation","parameters":[{"name":"asset","type":"asset","description":"The animation asset to play.","default":null,"filter":{"animation":true}},{"name":"take","type":"s","description":"The animation take to play.","default":null},{"name":"loop","type":"b","description":"Continuously replay the animation.","default":true},{"name":"speed","type":"f","description":"Playback speed.","default":1,"min":0,"max":100},{"name":"startTime","type":"f","description":"Begin playback at this time offset.","default":0,"min":0}]},"endKeyframeAnimation":{"scope":"local","name":"endKeyframeAnimation","action":false,"category":"Animation","parameters":[]},"pauseKeyframeAnimation":{"scope":"local","name":"pauseKeyframeAnimation","action":true,"category":"Animation","parameters":[]},"stopKeyframeAnimation":{"scope":"local","name":"stopKeyframeAnimation","action":true,"category":"Animation","parameters":[]},"toggleKeyframeAnimation":{"scope":"local","name":"toggleKeyframeAnimation","action":true,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/KeyframeAnimation"}},ComponentKeyframeAnimation);VAPI.ScriptRegistry.registerScript({"id":"lookat_component","name":"Look At Target","properties":{"description":"A component that automatically points the object at a target. This can be used for billboarding an object to the camera, making a character look at another, etc.","attributes":{"target":{"name":"target","type":"object","description":"The object that you want this object to point towards. e.g. for billboarding, this would be the camera used to render the scene."},"local":{"name":"local","type":"b","description":"If toggled, whatever rotation you have already applied to this object will be taken into account.","default":false},"showPreview":{"name":"showPreview","type":"b","description":"Run the lookAt in the editor.","default":true}},"attributesOrder":["target","local","showPreview"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/LookAtTarget"}},ComponentLookAtTarget);VAPI.ScriptRegistry.registerScript({"id":"normal_map_generator_component","name":"Normal Map Generator","properties":{"attributes":{"bumpTexture":{"name":"bumpTexture","type":"asset","filter":{"renderTexture2D":true,"texture2D":true}},"smoothness":{"name":"smoothness","type":"f","slider":true,"default":0.25,"min":0.0001,"max":1},"spread":{"name":"spread","type":"f","slider":true,"default":4,"min":1,"max":10},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["bumpTexture","smoothness","spread","autoLoad"],"events":{"renderNormalMap":{"scope":"local","name":"renderNormalMap","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/NormalMapGenerator"}},ComponentNormalMapGenerator);VAPI.ScriptRegistry.registerScript({"id":"object_animator_component","name":"Object Animator","properties":{"attributes":{},"attributesOrder":[],"events":{"playAnimateAlongCurve":{"scope":"local","name":"playAnimateAlongCurve","action":true,"category":"Animation","parameters":[{"name":"curve","type":"object","componentFilter":{"Curve":true}},{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"orientation","description":"Orient the object following the curve to either the direction of the curve or to the objects defining the curve.","type":"dd","default":"toCurve","options":{"None":"None","To Curve":"toCurve","To Nodes":"toNode"}},{"name":"loop","type":"b","description":"","default":false}]},"playAnimateToObject":{"scope":"local","name":"playAnimateToObject","action":true,"category":"Animation","parameters":[{"name":"object","type":"object","default":null},{"name":"animationTime","type":"f","description":"Total time that the animation will take. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"update orientation","type":"b","default":true}]},"playAnimateTranslation":{"scope":"local","name":"playAnimateTranslation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-1,"max":1},{"name":"objectUsage","type":"dd","description":"Specify what part of the animation the current object's position represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"playAnimateRotation":{"scope":"local","name":"playAnimateRotation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"angularVelocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-100,"max":100},{"name":"objectUsage","type":"dd","description":"Specify what part of the animation the current object's rotation represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}},{"name":"axisOrder","type":"dd","description":"Specify the axis order that the angular velocity will be applied in.","default":"YXZ","options":{"XYZ":"XYZ","YXZ":"YXZ","ZXY":"ZXY","XZY":"XZY","YZX":"YZX","ZYX":"ZYX"}}]},"playAnimateScale":{"scope":"local","name":"playAnimateScale","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-10,"max":10},{"name":"objectUsage","type":"dd","description":"Specify what part of the animation the current object's scale represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"pauseCurveAnimation":{"scope":"local","name":"pauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"stopCurveAnimation":{"scope":"local","name":"stopCurveAnimation","action":true,"category":"Animation","parameters":[]},"unpauseCurveAnimation":{"scope":"local","name":"unpauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"endAnimateAlongCurve":{"scope":"local","name":"endAnimateAlongCurve","action":false,"category":"Animation","parameters":[]},"endAnimateToObject":{"scope":"local","name":"endAnimateToObject","action":false,"category":"Animation","parameters":[]},"endAnimateTranslation":{"scope":"lcoal","name":"endAnimateTranslation","action":false,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["Object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ObjectAnimator"}},ComponentObjectAnimator);VAPI.ScriptRegistry.registerScript({"id":"object_picker","name":"Object Picker","properties":{"attributes":{"pickTrigger":{"name":"pickTrigger","type":"dd","description":"What mouse action will trigger the pick?","default":"leftMouseClick","options":{"Left Mouse Click":"leftMouseClick","Middle Mouse Click":"middleMouseClick","Right Mouse Click":"rightMouseClick","Left Mouse Down":"leftMouseDown","Middle Mouse Down":"middleMouseDown","Right Mouse Down":"rightMouseDown","Left Mouse Up":"leftMouseUp","Middle Mouse Up":"middleMouseUp","Right Mouse Up":"rightMouseUp"}},"enableHoverByDefault":{"name":"enableHoverByDefault","type":"b","default":false,"advanced":true,"description":"Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact."},"hoverFrameSkip":{"name":"hoverFrameSkip","type":"i","description":"Skip this many frames inbetween hover checks.","default":1,"min":0,"max":60}},"attributesOrder":["pickTrigger","enableHoverByDefault","hoverFrameSkip"],"events":{"pick":{"scope":"other","name":"pick","action":false,"category":"General","parameters":[]},"beginHover":{"scope":"other","name":"beginHover","action":false,"category":"General","parameters":[]},"endHover":{"scope":"other","name":"endHover","action":false,"category":"General","parameters":[]}},"externalDependencies":[],"filter":["Scene"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ObjectPicker"}},ComponentObjectPicker);VAPI.ScriptRegistry.registerScript({"id":"orbit_camera_controller","name":"Orbit Camera Controller","properties":{"description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.4,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":800,"max":20000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":10,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":500,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/OrbitCameraController"}},ComponentOrbitCameraController);VAPI.ScriptRegistry.registerScript({"id":"panorama_to_cubemap_script","name":"Panorama To Cube Map","properties":{"description":"A controller that allows a camera to easily orbit a target object.","attributes":{"panoramaTexture":{"name":"panoramaTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true},"description":"The texture to convert to a cube map."}},"attributesOrder":["panoramaTexture"],"events":{},"externalDependencies":[],"filter":["renderTextureCube"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PanoramaToCubeMap"}},ComponentPanoramaToCubeMap);VAPI.ScriptRegistry.registerScript({"id":"preview_axis_rotation","name":"Preview Axis Rotation","properties":{"description":"Set the rotation of any axis.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we rotate the object, if a transition is triggered","default":0.4,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"User Defined","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewAxisRotation"}},ComponentPreviewAxisRotation);VAPI.ScriptRegistry.registerScript({"id":"preview_camera_controller","name":"Preview Camera Controller","properties":{"description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":800,"max":20000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":10,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":500,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"resetOrbitCameraController":{"scope":"local","name":"resetOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewCameraController"}},ComponentPreviewCameraController);VAPI.ScriptRegistry.registerScript({"id":"preview_camera_focus","name":"Preview Camera Focus","properties":{"description":"A controller that allows a camera to easily orbit a target object.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we move to focus on the target","default":0.8,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewCameraFocus"}},ComponentPreviewCameraFocus);VAPI.ScriptRegistry.registerScript({"id":"preview_vr_controls","name":"Preview VR Controls","properties":{"description":"A controller for the preview camera when using a VR device.","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewVRControls"}},ComponentPreviewVRControls);VAPI.ScriptRegistry.registerScript({"id":"reflection_capture_planar","name":"Reflection Capture Plane","properties":{"attributes":{"reflectionTexture":{"name":"reflectionTexture","type":"asset","description":"The RenderTexture2D to render the reflection to.","filter":{"renderTexture2D":true}},"clipBias":{"name":"clipBias","type":"f","description":"Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.","default":0.01},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection. Default is 0.","default":0}},"attributesOrder":["reflectionTexture","clipBias","updateFrameInterval"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ReflectionCapturePlane"}},ComponentReflectionCapturePlane);VAPI.ScriptRegistry.registerScript({"id":"camera_filters_script","name":"Render Filters","properties":{"description":"Overrides the filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the \"Adaptive\" feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderFilters"}},ComponentRenderFilters);VAPI.ScriptRegistry.registerScript({"id":"render_modes","name":"Render Modes","properties":{"attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderModes"}},ComponentRenderModes);VAPI.ScriptRegistry.registerScript({"id":"render_target_viewer","name":"Render Target Viewer","properties":{"attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"50%"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"50%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"50%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":9}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderTargetViewer"}},ComponentRenderTargetViewer);VAPI.ScriptRegistry.registerScript({"id":"render_view_component","name":"Render View","properties":{"attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"0px"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"100%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"100%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":0},"clearColor":{"name":"clearColor","type":"b","description":"","default":false,"advanced":false},"clearDepth":{"name":"clearDepth","type":"b","description":"","default":true,"advanced":false},"renderTarget":{"name":"renderTarget","type":"asset","description":"","filter":{"renderTexture2D":true},"default":null,"advanced":false},"enablePreRenderFunctions":{"name":"enablePreRenderFunctions","type":"b","description":"Run pre-render functions with this view. These include things like real-time reflections, which need to be rendered for each view separately.","default":true,"advanced":true},"enableShadows":{"name":"enableShadows","type":"b","description":"Render shadows for this view.","default":true,"advanced":true}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup","clearColor","clearDepth","renderTarget","enablePreRenderFunctions","enableShadows"],"events":{"enableRenderView":{"scope":"local","name":"enableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"setViewport":{"scope":"local","name":"setViewport","category":"Rendering","parameters":[{"name":"viewportLeft","description":"Left position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportBottom","description":"Bottom position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportWidth","description":"Width of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"viewportHeight","description":"Height of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"animationTime","type":"f","description":"Animate the change in viewport over this many seconds.","default":0}]},"disableRenderView":{"scope":"local","name":"disableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"toggleRenderView":{"scope":"local","name":"toggleRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]}},"externalDependencies":[],"filter":["camera"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderView"}},ComponentRenderView);VAPI.ScriptRegistry.registerScript({"id":"box3d_renderer","name":"Renderer","properties":{"attributes":{"renderOnDemand":{"name":"renderOnDemand","type":"b","description":"When this is enabled, rendering will only happen when requested instead of every frame.","defualt":true},"antialias":{"name":"antialias","type":"b","description":"Enable or disable antialiasing of the rendered scene.","default":true},"preserveDrawingBuffer":{"name":"preserveDrawingBuffer","type":"b","description":"Tells the browser to preserve drawing buffers between frames so that they are available to be read by the application.","default":true},"autoClear":{"name":"autoClear","type":"b","description":"Automatically clear the render target before each render.","default":false},"devicePixelRatio":{"name":"devicePixelRatio","type":"dd","default":0,"options":{"Device Default":0,"One":1,"Two":2},"description":"Override the default pixel ratio of the system. Higher values will cause rendering at higher resolution while lower values will force rendering at lower resolutions. You can also set this to use the device default (mobile devices usually have values greater than 1)."},"clearColor":{"name":"clearColor","type":"c","description":"When the render target is cleared, this colour will be used","default":0},"clearAlpha":{"name":"clearAlpha","type":"f","description":"When the render target is cleared, this value will be used to clear the transparency","default":0,"min":0,"max":1,"step":0.001},"precision":{"name":"precision","type":"dd","description":"The default floating point and integer precision to be used by the GPU.","default":"mediump","options":{"Low":"lowp","Medium":"mediump","High":"highp"}},"shadowsEnabled":{"name":"shadowsEnabled","type":"b","description":"Enable or disable rendering of shadows.","default":true},"shadowsEnabledMobile":{"name":"shadowsEnabledMobile","type":"b","description":"Enable or disable rendering of shadows on mobile devices.","default":false},"shadowType":{"name":"shadowType","type":"dd","options":{"Soft PCF":2,"PCF":1,"No Filtering":0},"default":2},"shadowCullFace":{"name":"shadowCullFace","type":"dd","description":"Shadows will or will not automatically be updated every frame.","options":{"None":0,"Front":2,"Back":1},"default":2},"shadowDebug":{"name":"shadowDebug","type":"b","description":"Enable or disable debug rendering, showing the different shadow cascade sizes.","default":false},"logarithmicDepthBuffer":{"name":"logarithmicDepthBuffer","type":"b","description":"Use logarithmic z values while rendering.","default":true}},"attributesOrder":["renderOnDemand","antialias","preserveDrawingBuffer","autoClear","devicePixelRatio","clearColor","clearAlpha","precision","shadowsEnabled","shadowsEnabledMobile","shadowType","shadowCullFace","shadowDebug","logarithmicDepthBuffer"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Renderer"}},ComponentRenderer);VAPI.ScriptRegistry.registerScript({"id":"rotate_component","name":"Rotate","properties":{"description":"A simple component to rotate an object.","attributes":{"autoRotate":{"name":"autoRotate","type":"b","description":"Automatically start the rotation upon load.","default":true},"previewRotation":{"name":"previewRotation","type":"b","description":"Show the rotation in the editor.","default":true},"rotation":{"name":"rotation","type":"v3","description":"Amount of rotation per second about the x, y and z axes.","default":{"x":0,"y":0.5,"z":0}},"local":{"name":"local","type":"b","description":"Rotate relative to the local quaternion of the object. If false, the rotation will be relative to the world.","default":false}},"attributesOrder":["autoRotate","previewRotation","rotation","local"],"events":{"startRotate":{"scope":"local","name":"startRotate","action":true,"category":"Rotate","parameters":[]},"stopRotate":{"scope":"local","name":"stopRotate","action":true,"category":"Rotate","parameters":[]},"toggleRotate":{"scope":"local","name":"toggleRotate","action":true,"category":"Rotate","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Rotate"}},ComponentRotate);VAPI.ScriptRegistry.registerScript({"id":"loader_component","name":"Scene Loader","properties":{"description":"A simple component to load a scene and display progress for it.","attributes":{"scene":{"name":"scene","type":"asset","description":"The scene to load.","filter":{"scene":true}}},"attributesOrder":["scene"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Loading","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SceneLoader"}},ComponentSceneLoader);VAPI.ScriptRegistry.registerScript({"id":"shot_manager_component","name":"Shots","properties":{"description":"This component allows you to define a series of cinematic camera shots.","attributes":{"fadeIn":{"name":"fadeIn","type":"f","description":"The percentage of the animation spent fading in.","slider":true,"default":0.25,"min":0,"max":1},"cameras":{"name":"cameras","type":"a","description":"The list of cameras that define each shot.","hidden":true,"subType":{"type":"custom","attributes":{"cameraObject":{"type":"object","filter":{"camera":true}},"name":{"type":"s"},"description":{"type":"s"}}}}},"attributesOrder":["fadeIn","cameras"],"events":{"beginShot":{"scope":"other","name":"beginShot","filter":["camera"],"action":false,"category":"General","parameters":[]},"endShot":{"scope":"other","name":"endShot","filter":["camera"],"action":false,"category":"General","parameters":[]},"shotManager::play":{"scope":"global","name":"shotManager::play","action":true,"category":"General","parameters":[{"name":"shotNumber","type":"i","description":"The index of shot that you want to play.","default":0}]},"playShot":{"scope":"local","name":"playShot","action":true,"category":"General","parameters":[{"name":"shotNumber","type":"i","description":"The index of shot that you want to play.","default":0}]}},"externalDependencies":[],"filter":["Scene"],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Shots"}},ComponentShots);VAPI.ScriptRegistry.registerScript({"id":"simplex_noise_component","name":"Simplex Noise Generator","properties":{"attributes":{"layerAmplitude":{"name":"layerAmplitude","type":"v4","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},"layerScale":{"name":"layerScale","type":"v4","default":{"x":0.5,"y":2,"z":3,"w":4}},"scale":{"name":"scale","type":"v2","default":{"x":1,"y":1}},"offset":{"name":"offset","type":"v2","default":{"x":0,"y":0}},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["layerAmplitude","layerScale","scale","offset","autoLoad"],"events":{"renderNoise":{"scope":"local","name":"renderNoise","action":true,"category":"Rendering","parameters":[]},"changeNoiseValues":{"scope":"local","name":"changeNoiseValues","action":true,"category":"Rendering","parameters":[{"name":"layerAmplitude","type":"v4","description":"","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},{"name":"layerScale","type":"v4","description":"","default":{"x":0.5,"y":2,"z":3,"w":4}},{"name":"scale","type":"v2","description":"","default":{"x":1,"y":1}},{"name":"offset","type":"v2","description":"","default":{"x":0,"y":0}}]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SimplexNoiseGenerator"}},ComponentSimplexNoiseGenerator);VAPI.ScriptRegistry.registerScript({"id":"skybox_renderer","name":"Skybox","properties":{"attributes":{"size":{"name":"size","type":"f","default":100000,"min":1,"max":1000000},"skyboxTexture":{"name":"skyboxTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":"white_cube"},"skyboxFogPower":{"name":"skyboxFogPower","type":"f","description":"Controls the rate that fog decreases with height in the skybox.","default":0.8,"min":0,"max":1},"skyboxFogScale":{"name":"skyboxFogScale","type":"f","description":"Uniformly scales the amount of fog in the skybox.","default":0.5,"min":0,"max":1}},"attributesOrder":["size","skyboxTexture","skyboxFogPower","skyboxFogScale"],"events":{"setSkyboxTexture":{"scope":"local","name":"setSkyboxTexture","action":true,"parameters":[{"name":"texture","type":"asset","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"description":"The new skybox texture to use.","default":null}]}},"externalDependencies":[],"filter":["scene"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Skybox"}},ComponentSkybox);VAPI.ScriptRegistry.registerScript({"id":"spheremap_capture","name":"Sphere-Map Capture","properties":{"attributes":{"sphereTexture":{"name":"sphereTexture","type":"asset","description":"The RenderTexture2D to render the reflection to.","filter":{"renderTexture2D":true},"default":null},"near":{"name":"near","type":"f","description":"The closest distance to this object to render. Adjust this to avoid rendering local geometry to the texture.","default":0.25},"far":{"name":"far","type":"f","description":"The furthest distance from this object to render.","default":14000},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection. Default is 0.","default":0}},"attributesOrder":["sphereTexture","near","far","updateFrameInterval"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SphereMapCapture"}},ComponentSphereMapCapture);VAPI.ScriptRegistry.registerScript({"id":"text_renderer_component","name":"Text Renderer","properties":{"description":"Render the desired text to the texture we are attached to","attributes":{"text":{"name":"text","type":"s","default":"My Text","description":"Text you want to display"},"fontColor":{"name":"fontColor","type":"c","default":16777215,"description":"Color of the text"},"fontFamily":{"name":"fontFamily","type":"s","default":"Calibri","description":"Font family to render"},"pointSize":{"name":"pointSize","type":"i","default":48,"description":"Font size","min":2,"max":100}},"attributesOrder":["text","fontColor","fontFamily","pointSize"],"events":{},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Text","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/TextRenderer"}},ComponentTextRenderer)}}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(95),__webpack_require__(115),__webpack_require__(96),__webpack_require__(97),__webpack_require__(98),__webpack_require__(99),__webpack_require__(100),__webpack_require__(101),__webpack_require__(102),__webpack_require__(103),__webpack_require__(104),__webpack_require__(105),__webpack_require__(106),__webpack_require__(107),__webpack_require__(108),__webpack_require__(109),__webpack_require__(110),__webpack_require__(111),__webpack_require__(112),__webpack_require__(113),__webpack_require__(114),__webpack_require__(93),__webpack_require__(116),__webpack_require__(117),__webpack_require__(118),__webpack_require__(119),__webpack_require__(120),__webpack_require__(121),__webpack_require__(122),__webpack_require__(123),__webpack_require__(124),__webpack_require__(125),__webpack_require__(126),__webpack_require__(127),__webpack_require__(128),__webpack_require__(129),__webpack_require__(130),__webpack_require__(131),__webpack_require__(132),__webpack_require__(133),__webpack_require__(134)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Component2DTextLabel,ComponentAnnotation,ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentCustomControl,ComponentDebugConsoleDisplay,ComponentDebugTextureRender,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderTargetViewer,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentShots,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentSphereMapCapture,ComponentTextRenderer){return function(VAPI){VAPI.ScriptRegistry.registerScript({"id":"text_label_component","name":"2D Text Label","properties":{"description":"Simply render some text to the screen using HTML.","attributes":{"text":{"name":"text","type":"s","default":"2D Font Label","description":"The text to render"}},"attributesOrder":["text"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Text","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/2DTextLabel"}},Component2DTextLabel);VAPI.ScriptRegistry.registerScript({"id":"annotation_component","name":"Annotation","properties":{"description":"A way of putting notes or descriptions into your scenes. Places a pin and tag. Hides when obscured by other objects","attributes":{"Title":{"name":"Title","type":"s","default":"Annotation Title","description":"Title to display on the annotation tag"},"Description":{"name":"Description","type":"s","default":"A description for your Annotation","description":"The description to display on your tag"},"ShowDescription":{"name":"ShowDescription","type":"b","default":false,"description":"whether or not we show the description for the tag"},"ShowLine":{"name":"ShowLine","type":"b","default":true,"description":"Whether or not we show the line"},"Pin":{"name":"Pin","type":"custom","description":"properties of the pin","attributes":{"visible":{"type":"b","name":"Visible","description":"If enabled, a pin object exists in the scene","default":false},"autoScale":{"type":"b","name":"Visible","description":"If enabled, the pin will scale to always be easily selected","default":true},"material":{"type":"asset","name":"Material","description":"The material to color the pin with.","default":null,"filter":{"material":true}}}},"Colors":{"name":"Colors","type":"custom","description":"Use some preset styles created by us, or use your own!","attributes":{"styles":{"type":"dd","default":2,"options":{"Light 1":0,"Light 2":1,"Dark 1":2,"Dark 2":3,"Vibrant 1":4,"Vibrant 2":5},"description":"Pick the style you want the Annotation to use","advanced":false}}}},"attributesOrder":["Title","Description","ShowDescription","ShowLine","Pin","Colors"],"events":{"showAnnotation":{"scope":"local","name":"showAnnotation","action":true,"category":"Annotation","parameters":[]},"showAnnotationPin":{"scope":"local","name":"showAnnotationPin","action":true,"category":"Annotation","parameters":[]},"showAnnotationLine":{"scope":"local","name":"showAnnotationLine","action":true,"category":"Annotation","parameters":[]},"showAnnotationDescription":{"scope":"local","name":"showAnnotationDescription","action":true,"category":"Annotation","parameters":[]},"showAnnotationTag":{"scope":"local","name":"showAnnotationTag","action":true,"category":"Annotation","parameters":[]},"hideAnnotation":{"scope":"local","name":"hideAnnotation","action":true,"category":"Annotation","parameters":[]},"hideAnnotationPin":{"scope":"local","name":"hideAnnotationPin","action":true,"category":"Annotation","parameters":[]},"hideAnnotationLine":{"scope":"local","name":"hideAnnotationLine","action":true,"category":"Annotation","parameters":[]},"hideAnnotationDescription":{"scope":"local","name":"hideAnnotationDescription","action":true,"category":"Annotation","parameters":[]},"hideAnnotationTag":{"scope":"local","name":"hideAnnotationTag","action":true,"category":"Annotation","parameters":[]},"toggleAnnotation":{"scope":"local","name":"toggleAnnotation","action":true,"category":"Annotation","parameters":[]},"enableAnnotation":{"scope":"local","name":"enableAnnotation","action":true,"category":"Annotation","parameters":[]},"disableAnnotation":{"scope":"local","name":"disableAnnotation","action":true,"category":"Annotation","parameters":[]},"changeAnnotationPinMaterial":{"scope":"local","name":"changeAnnotationPinMaterial","action":true,"category":"Annotation","parameters":[{"name":"MaterialAsset","type":"asset","description":"The material to color the pin head with.","default":null,"filter":{"material":true}}]}},"externalDependencies":[],"filter":["object"],"category":"Annotation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Annotation"}},ComponentAnnotation);VAPI.ScriptRegistry.registerScript({"id":"audio_listener","name":"Audio Listener","properties":{"description":"Audio listener for 3D, positional sound effects","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/AudioListener"}},ComponentAudioListener);VAPI.ScriptRegistry.registerScript({"id":"audio_source","name":"Audio Source","properties":{"description":"Controls playback of audio assets","attributes":{"gain":{"name":"gain","type":"f","description":"Volume control","default":1,"min":0,"max":100},"autoPlay":{"name":"autoPlay","type":"b","description":"Play the audio once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the audio","default":true},"preload":{"name":"preload","type":"b","description":"Load the audio when the component is initialized","default":true},"positional":{"name":"positional","type":"b","description":"Enable/disable 3D, positional audio effects","default":false},"stream":{"name":"stream","type":"b","description":"Stream the audio","default":false},"asset":{"name":"asset","type":"asset","description":"Audio or video asset","default":null,"filter":{"audio":true,"textureVideo":true}}},"attributesOrder":["gain","autoPlay","loop","preload","positional","stream","asset"],"events":{"playAudio":{"scope":"local","name":"playAudio","action":true,"category":"Audio","parameters":[{"name":"offset","type":"f","description":"Defined in seconds","default":0}]},"pauseAudio":{"scope":"local","name":"pauseAudio","action":true,"category":"Audio","parameters":[]},"stopAudio":{"scope":"local","name":"stopAudio","action":true,"category":"Audio","parameters":[]},"toggleAudio":{"scope":"local","name":"toggleAudio","action":true,"category":"Audio","parameters":[]}},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/AudioSource"}},ComponentAudioSource);VAPI.ScriptRegistry.registerScript({"id":"cubemap_capture","name":"Cube-Map Capture","properties":{"attributes":{"cubeTexture":{"name":"cubeTexture","type":"asset","description":"The RenderTextureCube to render the reflection to.","filter":{"renderTextureCube":true},"default":null},"near":{"name":"near","type":"f","description":"The closest distance to this object to render. Adjust this to avoid   rendering local geometry to the texture.","default":25},"far":{"name":"far","type":"f","description":"The furthest distance from this object to render.","default":160000},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection.   Default is 0.","default":0},"renderPosX":{"name":"renderPosX","type":"b","description":"Render this side of the cube.","default":true},"renderNegX":{"name":"renderNegX","type":"b","description":"Render this side of the cube.","default":true},"renderPosY":{"name":"renderPosY","type":"b","description":"Render this side of the cube.","default":true},"renderNegY":{"name":"renderNegY","type":"b","description":"Render this side of the cube.","default":true},"renderPosZ":{"name":"renderPosZ","type":"b","description":"Render this side of the cube.","default":true},"renderNegZ":{"name":"renderNegZ","type":"b","description":"Render this side of the cube.","default":true}},"attributesOrder":["cubeTexture","near","far","updateFrameInterval","renderPosX","renderNegX","renderPosY","renderNegY","renderPosZ","renderNegZ"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/CubeMapCapture"}},ComponentCubeMapCapture);VAPI.ScriptRegistry.registerScript({"id":"curve_component","name":"Curve","properties":{"description":"Creates a spline curve that can be used for various things, including making objects follow it. Add controls points to shape the curve.","attributes":{"controlPoints":{"name":"controlPoints","type":"a","subType":{"type":"object"},"description":"The list of objects that define the curve shape."},"closed":{"name":"closed","type":"b","description":"If toggled, the start and end of the curve will be smoothly joined.","default":false}},"attributesOrder":["controlPoints","closed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Curve"}},ComponentCurve);VAPI.ScriptRegistry.registerScript({"id":"custom_control_component","name":"Custom Control","properties":{"attributes":{"name":{"name":"name","type":"s"},"control":{"name":"control","type":"control","default":"","options":{"Button":"button","Toggle":"toggle","List":"list"},"subType":{"type":"s"}}},"attributesOrder":["name","control"],"events":{},"externalDependencies":[],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/CustomControl"}},ComponentCustomControl);VAPI.ScriptRegistry.registerScript({"id":"debug_console_display","name":"Debug Console Display","properties":{"attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugConsoleDisplay"}},ComponentDebugConsoleDisplay);VAPI.ScriptRegistry.registerScript({"id":"debug_texture_render","name":"Debug Texture Render","properties":{"attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"0px"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"100%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"100%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":0}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup"],"events":{},"externalDependencies":[],"filter":["Texture2D","RenderTexture2D"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugTextureRender"}},ComponentDebugTextureRender);VAPI.ScriptRegistry.registerScript({"id":"render_filters_component","name":"Default Filters","properties":{"description":"Stores the default filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false,"description":"Enable tone-mapping."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the 'Adaptive' feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DefaultFilters"}},ComponentDefaultFilters);VAPI.ScriptRegistry.registerScript({"id":"environment","name":"Environment","properties":{"attributes":{"enableSceneLights":{"name":"enableSceneLights","type":"b","description":"","default":true},"envDiffuseTexture":{"name":"envDiffuseTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":null},"envSpecularTexture":{"name":"envSpecularTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":null}},"attributesOrder":["enableSceneLights","envDiffuseTexture","envSpecularTexture"],"events":{},"externalDependencies":[],"filter":["scene"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Environment"}},ComponentEnvironment);VAPI.ScriptRegistry.registerScript({"id":"event_handler_component","name":"Event Handler","properties":{"attributes":{"listen":{"name":"listen","type":"event","description":"The event to listen for. When this event is captured, all of the defined trigger events will be fired."},"triggers":{"name":"triggers","type":"a","subType":{"type":"event"},"description":"Fire each of these events in response to the captured listen event."}},"attributesOrder":["listen","triggers"],"events":{},"externalDependencies":[],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/EventHandler"}},ComponentEventHandler);VAPI.ScriptRegistry.registerScript({"id":"exploder_component","name":"Exploder","properties":{"description":"Explodes your objects and their hierarchies into different formations. Great for showing off parts in a model!","attributes":{"Time":{"name":"Time","type":"f","default":1.5,"description":"The amount of time to explode and contract the child meshes"},"Scale":{"name":"Scale","type":"v3","default":{"x":2,"y":2,"z":2},"description":"The scale of the explosion"},"Formation":{"name":"Formation","type":"dd","description":"Formation to use when exploding the hierarchy of this object.","default":"Scale","options":{"Circle":"Circle","Square Grid":"Grid","Scale Out":"Scale"}}},"attributesOrder":["Time","Scale","Formation"],"events":{"playExplode":{"scope":"local","name":"playExplode","action":true,"category":"Exploder","parameters":[]},"playContract":{"scope":"local","name":"playContract","action":true,"category":"Exploder","parameters":[]},"toggleExploder":{"scope":"local","name":"toggleExploder","action":true,"category":"Exploder","parameters":[]},"resetExploder":{"scope":"local","name":"resetExploder","action":true,"category":"Exploder","parameters":[]},"useCircleExplode":{"scope":"local","name":"useCircleExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useGridExplode":{"scope":"local","name":"useGridExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useScaleOutExplode":{"scope":"local","name":"useScaleOutExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":2,"y":2,"z":2}}]},"beginExplode":{"scope":"other","name":"beginExplode","action":false,"category":"Exploder","parameters":[]},"endExplode":{"scope":"other","name":"endExplode","action":false,"category":"Exploder","parameters":[]},"beginContract":{"scope":"other","name":"beginContract","action":false,"category":"Exploder","parameters":[]},"endContract":{"scope":"other","name":"endContract","action":false,"category":"Exploder","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Exploder"}},ComponentExploder);VAPI.ScriptRegistry.registerScript({"id":"free_camera_controller","name":"Free Camera Controller","properties":{"attributes":{"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"min":0,"max":1},"usePointerLock":{"name":"usePointerLock","type":"b","description":"","default":false},"invertX":{"name":"invertX","type":"b","default":false},"invertY":{"name":"invertY","type":"b","default":false},"invertZoom":{"name":"invertZoom","type":"b","default":false},"lookSpeed":{"name":"lookSpeed","type":"f","default":1,"min":0.0001,"max":1000},"movementSpeed":{"name":"movementSpeed","type":"f","default":300,"max":1000,"min":0.01},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.01}},"enablePan":{"name":"enablePan","type":"b","default":true},"enableZoom":{"name":"enableZoom","type":"b","default":true}},"attributesOrder":["inertialDamping","usePointerLock","invertX","invertY","invertZoom","lookSpeed","movementSpeed","pitchAngleBounds","enablePan","enableZoom"],"events":{"enableFreeCameraController":{"scope":"local","name":"enableFreeCameraController","parameters":[]},"disableFreeCameraController":{"scope":"local","name":"disableFreeCameraController","parameters":[]},"toggleFreeCameraController":{"scope":"local","name":"toggleFreeCameraController","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera-Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/FreeCamera"}},ComponentFreeCamera);VAPI.ScriptRegistry.registerScript({"id":"fullscreen_script","name":"Fullscreen","properties":{"description":"Uses fullscreen API to make your app fullscreen! This will fullscreen the canvas' parent element, so your UI can be fullscreened as well! If a selector is provided, then we will fullscreen that element, instead","attributes":{"Selector":{"name":"Selector","type":"s","default":"","description":"used to fullscreen a desired element"}},"attributesOrder":["Selector"],"events":{"toggleFullscreen":{"scope":"local","name":"toggleFullscreen","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Fullscreen"}},ComponentFullscreen);VAPI.ScriptRegistry.registerScript({"id":"hmd_renderer_script","name":"HMD Effect","properties":{"description":"Enables a head-mounted display effect (e.g. for Oculus Rift) on this camera.","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/HMDEffect"}},ComponentHMDEffect);VAPI.ScriptRegistry.registerScript({"id":"input_controller_component","name":"Input Controller","properties":{"attributes":{"mouseEvents":{"name":"mouseEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable mouse events?"},"scroll":{"type":"b","default":true,"description":"Listen to scroll events?"},"scroll_preventDefault":{"type":"b","default":false,"description":"Prevent default scroll behaviour?"},"move":{"type":"b","default":true,"description":"Listen to mouse move events?"},"down":{"type":"b","default":true,"description":"Listen to mouse down event?"},"down_preventDefault":{"type":"b","default":false,"description":"Prevent default mouse down behaviour?"},"up":{"type":"b","default":true,"description":"Listen to mouse up event?"},"double_click":{"type":"b","default":true,"description":"Listen to double click event?"},"leave":{"type":"b","default":true,"description":"Listen to mouse leave event"},"contextMenu":{"type":"b","default":true,"description":"Listen for the context menu event? (ie, right click)"},"contextMenu_preventDefault":{"type":"b","default":true,"description":"Prevent context menu default behaviour (ie, the context menu popping open)"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the mouse are picked up by the Event Handler"}}},"touchEvents":{"name":"touchEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable touch events?"},"start":{"type":"b","default":true,"description":"Listen for Touch Start"},"start_preventDefault":{"type":"b","default":true,"description":"Prevent default behaviour of touch start event"},"end":{"type":"b","default":true,"description":"Listen for touch end event"},"cancel":{"type":"b","default":true,"description":"Listen for touch cancel event"},"leave":{"type":"b","default":true,"description":"Listen for touch leave event"},"move":{"type":"b","default":true,"description":"Listen for touch move event"},"move_preventDefault":{"type":"b","default":true,"description":"Prevent default move behaviour (ie, dragging the window)"},"dragBufferDistance":{"type":"f","default":4,"name":"Drag Buffer Distance","description":"The distance from initial touch down that you need to move your finger before a drag event is fired, in pixels"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the touches are picked up by the Event Handler"}}},"keyEvents":{"name":"keyEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable keyboard events"},"down":{"type":"b","default":true,"description":"Listen to key down events"},"up":{"type":"b","default":true,"description":"Listen to key up events"},"preventDefault":{"type":"b","default":false,"description":"Prevent default keypress behaviour"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the keys are picked up by the Event Handler"}}},"vrEvents":{"name":"vrEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable events from VR devices"},"position":{"type":"b","default":true,"description":"Enable events for sensor position changes (when available from device)"},"orientation":{"type":"b","default":true,"description":"Enable events for sensor orientation changes"}}}},"attributesOrder":["mouseEvents","touchEvents","keyEvents","vrEvents"],"events":{"mouse_down_left":{"scope":"global","name":"mouse_down_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_right":{"scope":"global","name":"mouse_down_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_middle":{"scope":"global","name":"mouse_down_middle","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_left":{"scope":"global","name":"mouse_up_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_right":{"scope":"global","name":"mouse_up_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_middle":{"scope":"global","name":"mouse_up_middle","action":false,"category":"Input - Mouse","parameters":[]},"keypress_a":{"scope":"global","name":"keypress_a","action":false,"category":"Input - Keys","parameters":[]},"keypress_b":{"scope":"global","name":"keypress_b","action":false,"category":"Input - Keys","parameters":[]},"keypress_c":{"scope":"global","name":"keypress_c","action":false,"category":"Input - Keys","parameters":[]},"keypress_d":{"scope":"global","name":"keypress_d","action":false,"category":"Input - Keys","parameters":[]},"keypress_f":{"scope":"global","name":"keypress_f","action":false,"category":"Input - Keys","parameters":[]},"keypress_g":{"scope":"global","name":"keypress_g","action":false,"category":"Input - Keys","parameters":[]},"keypress_e":{"scope":"global","name":"keypress_e","action":false,"category":"Input - Keys","parameters":[]},"keypress_h":{"scope":"global","name":"keypress_h","action":false,"category":"Input - Keys","parameters":[]},"keypress_i":{"scope":"global","name":"keypress_i","action":false,"category":"Input - Keys","parameters":[]},"keypress_j":{"scope":"global","name":"keypress_j","action":false,"category":"Input - Keys","parameters":[]},"keypress_k":{"scope":"global","name":"keypress_k","action":false,"category":"Input - Keys","parameters":[]},"keypress_l":{"scope":"global","name":"keypress_l","action":false,"category":"Input - Keys","parameters":[]},"keypress_m":{"scope":"global","name":"keypress_m","action":false,"category":"Input - Keys","parameters":[]},"keypress_n":{"scope":"global","name":"keypress_n","action":false,"category":"Input - Keys","parameters":[]},"keypress_o":{"scope":"global","name":"keypress_o","action":false,"category":"Input - Keys","parameters":[]},"keypress_p":{"scope":"global","name":"keypress_p","action":false,"category":"Input - Keys","parameters":[]},"keypress_q":{"scope":"global","name":"keypress_q","action":false,"category":"Input - Keys","parameters":[]},"keypress_r":{"scope":"global","name":"keypress_r","action":false,"category":"Input - Keys","parameters":[]},"keypress_s":{"scope":"global","name":"keypress_s","action":false,"category":"Input - Keys","parameters":[]},"keypress_t":{"scope":"global","name":"keypress_t","action":false,"category":"Input - Keys","parameters":[]},"keypress_u":{"scope":"global","name":"keypress_u","action":false,"category":"Input - Keys","parameters":[]},"keypress_v":{"scope":"global","name":"keypress_v","action":false,"category":"Input - Keys","parameters":[]},"keypress_w":{"scope":"global","name":"keypress_w","action":false,"category":"Input - Keys","parameters":[]},"keypress_x":{"scope":"global","name":"keypress_x","action":false,"category":"Input - Keys","parameters":[]},"keypress_y":{"scope":"global","name":"keypress_y","action":false,"category":"Input - Keys","parameters":[]},"keypress_z":{"scope":"global","name":"keypress_z","action":false,"category":"Input - Keys","parameters":[]},"keypress_up_arrow":{"scope":"global","name":"keypress_up_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_down_arrow":{"scope":"global","name":"keypress_down_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_left_arrow":{"scope":"global","name":"keypress_left_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_right_arrow":{"scope":"global","name":"keypress_right_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_space":{"scope":"global","name":"keypress_space","action":false,"category":"Input - Keys","parameters":[]},"touch_start":{"scope":"global","name":"touch_start","action":false,"category":"Input - Touch","parameters":[]},"touch_end":{"scope":"global","name":"touch_end","action":false,"category":"Input - Touch","parameters":[]},"vr_orientation":{"scope":"global","name":"vr_orientation","action":false,"category":"Input - VR","parameters":[]},"vr_position":{"scope":"global","name":"vr_position","action":false,"category":"Input - VR","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Input","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/InputController"}},ComponentInputController);VAPI.ScriptRegistry.registerScript({"id":"animation","name":"Keyframe Animation","properties":{"attributes":{"autoPlay":{"name":"autoPlay","type":"b","description":"Play the animation once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the animation","default":true},"speed":{"name":"speed","type":"f","description":"Playback speed","default":1,"min":0,"max":100},"startTime":{"name":"startTime","type":"f","description":"Begin playback at this time offset","default":0,"min":0},"weight":{"name":"weight","type":"f","description":"Blending weight","default":1,"min":0,"max":1},"asset":{"name":"asset","type":"asset","description":"Animation asset","default":null,"filter":{"animation":true}},"take":{"name":"take","type":"ddfn","description":"The name of the animation take","default":null,"optionsFn":"getTakes"}},"attributesOrder":["autoPlay","loop","speed","startTime","weight","asset","take"],"events":{"playKeyframeAnimation":{"scope":"local","name":"playKeyframeAnimation","action":true,"category":"Animation","parameters":[{"name":"asset","type":"asset","description":"The animation asset to play.","default":null,"filter":{"animation":true}},{"name":"take","type":"s","description":"The animation take to play.","default":null},{"name":"loop","type":"b","description":"Continuously replay the animation.","default":true},{"name":"speed","type":"f","description":"Playback speed.","default":1,"min":0,"max":100},{"name":"startTime","type":"f","description":"Begin playback at this time offset.","default":0,"min":0}]},"endKeyframeAnimation":{"scope":"local","name":"endKeyframeAnimation","action":false,"category":"Animation","parameters":[]},"pauseKeyframeAnimation":{"scope":"local","name":"pauseKeyframeAnimation","action":true,"category":"Animation","parameters":[]},"stopKeyframeAnimation":{"scope":"local","name":"stopKeyframeAnimation","action":true,"category":"Animation","parameters":[]},"toggleKeyframeAnimation":{"scope":"local","name":"toggleKeyframeAnimation","action":true,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/KeyframeAnimation"}},ComponentKeyframeAnimation);VAPI.ScriptRegistry.registerScript({"id":"lookat_component","name":"Look At Target","properties":{"description":"A component that automatically points the object at a target. This can be used for billboarding an object to the camera, making a character look at another, etc.","attributes":{"target":{"name":"target","type":"object","description":"The object that you want this object to point towards. e.g. for billboarding, this would be the camera used to render the scene."},"local":{"name":"local","type":"b","description":"If toggled, whatever rotation you have already applied to this object will be taken into account.","default":false},"showPreview":{"name":"showPreview","type":"b","description":"Run the lookAt in the editor.","default":true}},"attributesOrder":["target","local","showPreview"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/LookAtTarget"}},ComponentLookAtTarget);VAPI.ScriptRegistry.registerScript({"id":"normal_map_generator_component","name":"Normal Map Generator","properties":{"attributes":{"bumpTexture":{"name":"bumpTexture","type":"asset","filter":{"renderTexture2D":true,"texture2D":true}},"smoothness":{"name":"smoothness","type":"f","slider":true,"default":0.25,"min":0.0001,"max":1},"spread":{"name":"spread","type":"f","slider":true,"default":4,"min":1,"max":10},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["bumpTexture","smoothness","spread","autoLoad"],"events":{"renderNormalMap":{"scope":"local","name":"renderNormalMap","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/NormalMapGenerator"}},ComponentNormalMapGenerator);VAPI.ScriptRegistry.registerScript({"id":"object_animator_component","name":"Object Animator","properties":{"attributes":{},"attributesOrder":[],"events":{"playAnimateAlongCurve":{"scope":"local","name":"playAnimateAlongCurve","action":true,"category":"Animation","parameters":[{"name":"curve","type":"object","componentFilter":{"Curve":true}},{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"orientation","description":"Orient the object following the curve to either the direction of the curve or to the objects defining the curve.","type":"dd","default":"toCurve","options":{"None":"None","To Curve":"toCurve","To Nodes":"toNode"}},{"name":"loop","type":"b","description":"","default":false}]},"playAnimateToObject":{"scope":"local","name":"playAnimateToObject","action":true,"category":"Animation","parameters":[{"name":"object","type":"object","default":null},{"name":"animationTime","type":"f","description":"Total time that the animation will take. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"update orientation","type":"b","default":true}]},"playAnimateTranslation":{"scope":"local","name":"playAnimateTranslation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-1,"max":1},{"name":"objectUsage","type":"dd","description":"Specify what part of the animation the current object's position represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"playAnimateRotation":{"scope":"local","name":"playAnimateRotation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"angularVelocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-100,"max":100},{"name":"objectUsage","type":"dd","description":"Specify what part of the animation the current object's rotation represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}},{"name":"axisOrder","type":"dd","description":"Specify the axis order that the angular velocity will be applied in.","default":"YXZ","options":{"XYZ":"XYZ","YXZ":"YXZ","ZXY":"ZXY","XZY":"XZY","YZX":"YZX","ZYX":"ZYX"}}]},"playAnimateScale":{"scope":"local","name":"playAnimateScale","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-10,"max":10},{"name":"objectUsage","type":"dd","description":"Specify what part of the animation the current object's scale represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"pauseCurveAnimation":{"scope":"local","name":"pauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"stopCurveAnimation":{"scope":"local","name":"stopCurveAnimation","action":true,"category":"Animation","parameters":[]},"unpauseCurveAnimation":{"scope":"local","name":"unpauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"endAnimateAlongCurve":{"scope":"local","name":"endAnimateAlongCurve","action":false,"category":"Animation","parameters":[]},"endAnimateToObject":{"scope":"local","name":"endAnimateToObject","action":false,"category":"Animation","parameters":[]},"endAnimateTranslation":{"scope":"lcoal","name":"endAnimateTranslation","action":false,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["Object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ObjectAnimator"}},ComponentObjectAnimator);VAPI.ScriptRegistry.registerScript({"id":"object_picker","name":"Object Picker","properties":{"attributes":{"pickTrigger":{"name":"pickTrigger","type":"dd","description":"What mouse action will trigger the pick?","default":"leftMouseClick","options":{"Left Mouse Click":"leftMouseClick","Middle Mouse Click":"middleMouseClick","Right Mouse Click":"rightMouseClick","Left Mouse Down":"leftMouseDown","Middle Mouse Down":"middleMouseDown","Right Mouse Down":"rightMouseDown","Left Mouse Up":"leftMouseUp","Middle Mouse Up":"middleMouseUp","Right Mouse Up":"rightMouseUp"}},"enableHoverByDefault":{"name":"enableHoverByDefault","type":"b","default":false,"advanced":true,"description":"Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact."},"hoverFrameSkip":{"name":"hoverFrameSkip","type":"i","description":"Skip this many frames inbetween hover checks.","default":1,"min":0,"max":60}},"attributesOrder":["pickTrigger","enableHoverByDefault","hoverFrameSkip"],"events":{"pick":{"scope":"other","name":"pick","action":false,"category":"General","parameters":[]},"beginHover":{"scope":"other","name":"beginHover","action":false,"category":"General","parameters":[]},"endHover":{"scope":"other","name":"endHover","action":false,"category":"General","parameters":[]}},"externalDependencies":[],"filter":["Scene"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ObjectPicker"}},ComponentObjectPicker);VAPI.ScriptRegistry.registerScript({"id":"orbit_camera_controller","name":"Orbit Camera Controller","properties":{"description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.4,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":800,"max":20000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":10,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":500,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/OrbitCameraController"}},ComponentOrbitCameraController);VAPI.ScriptRegistry.registerScript({"id":"panorama_to_cubemap_script","name":"Panorama To Cube Map","properties":{"description":"A controller that allows a camera to easily orbit a target object.","attributes":{"panoramaTexture":{"name":"panoramaTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true},"description":"The texture to convert to a cube map."}},"attributesOrder":["panoramaTexture"],"events":{},"externalDependencies":[],"filter":["renderTextureCube"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PanoramaToCubeMap"}},ComponentPanoramaToCubeMap);VAPI.ScriptRegistry.registerScript({"id":"preview_axis_rotation","name":"Preview Axis Rotation","properties":{"description":"Set the rotation of any axis.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we rotate the object, if a transition is triggered","default":0.4,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"User Defined","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewAxisRotation"}},ComponentPreviewAxisRotation);VAPI.ScriptRegistry.registerScript({"id":"preview_camera_controller","name":"Preview Camera Controller","properties":{"description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":800,"max":20000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":10,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":500,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"resetOrbitCameraController":{"scope":"local","name":"resetOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewCameraController"}},ComponentPreviewCameraController);VAPI.ScriptRegistry.registerScript({"id":"preview_camera_focus","name":"Preview Camera Focus","properties":{"description":"A controller that allows a camera to easily orbit a target object.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we move to focus on the target","default":0.8,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewCameraFocus"}},ComponentPreviewCameraFocus);VAPI.ScriptRegistry.registerScript({"id":"preview_vr_controls","name":"Preview VR Controls","properties":{"description":"A controller for the preview camera when using a VR device.","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewVRControls"}},ComponentPreviewVRControls);VAPI.ScriptRegistry.registerScript({"id":"reflection_capture_planar","name":"Reflection Capture Plane","properties":{"attributes":{"reflectionTexture":{"name":"reflectionTexture","type":"asset","description":"The RenderTexture2D to render the reflection to.","filter":{"renderTexture2D":true}},"clipBias":{"name":"clipBias","type":"f","description":"Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.","default":0.01},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection. Default is 0.","default":0}},"attributesOrder":["reflectionTexture","clipBias","updateFrameInterval"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ReflectionCapturePlane"}},ComponentReflectionCapturePlane);VAPI.ScriptRegistry.registerScript({"id":"camera_filters_script","name":"Render Filters","properties":{"description":"Overrides the filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the \"Adaptive\" feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderFilters"}},ComponentRenderFilters);VAPI.ScriptRegistry.registerScript({"id":"render_modes","name":"Render Modes","properties":{"attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderModes"}},ComponentRenderModes);VAPI.ScriptRegistry.registerScript({"id":"render_target_viewer","name":"Render Target Viewer","properties":{"attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"50%"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"50%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"50%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":9}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderTargetViewer"}},ComponentRenderTargetViewer);VAPI.ScriptRegistry.registerScript({"id":"render_view_component","name":"Render View","properties":{"attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"0px"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"100%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"100%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":0},"clearColor":{"name":"clearColor","type":"b","description":"","default":false,"advanced":false},"clearDepth":{"name":"clearDepth","type":"b","description":"","default":true,"advanced":false},"renderTarget":{"name":"renderTarget","type":"asset","description":"","filter":{"renderTexture2D":true},"default":null,"advanced":false},"enablePreRenderFunctions":{"name":"enablePreRenderFunctions","type":"b","description":"Run pre-render functions with this view. These include things like real-time reflections, which need to be rendered for each view separately.","default":true,"advanced":true},"enableShadows":{"name":"enableShadows","type":"b","description":"Render shadows for this view.","default":true,"advanced":true}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup","clearColor","clearDepth","renderTarget","enablePreRenderFunctions","enableShadows"],"events":{"enableRenderView":{"scope":"local","name":"enableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"setViewport":{"scope":"local","name":"setViewport","category":"Rendering","parameters":[{"name":"viewportLeft","description":"Left position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportBottom","description":"Bottom position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportWidth","description":"Width of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"viewportHeight","description":"Height of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"animationTime","type":"f","description":"Animate the change in viewport over this many seconds.","default":0}]},"disableRenderView":{"scope":"local","name":"disableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"toggleRenderView":{"scope":"local","name":"toggleRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]}},"externalDependencies":[],"filter":["camera"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderView"}},ComponentRenderView);VAPI.ScriptRegistry.registerScript({"id":"box3d_renderer","name":"Renderer","properties":{"attributes":{"renderOnDemand":{"name":"renderOnDemand","type":"b","description":"When this is enabled, rendering will only happen when requested instead of every frame.","defualt":true},"antialias":{"name":"antialias","type":"b","description":"Enable or disable antialiasing of the rendered scene.","default":true},"preserveDrawingBuffer":{"name":"preserveDrawingBuffer","type":"b","description":"Tells the browser to preserve drawing buffers between frames so that they are available to be read by the application.","default":true},"autoClear":{"name":"autoClear","type":"b","description":"Automatically clear the render target before each render.","default":false},"devicePixelRatio":{"name":"devicePixelRatio","type":"dd","default":0,"options":{"Device Default":0,"One":1,"Two":2},"description":"Override the default pixel ratio of the system. Higher values will cause rendering at higher resolution while lower values will force rendering at lower resolutions. You can also set this to use the device default (mobile devices usually have values greater than 1)."},"clearColor":{"name":"clearColor","type":"c","description":"When the render target is cleared, this colour will be used","default":0},"clearAlpha":{"name":"clearAlpha","type":"f","description":"When the render target is cleared, this value will be used to clear the transparency","default":0,"min":0,"max":1,"step":0.001},"precision":{"name":"precision","type":"dd","description":"The default floating point and integer precision to be used by the GPU.","default":"mediump","options":{"Low":"lowp","Medium":"mediump","High":"highp"}},"shadowsEnabled":{"name":"shadowsEnabled","type":"b","description":"Enable or disable rendering of shadows.","default":true},"shadowsEnabledMobile":{"name":"shadowsEnabledMobile","type":"b","description":"Enable or disable rendering of shadows on mobile devices.","default":false},"shadowType":{"name":"shadowType","type":"dd","options":{"Soft PCF":2,"PCF":1,"No Filtering":0},"default":2},"shadowCullFace":{"name":"shadowCullFace","type":"dd","description":"Shadows will or will not automatically be updated every frame.","options":{"None":0,"Front":2,"Back":1},"default":2},"shadowDebug":{"name":"shadowDebug","type":"b","description":"Enable or disable debug rendering, showing the different shadow cascade sizes.","default":false},"logarithmicDepthBuffer":{"name":"logarithmicDepthBuffer","type":"b","description":"Use logarithmic z values while rendering.","default":true}},"attributesOrder":["renderOnDemand","antialias","preserveDrawingBuffer","autoClear","devicePixelRatio","clearColor","clearAlpha","precision","shadowsEnabled","shadowsEnabledMobile","shadowType","shadowCullFace","shadowDebug","logarithmicDepthBuffer"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Renderer"}},ComponentRenderer);VAPI.ScriptRegistry.registerScript({"id":"rotate_component","name":"Rotate","properties":{"description":"A simple component to rotate an object.","attributes":{"autoRotate":{"name":"autoRotate","type":"b","description":"Automatically start the rotation upon load.","default":true},"previewRotation":{"name":"previewRotation","type":"b","description":"Show the rotation in the editor.","default":true},"rotation":{"name":"rotation","type":"v3","description":"Amount of rotation per second about the x, y and z axes.","default":{"x":0,"y":0.5,"z":0}},"local":{"name":"local","type":"b","description":"Rotate relative to the local quaternion of the object. If false, the rotation will be relative to the world.","default":false}},"attributesOrder":["autoRotate","previewRotation","rotation","local"],"events":{"startRotate":{"scope":"local","name":"startRotate","action":true,"category":"Rotate","parameters":[]},"stopRotate":{"scope":"local","name":"stopRotate","action":true,"category":"Rotate","parameters":[]},"toggleRotate":{"scope":"local","name":"toggleRotate","action":true,"category":"Rotate","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Rotate"}},ComponentRotate);VAPI.ScriptRegistry.registerScript({"id":"loader_component","name":"Scene Loader","properties":{"description":"A simple component to load a scene and display progress for it.","attributes":{"scene":{"name":"scene","type":"asset","description":"The scene to load.","filter":{"scene":true}}},"attributesOrder":["scene"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Loading","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SceneLoader"}},ComponentSceneLoader);VAPI.ScriptRegistry.registerScript({"id":"shot_manager_component","name":"Shots","properties":{"description":"This component allows you to define a series of cinematic camera shots.","attributes":{"fadeIn":{"name":"fadeIn","type":"f","description":"The percentage of the animation spent fading in.","slider":true,"default":0.25,"min":0,"max":1},"cameras":{"name":"cameras","type":"a","description":"The list of cameras that define each shot.","hidden":true,"subType":{"type":"custom","attributes":{"cameraObject":{"type":"object","filter":{"camera":true}},"name":{"type":"s"},"description":{"type":"s"}}}}},"attributesOrder":["fadeIn","cameras"],"events":{"beginShot":{"scope":"other","name":"beginShot","filter":["camera"],"action":false,"category":"General","parameters":[]},"endShot":{"scope":"other","name":"endShot","filter":["camera"],"action":false,"category":"General","parameters":[]},"shotManager::play":{"scope":"global","name":"shotManager::play","action":true,"category":"General","parameters":[{"name":"shotNumber","type":"i","description":"The index of shot that you want to play.","default":0}]},"playShot":{"scope":"local","name":"playShot","action":true,"category":"General","parameters":[{"name":"shotNumber","type":"i","description":"The index of shot that you want to play.","default":0}]}},"externalDependencies":[],"filter":["Scene"],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Shots"}},ComponentShots);VAPI.ScriptRegistry.registerScript({"id":"simplex_noise_component","name":"Simplex Noise Generator","properties":{"attributes":{"layerAmplitude":{"name":"layerAmplitude","type":"v4","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},"layerScale":{"name":"layerScale","type":"v4","default":{"x":0.5,"y":2,"z":3,"w":4}},"scale":{"name":"scale","type":"v2","default":{"x":1,"y":1}},"offset":{"name":"offset","type":"v2","default":{"x":0,"y":0}},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["layerAmplitude","layerScale","scale","offset","autoLoad"],"events":{"renderNoise":{"scope":"local","name":"renderNoise","action":true,"category":"Rendering","parameters":[]},"changeNoiseValues":{"scope":"local","name":"changeNoiseValues","action":true,"category":"Rendering","parameters":[{"name":"layerAmplitude","type":"v4","description":"","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},{"name":"layerScale","type":"v4","description":"","default":{"x":0.5,"y":2,"z":3,"w":4}},{"name":"scale","type":"v2","description":"","default":{"x":1,"y":1}},{"name":"offset","type":"v2","description":"","default":{"x":0,"y":0}}]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SimplexNoiseGenerator"}},ComponentSimplexNoiseGenerator);VAPI.ScriptRegistry.registerScript({"id":"skybox_renderer","name":"Skybox","properties":{"attributes":{"size":{"name":"size","type":"f","default":100000,"min":1,"max":1000000},"skyboxTexture":{"name":"skyboxTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":"white_cube"},"skyboxFogPower":{"name":"skyboxFogPower","type":"f","description":"Controls the rate that fog decreases with height in the skybox.","default":0.8,"min":0,"max":1},"skyboxFogScale":{"name":"skyboxFogScale","type":"f","description":"Uniformly scales the amount of fog in the skybox.","default":0.5,"min":0,"max":1}},"attributesOrder":["size","skyboxTexture","skyboxFogPower","skyboxFogScale"],"events":{"setSkyboxTexture":{"scope":"local","name":"setSkyboxTexture","action":true,"parameters":[{"name":"texture","type":"asset","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"description":"The new skybox texture to use.","default":null}]}},"externalDependencies":[],"filter":["scene"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Skybox"}},ComponentSkybox);VAPI.ScriptRegistry.registerScript({"id":"spheremap_capture","name":"Sphere-Map Capture","properties":{"attributes":{"sphereTexture":{"name":"sphereTexture","type":"asset","description":"The RenderTexture2D to render the reflection to.","filter":{"renderTexture2D":true},"default":null},"near":{"name":"near","type":"f","description":"The closest distance to this object to render. Adjust this to avoid rendering local geometry to the texture.","default":0.25},"far":{"name":"far","type":"f","description":"The furthest distance from this object to render.","default":14000},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection. Default is 0.","default":0}},"attributesOrder":["sphereTexture","near","far","updateFrameInterval"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SphereMapCapture"}},ComponentSphereMapCapture);VAPI.ScriptRegistry.registerScript({"id":"text_renderer_component","name":"Text Renderer","properties":{"description":"Render the desired text to the texture we are attached to","attributes":{"text":{"name":"text","type":"s","default":"My Text","description":"Text you want to display"},"fontColor":{"name":"fontColor","type":"c","default":16777215,"description":"Color of the text"},"fontFamily":{"name":"fontFamily","type":"s","default":"Calibri","description":"Font family to render"},"pointSize":{"name":"pointSize","type":"i","default":48,"description":"Font size","min":2,"max":100}},"attributesOrder":["text","fontColor","fontFamily","pointSize"],"events":{},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Text","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/TextRenderer"}},ComponentTextRenderer)}}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 93 */
@@ -69343,624 +69443,528 @@
 
 	/* eslint-disable */
 	/**
-	 * @vid object_animator_component
-	 * @vname Object Animator
-	 * @vcategory Animation
-	 * @vfilter Object
-	 * @vevent local playAnimateAlongCurve {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'curve', 'type' : 'object', 'componentFilter': { 'Curve' : true }},
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'orientation', 'description': 'Orient the object following the curve to either the direction of the curve or to the objects defining the curve.', 'type': 'dd', 'default': 'toCurve', 'options' : { 'None': 'None', 'To Curve' : 'toCurve', 'To Nodes' : 'toNode'}},
-	 *     {name: 'loop', 'type' : 'b', 'description': '', 'default': false}
-	 *   ]
+	 * @vid object_picker
+	 * @vname Object Picker
+	 * @vfilter Scene
+	 * @vcategory General
+	 * @vattr Dropdown pickTrigger {
+	 *   description: 'What mouse action will trigger the pick?',
+	 *   default: 'leftMouseClick',
+	 *   options: {
+	 *     'Left Mouse Click': 'leftMouseClick',
+	 *     'Middle Mouse Click': 'middleMouseClick',
+	 *     'Right Mouse Click': 'rightMouseClick',
+	 *     'Left Mouse Down': 'leftMouseDown',
+	 *     'Middle Mouse Down': 'middleMouseDown',
+	 *     'Right Mouse Down': 'rightMouseDown',
+	 *     'Left Mouse Up': 'leftMouseUp',
+	 *     'Middle Mouse Up': 'middleMouseUp',
+	 *     'Right Mouse Up': 'rightMouseUp'
+	 *   }
 	 * }
-	 * @vevent local playAnimateToObject {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'object', 'type' : 'object', 'default': null},
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Total time that the animation will take. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'update orientation', 'type' : 'b', 'default': true}
-	 *   ]
+	 * @vattr Boolean enableHoverByDefault {
+	 *   default: false,
+	 *   advanced: true,
+	 *   description: 'Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact.'
 	 * }
-	 * @vevent local playAnimateTranslation {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -1.0, 'max': 1.0},
-	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s position represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *   ]
+	 * @vattr Integer hoverFrameSkip {
+	 *   description: 'Skip this many frames inbetween hover checks.',
+	 *   default: 1,
+	 *   min: 0,
+	 *   max: 60
 	 * }
-	 * @vevent local playAnimateRotation {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'angularVelocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -100.0, 'max': 100.0},
-	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s rotation represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *     {name: 'axisOrder', 'type' : 'dd', 'description': 'Specify the axis order that the angular velocity will be applied in.', 'default': 'YXZ', 'options': {
-	 *       'XYZ': 'XYZ',
-	 *       'YXZ': 'YXZ',
-	 *       'ZXY': 'ZXY',
-	 *       'XZY': 'XZY',
-	 *       'YZX': 'YZX',
-	 *       'ZYX': 'ZYX'}
-	 *     }
-	 *   ]
-	 * }
-	 * @vevent local playAnimateScale {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -10.0, 'max': 10.0},
-	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s scale represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *   ]
-	 * }
-	 * @vevent local pauseCurveAnimation { 'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local stopCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local unpauseCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local endAnimateAlongCurve {'action': false, 'category': 'Animation', 'parameters': []}
-	 * @vevent local endAnimateToObject {'action': false, 'category': 'Animation', 'parameters': []}
-	 * @vevent lcoal endAnimateTranslation {'action': false, 'category': 'Animation', 'parameters': []}
+	 * @vevent other pick { action: false, category: 'General', parameters: [] }
+	 * @vevent other beginHover { action: false, category: 'General', parameters: [] }
+	 * @vevent other endHover { action: false, category: 'General', parameters: []}
 	 */
-	/* eslint-enable*/
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(94)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
-	  'use strict';
+	/* eslint-enable */
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(94)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
+	  /* global VAPI */
+	  'use strict'
 
-	  function ObjectAnimator() {
-	    this.playingCurveAnimation = false;
-	    this.curveAnim = undefined;
+	  /**
+	   * A custom component class.
+	   *
+	   * @class ObjectPicker
+	   */
+	  ;
+	  function ObjectPicker() {
+	    this.pickingMaterialDef = undefined;
+	    this.meshRegistry = {};
+	    this.meshList = [];
+	    this.pickingTexture = undefined;
+	    this.currentHoverObject = undefined;
+	    this.currentFrame = 0;
+
+	    this.enableHoverByDefault = false;
+	    this.pickTrigger = null;
+	    this.hoverEnabled = false;
 	  }
 
-	  ObjectAnimator.prototype = new Box3DComponent();
+	  ObjectPicker.prototype = new Box3DComponent();
 
+	  ObjectPicker.prototype.preInit = function () {
+	    this.getRuntime().once('endHover:bound', this._enableHover, this);
+	    this.getRuntime().once('beginHover:bound', this._enableHover, this);
+	  };
 	  /**
 	   * Called immediately after after component creation
 	   */
-	  ObjectAnimator.prototype.init = function () {
-	    this.getEntity().on('playAnimateAlongCurve', this.animateAlongCurve, this);
-	    this.getEntity().on('playAnimateToObject', this.animateToObject, this);
-	    this.getEntity().on('playAnimateTranslation', this.animateTranslation, this);
-	    this.getEntity().on('playAnimateRotation', this.animateRotation, this);
-	    this.getEntity().on('playAnimateScale', this.animateScale, this);
-	    this.getEntity().on('pauseCurveAnimation', this.onPauseCurveAnimation, this);
-	    this.getEntity().on('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
-	    this.getEntity().on('stopCurveAnimation', this.stopCurveAnimation, this);
+	  ObjectPicker.prototype.init = function () {
+	    // this.box3DEntity is available
+	    this.getRuntime().on('resize', this.resize, this);
 
-	    this.on('disable', this.onDisable, this);
+	    this.initPickingEvents();
+	    this.initPickingMaterial();
+	    this.initMeshRegistry();
+
+	    //listen to register objects
+	    this.getEvents().on('registerPickingObject', this.registerObject, this);
+	    this.getEvents().on('unregisterPickingObject', this.unregisterObject, this);
+
+	    this.resize();
 	  };
 
-	  ObjectAnimator.prototype.shutdown = function () {
-	    this.getEntity().off('playAnimateAlongCurve', this.animateAlongCurve, this);
-	    this.getEntity().off('playAnimateToObject', this.animateToObject, this);
-	    this.getEntity().off('playAnimateTranslation', this.animateTranslation, this);
-	    this.getEntity().off('playAnimateRotation', this.animateRotation, this);
-	    this.getEntity().off('playAnimateScale', this.animateScale, this);
-	    this.getEntity().off('pauseCurveAnimation', this.onPauseCurveAnimation, this);
-	    this.getEntity().off('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
-	    this.getEntity().off('stopCurveAnimation', this.stopCurveAnimation, this);
+	  /**
+	   * Called when a verold object is destroyed or this component is removed
+	   * from a verold object.
+	   */
+	  ObjectPicker.prototype.shutdown = function () {
+	    // make sure to clean up any events or other bindings that you have created
+	    // to avoid memory leaks
+	    this.uninitPickingEvents();
 
-	    this.off('disable', this.onDisable, this);
-	  };
+	    this.getRuntime().off('resize', this.resize, this);
+	    this.getEvents().off('registerPickingObject', this.registerObject, this);
+	    this.getEvents().off('unregisterPickingObject', this.unregisterObject, this);
 
-	  ObjectAnimator.prototype.onDisable = function () {
-	    this.getRuntimeData().position.copy(this.getEntity().getPosition());
-	    this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
-	    this.getRuntimeData().scale.copy(this.getEntity().getScale());
-	  };
-
-	  ObjectAnimator.prototype.stopCurveAnimation = function () {
-	    this.getRuntime().off('update', this.curveAnim, this);
-	    this.curveAnim = undefined;
-	  };
-
-	  ObjectAnimator.prototype.animateAlongCurve = function (curveObjectId, animationTime, easeIn, easeOut, orientation, loop) {
-
-	    function curveAnim(delta) {
-	      if (!this.box3DEntity || !this.isEnabled()) {
-	        engine.off('update', this.curveAnim, this);
-	        this.curveAnim = undefined;
-	        return;
-	      }
-	      if (curveComponent && this.playingCurveAnimation) {
-	        this.getRuntime().needsRender = true;
-	        currentTime += delta;
-	        var currentTimePercent = currentTime / animationTime;
-	        if (currentTimePercent >= 1.0) {
-	          currentTimePercent -= 1.0;
-	        }
-	        var easeOutStart = 1 - easeOut;
-
-	        //Ease in
-	        if (easeIn && currentTimePercent < easeIn) {
-	          var easeInProgress = currentTimePercent / easeIn;
-	          curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	        } else if (easeOut && currentTimePercent > easeOutStart) {
-	          //Ease out
-	          var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	          curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	        } else {
-	          //Full speed animation
-	          curveProgressPercent += delta * fullSpeed / animationTime;
-	        }
-
-	        //If the animation is finished
-	        if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
-	          curveProgressPercent %= 1.0;
-	          currentTime = 0.0;
-	          if (!loop) {
-	            curveProgressPercent = 0.99999999;
-	            this.playingCurveAnimation = false;
-
-	            this.getRuntime().off('update', this.curveAnim, this);
-	            this.curveAnim = undefined;
-	          }
-	          this.getEntity().trigger('endAnimateAlongCurve');
-	        }
-
-	        var curve = curveComponent.curve;
-	        var curveProgress_NodeRelative = curve.getUtoTmapping(curveProgressPercent);
-	        runtimeData.position.copy(curve.getPoint(curveProgress_NodeRelative));
-
-	        if (orientation === 'toCurve') {
-	          var tangent = curve.getTangent(curveProgress_NodeRelative);
-	          tempVector1.set(0, -1, 0);
-	          tempVector2.crossVectors(tangent, tempVector1);
-	          tempVector3.crossVectors(tangent, tempVector2);
-	          tempVector1.copy(runtimeData.position);
-	          tempVector1.add(tangent);
-	          tempMatrix.lookAt(runtimeData.position, tempVector1, tempVector3);
-	          runtimeData.quaternion.setFromRotationMatrix(tempMatrix);
-	        } else if (orientation === 'toNode') {
-	          var curveSegments;
-	          if (curveComponent.closed) {
-	            curveSegments = curve.points.length;
-	          } else {
-	            curveSegments = curve.points.length - 1;
-	          }
-	          var prevNode = Math.floor(curveProgress_NodeRelative * curveSegments);
-	          var nextNode = Math.ceil(curveProgress_NodeRelative * curveSegments) % curve.points.length;
-
-	          if (prevNode !== currentPrevNode) {
-	            if (prevNode > 0) {
-	              curveComponent.controlPoints[prevNode].getQuaternionInWorldSpace(prevQuaternion);
-	            } else {
-	              curveComponent.controlPoints[0].getQuaternionInWorldSpace(prevQuaternion);
-	            }
-	          }
-	          if (nextNode !== currentNextNode) {
-	            if (nextNode > 0) {
-	              curveComponent.controlPoints[nextNode].getQuaternionInWorldSpace(nextQuaternion);
-	            } else {
-	              curveComponent.controlPoints[0].getQuaternionInWorldSpace(nextQuaternion);
-	            }
-	          }
-	          var interp = curveProgress_NodeRelative * curveSegments - prevNode;
-	          runtimeData.quaternion.copy(prevQuaternion);
-	          runtimeData.quaternion.slerp(nextQuaternion, interp);
-	        }
+	    var parentAsset = this.getEntity().getParentAsset();
+	    parentAsset.off('meshLoaded', this.registerMesh, this);
+	    parentAsset.off('meshUnloaded', this.unregisterMesh, this);
+	    if (this.pickingTexture) {
+	      this.pickingTexture.dispose();
+	      this.pickingTexture = undefined;
+	    }
+	    for (var x in this.meshRegistry) {
+	      if (this.meshRegistry[x].pickingMaterial) {
+	        this.meshRegistry[x].pickingMaterial.dispose();
 	      }
 	    }
+	    this.meshRegistry = {};
+	    this.meshList = [];
+	  };
+
+	  ObjectPicker.prototype.initPickingEvents = function () {
+	    if (this.pickTrigger.substr(-2) === 'Up') {
+	      if (VAPI.isMobile()) {
+	        this.getRuntime().on('touchEnd', this.touchPick, this);
+	      } else {
+	        this.getRuntime().on('mouseUp', this.pick, this);
+	      }
+	    } else if (this.pickTrigger.substr(-4) === 'Down') {
+	      if (VAPI.isMobile()) {
+	        this.getRuntime().on('touchStart', this.touchPick, this);
+	      } else {
+	        this.getRuntime().on('mouseDown', this.pick, this);
+	      }
+	    } else if (this.pickTrigger.substr(-5) === 'Click') {
+	      if (VAPI.isMobile()) {
+	        this.getRuntime().on('touchEnd', this.touchPickNoDrag, this);
+	      } else {
+	        this.getRuntime().on('mouseUp', this.pickNoDrag, this);
+	      }
+	    }
+
+	    if (this.enableHoverByDefault && !VAPI.isMobile()) {
+	      this._enableHover();
+	    }
+	  };
+
+	  ObjectPicker.prototype.uninitPickingEvents = function () {
+	    if (this.pickTrigger.substr(-2) === 'Up') {
+	      if (VAPI.isMobile()) {
+	        this.getRuntime().off('touchEnd', this.touchPick, this);
+	      } else {
+	        this.getRuntime().off('mouseUp', this.pick, this);
+	      }
+	    } else {
+	      if (VAPI.isMobile()) {
+	        this.getRuntime().off('touchStart', this.touchPick, this);
+	      } else {
+	        this.getRuntime().off('mouseDown', this.pick, this);
+	      }
+	    }
+
+	    if (this.enableHoverByDefault && !VAPI.isMobile()) {
+	      this.getRuntime().off('postRender', this.hoverUpdate, this);
+	    }
+	  };
+
+	  ObjectPicker.prototype.initPickingMaterial = function () {
+	    this.pickingMaterialDef = {
+
+	      depthTest: true,
+	      depthWrite: true,
+	      transparent: false,
+	      side: THREE.DoubleSide,
+
+	      uniforms: {
+	        color: {
+	          type: 'c',
+	          value: 0xff0000
+	        }
+	      },
+
+	      vertexShader: [THREE.ShaderChunk['skinning_pars_vertex'], THREE.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', THREE.ShaderChunk['skinbase_vertex'], THREE.ShaderChunk['skinnormal_vertex'], THREE.ShaderChunk['defaultnormal_vertex'], THREE.ShaderChunk['skinning_vertex'], THREE.ShaderChunk['project_vertex'], THREE.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
+
+	      fragmentShader: ['uniform vec3 color;', THREE.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', THREE.ShaderChunk['logdepthbuf_fragment'], 'gl_FragColor = vec4( color, 1.0 );', '}'].join('\n')
+
+	    };
+	  };
+
+	  ObjectPicker.prototype.initMeshRegistry = function () {
+	    var parentAsset = this.getEntity().getParentAsset();
+	    parentAsset.on('meshLoaded', this.registerMesh, this);
+	    parentAsset.on('meshUnloaded', this.unregisterMesh, this);
+
 	    var that = this;
-	    var curveComponent;
-	    var curveObject;
+	    parentAsset.traverse(function (obj) {
+	      if (obj.type === 'mesh' || obj.type === 'skinned_mesh') {
+	        that.registerMesh(obj);
+	      }
+	    });
+	  };
 
-	    if (curveObjectId) {
-	      curveObject = this.getRuntime().getEntityById(curveObjectId);
-	      var components = curveObject.getComponentsByScriptId('curve_component');
-	      curveComponent = components[_.keys(components)[0]];
+	  ObjectPicker.prototype._enableHover = function () {
+	    if (!this.hoverEnabled && !VAPI.isMobile()) {
+	      this.getRuntime().on('postRender', this.hoverUpdate, this);
+	      this.hoverEnabled = true;
 	    }
-	    if (!curveComponent) {
+	  };
+
+	  /**
+	  * reset the size of the texture used to test against geometry picking parameters
+	  * @method resize
+	  */
+	  ObjectPicker.prototype.resize = function () {
+	    var oldPickingTexture = this.pickingTexture;
+	    var width = this.getRenderer().getWidth();
+	    var height = this.getRenderer().getHeight();
+	    this.pickingTexture = new THREE.WebGLRenderTarget(Math.floor(width / 4.0), Math.floor(height / 4.0), {
+	      minFilter: THREE.LinearFilter
+	    });
+	    this.pickingTexture.texture.generateMipmaps = false;
+	    if (oldPickingTexture) {
+	      oldPickingTexture.dispose();
+	    }
+	  };
+
+	  ObjectPicker.prototype.registerObject = function (box3DObject, runtimeData) {
+
+	    if (!this.meshRegistry[runtimeData.id]) {
+	      this.meshRegistry[runtimeData.id] = {
+	        box3DEntity: box3DObject,
+	        runtimeData: runtimeData,
+	        prevMaterial: null,
+	        pickingMaterial: new THREE.ShaderMaterial(this.pickingMaterialDef)
+	      };
+	      //Array for fast iteration
+	      this.meshList.push(this.meshRegistry[runtimeData.id]);
+	      this.meshRegistry[runtimeData.id].index = this.meshList.length - 1;
+	      var material = this.meshRegistry[runtimeData.id].pickingMaterial;
+	      material.uniforms = THREE.UniformsUtils.clone(this.pickingMaterialDef.uniforms);
+	      material.uniforms.color.value = new THREE.Color(runtimeData.id);
+
+	      if (runtimeData instanceof THREE.SkinnedMesh) {
+	        material.skinning = true;
+	      }
+	    }
+	  };
+
+	  ObjectPicker.prototype.unregisterObject = function (box3DObject, runtimeData) {
+	    if (runtimeData) {
+	      //remove the enitity data from the pick history, if it's there
+	      this.removeFromHistory(runtimeData.id);
+	      //The meshUnloaded event should fire just before the runtimeData is deleted.
+	      if (this.meshRegistry[runtimeData.id]) {
+	        this.meshRegistry[runtimeData.id].box3DEntity = null;
+	        this.meshRegistry[runtimeData.id].pickingMaterial.dispose();
+	        this.meshList.splice(this.meshRegistry[runtimeData.id].index, 1);
+	        delete this.meshRegistry[runtimeData.id];
+	      }
+	    }
+	  };
+
+	  ObjectPicker.prototype.registerMesh = function (veroldMesh) {
+	    //When the THREE.Mesh is created, register it so that it can be selected.
+	    veroldMesh.when('loadBase', function (mesh) {
+	      this.registerObject(mesh, mesh.runtimeData);
+	    }, this);
+	  };
+
+	  ObjectPicker.prototype.unregisterMesh = function (veroldMesh) {
+	    if (veroldMesh) {
+	      this.unregisterObject(veroldMesh.runtimeData);
+	    }
+	  };
+
+	  ObjectPicker.prototype.getThreeObjects = function (objects) {
+	    var sceneObjects = [];
+	    _.each(objects, function (object) {
+	      if (object && object.runtimeData) {
+	        sceneObjects.push(object.runtimeData);
+	      }
+	    });
+
+	    return sceneObjects;
+	  };
+
+	  ObjectPicker.prototype.touchPickNoDrag = function (event, callback) {
+	    //Check drag state
+	    if (!this.getInput().touchDragStatePrevious) {
+	      this.touchPick(event, callback);
+	    }
+	  };
+
+	  ObjectPicker.prototype.touchPick = function (event, callback) {
+
+	    if (!this.isEnabled()) {
 	      return;
 	    }
 
-	    var runtimeData = this.getRuntimeData();
-	    var engine = this.getRuntime();
-	    var currentTime = 0;
-	    var curveProgressPercent = 0.0;
+	    // if ( this.getInput().touchPosition.x ) {
+	    var x = this.getInput().touchPosition.x;
+	    var y = this.getInput().touchPosition.y;
 
-	    var tempVector1 = new THREE.Vector3();
-	    var tempVector2 = new THREE.Vector3();
-	    var tempVector3 = new THREE.Vector3();
-	    var tempMatrix = new THREE.Matrix4();
-	    var prevQuaternion = new THREE.Quaternion();
-	    var nextQuaternion = new THREE.Quaternion();
+	    var mesh = this.pickMesh(x, y);
+	    if (mesh) {
 
-	    if (easeIn + easeOut > 1.0) {
-	      log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	      easeIn = 0.5;
-	      easeOut = 0.5;
+	      mesh.trigger('pick');
+	      var parent = mesh.getParentObject();
+	      while (parent) {
+	        parent.trigger('pick');
+	        parent = parent.getParentObject();
+	      }
+	      if (_.isFunction(callback)) {
+	        callback(mesh);
+	      }
 	    }
+	    // }
+	  };
 
-	    var fullSpeedTime = 1.0 - easeIn - easeOut;
-	    var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
+	  ObjectPicker.prototype.pickNoDrag = function (event, callback) {
+	    //Check drag state
+	    if (!this.getInput().mouseDragStatePrevious[event.button]) {
+	      this.pick(event, callback);
+	    }
+	  };
 
-	    if (animationTime > 0) {
-	      this.playingCurveAnimation = true;
-	      var currentPrevNode = -1;
-	      var currentNextNode = -1;
-	      if (curveComponent.isCurveInit()) {
-
-	        this.curveAnim = curveAnim;
-	        this.getRuntime().on('update', this.curveAnim, this);
-	      } else {
-	        curveComponent.on('curveInit', function () {
-	          this.curveAnim = curveAnim;
-	          that.getRuntime().on('update', this.curveAnim, that);
-	        }, this);
+	  ObjectPicker.prototype.pick = function (event, callback) {
+	    if (!this.isEnabled()) {
+	      return;
+	    }
+	    if (this.pickTrigger.substr(0, 4) === 'left') {
+	      if (event.button !== 0) {
+	        return;
+	      }
+	    } else if (this.pickTrigger.substr(0, 4) === 'right') {
+	      if (event.button !== 2) {
+	        return;
+	      }
+	    } else if (event.button !== 1) {
+	      return;
+	    }
+	    var x = event.clientX;
+	    var y = event.clientY;
+	    var mesh = this.pickMesh(x, y);
+	    if (mesh) {
+	      mesh.trigger('pick');
+	      var parent = mesh.getParentObject();
+	      while (parent) {
+	        parent.trigger('pick');
+	        parent = parent.getParentObject();
+	      }
+	      if (_.isFunction(callback)) {
+	        callback(mesh);
 	      }
 	    }
 	  };
 
-	  ObjectAnimator.prototype.onPauseCurveAnimation = function () {
-	    this.playingCurveAnimation = false;
+	  ObjectPicker.prototype.hoverUpdate = function () {
+	    if (!this.isEnabled()) {
+	      return;
+	    }
+	    if (this.currentFrame < this.hoverFrameSkip) {
+	      this.currentFrame++;
+	      return;
+	    }
+	    this.currentFrame = 0;
+	    var x = this.getInput().mousePosition.x;
+	    var y = this.getInput().mousePosition.y;
+	    var parent;
+	    var mesh = this.pickMesh(x, y);
+	    if (mesh !== this.currentHoverObject) {
+	      if (this.currentHoverObject) {
+
+	        this.currentHoverObject.trigger('endHover');
+	        parent = this.currentHoverObject.getParentObject();
+	        while (parent) {
+	          parent.trigger('endHover');
+	          parent = parent.getParentObject();
+	        }
+	      }
+	      if (mesh) {
+	        this.currentHoverObject = mesh;
+
+	        mesh.trigger('beginHover');
+	        parent = mesh.getParentObject();
+	        while (parent) {
+	          parent.trigger('beginHover');
+	          parent = parent.getParentObject();
+	        }
+	      } else {
+	        this.currentHoverObject = null;
+	      }
+	    }
 	  };
 
-	  ObjectAnimator.prototype.onUnpauseCurveAnimation = function () {
-	    this.playingCurveAnimation = true;
-	  };
+	  ObjectPicker.prototype.pickMesh = function (x, y) {
 
-	  ObjectAnimator.prototype.animateToObject = function (objectId, animationTime, easeIn, easeOut, orientation) {
 	    var that = this;
-	    var engine = this.getRuntime();
+	    var scenes = this.getRuntime().assetRegistry.getAssetsByType('scene');
+	    var i;
+	    var pickedMesh = null;
+	    _.each(scenes, function (scene) {
+	      var cameras = scene.getObjectsByType('camera');
 
-	    function _animateTo(threeObject) {
-
-	      var entity_data = that.getRuntimeData();
-	      var tempMatrix = new THREE.Matrix4();
-	      var currTime = 0;
-	      var curveProgressPercent = 0.0;
-
-	      if (easeIn + easeOut > 1.0) {
-	        log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
-	      }
-
-	      var fullSpeedTime = 1.0 - easeIn - easeOut;
-	      var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
-	      //var easeInDistance = easeIn * fullSpeed / 2.0;
-	      //var easeOutDistance = easeOut * fullSpeed / 2.0;
-
-	      var startPos = new THREE.Vector3();
-	      var startQuat;
-	      startPos.copy(entity_data.position);
-
-	      var targetPosition = threeObject.position;
-	      var targetQuaternion = threeObject.quaternion;
-
-	      if (targetQuaternion && orientation) {
-	        startQuat = new THREE.Quaternion();
-	        startQuat.copy(entity_data.quaternion);
-	      }
-	      threeObject.updateMatrixWorld();
-	      targetPosition.setFromMatrixPosition(threeObject.matrixWorld);
-	      tempMatrix.extractRotation(threeObject.matrixWorld);
-	      targetQuaternion.setFromRotationMatrix(tempMatrix);
-
-	      if (animationTime > 0) {
-	        that.getRuntime().on('update', function objAnim(delta) {
-	          if (!this.box3DEntity || !this.isEnabled()) {
-	            engine.off('update', objAnim, this);
-	            return;
+	      var renderViews = [];
+	      _.each(cameras, function (camera) {
+	        var renderViewComponents = camera.getComponentsByScriptId('render_view_component');
+	        _.each(renderViewComponents, function (renderViewComponent) {
+	          if (renderViewComponent.isEnabled()) {
+	            if (renderViews.length > 0) {
+	              for (i = 0; i < renderViews.length; i++) {
+	                var renderView = renderViews[i];
+	                if (renderViewComponent.renderGroup >= renderView.renderGroup) {
+	                  renderViews.splice(i, 0, renderViewComponent);
+	                  break;
+	                }
+	              }
+	            } else {
+	              renderViews.push(renderViewComponent);
+	            }
 	          }
-	          that.getRuntime().needsRender = true;
-	          currTime += delta;
-	          var currentTimePercent = currTime / animationTime;
-	          var easeOutStart = 1 - easeOut;
-
-	          if (easeIn && currentTimePercent < easeIn) {
-	            //Ease in
-	            var easeInProgress = currentTimePercent / easeIn;
-	            curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	          } else if (easeOut && currentTimePercent > easeOutStart) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	          } else {
-	            //Full speed animation
-	            curveProgressPercent += delta * fullSpeed / animationTime;
-	          }
-	          //clamp at 1
-	          curveProgressPercent = Math.min(curveProgressPercent, 1.0);
-
-	          if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
-	            that.getRuntime().off('update', objAnim, that);
-	            that.getEntity().trigger('endAnimateToObject');
-	          }
-
-	          entity_data.position.copy(startPos);
-	          entity_data.position.lerp(targetPosition, curveProgressPercent);
-	          if (targetQuaternion && orientation) {
-	            entity_data.quaternion.copy(startQuat);
-	            entity_data.quaternion.slerp(targetQuaternion, curveProgressPercent);
-	          }
-	        }, that);
-	      } else {
-	        entity_data.position.copy(targetPosition);
-	        if (targetQuaternion) {
-	          entity_data.quaternion.copy(targetQuaternion);
-	        }
-
-	        //complete
-	        that.getEntity().trigger('endAnimateToObject');
-	      }
-	    }
-
-	    var object = this.getRuntime().getEntityById(objectId);
-	    if (object.runtimeData) {
-	      _animateTo(object.runtimeData);
-	    } else {
-	      object.once('loadBase', function () {
-	        _animateTo(object.runtimeData);
+	        });
 	      }, this);
-	      object.load();
-	    }
-	  };
 
-	  ObjectAnimator.prototype.animateTranslation = function (animationTime, easeIn, easeOut, velocity, objectUsage) {
+	      for (i = 0; i < renderViews.length; i++) {
+	        var renderView = renderViews[i];
+	        var canvas_height = that.getRenderer().getHeight();
+	        var viewport_offset = canvas_height - renderView._height - renderView._y;
+	        //Get the percentage x,y positions of the mouse on the viewport
+	        var mouseX = (x - renderView._x) / renderView._width;
+	        var mouseY = (y - viewport_offset) / renderView._height;
 
-	    var runtimeData = this.getRuntimeData();
-	    runtimeData.position.copy(this.getEntity().getPosition());
-	    runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	    runtimeData.scale.copy(this.getEntity().getScale());
-
-	    var currTime = 0;
-	    var engine = this.getRuntime();
-
-	    if (easeIn + easeOut > 1.0) {
-	      log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	      easeIn = 0.5;
-	      easeOut = 0.5;
-	    }
-
-	    var easeInTime = animationTime * easeIn;
-	    // var easeOutTime = animationTime * easeOut;
-
-	    var currentVelocity = new THREE.Vector3();
-	    var direction = new THREE.Vector3();
-	    direction.copy(velocity);
-	    var speed = direction.length();
-	    runtimeData.updateMatrixWorld();
-	    // runtimeData.updateMatrix();
-	    direction.applyQuaternion(runtimeData.quaternion);
-	    direction.normalize();
-
-	    if (objectUsage) {
-	      var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	      var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	      //Based on the object usage, set the original position so that the
-	      //animation plays forward from there...
-	      if (objectUsage === 'middle') {
-	        //postiion - velocity * time * 0.5
-	        currentVelocity.copy(velocity);
-	        currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	        runtimeData.position.add(currentVelocity);
-	      } else if (objectUsage === 'end') {
-	        currentVelocity.copy(velocity);
-	        currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	        runtimeData.position.add(currentVelocity);
-	      }
-	    }
-
-	    if (animationTime > 0) {
-	      this.getRuntime().on('update', function objAnim(delta) {
-	        if (!this.box3DEntity || !this.isEnabled()) {
-	          engine.off('update', objAnim, this);
+	        // pickedMesh = this.doRaycastPick( scene, renderView.box3DEntity, mouseX, mouseY );
+	        pickedMesh = this.doGPUPick(scene, renderView.box3DEntity, mouseX, mouseY);
+	        if (pickedMesh) {
 	          return;
 	        }
-	        currentVelocity.copy(direction);
+	      }
+	    }, this);
 
-	        this.getRuntime().needsRender = true;
-	        currTime += delta;
-	        var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
-	        var easeOutStart = 1.0 - easeOut;
-	        var easeOutStartTime = animationTime * easeOutStart;
-
-	        if (easeIn && currTime < easeInTime) {
-	          //Ease in
-	          var easeInProgress = currentTimePercent / easeIn;
-	          currentVelocity.multiplyScalar(delta * speed * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
-	        } else if (easeOut && currTime > easeOutStartTime) {
-	          //Ease out
-	          var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	          currentVelocity.multiplyScalar(delta * speed * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
-	        } else {
-	          //Full speed animation
-	          currentVelocity.multiplyScalar(delta * speed);
-	        }
-
-	        if (currTime >= animationTime) {
-	          this.getRuntime().off('update', objAnim, this);
-	          this.getEntity().trigger('endAnimateTranslation');
-	        }
-
-	        runtimeData.position.add(currentVelocity);
-	      }, this);
-	    }
+	    return pickedMesh;
 	  };
 
-	  ObjectAnimator.prototype.animateRotation = function (animationTime, easeIn, easeOut, velocity, objectUsage, axisOrder) {
+	  ObjectPicker.prototype.doRaycastPick = function (scene, camera, mouseX, mouseY) {
+	    var x = mouseX * 2 - 1;
+	    var y = -mouseY * 2 + 1;
 
-	    var runtimeData = this.getRuntimeData();
-	    runtimeData.position.copy(this.getEntity().getPosition());
-	    runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	    runtimeData.scale.copy(this.getEntity().getScale());
+	    var vector = new THREE.Vector3(x, y, 0.5);
 
-	    var currTime = 0;
-	    var engine = this.getRuntime();
+	    vector.unproject(camera.runtimeData);
 
-	    if (easeIn + easeOut > 1.0) {
-	      log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	      easeIn = 0.5;
-	      easeOut = 0.5;
+	    var raycaster = new THREE.Raycaster(camera.runtimeData.position, vector.sub(camera.runtimeData.position).normalize());
+
+	    var sceneObjects = this.getThreeObjects(scene.getObjects());
+	    var intersections = raycaster.intersectObjects(sceneObjects, false);
+
+	    if (intersections.length > 0) {
+	      for (var i = 0; i < intersections.length; i++) {
+	        var parent = intersections[i].object.parent;
+	        var entityId = intersections[i].object.box3DEntityId;
+	        var isVisible = true;
+	        if (!intersections[i].object.visible) {
+	          isVisible = false;
+	          continue;
+	        }
+	        while (parent) {
+
+	          if (!parent.visible) {
+	            isVisible = false;
+	            break;
+	          }
+
+	          parent = parent.parent;
+	        }
+
+	        if (isVisible) {
+	          return this.getRuntime().getEntityById(entityId);
+	        }
+	      }
+	    }
+	    return null;
+	  };
+
+	  ObjectPicker.prototype.doGPUPick = function (scene, camera, mouseX, mouseY) {
+
+	    if (mouseX < 0.0 || mouseY < 0.0 || mouseX > 1.0 || mouseY > 1.0) {
+	      return null;
 	    }
 
-	    var easeInTime = animationTime * easeIn;
-	    // var easeOutTime = animationTime * easeOut;
-	    var currentVelocity = new THREE.Quaternion();
-	    var fullSpeedQuat = new THREE.Quaternion();
+	    var i = 0;
+	    var material;
+	    for (i = 0; i < this.meshList.length; i++) {
+	      if (this.meshList[i].runtimeData) {
+	        material = this.meshList[i].runtimeData.material;
+	        this.meshList[i].prevMaterial = material;
+	        this.meshList[i].runtimeData.material = this.meshList[i].pickingMaterial;
+	      }
+	    }
+	    var renderer = this.getThreeRenderer();
+	    var currentShadowMapEnabled = renderer.shadowMap.enabled;
+	    renderer.shadowMap.enabled = false;
+	    // renderer.enableScissorTest( true );
+	    renderer.setViewport(0, 0, this.pickingTexture.width, this.pickingTexture.height);
+	    //render the picking scene off-screen
+	    var gl = renderer.getContext();
+	    renderer.render(scene.runtimeData, camera.runtimeData, this.pickingTexture, true);
 
-	    var tempVector1 = new THREE.Vector3();
-	    var eulerVelocity = new THREE.Euler(axisOrder);
-	    eulerVelocity.set(velocity.x, velocity.y, velocity.z);
-	    //Convert the euler angles to quaternion
-	    currentVelocity.setFromEuler(eulerVelocity);
-	    fullSpeedQuat.copy(currentVelocity);
-
-	    runtimeData.updateMatrixWorld();
-
-	    if (objectUsage) {
-	      var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	      var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	      //Based on the object usage, set the original rotation so that the
-	      //animation plays forward from there...
-	      if (objectUsage === 'middle') {
-	        //postiion - velocity * time * 0.5
-	        tempVector1.copy(velocity);
-	        tempVector1.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	        eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
-	        currentVelocity.setFromEuler(eulerVelocity);
-	        runtimeData.quaternion.multiply(currentVelocity);
-	      } else if (objectUsage === 'end') {
-	        tempVector1.copy(velocity);
-	        tempVector1.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	        eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
-	        currentVelocity.setFromEuler(eulerVelocity);
-	        runtimeData.quaternion.multiply(currentVelocity);
+	    //Return materials to their previous state
+	    for (i = 0; i < this.meshList.length; i++) {
+	      if (this.meshList[i].runtimeData) {
+	        this.meshList[i].runtimeData.material = this.meshList[i].prevMaterial;
 	      }
 	    }
 
-	    if (animationTime > 0) {
-	      this.getRuntime().on('update', function objAnim(delta) {
-	        if (!this.box3DEntity || !this.isEnabled()) {
-	          engine.off('update', objAnim, this);
-	          return;
-	        }
-	        var speed = 1.0;
+	    var pixelBuffer = new Uint8Array(4);
+	    //read the pixel under the mouse from the texture
+	    gl.readPixels(mouseX * this.pickingTexture.width, this.pickingTexture.height * (1.0 - mouseY), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
 
-	        this.getRuntime().needsRender = true;
-	        currTime += delta;
-	        var currentTimePercent = Math.min(currTime / animationTime, 1.0);
-	        var easeOutStart = 1.0 - easeOut;
-	        var easeOutStartTime = animationTime * easeOutStart;
+	    //interpret the pixel as an ID
+	    var id = pixelBuffer[0] << 16 | pixelBuffer[1] << 8 | pixelBuffer[2];
 
-	        if (easeIn && currTime < easeInTime) {
-	          //Ease in
-	          var easeInProgress = currentTimePercent / easeIn;
-	          speed *= delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	        } else if (easeOut && currTime > easeOutStartTime) {
-	          //Ease out
-	          var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	          speed *= delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	        } else {
-	          //Full speed animation
-	          speed *= delta;
-	        }
+	    renderer.shadowMap.enabled = currentShadowMapEnabled;
+	    renderer.setRenderTarget(null);
 
-	        if (currTime >= animationTime) {
-	          this.getRuntime().off('update', objAnim, this);
-	          this.getEntity().trigger('endAnimateTranslation');
-	        }
-	        currentVelocity.set(0.0, 0.0, 0.0, 1.0);
-	        currentVelocity.slerp(fullSpeedQuat, speed);
-	        runtimeData.quaternion.multiply(currentVelocity);
-	      }, this);
+	    if (this.meshRegistry[id]) {
+	      var entityId = this.meshRegistry[id].box3DEntity.id;
+	      return this.getRuntime().getEntityById(entityId);
 	    }
+	    return null;
 	  };
 
-	  ObjectAnimator.prototype.animateScale = function (animationTime, easeIn, easeOut, velocity, objectUsage) {
-
-	    var runtimeData = this.getRuntimeData();
-	    runtimeData.position.copy(this.getEntity().getPosition());
-	    runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	    runtimeData.scale.copy(this.getEntity().getScale());
-
-	    var currTime = 0;
-	    var engine = this.getRuntime();
-
-	    if (easeIn + easeOut > 1.0) {
-	      log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	      easeIn = 0.5;
-	      easeOut = 0.5;
-	    }
-
-	    var easeInTime = animationTime * easeIn;
-	    // var easeOutTime = animationTime * easeOut;
-
-	    var currentVelocity = new THREE.Vector3();
-	    runtimeData.updateMatrixWorld();
-
-	    if (objectUsage) {
-	      var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	      var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	      //Based on the object usage, set the original scale so that the
-	      //animation plays forward from there...
-	      if (objectUsage === 'middle') {
-	        //postiion - velocity * time * 0.5
-	        currentVelocity.copy(velocity);
-	        currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	        runtimeData.scale.add(currentVelocity);
-	      } else if (objectUsage === 'end') {
-	        currentVelocity.copy(velocity);
-	        currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	        runtimeData.scale.add(currentVelocity);
-	      }
-	    }
-
-	    if (animationTime > 0) {
-	      this.getRuntime().on('update', function objAnim(delta) {
-	        if (!this.box3DEntity || !this.isEnabled()) {
-	          engine.off('update', objAnim, this);
-	          return;
-	        }
-	        currentVelocity.copy(velocity);
-
-	        this.getRuntime().needsRender = true;
-	        currTime += delta;
-	        var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
-	        var easeOutStart = 1.0 - easeOut;
-	        var easeOutStartTime = animationTime * easeOutStart;
-
-	        if (easeIn && currTime < easeInTime) {
-	          //Ease in
-	          var easeInProgress = currentTimePercent / easeIn;
-	          currentVelocity.multiplyScalar(delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
-	        } else if (easeOut && currTime > easeOutStartTime) {
-	          //Ease out
-	          var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	          currentVelocity.multiplyScalar(delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
-	        } else {
-	          //Full speed animation
-	          currentVelocity.multiplyScalar(delta);
-	        }
-
-	        if (currTime >= animationTime) {
-	          this.getRuntime().off('update', objAnim, this);
-	          this.getEntity().trigger('endAnimateTranslation');
-	        }
-
-	        runtimeData.scale.add(currentVelocity);
-	      }, this);
-	    }
-	  };
-
-	  return ObjectAnimator;
+	  return ObjectPicker;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -73382,186 +73386,6 @@
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	/* eslint-disable */
-	/**
-	 * @vid importance_sampler_convolver
-	 * @vname Importance Sampling Convolver
-	 * @vcategory Rendering
-	 * @vfilter renderTexture2D
-	 * @vattr Boolean autoLoad { default: true }
-	 */
-	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(94)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
-	  'use strict';
-
-	  function SimplexNoiseRenderer() {
-	    this.m_Uniforms = null;
-	    this.m_NoiseMat = null;
-	  }
-
-	  SimplexNoiseRenderer.prototype = new Box3DComponent();
-
-	  SimplexNoiseRenderer.prototype.editorInit = function () {
-	    this.init();
-	    this.getEntity().on('loadBase', this.objectCreated, this);
-	  };
-
-	  SimplexNoiseRenderer.prototype.editorShutdown = function () {
-	    this.getEntity().off('loadBase', this.objectCreated, this);
-	    this.shutdown();
-	  };
-
-	  SimplexNoiseRenderer.prototype.init = function () {
-
-	    this.getEntity().on('changeNoiseValues', this.changeNoiseValues, this);
-	    this.getEntity().on('renderNoise', this.renderNoise, this);
-	    this.m_Uniforms = {
-	      time: {
-	        type: 'f',
-	        value: 1.0
-	      },
-	      scale: {
-	        type: 'v2',
-	        value: this.scale
-	      },
-	      offset: {
-	        type: 'v2',
-	        value: this.offset
-	      },
-	      layerAmplitude: {
-	        type: 'v4',
-	        value: this.layerAmplitude
-	      },
-	      layerScale: {
-	        type: 'v4',
-	        value: this.layerScale
-	      }
-	    };
-
-	    //create noise material
-	    this.m_NoiseMat = new THREE.ShaderMaterial({
-	      uniforms: this.m_Uniforms,
-	      vertexShader: SimplexNoiseRenderer.VertexShader,
-	      fragmentShader: SimplexNoiseRenderer.FragmentShader
-	    });
-
-	    this.cameraRTT = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, -10, 10);
-	    this.cameraRTT.position.z = 1;
-	    this.sceneRTT = new THREE.Scene();
-	    this.sceneRTT.add(this.cameraRTT);
-
-	    this.quadGeo = new THREE.PlaneGeometry(1, 1);
-	    this.quadRTT = new THREE.Mesh(this.quadGeo, this.m_NoiseMat);
-	    this.quadRTT.position.z = -5;
-	    this.sceneRTT.add(this.quadRTT);
-	  };
-
-	  SimplexNoiseRenderer.prototype.shutdown = function () {
-	    this.getEntity().off('changeNoiseValues', this.changeNoiseValues, this);
-	    this.getEntity().off('renderNoise', this.renderNoise, this);
-	    this.sceneRTT.remove(this.cameraRTT);
-	    this.sceneRTT.remove(this.quadRTT);
-	    this.sceneRTT = undefined;
-	    this.quadRTT = undefined;
-	    this.quadGeo.dispose();
-	    this.m_NoiseMat.dispose();
-	    this.m_Uniforms = undefined;
-	  };
-
-	  SimplexNoiseRenderer.prototype.objectCreated = function () {
-	    if (this.autoLoad) {
-	      this.renderNoise();
-	    }
-	  };
-
-	  SimplexNoiseRenderer.prototype.renderNoise = function () {
-	    this.getThreeRenderer().render(this.sceneRTT, this.cameraRTT, this.getThreeObject(), true);
-	    this.getThreeRenderer().setRenderTarget(null);
-	  };
-
-	  SimplexNoiseRenderer.prototype.changeNoiseValues = function (layerAmplitude, layerScale, scale, offset) {
-	    var values = {};
-	    if (layerAmplitude) {
-	      values.layerAmplitude = layerAmplitude;
-	    }
-	    if (layerScale) {
-	      values.layerScale = layerScale;
-	    }
-	    if (scale) {
-	      values.scale = scale;
-	    }
-	    if (offset) {
-	      values.offset = offset;
-	    }
-	    this.attributesChanged(values);
-	  };
-
-	  SimplexNoiseRenderer.prototype.attributesChanged = function (attributes) {
-	    if (attributes.scale && attributes.scale.x !== undefined) {
-	      this.m_Uniforms.scale.value.x = attributes.scale.x;
-	      this.m_Uniforms.scale.value.y = attributes.scale.y;
-	    }
-	    if (attributes.offset && attributes.offset.x !== undefined) {
-	      this.m_Uniforms.offset.value.x = attributes.offset.x;
-	      this.m_Uniforms.offset.value.y = attributes.offset.y;
-	    }
-	    if (attributes.layerScale && attributes.layerScale.x !== undefined) {
-	      this.m_Uniforms.layerScale.value.x = attributes.layerScale.x;
-	      this.m_Uniforms.layerScale.value.y = attributes.layerScale.y;
-	      this.m_Uniforms.layerScale.value.z = attributes.layerScale.z;
-	      this.m_Uniforms.layerScale.value.w = attributes.layerScale.w;
-	    }
-	    if (attributes.layerAmplitude && attributes.layerAmplitude.x !== undefined) {
-	      this.m_Uniforms.layerAmplitude.value.x = attributes.layerAmplitude.x;
-	      this.m_Uniforms.layerAmplitude.value.y = attributes.layerAmplitude.y;
-	      this.m_Uniforms.layerAmplitude.value.z = attributes.layerAmplitude.z;
-	      this.m_Uniforms.layerAmplitude.value.w = attributes.layerAmplitude.w;
-	    }
-	    this.renderNoise();
-	  };
-
-	  SimplexNoiseRenderer.VertexShader = ['varying vec2 vUv;', 'uniform vec2 scale;', 'uniform vec2 offset;', 'void main() {', 'vUv = uv * scale + offset;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
-
-	  SimplexNoiseRenderer.FragmentShader = [
-	    // For a given vector into the world (generated using UVs), sample the source
-	    // map using importance sampling.
-	    // x = -sin(u);
-	    // y = -sin(2v);
-	    // float4 PixelShaderFunction(VertexShaderOutput input) : SV_TARGET0
-	    // {
-	    //     ...
-
-	    //     float3 surface = tex2D(surfaceMap_Sampler, input.Texcoord).rgb;
-	    //     float ior = 1 + surface.r;
-	    //     float roughness = saturate(surface.g - EPSILON) + EPSILON;
-	    //     float metallic = surface.b;
-
-	    //     // Calculate colour at normal incidence
-	    //     float3 F0 = abs ((1.0 - ior) / (1.0 + ior));
-	    //     F0 = F0 * F0;
-	    //     F0 = lerp(F0, materialColour.rgb, metallic);
-
-	    //     // Calculate the specular contribution
-	    //     float3 ks = 0;
-	    //     float3 specular = GGX_Specular(specularCubemap, normal, viewVector, roughness, F0, ks );
-	    //     float3 kd = (1 - ks) * (1 - metallic);
-	    //     // Calculate the diffuse contribution
-	    //     float3 irradiance = texCUBE(diffuseCubemap_Sampler, normal ).rgb;
-	    //     float3 diffuse = materialColour * irradiance;
-
-	    //     return float4( kd * diffuse + /*ks **/ specular, 1);
-	    // }
-	  ].join('\n');
-
-	  return SimplexNoiseRenderer;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 111 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	/* eslint-disable */
 	/*
 	@vid input_controller_component
 	@vname Input Controller
@@ -74491,7 +74315,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 112 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -75082,7 +74906,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 113 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -75216,7 +75040,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 114 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -75370,6 +75194,634 @@
 	  NormalMapGenerator.FragmentShader = ['precision lowp float;', 'uniform float smoothness;', 'uniform float spread;', 'uniform vec2 resolution;', 'uniform sampler2D bumpTexture;', 'vec2 size = vec2( smoothness, 0.0 );', 'vec3 off = vec3(-spread / resolution.x, 0.0, spread / resolution.y);', 'varying vec2 vUv;', 'void main() {', 'vec4 wave = texture2D( bumpTexture, vUv);', 'float s11 = wave.x;', 'float s01 = texture2D( bumpTexture, vUv + off.xy ).x;', 'float s21 = texture2D( bumpTexture, vUv + off.zy ).x;', 'float s10 = texture2D( bumpTexture, vUv + off.yx ).x;', 'float s12 = texture2D( bumpTexture, vUv + off.yz ).x;', 'vec3 va = normalize(vec3( size.xy, s21-s01));', 'vec3 vb = normalize(vec3( size.yx, s12-s10));', 'vec3 norm = cross(va,vb);', 'gl_FragColor = vec4( norm * 0.5 + 0.5, s11 );', '}'].join('\n');
 
 	  return NormalMapGenerator;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 114 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	/* eslint-disable */
+	/**
+	 * @vid object_animator_component
+	 * @vname Object Animator
+	 * @vcategory Animation
+	 * @vfilter Object
+	 * @vevent local playAnimateAlongCurve {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'curve', 'type' : 'object', 'componentFilter': { 'Curve' : true }},
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'orientation', 'description': 'Orient the object following the curve to either the direction of the curve or to the objects defining the curve.', 'type': 'dd', 'default': 'toCurve', 'options' : { 'None': 'None', 'To Curve' : 'toCurve', 'To Nodes' : 'toNode'}},
+	 *     {name: 'loop', 'type' : 'b', 'description': '', 'default': false}
+	 *   ]
+	 * }
+	 * @vevent local playAnimateToObject {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'object', 'type' : 'object', 'default': null},
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Total time that the animation will take. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'update orientation', 'type' : 'b', 'default': true}
+	 *   ]
+	 * }
+	 * @vevent local playAnimateTranslation {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -1.0, 'max': 1.0},
+	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s position represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *   ]
+	 * }
+	 * @vevent local playAnimateRotation {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'angularVelocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -100.0, 'max': 100.0},
+	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s rotation represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *     {name: 'axisOrder', 'type' : 'dd', 'description': 'Specify the axis order that the angular velocity will be applied in.', 'default': 'YXZ', 'options': {
+	 *       'XYZ': 'XYZ',
+	 *       'YXZ': 'YXZ',
+	 *       'ZXY': 'ZXY',
+	 *       'XZY': 'XZY',
+	 *       'YZX': 'YZX',
+	 *       'ZYX': 'ZYX'}
+	 *     }
+	 *   ]
+	 * }
+	 * @vevent local playAnimateScale {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -10.0, 'max': 10.0},
+	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s scale represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *   ]
+	 * }
+	 * @vevent local pauseCurveAnimation { 'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local stopCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local unpauseCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local endAnimateAlongCurve {'action': false, 'category': 'Animation', 'parameters': []}
+	 * @vevent local endAnimateToObject {'action': false, 'category': 'Animation', 'parameters': []}
+	 * @vevent lcoal endAnimateTranslation {'action': false, 'category': 'Animation', 'parameters': []}
+	 */
+	/* eslint-enable*/
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(94)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
+	  'use strict';
+
+	  function ObjectAnimator() {
+	    this.playingCurveAnimation = false;
+	    this.curveAnim = undefined;
+	  }
+
+	  ObjectAnimator.prototype = new Box3DComponent();
+
+	  /**
+	   * Called immediately after after component creation
+	   */
+	  ObjectAnimator.prototype.init = function () {
+	    this.getEntity().on('playAnimateAlongCurve', this.animateAlongCurve, this);
+	    this.getEntity().on('playAnimateToObject', this.animateToObject, this);
+	    this.getEntity().on('playAnimateTranslation', this.animateTranslation, this);
+	    this.getEntity().on('playAnimateRotation', this.animateRotation, this);
+	    this.getEntity().on('playAnimateScale', this.animateScale, this);
+	    this.getEntity().on('pauseCurveAnimation', this.onPauseCurveAnimation, this);
+	    this.getEntity().on('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
+	    this.getEntity().on('stopCurveAnimation', this.stopCurveAnimation, this);
+
+	    this.on('disable', this.onDisable, this);
+	  };
+
+	  ObjectAnimator.prototype.shutdown = function () {
+	    this.getEntity().off('playAnimateAlongCurve', this.animateAlongCurve, this);
+	    this.getEntity().off('playAnimateToObject', this.animateToObject, this);
+	    this.getEntity().off('playAnimateTranslation', this.animateTranslation, this);
+	    this.getEntity().off('playAnimateRotation', this.animateRotation, this);
+	    this.getEntity().off('playAnimateScale', this.animateScale, this);
+	    this.getEntity().off('pauseCurveAnimation', this.onPauseCurveAnimation, this);
+	    this.getEntity().off('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
+	    this.getEntity().off('stopCurveAnimation', this.stopCurveAnimation, this);
+
+	    this.off('disable', this.onDisable, this);
+	  };
+
+	  ObjectAnimator.prototype.onDisable = function () {
+	    this.getRuntimeData().position.copy(this.getEntity().getPosition());
+	    this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
+	    this.getRuntimeData().scale.copy(this.getEntity().getScale());
+	  };
+
+	  ObjectAnimator.prototype.stopCurveAnimation = function () {
+	    this.getRuntime().off('update', this.curveAnim, this);
+	    this.curveAnim = undefined;
+	  };
+
+	  ObjectAnimator.prototype.animateAlongCurve = function (curveObjectId, animationTime, easeIn, easeOut, orientation, loop) {
+
+	    function curveAnim(delta) {
+	      if (!this.box3DEntity || !this.isEnabled()) {
+	        engine.off('update', this.curveAnim, this);
+	        this.curveAnim = undefined;
+	        return;
+	      }
+	      if (curveComponent && this.playingCurveAnimation) {
+	        this.getRuntime().needsRender = true;
+	        currentTime += delta;
+	        var currentTimePercent = currentTime / animationTime;
+	        if (currentTimePercent >= 1.0) {
+	          currentTimePercent -= 1.0;
+	        }
+	        var easeOutStart = 1 - easeOut;
+
+	        //Ease in
+	        if (easeIn && currentTimePercent < easeIn) {
+	          var easeInProgress = currentTimePercent / easeIn;
+	          curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	        } else if (easeOut && currentTimePercent > easeOutStart) {
+	          //Ease out
+	          var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	          curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	        } else {
+	          //Full speed animation
+	          curveProgressPercent += delta * fullSpeed / animationTime;
+	        }
+
+	        //If the animation is finished
+	        if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
+	          curveProgressPercent %= 1.0;
+	          currentTime = 0.0;
+	          if (!loop) {
+	            curveProgressPercent = 0.99999999;
+	            this.playingCurveAnimation = false;
+
+	            this.getRuntime().off('update', this.curveAnim, this);
+	            this.curveAnim = undefined;
+	          }
+	          this.getEntity().trigger('endAnimateAlongCurve');
+	        }
+
+	        var curve = curveComponent.curve;
+	        var curveProgress_NodeRelative = curve.getUtoTmapping(curveProgressPercent);
+	        runtimeData.position.copy(curve.getPoint(curveProgress_NodeRelative));
+
+	        if (orientation === 'toCurve') {
+	          var tangent = curve.getTangent(curveProgress_NodeRelative);
+	          tempVector1.set(0, -1, 0);
+	          tempVector2.crossVectors(tangent, tempVector1);
+	          tempVector3.crossVectors(tangent, tempVector2);
+	          tempVector1.copy(runtimeData.position);
+	          tempVector1.add(tangent);
+	          tempMatrix.lookAt(runtimeData.position, tempVector1, tempVector3);
+	          runtimeData.quaternion.setFromRotationMatrix(tempMatrix);
+	        } else if (orientation === 'toNode') {
+	          var curveSegments;
+	          if (curveComponent.closed) {
+	            curveSegments = curve.points.length;
+	          } else {
+	            curveSegments = curve.points.length - 1;
+	          }
+	          var prevNode = Math.floor(curveProgress_NodeRelative * curveSegments);
+	          var nextNode = Math.ceil(curveProgress_NodeRelative * curveSegments) % curve.points.length;
+
+	          if (prevNode !== currentPrevNode) {
+	            if (prevNode > 0) {
+	              curveComponent.controlPoints[prevNode].getQuaternionInWorldSpace(prevQuaternion);
+	            } else {
+	              curveComponent.controlPoints[0].getQuaternionInWorldSpace(prevQuaternion);
+	            }
+	          }
+	          if (nextNode !== currentNextNode) {
+	            if (nextNode > 0) {
+	              curveComponent.controlPoints[nextNode].getQuaternionInWorldSpace(nextQuaternion);
+	            } else {
+	              curveComponent.controlPoints[0].getQuaternionInWorldSpace(nextQuaternion);
+	            }
+	          }
+	          var interp = curveProgress_NodeRelative * curveSegments - prevNode;
+	          runtimeData.quaternion.copy(prevQuaternion);
+	          runtimeData.quaternion.slerp(nextQuaternion, interp);
+	        }
+	      }
+	    }
+	    var that = this;
+	    var curveComponent;
+	    var curveObject;
+
+	    if (curveObjectId) {
+	      curveObject = this.getRuntime().getEntityById(curveObjectId);
+	      var components = curveObject.getComponentsByScriptId('curve_component');
+	      curveComponent = components[_.keys(components)[0]];
+	    }
+	    if (!curveComponent) {
+	      return;
+	    }
+
+	    var runtimeData = this.getRuntimeData();
+	    var engine = this.getRuntime();
+	    var currentTime = 0;
+	    var curveProgressPercent = 0.0;
+
+	    var tempVector1 = new THREE.Vector3();
+	    var tempVector2 = new THREE.Vector3();
+	    var tempVector3 = new THREE.Vector3();
+	    var tempMatrix = new THREE.Matrix4();
+	    var prevQuaternion = new THREE.Quaternion();
+	    var nextQuaternion = new THREE.Quaternion();
+
+	    if (easeIn + easeOut > 1.0) {
+	      log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	      easeIn = 0.5;
+	      easeOut = 0.5;
+	    }
+
+	    var fullSpeedTime = 1.0 - easeIn - easeOut;
+	    var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
+
+	    if (animationTime > 0) {
+	      this.playingCurveAnimation = true;
+	      var currentPrevNode = -1;
+	      var currentNextNode = -1;
+	      if (curveComponent.isCurveInit()) {
+
+	        this.curveAnim = curveAnim;
+	        this.getRuntime().on('update', this.curveAnim, this);
+	      } else {
+	        curveComponent.on('curveInit', function () {
+	          this.curveAnim = curveAnim;
+	          that.getRuntime().on('update', this.curveAnim, that);
+	        }, this);
+	      }
+	    }
+	  };
+
+	  ObjectAnimator.prototype.onPauseCurveAnimation = function () {
+	    this.playingCurveAnimation = false;
+	  };
+
+	  ObjectAnimator.prototype.onUnpauseCurveAnimation = function () {
+	    this.playingCurveAnimation = true;
+	  };
+
+	  ObjectAnimator.prototype.animateToObject = function (objectId, animationTime, easeIn, easeOut, orientation) {
+	    var that = this;
+	    var engine = this.getRuntime();
+
+	    function _animateTo(threeObject) {
+
+	      var entity_data = that.getRuntimeData();
+	      var tempMatrix = new THREE.Matrix4();
+	      var currTime = 0;
+	      var curveProgressPercent = 0.0;
+
+	      if (easeIn + easeOut > 1.0) {
+	        log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
+	      }
+
+	      var fullSpeedTime = 1.0 - easeIn - easeOut;
+	      var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
+	      //var easeInDistance = easeIn * fullSpeed / 2.0;
+	      //var easeOutDistance = easeOut * fullSpeed / 2.0;
+
+	      var startPos = new THREE.Vector3();
+	      var startQuat;
+	      startPos.copy(entity_data.position);
+
+	      var targetPosition = threeObject.position;
+	      var targetQuaternion = threeObject.quaternion;
+
+	      if (targetQuaternion && orientation) {
+	        startQuat = new THREE.Quaternion();
+	        startQuat.copy(entity_data.quaternion);
+	      }
+	      threeObject.updateMatrixWorld();
+	      targetPosition.setFromMatrixPosition(threeObject.matrixWorld);
+	      tempMatrix.extractRotation(threeObject.matrixWorld);
+	      targetQuaternion.setFromRotationMatrix(tempMatrix);
+
+	      if (animationTime > 0) {
+	        that.getRuntime().on('update', function objAnim(delta) {
+	          if (!this.box3DEntity || !this.isEnabled()) {
+	            engine.off('update', objAnim, this);
+	            return;
+	          }
+	          that.getRuntime().needsRender = true;
+	          currTime += delta;
+	          var currentTimePercent = currTime / animationTime;
+	          var easeOutStart = 1 - easeOut;
+
+	          if (easeIn && currentTimePercent < easeIn) {
+	            //Ease in
+	            var easeInProgress = currentTimePercent / easeIn;
+	            curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	          } else if (easeOut && currentTimePercent > easeOutStart) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	          } else {
+	            //Full speed animation
+	            curveProgressPercent += delta * fullSpeed / animationTime;
+	          }
+	          //clamp at 1
+	          curveProgressPercent = Math.min(curveProgressPercent, 1.0);
+
+	          if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
+	            that.getRuntime().off('update', objAnim, that);
+	            that.getEntity().trigger('endAnimateToObject');
+	          }
+
+	          entity_data.position.copy(startPos);
+	          entity_data.position.lerp(targetPosition, curveProgressPercent);
+	          if (targetQuaternion && orientation) {
+	            entity_data.quaternion.copy(startQuat);
+	            entity_data.quaternion.slerp(targetQuaternion, curveProgressPercent);
+	          }
+	        }, that);
+	      } else {
+	        entity_data.position.copy(targetPosition);
+	        if (targetQuaternion) {
+	          entity_data.quaternion.copy(targetQuaternion);
+	        }
+
+	        //complete
+	        that.getEntity().trigger('endAnimateToObject');
+	      }
+	    }
+
+	    var object = this.getRuntime().getEntityById(objectId);
+	    if (object.runtimeData) {
+	      _animateTo(object.runtimeData);
+	    } else {
+	      object.once('loadBase', function () {
+	        _animateTo(object.runtimeData);
+	      }, this);
+	      object.load();
+	    }
+	  };
+
+	  ObjectAnimator.prototype.animateTranslation = function (animationTime, easeIn, easeOut, velocity, objectUsage) {
+
+	    var runtimeData = this.getRuntimeData();
+	    runtimeData.position.copy(this.getEntity().getPosition());
+	    runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	    runtimeData.scale.copy(this.getEntity().getScale());
+
+	    var currTime = 0;
+	    var engine = this.getRuntime();
+
+	    if (easeIn + easeOut > 1.0) {
+	      log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	      easeIn = 0.5;
+	      easeOut = 0.5;
+	    }
+
+	    var easeInTime = animationTime * easeIn;
+	    // var easeOutTime = animationTime * easeOut;
+
+	    var currentVelocity = new THREE.Vector3();
+	    var direction = new THREE.Vector3();
+	    direction.copy(velocity);
+	    var speed = direction.length();
+	    runtimeData.updateMatrixWorld();
+	    // runtimeData.updateMatrix();
+	    direction.applyQuaternion(runtimeData.quaternion);
+	    direction.normalize();
+
+	    if (objectUsage) {
+	      var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	      var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	      //Based on the object usage, set the original position so that the
+	      //animation plays forward from there...
+	      if (objectUsage === 'middle') {
+	        //postiion - velocity * time * 0.5
+	        currentVelocity.copy(velocity);
+	        currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	        runtimeData.position.add(currentVelocity);
+	      } else if (objectUsage === 'end') {
+	        currentVelocity.copy(velocity);
+	        currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	        runtimeData.position.add(currentVelocity);
+	      }
+	    }
+
+	    if (animationTime > 0) {
+	      this.getRuntime().on('update', function objAnim(delta) {
+	        if (!this.box3DEntity || !this.isEnabled()) {
+	          engine.off('update', objAnim, this);
+	          return;
+	        }
+	        currentVelocity.copy(direction);
+
+	        this.getRuntime().needsRender = true;
+	        currTime += delta;
+	        var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
+	        var easeOutStart = 1.0 - easeOut;
+	        var easeOutStartTime = animationTime * easeOutStart;
+
+	        if (easeIn && currTime < easeInTime) {
+	          //Ease in
+	          var easeInProgress = currentTimePercent / easeIn;
+	          currentVelocity.multiplyScalar(delta * speed * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
+	        } else if (easeOut && currTime > easeOutStartTime) {
+	          //Ease out
+	          var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	          currentVelocity.multiplyScalar(delta * speed * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
+	        } else {
+	          //Full speed animation
+	          currentVelocity.multiplyScalar(delta * speed);
+	        }
+
+	        if (currTime >= animationTime) {
+	          this.getRuntime().off('update', objAnim, this);
+	          this.getEntity().trigger('endAnimateTranslation');
+	        }
+
+	        runtimeData.position.add(currentVelocity);
+	      }, this);
+	    }
+	  };
+
+	  ObjectAnimator.prototype.animateRotation = function (animationTime, easeIn, easeOut, velocity, objectUsage, axisOrder) {
+
+	    var runtimeData = this.getRuntimeData();
+	    runtimeData.position.copy(this.getEntity().getPosition());
+	    runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	    runtimeData.scale.copy(this.getEntity().getScale());
+
+	    var currTime = 0;
+	    var engine = this.getRuntime();
+
+	    if (easeIn + easeOut > 1.0) {
+	      log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	      easeIn = 0.5;
+	      easeOut = 0.5;
+	    }
+
+	    var easeInTime = animationTime * easeIn;
+	    // var easeOutTime = animationTime * easeOut;
+	    var currentVelocity = new THREE.Quaternion();
+	    var fullSpeedQuat = new THREE.Quaternion();
+
+	    var tempVector1 = new THREE.Vector3();
+	    var eulerVelocity = new THREE.Euler(axisOrder);
+	    eulerVelocity.set(velocity.x, velocity.y, velocity.z);
+	    //Convert the euler angles to quaternion
+	    currentVelocity.setFromEuler(eulerVelocity);
+	    fullSpeedQuat.copy(currentVelocity);
+
+	    runtimeData.updateMatrixWorld();
+
+	    if (objectUsage) {
+	      var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	      var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	      //Based on the object usage, set the original rotation so that the
+	      //animation plays forward from there...
+	      if (objectUsage === 'middle') {
+	        //postiion - velocity * time * 0.5
+	        tempVector1.copy(velocity);
+	        tempVector1.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	        eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
+	        currentVelocity.setFromEuler(eulerVelocity);
+	        runtimeData.quaternion.multiply(currentVelocity);
+	      } else if (objectUsage === 'end') {
+	        tempVector1.copy(velocity);
+	        tempVector1.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	        eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
+	        currentVelocity.setFromEuler(eulerVelocity);
+	        runtimeData.quaternion.multiply(currentVelocity);
+	      }
+	    }
+
+	    if (animationTime > 0) {
+	      this.getRuntime().on('update', function objAnim(delta) {
+	        if (!this.box3DEntity || !this.isEnabled()) {
+	          engine.off('update', objAnim, this);
+	          return;
+	        }
+	        var speed = 1.0;
+
+	        this.getRuntime().needsRender = true;
+	        currTime += delta;
+	        var currentTimePercent = Math.min(currTime / animationTime, 1.0);
+	        var easeOutStart = 1.0 - easeOut;
+	        var easeOutStartTime = animationTime * easeOutStart;
+
+	        if (easeIn && currTime < easeInTime) {
+	          //Ease in
+	          var easeInProgress = currentTimePercent / easeIn;
+	          speed *= delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	        } else if (easeOut && currTime > easeOutStartTime) {
+	          //Ease out
+	          var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	          speed *= delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	        } else {
+	          //Full speed animation
+	          speed *= delta;
+	        }
+
+	        if (currTime >= animationTime) {
+	          this.getRuntime().off('update', objAnim, this);
+	          this.getEntity().trigger('endAnimateTranslation');
+	        }
+	        currentVelocity.set(0.0, 0.0, 0.0, 1.0);
+	        currentVelocity.slerp(fullSpeedQuat, speed);
+	        runtimeData.quaternion.multiply(currentVelocity);
+	      }, this);
+	    }
+	  };
+
+	  ObjectAnimator.prototype.animateScale = function (animationTime, easeIn, easeOut, velocity, objectUsage) {
+
+	    var runtimeData = this.getRuntimeData();
+	    runtimeData.position.copy(this.getEntity().getPosition());
+	    runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	    runtimeData.scale.copy(this.getEntity().getScale());
+
+	    var currTime = 0;
+	    var engine = this.getRuntime();
+
+	    if (easeIn + easeOut > 1.0) {
+	      log.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	      easeIn = 0.5;
+	      easeOut = 0.5;
+	    }
+
+	    var easeInTime = animationTime * easeIn;
+	    // var easeOutTime = animationTime * easeOut;
+
+	    var currentVelocity = new THREE.Vector3();
+	    runtimeData.updateMatrixWorld();
+
+	    if (objectUsage) {
+	      var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	      var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	      //Based on the object usage, set the original scale so that the
+	      //animation plays forward from there...
+	      if (objectUsage === 'middle') {
+	        //postiion - velocity * time * 0.5
+	        currentVelocity.copy(velocity);
+	        currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	        runtimeData.scale.add(currentVelocity);
+	      } else if (objectUsage === 'end') {
+	        currentVelocity.copy(velocity);
+	        currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	        runtimeData.scale.add(currentVelocity);
+	      }
+	    }
+
+	    if (animationTime > 0) {
+	      this.getRuntime().on('update', function objAnim(delta) {
+	        if (!this.box3DEntity || !this.isEnabled()) {
+	          engine.off('update', objAnim, this);
+	          return;
+	        }
+	        currentVelocity.copy(velocity);
+
+	        this.getRuntime().needsRender = true;
+	        currTime += delta;
+	        var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
+	        var easeOutStart = 1.0 - easeOut;
+	        var easeOutStartTime = animationTime * easeOutStart;
+
+	        if (easeIn && currTime < easeInTime) {
+	          //Ease in
+	          var easeInProgress = currentTimePercent / easeIn;
+	          currentVelocity.multiplyScalar(delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
+	        } else if (easeOut && currTime > easeOutStartTime) {
+	          //Ease out
+	          var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	          currentVelocity.multiplyScalar(delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
+	        } else {
+	          //Full speed animation
+	          currentVelocity.multiplyScalar(delta);
+	        }
+
+	        if (currTime >= animationTime) {
+	          this.getRuntime().off('update', objAnim, this);
+	          this.getEntity().trigger('endAnimateTranslation');
+	        }
+
+	        runtimeData.scale.add(currentVelocity);
+	      }, this);
+	    }
+	  };
+
+	  return ObjectAnimator;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -76463,538 +76915,6 @@
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	/* eslint-disable */
-	/**
-	 * @vid object_picker
-	 * @vname Object Picker
-	 * @vfilter Scene
-	 * @vcategory General
-	 * @vattr Dropdown pickTrigger {
-	 *   description: 'What mouse action will trigger the pick?',
-	 *   default: 'leftMouseClick',
-	 *   options: {
-	 *     'Left Mouse Click': 'leftMouseClick',
-	 *     'Middle Mouse Click': 'middleMouseClick',
-	 *     'Right Mouse Click': 'rightMouseClick',
-	 *     'Left Mouse Down': 'leftMouseDown',
-	 *     'Middle Mouse Down': 'middleMouseDown',
-	 *     'Right Mouse Down': 'rightMouseDown',
-	 *     'Left Mouse Up': 'leftMouseUp',
-	 *     'Middle Mouse Up': 'middleMouseUp',
-	 *     'Right Mouse Up': 'rightMouseUp'
-	 *   }
-	 * }
-	 * @vattr Boolean enableHoverByDefault {
-	 *   default: false,
-	 *   advanced: true,
-	 *   description: 'Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact.'
-	 * }
-	 * @vattr Integer hoverFrameSkip {
-	 *   description: 'Skip this many frames inbetween hover checks.',
-	 *   default: 1,
-	 *   min: 0,
-	 *   max: 60
-	 * }
-	 * @vevent other pick { action: false, category: 'General', parameters: [] }
-	 * @vevent other beginHover { action: false, category: 'General', parameters: [] }
-	 * @vevent other endHover { action: false, category: 'General', parameters: []}
-	 */
-	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(94)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
-	  /* global VAPI */
-	  'use strict'
-
-	  /**
-	   * A custom component class.
-	   *
-	   * @class ObjectPicker
-	   */
-	  ;
-	  function ObjectPicker() {
-	    this.pickingMaterialDef = undefined;
-	    this.meshRegistry = {};
-	    this.meshList = [];
-	    this.pickingTexture = undefined;
-	    this.currentHoverObject = undefined;
-	    this.currentFrame = 0;
-
-	    this.enableHoverByDefault = false;
-	    this.pickTrigger = null;
-	    this.hoverEnabled = false;
-	  }
-
-	  ObjectPicker.prototype = new Box3DComponent();
-
-	  ObjectPicker.prototype.preInit = function () {
-	    this.getRuntime().once('endHover:bound', this._enableHover, this);
-	    this.getRuntime().once('beginHover:bound', this._enableHover, this);
-	  };
-	  /**
-	   * Called immediately after after component creation
-	   */
-	  ObjectPicker.prototype.init = function () {
-	    // this.box3DEntity is available
-	    this.getRuntime().on('resize', this.resize, this);
-
-	    this.initPickingEvents();
-	    this.initPickingMaterial();
-	    this.initMeshRegistry();
-
-	    //listen to register objects
-	    this.getEvents().on('registerPickingObject', this.registerObject, this);
-	    this.getEvents().on('unregisterPickingObject', this.unregisterObject, this);
-
-	    this.resize();
-	  };
-
-	  /**
-	   * Called when a verold object is destroyed or this component is removed
-	   * from a verold object.
-	   */
-	  ObjectPicker.prototype.shutdown = function () {
-	    // make sure to clean up any events or other bindings that you have created
-	    // to avoid memory leaks
-	    this.uninitPickingEvents();
-
-	    this.getRuntime().off('resize', this.resize, this);
-	    this.getEvents().off('registerPickingObject', this.registerObject, this);
-	    this.getEvents().off('unregisterPickingObject', this.unregisterObject, this);
-
-	    var parentAsset = this.getEntity().getParentAsset();
-	    parentAsset.off('meshLoaded', this.registerMesh, this);
-	    parentAsset.off('meshUnloaded', this.unregisterMesh, this);
-	    if (this.pickingTexture) {
-	      this.pickingTexture.dispose();
-	      this.pickingTexture = undefined;
-	    }
-	    for (var x in this.meshRegistry) {
-	      if (this.meshRegistry[x].pickingMaterial) {
-	        this.meshRegistry[x].pickingMaterial.dispose();
-	      }
-	    }
-	    this.meshRegistry = {};
-	    this.meshList = [];
-	  };
-
-	  ObjectPicker.prototype.initPickingEvents = function () {
-	    if (this.pickTrigger.substr(-2) === 'Up') {
-	      if (VAPI.isMobile()) {
-	        this.getRuntime().on('touchEnd', this.touchPick, this);
-	      } else {
-	        this.getRuntime().on('mouseUp', this.pick, this);
-	      }
-	    } else if (this.pickTrigger.substr(-4) === 'Down') {
-	      if (VAPI.isMobile()) {
-	        this.getRuntime().on('touchStart', this.touchPick, this);
-	      } else {
-	        this.getRuntime().on('mouseDown', this.pick, this);
-	      }
-	    } else if (this.pickTrigger.substr(-5) === 'Click') {
-	      if (VAPI.isMobile()) {
-	        this.getRuntime().on('touchEnd', this.touchPickNoDrag, this);
-	      } else {
-	        this.getRuntime().on('mouseUp', this.pickNoDrag, this);
-	      }
-	    }
-
-	    if (this.enableHoverByDefault && !VAPI.isMobile()) {
-	      this._enableHover();
-	    }
-	  };
-
-	  ObjectPicker.prototype.uninitPickingEvents = function () {
-	    if (this.pickTrigger.substr(-2) === 'Up') {
-	      if (VAPI.isMobile()) {
-	        this.getRuntime().off('touchEnd', this.touchPick, this);
-	      } else {
-	        this.getRuntime().off('mouseUp', this.pick, this);
-	      }
-	    } else {
-	      if (VAPI.isMobile()) {
-	        this.getRuntime().off('touchStart', this.touchPick, this);
-	      } else {
-	        this.getRuntime().off('mouseDown', this.pick, this);
-	      }
-	    }
-
-	    if (this.enableHoverByDefault && !VAPI.isMobile()) {
-	      this.getRuntime().off('postRender', this.hoverUpdate, this);
-	    }
-	  };
-
-	  ObjectPicker.prototype.initPickingMaterial = function () {
-	    this.pickingMaterialDef = {
-
-	      depthTest: true,
-	      depthWrite: true,
-	      transparent: false,
-	      side: THREE.DoubleSide,
-
-	      uniforms: {
-	        color: {
-	          type: 'c',
-	          value: 0xff0000
-	        }
-	      },
-
-	      vertexShader: [THREE.ShaderChunk['skinning_pars_vertex'], THREE.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', THREE.ShaderChunk['skinbase_vertex'], THREE.ShaderChunk['skinnormal_vertex'], THREE.ShaderChunk['defaultnormal_vertex'], THREE.ShaderChunk['skinning_vertex'], THREE.ShaderChunk['project_vertex'], THREE.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
-
-	      fragmentShader: ['uniform vec3 color;', THREE.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', THREE.ShaderChunk['logdepthbuf_fragment'], 'gl_FragColor = vec4( color, 1.0 );', '}'].join('\n')
-
-	    };
-	  };
-
-	  ObjectPicker.prototype.initMeshRegistry = function () {
-	    var parentAsset = this.getEntity().getParentAsset();
-	    parentAsset.on('meshLoaded', this.registerMesh, this);
-	    parentAsset.on('meshUnloaded', this.unregisterMesh, this);
-
-	    var that = this;
-	    parentAsset.traverse(function (obj) {
-	      if (obj.type === 'mesh' || obj.type === 'skinned_mesh') {
-	        that.registerMesh(obj);
-	      }
-	    });
-	  };
-
-	  ObjectPicker.prototype._enableHover = function () {
-	    if (!this.hoverEnabled && !VAPI.isMobile()) {
-	      this.getRuntime().on('postRender', this.hoverUpdate, this);
-	      this.hoverEnabled = true;
-	    }
-	  };
-
-	  /**
-	  * reset the size of the texture used to test against geometry picking parameters
-	  * @method resize
-	  */
-	  ObjectPicker.prototype.resize = function () {
-	    var oldPickingTexture = this.pickingTexture;
-	    var width = this.getRenderer().getWidth();
-	    var height = this.getRenderer().getHeight();
-	    this.pickingTexture = new THREE.WebGLRenderTarget(Math.floor(width / 4.0), Math.floor(height / 4.0), {
-	      minFilter: THREE.LinearFilter
-	    });
-	    this.pickingTexture.texture.generateMipmaps = false;
-	    if (oldPickingTexture) {
-	      oldPickingTexture.dispose();
-	    }
-	  };
-
-	  ObjectPicker.prototype.registerObject = function (box3DObject, runtimeData) {
-
-	    if (!this.meshRegistry[runtimeData.id]) {
-	      this.meshRegistry[runtimeData.id] = {
-	        box3DEntity: box3DObject,
-	        runtimeData: runtimeData,
-	        prevMaterial: null,
-	        pickingMaterial: new THREE.ShaderMaterial(this.pickingMaterialDef)
-	      };
-	      //Array for fast iteration
-	      this.meshList.push(this.meshRegistry[runtimeData.id]);
-	      this.meshRegistry[runtimeData.id].index = this.meshList.length - 1;
-	      var material = this.meshRegistry[runtimeData.id].pickingMaterial;
-	      material.uniforms = THREE.UniformsUtils.clone(this.pickingMaterialDef.uniforms);
-	      material.uniforms.color.value = new THREE.Color(runtimeData.id);
-
-	      if (runtimeData instanceof THREE.SkinnedMesh) {
-	        material.skinning = true;
-	      }
-	    }
-	  };
-
-	  ObjectPicker.prototype.unregisterObject = function (box3DObject, runtimeData) {
-	    if (runtimeData) {
-	      //remove the enitity data from the pick history, if it's there
-	      this.removeFromHistory(runtimeData.id);
-	      //The meshUnloaded event should fire just before the runtimeData is deleted.
-	      if (this.meshRegistry[runtimeData.id]) {
-	        this.meshRegistry[runtimeData.id].box3DEntity = null;
-	        this.meshRegistry[runtimeData.id].pickingMaterial.dispose();
-	        this.meshList.splice(this.meshRegistry[runtimeData.id].index, 1);
-	        delete this.meshRegistry[runtimeData.id];
-	      }
-	    }
-	  };
-
-	  ObjectPicker.prototype.registerMesh = function (veroldMesh) {
-	    //When the THREE.Mesh is created, register it so that it can be selected.
-	    veroldMesh.when('loadBase', function (mesh) {
-	      this.registerObject(mesh, mesh.runtimeData);
-	    }, this);
-	  };
-
-	  ObjectPicker.prototype.unregisterMesh = function (veroldMesh) {
-	    if (veroldMesh) {
-	      this.unregisterObject(veroldMesh.runtimeData);
-	    }
-	  };
-
-	  ObjectPicker.prototype.getThreeObjects = function (objects) {
-	    var sceneObjects = [];
-	    _.each(objects, function (object) {
-	      if (object && object.runtimeData) {
-	        sceneObjects.push(object.runtimeData);
-	      }
-	    });
-
-	    return sceneObjects;
-	  };
-
-	  ObjectPicker.prototype.touchPickNoDrag = function (event, callback) {
-	    //Check drag state
-	    if (!this.getInput().touchDragStatePrevious) {
-	      this.touchPick(event, callback);
-	    }
-	  };
-
-	  ObjectPicker.prototype.touchPick = function (event, callback) {
-
-	    if (!this.isEnabled()) {
-	      return;
-	    }
-
-	    // if ( this.getInput().touchPosition.x ) {
-	    var x = this.getInput().touchPosition.x;
-	    var y = this.getInput().touchPosition.y;
-
-	    var mesh = this.pickMesh(x, y);
-	    if (mesh) {
-
-	      mesh.trigger('pick');
-	      var parent = mesh.getParentObject();
-	      while (parent) {
-	        parent.trigger('pick');
-	        parent = parent.getParentObject();
-	      }
-	      if (_.isFunction(callback)) {
-	        callback(mesh);
-	      }
-	    }
-	    // }
-	  };
-
-	  ObjectPicker.prototype.pickNoDrag = function (event, callback) {
-	    //Check drag state
-	    if (!this.getInput().mouseDragStatePrevious[event.button]) {
-	      this.pick(event, callback);
-	    }
-	  };
-
-	  ObjectPicker.prototype.pick = function (event, callback) {
-	    if (!this.isEnabled()) {
-	      return;
-	    }
-	    if (this.pickTrigger.substr(0, 4) === 'left') {
-	      if (event.button !== 0) {
-	        return;
-	      }
-	    } else if (this.pickTrigger.substr(0, 4) === 'right') {
-	      if (event.button !== 2) {
-	        return;
-	      }
-	    } else if (event.button !== 1) {
-	      return;
-	    }
-	    var x = event.clientX;
-	    var y = event.clientY;
-	    var mesh = this.pickMesh(x, y);
-	    if (mesh) {
-	      mesh.trigger('pick');
-	      var parent = mesh.getParentObject();
-	      while (parent) {
-	        parent.trigger('pick');
-	        parent = parent.getParentObject();
-	      }
-	      if (_.isFunction(callback)) {
-	        callback(mesh);
-	      }
-	    }
-	  };
-
-	  ObjectPicker.prototype.hoverUpdate = function () {
-	    if (!this.isEnabled()) {
-	      return;
-	    }
-	    if (this.currentFrame < this.hoverFrameSkip) {
-	      this.currentFrame++;
-	      return;
-	    }
-	    this.currentFrame = 0;
-	    var x = this.getInput().mousePosition.x;
-	    var y = this.getInput().mousePosition.y;
-	    var parent;
-	    var mesh = this.pickMesh(x, y);
-	    if (mesh !== this.currentHoverObject) {
-	      if (this.currentHoverObject) {
-
-	        this.currentHoverObject.trigger('endHover');
-	        parent = this.currentHoverObject.getParentObject();
-	        while (parent) {
-	          parent.trigger('endHover');
-	          parent = parent.getParentObject();
-	        }
-	      }
-	      if (mesh) {
-	        this.currentHoverObject = mesh;
-
-	        mesh.trigger('beginHover');
-	        parent = mesh.getParentObject();
-	        while (parent) {
-	          parent.trigger('beginHover');
-	          parent = parent.getParentObject();
-	        }
-	      } else {
-	        this.currentHoverObject = null;
-	      }
-	    }
-	  };
-
-	  ObjectPicker.prototype.pickMesh = function (x, y) {
-
-	    var that = this;
-	    var scenes = this.getRuntime().assetRegistry.getAssetsByType('scene');
-	    var i;
-	    var pickedMesh = null;
-	    _.each(scenes, function (scene) {
-	      var cameras = scene.getObjectsByType('camera');
-
-	      var renderViews = [];
-	      _.each(cameras, function (camera) {
-	        var renderViewComponents = camera.getComponentsByScriptId('render_view_component');
-	        _.each(renderViewComponents, function (renderViewComponent) {
-	          if (renderViewComponent.isEnabled()) {
-	            if (renderViews.length > 0) {
-	              for (i = 0; i < renderViews.length; i++) {
-	                var renderView = renderViews[i];
-	                if (renderViewComponent.renderGroup >= renderView.renderGroup) {
-	                  renderViews.splice(i, 0, renderViewComponent);
-	                  break;
-	                }
-	              }
-	            } else {
-	              renderViews.push(renderViewComponent);
-	            }
-	          }
-	        });
-	      }, this);
-
-	      for (i = 0; i < renderViews.length; i++) {
-	        var renderView = renderViews[i];
-	        var canvas_height = that.getRenderer().getHeight();
-	        var viewport_offset = canvas_height - renderView._height - renderView._y;
-	        //Get the percentage x,y positions of the mouse on the viewport
-	        var mouseX = (x - renderView._x) / renderView._width;
-	        var mouseY = (y - viewport_offset) / renderView._height;
-
-	        // pickedMesh = this.doRaycastPick( scene, renderView.box3DEntity, mouseX, mouseY );
-	        pickedMesh = this.doGPUPick(scene, renderView.box3DEntity, mouseX, mouseY);
-	        if (pickedMesh) {
-	          return;
-	        }
-	      }
-	    }, this);
-
-	    return pickedMesh;
-	  };
-
-	  ObjectPicker.prototype.doRaycastPick = function (scene, camera, mouseX, mouseY) {
-	    var x = mouseX * 2 - 1;
-	    var y = -mouseY * 2 + 1;
-
-	    var vector = new THREE.Vector3(x, y, 0.5);
-
-	    vector.unproject(camera.runtimeData);
-
-	    var raycaster = new THREE.Raycaster(camera.runtimeData.position, vector.sub(camera.runtimeData.position).normalize());
-
-	    var sceneObjects = this.getThreeObjects(scene.getObjects());
-	    var intersections = raycaster.intersectObjects(sceneObjects, false);
-
-	    if (intersections.length > 0) {
-	      for (var i = 0; i < intersections.length; i++) {
-	        var parent = intersections[i].object.parent;
-	        var entityId = intersections[i].object.box3DEntityId;
-	        var isVisible = true;
-	        if (!intersections[i].object.visible) {
-	          isVisible = false;
-	          continue;
-	        }
-	        while (parent) {
-
-	          if (!parent.visible) {
-	            isVisible = false;
-	            break;
-	          }
-
-	          parent = parent.parent;
-	        }
-
-	        if (isVisible) {
-	          return this.getRuntime().getEntityById(entityId);
-	        }
-	      }
-	    }
-	    return null;
-	  };
-
-	  ObjectPicker.prototype.doGPUPick = function (scene, camera, mouseX, mouseY) {
-
-	    if (mouseX < 0.0 || mouseY < 0.0 || mouseX > 1.0 || mouseY > 1.0) {
-	      return null;
-	    }
-
-	    var i = 0;
-	    var material;
-	    for (i = 0; i < this.meshList.length; i++) {
-	      if (this.meshList[i].runtimeData) {
-	        material = this.meshList[i].runtimeData.material;
-	        this.meshList[i].prevMaterial = material;
-	        this.meshList[i].runtimeData.material = this.meshList[i].pickingMaterial;
-	      }
-	    }
-	    var renderer = this.getThreeRenderer();
-	    var currentShadowMapEnabled = renderer.shadowMap.enabled;
-	    renderer.shadowMap.enabled = false;
-	    // renderer.enableScissorTest( true );
-	    renderer.setViewport(0, 0, this.pickingTexture.width, this.pickingTexture.height);
-	    //render the picking scene off-screen
-	    var gl = renderer.getContext();
-	    renderer.render(scene.runtimeData, camera.runtimeData, this.pickingTexture, true);
-
-	    //Return materials to their previous state
-	    for (i = 0; i < this.meshList.length; i++) {
-	      if (this.meshList[i].runtimeData) {
-	        this.meshList[i].runtimeData.material = this.meshList[i].prevMaterial;
-	      }
-	    }
-
-	    var pixelBuffer = new Uint8Array(4);
-	    //read the pixel under the mouse from the texture
-	    gl.readPixels(mouseX * this.pickingTexture.width, this.pickingTexture.height * (1.0 - mouseY), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
-
-	    //interpret the pixel as an ID
-	    var id = pixelBuffer[0] << 16 | pixelBuffer[1] << 8 | pixelBuffer[2];
-
-	    renderer.shadowMap.enabled = currentShadowMapEnabled;
-	    renderer.setRenderTarget(null);
-
-	    if (this.meshRegistry[id]) {
-	      var entityId = this.meshRegistry[id].box3DEntity.id;
-	      return this.getRuntime().getEntityById(entityId);
-	    }
-	    return null;
-	  };
-
-	  return ObjectPicker;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 117 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	/* eslint-disable */
 	/*
 	@vid orbit_camera_controller
 	@vname Orbit Camera Controller
@@ -78027,7 +77947,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 118 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -78184,7 +78104,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 119 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -78468,7 +78388,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 120 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -79495,7 +79415,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 121 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -79719,7 +79639,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 122 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -79791,7 +79711,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 123 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -80151,7 +80071,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 124 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -80673,7 +80593,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 125 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -81232,7 +81152,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 126 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -81630,7 +81550,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 127 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -81933,7 +81853,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 128 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -82523,7 +82443,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 129 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -82700,7 +82620,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 130 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -82773,7 +82693,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 131 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -83112,7 +83032,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 132 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -83313,7 +83233,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 133 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -83632,7 +83552,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 134 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -83868,7 +83788,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 135 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -84033,7 +83953,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 136 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -84041,7 +83961,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(79), __webpack_require__(137), __webpack_require__(138), __webpack_require__(142)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, BaseRegistry, ShaderAsset, Box3DShaderPBR_Metalness, Box3DShaderPBR_Specular) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(79), __webpack_require__(136), __webpack_require__(137), __webpack_require__(141)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, BaseRegistry, ShaderAsset, Box3DShaderPBR_Metalness, Box3DShaderPBR_Specular) {
 	  'use strict';
 
 	  var ShaderRegistry = function ShaderRegistry() {
@@ -84060,7 +83980,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 137 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -84249,12 +84169,12 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 138 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(139), __webpack_require__(140), __webpack_require__(141)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(138), __webpack_require__(139), __webpack_require__(140)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -84314,7 +84234,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 139 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -85446,24 +85366,24 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 140 */
+/* 139 */
 /***/ function(module, exports) {
 
 	module.exports = "\r\n/**\r\n * Shader used as a Box3D material type\r\n *\r\n * Written by Mike Bond\r\n */\r\n#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\tattribute vec4 tangent;\r\n#endif\r\n\r\nattribute vec2 uv2;\r\n\r\nuniform float time;\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n\tuniform float logDepthBufFC;\r\n#endif\r\n\r\n#ifdef DISPLACEMENT_MAP_RGBA\r\n\tuniform float displacementMag;\r\n\tuniform float displacementBias;\r\n\tuniform sampler2D displacementTexture;\r\n\tuniform int displacementUVChannel;\r\n\tuniform vec2 displacementTextureOffset;\r\n\tuniform vec2 displacementTextureScale;\r\n\tuniform vec2 displacementTexturePan;\r\n#endif\r\n\r\nvarying vec4 vNormal_VS;\r\n\r\n#if ( defined(NORMAL_MAP) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\nvarying vec4 vTangent_VS;\r\nvarying vec4 vBinormal_VS;\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR ) && defined( ALBEDO )\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#if defined( USE_SHADOWMAP ) && defined( USE_SCENE_LIGHTS )\r\n\t\t#if NUM_SHADOWS > 0\r\n\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\tuniform mat4 shadowMatrix[ NUM_SHADOWS ];\r\n\t\t#endif\r\n\t#endif\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tuniform mat4 bindMatrix;\r\n\tuniform mat4 bindMatrixInverse;\r\n\r\n\t#ifdef BONE_TEXTURE\r\n\r\n\t\tuniform sampler2D boneTexture;\r\n\t\tuniform int boneTextureWidth;\r\n\t\tuniform int boneTextureHeight;\r\n\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tfloat j = i * 4.0;\r\n\t\t\tfloat x = mod( j, float( boneTextureWidth ) );\r\n\t\t\tfloat y = floor( j / float( boneTextureHeight ) );\r\n\r\n\t\t\tfloat dx = 1.0 / float( boneTextureWidth );\r\n\t\t\tfloat dy = 1.0 / float( boneTextureHeight );\r\n\r\n\t\t\ty = dy * ( y + 0.5 );\r\n\r\n\t\t\tvec4 v1 = texture2D( boneTexture, vec2( dx * ( x + 0.5 ), y ) );\r\n\t\t\tvec4 v2 = texture2D( boneTexture, vec2( dx * ( x + 1.5 ), y ) );\r\n\t\t\tvec4 v3 = texture2D( boneTexture, vec2( dx * ( x + 2.5 ), y ) );\r\n\t\t\tvec4 v4 = texture2D( boneTexture, vec2( dx * ( x + 3.5 ), y ) );\r\n\r\n\t\t\tmat4 bone = mat4( v1, v2, v3, v4 );\r\n\r\n\t\t\treturn bone;\r\n\t\t}\r\n\t#else\r\n\r\n\t\tuniform mat4 boneGlobalMatrices[ NUM_BONES ];\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tmat4 bone = boneGlobalMatrices[ int(i) ];\r\n\t\t\treturn bone;\r\n\t\t}\r\n\r\n\t#endif\r\n#endif\r\n\r\n//Only for m * v (not v * m!)\r\nvec3 mulVectorByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn (v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] ) )).xyz;\r\n}\r\n\r\n//Only for m * p (not p * m!)\r\nvec4 mulPointByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] + m[3] ) );\r\n}\r\n\r\n\r\n\r\nvoid main() {\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvUv.xy = uv;\r\n\tvUv.y = 1.0 - vUv.y;\r\n\tvUv.zw = uv2;\r\n\tvUv.w = 1.0 - vUv.w;\r\n#endif\r\n\r\n#if defined( DISPLACEMENT_MAP_RGBA )\r\n\tfloat texDisplacement = 0.0;\r\n\t#if ( DISPLACEMENT_MAP_RGBA == 0 )\r\n\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\t\ttexDisplacement = displacementMag * displacementMap.x + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\r\n\t#elif ( DISPLACEMENT_MAP_RGBA == 1 )\r\n\t\t#define DISPLACEMENT_WITH_NORMAL\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\r\n\t\ttexDisplacement = displacementMag * displacementMap.a + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\t#endif\r\n\tvec4 displacedPosition = vec4( (normal * texDisplacement ) + position.xyz, 1.0 );\r\n#else\r\n\tvec4 displacedPosition = vec4( position, 1.0 );\r\n\r\n#endif\r\n\r\n\r\nhighp vec3 vNormal = normal;\r\n#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\thighp vec3 vTangent = tangent.xyz;\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tmat4 boneMatX = getBoneMatrix( skinIndex.x );\r\n\tmat4 boneMatY = getBoneMatrix( skinIndex.y );\r\n\tmat4 boneMatZ = getBoneMatrix( skinIndex.z );\r\n\tmat4 boneMatW = getBoneMatrix( skinIndex.w );\r\n\r\n\tmat4 skinMatrix = mat4( 0.0 );\r\n        skinMatrix += skinWeight.x * boneMatX;\r\n\tskinMatrix += skinWeight.y * boneMatY;\r\n\tskinMatrix += skinWeight.z * boneMatZ;\r\n\tskinMatrix += skinWeight.w * boneMatW;\r\n        skinMatrix  = bindMatrixInverse * skinMatrix * bindMatrix;\r\n\r\n\tvNormal = (skinMatrix * vec4( vNormal, 0.0 )).xyz;\r\n\t#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\t\tvTangent = (skinMatrix * vec4( vTangent, 0.0 )).xyz;\r\n\t#endif\r\n\r\n\tvec4 skinVertex    = bindMatrix * displacedPosition;\r\n\tdisplacedPosition  = boneMatX * skinVertex * skinWeight.x;\r\n\tdisplacedPosition += boneMatY * skinVertex * skinWeight.y;\r\n\tdisplacedPosition += boneMatZ * skinVertex * skinWeight.z;\r\n\tdisplacedPosition += boneMatW * skinVertex * skinWeight.w;\r\n\tdisplacedPosition  = bindMatrixInverse * displacedPosition;\r\n#endif\r\n\r\nvPosition_VS = modelViewMatrix * displacedPosition;\r\n\r\n#ifdef USE_BILLBOARDING\r\n\tgl_Position = projectionMatrix * (viewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + modelViewMatrix * displacedPosition );\r\n#else\r\n\tgl_Position = projectionMatrix * modelViewMatrix * displacedPosition;\r\n#endif\r\n\r\n#if defined( USE_LOGDEPTHBUF ) && !defined(DEPTH_PASS)\r\n\tgl_Position.z = log2(max(1e-6, gl_Position.w + 1.0)) * logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvFragDepth = 1.0 + gl_Position.w;\r\n\t#else\r\n\t\tgl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;\r\n\t#endif\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR )\r\n\t\t#if defined( ALBEDO )\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t\tvColor = color * color;\r\n\t\t\t#else\r\n\t\t\t\tvColor = color;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#endif\r\n\r\n\tvNormal_VS.xyz = normalMatrix * vNormal;\r\n\r\n\t#ifdef FLIP_SIDED\r\n\t\tvNormal_VS = -vNormal_VS;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\r\n\t\t#if defined( NORMAL_MAP ) && defined(USE_TANGENTS)\r\n\t\t\tvTangent_VS.xyz = normalMatrix * vTangent.xyz;\r\n\t\t\tvBinormal_VS.xyz = cross( vNormal_VS.xyz, vTangent_VS.xyz ) * tangent.w;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t \t#if NUM_SHADOWS > 0\r\n\r\n\t\t\t\tfor( int i = 0; i < NUM_SHADOWS; i ++ ) {\r\n\r\n\t\t\t\t\t#ifdef USE_MORPHTARGETS\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * vec4( morphed, 1.0 );\r\n\r\n\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * displacedPosition;\r\n\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z = log2(max(1e-6, 1.0 + vShadowCoord[ i ].w)) * logDepthBufFC - 1.0;\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z *= vShadowCoord[ i ].w;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t}\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t#endif\r\n#endif\r\n}"
 
 /***/ },
-/* 141 */
+/* 140 */
 /***/ function(module, exports) {
 
 	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t#extension GL_EXT_frag_depth : enable\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t// #ifdef SPECULAR_ENVIRONMENT_MAP_PROJECTION\r\n\t\t\tuniform float reflectionFresnel;\r\n\t\t\t#ifdef SPECULAR_ENVIRONMENT_MAP_CUBE\r\n\t\t\t\tuniform samplerCube specularEnvironmentMapCube;\r\n\t\t\t#elif defined(SPECULAR_ENVIRONMENT_MAP_2D)\r\n\t\t\t\tuniform sampler2D specularEnvironmentMap2D;\r\n\t\t\t#endif\r\n\t\t\t#ifdef DIFFUSE_ENVIRONMENT_MAP_CUBE\r\n\t\t\t\tuniform samplerCube diffuseEnvironmentMapCube;\r\n\t\t\t#elif defined(DIFFUSE_ENVIRONMENT_MAP_2D)\r\n\t\t\t\tuniform sampler2D diffuseEnvironmentMap2D;\r\n\t\t\t#endif\r\n\t\t// #endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t#if NUM_SHADOWS > 0\r\n\t\t\t\tuniform sampler2D shadowMap[ NUM_SHADOWS ];\r\n\t\t\t\tuniform vec2 shadowMapSize[ NUM_SHADOWS ];\r\n\t\t\t\tuniform float shadowBias[ NUM_SHADOWS ];\r\n\t\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\t#endif\r\n\r\n\t\t\tfloat unpackDepth( const in vec4 rgba_depth ) {\r\n\t\t\t\tconst vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\r\n\t\t\t\tfloat depth = dot( rgba_depth, bit_shift );\r\n\t\t\t\treturn depth;\r\n\t\t\t}\r\n\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t#ifdef GAMMA_INPUT\r\n\t\t  albedoTex.xyz *= albedoTex.xyz;\r\n\t\t#endif\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  emissiveTex *= emissiveTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  sssTex *= sssTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 sampleUV;\r\n\t\t\t#ifdef SPECULAR_ENVIRONMENT_MAP_CUBE_NUM_MIPS\r\n\t\t\t\tfloat numMips = float(SPECULAR_ENVIRONMENT_MAP_CUBE_NUM_MIPS);\r\n\t\t\t#elif defined(SPECULAR_ENVIRONMENT_MAP_2D_NUM_MIPS)\r\n\t\t\t\tfloat numMips = float(SPECULAR_ENVIRONMENT_MAP_2D_NUM_MIPS);\r\n\t\t\t#endif\r\n\r\n\t\t\t#if defined(SPECULAR_ENVIRONMENT_MAP_CUBE) || defined(SPECULAR_ENVIRONMENT_MAP_2D)\r\n\t\t\t\tmipBias = max((numMips * sqrt(roughnessValue)) - 3.0, 0.0);\r\n\r\n\t\t\t\t// vec3 cameraToVertex = normalize( vPosition_VS.xyz - cameraPosition );\r\n\t\t\t\t// vec3 cameraToVertex = normalize(vPosition_VS.xyz);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( SPECULAR_ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tvec4 reflectedColor = textureCube( specularEnvironmentMapCube, sampleUV, mipBias );\r\n\t\t\t\t//Sphere map reflection\r\n\t\t\t\t#elif ( SPECULAR_ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Don't use the full mipBias because the result gets less accurate as the mip gets larger (i.e. a 1x1 sphere map is only about half accurate)\r\n\t\t\t\t\tmipBias *= 0.5;\r\n\t\t\t\t\tvec4 reflectedColor = texture2D( specularEnvironmentMap2D, sampleUV.xy, mipBias);\r\n\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t#elif ( SPECULAR_ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t        vec4 reflectedColor = texture2D( specularEnvironmentMap2D, sampleUV.xy, mipBias );\r\n\t\t\t\t//Planar reflection\r\n\t\t\t\t#elif ( SPECULAR_ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\tvec4 reflectedColor = texture2D( specularEnvironmentMap2D, sampleUV.xy, mipBias );\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec4 reflectedColor = vec4(1.0);\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\t// If a diffuse environment map is also defined and uses the same projection, interpolate with it to\r\n\t\t\t\t// get a softer specular reflection on rough surfaces. In theory, this texture should represent fully\r\n\t\t\t\t// diffused light so mipBias should be unneccessary.\r\n\t\t\t\t#if defined(DIFFUSE_ENVIRONMENT_MAP_PROJECTION) && DIFFUSE_ENVIRONMENT_MAP_PROJECTION == SPECULAR_ENVIRONMENT_MAP_PROJECTION\r\n\t\t\t\t\t#if defined(DIFFUSE_ENVIRONMENT_MAP_CUBE) || defined(DIFFUSE_ENVIRONMENT_MAP_2D)\r\n\t\t\t\t\t\t#if ( SPECULAR_ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\t\t\tvec4 reflectedColorSoft = textureCube( diffuseEnvironmentMapCube, sampleUV );\r\n\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\tvec4 reflectedColorSoft = texture2D( diffuseEnvironmentMap2D, sampleUV.xy );\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\treflectedColor = mix(reflectedColor, reflectedColorSoft, roughnessValue);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t\t\treflectedColor.xyz *= reflectedColor.xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\r\n\t\t\t#if defined(DIFFUSE_ENVIRONMENT_MAP_CUBE) || defined(DIFFUSE_ENVIRONMENT_MAP_2D)\r\n\r\n\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t#if ( DIFFUSE_ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\ttotalDiffuse = texture2D( diffuseEnvironmentMap2D, sampleUV.xy).xyz;\r\n\t\t\t\t#elif ( DIFFUSE_ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\ttotalDiffuse = texture2D( diffuseEnvironmentMap2D, sampleUV.xy).xyz;\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#elif ( DIFFUSE_ENVIRONMENT_MAP_PROJECTION == 3)\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\ttotalDiffuse = textureCube( diffuseEnvironmentMapCube, sampleUV).xyz;\r\n\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t#elif ( DIFFUSE_ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t        totalDiffuse = texture2D( diffuseEnvironmentMap2D, sampleUV.xy).xyz;\r\n\t      #else\r\n\t      \ttotalDiffuse = vec3(1.0);\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t\t#if NUM_SHADOWS > 0 && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\t\t\t\t\tfloat shadowValues[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\tfloat shadowValuesScatter[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\t\t\t\t\t\tvec3 shadowColour = vec3(1.0);\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_DIR_LIGHTS; s ++ ) {\r\n\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\tvec3 frustumColors[3];\r\n\t\t\t\t\t\tfrustumColors[0] = vec3( 1.0, 0.5, 0.0 );\r\n\t\t\t\t\t\tfrustumColors[1] = vec3( 0.0, 1.0, 0.8 );\r\n\t\t\t\t\t\tfrustumColors[2] = vec3( 0.0, 0.5, 1.0 );\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\tint inFrustumCount = 0;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat fDepth;\r\n\t\t\t\t\t//int lightIndex = 0;\r\n\t\t\t\t\tint frustumIndex = 0;\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_SHADOWS; s ++ ) {\r\n\r\n\t\t\t\t\t\tvec3 shadowCoord = vShadowCoord[ s ].xyz / vShadowCoord[ s ].w;\r\n\t\t\t\t\t\t// \"if ( something && something )\" \t\t breaks ATI OpenGL shader compiler\r\n\t\t\t\t\t\t// \"if ( all( something, something ) )\"  using this instead\r\n\r\n\t\t\t\t\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\r\n\t\t\t\t\t\tbool inFrustum = all( inFrustumVec );\r\n\r\n\t\t\t\t\t\t// don't shadow pixels outside of light frustum\r\n\t\t\t\t\t\t// use just first frustum (for cascades)\r\n\t\t\t\t\t\t// don't shadow pixels behind far plane of light frustum\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\tinFrustumCount += int( inFrustum );\r\n\t\t\t\t\t\t\tbvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\tbool frustumTest = all( frustumTestVec );\r\n\r\n\t\t\t\t\t\tif ( frustumTest ) {\r\n\r\n\t\t\t\t\t\t\tshadowCoord.z += shadowBias[ s ];\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_TYPE_PCF_SOFT\r\n\r\n\t\t\t\t\t\t\t\t// Percentage-close filtering\r\n\t\t\t\t\t\t\t\t// (9 pixel kernel)\r\n\t\t\t\t\t\t\t\t// http://fabiensanglard.net/shadowmappingPCF/\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\r\n\r\n\t\t\t\t\t\t\t\t//const float shadowDelta = 1.0 / 9.0;\r\n\t\t\t\t\t\t\t\t//const float kernelCornerWeight = 1.0 / 16.0;\r\n\t\t\t\t\t\t\t\t//const float kernelEdgeWeight = 1.0 / 8.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.0 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.0 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tmat3 shadowKernel;\r\n\t\t\t\t\t\t\t\tmat3 depthKernel;\r\n\r\n\t\t\t\t\t\t\t\tdepthKernel[0][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\r\n\t\t\t\t\t\t\t\tvec3 shadowZ = vec3( shadowCoord.z );\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[0] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[1] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[2] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tvec2 fractionalCoord = 1.0 - fract(shadowCoord.xy * shadowMapSize[s].xy );\r\n\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\tvec4 shadowValueVector;\r\n\t\t\t\t\t\t\t\tshadowValueVector.x = mix(shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.y = mix(shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.z = mix(shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.w = mix(shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\r\n\r\n\t\t\t\t\t\t\t\tshadow = dot(shadowValueVector, vec4(1.0));\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\t\tdepthKernel[0] = mix( depthKernel[1], depthKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\t\tdepthKernel[1] = mix( depthKernel[2], depthKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\t\tvec4 depthValues;\r\n\t\t\t\t\t\t\t\t\tdepthValues.x = mix(depthKernel[0][1], depthKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.y = mix(depthKernel[0][2], depthKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.z = mix(depthKernel[1][1], depthKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.w = mix(depthKernel[1][2], depthKernel[1][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tfloat totalDepth = dot(depthValues, vec4(1.0));// + dot(depthKernel[1], vec3(1.0)) + dot(depthKernel[2], vec3(1.0));\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 4.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 100.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 1000.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#elif defined( SHADOWMAP_TYPE_PCF )\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\t\t\t\t\t\t\t\tconst float shadowDelta = 1.0 / 9.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.25 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.25 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tfloat totalDepth = 0.0;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy, 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 9.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 10000.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 100.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tvec4 rgbaDepth = texture2DProj( shadowMap[ s ], vec4( vShadowCoord[ s ].w * ( shadowCoord.xy ), 0.05, vShadowCoord[ s ].w ) );\r\n\t\t\t\t\t\t\t\t// vec4 rgbaDepth = texture2D( shadowMap[ s ], shadowCoord.xy );\r\n\t\t\t\t\t\t\t\tfloat fDepth = unpackDepth( rgbaDepth );\r\n\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) {\r\n\r\n\t\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= 0.0;\r\n\t\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 0.0;\r\n\t\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - fDepth );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum && inFrustumCount == 1 ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t//frustumIndex ++;\r\n\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\t\t\t\t\tfloat shadowValue = 1.0;\r\n\t\t\t\t\tfloat shadowValueScatter = 1.0;\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0) && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\r\n\t\t\t\t\t\tshadowValue = shadowValues[ i ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0)\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValueScatter = shadowValuesScatter[ i ];\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * (specWeight * shadowValue) + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * shadowValue * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && defined( SHADOWMAP_DEBUG )\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\ttotalDiffuse *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t#ifdef SPECULAR_COLOR\r\n\t\t\t\t\t\t\ttotalSpecular *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && defined(SPECULAR) && (defined(SPECULAR_ENVIRONMENT_MAP_CUBE) || defined(SPECULAR_ENVIRONMENT_MAP_2D))\r\n\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\tvec3 reflectance_term = reflectedColor.xyz * fresnel;\r\n\t\t\ttotalSpecular += reflectance_term * specularColorValue * (1.0 - roughnessValue);\r\n\r\n\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t#ifdef GAMMA_OUTPUT\r\n\t\t\tfinalColor = sqrt( finalColor );\r\n\t\t#endif\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
 
 /***/ },
-/* 142 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(139), __webpack_require__(140), __webpack_require__(141)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(138), __webpack_require__(139), __webpack_require__(140)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -85523,7 +85443,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 143 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -85557,7 +85477,120 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
+/* 143 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var now = __webpack_require__(144)
+	  , global = typeof window === 'undefined' ? {} : window
+	  , vendors = ['moz', 'webkit']
+	  , suffix = 'AnimationFrame'
+	  , raf = global['request' + suffix]
+	  , caf = global['cancel' + suffix] || global['cancelRequest' + suffix]
+
+	for(var i = 0; i < vendors.length && !raf; i++) {
+	  raf = global[vendors[i] + 'Request' + suffix]
+	  caf = global[vendors[i] + 'Cancel' + suffix]
+	      || global[vendors[i] + 'CancelRequest' + suffix]
+	}
+
+	// Some versions of FF have rAF but not cAF
+	if(!raf || !caf) {
+	  var last = 0
+	    , id = 0
+	    , queue = []
+	    , frameDuration = 1000 / 60
+
+	  raf = function(callback) {
+	    if(queue.length === 0) {
+	      var _now = now()
+	        , next = Math.max(0, frameDuration - (_now - last))
+	      last = next + _now
+	      setTimeout(function() {
+	        var cp = queue.slice(0)
+	        // Clear queue here to prevent
+	        // callbacks from appending listeners
+	        // to the current frame's queue
+	        queue.length = 0
+	        for(var i = 0; i < cp.length; i++) {
+	          if(!cp[i].cancelled) {
+	            try{
+	              cp[i].callback(last)
+	            } catch(e) {
+	              setTimeout(function() { throw e }, 0)
+	            }
+	          }
+	        }
+	      }, Math.round(next))
+	    }
+	    queue.push({
+	      handle: ++id,
+	      callback: callback,
+	      cancelled: false
+	    })
+	    return id
+	  }
+
+	  caf = function(handle) {
+	    for(var i = 0; i < queue.length; i++) {
+	      if(queue[i].handle === handle) {
+	        queue[i].cancelled = true
+	      }
+	    }
+	  }
+	}
+
+	module.exports = function(fn) {
+	  // Wrap in a new function to prevent
+	  // `cancel` potentially being assigned
+	  // to the native rAF function
+	  return raf.call(global, fn)
+	}
+	module.exports.cancel = function() {
+	  caf.apply(global, arguments)
+	}
+
+
+/***/ },
 /* 144 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
+	(function() {
+	  var getNanoSeconds, hrtime, loadTime;
+
+	  if ((typeof performance !== "undefined" && performance !== null) && performance.now) {
+	    module.exports = function() {
+	      return performance.now();
+	    };
+	  } else if ((typeof process !== "undefined" && process !== null) && process.hrtime) {
+	    module.exports = function() {
+	      return (getNanoSeconds() - loadTime) / 1e6;
+	    };
+	    hrtime = process.hrtime;
+	    getNanoSeconds = function() {
+	      var hr;
+	      hr = hrtime();
+	      return hr[0] * 1e9 + hr[1];
+	    };
+	    loadTime = getNanoSeconds();
+	  } else if (Date.now) {
+	    module.exports = function() {
+	      return Date.now() - loadTime;
+	    };
+	    loadTime = Date.now();
+	  } else {
+	    module.exports = function() {
+	      return new Date().getTime() - loadTime;
+	    };
+	    loadTime = new Date().getTime();
+	  }
+
+	}).call(this);
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(75)))
+
+/***/ },
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -86057,7 +86090,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -86102,7 +86135,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -86155,7 +86188,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87258,7 +87291,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87266,7 +87299,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(149)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseGeometryAsset) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(150)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseGeometryAsset) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -87525,12 +87558,12 @@
 	    _.each(primitivesByType, function (primitives, type) {
 	      var geometry = new THREE.BufferGeometry();
 
+	      // Add groups to the BufferGeometry.
 	      primitives.forEach(function (primitive) {
-	        geometry.addGroup(primitive.start, primitive.count, primitive.offset);
-
-	        geometry.groups[geometry.groups.length - 1].materialIndex = primitive.materialIndex;
+	        geometry.addGroup(primitive.start, primitive.count, primitive.materialIndex);
 	      });
 
+	      // Add attributes to the BufferGeometry.
 	      _.each(attributes, function (attribute, name) {
 	        if (name === 'index') {
 	          geometry.setIndex(attribute);
@@ -87629,7 +87662,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87651,6 +87684,11 @@
 	    Box3DAsset.call(this, json);
 	    this.loadedBytes = 0;
 	    this.geometries = {};
+	    this.maxMaterialIndices = {};
+
+	    _.each(BaseGeometryAsset.PrimitiveType, function (type) {
+	      this.maxMaterialIndices[type] = -1;
+	    }, this);
 	  };
 
 	  BaseGeometryAsset.prototype = new Box3DAsset();
@@ -87718,12 +87756,24 @@
 	   * Returns this asset's geometry of the specified type.
 	   * @method getGeometry
 	   * @public
-	   * @param {String} type one of the BaseGeometryAsset.PrimitiveType
+	   * @param {String} type one of BaseGeometryAsset.PrimitiveType
 	   * @returns {Object} a THREE.Geometry or THREE.BufferGeometry object
 	   */
 	  BaseGeometryAsset.prototype.getGeometry = function (type) {
 	    type = type !== undefined ? type : BaseGeometryAsset.PrimitiveType.TRIANGLES;
 	    return this.geometries[type];
+	  };
+
+	  /**
+	   * Returns this asset's maximum material index for the specified type.
+	   * @method getMaxMaterialIndex
+	   * @public
+	   * @param {String} type one of BaseGeometryAsset.PrimitiveType
+	   * @returns {Integer} the maximum material index
+	   */
+	  BaseGeometryAsset.prototype.getMaxMaterialIndex = function (type) {
+	    type = type !== undefined ? type : BaseGeometryAsset.PrimitiveType.TRIANGLES;
+	    return this.maxMaterialIndices[type];
 	  };
 
 	  /**
@@ -87735,12 +87785,35 @@
 	   * @returns {void}
 	   */
 	  BaseGeometryAsset.prototype.setGeometry = function (type, geometry) {
+	    var maxMaterialIndex = -1,
+	        missingMaterial = false;
+
 	    if (geometry) {
 	      // Flag the geometry as dynamic or static.
 	      geometry.dynamic = this.getProperty('dynamic') || false;
+
+	      // Correct negative material indices and compute the maximum material
+	      // index for this geometry.
+	      if (geometry instanceof THREE.BufferGeometry && geometry.groups) {
+	        geometry.groups.forEach(function (group) {
+	          maxMaterialIndex = Math.max(maxMaterialIndex, group.materialIndex);
+	        });
+
+	        geometry.groups.forEach(function (group) {
+	          if (group.materialIndex < 0) {
+	            group.materialIndex = maxMaterialIndex + 1;
+	            missingMaterial = true;
+	          }
+	        });
+
+	        if (missingMaterial) {
+	          maxMaterialIndex++;
+	        }
+	      }
 	    }
 
 	    this.geometries[type] = geometry;
+	    this.maxMaterialIndices[type] = maxMaterialIndex;
 	  };
 
 	  /**
@@ -87763,7 +87836,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87771,7 +87844,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(149)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseGeometryAsset) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(150)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseGeometryAsset) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -87862,7 +87935,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87911,7 +87984,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88017,6 +88090,11 @@
 	    }
 	  };
 
+	  /**
+	   * Temp function to set data from three.js texture. This should be replaced with a way to
+	   * create an asset from a url, blob data, etc. as this method doesn't set the asset up for
+	   * unload, reload, property changes, etc.
+	   */
 	  RenderTexture2DAsset.prototype.setFromThreeData = function (threeTexture) {
 	    var _this = this;
 
@@ -88041,7 +88119,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88277,7 +88355,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88470,7 +88548,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88552,7 +88630,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88699,7 +88777,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88725,12 +88803,12 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(75)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Promise) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(74)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Promise) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {},
@@ -89195,26 +89273,26 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./AssetRegistry/AnimationAsset": 144,
-		"./AssetRegistry/AnimationAsset.js": 144,
+		"./AssetRegistry/AnimationAsset": 145,
+		"./AssetRegistry/AnimationAsset.js": 145,
 		"./AssetRegistry/AnimationRegistry": 90,
 		"./AssetRegistry/AnimationRegistry.js": 90,
-		"./AssetRegistry/ApplicationAsset": 145,
-		"./AssetRegistry/ApplicationAsset.js": 145,
+		"./AssetRegistry/ApplicationAsset": 146,
+		"./AssetRegistry/ApplicationAsset.js": 146,
 		"./AssetRegistry/ApplicationRegistry": 80,
 		"./AssetRegistry/ApplicationRegistry.js": 80,
 		"./AssetRegistry/AssetRegistry": 77,
 		"./AssetRegistry/AssetRegistry.js": 77,
-		"./AssetRegistry/AudioAsset": 146,
-		"./AssetRegistry/AudioAsset.js": 146,
-		"./AssetRegistry/AudioRegistry": 143,
-		"./AssetRegistry/AudioRegistry.js": 143,
-		"./AssetRegistry/BaseGeometryAsset": 149,
-		"./AssetRegistry/BaseGeometryAsset.js": 149,
+		"./AssetRegistry/AudioAsset": 147,
+		"./AssetRegistry/AudioAsset.js": 147,
+		"./AssetRegistry/AudioRegistry": 142,
+		"./AssetRegistry/AudioRegistry.js": 142,
+		"./AssetRegistry/BaseGeometryAsset": 150,
+		"./AssetRegistry/BaseGeometryAsset.js": 150,
 		"./AssetRegistry/BaseRegistry": 79,
 		"./AssetRegistry/BaseRegistry.js": 79,
 		"./AssetRegistry/BaseTextureAsset": 6,
@@ -89227,42 +89305,42 @@
 		"./AssetRegistry/DocumentRegistry.js": 81,
 		"./AssetRegistry/GeometryRegistry": 87,
 		"./AssetRegistry/GeometryRegistry.js": 87,
-		"./AssetRegistry/MaterialAsset": 147,
-		"./AssetRegistry/MaterialAsset.js": 147,
+		"./AssetRegistry/MaterialAsset": 148,
+		"./AssetRegistry/MaterialAsset.js": 148,
 		"./AssetRegistry/MaterialRegistry": 88,
 		"./AssetRegistry/MaterialRegistry.js": 88,
-		"./AssetRegistry/MeshGeometryAsset": 148,
-		"./AssetRegistry/MeshGeometryAsset.js": 148,
-		"./AssetRegistry/PrefabAsset": 151,
-		"./AssetRegistry/PrefabAsset.js": 151,
+		"./AssetRegistry/MeshGeometryAsset": 149,
+		"./AssetRegistry/MeshGeometryAsset.js": 149,
+		"./AssetRegistry/PrefabAsset": 152,
+		"./AssetRegistry/PrefabAsset.js": 152,
 		"./AssetRegistry/PrefabRegistry": 78,
 		"./AssetRegistry/PrefabRegistry.js": 78,
-		"./AssetRegistry/PrimitiveGeometryAsset": 150,
-		"./AssetRegistry/PrimitiveGeometryAsset.js": 150,
-		"./AssetRegistry/RenderTexture2DAsset": 152,
-		"./AssetRegistry/RenderTexture2DAsset.js": 152,
+		"./AssetRegistry/PrimitiveGeometryAsset": 151,
+		"./AssetRegistry/PrimitiveGeometryAsset.js": 151,
+		"./AssetRegistry/RenderTexture2DAsset": 153,
+		"./AssetRegistry/RenderTexture2DAsset.js": 153,
 		"./AssetRegistry/RenderTextureCubeAsset": 2,
 		"./AssetRegistry/RenderTextureCubeAsset.js": 2,
-		"./AssetRegistry/SceneAsset": 153,
-		"./AssetRegistry/SceneAsset.js": 153,
+		"./AssetRegistry/SceneAsset": 154,
+		"./AssetRegistry/SceneAsset.js": 154,
 		"./AssetRegistry/SceneRegistry": 86,
 		"./AssetRegistry/SceneRegistry.js": 86,
 		"./AssetRegistry/ScriptAsset": 65,
 		"./AssetRegistry/ScriptAsset.js": 65,
 		"./AssetRegistry/ScriptRegistry": 91,
 		"./AssetRegistry/ScriptRegistry.js": 91,
-		"./AssetRegistry/ShaderAsset": 137,
-		"./AssetRegistry/ShaderAsset.js": 137,
-		"./AssetRegistry/ShaderRegistry": 136,
-		"./AssetRegistry/ShaderRegistry.js": 136,
-		"./AssetRegistry/Texture2DAsset": 154,
-		"./AssetRegistry/Texture2DAsset.js": 154,
-		"./AssetRegistry/TextureCubeAsset": 155,
-		"./AssetRegistry/TextureCubeAsset.js": 155,
+		"./AssetRegistry/ShaderAsset": 136,
+		"./AssetRegistry/ShaderAsset.js": 136,
+		"./AssetRegistry/ShaderRegistry": 135,
+		"./AssetRegistry/ShaderRegistry.js": 135,
+		"./AssetRegistry/Texture2DAsset": 155,
+		"./AssetRegistry/Texture2DAsset.js": 155,
+		"./AssetRegistry/TextureCubeAsset": 156,
+		"./AssetRegistry/TextureCubeAsset.js": 156,
 		"./AssetRegistry/TextureRegistry": 89,
 		"./AssetRegistry/TextureRegistry.js": 89,
-		"./AssetRegistry/TextureVideoAsset": 156,
-		"./AssetRegistry/TextureVideoAsset.js": 156,
+		"./AssetRegistry/TextureVideoAsset": 157,
+		"./AssetRegistry/TextureVideoAsset.js": 157,
 		"./Box3DEntity": 12,
 		"./Box3DEntity.js": 12,
 		"./Components/Box3DComponent": 94,
@@ -89299,76 +89377,74 @@
 		"./Components/BuiltIn/Fullscreen.js": 108,
 		"./Components/BuiltIn/HMDEffect": 109,
 		"./Components/BuiltIn/HMDEffect.js": 109,
-		"./Components/BuiltIn/ImportanceSamplerConvolver": 110,
-		"./Components/BuiltIn/ImportanceSamplerConvolver.js": 110,
-		"./Components/BuiltIn/InputController": 111,
-		"./Components/BuiltIn/InputController.js": 111,
-		"./Components/BuiltIn/KeyframeAnimation": 112,
-		"./Components/BuiltIn/KeyframeAnimation.js": 112,
-		"./Components/BuiltIn/LookAtTarget": 113,
-		"./Components/BuiltIn/LookAtTarget.js": 113,
-		"./Components/BuiltIn/NormalMapGenerator": 114,
-		"./Components/BuiltIn/NormalMapGenerator.js": 114,
-		"./Components/BuiltIn/ObjectAnimator": 93,
-		"./Components/BuiltIn/ObjectAnimator.js": 93,
-		"./Components/BuiltIn/ObjectPicker": 116,
-		"./Components/BuiltIn/ObjectPicker.js": 116,
-		"./Components/BuiltIn/OrbitCameraController": 117,
-		"./Components/BuiltIn/OrbitCameraController.js": 117,
-		"./Components/BuiltIn/PanoramaToCubeMap": 118,
-		"./Components/BuiltIn/PanoramaToCubeMap.js": 118,
-		"./Components/BuiltIn/PreviewAxisRotation": 119,
-		"./Components/BuiltIn/PreviewAxisRotation.js": 119,
-		"./Components/BuiltIn/PreviewCameraController": 120,
-		"./Components/BuiltIn/PreviewCameraController.js": 120,
-		"./Components/BuiltIn/PreviewCameraFocus": 121,
-		"./Components/BuiltIn/PreviewCameraFocus.js": 121,
-		"./Components/BuiltIn/PreviewVRControls": 122,
-		"./Components/BuiltIn/PreviewVRControls.js": 122,
-		"./Components/BuiltIn/ReflectionCapturePlane": 123,
-		"./Components/BuiltIn/ReflectionCapturePlane.js": 123,
-		"./Components/BuiltIn/RenderFilters": 124,
-		"./Components/BuiltIn/RenderFilters.js": 124,
-		"./Components/BuiltIn/RenderModes": 125,
-		"./Components/BuiltIn/RenderModes.js": 125,
-		"./Components/BuiltIn/RenderTargetViewer": 126,
-		"./Components/BuiltIn/RenderTargetViewer.js": 126,
-		"./Components/BuiltIn/RenderView": 127,
-		"./Components/BuiltIn/RenderView.js": 127,
-		"./Components/BuiltIn/Renderer": 128,
-		"./Components/BuiltIn/Renderer.js": 128,
-		"./Components/BuiltIn/Rotate": 129,
-		"./Components/BuiltIn/Rotate.js": 129,
-		"./Components/BuiltIn/SceneLoader": 130,
-		"./Components/BuiltIn/SceneLoader.js": 130,
-		"./Components/BuiltIn/Shots": 131,
-		"./Components/BuiltIn/Shots.js": 131,
-		"./Components/BuiltIn/SimplexNoiseGenerator": 132,
-		"./Components/BuiltIn/SimplexNoiseGenerator.js": 132,
-		"./Components/BuiltIn/Skybox": 133,
-		"./Components/BuiltIn/Skybox.js": 133,
-		"./Components/BuiltIn/SphereMapCapture": 134,
-		"./Components/BuiltIn/SphereMapCapture.js": 134,
-		"./Components/BuiltIn/TextRenderer": 135,
-		"./Components/BuiltIn/TextRenderer.js": 135,
+		"./Components/BuiltIn/InputController": 110,
+		"./Components/BuiltIn/InputController.js": 110,
+		"./Components/BuiltIn/KeyframeAnimation": 111,
+		"./Components/BuiltIn/KeyframeAnimation.js": 111,
+		"./Components/BuiltIn/LookAtTarget": 112,
+		"./Components/BuiltIn/LookAtTarget.js": 112,
+		"./Components/BuiltIn/NormalMapGenerator": 113,
+		"./Components/BuiltIn/NormalMapGenerator.js": 113,
+		"./Components/BuiltIn/ObjectAnimator": 114,
+		"./Components/BuiltIn/ObjectAnimator.js": 114,
+		"./Components/BuiltIn/ObjectPicker": 93,
+		"./Components/BuiltIn/ObjectPicker.js": 93,
+		"./Components/BuiltIn/OrbitCameraController": 116,
+		"./Components/BuiltIn/OrbitCameraController.js": 116,
+		"./Components/BuiltIn/PanoramaToCubeMap": 117,
+		"./Components/BuiltIn/PanoramaToCubeMap.js": 117,
+		"./Components/BuiltIn/PreviewAxisRotation": 118,
+		"./Components/BuiltIn/PreviewAxisRotation.js": 118,
+		"./Components/BuiltIn/PreviewCameraController": 119,
+		"./Components/BuiltIn/PreviewCameraController.js": 119,
+		"./Components/BuiltIn/PreviewCameraFocus": 120,
+		"./Components/BuiltIn/PreviewCameraFocus.js": 120,
+		"./Components/BuiltIn/PreviewVRControls": 121,
+		"./Components/BuiltIn/PreviewVRControls.js": 121,
+		"./Components/BuiltIn/ReflectionCapturePlane": 122,
+		"./Components/BuiltIn/ReflectionCapturePlane.js": 122,
+		"./Components/BuiltIn/RenderFilters": 123,
+		"./Components/BuiltIn/RenderFilters.js": 123,
+		"./Components/BuiltIn/RenderModes": 124,
+		"./Components/BuiltIn/RenderModes.js": 124,
+		"./Components/BuiltIn/RenderTargetViewer": 125,
+		"./Components/BuiltIn/RenderTargetViewer.js": 125,
+		"./Components/BuiltIn/RenderView": 126,
+		"./Components/BuiltIn/RenderView.js": 126,
+		"./Components/BuiltIn/Renderer": 127,
+		"./Components/BuiltIn/Renderer.js": 127,
+		"./Components/BuiltIn/Rotate": 128,
+		"./Components/BuiltIn/Rotate.js": 128,
+		"./Components/BuiltIn/SceneLoader": 129,
+		"./Components/BuiltIn/SceneLoader.js": 129,
+		"./Components/BuiltIn/Shots": 130,
+		"./Components/BuiltIn/Shots.js": 130,
+		"./Components/BuiltIn/SimplexNoiseGenerator": 131,
+		"./Components/BuiltIn/SimplexNoiseGenerator.js": 131,
+		"./Components/BuiltIn/Skybox": 132,
+		"./Components/BuiltIn/Skybox.js": 132,
+		"./Components/BuiltIn/SphereMapCapture": 133,
+		"./Components/BuiltIn/SphereMapCapture.js": 133,
+		"./Components/BuiltIn/TextRenderer": 134,
+		"./Components/BuiltIn/TextRenderer.js": 134,
 		"./Components/ComponentRegistry": 15,
 		"./Components/ComponentRegistry.js": 15,
 		"./Engine": 72,
 		"./Engine.js": 72,
-		"./EntityDispatcher": 74,
-		"./EntityDispatcher.js": 74,
-		"./Loaders/DevResourceLoader": 158,
-		"./Loaders/DevResourceLoader.js": 158,
+		"./EntityDispatcher": 73,
+		"./EntityDispatcher.js": 73,
+		"./Loaders/DevResourceLoader": 159,
+		"./Loaders/DevResourceLoader.js": 159,
 		"./Logger": 7,
 		"./Logger.js": 7,
-		"./Materials/Box3DShaderPBR_MetalRoughness": 138,
-		"./Materials/Box3DShaderPBR_MetalRoughness.js": 138,
-		"./Materials/Box3DShaderPBR_SpecGloss": 142,
-		"./Materials/Box3DShaderPBR_SpecGloss.js": 142,
-		"./Materials/Box3DShaderParameters": 139,
-		"./Materials/Box3DShaderParameters.js": 139,
-		"./Materials/Uber.frag": 141,
-		"./Materials/Uber.vert": 140,
+		"./Materials/Box3DShaderPBR_MetalRoughness": 137,
+		"./Materials/Box3DShaderPBR_MetalRoughness.js": 137,
+		"./Materials/Box3DShaderPBR_SpecGloss": 141,
+		"./Materials/Box3DShaderPBR_SpecGloss.js": 141,
+		"./Materials/Box3DShaderParameters": 138,
+		"./Materials/Box3DShaderParameters.js": 138,
+		"./Materials/Uber.frag": 140,
+		"./Materials/Uber.vert": 139,
 		"./Objects/BaseMeshObject": 69,
 		"./Objects/BaseMeshObject.js": 69,
 		"./Objects/Box3DObject": 11,
@@ -89387,8 +89463,8 @@
 		"./RuntimeEvents.js": 14,
 		"./Util/APIUtilities": 66,
 		"./Util/APIUtilities.js": 66,
-		"./Util/DOMUtilities": 157,
-		"./Util/DOMUtilities.js": 157,
+		"./Util/DOMUtilities": 158,
+		"./Util/DOMUtilities.js": 158,
 		"./Util/JSONLoader": 85,
 		"./Util/JSONLoader.js": 85,
 		"./VAPI": 1,
@@ -89397,8 +89473,8 @@
 		"./generated/components-builtin.js": 92,
 		"./libs/loglevel/loglevel": 8,
 		"./libs/loglevel/loglevel.js": 8,
-		"./libs/three/effects/AnaglyphEffect": 160,
-		"./libs/three/effects/AnaglyphEffect.js": 160,
+		"./libs/three/effects/AnaglyphEffect": 161,
+		"./libs/three/effects/AnaglyphEffect.js": 161,
 		"./libs/three/postprocessing/AdaptiveToneMappingPass": 64,
 		"./libs/three/postprocessing/AdaptiveToneMappingPass.js": 64,
 		"./libs/three/postprocessing/BloomPass": 18,
@@ -89453,8 +89529,8 @@
 		"./libs/three/shaders/EdgeShader.js": 39,
 		"./libs/three/shaders/EdgeShader2": 40,
 		"./libs/three/shaders/EdgeShader2.js": 40,
-		"./libs/three/shaders/FPAccuracyShader": 161,
-		"./libs/three/shaders/FPAccuracyShader.js": 161,
+		"./libs/three/shaders/FPAccuracyShader": 162,
+		"./libs/three/shaders/FPAccuracyShader.js": 162,
 		"./libs/three/shaders/FXAAShader": 25,
 		"./libs/three/shaders/FXAAShader.js": 25,
 		"./libs/three/shaders/FilmShader": 41,
@@ -89499,8 +89575,8 @@
 		"./libs/three/shaders/VerticalTiltShiftShader.js": 61,
 		"./libs/three/shaders/VignetteShader": 62,
 		"./libs/three/shaders/VignetteShader.js": 62,
-		"./libs/three/stats": 162,
-		"./libs/three/stats.js": 162,
+		"./libs/three/stats": 163,
+		"./libs/three/stats.js": 163,
 		"./libs/three/three": 5,
 		"./libs/three/three.js": 5,
 		"./libs/uuid": 13,
@@ -89517,11 +89593,11 @@
 	};
 	webpackContext.resolve = webpackContextResolve;
 	module.exports = webpackContext;
-	webpackContext.id = 159;
+	webpackContext.id = 160;
 
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -89721,7 +89797,7 @@
 
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -89767,7 +89843,7 @@
 
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -89919,7 +89995,7 @@
 
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports) {
 
 	module.exports = function() { throw new Error("define cannot be used indirect"); };
