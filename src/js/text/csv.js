@@ -8,10 +8,8 @@ import fetch from 'isomorphic-fetch';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Table, Column } from 'fixed-data-table';
+import { createAssetUrlCreator } from '../util';
 
-let Promise = global.Promise;
-let document = global.document;
-let URL = global.URL;
 let Box = global.Box || {};
 let Papa = global.Papa;
 
@@ -39,44 +37,44 @@ class CSV extends TextBase {
      * @returns {Promise} Promise to load a CSV
      */
     load(csvUrl) {
-        return new Promise((resolve, reject) => {
-            let papaWorkerUrl = this.options.location.hrefTemplate.replace('{{asset_name}}', 'papaparse.js');
 
-            fetch(papaWorkerUrl)
-                .then((response) => response.blob())
-                .then((papaWorkerBlob) => {
-                    Papa.SCRIPT_PATH = URL.createObjectURL(papaWorkerBlob);
-                    Papa.parse(this.appendAuthParam(csvUrl), {
-                        worker: true,
-                        download: true,
-                        error: (err, file, inputElem, reason) => {
-                            reject(reason);
-                        },
-                        complete: (results) => {
-                            this.finishLoading(results.data, resolve);
-                            URL.revokeObjectURL(papaWorkerBlob);
-                        }
-                    });
-                });
+        let assetUrlCreator = createAssetUrlCreator(this.options.location.hrefTemplate);
+        let papaWorkerUrl = assetUrlCreator('papaparse.js');
+
+        fetch(papaWorkerUrl)
+        .then((response) => response.blob())
+        .then((papaWorkerBlob) => {
+            Papa.SCRIPT_PATH = URL.createObjectURL(papaWorkerBlob);
+            Papa.parse(this.appendAuthParam(csvUrl), {
+                worker: true,
+                download: true,
+                error: (err, file, inputElem, reason) => {
+                    this.emit('error', reason);
+                },
+                complete: (results) => {
+                    this.finishLoading(results.data);
+                    URL.revokeObjectURL(papaWorkerBlob);
+                }
+            });
         });
+
+        super.load();
     }
 
     /**
      * Finishes loading the csv data
      *
-     * @param {String} data The data content to load
-     * @param {Function} resolve Resolution handler
      * @private
+     * @param {String} data The data content to load
      * @returns {void}
      */
-    finishLoading(data, resolve) {
+    finishLoading(data) {
         this.renderCSV(data);
 
         if (this.options.ui !== false) {
             this.loadUI();
         }
 
-        resolve(this);
         this.loaded = true;
         this.emit('load');
     }

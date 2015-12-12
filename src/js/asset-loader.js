@@ -1,127 +1,17 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import RepLoader from './rep-loader';
-import { generateContentUrl } from './util';
-
-const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
-
-let Promise = global.Promise;
-let document = global.document;
-let loadedAssets = [];
-let prefetchedAssets = [];
+import RepStatus from './rep-status';
+import {
+    createContentUrl,
+    prefetchAssets,
+    loadStylesheets,
+    loadScripts,
+    createAssetUrlCreator
+} from './util';
 
 @autobind
 class AssetLoader {
-
-    /**
-     * Create <link> element to prefetch external resource
-     *
-     * @param {string} url  asset urls
-     * @returns {HTMLElement} link element
-     */
-    createPrefetchLink(url) {
-        let link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.href = url;
-        return link;
-    }
-
-    /**
-     * Create <link> element to load external stylesheet
-     *
-     * @param {string} url  asset urls
-     * @returns {HTMLElement} link element
-     */
-    createStylesheet(url) {
-        let link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = url;
-        return link;
-    }
-
-    /**
-     * Create <script> element to load external script
-     *
-     * @param {String} url  asset url
-     * @returns {Array} script element
-     */
-    createScript(url) {
-        let script = document.createElement('script');
-        script.src = url;
-        script.async = false;
-
-        return [script, new Promise((resolve, reject) => {
-            script.addEventListener('load', resolve);
-            script.addEventListener('error', reject);
-        })];
-    }
-
-    /**
-     * Prefetches external stylsheets or js by appending a <link rel="prefetch"> element
-     *
-     * @param {Array} urls asset urls
-     * @returns {void}
-     */
-    prefetchAssets(urls) {
-        let head = document.getElementsByTagName('head')[0];
-
-        urls.forEach((url) => {
-            if (prefetchedAssets.indexOf(url) === -1) {
-                prefetchedAssets.push(url);
-                head.appendChild(this.createPrefetchLink(url));
-            }
-        });
-    }
-
-    /**
-     * Loads external stylsheets by appending a <link> element
-     *
-     * @param {Array} urls asset urls
-     * @returns {void}
-     */
-    loadStylesheets(urls) {
-        let head = document.getElementsByTagName('head')[0];
-
-        urls.forEach((url) => {
-            if (loadedAssets.indexOf(url) === -1) {
-                loadedAssets.push(url);
-                head.appendChild(this.createStylesheet(url));
-            }
-        });
-    }
-
-    /**
-     * Loads external scripts by appending a <script> element
-     *
-     * @param {Array} urls asset urls
-     * @returns {Promise} Promise to load scripts
-     */
-    loadScripts(urls) {
-        let head = document.getElementsByTagName('head')[0];
-        let promises = [];
-
-        urls.forEach((url) => {
-            if (loadedAssets.indexOf(url) === -1) {
-                loadedAssets.push(url);
-                let [script, promise] = this.createScript(url);
-                promises.push(promise);
-                head.appendChild(script);
-            }
-        });
-
-        return Promise.all(promises);
-    }
-
-    /**
-     * Factory to create asset URLs
-     * @param {String} template url
-     * @returns {Function} factory for creating asset url
-     */
-    assetUrlFactory(template) {
-        return (name) => template.replace('{{asset_name}}', name);
-    }
 
     /**
      * Determines if this loader can be used
@@ -146,58 +36,47 @@ class AssetLoader {
     }
 
     /**
-     * Loads a previewer
+     * Chooses a representation. Assumes that there will be only
+     * one specific representation. In other words we will not have
+     * two png representation entries with different properties.
      *
      * @param {Object} file box file
-     * @param {string|HTMLElement} container where to load the preview
-     * @param {Object} [options] optional options
+     * @param {Object} viewer the chosen viewer
+     * @returns {Object} the representation to load
+     */
+    determineRepresentation(file, viewer) {
+        return file.representations.entries.find((entry) => viewer.REPRESENTATION === entry.representation);
+    }
+
+    /**
+     * Gets the status of a representation asset
+     *
+     * @param {Object} representation box representation
+     * @param {Object} headers request headers
      * @returns {Promise} Promise to load a preview
      */
-    load(file, container, options) {
+    determineRepresentationStatus(representation, headers) {
+        let repStatus = new RepStatus();
+        return repStatus.status(representation, headers);
+    }
 
-        // Create a new representation loader
-        let repLoader = new RepLoader();
+    /**
+     * Loads assets needed for a preview and finally loads the viewer
+     *
+     * @param {Object} viewer chosen viewer
+     * @param {String} assetTemplate template of assets
+     * @returns {Promise} Promise to load scripts
+     */
+    load(viewer, assetTemplate) {
 
         // Create an asset path creator function
-        let assetPathCreator = this.assetUrlFactory(options.location.hrefTemplate);
+        let assetUrlCreator = createAssetUrlCreator(assetTemplate);
 
-        // Determine the viewer to use
-        let viewer = this.determineViewer(file);
+        // 1st load the stylesheets needed for this preview
+        loadStylesheets(viewer.STYLESHEETS.map(assetUrlCreator));
 
-        // Save the factory for creating content urls
-        options.contentUrlFactory = generateContentUrl;
-
-        // Save the factory for creating asset urls
-        options.assetUrlFactory = assetPathCreator;
-
-        // Save CSS entries as options
-        options.stylesheets = viewer.STYLESHEETS.map(assetPathCreator);
-
-        // Save JS entries as options
-        options.scripts = viewer.SCRIPTS.map(assetPathCreator);
-
-        // Save file as options as the viewer may use it
-        options.file = file;
-
-        // 1st load the stylesheets needed by this previewer
-        this.loadStylesheets(options.stylesheets);
-
-        // Load the scripts for this previewer
-        return this.loadScripts(options.scripts).then(() => {
-
-            this.previewer = new Box.Preview[viewer.CONSTRUCTOR](container, options);
-
-            // Once the previewer loads, hides loading indicator
-            this.previewer.addListener('load', () => {
-                if (container) {
-                    container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
-                }
-            });
-
-            repLoader.addListener('ready', (rep) => this.previewer.load(rep));
-            repLoader.addListener('error', (rep) => Promise.reject('Failed to load ' + rep));
-            repLoader.load(file, viewer, options);
-        });
+        // Then load the scripts needed for this preview
+        return loadScripts(viewer.SCRIPTS.map(assetUrlCreator));
     }
 
     /**
@@ -209,23 +88,23 @@ class AssetLoader {
      */
     prefetch(file, options) {
         // Create an asset path creator function
-        let assetPathCreator = this.assetUrlFactory(options.location.hrefTemplate);
+        let assetUrlCreator = createAssetUrlCreator(options.location.hrefTemplate);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
 
         // Determine the representation to use
-        let representation = RepLoader.determineRepresentation(file, viewer);
+        let representation = this.determineRepresentation(file, viewer);
 
-        // Prefetch the stylesheets needed by this previewer
-        this.prefetchAssets(viewer.STYLESHEETS.map(assetPathCreator));
+        // Prefetch the stylesheets needed for this preview
+        prefetchAssets(viewer.STYLESHEETS.map(assetUrlCreator));
 
-        // Prefetch the scripts for this previewer
-        this.prefetchAssets(viewer.SCRIPTS.map(assetPathCreator));
+        // Prefetch the scripts needed for this preview
+        prefetchAssets(viewer.SCRIPTS.map(assetUrlCreator));
 
         let img = document.createElement('img');
         img.crossOrigin = 'anonymous';
-        img.src = generateContentUrl(representation.links.content.url, options.token);
+        img.src = createContentUrl(representation.links.content.url, options.token);
     }
 
     /**
@@ -235,24 +114,8 @@ class AssetLoader {
      * @param {Object} options options
      * @returns {void}
      */
-    init(options) {
+    preload(options) {
         // empty
-    }
-
-    /**
-     * Destroys a previewer
-     *
-     * @param {Object} file box file
-     * @param {string|HTMLElement} container where to load the preview
-     * @param {Object} [options] optional options
-     * @returns {void}
-     */
-    destroy() {
-        if (this.previewer && typeof this.previewer.destroy === 'function') {
-            this.previewer.destroy();
-        }
-
-        this.previewer = undefined;
     }
 }
 

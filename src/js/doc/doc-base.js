@@ -5,6 +5,7 @@ import fetch from 'isomorphic-fetch';
 import Base from '../base';
 import Controls from '../controls';
 import fullscreen from '../fullscreen';
+import { createAssetUrlCreator } from '../util';
 
 // PDFJS
 import 'file?name=compatibility.js!../../third-party/doc/compatibility.js';
@@ -18,11 +19,8 @@ import 'file?name=jquery-2.1.4.min.js!../../third-party/annotatorjs/jquery-2.1.4
 import 'file?name=annotator.min.js!../../third-party/annotatorjs/annotator.min.js';
 import 'file?name=annotator.min.css!../../third-party/annotatorjs/annotator.min.css';
 
-let Promise = global.Promise;
-let document = global.document;
 let PDFJS = global.PDFJS;
 
-const DOC_LOAD_TIMEOUT_IN_MILLIS = 60000;
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 
 const PRESENTATION_MODE_STATE = {
@@ -47,6 +45,7 @@ class DocBase extends Base {
 
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
+        this.loadTimeout = 60000;
     }
 
     /**
@@ -84,29 +83,22 @@ class DocBase extends Base {
      * @returns {Promise} Promise to load a pdf
      */
     load(pdfUrl) {
-        return new Promise((resolve, reject) => {
+        // Workers cannot be loaded via XHR when not from the same domain, so we load it as a blob
+        let assetUrlCreator = createAssetUrlCreator(this.options.location.hrefTemplate);
+        let pdfWorkerUrl = assetUrlCreator('pdf.worker.js');
+        let pdfCMapBaseURI = this.options.location.staticBaseURI + 'cmaps/';
 
-            // Workers cannot be loaded via XHR when not from the same domain, so we load it as a blob
-            let pdfWorkerUrl = this.options.location.hrefTemplate.replace('{{asset_name}}', 'pdf.worker.js');
-            let pdfCMapBaseURI = this.options.location.staticBaseURI + 'cmaps/';
-
-            fetch(pdfWorkerUrl).then((response) => response.blob())
-                .then((pdfWorkerBlob) => {
-                    PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
-                    PDFJS.cMapUrl = pdfCMapBaseURI;
-                    PDFJS.cMapPacked = true;
-
-                    this.initViewer(pdfUrl, resolve);
-
-                    URL.revokeObjectURL(pdfWorkerBlob);
-
-                    setTimeout(() => {
-                        if (!this.loaded) {
-                            reject();
-                        }
-                    }, DOC_LOAD_TIMEOUT_IN_MILLIS);
-                });
+        fetch(pdfWorkerUrl)
+        .then((response) => response.blob())
+        .then((pdfWorkerBlob) => {
+            PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
+            PDFJS.cMapUrl = pdfCMapBaseURI;
+            PDFJS.cMapPacked = true;
+            this.initViewer(pdfUrl);
+            URL.revokeObjectURL(pdfWorkerBlob);
         });
+
+        super.load();
     }
 
     /**
@@ -188,12 +180,11 @@ class DocBase extends Base {
     /**
      * Loads PDF.js with provided PDF
      *
-     * @param {String} pdfUrl The URL of the PDF to load
-     * @param {Function} resolve Resolution handler
      * @private
+     * @param {String} pdfUrl The URL of the PDF to load
      * @returns {void}
      */
-    initViewer(pdfUrl, resolve) {
+    initViewer(pdfUrl) {
         // Initialize PDF.js in container
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl
@@ -212,7 +203,7 @@ class DocBase extends Base {
         this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
 
         // When first page is rendered, message that preview has loaded
-        this.docEl.addEventListener('pagerendered', this.pagerenderedHandler(resolve));
+        this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
 
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
@@ -362,20 +353,16 @@ class DocBase extends Base {
     /**
      * Returns handler for 'pagesrendered' event
      *
-     * @param {Function} resolve Resolution handler
      * @private
-     * @returns {Function} Handler
+     * @returns {void}
      */
-    pagerenderedHandler(resolve) {
-        return () => {
-            if (this.loaded) {
-                return;
-            }
+    pagerenderedHandler() {
+        if (this.loaded) {
+            return;
+        }
 
-            resolve(this);
-            this.loaded = true;
-            this.emit('load');
-        };
+        this.loaded = true;
+        this.emit('load');
     }
 
     /**

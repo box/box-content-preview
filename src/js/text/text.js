@@ -7,11 +7,8 @@ import TextBase from './text-base';
 import 'file?name=highlight.js!../../third-party/text/highlight.js';
 import 'file?name=github.css!../../third-party/text/github.css';
 
-let Promise = global.Promise;
 let Box = global.Box || {};
 let hljs = global.hljs;
-
-const TEXT_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 @autobind
 class PlainText extends TextBase {
@@ -37,34 +34,25 @@ class PlainText extends TextBase {
      * @returns {Promise} Promise to load a text file
      */
     load(textUrl) {
-        return new Promise((resolve, reject) => {
-
-            fetch(textUrl, {
-                headers: this.appendAuthHeader()
-            }).then((response) => {
-                return response.text();
-            }).then((txt) => {
-                this.finishLoading(txt, resolve);
-            });
-
-            setTimeout(() => {
-                if (!this.loaded) {
-                    reject();
-                }
-            }, TEXT_LOAD_TIMEOUT_IN_MILLIS);
-
+        fetch(textUrl, {
+            headers: this.appendAuthHeader()
+        }).then((response) => {
+            return response.text();
+        }).then((txt) => {
+            this.finishLoading(txt);
         });
+
+        super.load();
     }
 
     /**
      * Loads highlight.js to highlight the file
      *
-     * @param {String} txt The text content to load
-     * @param {Function} resolve Resolution handler
      * @private
+     * @param {String} txt The text content to load
      * @returns {void}
      */
-    finishLoading(txt, resolve) {
+    finishLoading(txt) {
         this.codeEl.textContent = txt;
 
         // Only try to parse files smaller than 50KB otherwise the browser can hang
@@ -74,8 +62,6 @@ class PlainText extends TextBase {
 
         // Add our class after highlighting otherwise highlightjs doesnt work
         this.preEl.classList.add('box-preview-text');
-
-        resolve(this);
 
         if (this.options.ui !== false) {
             this.loadUI();

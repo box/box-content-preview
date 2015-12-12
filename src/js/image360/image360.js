@@ -7,18 +7,24 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import Image360Controls from './image360-controls';
 import Image360Renderer from './image360-renderer';
-import {EVENT_ENABLE_VR, EVENT_DISABLE_VR, EVENT_LOAD, EVENT_SCENE_LOADED, EVENT_SHOW_VR_BUTTON,
-	EVENT_TOGGLE_FULLSCREEN, EVENT_ENTER_FULLSCREEN, EVENT_EXIT_FULLSCREEN} from './image360-constants';
+import {
+    EVENT_ENABLE_VR,
+    EVENT_DISABLE_VR,
+    EVENT_LOAD,
+    EVENT_ERROR,
+    EVENT_SCENE_LOADED,
+    EVENT_SHOW_VR_BUTTON,
+	EVENT_TOGGLE_FULLSCREEN,
+    EVENT_ENTER_FULLSCREEN,
+    EVENT_EXIT_FULLSCREEN
+} from './image360-constants';
 import 'file?name=boxsdk-0.1.1.js!../../third-party/model3d/boxsdk-0.1.1.js';
 import 'file?name=box3d-resource-loader-0.1.1.js!../../third-party/model3d/box3d-resource-loader-0.1.1.js';
 import 'file?name=box3d-runtime-0.8.1.js!../../third-party/model3d/box3d-runtime-0.8.1.js';
 
-let Promise = global.Promise;
-let document = global.document;
 let Box = global.Box || {};
 
 const CSS_CLASS_IMAGE360 = 'box-preview-image360';
-const IMAGE360_LOAD_TIMEOUT_IN_MILLIS = 10000;
 
 /**
  * Image360
@@ -83,26 +89,18 @@ class Image360 extends Base {
 	 */
 	load(image360Url) {
 		// Temp hack
-		return new Promise((resolve, reject) => {
-			this.renderer
-				.load(this.appendAuthParam(image360Url), this.options)
-				.then(() => {
-					this.emit(EVENT_LOAD);
-					this.loaded = true;
-					resolve(this);
-				})
-				.catch((err) => {
-					console.error(err.message);
-					console.error(err);
-					reject(err);
-				});
-
-			setTimeout(() => {
-				if (!this.loaded) {
-					reject();
-				}
-			}, IMAGE360_LOAD_TIMEOUT_IN_MILLIS);
-		});
+		this.renderer
+        .load(this.appendAuthParam(image360Url), this.options)
+        .then(() => {
+            this.emit(EVENT_LOAD);
+            this.loaded = true;
+        })
+        .catch((err) => {
+            console.error(err.message);
+            console.error(err);
+            this.emit(EVENT_ERROR, err.message);
+        });
+        super.load();
 	}
 
 	/**

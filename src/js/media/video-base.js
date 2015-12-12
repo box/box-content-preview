@@ -6,8 +6,6 @@ import throttle from 'lodash/function/throttle';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 
-let document = global.document;
-
 @autobind
 class VideoBase extends MediaBase {
 
@@ -22,6 +20,8 @@ class VideoBase extends MediaBase {
 
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
+        this.mediaEl.setAttribute('autoplay', true);
+        this.mediaEl.setAttribute('preload', 'auto');
     }
 
     /**

@@ -1,6 +1,7 @@
 'use strict';
 export const EVENT_ENABLE_VR = 'enableVr';
 export const EVENT_ENTER_FULLSCREEN = 'enterfullscreen';
+export const EVENT_ERROR = 'error';
 export const EVENT_EXIT_FULLSCREEN = 'exitfullscreen';
 export const EVENT_DISABLE_VR = 'disableVr';
 export const EVENT_LOAD = 'load';

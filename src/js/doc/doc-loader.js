@@ -1,6 +1,7 @@
 'use strict';
 
 import AssetLoader from '../asset-loader';
+import { createAssetUrlCreator, prefetchAssets } from '../util';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 // For example, a pdf file can be previewed both natively (majority use case) using the original
@@ -41,16 +42,17 @@ class DocLoader extends AssetLoader {
     }
 
     /**
-     * Some initialization stuff
+     * Some pre loading stuff
      *
      * @override
      * @param {Object} options some options
      * @returns {void}
      */
-    init(options) {
+    preload(options) {
         // Since the pdf worker is pretty big, lets prefetch it
-        let pdfWorkerUrl = this.assetUrlFactory(options.location.hrefTemplate)('pdf.worker.js');
-        this.prefetchAssets([ pdfWorkerUrl ]);
+        let assetUrlCreator = createAssetUrlCreator(options.location.hrefTemplate);
+        let pdfWorkerUrl = assetUrlCreator('pdf.worker.js');
+        prefetchAssets([ pdfWorkerUrl ]);
     }
 }
 

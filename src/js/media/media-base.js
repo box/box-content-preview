@@ -4,13 +4,9 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import MediaControls from './media-controls';
 
-const MEDIA_LOAD_TIMEOUT_IN_MILLIS = 100000;
 const CSS_CLASS_MEDIA = 'box-preview-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'box-preview-media-container';
 const DEFAULT_VOLUME = 0.7;
-
-let Promise = global.Promise;
-let document = global.document;
 
 @autobind
 class MediaBase extends Base {
@@ -32,6 +28,8 @@ class MediaBase extends Base {
         // Media Wrapper
         this.mediaContainerEl = this.wrapperEl.appendChild(document.createElement('div'));
         this.mediaContainerEl.className = CSS_CLASS_MEDIA_CONTAINER;
+
+        this.loadTimeout = 100000;
     }
 
     /**
@@ -70,24 +68,9 @@ class MediaBase extends Base {
      */
     load(mediaUrl) {
         this.mediaUrl = this.appendAuthParam(mediaUrl);
-
-        return new Promise((resolve, reject) => {
-
-            // For media elements meta data load signifies a load event
-            this.mediaEl.addEventListener('loadedmetadata', () => {
-                resolve(this);
-                this.loadedmetadataHandler();
-            });
-
-            // Attach the media source
-            this.mediaEl.src = this.mediaUrl;
-
-            setTimeout(() => {
-                if (!this.loaded) {
-                    reject();
-                }
-            }, MEDIA_LOAD_TIMEOUT_IN_MILLIS);
-        });
+        this.mediaEl.addEventListener('loadedmetadata', this.loadedmetadataHandler);
+        this.mediaEl.src = this.mediaUrl;
+        super.load();
     }
 
     /**

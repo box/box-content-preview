@@ -9,7 +9,6 @@ import 'file?name=shaka-player.js!../../third-party/media/shaka-player.js';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-is-hd';
-const MEDIA_LOAD_TIMEOUT_IN_MILLIS = 10000;
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 3;
 
@@ -53,23 +52,14 @@ class Dash extends VideoBase {
     load(mediaUrl) {
 
         this.mediaUrl = mediaUrl;
+        this.mediaEl.addEventListener('loadedmetadata', this.loadedmetadataHandler);
+        this.loadDashPlayer();
 
-        return new Promise((resolve, reject) => {
-
-            // For media elements meta data load signifies a load event
-            this.mediaEl.addEventListener('loadedmetadata', () => {
-                resolve(this);
-                this.loadedmetadataHandler();
-            });
-
-            this.loadDashPlayer();
-
-            setTimeout(() => {
-                if (!this.loaded) {
-                    reject();
-                }
-            }, MEDIA_LOAD_TIMEOUT_IN_MILLIS);
-        });
+        setTimeout(() => {
+            if (!this.loaded) {
+                this.emit('error');
+            }
+        }, 10000);
     }
 
     /**
@@ -210,7 +200,7 @@ class Dash extends VideoBase {
     loadFilmStrip() {
         let filmstrip = this.options.file.representations.entries.find((entry) => 'filmstrip' === entry.representation);
         if (filmstrip) {
-            this.filmstripUrl = this.appendAuthParam(this.options.contentUrlFactory(this.options.file.representations.content_base_url, filmstrip.content, filmstrip.properties));
+            this.filmstripUrl = this.appendAuthParam(filmstrip.links.content.url);
             this.mediaControls.initFilmstrip(this.filmstripUrl, this.aspect);
         }
     }
