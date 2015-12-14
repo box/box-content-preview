@@ -36,7 +36,7 @@ class RepLoader {
                     break;
                 case 202:
                     this.statusTimeout = setTimeout(() => {
-                        this.updateStatus(url, token);
+                        this.updateStatus(url, headers);
                     }, STATUS_UPDATE_INTERVAL_IN_MILLIS);
                     break;
                 default:
