@@ -42,6 +42,16 @@ class DocLoader extends AssetLoader {
     }
 
     /**
+     * A unique identifier for this loader
+     *
+     * @public
+     * @returns {String} id of this loader
+     */
+    get id() {
+        return 'box-doc';
+    }
+
+    /**
      * Some pre loading stuff
      *
      * @override

@@ -46,6 +46,16 @@ class ImageLoader extends AssetLoader {
         super();
         this.viewers = VIEWERS;
     }
+
+    /**
+     * A unique identifier for this loader
+     *
+     * @public
+     * @returns {String} id of this loader
+     */
+    get id() {
+        return 'box-image';
+    }
 }
 
 export default new ImageLoader();

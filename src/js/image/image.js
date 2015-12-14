@@ -211,6 +211,17 @@ class Image extends Base {
     }
 
     /**
+     * Switches the viewer to 3D
+     * @public
+     * @returns {void}
+     */
+    switchTo3D() {
+        this.emit('reload', {
+            skip: [ this.options.loader.id ]
+        });
+    }
+
+    /**
      * Handles zoom
      * @param {string} [type] Type of zoom in|out|reset
      * @private
@@ -318,6 +329,7 @@ class Image extends Base {
     loadUI() {
         super.loadUI();
         this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon');
+        this.controls.add('View in 3D', this.switchTo3D, 'box-preview-image-switch-3d-icon', '3D');
     }
 }
 
