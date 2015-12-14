@@ -15,88 +15,88 @@ const CSS_CLASS_HIDDEN = 'hidden';
  */
 @autobind
 class Image360Controls extends EventEmitter  {
-	/**
-	 * [constructor]
-	 * @param {HTMLElement} containerEl the container element
-	 * @returns {Image360Controls} Image360Controls instance
-	 */
-	constructor(containerEl,) {
-		super();
+    /**
+     * [constructor]
+     * @param {HTMLElement} containerEl the container element
+     * @returns {Image360Controls} Image360Controls instance
+     */
+    constructor(containerEl) {
+        super();
 
-		this.vrEnabled = false;
+        this.vrEnabled = false;
 
-		this.containerEl = containerEl;
+        this.containerEl = containerEl;
 
-		let template = controlsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        let template = controlsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
 
-		this.containerEl.appendChild(document.createRange().createContextualFragment(template));
+        this.containerEl.appendChild(document.createRange().createContextualFragment(template));
 
-		this.el = this.containerEl.querySelector('.image360-controls');
+        this.el = this.containerEl.querySelector('.image360-controls');
 
-		this.fullscreenButtonEl = this.el.querySelector('.controls-fullscreen');
-		this.switch2DButtonEl = this.el.querySelector('.controls-2d');
+        this.fullscreenButtonEl = this.el.querySelector('.controls-fullscreen');
+        this.switch2DButtonEl = this.el.querySelector('.controls-2d');
         this.resetButtonEl = this.el.querySelector('.controls-reset');
-		this.vrButtonEl = this.el.querySelector('.controls-vr');
+        this.vrButtonEl = this.el.querySelector('.controls-vr');
 
-		this.attachEventHandlers();
-	}
+        this.attachEventHandlers();
+    }
 
-	/**
-	 * Destroy handler
-	 * @returns {void}
-	 */
-	destroy() {
-		this.detachEventHandlers();
-	}
+    /**
+     * Destroy handler
+     * @returns {void}
+     */
+    destroy() {
+        this.detachEventHandlers();
+    }
 
-	/**
-	 * Attaches event handlers
-	 * @returns {void}
-	 */
-	attachEventHandlers() {
-		this.fullscreenButtonEl.addEventListener('click', this.handleToggleFullscreen);
-		this.vrButtonEl.addEventListener('click', this.handleToggleVr);
+    /**
+     * Attaches event handlers
+     * @returns {void}
+     */
+    attachEventHandlers() {
+        this.fullscreenButtonEl.addEventListener('click', this.handleToggleFullscreen);
+        this.vrButtonEl.addEventListener('click', this.handleToggleVr);
         this.switch2DButtonEl.addEventListener('click', this.switchTo2dViewer);
-	}
+    }
 
-	/**
-	 * Detaches event handlers
-	 * @returns {void}
-	 */
-	detachEventHandlers() {
-		this.fullscreenButtonEl.removeEventListener('click', this.handleToggleFullscreen);
-		this.vrButtonEl.removeEventListener('click', this.handleToggleVr);
-	}
+    /**
+     * Detaches event handlers
+     * @returns {void}
+     */
+    detachEventHandlers() {
+        this.fullscreenButtonEl.removeEventListener('click', this.handleToggleFullscreen);
+        this.vrButtonEl.removeEventListener('click', this.handleToggleVr);
+    }
 
-	/**
-	 * Handle toggle fullscreen event
-	 * @returns {void}
-	 */
-	handleToggleFullscreen() {
-		this.emit('toggleFullscreen');
-	}
+    /**
+     * Handle toggle fullscreen event
+     * @returns {void}
+     */
+    handleToggleFullscreen() {
+        this.emit('toggleFullscreen');
+    }
 
-	/**
-	 * Handle toggle VR event
-	 * @returns {void}
-	 */
-	handleToggleVr() {
-		if (this.vrEnabled) {
-			this.vrEnabled = false;
-			this.emit(EVENT_DISABLE_VR);
-		} else {
-			this.vrEnabled = true;
-			this.emit(EVENT_ENABLE_VR);
-		}
-	}
+    /**
+     * Handle toggle VR event
+     * @returns {void}
+     */
+    handleToggleVr() {
+        if (this.vrEnabled) {
+            this.vrEnabled = false;
+            this.emit(EVENT_DISABLE_VR);
+        } else {
+            this.vrEnabled = true;
+            this.emit(EVENT_ENABLE_VR);
+        }
+    }
 
-	/**
-	 * Enables the VR button
-	 * @returns {void}
-	 */
-	showVrButton() {
-		this.vrButtonEl.classList.remove(CSS_CLASS_HIDDEN);
-	}
+    /**
+     * Enables the VR button
+     * @returns {void}
+     */
+    showVrButton() {
+        this.vrButtonEl.classList.remove(CSS_CLASS_HIDDEN);
+    }
 
     /**
      * Switches back to 2D viewer
