@@ -239,9 +239,10 @@ class Preview {
      * Loads a viewer.
      *
      * @private
+     * @param {Array|void} [skip] loaders to skip
      * @returns {Promise} Promise to load a viewer
      */
-    loadViewer() {
+    loadViewer(skip = []) {
 
         // Before loading a new preview check if a prior preview was showing.
         // If it was showing make sure to destroy it to do any cleanup.
@@ -254,7 +255,7 @@ class Preview {
         });
 
         // Determine the asset loader to use
-        let loader = this.getLoader(this.file);
+        let loader = this.getLoader(this.file, skip);
 
         // If the loader does not exist reject right away
         if (!loader) {
@@ -279,21 +280,14 @@ class Preview {
             // Save reference to file to give to the viewer
             this.options.file = this.file;
 
+            // Let the viewer also know the loader thats loading it
+            this.options.loader = loader;
+
             // Instantiate the viewer
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
 
             // Add listeners for viewer load / error event
-            this.viewer.addListener('error', this.triggerError);
-            this.viewer.addListener('load', () => {
-
-                // Once the viewer loads, hide the loading indicator
-                if (this.container) {
-                    this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
-                }
-
-                // Finally resolve with the viewer instance back to the caller
-                this.viewerSuccess(this.viewer);
-            });
+            this.attachViewerListeners();
 
             // Load the representation into the viewer
             this.viewer.load(representation.links.content.url);
@@ -301,6 +295,30 @@ class Preview {
         }).catch(this.triggerError);
 
         return promise;
+    }
+
+    /**
+     * Loads a viewer.
+     *
+     * @private
+     * @returns {Promise} Promise to load a viewer
+     */
+    attachViewerListeners() {
+        // Add listeners for viewer load / error event
+        this.viewer.addListener('error', this.triggerError);
+        this.viewer.addListener('load', () => {
+
+            // Once the viewer loads, hide the loading indicator
+            if (this.container) {
+                this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
+            }
+
+            // Finally resolve with the viewer instance back to the caller
+            this.viewerSuccess(this.viewer);
+        });
+        this.viewer.addListener('reload', (args) => {
+            this.loadViewer(args.skip);
+        });
     }
 
     /**
@@ -392,14 +410,13 @@ class Preview {
     /**
      * Determines a preview loader
      *
-     * @param {Object} file File to preview
      * @private
+     * @param {Object} file File to preview
+     * @param {Array|void} [skip] loaders to skip
      * @returns {Object} Loader
      */
-    getLoader(file) {
-        return loaders.find((loader) => {
-            return loader.canLoad(file);
-        });
+    getLoader(file, skip = []) {
+        return loaders.find((loader) => skip.indexOf(loader.id) === -1 && loader.canLoad(file));
     }
 
     /**

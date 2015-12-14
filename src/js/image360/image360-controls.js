@@ -20,7 +20,7 @@ class Image360Controls extends EventEmitter  {
 	 * @param {HTMLElement} containerEl the container element
 	 * @returns {Image360Controls} Image360Controls instance
 	 */
-	constructor(containerEl) {
+	constructor(containerEl,) {
 		super();
 
 		this.vrEnabled = false;
@@ -34,7 +34,8 @@ class Image360Controls extends EventEmitter  {
 		this.el = this.containerEl.querySelector('.image360-controls');
 
 		this.fullscreenButtonEl = this.el.querySelector('.controls-fullscreen');
-		this.resetButtonEl = this.el.querySelector('.controls-reset');
+		this.switch2DButtonEl = this.el.querySelector('.controls-2d');
+        this.resetButtonEl = this.el.querySelector('.controls-reset');
 		this.vrButtonEl = this.el.querySelector('.controls-vr');
 
 		this.attachEventHandlers();
@@ -55,6 +56,7 @@ class Image360Controls extends EventEmitter  {
 	attachEventHandlers() {
 		this.fullscreenButtonEl.addEventListener('click', this.handleToggleFullscreen);
 		this.vrButtonEl.addEventListener('click', this.handleToggleVr);
+        this.switch2DButtonEl.addEventListener('click', this.switchTo2dViewer);
 	}
 
 	/**
@@ -95,6 +97,14 @@ class Image360Controls extends EventEmitter  {
 	showVrButton() {
 		this.vrButtonEl.classList.remove(CSS_CLASS_HIDDEN);
 	}
+
+    /**
+     * Switches back to 2D viewer
+     * @returns {void}
+     */
+    switchTo2dViewer() {
+        this.emit('switch2d');
+    }
 }
 
 export default Image360Controls;

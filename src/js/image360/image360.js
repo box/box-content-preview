@@ -16,7 +16,9 @@ import {
     EVENT_SHOW_VR_BUTTON,
 	EVENT_TOGGLE_FULLSCREEN,
     EVENT_ENTER_FULLSCREEN,
-    EVENT_EXIT_FULLSCREEN
+    EVENT_EXIT_FULLSCREEN,
+    EVENT_RELOAD,
+    EVENT_SWITCH_2D
 } from './image360-constants';
 import 'file?name=boxsdk-0.1.1.js!../../third-party/model3d/boxsdk-0.1.1.js';
 import 'file?name=box3d-resource-loader-0.1.1.js!../../third-party/model3d/box3d-resource-loader-0.1.1.js';
@@ -59,13 +61,14 @@ class Image360 extends Base {
 	 * @returns {void}
 	 */
 	attachEventHandlers() {
-		this.controls.on(EVENT_TOGGLE_FULLSCREEN, this.toggleFullscreen);
-		this.controls.on(EVENT_ENABLE_VR, this.handleEnableVr);
-		this.controls.on(EVENT_DISABLE_VR, this.handleDisableVr);
-		this.renderer.on(EVENT_SCENE_LOADED, this.handleSceneLoaded);
-		this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
-		this.on(EVENT_ENTER_FULLSCREEN, this.handleEnterFullscreen);
-		this.on(EVENT_EXIT_FULLSCREEN, this.handleExitFullscreen);
+		this.controls.addListener(EVENT_TOGGLE_FULLSCREEN, this.toggleFullscreen);
+		this.controls.addListener(EVENT_ENABLE_VR, this.handleEnableVr);
+		this.controls.addListener(EVENT_DISABLE_VR, this.handleDisableVr);
+		this.controls.addListener(EVENT_SWITCH_2D, this.switchTo2dViewer);
+        this.renderer.addListener(EVENT_SCENE_LOADED, this.handleSceneLoaded);
+		this.renderer.addListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
+		this.addListener(EVENT_ENTER_FULLSCREEN, this.handleEnterFullscreen);
+		this.addListener(EVENT_EXIT_FULLSCREEN, this.handleExitFullscreen);
 	}
 
 	/**
@@ -76,7 +79,8 @@ class Image360 extends Base {
 		this.controls.removeListener(EVENT_TOGGLE_FULLSCREEN, this.toggleFullscreen);
 		this.controls.removeListener(EVENT_ENABLE_VR, this.handleEnableVr);
 		this.controls.removeListener(EVENT_DISABLE_VR, this.handleDisableVr);
-		this.renderer.removeListener(EVENT_SCENE_LOADED, this.handleSceneLoaded);
+		this.controls.removeListener(EVENT_SWITCH_2D, this.switchTo2dViewer);
+        this.renderer.removeListener(EVENT_SCENE_LOADED, this.handleSceneLoaded);
 		this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
 		this.removeListener(EVENT_ENTER_FULLSCREEN, this.handleEnterFullscreen);
 		this.removeListener(EVENT_EXIT_FULLSCREEN, this.handleExitFullscreen);
@@ -153,6 +157,16 @@ class Image360 extends Base {
 	handleShowVrButton() {
 		this.controls.showVrButton();
 	}
+
+    /**
+     * Switches back to 2D viewer
+     * @returns {void}
+     */
+    switchTo2dViewer() {
+        this.emit(EVENT_RELOAD, {
+            skip: [ this.options.loader.id ]
+        });
+    }
 }
 
 Box.Preview = Box.Preview || {};
