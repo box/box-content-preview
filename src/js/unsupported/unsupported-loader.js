@@ -16,7 +16,7 @@ class UnsupportedLoader extends AssetLoader {
      * Determines if this loader can be used
      *
      * @override
-     * @return {Boolean}
+     * @returns {Boolean} always true
      */
     canLoad() {
         return true;
@@ -26,7 +26,7 @@ class UnsupportedLoader extends AssetLoader {
      * Chooses a viewer based on file extension.
      *
      * @override
-     * @return {Object} the viewer to use
+     * @returns {Object} the viewer to use
      */
     determineViewer() {
         return VIEWER;
@@ -36,7 +36,7 @@ class UnsupportedLoader extends AssetLoader {
      * Prefetches assets
      *
      * @override
-     * @return {void}
+     * @returns {void}
      */
     prefetch() {
         // no-op

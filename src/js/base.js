@@ -4,7 +4,7 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
 import debounce from 'lodash/function/debounce';
-import { generateContentUrl } from './util';
+import { createContentUrl } from './util';
 
 const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
@@ -49,6 +49,9 @@ class Base extends EventEmitter {
 
         // Attach event listeners
         this.addCommonListeners();
+
+        // Timeout for loading the preview
+        this.loadTimeout = 10000;
     }
 
     /**
@@ -67,6 +70,20 @@ class Base extends EventEmitter {
     }
 
     /**
+     * Loads content.
+     *
+     * @protected
+     * @returns {Promise} Promise to load image
+     */
+    load() {
+        setTimeout(() => {
+            if (!this.loaded) {
+                this.emit('error');
+            }
+        }, this.loadTimeout);
+    }
+
+    /**
      * Headers for fetch
      *
      * @protected
@@ -74,7 +91,7 @@ class Base extends EventEmitter {
      * @returns {Object} fetch headers
      */
     appendAuthParam(url) {
-        return generateContentUrl(url, this.options.token);
+        return createContentUrl(url, this.options.token);
     }
 
     /**

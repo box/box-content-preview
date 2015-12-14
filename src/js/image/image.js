@@ -8,10 +8,7 @@ const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_IMAGE = 'box-preview-image';
-const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 10000;
 
-let Promise = global.Promise;
-let document = global.document;
 let Box = global.Box || {};
 
 @autobind
@@ -54,33 +51,22 @@ class Image extends Base {
     /**
      * Loads an image.
      *
-     * @pubic
+     * @public
      * @param {String} imageUrl The image url
-     * @returns {Promise} Promise to load image
+     * @returns {void}
      */
     load(imageUrl) {
         this.imageUrl = this.appendAuthParam(imageUrl);
-
-        return new Promise((resolve, reject) => {
-            this.imageEl.addEventListener('load', () => {
-                resolve(this);
-                this.loaded = true;
-                this.zoom();
-
-                if (this.options.ui !== false) {
-                    this.loadUI();
-                }
-
-                this.emit('load');
-            });
-            this.imageEl.src = this.imageUrl;
-
-            setTimeout(() => {
-                if (!this.loaded) {
-                    reject();
-                }
-            }, IMAGE_LOAD_TIMEOUT_IN_MILLIS);
+        this.imageEl.addEventListener('load', () => {
+            this.loaded = true;
+            this.emit('load');
+            this.zoom();
+            if (this.options.ui !== false) {
+                this.loadUI();
+            }
         });
+        this.imageEl.src = this.imageUrl;
+        super.load();
     }
 
     /**

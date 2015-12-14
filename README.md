@@ -55,6 +55,11 @@ Box.Preview.updateAuthToken(/* string */ token);
 ```
 to update the auth token if needed, when it expires.
 
+```javascript
+Box.Preview.getViewer();
+```
+to get the current viewer. May return null till the viewer loads.
+
 Test
 ----
 

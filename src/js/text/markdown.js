@@ -8,11 +8,8 @@ import marked from 'marked';
 import 'file?name=highlight.js!../../third-party/text/highlight.js';
 import 'file?name=github.css!../../third-party/text/github.css';
 
-let Promise = global.Promise;
 let Box = global.Box || {};
 let hljs = global.hljs;
-
-const TEXT_LOAD_TIMEOUT_IN_MILLIS = 5000;
 
 @autobind
 class MarkDown extends TextBase {
@@ -38,36 +35,28 @@ class MarkDown extends TextBase {
      * @returns {Promise} Promise to load a text file
      */
     load(textUrl) {
-        return new Promise((resolve, reject) => {
+        fetch(textUrl, {
+            headers: this.appendAuthHeader()
+        }).then((response) => {
+            return response.text();
+        }).then((txt) => {
 
-            fetch(textUrl, {
-                headers: this.appendAuthHeader()
-            }).then((response) => {
-                return response.text();
-            }).then((txt) => {
-
-                marked.setOptions({
-                    highlightClass: 'hljs',
-                    highlight: (code) => hljs.highlightAuto(code).value
-                });
-
-                this.markDownEl.innerHTML = marked(txt);
-                resolve(this);
-
-                if (this.options.ui !== false) {
-                    this.loadUI();
-                }
-
-                this.loaded = true;
-                this.emit('load');
+            marked.setOptions({
+                highlightClass: 'hljs',
+                highlight: (code) => hljs.highlightAuto(code).value
             });
 
-            setTimeout(() => {
-                if (!this.loaded) {
-                    reject();
-                }
-            }, TEXT_LOAD_TIMEOUT_IN_MILLIS);
+            this.markDownEl.innerHTML = marked(txt);
+
+            if (this.options.ui !== false) {
+                this.loadUI();
+            }
+
+            this.loaded = true;
+            this.emit('load');
         });
+
+        super.load();
     }
 }
 

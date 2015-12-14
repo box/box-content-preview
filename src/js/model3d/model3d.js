@@ -8,10 +8,25 @@ import Base from '../base';
 import Model3dControls from './model3d-controls';
 import Model3dSettings from './model3d-settings';
 import Model3dRenderer from './model3d-renderer';
-import {EVENT_ENABLE_VR, EVENT_DISABLE_VR, EVENT_LOAD, EVENT_MISSING_ASSET, EVENT_RESET,
-	EVENT_ROTATE_ON_AXIS, EVENT_SET_RENDER_MODE, EVENT_SCENE_LOADED, EVENT_SHOW_VR_BUTTON,
-	EVENT_TOGGLE_FULLSCREEN, EVENT_ENTER_FULLSCREEN, EVENT_EXIT_FULLSCREEN, EVENT_SAVE_SCENE_DEFAULTS,
-	EVENT_METADATA_UPDATE_SUCCESS, EVENT_METADATA_UPDATE_FAILURE, EVENT_RESET_SCENE_DEFAULTS } from './model3d-constants';
+import {
+    EVENT_ENABLE_VR,
+    EVENT_DISABLE_VR,
+    EVENT_ERROR,
+    EVENT_LOAD,
+    EVENT_MISSING_ASSET,
+    EVENT_RESET,
+	EVENT_ROTATE_ON_AXIS,
+    EVENT_SET_RENDER_MODE,
+    EVENT_SCENE_LOADED,
+    EVENT_SHOW_VR_BUTTON,
+	EVENT_TOGGLE_FULLSCREEN,
+    EVENT_ENTER_FULLSCREEN,
+    EVENT_EXIT_FULLSCREEN,
+    EVENT_SAVE_SCENE_DEFAULTS,
+	EVENT_METADATA_UPDATE_SUCCESS,
+    EVENT_METADATA_UPDATE_FAILURE,
+    EVENT_RESET_SCENE_DEFAULTS
+} from './model3d-constants';
 import 'file?name=boxsdk-0.1.1.js!../../third-party/model3d/boxsdk-0.1.1.js';
 import 'file?name=box3d-resource-loader-0.1.1.js!../../third-party/model3d/box3d-resource-loader-0.1.1.js';
 import 'file?name=box3d-runtime-0.8.1.js!../../third-party/model3d/box3d-runtime-0.8.1.js';
@@ -21,7 +36,6 @@ let document = global.document;
 let Box = global.Box || {};
 
 const CSS_CLASS_MODEL3D = 'box-preview-model3d';
-const MODEL3D_LOAD_TIMEOUT_IN_MILLIS = 100000;
 const MISSING_MAX = 4;
 const RENDER_MODE_MAP = {
 	'Lit': 'lit',
@@ -66,6 +80,8 @@ class Model3d extends Base {
 			up: null,
 			forward: null
 		};
+
+        this.loadTimeout = 100000;
 	}
 
 	/**
@@ -115,26 +131,18 @@ class Model3d extends Base {
 	 */
 	load(model3dJsonUrl) {
 		// Temp hack
-		return new Promise((resolve, reject) => {
-			this.renderer
-				.load(this.appendAuthParam(model3dJsonUrl), this.options)
-				.then(() => {
-					this.emit(EVENT_LOAD);
-					this.loaded = true;
-					resolve(this);
-				})
-				.catch((err) => {
-					console.error(err.message);
-					console.error(err);
-					reject(err);
-				});
-
-			setTimeout(() => {
-				if (!this.loaded) {
-					reject();
-				}
-			}, MODEL3D_LOAD_TIMEOUT_IN_MILLIS);
-		});
+		this.renderer
+        .load(this.appendAuthParam(model3dJsonUrl), this.options)
+        .then(() => {
+            this.emit(EVENT_LOAD);
+            this.loaded = true;
+        })
+        .catch((err) => {
+            console.error(err.message);
+            console.error(err);
+            this.emit(EVENT_ERROR, err.message);
+        });
+        super.load();
 	}
 
 	/**

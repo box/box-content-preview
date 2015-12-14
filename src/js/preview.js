@@ -11,12 +11,11 @@ import cache from './cache';
 const PREFETCH_COUNT = 3;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
 const CLASS_HIDDEN = 'box-preview-is-hidden';
+const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 const MOUSEMOVE_THROTTLE = 1500;
 const CRAWLER = '<div class="box-preview-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
 
 let Box = global.Box || {};
-let Promise = global.Promise;
-let document = global.document;
 
 @autobind
 class Preview {
@@ -40,8 +39,8 @@ class Preview {
         // other files are relative to it.
         this.determinePreviewLocation();
 
-        // Call init of loaders
-        this.initLoaders();
+        // Call preload of loaders
+        this.preloadLoaders();
 
         // Throttled mousemove for navigation visibility
         this.throttledMousemoveHandler = throttle(() => {
@@ -93,10 +92,10 @@ class Preview {
      * @private
      * @returns {void}
      */
-    initLoaders() {
+    preloadLoaders() {
         loaders.forEach((loader) => {
-            if (typeof loader.init === 'function') {
-                loader.init(this.options);
+            if (typeof loader.preload === 'function') {
+                loader.preload(this.options);
             }
         });
     }
@@ -243,17 +242,77 @@ class Preview {
      * @returns {Promise} Promise to load a viewer
      */
     loadViewer() {
+
         // Before loading a new preview check if a prior preview was showing.
-        // If it was showing make sure to destroy it and do any cleanup.
+        // If it was showing make sure to destroy it to do any cleanup.
         this.destroy();
 
-        // Save the reference to the current loader being used
-        this.loader = this.getLoader(this.file);
+        // Create a deferred promise
+        let promise = new Promise((resolve, reject) => {
+            this.viewerSuccess = resolve;
+            this.viewerError = reject;
+        });
 
-        // Finally load the preview using the above loader
-        if (this.loader && typeof this.loader.load === 'function') {
-            return this.loader.load(this.file, this.container, this.options);
+        // Determine the asset loader to use
+        let loader = this.getLoader(this.file);
+
+        // If the loader does not exist reject right away
+        if (!loader) {
+            return Promise.reject('Cannot determine loader!');
         }
+
+        // Determine the viewer to use
+        let viewer = loader.determineViewer(this.file);
+
+        // Determine the representation to use
+        let representation = loader.determineRepresentation(this.file, viewer);
+
+        // Load all the static assets
+        let promiseToLoadAssets = loader.load(viewer, this.options.location.hrefTemplate);
+
+        // Load the representation assets
+        let promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(representation, this.getRequestHeaders());
+
+        // Proceed only when both static and representation assets have been loaded
+        Promise.all([ promiseToLoadAssets, promiseToGetRepresentationStatusSuccess ]).then(() => {
+
+            // Save reference to file to give to the viewer
+            this.options.file = this.file;
+
+            // Instantiate the viewer
+            this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
+
+            // Add listeners for viewer load / error event
+            this.viewer.addListener('error', this.triggerError);
+            this.viewer.addListener('load', () => {
+
+                // Once the viewer loads, hide the loading indicator
+                if (this.container) {
+                    this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
+                }
+
+                // Finally resolve with the viewer instance back to the caller
+                this.viewerSuccess(this.viewer);
+            });
+
+            // Load the representation into the viewer
+            this.viewer.load(representation.links.content.url);
+
+        }).catch(this.triggerError);
+
+        return promise;
+    }
+
+    /**
+     * Triggers error.
+     *
+     * @private
+     * @param {String} reason error
+     * @returns {void}
+     */
+    triggerError(reason) {
+        this.destroy();
+        this.viewerError(reason || 'Failed to load the viewer in the allotted time.');
     }
 
     /**
@@ -422,7 +481,6 @@ class Preview {
         }
     }
 
-
     /**
      * Parses the options
      * @param {String|Object} file box file object or id
@@ -468,15 +526,38 @@ class Preview {
      * @returns {void}
      */
     destroy() {
-        if (this.loader && typeof this.loader.destroy === 'function') {
-            this.loader.destroy();
+        if (this.viewer && typeof this.viewer.destroy === 'function') {
+            this.viewer.destroy();
         }
+
+        this.viewer = undefined;
     }
 
 
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
+
+    /**
+     * Sets the authorization token that may have expired.
+     *
+     * @public
+     * @param {String} token auth token
+     * @returns {void}
+     */
+    updateAuthToken(token) {
+        this.options.token = token;
+    }
+
+    /**
+     * Returns the current viewer
+     *
+     * @public
+     * @returns {Object|undefined} current viewer
+     */
+    getViewer() {
+        return this.viewer;
+    }
 
     /**
      * Primary function to show a preview.
@@ -514,17 +595,6 @@ class Preview {
 
         // Finally load the 1st preview
         return this.load(typeof file === 'string' ? file : file.id);
-    }
-
-    /**
-     * Sets the authorization token that may have expired.
-     *
-     * @public
-     * @param {String} token auth token
-     * @returns {void}
-     */
-    updateAuthToken(token) {
-        this.options.token = token;
     }
 
     /**

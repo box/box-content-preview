@@ -7,7 +7,6 @@ import ImageBase from './image-base';
 
 const CSS_CLASS_IMAGE = 'box-preview-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
-const IMAGE_LOAD_TIMEOUT_IN_MILLIS = 60000;
 
 let Promise = global.Promise;
 let document = global.document;
@@ -34,6 +33,7 @@ class MultiImage extends ImageBase {
         this.wrapperEl.addEventListener('mouseup', this.handleMouseUp);
 
         this.imageEls = [this.wrapperEl.appendChild(document.createElement('img'))];
+        this.loadTimeout = 60000;
     }
 
     /**
@@ -59,33 +59,23 @@ class MultiImage extends ImageBase {
     load(imageUrls) {
         this.imageUrls = imageUrls;
 
-        return new Promise((resolve, reject) => {
-
-            this.imageEls[0].addEventListener('load', () => {
-                resolve(this);
-                this.loaded = true;
-                this.zoom();
-
-                if (this.options.ui !== false) {
-                    this.loadUI();
-                }
-
-                this.emit('load');
-            });
-
-            this.imageUrls.forEach((imageUrl, index) => {
-                if (index !== 0) {
-                    this.imageEls[index] = this.wrapperEl.appendChild(document.createElement('img'));
-                }
-                this.imageEls[index].src = imageUrl;
-            });
-
-            setTimeout(() => {
-                if (!this.loaded) {
-                    reject();
-                }
-            }, IMAGE_LOAD_TIMEOUT_IN_MILLIS);
+        this.imageEls[0].addEventListener('load', () => {
+            this.loaded = true;
+            this.emit('load');
+            this.zoom();
+            if (this.options.ui !== false) {
+                this.loadUI();
+            }
         });
+
+        this.imageUrls.forEach((imageUrl, index) => {
+            if (index !== 0) {
+                this.imageEls[index] = this.wrapperEl.appendChild(document.createElement('img'));
+            }
+            this.imageEls[index].src = imageUrl;
+        });
+
+        super.load();
     }
 
     /**

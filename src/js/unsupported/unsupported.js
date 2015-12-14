@@ -4,18 +4,17 @@ import '../../css/unsupported/unsupported.css';
 import autobind from 'autobind-decorator';
 import Base from '../base';
 
-let document = global.document;
-let Promise = global.Promise;
+let Box = global.Box || {};
 
 @autobind
 class Unsupported extends Base {
 
     /**
      * [constructor]
-     * 
-     * @param {string|HTMLElement} event The mousemove event
-     * @param {object} [options] some options
-     * @returns {Image}
+     *
+     * @param {String|HTMLElement} container The container
+     * @param {Object} options some options
+     * @returns {Unsupported} Unsupported instance
      */
     constructor(container, options) {
         super(container, options);
@@ -28,33 +27,29 @@ class Unsupported extends Base {
     /**
      * Shows an unsupported message to the user.
      *
-     * @param {String} extension file extension
      * @public
-     * @returns {Promise}
+     * @param {String} extension file extension
+     * @returns {void}
      */
     load() {
-        return new Promise((resolve, reject) => {
+        let className = 'blank';
 
-            let className = 'blank';
+        switch (this.options.file.extension) {
+            case 'zip':
+                className = 'zip';
+                break;
+            case 'flv':
+                className = 'flv';
+                break;
+            default:
+                className = 'blank';
+        }
 
-            switch (this.options.file.extension) {
-                case 'zip':
-                    className = 'zip';
-                    break;
-                case 'flv':
-                    className = 'flv';
-                    break;
-                default:
-                    className = 'blank';
-            }
+        this.iconEl.className = 'box-preview-file-' + className;
+        this.messageEl.innerHTML = 'Not supported';
 
-            this.iconEl.className = 'box-preview-file-' + className;
-            this.messageEl.innerHTML = 'Not supported';
-            
-            resolve(this);
-            this.loaded = true;
-            this.emit('load');
-        });
+        this.loaded = true;
+        this.emit('load');
     }
 }
 
