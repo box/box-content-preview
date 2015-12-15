@@ -60,6 +60,21 @@ Box.Preview.getViewer();
 ```
 to get the current viewer. May return null till the viewer loads.
 
+```javascript
+Box.Preview.getViewers();
+```
+to get all the available viewers.
+
+```javascript
+Box.Preview.enableViewers(/* String|Array */ viewers);
+```
+to enable one or more viewers.
+
+```javascript
+Box.Preview.disableViewers(/* String|Array */ viewers);
+```
+to disable one or more viewers.
+
 Test
 ----
 

@@ -163,9 +163,8 @@ class Image360 extends Base {
      * @returns {void}
      */
     switchTo2dViewer() {
-        this.emit(EVENT_RELOAD, {
-            skip: [ this.options.loader.id ]
-        });
+        Box.Preview.enableViewers('Image');
+        this.emit(EVENT_RELOAD);
     }
 }
 

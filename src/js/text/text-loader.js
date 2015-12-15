@@ -37,16 +37,6 @@ class TextLoader extends AssetLoader {
         super();
         this.viewers = VIEWERS;
     }
-
-    /**
-     * A unique identifier for this loader
-     *
-     * @public
-     * @returns {String} id of this loader
-     */
-    get id() {
-        return 'box-text';
-    }
 }
 
 export default new TextLoader();

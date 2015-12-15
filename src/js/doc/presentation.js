@@ -6,7 +6,6 @@ import DocBase from './doc-base';
 import pageNumTemplate from 'raw!../../html/doc/page-num-button-content.html';
 
 let Box = global.Box || {};
-let document = global.document;
 
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;

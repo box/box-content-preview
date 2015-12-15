@@ -16,21 +16,38 @@ class AssetLoader {
     /**
      * Determines if this loader can be used
      *
+     * @public
      * @param {Object} file box file
+     * @param {Array|void} [disabledViewers] List of disabled viewers
      * @returns {Boolean} Is file supported
      */
-    canLoad(file) {
-        return !!this.determineViewer(file);
+    canLoad(file, disabledViewers = []) {
+        return !!this.determineViewer(file, disabledViewers);
+    }
+
+    /**
+     * Returns the available viewers
+     *
+     * @public
+     * @returns {Array} list of supported viewers
+     */
+    getViewers() {
+        return this.viewers;
     }
 
     /**
      * Chooses a viewer based on file extension.
      *
+     * @public
      * @param {Object} file box file
+     * @param {Array|void} [disabledViewers] List of disabled viewers
      * @returns {Object} the viewer to use
      */
-    determineViewer(file) {
+    determineViewer(file, disabledViewers = []) {
         return this.viewers.find((viewer) => {
+            if (disabledViewers.indexOf(viewer.CONSTRUCTOR) > -1) {
+                return false;
+            }
             return viewer.EXTENSIONS.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => viewer.REPRESENTATION === entry.representation);
         });
     }
@@ -40,6 +57,7 @@ class AssetLoader {
      * one specific representation. In other words we will not have
      * two png representation entries with different properties.
      *
+     * @public
      * @param {Object} file box file
      * @param {Object} viewer the chosen viewer
      * @returns {Object} the representation to load
@@ -51,6 +69,7 @@ class AssetLoader {
     /**
      * Gets the status of a representation asset
      *
+     * @public
      * @param {Object} representation box representation
      * @param {Object} headers request headers
      * @returns {Promise} Promise to load a preview
@@ -63,6 +82,7 @@ class AssetLoader {
     /**
      * Loads assets needed for a preview and finally loads the viewer
      *
+     * @public
      * @param {Object} viewer chosen viewer
      * @param {String} assetTemplate template of assets
      * @returns {Promise} Promise to load scripts
@@ -82,6 +102,7 @@ class AssetLoader {
     /**
      * Prefetches assets
      *
+     * @public
      * @param {Object} file box file
      * @param {Object} [options] optional options
      * @returns {void}
@@ -111,6 +132,7 @@ class AssetLoader {
      * An empty function that can be overriden just incase
      * some loader wants to do some initialization stuff
      *
+     * @public
      * @param {Object} options options
      * @returns {void}
      */

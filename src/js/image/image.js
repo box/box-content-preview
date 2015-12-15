@@ -216,9 +216,8 @@ class Image extends Base {
      * @returns {void}
      */
     switchTo3D() {
-        this.emit('reload', {
-            skip: [ this.options.loader.id ]
-        });
+        Box.Preview.disableViewers('Image');
+        this.emit('reload');
     }
 
     /**
