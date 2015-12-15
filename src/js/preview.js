@@ -35,6 +35,9 @@ class Preview {
         // Options
         this.options = {};
 
+        // Disabled viewers
+        this.disabledViewers = {};
+
         // Determine the location of preview.js since all
         // other files are relative to it.
         this.determinePreviewLocation();
@@ -82,22 +85,6 @@ class Preview {
         };
 
         anchor = undefined;
-    }
-
-
-    /**
-     * Initializes the loaders which may have
-     * an optional init method.
-     *
-     * @private
-     * @returns {void}
-     */
-    preloadLoaders() {
-        loaders.forEach((loader) => {
-            if (typeof loader.preload === 'function') {
-                loader.preload(this.options);
-            }
-        });
     }
 
     /**
@@ -239,10 +226,9 @@ class Preview {
      * Loads a viewer.
      *
      * @private
-     * @param {Array|void} [skip] loaders to skip
      * @returns {Promise} Promise to load a viewer
      */
-    loadViewer(skip = []) {
+    loadViewer() {
 
         // Before loading a new preview check if a prior preview was showing.
         // If it was showing make sure to destroy it to do any cleanup.
@@ -255,7 +241,7 @@ class Preview {
         });
 
         // Determine the asset loader to use
-        let loader = this.getLoader(this.file, skip);
+        let loader = this.getLoader(this.file);
 
         // If the loader does not exist reject right away
         if (!loader) {
@@ -306,18 +292,14 @@ class Preview {
     attachViewerListeners() {
         // Add listeners for viewer load / error event
         this.viewer.addListener('error', this.triggerError);
+        this.viewer.addListener('reload', this.loadViewer);
         this.viewer.addListener('load', () => {
-
             // Once the viewer loads, hide the loading indicator
             if (this.container) {
                 this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
             }
-
             // Finally resolve with the viewer instance back to the caller
             this.viewerSuccess(this.viewer);
-        });
-        this.viewer.addListener('reload', (args) => {
-            this.loadViewer(args.skip);
         });
     }
 
@@ -408,18 +390,6 @@ class Preview {
     }
 
     /**
-     * Determines a preview loader
-     *
-     * @private
-     * @param {Object} file File to preview
-     * @param {Array|void} [skip] loaders to skip
-     * @returns {Object} Loader
-     */
-    getLoader(file, skip = []) {
-        return loaders.find((loader) => skip.indexOf(loader.id) === -1 && loader.canLoad(file));
-    }
-
-    /**
      * Shows navigation arrows
      *
      * @private
@@ -496,6 +466,32 @@ class Preview {
             this.load(this.files[newIndex]);
             this.updateNavigation();
         }
+    }
+
+    /**
+     * Initializes the loaders which may have
+     * an optional init method.
+     *
+     * @private
+     * @returns {void}
+     */
+    preloadLoaders() {
+        loaders.forEach((loader) => {
+            if (loader.enabled && typeof loader.preload === 'function') {
+                loader.preload(this.options);
+            }
+        });
+    }
+
+    /**
+     * Determines a preview loader
+     *
+     * @private
+     * @param {Object} file File to preview
+     * @returns {Object} Loader
+     */
+    getLoader(file) {
+        return loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
     }
 
     /**
@@ -629,6 +625,54 @@ class Preview {
             if (destroy) {
                 this.container.innerHTML = '';
             }
+        }
+    }
+
+    /**
+     * Returns a list of viewers
+     *
+     * @public
+     * @returns {Array} list of supported viewers
+     */
+    getViewers() {
+        let viewers = [];
+        loaders.forEach((loader) => {
+            viewers = viewers.concat(loader.getViewers());
+        });
+        return viewers;
+    }
+
+    /**
+     * Disables a viewer
+     *
+     * @public
+     * @param {String|Array} viewers destroys the container contents
+     * @returns {void}
+     */
+    disableViewers(viewers) {
+        if (Array.isArray(viewers)) {
+            viewers.forEach((viewer) => {
+                this.disabledViewers[viewer] = 1;
+            });
+        } else if (viewers) {
+            this.disabledViewers[viewers] = 1;
+        }
+    }
+
+    /**
+     * Disables a viewer
+     *
+     * @public
+     * @param {String|Array} viewers destroys the container contents
+     * @returns {void}
+     */
+    enableViewers(viewers) {
+        if (Array.isArray(viewers)) {
+            viewers.forEach((viewer) => {
+                delete this.disabledViewers[viewer];
+            });
+        } else if (viewers) {
+            delete this.disabledViewers[viewers];
         }
     }
 }

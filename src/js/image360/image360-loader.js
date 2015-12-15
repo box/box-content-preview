@@ -32,16 +32,6 @@ class Image360Loader extends AssetLoader {
         super();
         this.viewers = VIEWERS;
     }
-
-    /**
-     * A unique identifier for this loader
-     *
-     * @public
-     * @returns {String} id of this loader
-     */
-    get id() {
-        return 'box-image-360';
-    }
 }
 
 export default new Image360Loader();

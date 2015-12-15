@@ -41,16 +41,6 @@ class UnsupportedLoader extends AssetLoader {
     prefetch() {
         // no-op
     }
-
-    /**
-     * A unique identifier for this loader
-     *
-     * @public
-     * @returns {String} id of this loader
-     */
-    get id() {
-        return 'box-unsupported';
-    }
 }
 
 export default new UnsupportedLoader();

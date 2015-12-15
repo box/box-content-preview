@@ -23,16 +23,6 @@ class Model3dLoader extends AssetLoader {
         super();
         this.viewers = VIEWERS;
     }
-
-    /**
-     * A unique identifier for this loader
-     *
-     * @public
-     * @returns {String} id of this loader
-     */
-    get id() {
-        return 'box-3d';
-    }
 }
 
 export default new Model3dLoader();

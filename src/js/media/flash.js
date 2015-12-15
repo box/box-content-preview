@@ -73,7 +73,7 @@ class Flash extends Base {
         lightbox.setType('flash');
     }
 
-    
+
     var flashElement,
         $element,
         lightbox,
@@ -154,8 +154,8 @@ class Flash extends Base {
      * Resizes the Flash object to do one of two things: set width and height in the case of video
      * files or fill the screen otherwise
      * @param {object} [data] Event data object that may contain width and height
-     * @param {Number} [data.width] Width of video if viewing a video file 
-     * @param {Number} [data.height] Height of video if viewing a video file 
+     * @param {Number} [data.width] Width of video if viewing a video file
+     * @param {Number} [data.height] Height of video if viewing a video file
      * @returns {void}
      */
     resizeFlashObject(data) {
@@ -303,7 +303,7 @@ class Flash extends Base {
     }
 
 
-        
+
 
         destroy() {
             // @TODO(dtong) add a method off() to detach all events
