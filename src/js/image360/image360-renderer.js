@@ -10,10 +10,10 @@ import {EVENT_SHOW_VR_BUTTON} from './image360-constants';
 const CACHE_KEY_BOX3D = 'box3d';
 
 const INPUT_SETTINGS = {
-	vrEvents: {
-		enable: true,
-		position: false
-	}
+    vrEvents: {
+        enable: true,
+        position: false
+    }
 };
 
 /**
@@ -24,263 +24,290 @@ const INPUT_SETTINGS = {
  */
 @autobind
 class Image360Renderer extends EventEmitter {
-	/**
-	 * [constructor]
-	 * @param {HTMLElement} containerEl the container element
-	 * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
-	 * @returns {Image360Renderer} Image360Renderer instance
-	 */
-	constructor(containerEl, boxSdk) {
-		super();
-		this.containerEl = containerEl;
-		this.vrEnabled = false;
-		this.boxSdk = boxSdk;
-	}
+    /**
+     * [constructor]
+     * @param {HTMLElement} containerEl the container element
+     * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
+     * @returns {Image360Renderer} Image360Renderer instance
+     */
+    constructor(containerEl, boxSdk) {
+        super();
+        this.containerEl = containerEl;
+        this.vrEnabled = false;
+        this.boxSdk = boxSdk;
+        this.textureAsset;
+    }
 
-	/**
-	 * Called on preview destroy
-	 * @returns {void}
-	 */
-	destroy() {
-		if (!this.box3d) {
-			return;
-		}
+    /**
+     * Called on preview destroy
+     * @returns {void}
+     */
+    destroy() {
+        if (!this.box3d) {
+            return;
+        }
 
-		this.hideBox3d();
+        this.cleanupTexture();
 
-		this.box3d.resourceLoader.destroy();
-		this.box3d.resourceLoader = null;
-		this.box3d = null;
-	}
+        this.hideBox3d();
 
-	/**
-	 * Load a box3d json
-	 * @param  {string} jsonUrl The url to the box3d json
-	 * @param  {object} options Options object
-	 * @returns {void}
-	 */
-	load(jsonUrl, options) {
-		return this.initBox3d(options)
-			.then(this.loadPanoramaFile.bind(this, jsonUrl));
-	}
+        this.box3d.resourceLoader.destroy();
+        this.box3d.resourceLoader = null;
+        this.box3d = null;
+    }
 
-	/**
-	 * Get the scene's camera instance.
-	 * @returns {Box3DEntity} The camera instance
-	 */
-	getCamera() {
-		let scene = this.getScene();
-		return scene ? scene.getChildById('CAMERA_ID') : null;
-	}
+    /**
+     * Destroy the texture asset created from the Box file and unallocate any GPU memory
+     * consumed by it.
+     * @private
+     * @method cleanupTexture
+     * @returns {void}
+     */
+    cleanupTexture() {
+        if (this.textureAsset) {
+            this.textureAsset.destroy();
+            this.textureAsset = undefined;
+        }
+    }
 
-	/**
-	 * Get the scene asset.
-	 * @returns {Box3DEntity} The scene asset
-	 */
-	getScene() {
-		return this.box3d ? this.box3d.assetRegistry.getAssetById('SCENE_ID') : null;
-	}
+    /**
+     * Load a box3d json
+     * @param  {string} jsonUrl The url to the box3d json
+     * @param  {object} options Options object
+     * @returns {void}
+     */
+    load(jsonUrl, options) {
+        return this.initBox3d(options)
+            .then(this.loadPanoramaFile.bind(this, options.file));
+    }
 
-	/**
-	 * Initialize the Box3D engine.
-	 * @param {object} options the preview options object
-	 * @returns {void} nothing
-	 */
-	initBox3d(options) {
-		let resourceLoader,
-		opts = {};
+    /**
+     * Get the scene's camera instance.
+     * @returns {Box3DEntity} The camera instance
+     */
+    getCamera() {
+        let scene = this.getScene();
+        return scene ? scene.getChildById('CAMERA_ID') : null;
+    }
 
-		// Initialize global modules.
-		if (!VAPI) {
-			return Promise.reject(new Error('Missing VAPI'));
-		}
+    /**
+     * Get the scene asset.
+     * @returns {Box3DEntity} The scene asset
+     */
+    getScene() {
+        return this.box3d ? this.box3d.assetRegistry.getAssetById('SCENE_ID') : null;
+    }
 
-		if (!Box3DResourceLoader) {
-			return Promise.reject(new Error('Missing Box3DResourceLoader'));
-		}
+    /**
+     * Initialize the Box3D engine.
+     * @param {object} options the preview options object
+     * @returns {void} nothing
+     */
+    initBox3d(options) {
+        let resourceLoader,
+        opts = {};
 
-		if (!options.file || !options.file.file_version) {
-			return Promise.reject(new Error('Missing file version'));
-		}
+        // Initialize global modules.
+        if (!VAPI) {
+            return Promise.reject(new Error('Missing VAPI'));
+        }
 
-		opts.token = options.token;
-		opts.apiBase = options.api;
-		opts.parentId = options.file.parent.id;
-		opts.boxSdk = this.boxSdk;
-		resourceLoader = new Box3DResourceLoader(options.file.id, options.file.file_version.id, opts);
+        if (!Box3DResourceLoader) {
+            return Promise.reject(new Error('Missing Box3DResourceLoader'));
+        }
 
-		return this.createBox3d(resourceLoader, options);
-	}
+        if (!options.file || !options.file.file_version) {
+            return Promise.reject(new Error('Missing file version'));
+        }
 
-	/**
-	 * Create a new Box3D engine.
-	 * @param {object} resourceLoader The resource loader instance that should be used
-	 * @param {object} options The preview options object
-	 * @returns {void}
-	 */
-	createBox3d(resourceLoader, options) {
-		this.box3d = Cache.get(CACHE_KEY_BOX3D);
+        opts.token = options.token;
+        opts.apiBase = options.api;
+        opts.parentId = options.file.parent.id;
+        opts.boxSdk = this.boxSdk;
+        resourceLoader = new Box3DResourceLoader(options.file.id, options.file.file_version.id, opts);
 
-		if (this.box3d) {
-			this.box3d.resourceLoader = resourceLoader;
-			this.showBox3d();
-			return Promise.resolve(this.box3d);
-		}
+        return this.createBox3d(resourceLoader, options);
+    }
 
-		this.box3d = new VAPI.Engine();
+    /**
+     * Create a new Box3D engine.
+     * @param {object} resourceLoader The resource loader instance that should be used
+     * @param {object} options The preview options object
+     * @returns {void}
+     */
+    createBox3d(resourceLoader, options) {
+        this.box3d = Cache.get(CACHE_KEY_BOX3D);
 
-		return new Promise((resolve, reject) => {
-			this.box3d.initialize({
-				container: this.containerEl,
-				engineName: 'Default',
-				entities: sceneEntities,
-				inputSettings: INPUT_SETTINGS,
-				resourceLoader
-			}, () => {
-				let app = this.box3d.assetRegistry.getAssetById('APP_ASSET_ID');
-				app.load(() => {
-					Cache.set('box3d', this.box3d);
-					resolve(this.box3d);
-				});
-			}.bind(this));
-		});
-	}
+        if (this.box3d) {
+            this.box3d.resourceLoader = resourceLoader;
+            this.showBox3d();
+            return Promise.resolve(this.box3d);
+        }
 
-	/**
-	 * Parse out the proper components to assemble a threejs mesh
-	 * @param {string} fileUrl The Box3D file URL
-	 * @returns {void}
-	 */
-	loadPanoramaFile(fileUrl) {
+        this.box3d = new VAPI.Engine();
 
-		let textureLoader = new THREE.TextureLoader();
-		textureLoader.crossOrigin = true;
-		return new Promise((resolve, reject) => {
-			textureLoader.load(fileUrl, (texture) => {
-				let scene;
-				let skybox;
-				let skyboxTexture = this.box3d.getEntityById('SKYBOX_IMAGE');
-				texture.flipY = false;
-				skyboxTexture.setFromThreeData(texture);
-				scene = this.box3d.getEntityById('SCENE_ID');
-				skybox = scene.getComponentByScriptId('skybox_renderer');
-				skybox.setSkyboxTexture('SKYBOX_IMAGE');
-				resolve();
-			});
-		});
-	}
+        return new Promise((resolve, reject) => {
+            this.box3d.initialize({
+                container: this.containerEl,
+                engineName: 'Default',
+                entities: sceneEntities,
+                inputSettings: INPUT_SETTINGS,
+                resourceLoader
+            }, () => {
+                let app = this.box3d.assetRegistry.getAssetById('APP_ASSET_ID');
+                app.load(() => {
+                    Cache.set('box3d', this.box3d);
+                    resolve(this.box3d);
+                });
+            }.bind(this));
+        });
+    }
 
-	/**
-	 * Enables VR if present
-	 * @returns {void}
-	 */
-	enableVrIfPresent() {
-		// Get the vrDevice to pass to the fullscreen API
-		this.input = this.box3d.getApplication().getComponentByScriptId('input_controller_component');
-		if (this.input) {
-			this.input.whenVrDeviceAvailable((device) => {
-				this.vrDevice = device;
-				this.emit(EVENT_SHOW_VR_BUTTON);
-			});
-		}
-	}
+    /**
+     * Parse out the proper components to assemble a threejs mesh
+     * @param {object} fileProperties The Box3D file properties
+     * @returns {void}
+     */
+    loadPanoramaFile(fileProperties) {
+        let scene;
+        let skybox;
+        scene = this.box3d.getEntityById('SCENE_ID');
+        skybox = scene.getComponentByScriptId('skybox_renderer');
+        skybox.setSkyboxTexture(null);
 
-	/**
-	 * Hide the Box3D canvas and pause the runtime.
-	 * @returns {void}
-	 */
-	hideBox3d() {
-		// Trigger a render to remove any artifacts.
-		this.box3d.trigger('update');
-		this.box3d.trigger('render');
+        this.textureAsset = this.box3d.assetRegistry.createAsset({
+            type: 'texture2D',
+            properties: {
+                ignoreStream: true,
+                generateMipmaps: false,
+                filtering: 'Linear',
+                uMapping: 'Clamp',
+                vMapping: 'Clamp',
+                fileId: fileProperties.id,
+                filename: fileProperties.name,
+                originalImage: fileProperties.extension === 'jpg' ||
+                    fileProperties.fileExtension === 'png' ? true : false
+            }
+        });
+        return new Promise((resolve, reject) => {
+            this.textureAsset.load((texAsset) => {
+                skybox.setSkyboxTexture(this.textureAsset.id);
+                resolve();
+            });
+        });
+    }
 
-		if (this.box3d.container) {
-			if (this.box3d.canvas) {
-				this.box3d.container.removeChild(this.box3d.canvas);
-			}
-			this.box3d.container = null;
-		}
+    /**
+     * Enables VR if present
+     * @returns {void}
+     */
+    enableVrIfPresent() {
+        // Get the vrDevice to pass to the fullscreen API
+        this.input = this.box3d.getApplication().getComponentByScriptId('input_controller_component');
+        if (this.input) {
+            this.input.whenVrDeviceAvailable((device) => {
+                this.vrDevice = device;
+                this.emit(EVENT_SHOW_VR_BUTTON);
+            });
+        }
+    }
 
-		// Prevent background updates and rendering.
-		this.box3d.pause();
-	}
+    /**
+     * Hide the Box3D canvas and pause the runtime.
+     * @returns {void}
+     */
+    hideBox3d() {
+        // Trigger a render to remove any artifacts.
+        this.box3d.trigger('update');
+        this.box3d.trigger('render');
 
-	/**
-	 * Make the Box3D canvas visible and resume updates.
-	 * @returns {void}
-	 */
-	showBox3d() {
-		if (this.box3d) {
-			if (!this.box3d.container) {
-				this.box3d.container = this.containerEl;
-				this.box3d.container.appendChild(this.box3d.canvas);
-			}
+        if (this.box3d.container) {
+            if (this.box3d.canvas) {
+                this.box3d.container.removeChild(this.box3d.canvas);
+            }
+            this.box3d.container = null;
+        }
 
-			// Resume updates and rendering.
-			this.box3d.unpause();
-		}
-	}
+        // Prevent background updates and rendering.
+        this.box3d.pause();
+    }
 
-	/**
-	 * Handles entering fullscreen mode
-	 * @returns {void}
-	 */
-	enterFullscreen() {
-		// Nothing for now
-	}
+    /**
+     * Make the Box3D canvas visible and resume updates.
+     * @returns {void}
+     */
+    showBox3d() {
+        if (this.box3d) {
+            if (!this.box3d.container) {
+                this.box3d.container = this.containerEl;
+                this.box3d.container.appendChild(this.box3d.canvas);
+            }
 
-	/**
-	 * Handles exiting fullscreen mode
-	 * @returns {void}
-	 */
-	exitFullscreen() {
-		this.disableVr();
-	}
+            // Resume updates and rendering.
+            this.box3d.unpause();
+        }
+    }
 
-	/**
-	 * Enable the VR system (HMD)
-	 * @returns {void}
-	 */
-	enableVr() {
-		if (!this.vrDevice || this.vrEnabled) {
-			return;
-		}
+    /**
+     * Handles entering fullscreen mode
+     * @returns {void}
+     */
+    enterFullscreen() {
+        // Nothing for now
+    }
 
-		this.vrEnabled = true;
+    /**
+     * Handles exiting fullscreen mode
+     * @returns {void}
+     */
+    exitFullscreen() {
+        this.disableVr();
+    }
 
-		let camera = this.getCamera();
+    /**
+     * Enable the VR system (HMD)
+     * @returns {void}
+     */
+    enableVr() {
+        if (!this.vrDevice || this.vrEnabled) {
+            return;
+        }
 
-		let hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
-		hmdComponent.enable();
+        this.vrEnabled = true;
 
-		let vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
-		vrControlsComponent.enable();
+        let camera = this.getCamera();
 
-		this.box3d.getBaseRenderer().setAttribute('clearAlpha', 1.0);
-		this.box3d.getBaseRenderer().setAttribute('clearColor', 0x000000);
-	}
+        let hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
+        hmdComponent.enable();
 
-	/**
-	 * Disable the VR system (HMD)
-	 * @returns {void}
-	 */
-	disableVr() {
-		if (!this.vrDevice || !this.vrEnabled) {
-			return;
-		}
+        let vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
+        vrControlsComponent.enable();
 
-		this.vrEnabled = false;
+        this.box3d.getBaseRenderer().setAttribute('clearAlpha', 1.0);
+        this.box3d.getBaseRenderer().setAttribute('clearColor', 0x000000);
+    }
 
-		let camera = this.getCamera();
+    /**
+     * Disable the VR system (HMD)
+     * @returns {void}
+     */
+    disableVr() {
+        if (!this.vrDevice || !this.vrEnabled) {
+            return;
+        }
 
-		let hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
-		hmdComponent.disable();
+        this.vrEnabled = false;
 
-		let vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
-		vrControlsComponent.disable();
+        let camera = this.getCamera();
 
-		this.box3d.getBaseRenderer().setAttribute('clearAlpha', 0.0);
-	}
+        let hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
+        hmdComponent.disable();
+
+        let vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
+        vrControlsComponent.disable();
+
+        this.box3d.getBaseRenderer().setAttribute('clearAlpha', 0.0);
+    }
 }
 
 export default Image360Renderer;

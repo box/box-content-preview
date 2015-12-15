@@ -5,7 +5,7 @@ import AssetLoader from '../asset-loader';
 const VIEWERS = [
     {
         REPRESENTATION: 'original',
-        EXTENSIONS: [ 'jpg' ],
+        EXTENSIONS: [ 'jpg', 'png' ],
         SCRIPTS: [ 'boxsdk-0.1.1.js', 'box3d-resource-loader-0.1.1.js',
             'box3d-runtime-0.8.1.js', 'image360.js' ],
         STYLESHEETS: [ 'image360.css' ],
@@ -13,7 +13,7 @@ const VIEWERS = [
     },
     {
         REPRESENTATION: 'png',
-        EXTENSIONS: [ 'ai', 'bmp', 'eps', 'gif', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
+        EXTENSIONS: [ 'ai', 'bmp', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
         SCRIPTS: [ 'boxsdk-0.1.1.js', 'box3d-resource-loader-0.1.1.js',
 
             'box3d-runtime-0.8.1.js', 'image360.js' ],
