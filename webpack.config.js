@@ -56,7 +56,12 @@ RsyncPlugin.prototype.apply = function(compiler) {
     var self = this;
     compiler.plugin('done', function() {
         console.log('--------- Rsync starting for ' + self.source + ' ---------');
-        exec('rsync -avz --delete --exclude=".*" ' + self.source + ' ' + self.destination);
+        exec('rsync -avz --delete --exclude=".*" "' + self.source + '" "' + self.destination + '"', function(err) {
+            if (err !== null) {
+                console.log('exec error: ' + err);
+                process.exit(1);
+            }
+        });
         console.log('--------- Rsync done ---------');
     });
 };
@@ -71,7 +76,7 @@ module.exports = languagesArray.map(function(language, index) {
         new webpack.NoErrorsPlugin(),
         new ExtractTextPlugin('[Name].css', { allChunks: true }),
         new I18nPlugin(languages[language]),
-        new RsyncPlugin('src/third-party/static', dist)
+        new RsyncPlugin(static, dist)
     ];
 
     // If this is not a release build, add the Rsync plugin for local
