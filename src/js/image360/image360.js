@@ -54,6 +54,7 @@ class Image360 extends Base {
         this.renderer = new Image360Renderer(this.wrapperEl, this.boxSdk);
 
         this.attachEventHandlers();
+        this.loadTimeout = 50000;
     }
 
     /**
