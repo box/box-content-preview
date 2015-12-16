@@ -91,6 +91,9 @@ class DocBase extends Base {
         fetch(pdfWorkerUrl)
         .then((response) => response.blob())
         .then((pdfWorkerBlob) => {
+            if (this.destroyed) {
+                return;
+            }
             PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
             PDFJS.cMapUrl = pdfCMapBaseURI;
             PDFJS.cMapPacked = true;

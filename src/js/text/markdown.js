@@ -41,6 +41,10 @@ class MarkDown extends TextBase {
             return response.text();
         }).then((txt) => {
 
+            if (this.destroyed) {
+                return;
+            }
+
             marked.setOptions({
                 highlightClass: 'hljs',
                 highlight: (code) => hljs.highlightAuto(code).value

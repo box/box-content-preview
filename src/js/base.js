@@ -158,6 +158,7 @@ class Base extends EventEmitter {
         document.defaultView.removeEventListener('resize', this.resizeHandler);
         this.removeAllListeners();
         this.containerEl.innerHTML = '';
+        this.destroyed = true;
     }
 }
 

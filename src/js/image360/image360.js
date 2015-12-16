@@ -97,6 +97,9 @@ class Image360 extends Base {
         this.renderer
         .load(this.appendAuthParam(image360Url), this.options)
         .then(() => {
+            if (this.destroyed) {
+                return;
+            }
             this.emit(EVENT_LOAD);
             this.loaded = true;
         })

@@ -52,6 +52,9 @@ class CSV extends TextBase {
                     this.emit('error', reason);
                 },
                 complete: (results) => {
+                    if (this.destroyed) {
+                        return;
+                    }
                     this.finishLoading(results.data);
                     URL.revokeObjectURL(papaWorkerBlob);
                 }

@@ -39,6 +39,9 @@ class PlainText extends TextBase {
         }).then((response) => {
             return response.text();
         }).then((txt) => {
+            if (this.destroyed) {
+                return;
+            }
             this.finishLoading(txt);
         });
 
