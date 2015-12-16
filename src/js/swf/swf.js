@@ -42,6 +42,9 @@ class SWF extends Base {
      */
     load(swfUrl) {
         swfobject.embedSWF(this.appendAuthParam(swfUrl), 'flash-player', '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
+            if (this.destroyed) {
+                return;
+            }
             this.loaded = true;
             this.emit('load');
         });

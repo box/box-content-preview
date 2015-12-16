@@ -80,6 +80,9 @@ class MediaBase extends Base {
      * @returns {void}
      */
     loadedmetadataHandler() {
+        if (this.destroyed) {
+            return;
+        }
         this.loaded = true;
         this.mediaEl.volume = DEFAULT_VOLUME;
         this.emit('load');

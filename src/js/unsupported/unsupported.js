@@ -46,7 +46,7 @@ class Unsupported extends Base {
         }
 
         this.iconEl.className = 'box-preview-file-' + className;
-        this.messageEl.innerHTML = 'Not supported';
+        this.messageEl.innerHTML = this.options.viewerOptions.error ? this.options.viewerOptions.error : 'Not supported';
 
         this.loaded = true;
         this.emit('load');

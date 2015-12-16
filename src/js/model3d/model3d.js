@@ -134,6 +134,9 @@ class Model3d extends Base {
 		this.renderer
         .load(this.appendAuthParam(model3dJsonUrl), this.options)
         .then(() => {
+            if (this.destroyed) {
+                return;
+            }
             this.emit(EVENT_LOAD);
             this.loaded = true;
         })

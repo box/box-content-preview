@@ -7,6 +7,7 @@ import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import loaders from './loaders';
 import cache from './cache';
+import UnsupportedLoader from './unsupported/unsupported-loader';
 
 const PREFETCH_COUNT = 3;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
@@ -217,8 +218,6 @@ class Preview {
             } else {
                 return Promise.reject(file.message);
             }
-        }).catch((err) => {
-            return Promise.reject(err);
         });
     }
 
@@ -243,11 +242,6 @@ class Preview {
         // Determine the asset loader to use
         let loader = this.getLoader(this.file);
 
-        // If the loader does not exist reject right away
-        if (!loader) {
-            return Promise.reject('Cannot determine loader!');
-        }
-
         // Determine the viewer to use
         let viewer = loader.determineViewer(this.file);
 
@@ -265,9 +259,6 @@ class Preview {
 
             // Save reference to file to give to the viewer
             this.options.file = this.file;
-
-            // Let the viewer also know the loader thats loading it
-            this.options.loader = loader;
 
             // Instantiate the viewer
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
@@ -311,8 +302,11 @@ class Preview {
      * @returns {void}
      */
     triggerError(reason) {
-        this.destroy();
+        this.error = true;
         this.viewerError(reason || 'Failed to load the viewer in the allotted time.');
+        this.options.viewerOptions.error = reason || 'An unknown error has occurered';
+        this.loadViewer();
+        this.error = false;
     }
 
     /**
@@ -491,6 +485,9 @@ class Preview {
      * @returns {Object} Loader
      */
     getLoader(file) {
+        if (this.error) {
+            return UnsupportedLoader;
+        }
         return loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
     }
 
@@ -519,7 +516,7 @@ class Preview {
         this.updateAuthToken(options.token);
 
         // Save the reference to any additional custom options
-        this.options.viewerOptions = options.viewerOptions;
+        this.options.viewerOptions = options.viewerOptions || {};
 
         // Normalize by putting file inside files array if the latter
         // is empty. If its not empty, then it is assumed that file is
@@ -624,6 +621,8 @@ class Preview {
             this.container.removeEventListener('mousemove', this.throttledMousemoveHandler);
             if (destroy) {
                 this.container.innerHTML = '';
+            } else if (this.container.firstElementChild) {
+                this.container.firstElementChild.classList.remove(CLASS_PREVIEW_LOADED);
             }
         }
     }

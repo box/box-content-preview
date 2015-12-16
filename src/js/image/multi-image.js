@@ -60,6 +60,9 @@ class MultiImage extends ImageBase {
         this.imageUrls = imageUrls;
 
         this.imageEls[0].addEventListener('load', () => {
+            if (this.destroyed) {
+                return;
+            }
             this.loaded = true;
             this.emit('load');
             this.zoom();

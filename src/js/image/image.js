@@ -58,6 +58,9 @@ class Image extends Base {
     load(imageUrl) {
         this.imageUrl = this.appendAuthParam(imageUrl);
         this.imageEl.addEventListener('load', () => {
+            if (this.destroyed) {
+                return;
+            }
             this.loaded = true;
             this.emit('load');
             this.zoom();
