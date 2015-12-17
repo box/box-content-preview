@@ -21,7 +21,7 @@ class ImageBase extends Base {
         if (this.imageEl) {
             this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
         }
-        
+
         super.destroy();
     }
 
@@ -44,6 +44,15 @@ class ImageBase extends Base {
     }
 
     /**
+     * Resize image by calling zoom.
+     * @public
+     * @returns {void}
+     */
+    resize() {
+        this.zoom();
+    }
+
+    /**
      * Zooms in
      * @private
      * @returns {void}
@@ -53,7 +62,7 @@ class ImageBase extends Base {
         this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon');
         this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon');
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-image-expand-icon');
-    }        
+    }
 }
 
 export default ImageBase;
