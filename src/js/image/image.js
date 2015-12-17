@@ -289,12 +289,23 @@ class Image extends Base {
                 // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
                 if (width > viewport.width || height > viewport.height) {
                     ratio = Math.min(viewport.width / width, viewport.height / height);
-                }
 
-                if (modifyWidthInsteadOfHeight) {
-                    newWidth = width * ratio;
+                    if (modifyWidthInsteadOfHeight) {
+                        newWidth = width * ratio;
+                    } else {
+                        newHeight = height * ratio;
+                    }
+
+                // If the image is smaller than the new viewport, zoom up to a
+                // max of the original file size
                 } else {
-                    newHeight = height * ratio;
+                    if (modifyWidthInsteadOfHeight) {
+                        let originalWidth = isRotated ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
+                        newWidth = Math.min(viewport.width, originalWidth);
+                    } else {
+                        let originalHeight = isRotated ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
+                        newHeight = Math.min(viewport.height, originalHeight);
+                    }
                 }
         }
 
@@ -316,8 +327,6 @@ class Image extends Base {
         // Fix the scroll position of the image to be centered
         this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
         this.wrapperEl.scrollTop = (this.wrapperEl.scrollHeight - viewport.height) / 2;
-
-        this.emit('resize');
 
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);

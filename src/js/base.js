@@ -125,7 +125,7 @@ class Base extends EventEmitter {
         });
 
         // Add a resize handler for the window
-        document.defaultView.addEventListener('resize', this.resizeHandler);
+        document.defaultView.addEventListener('resize', this.debouncedResizeHandler());
     }
 
     /**
