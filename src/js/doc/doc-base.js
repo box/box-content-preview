@@ -97,7 +97,11 @@ class DocBase extends Base {
             PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
             PDFJS.cMapUrl = pdfCMapBaseURI;
             PDFJS.cMapPacked = true;
+            PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab
+
             this.initViewer(pdfUrl);
+
+            // Releases worker blob
             URL.revokeObjectURL(pdfWorkerBlob);
         });
 

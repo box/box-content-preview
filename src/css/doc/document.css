@@ -54,10 +54,9 @@
 	-moz-box-sizing: content-box !important;
 	-webkit-box-sizing: content-box !important;
     position: relative;
-    margin: 0 auto;
-    padding: 10px 0;
+    margin: 10px auto;
+    padding: 0;
     border: 0;
-    border-image: none;
 }
 
 .pdfViewer .page .loadingIcon {
@@ -67,9 +66,4 @@
 /* Only show page loading indicator when viewer has loaded */
 .box-preview-loaded .pdfViewer .page .loadingIcon {
     background: url('../../img/loading-icon.gif') center no-repeat;
-}
-
-/* Match text layer offset to .page padding */
-.textLayer {
-    margin: 10px 0;
 }
