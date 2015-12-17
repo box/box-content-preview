@@ -7,7 +7,7 @@ import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import loaders from './loaders';
 import cache from './cache';
-import UnsupportedLoader from './unsupported/unsupported-loader';
+import ErrorLoader from './error/error-loader';
 
 const PREFETCH_COUNT = 3;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
@@ -38,6 +38,12 @@ class Preview {
 
         // Disabled viewers
         this.disabledViewers = {};
+
+        // Auth token
+        this.token = '';
+
+        // Deferred promise for viewer
+        this.deferred = {};
 
         // Determine the location of preview.js since all
         // other files are relative to it.
@@ -164,7 +170,9 @@ class Preview {
         }
 
         if (this.files.length > 1) {
-            promise.then(() => this.prefetch());
+            promise.then(() => this.prefetch()).catch(() => {
+                // no-op
+            });
         }
 
         return promise;
@@ -192,7 +200,7 @@ class Preview {
             .then((file) => {
                 cache.set(file.id, file);
                 // Reload the preview
-            });
+            }).catch(this.triggerError);
         }
 
         return this.loadViewer();
@@ -216,9 +224,10 @@ class Preview {
                 this.file = file;
                 return this.loadViewer();
             } else {
+                this.triggerError(file.message);
                 return Promise.reject(file.message);
             }
-        });
+        }).catch(this.triggerError);
     }
 
     /**
@@ -234,9 +243,9 @@ class Preview {
         this.destroy();
 
         // Create a deferred promise
-        let promise = new Promise((resolve, reject) => {
-            this.viewerSuccess = resolve;
-            this.viewerError = reject;
+        this.deferred.promise = new Promise((resolve, reject) => {
+            this.deferred.resolve = resolve;
+            this.deferred.reject = reject;
         });
 
         // Determine the asset loader to use
@@ -271,7 +280,7 @@ class Preview {
 
         }).catch(this.triggerError);
 
-        return promise;
+        return this.deferred.promise;
     }
 
     /**
@@ -290,23 +299,47 @@ class Preview {
                 this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
             }
             // Finally resolve with the viewer instance back to the caller
-            this.viewerSuccess(this.viewer);
+            if (this.deferred.resolve) {
+                this.deferred.resolve(this.viewer);
+                this.deferred = {};
+            }
         });
     }
 
     /**
-     * Triggers error.
+     * Triggers an error.
      *
      * @private
-     * @param {String} reason error
+     * @param {String|null|undefined} reason error
      * @returns {void}
      */
     triggerError(reason) {
-        this.error = true;
-        this.viewerError(reason || 'Failed to load the viewer in the allotted time.');
-        this.options.viewerOptions.error = reason || 'An unknown error has occurered';
-        this.loadViewer();
-        this.error = false;
+
+        // Nuke the cache
+        cache.unset(this.file.id);
+
+        // Use a default reason if none was passed in
+        if (reason instanceof Error) {
+            reason = reason.message;
+        }
+        reason = reason || 'An error has occurered while loading the preview';
+
+        let viewer = ErrorLoader.determineViewer();
+        ErrorLoader.load(viewer, this.options.location.hrefTemplate).then(() => {
+            // Destroy anything still showing
+            this.destroy();
+
+            // Reject any pending promises
+            if (this.deferred.reject) {
+                this.deferred.reject(reason);
+                this.deferred = {};
+            }
+
+            this.options.viewerOptions.error = reason;
+            this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
+            this.viewer.load();
+            this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
+        });
     }
 
     /**
@@ -485,9 +518,6 @@ class Preview {
      * @returns {Object} Loader
      */
     getLoader(file) {
-        if (this.error) {
-            return UnsupportedLoader;
-        }
         return loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
     }
 
@@ -513,7 +543,7 @@ class Preview {
         this.options.api = options.api;
 
         // Save the reference to the auth token
-        this.updateAuthToken(options.token);
+        this.options.token = this.token || options.token;
 
         // Save the reference to any additional custom options
         this.options.viewerOptions = options.viewerOptions || {};
@@ -556,17 +586,7 @@ class Preview {
      * @returns {void}
      */
     updateAuthToken(token) {
-        this.options.token = token;
-    }
-
-    /**
-     * Returns the current viewer
-     *
-     * @public
-     * @returns {Object|undefined} current viewer
-     */
-    getViewer() {
-        return this.viewer;
+        this.token = token;
     }
 
     /**
@@ -625,6 +645,16 @@ class Preview {
                 this.container.firstElementChild.classList.remove(CLASS_PREVIEW_LOADED);
             }
         }
+    }
+
+    /**
+     * Returns the current viewer
+     *
+     * @public
+     * @returns {Object|undefined} current viewer
+     */
+    getViewer() {
+        return this.viewer;
     }
 
     /**

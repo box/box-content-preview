@@ -16,9 +16,9 @@ class Cache {
     /**
      * Caches a simple object in memory cache.
      *
+     * @public
      * @param {string} key The cache key
      * @param {*} value The cache value
-     * @public
      * @returns {void}
      */
     set(key, value) {
@@ -28,8 +28,19 @@ class Cache {
     /**
      * Caches a simple object in memory cache.
      *
-     * @param {string} key The cache key
      * @public
+     * @param {string} key The cache key
+     * @returns {void}
+     */
+    unset(key) {
+        delete this.cache[key];
+    }
+
+    /**
+     * Caches a simple object in memory cache.
+     *
+     * @public
+     * @param {string} key The cache key
      * @returns {Boolean} whether the cache has key
      */
     has(key) {
@@ -39,8 +50,8 @@ class Cache {
     /**
      * Fetches a cached object from memory cache.
      *
-     * @param {string} key the key of the cached object
      * @public
+     * @param {string} key the key of the cached object
      * @returns {*} the cached object
      */
     get(key) {
