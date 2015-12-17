@@ -1,31 +1,31 @@
 'use strict';
 
-import '../../css/unsupported/unsupported.css';
+import '../../css/error/error.css';
 import autobind from 'autobind-decorator';
 import Base from '../base';
 
 let Box = global.Box || {};
 
 @autobind
-class Unsupported extends Base {
+class Error extends Base {
 
     /**
      * [constructor]
      *
      * @param {String|HTMLElement} container The container
      * @param {Object} options some options
-     * @returns {Unsupported} Unsupported instance
+     * @returns {Error} Error instance
      */
     constructor(container, options) {
         super(container, options);
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
         this.messageEl = this.infoEl.appendChild(document.createElement('div'));
-        this.infoEl.className = 'box-preview-unsupported';
+        this.infoEl.className = 'box-preview-error';
     }
 
     /**
-     * Shows an unsupported message to the user.
+     * Shows an error message to the user.
      *
      * @public
      * @param {String} extension file extension
@@ -34,15 +34,17 @@ class Unsupported extends Base {
     load() {
         let className = 'blank';
 
-        switch (this.options.file.extension) {
-            case 'zip':
-                className = 'zip';
-                break;
-            case 'flv':
-                className = 'flv';
-                break;
-            default:
-                className = 'blank';
+        if (!this.options.viewerOptions.error) {
+            switch (this.options.file.extension) {
+                case 'zip':
+                    className = 'zip';
+                    break;
+                case 'flv':
+                    className = 'flv';
+                    break;
+                default:
+                    className = 'blank';
+            }
         }
 
         this.iconEl.className = 'box-preview-file-' + className;
@@ -54,6 +56,6 @@ class Unsupported extends Base {
 }
 
 Box.Preview = Box.Preview || {};
-Box.Preview.Unsupported = Unsupported;
+Box.Preview.Error = Error;
 global.Box = Box;
-export default Unsupported;
+export default Error;

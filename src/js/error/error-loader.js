@@ -5,12 +5,12 @@ import AssetLoader from '../asset-loader';
 const VIEWER = {
     REPRESENTATION: 'original',
     EXTENSIONS: [ ],
-    SCRIPTS: [ 'unsupported.js' ],
-    STYLESHEETS: [ 'unsupported.css' ],
-    CONSTRUCTOR: 'Unsupported'
+    SCRIPTS: [ 'error.js' ],
+    STYLESHEETS: [ 'error.css' ],
+    CONSTRUCTOR: 'Error'
 };
 
-class UnsupportedLoader extends AssetLoader {
+class ErrorLoader extends AssetLoader {
 
     /**
      * Determines if this loader can be used
@@ -43,4 +43,4 @@ class UnsupportedLoader extends AssetLoader {
     }
 }
 
-export default new UnsupportedLoader();
+export default new ErrorLoader();

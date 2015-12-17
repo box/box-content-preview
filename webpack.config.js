@@ -99,7 +99,7 @@ module.exports = languagesArray.map(function(language, index) {
             mp4: js + '/media/mp4.js',
             mp3: js + '/media/mp3.js',
             dash: js + '/media/dash.js',
-            unsupported: js + '/unsupported/unsupported.js',
+            error: js + '/error/error.js',
             model3d: js + '/model3d/model3d.js',
             image360: js + '/image360/image360.js'
         },
