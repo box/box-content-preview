@@ -466,6 +466,22 @@ class Preview {
     }
 
     /**
+     * Shows the preview at an index
+     *
+     * @private
+     * @param {Number} index index of preview
+     * @returns {void}
+     */
+    navigateToIndex(index) {
+        let file = this.files[index];
+        this.load(file);
+        this.updateNavigation();
+        if (typeof this.onNavigate === 'function') {
+            this.onNavigate(file);
+        }
+    }
+
+    /**
      * Shows the prior preview
      *
      * @private
@@ -475,8 +491,7 @@ class Preview {
         let currentIndex = this.files.indexOf(this.file.id);
         let newIndex = currentIndex === 0 ? 0 : currentIndex - 1;
         if (newIndex !== currentIndex) {
-            this.load(this.files[newIndex]);
-            this.updateNavigation();
+            this.navigateToIndex(newIndex);
         }
     }
 
@@ -490,8 +505,7 @@ class Preview {
         let currentIndex = this.files.indexOf(this.file.id);
         let newIndex = currentIndex === this.files.length - 1 ? this.files.length - 1 : currentIndex + 1;
         if (newIndex !== currentIndex) {
-            this.load(this.files[newIndex]);
-            this.updateNavigation();
+            this.navigateToIndex(newIndex);
         }
     }
 
@@ -547,6 +561,9 @@ class Preview {
 
         // Save the reference to any additional custom options
         this.options.viewerOptions = options.viewerOptions || {};
+
+        // Save the navigation callback
+        this.onNavigate = options.onNavigate;
 
         // Normalize by putting file inside files array if the latter
         // is empty. If its not empty, then it is assumed that file is
@@ -637,7 +654,7 @@ class Preview {
     hide(destroy = false) {
         this.destroy();
         if (this.container) {
-            this.container.style.display = 'none';
+            this.container.style.display = '';
             this.container.removeEventListener('mousemove', this.throttledMousemoveHandler);
             if (destroy) {
                 this.container.innerHTML = '';
