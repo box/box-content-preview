@@ -29,7 +29,7 @@ const VIEWERS = [
     },
     {
         REPRESENTATION: 'png',
-        EXTENSIONS: [ 'ai', 'bmp', 'eps', 'gif', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
+        EXTENSIONS: [ 'ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image'
