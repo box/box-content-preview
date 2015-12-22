@@ -20,13 +20,12 @@ class Annotation {
      */
     constructor(data) {
         this.annotationID = AnnotationService.generateID();
+        this.threadID = data.threadID || AnnotationService.generateID();
         this.fileID = data.fileID;
         this.type = data.type;
         this.text = data.text;
         this.location = data.location;
         this.user = data.user;
-        // Default to random GUID
-        this.threadID = data.threadID || AnnotationService.generateID();
         this.created = new Date();
         this.updated = this.created;
     }

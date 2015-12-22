@@ -37,15 +37,6 @@ class Annotator {
         };
     }
 
-    /**
-     * Destructor
-     *
-     * @returns {void}
-     */
-    destroy() {
-        // Go through saved references and remove event listeners
-    }
-
 }
 
 export default Annotator;
