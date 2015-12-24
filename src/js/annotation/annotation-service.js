@@ -27,14 +27,41 @@ let Promise = global.Promise;
             let matchingAnnotations = annotations.filter((annotation) => annotation.fileID === fileID);
 
             // Construct map of thread ID to annotations
-            for (let annotation in matchingAnnotations) {
+            matchingAnnotations.forEach((annotation) => {
                 let threadID = annotation.threadID;
                 let annotationsInThread = result.get(threadID) || [];
                 annotationsInThread.push(annotation);
                 result.set(threadID, annotationsInThread);
+            });
+
+            // Sort annotations by date created
+            for (let threadedAnnotations of result.values()) {
+                threadedAnnotations.sort((a, b) => {
+                    return a.created.getTime() - b.created.getTime();
+                });
             }
 
             resolve(result);
+        });
+    }
+
+    /**
+     * Gets annotations in the specified thread.
+     *
+     * @param {string} threadID ID of thread to fetch annotations for
+     * @returns {Annotation[]} Array of annotations in this thread
+     */
+    getAnnotationsForThread(threadID) {
+        return new Promise((resolve, reject) => {
+            let annotations = this.localAnnotations;
+            let matchingAnnotations = annotations.filter((annotation) => annotation.threadID === threadID);
+
+            // Sort annotations by date created
+            matchingAnnotations.sort((a, b) => {
+                return a.created.getTime() - b.created.getTime();
+            });
+
+            resolve(matchingAnnotations);
         });
     }
 

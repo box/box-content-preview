@@ -14,6 +14,40 @@ const ANNOTATION_TYPE = {
 };
 const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch)) ? 'touchstart' : 'click';
 
+/*---------- Helpers ----------*/
+/**
+ * Recreates rangy's highlighter.serialize() for a single highlight
+ *
+ * @param {Object} highlight Rangy highlight
+ * @returns {string} Serialized highlight string
+ */
+function serializeHighlight(highlight) {
+    return [
+        highlight.characterRange.start,
+        highlight.characterRange.end,
+        highlight.id,
+        highlight.classApplier.className,
+        highlight.containerElementId
+    ].join('$');
+}
+
+/**
+ * Finds the closest ancestor DOM element with the specified class
+ *
+ * @param {HTMLElement} element Element to search ancestors of
+ * @param {string} className Class name to query
+ * @returns {HTMLElement|null} Closest ancestor with given class or null
+ */
+function findClosestEl(element, className) {
+    for (; element && element !== document; element = element.parentNode) {
+        if (element.classList.contains(className)) {
+            return element;
+        }
+    }
+
+    return null;
+}
+
 /**
  * Annotator base class. Viewer-specific annotators should extend this.
  */
@@ -26,10 +60,28 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     init() {
+        this.handlerRefs = [];
+
         this.setupAnnotations();
         this.showAnnotations();
     }
 
+    /**
+     * Destructor
+     *
+     * @returns {void}
+     */
+    destroy() {
+        // Clean up event handler references
+        this.handlerRefs.forEach((ref) => {
+            if (ref.element && typeof ref.element.removeEventListener === 'function') {
+                ref.element.removeEventListener(TOUCH_EVENT, ref.handler);
+                // @TODO(tjin): delete ref.element?
+            }
+        });
+    }
+
+    /*---------- Generic Annotations ----------*/
     /**
      * Annotations setup.
      *
@@ -39,15 +91,19 @@ class DocAnnotator extends Annotator {
         // Init rangy
         this.highlighter = rangy.createHighlighter();
 
-        // Init rangy highlight classapplier and add onclick per rangy highlight
+        // Init rangy highlight classapplier
         this.highlighter.addClassApplier(rangy.createClassApplier('highlight', {
             ignoreWhiteSpace: true,
             tagNames: ['span', 'a'],
-            elementProperties: {
-                onclick: () => {
-                    let threadID = rangy.serialize([this.highligher.getHighlightForElement(this)]);
-                    this.showAnnotationDialog(threadID);
-                }
+            // When highlight element is created, add an event handler to show the annotation
+            onElementCreate: (element) => {
+                element.addEventListener(TOUCH_EVENT, this.showHighlightAnnotationHandler);
+
+                // Maintain handler reference for cleanup
+                this.handlerRefs.append({
+                    element: element,
+                    handler: this.showHighlightAnnotationHandler
+                });
             }
         }));
     }
@@ -85,6 +141,33 @@ class DocAnnotator extends Annotator {
         });
     }
 
+    /**
+     * Create an annotation object from annotation data.
+     *
+     * @param {Object} annotationData Data to create annotation with
+     * @returns {Annotation} Annotation
+     */
+    createAnnotation(annotationData) {
+        let data = {
+            fileID: this.fildID,
+            type: annotationData.type,
+            text: annotationData.text,
+            user: this.user
+        };
+        switch (annotationData.type) {
+            case ANNOTATION_TYPE.HIGHLIGHT:
+                data.threadID = annotationData.threadID;
+                data.location = {}; // highlight location is stored in threadID
+                break;
+            case ANNOTATION_TYPE.POINT:
+                // Point thread ID is generated
+                data.location = annotationData.location;
+                break;
+        }
+
+        return new Annotation(data);
+    }
+
 
     /*---------- Highlight Annotations ----------*/
 
@@ -103,15 +186,57 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Hook to add an annotation. Shows a create annotation dialog with the
-     * currently selected text.
+     * Event handler for showing a highlight annotation
      *
+     * @param {Event} event DOM event
      * @returns {void}
      */
-    addHighlightAnnotation() {
-        // get selection from window
-        // get location based on selection
-        // call createAnnotationDialog() with correct params
+    showHighlightAnnotationHandler(event) {
+        let threadID = serializeHighlight(this.highligher.getHighlightForElement(event.target));
+        this.showAnnotationDialog(threadID);
+    }
+
+    /**
+     * Event handler for adding a highlight annotation. Shows a create
+     * highlight annotation dialog with the currently selected text.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    addHighlightAnnotationHandler(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Get selection location and dimensions
+        let selection = window.getSelection();
+        if (selection.rangeCount < 1) {
+            return;
+        }
+        let selectionDimensions = selection.getRangeAt(0).getBoundingClientRect(),
+            pageEl = findClosestEl(selection.anchorNode, 'page'),
+            pageDimensions = pageEl.getBoundingClientRect(),
+            page = pageEl ? pageEl.dataset.pageNumber : 1,
+            pageScale = this.getScale(),
+            highlight = this.highlighter.highlightSelection('highlight', {
+                containerElementId: pageEl.id
+            })[0]; // get the newest highlight
+
+        let x = selectionDimensions.left + selectionDimensions.width / 2 + window.scrollX,
+            y = selectionDimensions.top + selectionDimensions.height + window.scrollY;
+        x = (x - pageDimensions.left) / pageScale;
+        y = (y - pageDimensions.top) / pageScale;
+
+        let annotationData = {
+                type: ANNOTATION_TYPE.HIGHLIGHT,
+                threadID: serializeHighlight(highlight)
+            },
+            locationData = {
+                x: x,
+                y: y,
+                page: page
+            };
+
+        this.createAnnotationDialog(annotationData, locationData);
     }
 
     /*---------- Point Annotations ----------*/
@@ -123,12 +248,12 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showPointAnnotations(pointAnnotations) {
-        for (let annotation in pointAnnotations) {
+        pointAnnotations.forEach((annotation) => {
             // Create point annotation HTML
             let pointAnnotationEl = document.createElement('span');
             pointAnnotation.classList.add('point-annotation');
             // Note casing of threadId translates to data-thread-id
-            pointAnnotation.dataset.threadid = annotation.threadID;
+            pointAnnotation.dataset.threadId = annotation.threadID;
 
             let location = annotation.location,
                 x = location.x * this.getScale(),
@@ -139,28 +264,41 @@ class DocAnnotator extends Annotator {
             pageEl.appendChild(pointAnnotationEl);
             pointAnnotationEl.style.left = x + 'px';
             pointAnnotationEl.style.top = y + 'px';
+            pointAnnotationEl.addEventListener(TOUCH_EVENT, this.showPointAnnotationHandler);
 
-            let listener = () => {
-                // @NOTE(tjin): Do I need to pass in thread ID here or can I fetch from DOM node?
-                showAnnotationDialog(annotation.threadID);
-            };
-            pointAnnotationEl.addEventListener(TOUCH_EVENT, listener);
-
-            // Maintain listener reference for cleanup
-            this.listenerRefs.append({
+            // Maintain handler reference for cleanup
+            this.handlerRefs.append({
                 element: pointAnnotationEl,
-                handler: listener
+                handler: this.showPointAnnotationHandler
             });
+        });
+    }
+
+    /**
+     * Event handler for clicking an existing point annotation
+     *
+     * @param {Event} event DOM Event
+     * @returns {void}
+     */
+    showPointAnnotationHandler(event) {
+        if (event && event.target) {
+            let threadID = event.target.dataset.threadId;
+            showAnnotationDialog(threadID);
         }
     }
 
     /**
-     * Hook to add a point annotation. The next user click will indicate the
-     * location to annotate.
+     * Event handler for aadding a point annotation. Shows a create point
+     * annotation dialog at the next location the user clicks.
      *
+     * @param {Event} event DOM event
      * @returns {void}
      */
-    addPointAnnotation() {
+    addPointAnnotationHandler(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+
         // think about touch devices - think about edge cases Crenmont guys saw with weird interactions
         // add throttled event handler on page, maintain reference for cleanup
             // page onclick = showCreateAnnotationDialog() with correct params
@@ -170,24 +308,52 @@ class DocAnnotator extends Annotator {
     /**
      * Show a dialog that allows a user to create an annotation.
      *
-     * @param {Object} data Data for dialog
-     * @param {Object} data.location Location to place dialog
+     * @param {Object} annotationData Annotation data
+     * @param {Object} locationData Location to place dialog
      * @returns {void}
      */
-    createAnnotationDialog(data) {
-        // Get template & convert to DOM element
-        // Position dom element given location blob - individual annotators should implement this
-            // docAnnotator.positionDialog(location);
-        // Add event listeners, maintain references for cleanup (see controls.js)
-            // 'post'.onClick(function() {
-                // docAnnotator.createAnnotation(this);
-                // annotationsService.save(annotation);
-                // })
-            // 'cancel'.onClick(function() {
-                // remove event handlers
-                // remove saved references
-                // remove dialog
-                // })
+    createAnnotationDialog(annotationData, locationData) {
+        // Create dialog element
+        let dialogEl = document.createElement('div'),
+        // @TODO(tjin): fill in HTML stuff here
+            postButtonEl = document.createElement('button'),
+            cancelButton = document.createElement('button');
+
+        function createAnnotationHandler(event) {
+            // Get annotation text and create annotation
+            annotationData.text = dialogEl.querySelector('annotation-text').value;
+            let annotation = this.createAnnotation(annotationData);
+
+            // Save annotation
+            this.annotationService.create(annotation);
+
+            // Clean up event handlers and close dialog
+            postButtonEl.removeEventListener(TOUCH_EVENT, createAnnotationHandler);
+            cancelButtonEl.removeEventListener(TOUCH_EVENT, cancelAnnotationHandler);
+            dialogEl.parentNode.removeChild(dialogEl);
+        }
+
+        function cancelAnnotationHandler() {
+            // Clean up event handlers and close dialog
+            postButtonEl.removeEventListener(TOUCH_EVENT, createAnnotationHandler);
+            cancelButtonEl.removeEventListener(TOUCH_EVENT, cancelAnnotationHandler);
+            dialogEl.parentNode.removeChild(dialogEl);
+        }
+
+        postButtonEl.addEventListener(TOUCH_EVENT, createAnnotationHandler);
+        cancelButton.addEventListener(TOUCH_EVENT, cancelAnnotationHandler);
+
+        // Maintain handler references for cleanup
+        this.handlerRefs.append({
+            element: postButtonEl,
+            handler: createAnnotationHandler
+        });
+        this.handlerRefs.append({
+            element: cancelButton,
+            handler: cancelAnnotationHandler
+        });
+
+        this.positionDialog(dialogEl, locationData);
     }
 
     /**
@@ -198,6 +364,8 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showAnnotationDialog(threadID) {
+        let annotations = this.annotationsService.getAnnotationsForThread(threadID);
+
         // Loop through annotations in threadID & generate update dialog with existing annotations
         // Add event listeners, maintain references for cleanup
             // Use event delegation for deleting existing annotations
@@ -207,16 +375,20 @@ class DocAnnotator extends Annotator {
                 // remove annotation from dialog
                 // docAnnotator.deleteAnnotation(thisAnnotation);
 
-        // NOT SURE I NEED TWO FUNCTIONS - a showAnnotationDialog(data) with optional threadID param
-        // could differentiate between the two:
-        // no threadID = new annotation thread
-        // threadID = existing annotation thread
-        // add reply ~ equal to add first annotation
+
+        // if root annotation is deleted, remove event handler on element
     }
 
-    /*---------- Helper Functions ----------*/
-    // z-index-changer?
-    // other helper functions
+    /**
+     * Position a dialog at the specified location.
+     *
+     * @param {HTMLElement} dialogEl Dialog element to position
+     * @param {Object} locationData Data about where to position the dialog
+     * @returns {void}
+     */
+    positionDialog(dialogEl, locationData) {
+
+    }
 }
 
 export default DocAnnotator;
