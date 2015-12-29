@@ -117,7 +117,8 @@ class MediaControls extends EventEmitter  {
 
     /**
      * Formats a number of seconds as a time string
-     * @param {Number} seconds
+     *
+     * @param {Number} seconds seconds
      * @private
      * @returns {String} A string formatted like 03:57:35
      */
@@ -203,7 +204,7 @@ class MediaControls extends EventEmitter  {
 
     /**
      * Sets the volume
-     * @param {Number} volume
+     * @param {Number} volume volume
      * @returns {void}
      */
     updateVolumeIcon(volume) {
@@ -409,6 +410,16 @@ class MediaControls extends EventEmitter  {
             // Don't hide the film strip when we are scrubbing
             this.filmstripContainerEl.style.display = 'none';
         }
+    }
+
+    /**
+     * Determines if controls are focused
+     *
+     * @public
+     * @returns {Boolean} true if controls are focused
+     */
+    isFocused() {
+        return this.wrapperEl.contains(document.activeElement);
     }
 }
 

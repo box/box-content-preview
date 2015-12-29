@@ -8,6 +8,7 @@ import Browser from './browser';
 import loaders from './loaders';
 import cache from './cache';
 import ErrorLoader from './error/error-loader';
+import { decodeKeydown } from './util';
 
 const PREFETCH_COUNT = 3;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
@@ -142,6 +143,9 @@ class Preview {
             this.showNavigation();
             this.container.addEventListener('mousemove', this.throttledMousemoveHandler);
         }
+
+        // Attach keyboard events
+        document.addEventListener('keydown', this.keydownHandler);
     }
 
     /**
@@ -590,6 +594,48 @@ class Preview {
         this.viewer = undefined;
     }
 
+    /**
+     * Keydown handler
+     *
+     * @private
+     * @param {Event} event keydown event
+     * @returns {void}
+     */
+    keydownHandler(event) {
+        let consumed = false;
+        let key = decodeKeydown(event);
+
+        if (!key) {
+            return;
+        }
+
+        if (this.viewer && typeof this.viewer.onKeydown === 'function') {
+            consumed = !!this.viewer.onKeydown(key);
+        }
+
+        if (!consumed) {
+            switch (key) {
+                case 'ArrowLeft':
+                    this.navigateLeft();
+                    consumed = true;
+                    break;
+                case 'ArrowRight':
+                    this.navigateRight();
+                    consumed = true;
+                    break;
+                case 'Escape':
+                    this.hide(true);
+                    consumed = true;
+                    break;
+            }
+        }
+
+        if (consumed) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
 
     //--------------------------------------------------------------------------
     // Public
@@ -652,7 +698,10 @@ class Preview {
      * @returns {void}
      */
     hide(destroy = false) {
+
+        // Destroy the viewer
         this.destroy();
+
         if (this.container) {
             this.container.style.display = '';
             this.container.removeEventListener('mousemove', this.throttledMousemoveHandler);
@@ -662,6 +711,9 @@ class Preview {
                 this.container.firstElementChild.classList.remove(CLASS_PREVIEW_LOADED);
             }
         }
+
+        // Remove keyboard events
+        document.removeEventListener('keydown', this.keydownHandler);
     }
 
     /**

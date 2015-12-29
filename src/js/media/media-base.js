@@ -209,6 +209,28 @@ class MediaBase extends Base {
         this.mediaEl.addEventListener('pause', this.showPlayIcon);
         this.mediaEl.addEventListener('ended', this.resetPlayIcon);
     }
+
+    /**
+     * Handles keyboard events for media
+     *
+     * @private
+     * @param {String} key keydown key
+     * @returns {Boolean} consumed or not
+     */
+    onKeydown(key) {
+
+        // Return false when media controls are not ready or are focused
+        if (!this.mediaControls || this.mediaControls.isFocused()) {
+            return false;
+        }
+
+        if (key === 'Space') {
+            this.mediaControls.togglePlay();
+            return true;
+        }
+
+        return false;
+    }
 }
 
 export default MediaBase;
