@@ -9,7 +9,8 @@ const VIEWERS = [
         EXTENSIONS: [ 'md' ],
         SCRIPTS: [ 'highlight.js', 'markdown.js' ],
         STYLESHEETS: [ 'markdown.css', 'github.css' ],
-        CONSTRUCTOR: 'MarkDown'
+        CONSTRUCTOR: 'MarkDown',
+        PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'original',
@@ -23,7 +24,8 @@ const VIEWERS = [
         EXTENSIONS: [ 'as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'm', 'make', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'yaml' ],
         SCRIPTS: [ 'highlight.js', 'text.js' ],
         STYLESHEETS: [ 'text.css', 'github.css' ],
-        CONSTRUCTOR: 'Text'
+        CONSTRUCTOR: 'Text',
+        PREFETCH: 'xhr'
     }
 ];
 
