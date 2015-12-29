@@ -123,9 +123,17 @@ class AssetLoader {
         // Prefetch the scripts needed for this preview
         prefetchAssets(viewer.SCRIPTS.map(assetUrlCreator));
 
-        let img = document.createElement('img');
-        img.crossOrigin = 'anonymous';
-        img.src = createContentUrl(representation.links.content.url, options.token);
+        if (viewer.PREFETCH === 'xhr') {
+            fetch(representation.links.content.url, {
+                headers: {
+                    'Authorization': 'Bearer ' + this.options.token
+                }
+            });
+        } else {
+            let img = document.createElement('img');
+            img.crossOrigin = 'anonymous';
+            img.src = createContentUrl(representation.links.content.url, options.token);
+        }
     }
 
     /**

@@ -20,7 +20,8 @@ const VIEWERS = [
         EXTENSIONS: VIDEO_FORMATS,
         SCRIPTS: [ 'shaka-player.js', 'dash.js' ],
         STYLESHEETS: [ 'dash.css' ],
-        CONSTRUCTOR: 'Dash'
+        CONSTRUCTOR: 'Dash',
+        PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'mp4',
