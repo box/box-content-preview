@@ -138,3 +138,68 @@ export function loadScripts(urls) {
 
     return Promise.all(promises);
 }
+
+/**
+ * Function to decode key down events into keys
+ *
+ * @public
+ * @param {Event} event keydown event
+ * @returns {String} decoded keydown key
+ */
+export function decodeKeydown(event) {
+
+    let modifier = '';
+
+    // KeyboardEvent.key is the new spec supported in Firefox and IE.
+    // KeyboardEvent.keyIdentifier is the old spec supported in Chrome and Safari.
+    // Priority is given to the new spec.
+    let key = event.key || event.keyIdentifier;
+
+    // Get the modifiers on their own
+    if (event.ctrlKey) {
+        modifier = 'Control';
+    } else if (event.shiftKey) {
+        modifier = 'Shift';
+    } else if (event.metaKey) {
+        modifier = 'Meta';
+    }
+
+    // The key and keyIdentifier specs also include modifiers.
+    // Since we are manually getting the modifiers above we do
+    // not want to trap them again here.
+    if (key === modifier) {
+        key = '';
+    }
+
+    // keyIdentifier spec returns UTF8 char codes
+    // Need to convert them back to ascii.
+    if (key.indexOf('U+') === 0) {
+        if (key === 'U+001B') {
+            key = 'Escape';
+        } else {
+            key = String.fromCharCode(key.replace('U+', '0x'));
+        }
+    }
+
+    // If nothing was pressed just return
+    if (!key) {
+        return '';
+    }
+
+    // Special casing for space bar
+    if (key === ' ') {
+        key = 'Space';
+    }
+
+    // keyIdentifier spec does not prefix the word Arrow.
+    // Newer key spec does it automatically.
+    if (key === 'Right' || key === 'Left' || key === 'Down' || key === 'Up') {
+        key = 'Arrow' + key;
+    }
+
+    if (modifier) {
+        modifier += '+';
+    }
+
+    return modifier + key;
+}
