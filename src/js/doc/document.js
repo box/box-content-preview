@@ -105,6 +105,11 @@ class Document extends DocBase {
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
 
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon');
+
+        this.controls.add(__('rotate_left'), () => {
+            this.rotateLeft();
+        }, 'box-preview-doc-rotate-left-icon');
+
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
     }
 
