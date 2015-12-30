@@ -29,6 +29,24 @@ class Annotation {
         this.created = new Date();
         this.updated = this.created;
     }
+
+    /**
+     * Copies annotation
+     *
+     * @param {Annotation} annotation Annotation to copy
+     * @param {Object} [data] Optional data object with properties to override
+     * @returns {Annotation} Copied annotation with unique ID
+     */
+    static copy(annotation, data) {
+        return new Annotation({
+            threadID: data.threadID || annotation.threadID,
+            fileID: data.fileID || annotation.fileID,
+            type: data.type || annotation.type,
+            text: data.text || annotation.text,
+            location: data.location || annotation.location,
+            user: data.user || annotation.user
+        });
+    }
 }
 
 export default Annotation;

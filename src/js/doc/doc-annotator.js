@@ -1,18 +1,17 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-//import Annotation from '../annotation/annotation';
+import Annotation from '../annotation/annotation';
 //import AnnotationService from '../annotation/annotation-service';
 import rangy from 'rangy';
-
-//import createDialogTemplate from 'raw!../../html/annotation/create-annotation-dialog.html';
-//import updateAnnotationTemplate from 'raw!../../html/annotation/update-annotation-dialog.html';
 
 const ANNOTATION_TYPE = {
     HIGHLIGHT: 'highlight',
     POINT: 'point'
 };
 const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch)) ? 'touchstart' : 'click';
+
+let document = global.document;
 
 /*---------- Helpers ----------*/
 /**
@@ -49,6 +48,21 @@ function findClosestEl(element, className) {
 }
 
 /**
+ * Escapes HTML
+ *
+ * @param {string} str Input string
+ * @returns {string} HTML escaped string
+ */
+function htmlEscape(str) {
+    return str.replace(/&/g, '&amp;') // first!
+              .replace(/>/g, '&gt;')
+              .replace(/</g, '&lt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;')
+              .replace(/`/g, '&#96;');
+}
+
+/**
  * Annotator base class. Viewer-specific annotators should extend this.
  */
 @autobind
@@ -60,7 +74,7 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     init() {
-        this.handlerRefs = [];
+        this.handlerMap = new Map();
 
         this.setupAnnotations();
         this.showAnnotations();
@@ -72,13 +86,7 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     destroy() {
-        // Clean up event handler references
-        this.handlerRefs.forEach((ref) => {
-            if (ref.element && typeof ref.element.removeEventListener === 'function') {
-                ref.element.removeEventListener(TOUCH_EVENT, ref.handler);
-                // @TODO(tjin): delete ref.element?
-            }
-        });
+        this.removeAllEventHandlers();
     }
 
     /*---------- Generic Annotations ----------*/
@@ -97,12 +105,9 @@ class DocAnnotator extends Annotator {
             tagNames: ['span', 'a'],
             // When highlight element is created, add an event handler to show the annotation
             onElementCreate: (element) => {
-                element.addEventListener(TOUCH_EVENT, this.showHighlightAnnotationHandler);
-
-                // Maintain handler reference for cleanup
-                this.handlerRefs.append({
-                    element: element,
-                    handler: this.showHighlightAnnotationHandler
+                this.addEventHandler(element, (event) => {
+                    let threadID = serializeHighlight(this.highligher.getHighlightForElement(event.target));
+                    this.showAnnotationDialog(threadID);
                 });
             }
         }));
@@ -157,7 +162,7 @@ class DocAnnotator extends Annotator {
         switch (annotationData.type) {
             case ANNOTATION_TYPE.HIGHLIGHT:
                 data.threadID = annotationData.threadID;
-                data.location = {}; // highlight location is stored in threadID
+                data.location = { highlight: highlight };
                 break;
             case ANNOTATION_TYPE.POINT:
                 // Point thread ID is generated
@@ -183,17 +188,6 @@ class DocAnnotator extends Annotator {
         highlightThreads.unshift('type:textContent');
         let serializedHighlights = highlightThreads.join('|');
         this.highlighter.deserialize(serializedHighlights);
-    }
-
-    /**
-     * Event handler for showing a highlight annotation
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     */
-    showHighlightAnnotationHandler(event) {
-        let threadID = serializeHighlight(this.highligher.getHighlightForElement(event.target));
-        this.showAnnotationDialog(threadID);
     }
 
     /**
@@ -226,6 +220,7 @@ class DocAnnotator extends Annotator {
         x = (x - pageDimensions.left) / pageScale;
         y = (y - pageDimensions.top) / pageScale;
 
+        // Generate annotation parameters and location data to store
         let annotationData = {
                 type: ANNOTATION_TYPE.HIGHLIGHT,
                 threadID: serializeHighlight(highlight)
@@ -256,39 +251,25 @@ class DocAnnotator extends Annotator {
             pointAnnotation.dataset.threadId = annotation.threadID;
 
             let location = annotation.location,
-                x = location.x * this.getScale(),
-                y = location.y * this.getScale(),
+                pageScale = this.getScale(),
+                x = location.x * pageScale,
+                y = location.y * pageScale,
                 page = location.page,
-                pageEl = document.querySelector('page[data-page-number="' + page + '"]');
+                pageEl = document.querySelector('[data-page-number="' + page + '"]');
 
             pageEl.appendChild(pointAnnotationEl);
             pointAnnotationEl.style.left = x + 'px';
             pointAnnotationEl.style.top = y + 'px';
-            pointAnnotationEl.addEventListener(TOUCH_EVENT, this.showPointAnnotationHandler);
 
-            // Maintain handler reference for cleanup
-            this.handlerRefs.append({
-                element: pointAnnotationEl,
-                handler: this.showPointAnnotationHandler
+            this.addEventHandler(pointAnnotationEl, (event) => {
+                let threadID = event.target.dataset.threadId;
+                showAnnotationDialog(threadID);
             });
         });
     }
 
     /**
-     * Event handler for clicking an existing point annotation
-     *
-     * @param {Event} event DOM Event
-     * @returns {void}
-     */
-    showPointAnnotationHandler(event) {
-        if (event && event.target) {
-            let threadID = event.target.dataset.threadId;
-            showAnnotationDialog(threadID);
-        }
-    }
-
-    /**
-     * Event handler for aadding a point annotation. Shows a create point
+     * Event handler for adding a point annotation. Shows a create point
      * annotation dialog at the next location the user clicks.
      *
      * @param {Event} event DOM event
@@ -298,10 +279,34 @@ class DocAnnotator extends Annotator {
         event.preventDefault();
         event.stopPropagation();
 
+        // @TODO(tjin): Investigate edge cases with existing highlights in 'bindOnClickCreateComment'
 
-        // think about touch devices - think about edge cases Crenmont guys saw with weird interactions
-        // add throttled event handler on page, maintain reference for cleanup
-            // page onclick = showCreateAnnotationDialog() with correct params
+        this.addEventHandler(document, (event) => {
+            let pageEl = findClosestEl(event.target, 'page');
+
+            // If click isn't on a page, disregard
+            if (!pageEl) {
+                return;
+            }
+
+            // Remove handler so we don't create multiple point annotations
+            this.removeEventHandlers(document);
+
+            // Generate annotation parameters and location data to store
+            let pageDimensions = pageEl.getBoundingClientRect(),
+                page = pageEl.dataset.pageNumber,
+                pageScale = this.getScale(),
+                x = (e.offsetX + pageDimensions.left) / pageScale,
+                y = (e.offsetY + pageDimensions.top) / pageScale,
+                annotationData = { type: ANNOTATION_TYPE.POINT },
+                locationData = {
+                    x: x,
+                    y: y,
+                    page: page
+                };
+
+            this.createAnnotationDialog(annotationData, locationData);
+        });
     }
 
     /*---------- Dialogs ----------*/
@@ -314,46 +319,55 @@ class DocAnnotator extends Annotator {
      */
     createAnnotationDialog(annotationData, locationData) {
         // Create dialog element
-        let dialogEl = document.createElement('div'),
-        // @TODO(tjin): fill in HTML stuff here
-            postButtonEl = document.createElement('button'),
-            cancelButton = document.createElement('button');
+        let annotationDialogEl = document.createElement('div'),
+            annotationElString = `
+            <div class="annotation-container">
+                <textarea class="annotation-text"></textarea>
+                <button class="cancel-annotation"></button>
+                <button class="post-annotation"></button>
+            </div>`.trim();
+        annotationDialogEl.classList.add('annotation-dialog');
+        annotationDialogEl.innerHTML = annotationElString;
 
-        function createAnnotationHandler(event) {
+        let postButtonEl = annotationDialogEl.querySelector('post-annotation'),
+            cancelButtonEl = annotationDialogEl.querySelector('cancel-annotation');
+
+        this.addEventHandler(postButtonEl, () => {
             // Get annotation text and create annotation
-            annotationData.text = dialogEl.querySelector('annotation-text').value;
+            annotationData.text = annotationDialogEl.querySelector('annotation-text').value;
             let annotation = this.createAnnotation(annotationData);
 
             // Save annotation
-            this.annotationService.create(annotation);
+            this.annotationService.create(annotation).then(() => {
+                // Clean up event handlers and close dialog
+                this.removeEventHandlers(postButtonEl);
+                this.removeEventHandlers(cancelButtonEl);
+                annotationDialogEl.parentNode.removeChild(annotationDialogEl);
 
-            // Clean up event handlers and close dialog
-            postButtonEl.removeEventListener(TOUCH_EVENT, createAnnotationHandler);
-            cancelButtonEl.removeEventListener(TOUCH_EVENT, cancelAnnotationHandler);
-            dialogEl.parentNode.removeChild(dialogEl);
-        }
-
-        function cancelAnnotationHandler() {
-            // Clean up event handlers and close dialog
-            postButtonEl.removeEventListener(TOUCH_EVENT, createAnnotationHandler);
-            cancelButtonEl.removeEventListener(TOUCH_EVENT, cancelAnnotationHandler);
-            dialogEl.parentNode.removeChild(dialogEl);
-        }
-
-        postButtonEl.addEventListener(TOUCH_EVENT, createAnnotationHandler);
-        cancelButton.addEventListener(TOUCH_EVENT, cancelAnnotationHandler);
-
-        // Maintain handler references for cleanup
-        this.handlerRefs.append({
-            element: postButtonEl,
-            handler: createAnnotationHandler
-        });
-        this.handlerRefs.append({
-            element: cancelButton,
-            handler: cancelAnnotationHandler
+                // Show newly created annotation
+                this.showAnnotationDialog(annotation.threadID);
+            });
         });
 
-        this.positionDialog(dialogEl, locationData);
+        this.addEventHandler(cancelButtonEl, () => {
+            // Clean up event handlers and close dialog
+            this.removeEventHandlers(postButtonEl);
+            this.removeEventHandlers(cancelButtonEl);
+            annotationDialogEl.parentNode.removeChild(annotationDialogEl);
+        });
+
+        this.positionDialog(annotationDialogEl, locationData);
+
+        // Close annotation dialog when user clicks outside
+        this.addEventHandler(document, (event) => {
+            // @TODO(tjin): what about other annotation dialogs? (may not be an issue)
+            if (!findClosestEl(event.target, 'annotation-dialog')) {
+                this.removeEventHandlers(document);
+                this.removeEventHandlers(postButtonEl);
+                this.removeEventHandlers(cancelButtonEl);
+                annotationDialogEl.parentNode.removeChild(annotationDialogEl);
+            }
+        });
     }
 
     /**
@@ -364,19 +378,151 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showAnnotationDialog(threadID) {
-        let annotations = this.annotationsService.getAnnotationsForThread(threadID);
+        let annotations = this.annotationService.getAnnotationsForThread(threadID);
 
-        // Loop through annotations in threadID & generate update dialog with existing annotations
-        // Add event listeners, maintain references for cleanup
-            // Use event delegation for deleting existing annotations
-            // 'delete'.onClick(function() {
-                // Find out which annotation this is referring to
-                // annotationsService.delete(annotation);
-                // remove annotation from dialog
-                // docAnnotator.deleteAnnotation(thisAnnotation);
+        if (annotations.length === 0) {
+            return;
+        }
 
+        let annotationDialogEl = document.createElement('div'),
+            annotationCommentsEl = document.createElement('div'),
+            locationData = {};
 
-        // if root annotation is deleted, remove event handler on element
+        annotationDialogEl.classList.add('annotation-dialog');
+        annotationCommentsEl.classList.add('annotation-comments');
+        annotationDialogEl.appendChild(annotationCommentsEl);
+
+        // Creates an annotation comment element
+        // @TODO(tjin): move into separate function
+        function createAnnotationCommentEl(annotation) {
+            let avatarUrl = htmlEscape(annotation.user.avatarUrl),
+                userName = htmlEscape(annotation.user.name),
+                created = new Date(annotation.created).toLocaleDateString('en-US'),
+                text = htmlEscape(annotation.text);
+
+            let annotationElString = `
+                <div class="profile-image-container"><img src=${avatarUrl} alt="Profile"></div>
+                <div class="comment-container">
+                    <div class="user-name">${userName}<div>
+                    <div class="comment-date">${created}</div>
+                    <div class="comment-text">${text}</div>
+                    <div class="delete-confirmation"></div>
+                    <button class="delete-comment"></button>
+                </div>`.trim(),
+                annotationEl = document.createElement('div');
+            annotationEl.innerHTML = annotationElString;
+            annotationEl.classList.add('annotation-comment');
+
+            let deleteButtonEl = annotationEl.querySelector('.delete-comment');
+            this.addEventHandler(deleteButtonEl, () => {
+                // Delete annotation and then remove HTML element
+                this.annotationService.delete(annotation.id).then(() => {
+                    this.removeEventHandlers(deleteButtonEl);
+                    annotationEl.parentNode.removeChild(annotationEl);
+
+                    // If this was the root comment in this thread, remove the whole thread
+                    if (annotationEl.parentNode.childElementCount === 0) {
+                        let replyButtonEl = annotationDialogEl.querySelector('.add-reply'),
+                            cancelButtonEl = annotationDialogEl.querySelector('.cancel-reply'),
+                            postButtonEl = annotationDialogEl.querySelector('.post-reply');
+                        this.removeEventHandlers(replyButtonEl);
+                        this.removeEventHandlers(cancelButtonEl);
+                        this.removeEventHandlers(postButtonEl);
+
+                        annotationDialogEl.parentNode.removeChild(annotationDialogEl);
+
+                        // Remove highlight or point element
+                        if (annotation.type === ANNOTATION_TYPE.HIGHLIGHT) {
+                            this.highlighter.removeHighlights([annotation.location.highlight]);
+                        } else if (annotation.type === ANNOTATION_TYPE.POINT) {
+                            let pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
+                            if (pointAnnotationEl) {
+                                this.removeEventHandlers(pointAnnotationEl);
+                                pointAnnotationEl.parentNode.removeChild(pointAnnotationEl);
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        annotations.forEach((annotation) => {
+            // All annotations in a thread should have the same location
+            if (!locationData) {
+                locationData = annotation.location;
+            }
+
+            // Create annotation comment boxes per annotation in thread
+            let annotationEl = createAnnotationCommentEl(annotation);
+            annotationCommentsEl.appendChild(annotationEl);
+        });
+
+        // Create annotation reply box
+        let replyElString = `
+            <button class="add-reply"></button>
+            <div class="reply-container hidden">
+                <textarea class="reply-text"></textarea>
+                <button class="cancel-reply"></button>
+                <button class="post-reply"></button>
+            </div>`.trim(),
+            replyEl = document.createElement('div');
+        replyEl.innerHTML = replyElString;
+        replyEl.classList.add('annotation-reply');
+
+        let replyButtonEl = replyEl.querySelector('.add-reply'),
+            cancelButtonEl = replyEl.querySelector('.cancel-reply'),
+            postButtonEl = replyEl.querySelector('.post-reply'),
+            replyContainerEl = replyEl.querySelector('.reply-container'),
+            replyTextEl = replyEl.querySelector('.reply-text');
+
+        this.addEventHandler(replyButtonEl, () => {
+            replyContainerEl.classList.remove('hidden');
+        });
+
+        this.addEventHandler(cancelButtonEl, () => {
+            replyContainerEl.classList.add('hidden');
+        });
+
+        this.addEventHandler(postButtonEl, () => {
+            replyContainerEl.classList.add('hidden');
+
+            let newAnnotation = Annotation.copy(annotations[0], {
+                text: replyTextEl.value.trim(),
+                user: this.user
+            });
+
+            this.annotationService.create(newAnnotation).then((createdAnnotation) => {
+                let annotationEl = createAnnotationCommentEl(createdAnnotation);
+                annotationCommentsEl.parentNode.insertBefore(annotationEl, replyEl);
+            });
+        });
+
+        annotationDialogEl.appendChild(replyEl);
+
+        this.positionDialog(dialogEl, locationData);
+
+        // Close annotation dialog when user clicks outside
+        this.addEventHandler(document, (event) => {
+            // @TODO(tjin): what about other annotation dialogs? (may not be an issue)
+            if (!findClosestEl(event.target, 'annotation-dialog')) {
+                this.removeEventHandlers(document);
+
+                // Remove 'reply' event handlers
+                this.removeEventHandlers(replyButtonEl);
+                this.removeEventHandlers(cancelButtonEl);
+                this.removeEventHandlers(postButtonEl);
+
+                // Remove 'delete' event handlers
+                if (annotationCommentsEl && annotationCommentsEl.children) {
+                    annotationCommentsEl.children.forEach((annotationEl) => {
+                        let deleteButtonEl = annotationEl.querySelector('.delete-comment');
+                        this.removeEventHandlers(deleteButtonEl);
+                    });
+                }
+
+                annotationDialogEl.parentNode.removeChild(annotationDialogEl);
+            }
+        });
     }
 
     /**
@@ -387,7 +533,68 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     positionDialog(dialogEl, locationData) {
+        let page = locationData.page,
+            pageEl = document.querySelector('[data-page-number="' + page + '"]');
 
+        pageEl.child(dialogEl);
+        pageEl.style.left = locationData.x + 'px';
+        pageEl.style.top = locationData.y + 'px';
+        pageEl.style.transform = 'scale(' + this.getScale() + ')';
+
+        // @TODO(tjin): reposition to avoid sides
+    }
+
+    /*---------- Helpers ----------*/
+    /**
+     * Helper to add event handler to an element and save a reference for
+     * cleanup.
+     *
+     * @param {HTMLElement} element Element to attach handler to
+     * @param {Function} handler Event handler
+     * @returns {void}
+     */
+    addEventHandler(element, handler) {
+        element.addEventListener(TOUCH_EVENT, handler);
+
+        let handlers = this.handlerMap.get(element) || [];
+        handlers.append(handler);
+
+        this.handlerMap.set(element, handlers);
+    }
+
+    /**
+     * Helper to remove all saved event handlers from an element.
+     *
+     * @param {HTMLElement} element Element to remove handlers from
+     * @returns {void}
+     */
+    removeEventHandlers(element) {
+        let handlers = this.handlerMap.get(element) || [];
+
+        if (element && typeof element.removeEventListener === 'function') {
+            handlers.forEach((handler) => {
+                element.removeEventListener(TOUCH_EVENT, handler);
+            });
+        }
+
+        this.handlerMap.delete(element);
+    }
+
+    /**
+     * Helper to remove all saved event handlers.
+     *
+     * @returns {void}
+     */
+    removeAllEventHandlers() {
+        for (let [element, handlers] of this.handlerMap) {
+            if (element && typeof element.removeEventListener === 'function') {
+                handlers.forEach((handler) => {
+                    element.removeEventListener(TOUCH_EVENT, handler);
+                });
+            }
+
+            this.handlerMap.delete(element);
+        }
     }
 }
 
