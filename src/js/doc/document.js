@@ -106,6 +106,15 @@ class Document extends DocBase {
 
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon');
 
+        // Annotation buttons
+        if (this.options.viewerOptions && this.options.viewerOptions.annotations === true) {
+            this.controls.add(__('add_highlight_annotation'),
+                this.annotator.addHighlightAnnotationHandler, 'box-preview-doc-zoom-in-icon');
+
+            this.controls.add(__('add_point_annotation'),
+                this.annotator.addPointAnnotationHandler, 'box-preview-doc-zoom-out-icon');
+        }
+
         this.controls.add(__('rotate_left'), () => {
             this.rotateLeft();
         }, 'box-preview-doc-rotate-left-icon');

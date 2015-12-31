@@ -2,8 +2,12 @@
 
 import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
+import Annotator from '../annotation/annotator';
 //import AnnotationService from '../annotation/annotation-service';
 import rangy from 'rangy';
+// @NOTE(tjin): Workaround npm rangy issue: https://github.com/timdown/rangy/issues/342
+import rangyClassApplier from 'rangy/lib/rangy-classapplier';
+import rangyHighlight from 'rangy/lib/rangy-highlighter';
 
 const ANNOTATION_TYPE = {
     HIGHLIGHT: 'highlight',
@@ -37,9 +41,9 @@ function serializeHighlight(highlight) {
  * @param {string} className Class name to query
  * @returns {HTMLElement|null} Closest ancestor with given class or null
  */
-function findClosestEl(element, className) {
+function findClosestElWithClass(element, className) {
     for (; element && element !== document; element = element.parentNode) {
-        if (element.classList.contains(className)) {
+        if (element.classList && element.classList.contains(className)) {
             return element;
         }
     }
@@ -106,7 +110,7 @@ class DocAnnotator extends Annotator {
             // When highlight element is created, add an event handler to show the annotation
             onElementCreate: (element) => {
                 this.addEventHandler(element, (event) => {
-                    let threadID = serializeHighlight(this.highligher.getHighlightForElement(event.target));
+                    let threadID = serializeHighlight(this.highlighter.getHighlightForElement(event.target));
                     this.showAnnotationDialog(threadID);
                 });
             }
@@ -207,7 +211,7 @@ class DocAnnotator extends Annotator {
             return;
         }
         let selectionDimensions = selection.getRangeAt(0).getBoundingClientRect(),
-            pageEl = findClosestEl(selection.anchorNode, 'page'),
+            pageEl = findClosestElWithClass(selection.anchorNode.parentNode, 'page'),
             pageDimensions = pageEl.getBoundingClientRect(),
             page = pageEl ? pageEl.dataset.pageNumber : 1,
             pageScale = this.getScale(),
@@ -282,7 +286,7 @@ class DocAnnotator extends Annotator {
         // @TODO(tjin): Investigate edge cases with existing highlights in 'bindOnClickCreateComment'
 
         this.addEventHandler(document, (event) => {
-            let pageEl = findClosestEl(event.target, 'page');
+            let pageEl = findClosestElWithClass(event.target, 'page');
 
             // If click isn't on a page, disregard
             if (!pageEl) {
@@ -329,12 +333,12 @@ class DocAnnotator extends Annotator {
         annotationDialogEl.classList.add('annotation-dialog');
         annotationDialogEl.innerHTML = annotationElString;
 
-        let postButtonEl = annotationDialogEl.querySelector('post-annotation'),
-            cancelButtonEl = annotationDialogEl.querySelector('cancel-annotation');
+        let postButtonEl = annotationDialogEl.querySelector('.post-annotation'),
+            cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation');
 
         this.addEventHandler(postButtonEl, () => {
             // Get annotation text and create annotation
-            annotationData.text = annotationDialogEl.querySelector('annotation-text').value;
+            annotationData.text = annotationDialogEl.querySelector('.annotation-text').value;
             let annotation = this.createAnnotation(annotationData);
 
             // Save annotation
@@ -361,7 +365,7 @@ class DocAnnotator extends Annotator {
         // Close annotation dialog when user clicks outside
         this.addEventHandler(document, (event) => {
             // @TODO(tjin): what about other annotation dialogs? (may not be an issue)
-            if (!findClosestEl(event.target, 'annotation-dialog')) {
+            if (!findClosestElWithClass(event.target, 'annotation-dialog')) {
                 this.removeEventHandlers(document);
                 this.removeEventHandlers(postButtonEl);
                 this.removeEventHandlers(cancelButtonEl);
@@ -378,151 +382,151 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showAnnotationDialog(threadID) {
-        let annotations = this.annotationService.getAnnotationsForThread(threadID);
+        this.annotationService.getAnnotationsForThread(threadID).then((annotations) => {
+            if (!annotations || annotations.length === 0) {
+                return;
+            }
 
-        if (annotations.length === 0) {
-            return;
-        }
+            let annotationDialogEl = document.createElement('div'),
+                annotationCommentsEl = document.createElement('div'),
+                locationData = {};
 
-        let annotationDialogEl = document.createElement('div'),
-            annotationCommentsEl = document.createElement('div'),
-            locationData = {};
+            annotationDialogEl.classList.add('annotation-dialog');
+            annotationCommentsEl.classList.add('annotation-comments');
+            annotationDialogEl.appendChild(annotationCommentsEl);
 
-        annotationDialogEl.classList.add('annotation-dialog');
-        annotationCommentsEl.classList.add('annotation-comments');
-        annotationDialogEl.appendChild(annotationCommentsEl);
+            // Creates an annotation comment element
+            // @TODO(tjin): move into separate function
+            function createAnnotationCommentEl(annotation) {
+                let avatarUrl = htmlEscape(annotation.user.avatarUrl),
+                    userName = htmlEscape(annotation.user.name),
+                    created = new Date(annotation.created).toLocaleDateString('en-US'),
+                    text = htmlEscape(annotation.text);
 
-        // Creates an annotation comment element
-        // @TODO(tjin): move into separate function
-        function createAnnotationCommentEl(annotation) {
-            let avatarUrl = htmlEscape(annotation.user.avatarUrl),
-                userName = htmlEscape(annotation.user.name),
-                created = new Date(annotation.created).toLocaleDateString('en-US'),
-                text = htmlEscape(annotation.text);
+                let annotationElString = `
+                    <div class="profile-image-container"><img src=${avatarUrl} alt="Profile"></div>
+                    <div class="comment-container">
+                        <div class="user-name">${userName}<div>
+                        <div class="comment-date">${created}</div>
+                        <div class="comment-text">${text}</div>
+                        <div class="delete-confirmation"></div>
+                        <button class="delete-comment"></button>
+                    </div>`.trim(),
+                    annotationEl = document.createElement('div');
+                annotationEl.innerHTML = annotationElString;
+                annotationEl.classList.add('annotation-comment');
 
-            let annotationElString = `
-                <div class="profile-image-container"><img src=${avatarUrl} alt="Profile"></div>
-                <div class="comment-container">
-                    <div class="user-name">${userName}<div>
-                    <div class="comment-date">${created}</div>
-                    <div class="comment-text">${text}</div>
-                    <div class="delete-confirmation"></div>
-                    <button class="delete-comment"></button>
-                </div>`.trim(),
-                annotationEl = document.createElement('div');
-            annotationEl.innerHTML = annotationElString;
-            annotationEl.classList.add('annotation-comment');
+                let deleteButtonEl = annotationEl.querySelector('.delete-comment');
+                this.addEventHandler(deleteButtonEl, () => {
+                    // Delete annotation and then remove HTML element
+                    this.annotationService.delete(annotation.id).then(() => {
+                        this.removeEventHandlers(deleteButtonEl);
+                        annotationEl.parentNode.removeChild(annotationEl);
 
-            let deleteButtonEl = annotationEl.querySelector('.delete-comment');
-            this.addEventHandler(deleteButtonEl, () => {
-                // Delete annotation and then remove HTML element
-                this.annotationService.delete(annotation.id).then(() => {
-                    this.removeEventHandlers(deleteButtonEl);
-                    annotationEl.parentNode.removeChild(annotationEl);
+                        // If this was the root comment in this thread, remove the whole thread
+                        if (annotationEl.parentNode.childElementCount === 0) {
+                            let replyButtonEl = annotationDialogEl.querySelector('.add-reply'),
+                                cancelButtonEl = annotationDialogEl.querySelector('.cancel-reply'),
+                                postButtonEl = annotationDialogEl.querySelector('.post-reply');
+                            this.removeEventHandlers(replyButtonEl);
+                            this.removeEventHandlers(cancelButtonEl);
+                            this.removeEventHandlers(postButtonEl);
 
-                    // If this was the root comment in this thread, remove the whole thread
-                    if (annotationEl.parentNode.childElementCount === 0) {
-                        let replyButtonEl = annotationDialogEl.querySelector('.add-reply'),
-                            cancelButtonEl = annotationDialogEl.querySelector('.cancel-reply'),
-                            postButtonEl = annotationDialogEl.querySelector('.post-reply');
-                        this.removeEventHandlers(replyButtonEl);
-                        this.removeEventHandlers(cancelButtonEl);
-                        this.removeEventHandlers(postButtonEl);
+                            annotationDialogEl.parentNode.removeChild(annotationDialogEl);
 
-                        annotationDialogEl.parentNode.removeChild(annotationDialogEl);
-
-                        // Remove highlight or point element
-                        if (annotation.type === ANNOTATION_TYPE.HIGHLIGHT) {
-                            this.highlighter.removeHighlights([annotation.location.highlight]);
-                        } else if (annotation.type === ANNOTATION_TYPE.POINT) {
-                            let pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
-                            if (pointAnnotationEl) {
-                                this.removeEventHandlers(pointAnnotationEl);
-                                pointAnnotationEl.parentNode.removeChild(pointAnnotationEl);
+                            // Remove highlight or point element
+                            if (annotation.type === ANNOTATION_TYPE.HIGHLIGHT) {
+                                this.highlighter.removeHighlights([annotation.location.highlight]);
+                            } else if (annotation.type === ANNOTATION_TYPE.POINT) {
+                                let pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
+                                if (pointAnnotationEl) {
+                                    this.removeEventHandlers(pointAnnotationEl);
+                                    pointAnnotationEl.parentNode.removeChild(pointAnnotationEl);
+                                }
                             }
                         }
-                    }
+                    });
                 });
-            });
-        }
-
-        annotations.forEach((annotation) => {
-            // All annotations in a thread should have the same location
-            if (!locationData) {
-                locationData = annotation.location;
             }
 
-            // Create annotation comment boxes per annotation in thread
-            let annotationEl = createAnnotationCommentEl(annotation);
-            annotationCommentsEl.appendChild(annotationEl);
-        });
-
-        // Create annotation reply box
-        let replyElString = `
-            <button class="add-reply"></button>
-            <div class="reply-container hidden">
-                <textarea class="reply-text"></textarea>
-                <button class="cancel-reply"></button>
-                <button class="post-reply"></button>
-            </div>`.trim(),
-            replyEl = document.createElement('div');
-        replyEl.innerHTML = replyElString;
-        replyEl.classList.add('annotation-reply');
-
-        let replyButtonEl = replyEl.querySelector('.add-reply'),
-            cancelButtonEl = replyEl.querySelector('.cancel-reply'),
-            postButtonEl = replyEl.querySelector('.post-reply'),
-            replyContainerEl = replyEl.querySelector('.reply-container'),
-            replyTextEl = replyEl.querySelector('.reply-text');
-
-        this.addEventHandler(replyButtonEl, () => {
-            replyContainerEl.classList.remove('hidden');
-        });
-
-        this.addEventHandler(cancelButtonEl, () => {
-            replyContainerEl.classList.add('hidden');
-        });
-
-        this.addEventHandler(postButtonEl, () => {
-            replyContainerEl.classList.add('hidden');
-
-            let newAnnotation = Annotation.copy(annotations[0], {
-                text: replyTextEl.value.trim(),
-                user: this.user
-            });
-
-            this.annotationService.create(newAnnotation).then((createdAnnotation) => {
-                let annotationEl = createAnnotationCommentEl(createdAnnotation);
-                annotationCommentsEl.parentNode.insertBefore(annotationEl, replyEl);
-            });
-        });
-
-        annotationDialogEl.appendChild(replyEl);
-
-        this.positionDialog(dialogEl, locationData);
-
-        // Close annotation dialog when user clicks outside
-        this.addEventHandler(document, (event) => {
-            // @TODO(tjin): what about other annotation dialogs? (may not be an issue)
-            if (!findClosestEl(event.target, 'annotation-dialog')) {
-                this.removeEventHandlers(document);
-
-                // Remove 'reply' event handlers
-                this.removeEventHandlers(replyButtonEl);
-                this.removeEventHandlers(cancelButtonEl);
-                this.removeEventHandlers(postButtonEl);
-
-                // Remove 'delete' event handlers
-                if (annotationCommentsEl && annotationCommentsEl.children) {
-                    annotationCommentsEl.children.forEach((annotationEl) => {
-                        let deleteButtonEl = annotationEl.querySelector('.delete-comment');
-                        this.removeEventHandlers(deleteButtonEl);
-                    });
+            annotations.forEach((annotation) => {
+                // All annotations in a thread should have the same location
+                if (!locationData) {
+                    locationData = annotation.location;
                 }
 
-                annotationDialogEl.parentNode.removeChild(annotationDialogEl);
-            }
-        });
+                // Create annotation comment boxes per annotation in thread
+                let annotationEl = createAnnotationCommentEl(annotation);
+                annotationCommentsEl.appendChild(annotationEl);
+            });
+
+            // Create annotation reply box
+            let replyElString = `
+                <button class="add-reply"></button>
+                <div class="reply-container hidden">
+                    <textarea class="reply-text"></textarea>
+                    <button class="cancel-reply"></button>
+                    <button class="post-reply"></button>
+                </div>`.trim(),
+                replyEl = document.createElement('div');
+            replyEl.innerHTML = replyElString;
+            replyEl.classList.add('annotation-reply');
+
+            let replyButtonEl = replyEl.querySelector('.add-reply'),
+                cancelButtonEl = replyEl.querySelector('.cancel-reply'),
+                postButtonEl = replyEl.querySelector('.post-reply'),
+                replyContainerEl = replyEl.querySelector('.reply-container'),
+                replyTextEl = replyEl.querySelector('.reply-text');
+
+            this.addEventHandler(replyButtonEl, () => {
+                replyContainerEl.classList.remove('hidden');
+            });
+
+            this.addEventHandler(cancelButtonEl, () => {
+                replyContainerEl.classList.add('hidden');
+            });
+
+            this.addEventHandler(postButtonEl, () => {
+                replyContainerEl.classList.add('hidden');
+
+                let newAnnotation = Annotation.copy(annotations[0], {
+                    text: replyTextEl.value.trim(),
+                    user: this.user
+                });
+
+                this.annotationService.create(newAnnotation).then((createdAnnotation) => {
+                    let annotationEl = createAnnotationCommentEl(createdAnnotation);
+                    annotationCommentsEl.parentNode.insertBefore(annotationEl, replyEl);
+                });
+            });
+
+            annotationDialogEl.appendChild(replyEl);
+
+            this.positionDialog(dialogEl, locationData);
+
+            // Close annotation dialog when user clicks outside
+            this.addEventHandler(document, (event) => {
+                // @TODO(tjin): what about other annotation dialogs? (may not be an issue)
+                if (!findClosestElWithClass(event.target, 'annotation-dialog')) {
+                    this.removeEventHandlers(document);
+
+                    // Remove 'reply' event handlers
+                    this.removeEventHandlers(replyButtonEl);
+                    this.removeEventHandlers(cancelButtonEl);
+                    this.removeEventHandlers(postButtonEl);
+
+                    // Remove 'delete' event handlers
+                    if (annotationCommentsEl && annotationCommentsEl.children) {
+                        annotationCommentsEl.children.forEach((annotationEl) => {
+                            let deleteButtonEl = annotationEl.querySelector('.delete-comment');
+                            this.removeEventHandlers(deleteButtonEl);
+                        });
+                    }
+
+                    annotationDialogEl.parentNode.removeChild(annotationDialogEl);
+                }
+            });
+        }
     }
 
     /**
@@ -536,10 +540,10 @@ class DocAnnotator extends Annotator {
         let page = locationData.page,
             pageEl = document.querySelector('[data-page-number="' + page + '"]');
 
-        pageEl.child(dialogEl);
-        pageEl.style.left = locationData.x + 'px';
-        pageEl.style.top = locationData.y + 'px';
-        pageEl.style.transform = 'scale(' + this.getScale() + ')';
+        pageEl.appendChild(dialogEl);
+        dialogEl.style.left = locationData.x + 'px';
+        dialogEl.style.top = locationData.y + 'px';
+        dialogEl.style.transform = 'scale(' + this.getScale() + ')';
 
         // @TODO(tjin): reposition to avoid sides
     }
@@ -557,7 +561,7 @@ class DocAnnotator extends Annotator {
         element.addEventListener(TOUCH_EVENT, handler);
 
         let handlers = this.handlerMap.get(element) || [];
-        handlers.append(handler);
+        handlers.push(handler);
 
         this.handlerMap.set(element, handlers);
     }
