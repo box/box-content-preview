@@ -186,7 +186,7 @@ let Promise = global.Promise;
      * @returns {Annotations[]} Annotations stored in local storage
      */
     get localAnnotations() {
-        let annotationsString = localStorage.getItem('annotations');
+        let annotationsString = localStorage.getItem('annotationsLocalStorage');
         return (annotationsString === null) ? [] : JSON.parse(annotationsString);
     }
 
@@ -197,7 +197,7 @@ let Promise = global.Promise;
      * @returns {void}
      */
     set localAnnotations(annotations) {
-        localStorage.setItem('annotations', JSON.stringify(annotations));
+        localStorage.setItem('annotationsLocalStorage', JSON.stringify(annotations));
     }
  }
 

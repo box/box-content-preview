@@ -3,7 +3,7 @@
 import autobind from 'autobind-decorator';
 import Base from '../base';
 import Controls from '../controls';
-//import DocAnnotator from './doc-annotator';
+import DocAnnotator from './doc-annotator';
 import fetch from 'isomorphic-fetch';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator } from '../util';
@@ -247,13 +247,12 @@ class DocBase extends Base {
      * @private
      * @returns {void}
      */
-    loadAnnotations() {
-        /*
+    initAnnotations() {
         let fileID = this.options.file.id;
         this.annotator = new DocAnnotator(fileID, {
             getScale: this.getScale
         });
-        this.annotator.init();*/
+        this.annotator.init();
     }
 
     /**
@@ -363,12 +362,13 @@ class DocBase extends Base {
     pagesinitHandler() {
         this.pdfViewer.currentScaleValue = 'auto';
 
-        if (this.options.ui !== false) {
-            this.loadUI();
+        // Load annotations before controls since there are annotation controls
+        if (this.options.viewerOptions && this.options.viewerOptions.annotations === true) {
+            this.initAnnotations();
         }
 
-        if (this.options.viewerOptions && this.options.viewerOptions.annotations === true) {
-            this.loadAnnotations();
+        if (this.options.ui !== false) {
+            this.loadUI();
         }
     }
 
