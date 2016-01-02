@@ -37,12 +37,12 @@ shows a preview. Clients are still responsible for showing the constainer if it 
 
 * `file` is either a string file id OR JSON file object response from https://box-content.readme.io/reference#files
 * `options` is an object with the following attribute
-  * (required) `api` is the api host like `https://api.box.com`.
   * (required) `token` is the api auth token.
+  * (optional) `api` is the api host like `https://ldap.dev.box.net/api`. Defaults to `https://api.box.com`.
   * (optional) `files` is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
   * (optional) `container` is the container dom node for preview. Can be a selector or html node.
   * (optional) `sharedLink` is the fully qualified shared url that needs to passed on to the api.
-  * (optional) `viewerOptions` json object to pass on to the viewer.
+  * (optional) `viewers` is a json object that has options for individual viewers with viewer name as the key.
 
 ```javascript
 Box.Preview.hide(/* optional boolean */ destroy);
@@ -73,7 +73,7 @@ to enable one or more viewers.
 ```javascript
 Box.Preview.disableViewers(/* String|Array */ viewers);
 ```
-to disable one or more viewers.
+to disable one or more viewers. Viewers can also be disabled by setting `disabled: true` on the viewer inside viewers options.
 
 Test
 ----

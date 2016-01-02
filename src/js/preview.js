@@ -16,6 +16,7 @@ const CLASS_HIDDEN = 'box-preview-is-hidden';
 const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 const MOUSEMOVE_THROTTLE = 1500;
 const CRAWLER = '<div class="box-preview-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
+const PERMISSIONS_ERROR = 'Missing permissions to preview';
 
 let Box = global.Box || {};
 
@@ -228,8 +229,7 @@ class Preview {
                 this.file = file;
                 return this.loadViewer();
             } else {
-                this.triggerError(file.message);
-                return Promise.reject(file.message);
+                throw file.message;
             }
         }).catch(this.triggerError);
     }
@@ -245,6 +245,11 @@ class Preview {
         // Before loading a new preview check if a prior preview was showing.
         // If it was showing make sure to destroy it to do any cleanup.
         this.destroy();
+
+        // Check if preview permissions exist
+        if (!this.file.permissions.can_preview) {
+            throw PERMISSIONS_ERROR;
+        }
 
         // Create a deferred promise
         this.deferred.promise = new Promise((resolve, reject) => {
@@ -314,7 +319,7 @@ class Preview {
      * Triggers an error.
      *
      * @private
-     * @param {String|null|undefined} reason error
+     * @param {String|null|undefined|Error} reason error
      * @returns {void}
      */
     triggerError(reason) {
@@ -339,7 +344,9 @@ class Preview {
                 this.deferred = {};
             }
 
-            this.options.viewerOptions.error = reason;
+            this.options.viewers.Error = {
+                reason: reason
+            };
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
             this.viewer.load();
             this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
@@ -547,24 +554,19 @@ class Preview {
      */
     parseOptions(file, options) {
 
-        // API host should be available
-        if (!options.api) {
-            throw 'Missing API Host!';
-        }
-
         // Auth token should be available
         if (!options.token) {
             throw 'Missing Auth Token!';
         }
 
         // Save the reference to the api endpoint
-        this.options.api = options.api;
+        this.options.api = options.api || 'https://api.box.com';
 
         // Save the reference to the auth token
         this.options.token = this.token || options.token;
 
-        // Save the reference to any additional custom options
-        this.options.viewerOptions = options.viewerOptions || {};
+        // Save the reference to any additional custom options for viewers
+        this.options.viewers = options.viewers || {};
 
         // Save the navigation callback
         this.onNavigate = options.onNavigate;
@@ -578,6 +580,10 @@ class Preview {
         } else {
             this.files = typeof file === 'string' ? [file] : [file.id];
         }
+
+        // Iterate over all the viewer options and disable any viewer
+        // that has an option disabled set to true
+        this.disableViewers(Object.keys(this.options.viewers).filter((viewer) => !!this.options.viewers[viewer].disabled));
     }
 
     /**

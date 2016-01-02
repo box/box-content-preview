@@ -33,8 +33,9 @@ class Error extends Base {
      */
     load() {
         let className = 'blank';
+        let reason = this.options.viewers.Error ? this.options.viewers.Error.reason : '';
 
-        if (!this.options.viewerOptions.error) {
+        if (!reason) {
             switch (this.options.file.extension) {
                 case 'zip':
                     className = 'zip';
@@ -48,7 +49,7 @@ class Error extends Base {
         }
 
         this.iconEl.className = 'box-preview-file-' + className;
-        this.messageEl.innerHTML = this.options.viewerOptions.error ? this.options.viewerOptions.error : 'Not supported';
+        this.messageEl.innerHTML = reason ? reason : 'Not supported';
 
         this.loaded = true;
         this.emit('load');

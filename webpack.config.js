@@ -4,7 +4,7 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var I18nPlugin = require('i18n-webpack-plugin');
-var exec = require('child_process').exec;
+var RsyncPlugin = require('./build/RsyncPlugin');
 
 var js = path.join(__dirname, 'src/js');
 var i18n = path.join(__dirname, 'src/i18n/json');
@@ -47,24 +47,6 @@ var languagesArray = isRelease ? Object.keys(languages) : [ 'en-US' ];
 // Get the version from package.json
 var version = isRelease ? require('./package.json').version : 'dev';
 
-// Rsync plugin that copies things from the dist folder to our dev machine
-function RsyncPlugin(source, destination) {
-    this.source = source;
-    this.destination = destination;
-}
-RsyncPlugin.prototype.apply = function(compiler) {
-    var self = this;
-    compiler.plugin('done', function() {
-        console.log('--------- Rsync starting for ' + self.source + ' ---------');
-        exec('rsync -avz --delete --exclude=".*" "' + self.source + '" "' + self.destination + '"', function(err) {
-            if (err !== null) {
-                console.log('exec error: ' + err);
-                process.exit(1);
-            }
-        });
-        console.log('--------- Rsync done ---------');
-    });
-};
 
 module.exports = languagesArray.map(function(language, index) {
 
