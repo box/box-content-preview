@@ -526,7 +526,7 @@ class DocAnnotator extends Annotator {
                     annotationDialogEl.parentNode.removeChild(annotationDialogEl);
                 }
             });
-        }
+        });
     }
 
     /**

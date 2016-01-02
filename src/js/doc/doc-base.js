@@ -363,7 +363,9 @@ class DocBase extends Base {
         this.pdfViewer.currentScaleValue = 'auto';
 
         // Load annotations before controls since there are annotation controls
-        if (this.options.viewerOptions && this.options.viewerOptions.annotations === true) {
+        // @TODO maybe this should move out to individual viewers
+        if ((this.options.viewers.Document && this.options.viewers.Document.annotations) ||
+            (this.options.viewers.Presentation && this.options.viewers.Presentation.annotations)) {
             this.initAnnotations();
         }
 
