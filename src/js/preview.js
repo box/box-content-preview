@@ -62,7 +62,7 @@ class Preview {
             }
             this.timeoutHandler = setTimeout(() => {
                 if (this.container) {
-                    this.container.classList.add(CLASS_NAVIGATION_VISIBILITY);
+                    this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
                 }
             }, MOUSEMOVE_THROTTLE);
         }, MOUSEMOVE_THROTTLE - 500, true);

@@ -5,7 +5,7 @@
     height: 60px; /* same as controls */
 }
 
-.box-preview-media-mp3 .box-preview-media-hd-icon,
+.box-preview-media-mp3 .box-preview-media-gear-icon,
 .box-preview-media-mp3 .box-preview-media-expand-icon {
     display: none;
 }

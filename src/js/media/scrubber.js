@@ -15,9 +15,9 @@ class Scrubber extends EventEmitter {
 
     /**
      * Service to handle the position and movement of a slider element
-     * 
+     *
      * [constructor]
-     * @param {HTMLElement} containerEl
+     * @param {HTMLElement} containerEl container node
      * @param {string} accessibilityText
      * @param {number} [value] optional initial value
      * @param {number} [bufferedValue] optional initial buffered value
@@ -29,19 +29,19 @@ class Scrubber extends EventEmitter {
         super();
 
         this.containerEl = containerEl;
-        
+
         this.containerEl.innerHTML = scrubberTemplate.replace('{{accessibilityText}}', accessibilityText).replace(/\>\s*\</g, '><'); // removing new lines
-        
+
         // This container provides relative positioning. It also helps with adding hover states.
         this.scrubberContainerEl = this.containerEl.querySelector('.box-preview-media-scrubber-container');
-        
+
         // This wrapper is absolute positioned 50% to the right.
         this.scrubberWrapperEl = this.containerEl.querySelector('.box-preview-media-scrubber-wrapper');
-        
+
         // The scrubber is relative positioned 50% to the left. Since its relative parent is
         // positioned 50% right, it makes this element center aligned.
         this.scrubberEl = this.containerEl.querySelector('.box-preview-media-scrubber');
-        
+
         // The actual bars
         this.bufferedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-buffered');
         this.convertedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-converted');
@@ -78,7 +78,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * Resizes the scrubber on demand by reducing the size from container
-     * 
+     *
      * @public
      * @param {number} offset the the value to reduce the scrubber length by
      * @returns {void}
@@ -90,7 +90,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
-     * 
+     *
      * @public
      * @param {number} value the the value to save
      * @returns {void}
@@ -99,13 +99,13 @@ class Scrubber extends EventEmitter {
 
         // When setting widths and lefts, take into account that the handle is round
         // and has its own width that needs to be accounted for.
-        // 
+        //
         // So the scrubber handle's left can go from
         // all the way to the left of scrubber and additionally width / 2 so
         // that the scrubber center aligns at position 0 for the bar.
         // to
-        // all the way on the right minus its own width / 2.        
-        
+        // all the way on the right minus its own width / 2.
+
         let handleWidth = 16; // 16px from the CSS
         let scrubberWidth = this.scrubberEl.clientWidth;
         let handlePosition = (this.value * scrubberWidth - (handleWidth / 2)) * 100 / scrubberWidth;
@@ -115,7 +115,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
-     * 
+     *
      * @public
      * @param {number} value the the value to save
      * @returns {void}
@@ -131,24 +131,24 @@ class Scrubber extends EventEmitter {
         //  no greater than the converted value
         this.value = Math.max(Math.min(value, this.convertedValue), MIN_VALUE);
 
-        // The played values should ignore the handle width since we don't care about it.        
+        // The played values should ignore the handle width since we don't care about it.
         this.playedEl.style.width = this.value * 100 + '%';
         this.adjustScrubberHandle();
     }
 
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
-     * 
+     *
      * @public
      * @param {number} value the the value to save
      * @returns {void}
      */
     setBufferedValue(value = MAX_VALUE) {
-        
+
         if (value === this.bufferedValue) {
             return;
         }
-        
+
         // Set the new scrubber buffered value. However this value should be
         //  no more than 1
         //  no less than 0
@@ -159,17 +159,17 @@ class Scrubber extends EventEmitter {
 
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
-     * 
+     *
      * @public
      * @param {number} value the the value to save
      * @returns {void}
      */
     setConvertedValue(value = MAX_VALUE) {
-        
+
         if (value === this.convertedValue) {
             return;
         }
-        
+
         // Set the new scrubber converted value. However this value should be
         //  no more than 1
         //  no less than 0
@@ -180,7 +180,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * Calculates the position of the scrubber handle based on mouse action
-     * 
+     *
      * @private
      * @param {Event} event the instance of the class
      * @returns {void}
@@ -200,7 +200,7 @@ class Scrubber extends EventEmitter {
      * Sets the mouse move state to true and calls the mouse action handler
      * The prevents the default mouse down behavior and the event propagation
      * since the intension of the user is to drag the handle, and not to click on the page
-     * 
+     *
      * @private
      * @param {Scrubber} ctx the instance of the class
      * @returns {void}
@@ -224,7 +224,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * Sets the mouse move state to false thus stopping mouse action handling
-     * 
+     *
      * @private
      * @returns {void}
      */
@@ -255,17 +255,17 @@ class Scrubber extends EventEmitter {
 
     /**
      * Returns the dom element for the scrubber handle
-     * 
+     *
      * @public
      * @returns {HTMLElement} The dom element
      */
     getHandleEl() {
         return this.handleEl;
     }
-    
+
     /**
      * Returns the dom element for the scrubber conversion bar
-     * 
+     *
      * @public
      * @returns {HTMLElement} The dom element
      */

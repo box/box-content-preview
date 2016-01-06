@@ -20,7 +20,8 @@
 .box-preview-media-volume-icon-mute:before,
 .box-preview-media-volume-icon-low:before,
 .box-preview-media-volume-icon-medium:before,
-.box-preview-media-volume-icon-high:before {
+.box-preview-media-volume-icon-high:before,
+.box-preview-media-gear-icon:before {
     content: "";
     width: 20px;
     height: 20px;
@@ -119,6 +120,14 @@
 
 
 /*----- Media ------*/
+.box-preview-media-gear-icon:before {
+    -shalam-sprite: 'controls/settings-cog.png' dest-size(20px 20px);
+    /* shalam! */;
+    background: url(../img/sprite.compat.png) -80px -500px;
+    background: url(../img/sprite.png) -42.5px -447.5px/160px 545px;
+    /* end shalam */
+}
+
 .box-preview-media-play-icon:before {
     -shalam-sprite: '../img/dark/play.png' dest-size(20px, 20px);
     /* shalam! */;

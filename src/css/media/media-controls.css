@@ -1,4 +1,5 @@
 @import 'scrubber.css';
+@import 'settings.css';
 
 .box-preview-media-controls-wrapper.box-preview-media-controls-is-visible,
 .box-preview-media-controls-wrapper:hover,
@@ -81,7 +82,7 @@
 }
 
 .box-preview-media-expand-icon,
-.box-preview-media-hd-icon {
+.box-preview-media-gear-icon {
     float: right;
 }
 
@@ -94,12 +95,4 @@
 .box-preview-media-volume-scrubber-container .box-preview-media-scrubber-played,
 .box-preview-media-volume-scrubber-container .box-preview-media-scrubber-underlay {
     transform: scaleY(1) !important;
-}
-
-.box-preview-media-hd-icon {
-    opacity: 0.5;
-}
-
-.box-preview-media-is-hd .box-preview-media-hd-icon {
-    opacity: 1;
 }
