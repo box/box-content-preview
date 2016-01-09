@@ -1,4 +1,4 @@
-.settings {
+.box-preview-media-settings {
     padding: 0;
     border: 0 none;
     margin: 0;
@@ -18,14 +18,14 @@
     display: none;
 }
 
-.settings-item-speed,
-.settings-sub-item-speed,
-.settings-sub-item-quality {
+.box-preview-media-settings-item-speed,
+.box-preview-media-settings-sub-item-speed,
+.box-preview-media-settings-sub-item-quality {
     border-bottom: 1px solid rgba(33, 33, 33, 0.5)
 }
 
-.settings-item,
-.settings-sub-item {
+.box-preview-media-settings-item,
+.box-preview-media-settings-sub-item {
     padding: 8px;
     height: 30px;
     cursor: pointer;
@@ -33,78 +33,65 @@
     overflow: hidden;
 }
 
-.settings-item:hover,
-.settings-sub-item:hover {
+.box-preview-media-settings-item:hover,
+.box-preview-media-settings-sub-item:hover {
     background-color: rgba(0, 0, 0, 0.2);
     color: #fff;
 }
 
-.settings-item .settings-label,
-.settings-item .settings-value,
-.settings-sub-item .settings-label,
-.settings-sub-item .settings-value {
+.box-preview-media-settings-item .box-preview-media-settings-label,
+.box-preview-media-settings-item .box-preview-media-settings-value,
+.box-preview-media-settings-sub-item .box-preview-media-settings-label,
+.box-preview-media-settings-sub-item .box-preview-media-settings-value {
     display: inline-block;
     vertical-align: middle;
 }
 
-.settings-item .settings-label {
+.box-preview-media-settings-item .box-preview-media-settings-label {
     width: 75px;
     padding-left: 5px;
 }
 
-.settings-item .settings-value {
+.box-preview-media-settings-item .box-preview-media-settings-value {
     text-align: right;
     width: 60px;
 }
 
-.settings-sub-item .settings-label {
+.box-preview-media-settings-sub-item .box-preview-media-settings-label {
     width: 40px;
 }
 
-.settings-sub-item .settings-value {
+.box-preview-media-settings-sub-item .box-preview-media-settings-value {
     width: 40px;
 }
 
-.option-quality,
-.option-speed {
+.box-preview-media-settings-options-quality,
+.box-preview-media-settings-options-speed {
     display: none;
 }
 
-.show-speed.settings,
-.show-quality.settings {
-    width: 100px;
-    height: 120px;
+.box-preview-media-settings-show-speed.box-preview-media-settings,
+.box-preview-media-settings-show-quality.box-preview-media-settings {
+    width: 100px !important;
+    height: 120px !important;
 }
 
-.show-speed.settings {
-    height: 210px;
+.box-preview-media-settings-show-speed.box-preview-media-settings {
+    height: 210px !important;
 }
 
-.show-speed .settings-item,
-.show-quality .settings-item {
+.box-preview-media-settings-show-speed .box-preview-media-settings-item,
+.box-preview-media-settings-show-quality .box-preview-media-settings-item {
     display: none;
 }
 
-.show-speed .option-speed,
-.show-quality .option-quality {
+.box-preview-media-settings-show-speed .box-preview-media-settings-options-speed,
+.box-preview-media-settings-show-quality .box-preview-media-settings-options-quality {
     display: block;
 }
 
-.option-quality-hd {
-    display: inline-block;
-    color: red;
-    font-size: 8px;
-    padding: 1px 2px;
-    top: -5px;
-    position: relative;
-}
-
-.settings-sub-item .option-quality-hd {
-    top: 5px;
-    position: absolute;
-}
-
-.settings-arrow {
+.box-preview-media-settings-arrow,
+.box-preview-media-settings-arrow-reversed {
     width: 14px;
     height: 14px;
     content: "";
@@ -115,20 +102,15 @@
     background-size: 14px 14px;
 }
 
-.settings-arrow-reversed {
+.box-preview-media-settings-arrow-reversed {
     transform: rotateZ(180deg);
     width: 25px;
     height: 16px;
-    content: "";
-    display: inline-block;
-    vertical-align: middle;
     background-position: 3px 0;
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAwJSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIxMDAlIj48cGF0aCBkPSJNMTYuOTgsMTYgTDEwLjk4LDEwIEwxMi45OCw4IEwyMS4wMSwxNiBMMTIuOTgsMjQgTDEwLjk4LDIyIEwxNi45OCwxNiBaIiBmaWxsPSIjZmZmIiAvPjwvc3ZnPg==);
-    background-repeat: no-repeat;
     background-size: 16px 16px;
 }
 
-.settings-icon {
+.box-preview-media-settings-icon {
     display: inline-block;
     content: "";
     height: 12px;
@@ -139,6 +121,6 @@
     background-size: 11px 11px;
 }
 
-.settings-icon-selected {
+.box-preview-media-settings-icon-selected {
     background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAwJSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMTYgMTYiIHdpZHRoPSIxMDAlIj48cGF0aCBkPSJNNi45OSw5IEwxMi42NiwzIEwxNC42Niw1LjAzIEw3LjEyLDEzLjAwIEwxLjMzLDcuNzMgTDMuMzQsNS42NCBMNi45OSw5IFoiIGZpbGw9IiNmZmYiIC8+PC9zdmc+);
 }

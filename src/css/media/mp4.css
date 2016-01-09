@@ -7,10 +7,14 @@
     width: 100%;
 }
 
-.box-preview-media-mp4 .box-preview-media-gear-icon {
-    display: none;
-}
-
 .box-preview-is-fullscreen .box-preview-media-mp4 .box-preview-media-container {
     width: 100%;
+}
+
+.box-preview-media-mp4 .box-preview-media-settings {
+    height: 30px;
+}
+
+.box-preview-media-mp4 .box-preview-media-settings-item-quality {
+    display: none;
 }

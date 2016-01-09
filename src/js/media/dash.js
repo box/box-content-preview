@@ -8,7 +8,7 @@ import fullscreen from '../fullscreen';
 import 'file?name=shaka-player.js!../../third-party/media/shaka-player.js';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
-const CSS_CLASS_HD = 'box-preview-media-is-hd';
+const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 3;
 
@@ -40,8 +40,7 @@ class Dash extends VideoBase {
             this.player.destroy();
         }
         if (this.mediaControls) {
-            this.mediaControls.removeListener('quality', this.handleQuality);
-            this.mediaControls.removeListener('speed', this.handleSpeed);
+            this.mediaControls.removeListener('qualitychange', this.handleQuality);
         }
         super.destroy();
     }
@@ -161,10 +160,12 @@ class Dash extends VideoBase {
      * Handler for hd/sd/auto video
      *
      * @private
-     * @param {String} quality hd or sd or auto
      * @returns {void}
      */
-    handleQuality(quality) {
+    handleQuality() {
+
+        let quality = cache.get('media-quality');
+
         switch (quality) {
             case 'hd':
                 this.enableHD();
@@ -179,60 +180,21 @@ class Dash extends VideoBase {
     }
 
     /**
-     * Handler for hd/sd/auto video
+     * Handles adaptation changes
      *
      * @private
-     * @param {Number} speed playback rate
+     * @param {Object} adaptation video rep
      * @returns {void}
      */
-    handleSpeed(speed) {
-        this.mediaEl.playbackRate = speed;
+    adaptationHandler(adaptation) {
+        if (adaptation.contentType === 'video') {
+            if (adaptation.bandwidth === this.maxBandwidth) {
+                this.wrapperEl.classList.add(CSS_CLASS_HD);
+            } else {
+                this.wrapperEl.classList.remove(CSS_CLASS_HD);
+            }
+        }
     }
-
-
-
-    /**
-     * Handler for hd video
-     *
-     * @private
-     * @returns {void}
-     */
-    // hdHandler() {
-    //     this.player.configure({
-    //         enableAdaptation: false
-    //     });
-
-    //     let potentiallyCachedHDVideos = cache.get('potentiallyCachedHDVideos') || {};
-
-    //     if (this.wrapperEl.classList.contains(CSS_CLASS_HD)) {
-    //         this.player.selectVideoTrack(this.largestRepresentationId + 1);
-    //         // If we are switching to SD, unflag this file to be HD on subsequent views
-    //         delete potentiallyCachedHDVideos[this.mediaUrl];
-    //     } else {
-    //         this.player.selectVideoTrack(this.largestRepresentationId);
-    //         // If we are switching to HD, flag this file to be HD on subsequent views as we may have cached segments
-    //         potentiallyCachedHDVideos[this.mediaUrl] = true;
-    //     }
-
-    //     cache.set('potentiallyCachedHDVideos', potentiallyCachedHDVideos);
-    // }
-
-    // /**
-    //  * Handles adaptation changes
-    //  *
-    //  * @private
-    //  * @param {Object} adaptation video rep
-    //  * @returns {void}
-    //  */
-    // adaptationHandler(adaptation) {
-    //     if (adaptation.contentType === 'video') {
-    //         if (adaptation.bandwidth === this.maxBandwidth) {
-    //             this.wrapperEl.classList.add(CSS_CLASS_HD);
-    //         } else {
-    //             this.wrapperEl.classList.remove(CSS_CLASS_HD);
-    //         }
-    //     }
-    // }
 
     /**
      * Adds event listeners to the media controls.
@@ -243,9 +205,18 @@ class Dash extends VideoBase {
      */
     addEventListenersForMediaControls() {
         super.addEventListenersForMediaControls();
+        this.mediaControls.addListener('qualitychange', this.handleQuality);
+    }
 
-        this.mediaControls.addListener('quality', this.handleQuality);
-        this.mediaControls.addListener('speed', this.handleSpeed);
+    /**
+     * Handler for meta data load for the media element.
+     *
+     * @private
+     * @returns {void}
+     */
+    loadedmetadataHandler() {
+        super.loadedmetadataHandler();
+        this.handleQuality();
     }
 
     /**
@@ -286,11 +257,8 @@ class Dash extends VideoBase {
         let videoTracks = this.player.getVideoTracks();
 
         if (videoTracks.length) {
-
             // Iterate over all available video representations and find the one that
             // seems the biggest so that the video player is set to the max size
-            let potentiallyCachedHDVideos = cache.get('potentiallyCachedHDVideos') || {};
-
             let largestRepresentation = videoTracks.reduce(function(a, b) {
                 return a.width > b.width ? a : b;
             });
@@ -300,15 +268,6 @@ class Dash extends VideoBase {
             this.aspect = this.videoWidth / this.videoHeight;
             this.maxBandwidth = largestRepresentation.bandwidth;
             this.largestRepresentationId = largestRepresentation.id;
-
-            // // If this file was flagged for HD in a prior preview, then force HD
-            // // This takes advantage of the fact that some segments may be cached
-            // if (potentiallyCachedHDVideos[this.mediaUrl]) {
-            //     this.player.configure({
-            //         enableAdaptation: false
-            //     });
-            //     this.player.selectVideoTrack(this.largestRepresentationId);
-            // }
         }
     }
 

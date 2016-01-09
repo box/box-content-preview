@@ -2,6 +2,7 @@
 
 import autobind from 'autobind-decorator';
 import Base from '../base';
+import cache from '../cache';
 import MediaControls from './media-controls';
 
 const CSS_CLASS_MEDIA = 'box-preview-media';
@@ -38,6 +39,7 @@ class MediaBase extends Base {
      */
     destroy() {
         if (this.mediaControls) {
+            this.mediaControls.removeListener('speedchange', this.handleSpeed);
             this.mediaControls.destroy();
         }
 
@@ -84,13 +86,40 @@ class MediaBase extends Base {
             return;
         }
         this.loaded = true;
-        this.mediaEl.volume = DEFAULT_VOLUME;
         this.emit('load');
 
         if (this.options.ui) {
             this.loadUI();
             this.resize();
         }
+    }
+
+    /**
+     * Handler for playback rate
+     *
+     * @private
+     * @returns {void}
+     */
+    handleSpeed() {
+        let speed = cache.get('media-speed') - 0;
+        this.mediaEl.playbackRate = speed;
+    }
+
+    /**
+     * Handler for volume
+     *
+     * @private
+     * @returns {void}
+     */
+    handleVolume() {
+
+        let volume = DEFAULT_VOLUME;
+
+        if (cache.has('media-volume')) {
+            volume = cache.get('media-volume');
+        }
+
+        this.mediaEl.volume = volume;
     }
 
     /**
@@ -118,30 +147,36 @@ class MediaBase extends Base {
      * @returns {void}
      */
     addEventListenersForMediaControls() {
-        this.mediaControls.on('timeupdate', (value) => {
+        this.mediaControls.addListener('timeupdate', (value) => {
             this.mediaEl.currentTime = value * this.mediaEl.duration;
         });
 
-        this.mediaControls.on('volumeupdate', (value) => {
-            this.mediaEl.volume = value;
+        this.mediaControls.addListener('volumeupdate', (value) => {
+            cache.set('media-volume', value);
+            this.handleVolume();
         });
 
-        this.mediaControls.on('toggleplayback', () => {
+        this.mediaControls.addListener('toggleplayback', () => {
             if (this.mediaEl.paused) {
                 this.mediaEl.play();
+                this.handleSpeed();
+                this.handleVolume();
             } else {
                 this.mediaEl.pause();
             }
         });
 
-        this.mediaControls.on('togglemute', () => {
+        this.mediaControls.addListener('togglemute', () => {
             if (this.mediaEl.volume) {
                 this.oldVolume = this.mediaEl.volume;
-                this.mediaEl.volume = 0;
+                cache.set('media-volume', 0);
             } else {
-                this.mediaEl.volume = this.oldVolume || DEFAULT_VOLUME;
+                cache.set('media-volume', this.oldVolume);
             }
+            this.handleVolume();
         });
+
+        this.mediaControls.addListener('speedchange', this.handleSpeed);
     }
 
     /**
@@ -172,6 +207,8 @@ class MediaBase extends Base {
      */
     showPauseIcon() {
         this.mediaControls.showPauseIcon();
+        this.handleSpeed();
+        this.handleVolume();
     }
 
     /**

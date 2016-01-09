@@ -24,6 +24,7 @@ class MediaControls extends EventEmitter  {
     /**
      * [constructor]
      * @param {HTMLElement} containerEl container
+     * @param {HTMLElement} mediaEl media element
      * @returns {Controls} Controls instance
      */
     constructor(containerEl, mediaEl) {
@@ -115,12 +116,7 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     handleSpeed(speed) {
-        if (speed === 'normal') {
-            speed = 1;
-        } else {
-            speed = speed - 0;
-        }
-        this.emit('speed', speed);
+        this.emit('speedchange');
     }
 
     /**
@@ -131,7 +127,7 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     handleQuality(quality) {
-        this.emit('quality', quality);
+        this.emit('qualitychange');
     }
 
     /**
@@ -305,7 +301,7 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     hide() {
-        if (this.settings.isVisible()) {
+        if (this.settings && this.settings.isVisible()) {
             this.show();
             return;
         }

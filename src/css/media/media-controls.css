@@ -96,3 +96,18 @@
 .box-preview-media-volume-scrubber-container .box-preview-media-scrubber-underlay {
     transform: scaleY(1) !important;
 }
+
+.box-preview-media-controls-hd {
+    font-size: 7px;
+    background: red;
+    padding: 1px 2px;
+    border-radius: 3px;
+    position: relative;
+    top: -5px;
+    left: -5px;
+    display: none;
+}
+
+.box-preview-media-controls-is-hd .box-preview-media-controls-hd {
+    display: inline;
+}
