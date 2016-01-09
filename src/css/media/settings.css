@@ -1,0 +1,126 @@
+.box-preview-media-settings {
+    padding: 0;
+    border: 0 none;
+    margin: 0;
+    color: #ddd;
+    width: 170px;
+    height: 60px;
+    font-size: 10px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: absolute;
+    font-family: Helvetica, sans-serif;
+    background-color: rgba(33, 33, 33, 0.5);
+    transition: width 0.2s, height 0.2s;
+    font-weight: 100;
+    bottom: 60px;
+    right: 16px;
+    display: none;
+}
+
+.box-preview-media-settings-item-speed,
+.box-preview-media-settings-sub-item-speed,
+.box-preview-media-settings-sub-item-quality {
+    border-bottom: 1px solid rgba(33, 33, 33, 0.5)
+}
+
+.box-preview-media-settings-item,
+.box-preview-media-settings-sub-item {
+    padding: 8px;
+    height: 30px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.box-preview-media-settings-item:hover,
+.box-preview-media-settings-sub-item:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #fff;
+}
+
+.box-preview-media-settings-item .box-preview-media-settings-label,
+.box-preview-media-settings-item .box-preview-media-settings-value,
+.box-preview-media-settings-sub-item .box-preview-media-settings-label,
+.box-preview-media-settings-sub-item .box-preview-media-settings-value {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.box-preview-media-settings-item .box-preview-media-settings-label {
+    width: 75px;
+    padding-left: 5px;
+}
+
+.box-preview-media-settings-item .box-preview-media-settings-value {
+    text-align: right;
+    width: 60px;
+}
+
+.box-preview-media-settings-sub-item .box-preview-media-settings-label {
+    width: 40px;
+}
+
+.box-preview-media-settings-sub-item .box-preview-media-settings-value {
+    width: 40px;
+}
+
+.box-preview-media-settings-options-quality,
+.box-preview-media-settings-options-speed {
+    display: none;
+}
+
+.box-preview-media-settings-show-speed.box-preview-media-settings,
+.box-preview-media-settings-show-quality.box-preview-media-settings {
+    width: 100px !important;
+    height: 120px !important;
+}
+
+.box-preview-media-settings-show-speed.box-preview-media-settings {
+    height: 210px !important;
+}
+
+.box-preview-media-settings-show-speed .box-preview-media-settings-item,
+.box-preview-media-settings-show-quality .box-preview-media-settings-item {
+    display: none;
+}
+
+.box-preview-media-settings-show-speed .box-preview-media-settings-options-speed,
+.box-preview-media-settings-show-quality .box-preview-media-settings-options-quality {
+    display: block;
+}
+
+.box-preview-media-settings-arrow,
+.box-preview-media-settings-arrow-reversed {
+    width: 14px;
+    height: 14px;
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAwJSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIxMDAlIj48cGF0aCBkPSJNMTYuOTgsMTYgTDEwLjk4LDEwIEwxMi45OCw4IEwyMS4wMSwxNiBMMTIuOTgsMjQgTDEwLjk4LDIyIEwxNi45OCwxNiBaIiBmaWxsPSIjZmZmIiAvPjwvc3ZnPg==);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+}
+
+.box-preview-media-settings-arrow-reversed {
+    transform: rotateZ(180deg);
+    width: 25px;
+    height: 16px;
+    background-position: 3px 0;
+    background-size: 16px 16px;
+}
+
+.box-preview-media-settings-icon {
+    display: inline-block;
+    content: "";
+    height: 12px;
+    width: 30px;
+    vertical-align: middle;
+    background-repeat: no-repeat;
+    background-position: 10px 0;
+    background-size: 11px 11px;
+}
+
+.box-preview-media-settings-icon-selected {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAwJSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMTYgMTYiIHdpZHRoPSIxMDAlIj48cGF0aCBkPSJNNi45OSw5IEwxMi42NiwzIEwxNC42Niw1LjAzIEw3LjEyLDEzLjAwIEwxLjMzLDcuNzMgTDMuMzQsNS42NCBMNi45OSw5IFoiIGZpbGw9IiNmZmYiIC8+PC9zdmc+);
+}

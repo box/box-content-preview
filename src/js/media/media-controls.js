@@ -4,6 +4,7 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import controlsTemplate from 'raw!../../html/media/controls.html';
 import Scrubber from './scrubber';
+import Settings from './settings';
 
 const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
 const PLAYING_CLASS = 'box-preview-media-is-playing';
@@ -22,8 +23,9 @@ class MediaControls extends EventEmitter  {
 
     /**
      * [constructor]
-     * @param {HTMLElement} containerEl
-     * @returns {Controls}
+     * @param {HTMLElement} containerEl container
+     * @param {HTMLElement} mediaEl media element
+     * @returns {Controls} Controls instance
      */
     constructor(containerEl, mediaEl) {
 
@@ -49,8 +51,9 @@ class MediaControls extends EventEmitter  {
         this.durationEl = this.wrapperEl.querySelector('.box-preview-media-controls-duration');
 
         this.fullscreenButtonEl = this.wrapperEl.querySelector('.box-preview-media-expand-icon');
-        this.hdButtonEl = this.wrapperEl.querySelector('.box-preview-media-hd-icon');
+        this.settingsButtonEl = this.wrapperEl.querySelector('.box-preview-media-gear-icon');
 
+        this.setupSettings();
         this.setupScrubbers();
         this.attachEventHandlers();
     }
@@ -78,10 +81,17 @@ class MediaControls extends EventEmitter  {
             this.volScrubber = undefined;
         }
 
+        if (this.settings) {
+            this.settings.removeListener('quality', this.handleQuality);
+            this.settings.removeListener('speed', this.handleSpeed);
+            this.settings.destroy();
+            this.settings = undefined;
+        }
+
         this.playButtonEl.removeEventListener('click', this.togglePlay);
         this.volButtonEl.removeEventListener('click', this.toggleMute);
         this.fullscreenButtonEl.removeEventListener('click', this.toggleFullscreen);
-        this.hdButtonEl.removeEventListener('click', this.toggleHD);
+        this.settingsButtonEl.removeEventListener('click', this.toggleSettings);
 
         this.wrapperEl = undefined;
         this.timeScrubberEl = undefined;
@@ -92,10 +102,43 @@ class MediaControls extends EventEmitter  {
         this.timecodeEl = undefined;
         this.durationEl = undefined;
         this.fullscreenButtonEl = undefined;
-        this.hdButtonEl = undefined;
+        this.settingsButtonEl = undefined;
         this.filmstripContainerEl = undefined;
         this.filmstripEl = undefined;
         this.filmstripTimeEl = undefined;
+    }
+
+    /**
+     * Playback rate handler
+     *
+     * @private
+     * @param {String} speed playback rate
+     * @returns {void}
+     */
+    handleSpeed(speed) {
+        this.emit('speedchange');
+    }
+
+    /**
+     * Quality handler
+     *
+     * @private
+     * @param {String} quality hd or sd or auto
+     * @returns {void}
+     */
+    handleQuality(quality) {
+        this.emit('qualitychange');
+    }
+
+    /**
+     * Attaches settings menu
+     * @private
+     * @returns {void}
+     */
+    setupSettings() {
+        this.settings = new Settings(this.containerEl);
+        this.settings.addListener('quality', this.handleQuality);
+        this.settings.addListener('speed', this.handleSpeed);
     }
 
     /**
@@ -176,12 +219,16 @@ class MediaControls extends EventEmitter  {
     }
 
     /**
-     * Toggles HD
-     * @emits togglehd
+     * Toggles settings menu
+     * @emits toggleSettings
      * @returns {void}
      */
-    toggleHD() {
-        this.emit('togglehd');
+    toggleSettings() {
+        if (this.settings.isVisible()) {
+            this.settings.hide();
+        } else {
+            this.settings.show();
+        }
     }
 
     /**
@@ -223,7 +270,7 @@ class MediaControls extends EventEmitter  {
         this.playButtonEl.addEventListener('click', this.togglePlay);
         this.volButtonEl.addEventListener('click', this.toggleMute);
         this.fullscreenButtonEl.addEventListener('click', this.toggleFullscreen);
-        this.hdButtonEl.addEventListener('click', this.toggleHD);
+        this.settingsButtonEl.addEventListener('click', this.toggleSettings);
     }
 
     /**
@@ -254,6 +301,11 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     hide() {
+        if (this.settings && this.settings.isVisible()) {
+            this.show();
+            return;
+        }
+
         if (this.wrapperEl) {
             this.wrapperEl.classList.remove(SHOW_CONTROLS_CLASS);
         }
@@ -283,8 +335,8 @@ class MediaControls extends EventEmitter  {
      * Sets up the filmstrip
      *
      * @private
-     * @param {String} filmstripUrl
-     * @param {Number} aspect
+     * @param {String} filmstripUrl url to filmstrip image
+     * @param {Number} aspect aspect ratio
      * @returns {void}
      */
     initFilmstrip(filmstripUrl, aspect) {
@@ -368,10 +420,16 @@ class MediaControls extends EventEmitter  {
      * Shows the filmstrip frame
      *
      * @private
-     * @param {Event} event
+     * @param {Event} event mouse event
      * @returns {void}
      */
     filmstripShowHandler(event) {
+
+        // Don't show the filstrip when settings menu is open
+        if (this.settings.isVisible()) {
+            return;
+        }
+
         let rect = this.containerEl.getBoundingClientRect();
         let pageX = event.pageX; // get the mouse X position
         let time = (pageX - rect.left) * this.mediaEl.duration / rect.width; // given the mouse X position, get the relative time

@@ -25,6 +25,8 @@ class MP3 extends MediaBase {
 
         // Audio element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('audio'));
+        this.mediaEl.setAttribute('autoplay', true);
+        this.mediaEl.setAttribute('preload', 'auto');
     }
 
     /**

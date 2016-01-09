@@ -1,4 +1,5 @@
 @import 'scrubber.css';
+@import 'settings.css';
 
 .box-preview-media-controls-wrapper.box-preview-media-controls-is-visible,
 .box-preview-media-controls-wrapper:hover,
@@ -81,7 +82,7 @@
 }
 
 .box-preview-media-expand-icon,
-.box-preview-media-hd-icon {
+.box-preview-media-gear-icon {
     float: right;
 }
 
@@ -96,10 +97,17 @@
     transform: scaleY(1) !important;
 }
 
-.box-preview-media-hd-icon {
-    opacity: 0.5;
+.box-preview-media-controls-hd {
+    font-size: 7px;
+    background: red;
+    padding: 1px 2px;
+    border-radius: 3px;
+    position: relative;
+    top: -5px;
+    left: -5px;
+    display: none;
 }
 
-.box-preview-media-is-hd .box-preview-media-hd-icon {
-    opacity: 1;
+.box-preview-media-controls-is-hd .box-preview-media-controls-hd {
+    display: inline;
 }

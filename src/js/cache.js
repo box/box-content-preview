@@ -44,7 +44,7 @@ class Cache {
      * @returns {Boolean} whether the cache has key
      */
     has(key) {
-        return !!this.cache[key];
+        return typeof this.cache[key] !== 'undefined';
     }
 
     /**
