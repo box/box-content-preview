@@ -78,19 +78,35 @@ class Preview {
         let scriptSrc = document.querySelector('script[src*="preview.js"]').src;
         let anchor = document.createElement('a');
 
+        if (!scriptSrc) {
+            throw 'Missing or malformed preview library inclusion';
+        }
+
         anchor.href = scriptSrc;
+        let pathname = anchor.pathname;
+        let pathFragments = pathname.split('/');
+        let fragmentLength = pathFragments.length;
+
+        let fileName = pathFragments[fragmentLength - 1];
+        let locale = pathFragments[fragmentLength - 2];
+        let version = pathFragments[fragmentLength - 3];
+
+        let baseURI = anchor.href.replace(fileName, '');
+        let staticBaseURI = baseURI.replace(locale, 'third-party');
+
         this.options.location = {
             origin: anchor.origin,
             host: anchor.host,
             hostname: anchor.hostname,
-            pathname: anchor.pathname,
+            pathname: pathname,
             search: anchor.search,
             protocol: anchor.protocol,
             port: anchor.port,
             href: anchor.href,
-            hrefTemplate: anchor.href.replace('preview.js', '{{asset_name}}'),
-            baseURI: (anchor.origin + anchor.pathname).replace('preview.js', ''),
-            staticBaseURI: (anchor.origin + anchor.pathname).replace('preview.js', 'static/')
+            locale: locale,
+            version: version,
+            baseURI: baseURI,
+            staticBaseURI: staticBaseURI
         };
 
         anchor = undefined;
@@ -267,7 +283,7 @@ class Preview {
         let representation = loader.determineRepresentation(this.file, viewer);
 
         // Load all the static assets
-        let promiseToLoadAssets = loader.load(viewer, this.options.location.hrefTemplate);
+        let promiseToLoadAssets = loader.load(viewer, this.options.location);
 
         // Load the representation assets
         let promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(representation, this.getRequestHeaders());
@@ -334,7 +350,7 @@ class Preview {
         reason = reason || 'An error has occurered while loading the preview';
 
         let viewer = ErrorLoader.determineViewer();
-        ErrorLoader.load(viewer, this.options.location.hrefTemplate).then(() => {
+        ErrorLoader.load(viewer, this.options.location).then(() => {
             // Destroy anything still showing
             this.destroy();
 

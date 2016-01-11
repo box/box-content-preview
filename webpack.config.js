@@ -11,7 +11,7 @@ var i18n = path.join(__dirname, 'src/i18n/json');
 var css = path.join(__dirname, 'src/css');
 var img = path.join(__dirname, 'src/img');
 var test = path.join(__dirname, 'test');
-var static = path.join(__dirname, 'src/third-party/static');
+var thirdParty = path.join(__dirname, 'src/third-party');
 
 var languages = {
     'en-AU': require(i18n + '/en-AU.json'),
@@ -53,12 +53,15 @@ module.exports = languagesArray.map(function(language, index) {
     // Output path
     var dist = path.join(__dirname, 'dist', version, language);
 
+    // Static output path
+    var static = path.join(__dirname, 'dist', version);
+
     // List of plugins used for building our bundles
     var plugins = [
         new webpack.NoErrorsPlugin(),
         new ExtractTextPlugin('[Name].css', { allChunks: true }),
         new I18nPlugin(languages[language]),
-        new RsyncPlugin(static, dist)
+        new RsyncPlugin(thirdParty, static)
     ];
 
     // If this is not a release build, add the Rsync plugin for local

@@ -20,9 +20,6 @@ import {
     EVENT_RELOAD,
     EVENT_SWITCH_2D
 } from './image360-constants';
-import 'file?name=boxsdk-0.1.1.js!../../third-party/model3d/boxsdk-0.1.1.js';
-import 'file?name=box3d-resource-loader-0.1.1.js!../../third-party/model3d/box3d-resource-loader-0.1.1.js';
-import 'file?name=box3d-runtime-0.8.1.js!../../third-party/model3d/box3d-runtime-0.8.1.js';
 
 let Box = global.Box || {};
 

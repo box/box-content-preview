@@ -84,13 +84,13 @@ class AssetLoader {
      *
      * @public
      * @param {Object} viewer chosen viewer
-     * @param {String} assetTemplate template of assets
+     * @param {Object} location template of assets
      * @returns {Promise} Promise to load scripts
      */
-    load(viewer, assetTemplate) {
+    load(viewer, location) {
 
         // Create an asset path creator function
-        let assetUrlCreator = createAssetUrlCreator(assetTemplate);
+        let assetUrlCreator = createAssetUrlCreator(location);
 
         // 1st load the stylesheets needed for this preview
         loadStylesheets(viewer.STYLESHEETS.map(assetUrlCreator));
@@ -109,7 +109,7 @@ class AssetLoader {
      */
     prefetch(file, options) {
         // Create an asset path creator function
-        let assetUrlCreator = createAssetUrlCreator(options.location.hrefTemplate);
+        let assetUrlCreator = createAssetUrlCreator(options.location);
 
         // Determine the viewer to use
         let viewer = this.determineViewer(file);
