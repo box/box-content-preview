@@ -1,6 +1,4 @@
 'use strict';
-import hdrEnvDiffUrl from '../../img/model3d/hdr_env_diff.png';
-import hdrEnvSpecUrl from '../../img/model3d/hdr_env_spec.png';
 
 /**
  * Returns the default scene entities array
@@ -106,7 +104,7 @@ function sceneEntities(prefix) {
 			ignoreStream: true
 		},
 		resources: [{
-			path: prefix + hdrEnvSpecUrl,
+			path: prefix + 'model3d/hdr_env_spec.png',
 			contentType: 'image/png',
 			contentEncoding: 'identity',
 			properties: {
@@ -128,7 +126,7 @@ function sceneEntities(prefix) {
 			ignoreStream: true
 		},
 		resources: [{
-			path: prefix + hdrEnvDiffUrl,
+			path: prefix + 'model3d/hdr_env_diff.png',
 			contentType: 'image/png',
 			contentEncoding: 'identity',
 			properties: {
