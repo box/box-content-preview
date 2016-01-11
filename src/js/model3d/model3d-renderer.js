@@ -197,7 +197,7 @@ class Model3dRenderer extends EventEmitter {
 			this.box3d.initialize({
 				container: this.containerEl,
 				engineName: 'Default',
-				entities: sceneEntities(options.location.baseURI),
+				entities: sceneEntities(options.location.staticBaseURI),
 				inputSettings: INPUT_SETTINGS,
 				resourceLoader
 			}, () => {
