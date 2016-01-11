@@ -2,6 +2,7 @@
 
 import AssetLoader from '../asset-loader';
 
+const STATIC_URI = 'third-party/media/';
 const VIDEO_FORMATS = [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv' ];
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
@@ -18,7 +19,7 @@ const VIEWERS = [
     {
         REPRESENTATION: 'dash',
         EXTENSIONS: VIDEO_FORMATS,
-        SCRIPTS: [ 'shaka-player.js', 'dash.js' ],
+        SCRIPTS: [ STATIC_URI + 'shaka-player.js', 'dash.js' ],
         STYLESHEETS: [ 'dash.css' ],
         CONSTRUCTOR: 'Dash',
         PREFETCH: 'xhr'

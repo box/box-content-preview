@@ -1,7 +1,6 @@
 'use strict';
 
 import '../../css/text/csv.css';
-import 'file?name=papaparse.js!../../third-party/text/papaparse.js';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
 import fetch from 'isomorphic-fetch';
@@ -38,8 +37,8 @@ class CSV extends TextBase {
      */
     load(csvUrl) {
 
-        let assetUrlCreator = createAssetUrlCreator(this.options.location.hrefTemplate);
-        let papaWorkerUrl = assetUrlCreator('papaparse.js');
+        let assetUrlCreator = createAssetUrlCreator(this.options.location);
+        let papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.js');
 
         fetch(papaWorkerUrl)
         .then((response) => response.blob())

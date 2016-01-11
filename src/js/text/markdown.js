@@ -5,8 +5,6 @@ import autobind from 'autobind-decorator';
 import TextBase from './text-base';
 import fetch from 'isomorphic-fetch';
 import marked from 'marked';
-import 'file?name=highlight.js!../../third-party/text/highlight.js';
-import 'file?name=github.css!../../third-party/text/github.css';
 
 let Box = global.Box || {};
 let hljs = global.hljs;

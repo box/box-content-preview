@@ -73,11 +73,29 @@ export function createContentUrl(url, token) {
  * Factory to create asset URLs
  *
  * @public
- * @param {String} template url
+ * @param {location} location object
  * @returns {Function} factory for creating asset url
  */
-export function createAssetUrlCreator(template) {
-    return (name) => template.replace('{{asset_name}}', name);
+export function createAssetUrlCreator(location) {
+    let baseURI = location.baseURI;
+    let staticBaseURI = location.staticBaseURI;
+
+    return (name) => {
+        let asset;
+
+        if (name.indexOf('http') === 0) {
+            // This is a full url
+            asset = name;
+        } else if (name.indexOf('third-party') === 0) {
+            // This is a static third-party asset thats not localized
+            asset = staticBaseURI + name.replace('third-party/', '');
+        } else {
+            // This is our own asset that is localized
+            asset = baseURI + name;
+        }
+
+        return asset;
+    };
 }
 
 /**

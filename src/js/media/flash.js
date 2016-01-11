@@ -2,7 +2,6 @@
 
 import autobind from 'autobind-decorator';
 import Base from '../base';
-import 'file?name=swfobject.js!../../third-party/swfobject.js';
 
 let document = global.document;
 let Box = global.Box || {};

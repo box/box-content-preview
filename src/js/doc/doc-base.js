@@ -8,13 +8,6 @@ import fetch from 'isomorphic-fetch';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator } from '../util';
 
-// PDFJS
-import 'file?name=compatibility.js!../../third-party/doc/compatibility.js';
-import 'file?name=pdf.worker.js!../../third-party/doc/pdf.worker.js';
-import 'file?name=pdf.js!../../third-party/doc/pdf.js';
-import 'file?name=pdf_viewer.js!../../third-party/doc/pdf_viewer.js';
-import 'file?name=pdf_viewer.css!../../third-party/doc/pdf_viewer.css';
-
 let PDFJS = global.PDFJS;
 
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
@@ -85,9 +78,9 @@ class DocBase extends Base {
      */
     load(pdfUrl) {
         // Workers cannot be loaded via XHR when not from the same domain, so we load it as a blob
-        let assetUrlCreator = createAssetUrlCreator(this.options.location.hrefTemplate);
-        let pdfWorkerUrl = assetUrlCreator('pdf.worker.js');
-        let pdfCMapBaseURI = this.options.location.staticBaseURI + 'cmaps/';
+        let assetUrlCreator = createAssetUrlCreator(this.options.location);
+        let pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
+        let pdfCMapBaseURI = this.options.location.staticBaseURI + 'doc/cmaps/';
 
         fetch(pdfWorkerUrl)
         .then((response) => response.blob())
