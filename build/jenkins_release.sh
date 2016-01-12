@@ -41,17 +41,17 @@ mavenPassword=$(grep '^password=' $credentialsFile | sed 's/^password=//')
 
 
 increment_version_and_push() {
-  
+
     tag_version="v$VERSION"
     echo "----------------------------------------------------"
     echo "Release version is" $VERSION
     echo "Tagging version" $tag_version
-    echo "----------------------------------------------------"  
+    echo "----------------------------------------------------"
     git tag -a $tag_version -m $tag_version
 
     echo "----------------------------------------------------"
     echo "Bumping master version..."
-    echo "----------------------------------------------------"  
+    echo "----------------------------------------------------"
     if $major_release; then
         npm version major --no-git-tag-version
     else
@@ -59,7 +59,7 @@ increment_version_and_push() {
     fi
 
     new_version=$(./build/current_version.sh)
-    git commit -am $new_version  
+    git commit -am $new_version
     echo "----------------------------------------------------"
     echo "Master version is now at" $new_version
     echo "----------------------------------------------------"
@@ -78,11 +78,11 @@ increment_version_and_push() {
 
 
 push_to_maven() {
-    
+
     echo "----------------------------------------------------"
     echo "Starting a Maven push for" $KIND-$VERSION
-    echo "----------------------------------------------------"  
-    
+    echo "----------------------------------------------------"
+
     shopt -s dotglob
 
     [ -e "$KIND-$VERSION" ] || ln -s . "$KIND-$VERSION" # For the rpm prefix
@@ -95,8 +95,8 @@ push_to_maven() {
 
     echo "----------------------------------------------------"
     echo "Status of Maven push: $status"
-    echo "----------------------------------------------------"  
-    
+    echo "----------------------------------------------------"
+
     rm $rpmDir/$rpm || exit 1
     rm $KIND-$VERSION || exit 1
 }
@@ -104,19 +104,31 @@ push_to_maven() {
 
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
-  
+
     echo "----------------------------------------------------"
     echo "Installing node modules..."
-    echo "----------------------------------------------------"  
+    echo "----------------------------------------------------"
     if npm install; then
         echo "----------------------------------------------------"
         echo "Installed node modules."
         echo "----------------------------------------------------"
     else
-        echo "----------------------------------------------------"
-        echo "Failed to install node modules!"
-        echo "----------------------------------------------------"
-        exit 1;
+        if npm install --registry https://registry.nodejitsu.com; then
+            echo "----------------------------------------------------"
+            echo "Installed node modules."
+            echo "----------------------------------------------------"
+        else
+            if npm install --registry https://npm.strongloop.com; then
+                echo "----------------------------------------------------"
+                echo "Installed node modules."
+                echo "----------------------------------------------------"
+            else
+                echo "----------------------------------------------------"
+                echo "Failed to install node modules!"
+                echo "----------------------------------------------------"
+                exit 1;
+            fi
+        fi
     fi
 
 
