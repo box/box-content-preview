@@ -1,8 +1,7 @@
 @import 'scrubber.css';
 @import 'settings.css';
 
-.box-preview-media-controls-wrapper.box-preview-media-controls-is-visible,
-.box-preview-media-controls-wrapper:hover,
+.box-preview-media-controls-is-visible .box-preview-media-controls-wrapper,
 .box-preview-media-controls-wrapper:active,
 .box-preview-media-controls-wrapper:focus {
     opacity: 1;
@@ -103,8 +102,8 @@
     padding: 1px 2px;
     border-radius: 3px;
     position: relative;
-    top: -5px;
-    left: -5px;
+    top: -6px;
+    left: -8px;
     display: none;
 }
 

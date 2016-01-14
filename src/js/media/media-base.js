@@ -8,6 +8,7 @@ import MediaControls from './media-controls';
 const CSS_CLASS_MEDIA = 'box-preview-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'box-preview-media-container';
 const DEFAULT_VOLUME = 0.7;
+const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 
 @autobind
 class MediaBase extends Base {
@@ -46,8 +47,9 @@ class MediaBase extends Base {
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
             this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
-            this.mediaEl.removeEventListener('playing', this.showPauseIcon);
-            this.mediaEl.removeEventListener('pause', this.showPlayIcon);
+            this.mediaEl.removeEventListener('playing', this.playingHandler);
+            this.mediaEl.removeEventListener('pause', this.pauseHandler);
+            this.mediaEl.removeEventListener('waiting', this.waitingHandler);
             this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
 
             this.mediaEl.removeAttribute('src');
@@ -201,14 +203,28 @@ class MediaBase extends Base {
 
     /**
      * Shows the pause icon.
+     * Hides the loading indicator.
+     * Updates volume.
+     * Updates speed.
      *
      * @private
      * @returns {void}
      */
-    showPauseIcon() {
+    playingHandler() {
+        this.containerEl.classList.add(CLASS_PREVIEW_LOADED);
         this.mediaControls.showPauseIcon();
         this.handleSpeed();
         this.handleVolume();
+    }
+
+    /**
+     * Shows the loading indicator.
+     *
+     * @private
+     * @returns {void}
+     */
+    waitingHandler() {
+        this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
     }
 
     /**
@@ -217,7 +233,7 @@ class MediaBase extends Base {
      * @private
      * @returns {void}
      */
-    showPlayIcon() {
+    pauseHandler() {
         this.mediaControls.showPlayIcon();
     }
 
@@ -229,7 +245,7 @@ class MediaBase extends Base {
      */
     resetPlayIcon() {
         this.mediaControls.setTimeCode(0);
-        this.showPlayIcon();
+        this.pauseHandler();
     }
 
     /**
@@ -242,8 +258,9 @@ class MediaBase extends Base {
     addEventListenersForMediaElement() {
         this.mediaEl.addEventListener('timeupdate', this.setTimeCode);
         this.mediaEl.addEventListener('volumechange', this.updateVolumeIcon);
-        this.mediaEl.addEventListener('playing', this.showPauseIcon);
-        this.mediaEl.addEventListener('pause', this.showPlayIcon);
+        this.mediaEl.addEventListener('playing', this.playingHandler);
+        this.mediaEl.addEventListener('pause', this.pauseHandler);
+        this.mediaEl.addEventListener('waiting', this.waitingHandler);
         this.mediaEl.addEventListener('ended', this.resetPlayIcon);
     }
 
