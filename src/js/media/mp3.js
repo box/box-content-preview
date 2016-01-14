@@ -37,7 +37,7 @@ class MP3 extends MediaBase {
      */
     loadUI() {
         super.loadUI();
-        this.mediaControls.show(true);
+        this.mediaControls.show();
         this.mediaControls.resizeTimeScrubber();
     }
 }

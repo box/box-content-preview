@@ -159,11 +159,16 @@ class Dash extends VideoBase {
      * Handler for hd/sd/auto video
      *
      * @private
+     * @param {Boolean|void} [showLoadingIndicator] shows the loading crawler
      * @returns {void}
      */
-    handleQuality() {
+    handleQuality(showLoadingIndicator = true) {
 
         let quality = cache.get('media-quality');
+
+        if (showLoadingIndicator) {
+            this.containerEl.classList.remove('box-preview-loaded');
+        }
 
         switch (quality) {
             case 'hd':
@@ -215,7 +220,7 @@ class Dash extends VideoBase {
      */
     loadedmetadataHandler() {
         super.loadedmetadataHandler();
-        this.handleQuality();
+        this.handleQuality(false);
     }
 
     /**

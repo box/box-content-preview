@@ -92,6 +92,8 @@ class MediaControls extends EventEmitter  {
         this.volButtonEl.removeEventListener('click', this.toggleMute);
         this.fullscreenButtonEl.removeEventListener('click', this.toggleFullscreen);
         this.settingsButtonEl.removeEventListener('click', this.toggleSettings);
+        this.wrapperEl.removeEventListener('mouseenter', this.mouseenterHandler);
+        this.wrapperEl.removeEventListener('mouseleave', this.mouseleaveHandler);
 
         this.wrapperEl = undefined;
         this.timeScrubberEl = undefined;
@@ -267,6 +269,8 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     attachEventHandlers() {
+        this.wrapperEl.addEventListener('mouseenter', this.mouseenterHandler);
+        this.wrapperEl.addEventListener('mouseleave', this.mouseleaveHandler);
         this.playButtonEl.addEventListener('click', this.togglePlay);
         this.volButtonEl.addEventListener('click', this.toggleMute);
         this.fullscreenButtonEl.addEventListener('click', this.toggleFullscreen);
@@ -274,26 +278,47 @@ class MediaControls extends EventEmitter  {
     }
 
     /**
+     * Handles the mouse enter event.
+     * Prevents hiding of the controls.
+     *
+     * @private
+     * @returns {void}
+     */
+    mouseenterHandler() {
+        this.preventHiding = true;
+        this.show();
+    }
+
+    /**
+     * Handles the mouse leave event.
+     * Allows hiding of the controls.
+     *
+     * @private
+     * @returns {void}
+     */
+    mouseleaveHandler() {
+        this.preventHiding = false;
+        this.show();
+    }
+
+    /**
      * Shows the media controls
      *
      * @public
-     * @param {boolean} [preventHiding] Prevents the controls from hiding
      * @returns {void}
      */
-    show(preventHiding = false) {
+    show() {
 
         if (!this.wrapperEl) {
             return;
         }
 
-        this.wrapperEl.classList.add(SHOW_CONTROLS_CLASS);
+        this.wrapperEl.parentNode.classList.add(SHOW_CONTROLS_CLASS);
 
-        if (!preventHiding) {
-            clearTimeout(this.autoHideTimeout);
-            this.autoHideTimeout = setTimeout(() => {
-                this.hide();
-            }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
-        }
+        clearTimeout(this.autoHideTimeout);
+        this.autoHideTimeout = setTimeout(() => {
+            this.hide();
+        }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
     }
 
     /**
@@ -301,13 +326,16 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     hide() {
-        if (this.settings && this.settings.isVisible()) {
+
+        // Do not hide the controls if the settings menu was open
+        // Also do not hide, till the mouse has left the controls
+        if (this.preventHiding || (this.settings && this.settings.isVisible())) {
             this.show();
             return;
         }
 
         if (this.wrapperEl) {
-            this.wrapperEl.classList.remove(SHOW_CONTROLS_CLASS);
+            this.wrapperEl.parentNode.classList.remove(SHOW_CONTROLS_CLASS);
         }
     }
 
