@@ -3,9 +3,9 @@
     border: 0 none;
     margin: 0;
     color: #ddd;
-    width: 170px;
-    height: 60px;
-    font-size: 10px;
+    width: 132px;
+    height: 48px;
+    font-size: 9px;
     border-radius: 4px;
     overflow: hidden;
     position: absolute;
@@ -26,8 +26,8 @@
 
 .box-preview-media-settings-item,
 .box-preview-media-settings-sub-item {
-    padding: 8px;
-    height: 30px;
+    padding: 5px;
+    height: 24px;
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
@@ -48,7 +48,7 @@
 }
 
 .box-preview-media-settings-item .box-preview-media-settings-label {
-    width: 75px;
+    width: 50px;
     padding-left: 5px;
 }
 
@@ -72,12 +72,12 @@
 
 .box-preview-media-settings-show-speed.box-preview-media-settings,
 .box-preview-media-settings-show-quality.box-preview-media-settings {
-    width: 100px !important;
-    height: 120px !important;
+    width: 88px !important;
+    height: 96px !important; /* 24px * 4 options */
 }
 
 .box-preview-media-settings-show-speed.box-preview-media-settings {
-    height: 210px !important;
+    height: 168px !important; /* 24px * 7 options */
 }
 
 .box-preview-media-settings-show-speed .box-preview-media-settings-item,
