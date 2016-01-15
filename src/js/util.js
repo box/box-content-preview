@@ -1,6 +1,7 @@
 'use strict';
 
-let loadedAssets = [];
+let loadedJSAssets = [];
+let loadedCSSAssets = [];
 let prefetchedAssets = [];
 
 /**
@@ -124,11 +125,18 @@ export function prefetchAssets(urls) {
 export function loadStylesheets(urls) {
     let head = document.getElementsByTagName('head')[0];
 
+    // Before adding new stylesheets, remove prior ones
+    // This is because stylesheets can conflict
+    loadedCSSAssets.forEach((url) => {
+        let link = head.querySelector('link[rel="stylesheet"][href="' + url + '"]');
+        head.removeChild(link);
+    });
+
+    loadedCSSAssets = [];
+
     urls.forEach((url) => {
-        if (loadedAssets.indexOf(url) === -1) {
-            loadedAssets.push(url);
-            head.appendChild(createStylesheet(url));
-        }
+        loadedCSSAssets.push(url);
+        head.appendChild(createStylesheet(url));
     });
 }
 
@@ -143,8 +151,8 @@ export function loadScripts(urls) {
     let promises = [];
 
     urls.forEach((url) => {
-        if (loadedAssets.indexOf(url) === -1) {
-            loadedAssets.push(url);
+        if (loadedJSAssets.indexOf(url) === -1) {
+            loadedJSAssets.push(url);
             let script = createScript(url);
             promises.push(new Promise((resolve, reject) => {
                 script.addEventListener('load', resolve);

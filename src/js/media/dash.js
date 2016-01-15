@@ -166,7 +166,7 @@ class Dash extends VideoBase {
 
         let quality = cache.get('media-quality');
 
-        if (showLoadingIndicator) {
+        if (showLoadingIndicator && !this.mediaEl.paused && !this.mediaEl.ended) {
             this.containerEl.classList.remove('box-preview-loaded');
         }
 
