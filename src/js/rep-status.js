@@ -28,7 +28,10 @@ class RepLoader {
      * @returns {void}
      */
     updateStatus(url, headers) {
-        fetch(url, { headers: headers }).then((response) => {
+        fetch(url, {
+            method: 'head',
+            headers: headers
+        }).then((response) => {
             clearTimeout(this.statusTimeout);
             switch (response.status) {
                 case 200:
