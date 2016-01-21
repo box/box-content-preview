@@ -50,6 +50,10 @@
 	opacity: 0.7;
 }
 
+.box-preview-image360 .preview-overlay .switch-2d {
+    top: 0;
+}
+
 .preview-controls-3dcg {
 	left: 50%;
 	bottom: 25px;
