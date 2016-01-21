@@ -9,7 +9,7 @@ import fullscreen from '../fullscreen';
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
-const MAX_BUFFER = SEGMENT_SIZE * 3;
+const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 
 let Box = global.Box || {};
 let shaka = global.shaka;
