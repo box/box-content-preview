@@ -13,20 +13,31 @@
  * limitations under the License.
  */
 /* jshint globalstrict: false */
-/* globals PDFJS, global */
+/* umdutils ignore */
 
-// Initializing PDFJS global object (if still undefined)
-if (typeof PDFJS === 'undefined') {
-  (typeof window !== 'undefined' ? window :
-   typeof global !== 'undefined' ? global : this).PDFJS = {};
-}
-
-PDFJS.version = '1.3.146';
-PDFJS.build = '8ed3692';
-
-(function pdfjsWrapper() {
+(function (root, factory) {
+  'use strict';
+  if (typeof define === 'function' && define.amd) {
+define('pdfjs-dist/build/pdf.worker', ['exports'], factory);
+  } else if (typeof exports !== 'undefined') {
+    factory(exports);
+  } else {
+factory((root.pdfjsDistBuildPdfWorker = {}));
+  }
+}(this, function (exports) {
   // Use strict in our context only - users might not want it
   'use strict';
+
+var pdfjsVersion = '1.3.231';
+var pdfjsBuild = '58329f7';
+
+  var pdfjsFilePath =
+    typeof document !== 'undefined' && document.currentScript ?
+      document.currentScript.src : null;
+
+  var pdfjsLibs = {};
+
+  (function pdfjsWrapper() {
 
 
 
@@ -8996,6 +9007,13 @@ var NetworkManager = (function NetworkManagerClosure() {
     globalScope.PDFJS = {};
   }
 
+  if (typeof pdfjsVersion !== 'undefined') {
+    globalScope.PDFJS.version = pdfjsVersion;
+  }
+  if (typeof pdfjsVersion !== 'undefined') {
+    globalScope.PDFJS.build = pdfjsBuild;
+  }
+
   globalScope.PDFJS.pdfBug = false;
 
   exports.globalScope = globalScope;
@@ -9692,29 +9710,7 @@ function combineUrl(baseUrl, url) {
   if (!url) {
     return baseUrl;
   }
-  if (/^[a-z][a-z0-9+\-.]*:/i.test(url)) {
-    return url;
-  }
-  var i;
-  if (url.charAt(0) === '/') {
-    // absolute path
-    i = baseUrl.indexOf('://');
-    if (url.charAt(1) === '/') {
-      ++i;
-    } else {
-      i = baseUrl.indexOf('/', i + 3);
-    }
-    return baseUrl.substring(0, i) + url;
-  } else {
-    // relative path
-    var pathLength = baseUrl.length;
-    i = baseUrl.lastIndexOf('#');
-    pathLength = i >= 0 ? i : pathLength;
-    i = baseUrl.lastIndexOf('?', pathLength);
-    pathLength = i >= 0 ? i : pathLength;
-    var prefixLength = baseUrl.lastIndexOf('/', pathLength);
-    return baseUrl.substring(0, prefixLength + 1) + url;
-  }
+  return new URL(url, baseUrl).href;
 }
 
 // Validates if URL is safe and allowed, e.g. to avoid XSS.
@@ -9741,6 +9737,26 @@ function isValidUrl(url, allowRelative) {
   }
 }
 PDFJS.isValidUrl = isValidUrl;
+
+/**
+ * Adds various attributes (href, title, target, rel) to hyperlinks.
+ * @param {HTMLLinkElement} link - The link element.
+ * @param {Object} params - An object with the properties:
+ * @param {string} params.url - An absolute URL.
+ */
+function addLinkAttributes(link, params) {
+  var url = params && params.url;
+  link.href = link.title = (url ? removeNullCharacters(url) : '');
+
+  if (url) {
+    if (isExternalLinkTargetSet()) {
+      link.target = LinkTargetStringMap[PDFJS.externalLinkTarget];
+    }
+    // Strip referrer from the URL.
+    link.rel = PDFJS.externalLinkRel;
+  }
+}
+PDFJS.addLinkAttributes = addLinkAttributes;
 
 function shadow(obj, prop, value) {
   Object.defineProperty(obj, prop, { value: value,
@@ -9904,6 +9920,16 @@ var XRefParseException = (function XRefParseExceptionClosure() {
   return XRefParseException;
 })();
 
+var NullCharactersRegExp = /\x00/g;
+
+function removeNullCharacters(str) {
+  if (typeof str !== 'string') {
+    warn('The argument for removeNullCharacters must be a string.');
+    return str;
+  }
+  return str.replace(NullCharactersRegExp, '');
+}
+PDFJS.removeNullCharacters = removeNullCharacters;
 
 function bytesToString(bytes) {
   assert(bytes !== null && typeof bytes === 'object' &&
@@ -10194,6 +10220,42 @@ var Util = PDFJS.Util = (function UtilClosure() {
 
   Util.sign = function Util_sign(num) {
     return num < 0 ? -1 : 1;
+  };
+
+  var ROMAN_NUMBER_MAP = [
+    '', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM',
+    '', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC',
+    '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'
+  ];
+  /**
+   * Converts positive integers to (upper case) Roman numerals.
+   * @param {integer} number - The number that should be converted.
+   * @param {boolean} lowerCase - Indicates if the result should be converted
+   *   to lower case letters. The default is false.
+   * @return {string} The resulting Roman number.
+   */
+  Util.toRoman = function Util_toRoman(number, lowerCase) {
+    assert(isInt(number) && number > 0,
+           'The number should be a positive integer.');
+    var pos, romanBuf = [];
+    // Thousands
+    while (number >= 1000) {
+      number -= 1000;
+      romanBuf.push('M');
+    }
+    // Hundreds
+    pos = (number / 100) | 0;
+    number %= 100;
+    romanBuf.push(ROMAN_NUMBER_MAP[pos]);
+    // Tens
+    pos = (number / 10) | 0;
+    number %= 10;
+    romanBuf.push(ROMAN_NUMBER_MAP[10 + pos]);
+    // Ones
+    romanBuf.push(ROMAN_NUMBER_MAP[20 + number]);
+
+    var romanStr = romanBuf.join('');
+    return (lowerCase ? romanStr.toLowerCase() : romanStr);
   };
 
   Util.appendToArray = function Util_appendToArray(arr1, arr2) {
@@ -11036,6 +11098,623 @@ function loadJpegStream(id, imageUrl, objs) {
   img.src = imageUrl;
 }
 
+  // Polyfill from https://github.com/Polymer/URL
+/* Any copyright is dedicated to the Public Domain.
+ * http://creativecommons.org/publicdomain/zero/1.0/ */
+(function checkURLConstructor(scope) {
+  /* jshint ignore:start */
+
+  // feature detect for URL constructor
+  var hasWorkingUrl = false;
+  if (typeof URL === 'function' && ('origin' in URL.prototype)) {
+    try {
+      var u = new URL('b', 'http://a');
+      u.pathname = 'c%20d';
+      hasWorkingUrl = u.href === 'http://a/c%20d';
+    } catch(e) {}
+  }
+
+  if (hasWorkingUrl)
+    return;
+
+  var relative = Object.create(null);
+  relative['ftp'] = 21;
+  relative['file'] = 0;
+  relative['gopher'] = 70;
+  relative['http'] = 80;
+  relative['https'] = 443;
+  relative['ws'] = 80;
+  relative['wss'] = 443;
+
+  var relativePathDotMapping = Object.create(null);
+  relativePathDotMapping['%2e'] = '.';
+  relativePathDotMapping['.%2e'] = '..';
+  relativePathDotMapping['%2e.'] = '..';
+  relativePathDotMapping['%2e%2e'] = '..';
+
+  function isRelativeScheme(scheme) {
+    return relative[scheme] !== undefined;
+  }
+
+  function invalid() {
+    clear.call(this);
+    this._isInvalid = true;
+  }
+
+  function IDNAToASCII(h) {
+    if ('' == h) {
+      invalid.call(this)
+    }
+    // XXX
+    return h.toLowerCase()
+  }
+
+  function percentEscape(c) {
+    var unicode = c.charCodeAt(0);
+    if (unicode > 0x20 &&
+       unicode < 0x7F &&
+       // " # < > ? `
+       [0x22, 0x23, 0x3C, 0x3E, 0x3F, 0x60].indexOf(unicode) == -1
+      ) {
+      return c;
+    }
+    return encodeURIComponent(c);
+  }
+
+  function percentEscapeQuery(c) {
+    // XXX This actually needs to encode c using encoding and then
+    // convert the bytes one-by-one.
+
+    var unicode = c.charCodeAt(0);
+    if (unicode > 0x20 &&
+       unicode < 0x7F &&
+       // " # < > ` (do not escape '?')
+       [0x22, 0x23, 0x3C, 0x3E, 0x60].indexOf(unicode) == -1
+      ) {
+      return c;
+    }
+    return encodeURIComponent(c);
+  }
+
+  var EOF = undefined,
+      ALPHA = /[a-zA-Z]/,
+      ALPHANUMERIC = /[a-zA-Z0-9\+\-\.]/;
+
+  function parse(input, stateOverride, base) {
+    function err(message) {
+      errors.push(message)
+    }
+
+    var state = stateOverride || 'scheme start',
+        cursor = 0,
+        buffer = '',
+        seenAt = false,
+        seenBracket = false,
+        errors = [];
+
+    loop: while ((input[cursor - 1] != EOF || cursor == 0) && !this._isInvalid) {
+      var c = input[cursor];
+      switch (state) {
+        case 'scheme start':
+          if (c && ALPHA.test(c)) {
+            buffer += c.toLowerCase(); // ASCII-safe
+            state = 'scheme';
+          } else if (!stateOverride) {
+            buffer = '';
+            state = 'no scheme';
+            continue;
+          } else {
+            err('Invalid scheme.');
+            break loop;
+          }
+          break;
+
+        case 'scheme':
+          if (c && ALPHANUMERIC.test(c)) {
+            buffer += c.toLowerCase(); // ASCII-safe
+          } else if (':' == c) {
+            this._scheme = buffer;
+            buffer = '';
+            if (stateOverride) {
+              break loop;
+            }
+            if (isRelativeScheme(this._scheme)) {
+              this._isRelative = true;
+            }
+            if ('file' == this._scheme) {
+              state = 'relative';
+            } else if (this._isRelative && base && base._scheme == this._scheme) {
+              state = 'relative or authority';
+            } else if (this._isRelative) {
+              state = 'authority first slash';
+            } else {
+              state = 'scheme data';
+            }
+          } else if (!stateOverride) {
+            buffer = '';
+            cursor = 0;
+            state = 'no scheme';
+            continue;
+          } else if (EOF == c) {
+            break loop;
+          } else {
+            err('Code point not allowed in scheme: ' + c)
+            break loop;
+          }
+          break;
+
+        case 'scheme data':
+          if ('?' == c) {
+            this._query = '?';
+            state = 'query';
+          } else if ('#' == c) {
+            this._fragment = '#';
+            state = 'fragment';
+          } else {
+            // XXX error handling
+            if (EOF != c && '\t' != c && '\n' != c && '\r' != c) {
+              this._schemeData += percentEscape(c);
+            }
+          }
+          break;
+
+        case 'no scheme':
+          if (!base || !(isRelativeScheme(base._scheme))) {
+            err('Missing scheme.');
+            invalid.call(this);
+          } else {
+            state = 'relative';
+            continue;
+          }
+          break;
+
+        case 'relative or authority':
+          if ('/' == c && '/' == input[cursor+1]) {
+            state = 'authority ignore slashes';
+          } else {
+            err('Expected /, got: ' + c);
+            state = 'relative';
+            continue
+          }
+          break;
+
+        case 'relative':
+          this._isRelative = true;
+          if ('file' != this._scheme)
+            this._scheme = base._scheme;
+          if (EOF == c) {
+            this._host = base._host;
+            this._port = base._port;
+            this._path = base._path.slice();
+            this._query = base._query;
+            this._username = base._username;
+            this._password = base._password;
+            break loop;
+          } else if ('/' == c || '\\' == c) {
+            if ('\\' == c)
+              err('\\ is an invalid code point.');
+            state = 'relative slash';
+          } else if ('?' == c) {
+            this._host = base._host;
+            this._port = base._port;
+            this._path = base._path.slice();
+            this._query = '?';
+            this._username = base._username;
+            this._password = base._password;
+            state = 'query';
+          } else if ('#' == c) {
+            this._host = base._host;
+            this._port = base._port;
+            this._path = base._path.slice();
+            this._query = base._query;
+            this._fragment = '#';
+            this._username = base._username;
+            this._password = base._password;
+            state = 'fragment';
+          } else {
+            var nextC = input[cursor+1]
+            var nextNextC = input[cursor+2]
+            if (
+              'file' != this._scheme || !ALPHA.test(c) ||
+              (nextC != ':' && nextC != '|') ||
+              (EOF != nextNextC && '/' != nextNextC && '\\' != nextNextC && '?' != nextNextC && '#' != nextNextC)) {
+              this._host = base._host;
+              this._port = base._port;
+              this._username = base._username;
+              this._password = base._password;
+              this._path = base._path.slice();
+              this._path.pop();
+            }
+            state = 'relative path';
+            continue;
+          }
+          break;
+
+        case 'relative slash':
+          if ('/' == c || '\\' == c) {
+            if ('\\' == c) {
+              err('\\ is an invalid code point.');
+            }
+            if ('file' == this._scheme) {
+              state = 'file host';
+            } else {
+              state = 'authority ignore slashes';
+            }
+          } else {
+            if ('file' != this._scheme) {
+              this._host = base._host;
+              this._port = base._port;
+              this._username = base._username;
+              this._password = base._password;
+            }
+            state = 'relative path';
+            continue;
+          }
+          break;
+
+        case 'authority first slash':
+          if ('/' == c) {
+            state = 'authority second slash';
+          } else {
+            err("Expected '/', got: " + c);
+            state = 'authority ignore slashes';
+            continue;
+          }
+          break;
+
+        case 'authority second slash':
+          state = 'authority ignore slashes';
+          if ('/' != c) {
+            err("Expected '/', got: " + c);
+            continue;
+          }
+          break;
+
+        case 'authority ignore slashes':
+          if ('/' != c && '\\' != c) {
+            state = 'authority';
+            continue;
+          } else {
+            err('Expected authority, got: ' + c);
+          }
+          break;
+
+        case 'authority':
+          if ('@' == c) {
+            if (seenAt) {
+              err('@ already seen.');
+              buffer += '%40';
+            }
+            seenAt = true;
+            for (var i = 0; i < buffer.length; i++) {
+              var cp = buffer[i];
+              if ('\t' == cp || '\n' == cp || '\r' == cp) {
+                err('Invalid whitespace in authority.');
+                continue;
+              }
+              // XXX check URL code points
+              if (':' == cp && null === this._password) {
+                this._password = '';
+                continue;
+              }
+              var tempC = percentEscape(cp);
+              (null !== this._password) ? this._password += tempC : this._username += tempC;
+            }
+            buffer = '';
+          } else if (EOF == c || '/' == c || '\\' == c || '?' == c || '#' == c) {
+            cursor -= buffer.length;
+            buffer = '';
+            state = 'host';
+            continue;
+          } else {
+            buffer += c;
+          }
+          break;
+
+        case 'file host':
+          if (EOF == c || '/' == c || '\\' == c || '?' == c || '#' == c) {
+            if (buffer.length == 2 && ALPHA.test(buffer[0]) && (buffer[1] == ':' || buffer[1] == '|')) {
+              state = 'relative path';
+            } else if (buffer.length == 0) {
+              state = 'relative path start';
+            } else {
+              this._host = IDNAToASCII.call(this, buffer);
+              buffer = '';
+              state = 'relative path start';
+            }
+            continue;
+          } else if ('\t' == c || '\n' == c || '\r' == c) {
+            err('Invalid whitespace in file host.');
+          } else {
+            buffer += c;
+          }
+          break;
+
+        case 'host':
+        case 'hostname':
+          if (':' == c && !seenBracket) {
+            // XXX host parsing
+            this._host = IDNAToASCII.call(this, buffer);
+            buffer = '';
+            state = 'port';
+            if ('hostname' == stateOverride) {
+              break loop;
+            }
+          } else if (EOF == c || '/' == c || '\\' == c || '?' == c || '#' == c) {
+            this._host = IDNAToASCII.call(this, buffer);
+            buffer = '';
+            state = 'relative path start';
+            if (stateOverride) {
+              break loop;
+            }
+            continue;
+          } else if ('\t' != c && '\n' != c && '\r' != c) {
+            if ('[' == c) {
+              seenBracket = true;
+            } else if (']' == c) {
+              seenBracket = false;
+            }
+            buffer += c;
+          } else {
+            err('Invalid code point in host/hostname: ' + c);
+          }
+          break;
+
+        case 'port':
+          if (/[0-9]/.test(c)) {
+            buffer += c;
+          } else if (EOF == c || '/' == c || '\\' == c || '?' == c || '#' == c || stateOverride) {
+            if ('' != buffer) {
+              var temp = parseInt(buffer, 10);
+              if (temp != relative[this._scheme]) {
+                this._port = temp + '';
+              }
+              buffer = '';
+            }
+            if (stateOverride) {
+              break loop;
+            }
+            state = 'relative path start';
+            continue;
+          } else if ('\t' == c || '\n' == c || '\r' == c) {
+            err('Invalid code point in port: ' + c);
+          } else {
+            invalid.call(this);
+          }
+          break;
+
+        case 'relative path start':
+          if ('\\' == c)
+            err("'\\' not allowed in path.");
+          state = 'relative path';
+          if ('/' != c && '\\' != c) {
+            continue;
+          }
+          break;
+
+        case 'relative path':
+          if (EOF == c || '/' == c || '\\' == c || (!stateOverride && ('?' == c || '#' == c))) {
+            if ('\\' == c) {
+              err('\\ not allowed in relative path.');
+            }
+            var tmp;
+            if (tmp = relativePathDotMapping[buffer.toLowerCase()]) {
+              buffer = tmp;
+            }
+            if ('..' == buffer) {
+              this._path.pop();
+              if ('/' != c && '\\' != c) {
+                this._path.push('');
+              }
+            } else if ('.' == buffer && '/' != c && '\\' != c) {
+              this._path.push('');
+            } else if ('.' != buffer) {
+              if ('file' == this._scheme && this._path.length == 0 && buffer.length == 2 && ALPHA.test(buffer[0]) && buffer[1] == '|') {
+                buffer = buffer[0] + ':';
+              }
+              this._path.push(buffer);
+            }
+            buffer = '';
+            if ('?' == c) {
+              this._query = '?';
+              state = 'query';
+            } else if ('#' == c) {
+              this._fragment = '#';
+              state = 'fragment';
+            }
+          } else if ('\t' != c && '\n' != c && '\r' != c) {
+            buffer += percentEscape(c);
+          }
+          break;
+
+        case 'query':
+          if (!stateOverride && '#' == c) {
+            this._fragment = '#';
+            state = 'fragment';
+          } else if (EOF != c && '\t' != c && '\n' != c && '\r' != c) {
+            this._query += percentEscapeQuery(c);
+          }
+          break;
+
+        case 'fragment':
+          if (EOF != c && '\t' != c && '\n' != c && '\r' != c) {
+            this._fragment += c;
+          }
+          break;
+      }
+
+      cursor++;
+    }
+  }
+
+  function clear() {
+    this._scheme = '';
+    this._schemeData = '';
+    this._username = '';
+    this._password = null;
+    this._host = '';
+    this._port = '';
+    this._path = [];
+    this._query = '';
+    this._fragment = '';
+    this._isInvalid = false;
+    this._isRelative = false;
+  }
+
+  // Does not process domain names or IP addresses.
+  // Does not handle encoding for the query parameter.
+  function jURL(url, base /* , encoding */) {
+    if (base !== undefined && !(base instanceof jURL))
+      base = new jURL(String(base));
+
+    this._url = url;
+    clear.call(this);
+
+    var input = url.replace(/^[ \t\r\n\f]+|[ \t\r\n\f]+$/g, '');
+    // encoding = encoding || 'utf-8'
+
+    parse.call(this, input, null, base);
+  }
+
+  jURL.prototype = {
+    toString: function() {
+      return this.href;
+    },
+    get href() {
+      if (this._isInvalid)
+        return this._url;
+
+      var authority = '';
+      if ('' != this._username || null != this._password) {
+        authority = this._username +
+            (null != this._password ? ':' + this._password : '') + '@';
+      }
+
+      return this.protocol +
+          (this._isRelative ? '//' + authority + this.host : '') +
+          this.pathname + this._query + this._fragment;
+    },
+    set href(href) {
+      clear.call(this);
+      parse.call(this, href);
+    },
+
+    get protocol() {
+      return this._scheme + ':';
+    },
+    set protocol(protocol) {
+      if (this._isInvalid)
+        return;
+      parse.call(this, protocol + ':', 'scheme start');
+    },
+
+    get host() {
+      return this._isInvalid ? '' : this._port ?
+          this._host + ':' + this._port : this._host;
+    },
+    set host(host) {
+      if (this._isInvalid || !this._isRelative)
+        return;
+      parse.call(this, host, 'host');
+    },
+
+    get hostname() {
+      return this._host;
+    },
+    set hostname(hostname) {
+      if (this._isInvalid || !this._isRelative)
+        return;
+      parse.call(this, hostname, 'hostname');
+    },
+
+    get port() {
+      return this._port;
+    },
+    set port(port) {
+      if (this._isInvalid || !this._isRelative)
+        return;
+      parse.call(this, port, 'port');
+    },
+
+    get pathname() {
+      return this._isInvalid ? '' : this._isRelative ?
+          '/' + this._path.join('/') : this._schemeData;
+    },
+    set pathname(pathname) {
+      if (this._isInvalid || !this._isRelative)
+        return;
+      this._path = [];
+      parse.call(this, pathname, 'relative path start');
+    },
+
+    get search() {
+      return this._isInvalid || !this._query || '?' == this._query ?
+          '' : this._query;
+    },
+    set search(search) {
+      if (this._isInvalid || !this._isRelative)
+        return;
+      this._query = '?';
+      if ('?' == search[0])
+        search = search.slice(1);
+      parse.call(this, search, 'query');
+    },
+
+    get hash() {
+      return this._isInvalid || !this._fragment || '#' == this._fragment ?
+          '' : this._fragment;
+    },
+    set hash(hash) {
+      if (this._isInvalid)
+        return;
+      this._fragment = '#';
+      if ('#' == hash[0])
+        hash = hash.slice(1);
+      parse.call(this, hash, 'fragment');
+    },
+
+    get origin() {
+      var host;
+      if (this._isInvalid || !this._scheme) {
+        return '';
+      }
+      // javascript: Gecko returns String(""), WebKit/Blink String("null")
+      // Gecko throws error for "data://"
+      // data: Gecko returns "", Blink returns "data://", WebKit returns "null"
+      // Gecko returns String("") for file: mailto:
+      // WebKit/Blink returns String("SCHEME://") for file: mailto:
+      switch (this._scheme) {
+        case 'data':
+        case 'file':
+        case 'javascript':
+        case 'mailto':
+          return 'null';
+      }
+      host = this.host;
+      if (!host) {
+        return '';
+      }
+      return this._scheme + '://' + host;
+    }
+  };
+
+  // Copy over the static methods
+  var OriginalURL = scope.URL;
+  if (OriginalURL) {
+    jURL.createObjectURL = function(blob) {
+      // IE extension allows a second optional options argument.
+      // http://msdn.microsoft.com/en-us/library/ie/hh772302(v=vs.85).aspx
+      return OriginalURL.createObjectURL.apply(OriginalURL, arguments);
+    };
+    jURL.revokeObjectURL = function(url) {
+      OriginalURL.revokeObjectURL(url);
+    };
+  }
+
+  scope.URL = jURL;
+  /* jshint ignore:end */
+})(globalScope);
+
 exports.FONT_IDENTITY_MATRIX = FONT_IDENTITY_MATRIX;
 exports.IDENTITY_MATRIX = IDENTITY_MATRIX;
 exports.OPS = OPS;
@@ -11077,11 +11756,13 @@ exports.isInt = isInt;
 exports.isNum = isNum;
 exports.isString = isString;
 exports.isValidUrl = isValidUrl;
+exports.addLinkAttributes = addLinkAttributes;
 exports.loadJpegStream = loadJpegStream;
 exports.log2 = log2;
 exports.readInt8 = readInt8;
 exports.readUint16 = readUint16;
 exports.readUint32 = readUint32;
+exports.removeNullCharacters = removeNullCharacters;
 exports.shadow = shadow;
 exports.string32 = string32;
 exports.stringToBytes = stringToBytes;
@@ -22888,6 +23569,8 @@ var shadow = sharedUtil.shadow;
 var stringToPDFString = sharedUtil.stringToPDFString;
 var stringToUTF8String = sharedUtil.stringToUTF8String;
 var warn = sharedUtil.warn;
+var isValidUrl = sharedUtil.isValidUrl;
+var Util = sharedUtil.Util;
 var Ref = corePrimitives.Ref;
 var RefSet = corePrimitives.RefSet;
 var RefSetCache = corePrimitives.RefSetCache;
@@ -22987,9 +23670,17 @@ var Catalog = (function CatalogClosure() {
             if (!outlineDict.has('Title')) {
               error('Invalid outline item');
             }
-            var dest = outlineDict.get('A');
-            if (dest) {
-              dest = dest.get('D');
+            var actionDict = outlineDict.get('A'), dest = null, url = null;
+            if (actionDict) {
+              var destEntry = actionDict.get('D');
+              if (destEntry) {
+                dest = destEntry;
+              } else {
+                var uriEntry = actionDict.get('URI');
+                if (isString(uriEntry) && isValidUrl(uriEntry, false)) {
+                  url = uriEntry;
+                }
+              }
             } else if (outlineDict.has('Dest')) {
               dest = outlineDict.getRaw('Dest');
               if (isName(dest)) {
@@ -22999,6 +23690,7 @@ var Catalog = (function CatalogClosure() {
             var title = outlineDict.get('Title');
             var outlineItem = {
               dest: dest,
+              url: url,
               title: stringToPDFString(title),
               color: outlineDict.get('C') || [0, 0, 0],
               count: outlineDict.get('Count'),
@@ -23093,6 +23785,96 @@ var Catalog = (function CatalogClosure() {
       }
       return dest;
     },
+
+    get pageLabels() {
+      var obj = null;
+      try {
+        obj = this.readPageLabels();
+      } catch (ex) {
+        if (ex instanceof MissingDataException) {
+          throw ex;
+        }
+        warn('Unable to read page labels.');
+      }
+      return shadow(this, 'pageLabels', obj);
+    },
+    readPageLabels: function Catalog_readPageLabels() {
+      var obj = this.catDict.getRaw('PageLabels');
+      if (!obj) {
+        return null;
+      }
+      var pageLabels = new Array(this.numPages);
+      var style = null;
+      var prefix = '';
+      var start = 1;
+
+      var numberTree = new NumberTree(obj, this.xref);
+      var nums = numberTree.getAll();
+      var currentLabel = '', currentIndex = 1;
+
+      for (var i = 0, ii = this.numPages; i < ii; i++) {
+        if (nums.hasOwnProperty(i)) {
+          var labelDict = nums[i];
+          assert(isDict(labelDict), 'The PageLabel is not a dictionary.');
+
+          var type = labelDict.get('Type');
+          assert(!type || (isName(type) && type.name === 'PageLabel'),
+                 'Invalid type in PageLabel dictionary.');
+
+          var s = labelDict.get('S');
+          assert(!s || isName(s), 'Invalid style in PageLabel dictionary.');
+          style = (s ? s.name : null);
+
+          prefix = labelDict.get('P') || '';
+          assert(isString(prefix), 'Invalid prefix in PageLabel dictionary.');
+
+          start = labelDict.get('St') || 1;
+          assert(isInt(start), 'Invalid start in PageLabel dictionary.');
+          currentIndex = start;
+        }
+
+        switch (style) {
+          case 'D':
+            currentLabel = currentIndex;
+            break;
+          case 'R':
+          case 'r':
+            currentLabel = Util.toRoman(currentIndex, style === 'r');
+            break;
+          case 'A':
+          case 'a':
+            var LIMIT = 26; // Use only the characters A--Z, or a--z.
+            var A_UPPER_CASE = 0x41, A_LOWER_CASE = 0x61;
+
+            var baseCharCode = (style === 'a' ? A_LOWER_CASE : A_UPPER_CASE);
+            var letterIndex = currentIndex - 1;
+            var character = String.fromCharCode(baseCharCode +
+                                                (letterIndex % LIMIT));
+            var charBuf = [];
+            for (var j = 0, jj = (letterIndex / LIMIT) | 0; j <= jj; j++) {
+              charBuf.push(character);
+            }
+            currentLabel = charBuf.join('');
+            break;
+          default:
+            assert(!style,
+                   'Invalid style "' + style + '" in PageLabel dictionary.');
+        }
+        pageLabels[i] = prefix + currentLabel;
+
+        currentLabel = '';
+        currentIndex++;
+      }
+
+      // Ignore PageLabels if they correspond to standard page numbering.
+      for (i = 0, ii = this.numPages; i < ii; i++) {
+        if (pageLabels[i] !== (i + 1).toString()) {
+          break;
+        }
+      }
+      return (i === ii ? [] : pageLabels);
+    },
+
     get attachments() {
       var xref = this.xref;
       var attachments = null, nameTreeRef;
@@ -23968,24 +24750,23 @@ var XRef = (function XRefClosure() {
 })();
 
 /**
- * A NameTree is like a Dict but has some advantageous properties, see the
- * spec (7.9.6) for more details.
- * TODO: implement all the Dict functions and make this more efficent.
+ * A NameTree/NumberTree is like a Dict but has some advantageous properties,
+ * see the specification (7.9.6 and 7.9.7) for additional details.
+ * TODO: implement all the Dict functions and make this more efficient.
  */
-var NameTree = (function NameTreeClosure() {
-  function NameTree(root, xref) {
-    this.root = root;
-    this.xref = xref;
+var NameOrNumberTree = (function NameOrNumberTreeClosure() {
+  function NameOrNumberTree(root, xref) {
+    throw new Error('Cannot initialize NameOrNumberTree.');
   }
 
-  NameTree.prototype = {
-    getAll: function NameTree_getAll() {
+  NameOrNumberTree.prototype = {
+    getAll: function NameOrNumberTree_getAll() {
       var dict = {};
       if (!this.root) {
         return dict;
       }
       var xref = this.xref;
-      // reading name tree
+      // Reading Name/Number tree.
       var processed = new RefSet();
       processed.put(this.root);
       var queue = [this.root];
@@ -23999,45 +24780,43 @@ var NameTree = (function NameTreeClosure() {
           var kids = obj.get('Kids');
           for (i = 0, n = kids.length; i < n; i++) {
             var kid = kids[i];
-            if (processed.has(kid)) {
-              error('invalid destinations');
-            }
+            assert(!processed.has(kid),
+                   'Duplicate entry in "' + this._type + '" tree.');
             queue.push(kid);
             processed.put(kid);
           }
           continue;
         }
-        var names = obj.get('Names');
-        if (names) {
-          for (i = 0, n = names.length; i < n; i += 2) {
-            dict[xref.fetchIfRef(names[i])] = xref.fetchIfRef(names[i + 1]);
+        var entries = obj.get(this._type);
+        if (isArray(entries)) {
+          for (i = 0, n = entries.length; i < n; i += 2) {
+            dict[xref.fetchIfRef(entries[i])] = xref.fetchIfRef(entries[i + 1]);
           }
         }
       }
       return dict;
     },
 
-    get: function NameTree_get(destinationId) {
+    get: function NameOrNumberTree_get(key) {
       if (!this.root) {
         return null;
       }
 
       var xref = this.xref;
-      var kidsOrNames = xref.fetchIfRef(this.root);
+      var kidsOrEntries = xref.fetchIfRef(this.root);
       var loopCount = 0;
-      var MAX_NAMES_LEVELS = 10;
+      var MAX_LEVELS = 10;
       var l, r, m;
 
       // Perform a binary search to quickly find the entry that
-      // contains the named destination we are looking for.
-      while (kidsOrNames.has('Kids')) {
-        loopCount++;
-        if (loopCount > MAX_NAMES_LEVELS) {
-          warn('Search depth limit for named destionations has been reached.');
+      // contains the key we are looking for.
+      while (kidsOrEntries.has('Kids')) {
+        if (++loopCount > MAX_LEVELS) {
+          warn('Search depth limit reached for "' + this._type + '" tree.');
           return null;
         }
 
-        var kids = kidsOrNames.get('Kids');
+        var kids = kidsOrEntries.get('Kids');
         if (!isArray(kids)) {
           return null;
         }
@@ -24049,12 +24828,12 @@ var NameTree = (function NameTreeClosure() {
           var kid = xref.fetchIfRef(kids[m]);
           var limits = kid.get('Limits');
 
-          if (destinationId < xref.fetchIfRef(limits[0])) {
+          if (key < xref.fetchIfRef(limits[0])) {
             r = m - 1;
-          } else if (destinationId > xref.fetchIfRef(limits[1])) {
+          } else if (key > xref.fetchIfRef(limits[1])) {
             l = m + 1;
           } else {
-            kidsOrNames = xref.fetchIfRef(kids[m]);
+            kidsOrEntries = xref.fetchIfRef(kids[m]);
             break;
           }
         }
@@ -24063,31 +24842,55 @@ var NameTree = (function NameTreeClosure() {
         }
       }
 
-      // If we get here, then we have found the right entry. Now
-      // go through the named destinations in the Named dictionary
-      // until we find the exact destination we're looking for.
-      var names = kidsOrNames.get('Names');
-      if (isArray(names)) {
+      // If we get here, then we have found the right entry. Now go through the
+      // entries in the dictionary until we find the key we're looking for.
+      var entries = kidsOrEntries.get(this._type);
+      if (isArray(entries)) {
         // Perform a binary search to reduce the lookup time.
         l = 0;
-        r = names.length - 2;
+        r = entries.length - 2;
         while (l <= r) {
           // Check only even indices (0, 2, 4, ...) because the
-          // odd indices contain the actual D array.
+          // odd indices contain the actual data.
           m = (l + r) & ~1;
-          if (destinationId < xref.fetchIfRef(names[m])) {
+          var currentKey = xref.fetchIfRef(entries[m]);
+          if (key < currentKey) {
             r = m - 2;
-          } else if (destinationId > xref.fetchIfRef(names[m])) {
+          } else if (key > currentKey) {
             l = m + 2;
           } else {
-            return xref.fetchIfRef(names[m + 1]);
+            return xref.fetchIfRef(entries[m + 1]);
           }
         }
       }
       return null;
     }
   };
+  return NameOrNumberTree;
+})();
+
+var NameTree = (function NameTreeClosure() {
+  function NameTree(root, xref) {
+    this.root = root;
+    this.xref = xref;
+    this._type = 'Names';
+  }
+
+  Util.inherit(NameTree, NameOrNumberTree, {});
+
   return NameTree;
+})();
+
+var NumberTree = (function NumberTreeClosure() {
+  function NumberTree(root, xref) {
+    this.root = root;
+    this.xref = xref;
+    this._type = 'Nums';
+  }
+
+  Util.inherit(NumberTree, NameOrNumberTree, {});
+
+  return NumberTree;
 })();
 
 /**
@@ -24601,6 +25404,9 @@ var HINTING_ENABLED = false;
 // Accented charactars are not displayed properly on windows, using this flag
 // to control analysis of seac charstrings.
 var SEAC_ANALYSIS_ENABLED = false;
+
+// Maximum subroutine call depth of type 2 chartrings. Matches OTS.
+var MAX_SUBR_NESTING = 10;
 
 var FontFlags = {
   FixedPitch: 1,
@@ -27185,7 +27991,14 @@ var Font = (function FontClosure() {
     }
     // Some CIDFontType0C fonts by mistake claim CIDFontType0.
     if (type === 'CIDFontType0') {
-      subtype = isType1File(file) ? 'CIDFontType0' : 'CIDFontType0C';
+      if (isType1File(file)) {
+        subtype = 'CIDFontType0';
+      } else if (isOpenTypeFile(file)) {
+        // Sometimes the type/subtype can be a complete lie (see issue6782.pdf).
+        type = subtype = 'OpenType';
+      } else {
+        subtype = 'CIDFontType0C';
+      }
     }
 
     var data;
@@ -27267,6 +28080,11 @@ var Font = (function FontClosure() {
   function isTrueTypeFile(file) {
     var header = file.peekBytes(4);
     return readUint32(header, 0) === 0x00010000;
+  }
+
+  function isOpenTypeFile(file) {
+    var header = file.peekBytes(4);
+    return bytesToString(header) === 'OTTO';
   }
 
   function isType1File(file) {
@@ -28661,8 +29479,16 @@ var Font = (function FontClosure() {
         delete tables['cvt '];
         this.isOpenType = true;
       } else {
-        if (!tables.glyf || !tables.loca) {
-          error('Required "glyf" or "loca" tables are not found');
+        if (!tables.loca) {
+          error('Required "loca" table is not found');
+        }
+        if (!tables.glyf) {
+          warn('Required "glyf" table is not found -- trying to recover.');
+          // Note: We use `sanitizeGlyphLocations` to add dummy glyf data below.
+          tables.glyf = {
+            tag: 'glyf',
+            data: new Uint8Array(0),
+          };
         }
         this.isOpenType = false;
       }
@@ -28869,9 +29695,11 @@ var Font = (function FontClosure() {
               var glyphId = properties.glyphNames.indexOf(glyphName);
               if (glyphId > 0 && hasGlyph(glyphId, -1, -1)) {
                 charCodeToGlyphId[charCode] = glyphId;
-              } else {
-                charCodeToGlyphId[charCode] = 0; // notdef
+                found = true;
               }
+            }
+            if (!found) {
+              charCodeToGlyphId[charCode] = 0; // notdef
             }
           }
         } else if (cmapPlatformId === 0 && cmapEncodingId === 0) {
@@ -30631,10 +31459,7 @@ var CFFParser = (function CFFParserClosure() {
       cff.isCIDFont = topDict.hasName('ROS');
 
       var charStringOffset = topDict.getByName('CharStrings');
-      var charStringsAndSeacs = this.parseCharStrings(charStringOffset);
-      cff.charStrings = charStringsAndSeacs.charStrings;
-      cff.seacs = charStringsAndSeacs.seacs;
-      cff.widths = charStringsAndSeacs.widths;
+      var charStringIndex = this.parseIndex(charStringOffset).obj;
 
       var fontMatrix = topDict.getByName('FontMatrix');
       if (fontMatrix) {
@@ -30662,18 +31487,29 @@ var CFFParser = (function CFFParserClosure() {
         // cid fonts don't have an encoding
         encoding = null;
         charset = this.parseCharsets(topDict.getByName('charset'),
-                                     cff.charStrings.count, cff.strings, true);
+                                     charStringIndex.count, cff.strings, true);
         cff.fdSelect = this.parseFDSelect(topDict.getByName('FDSelect'),
-                                             cff.charStrings.count);
+                                          charStringIndex.count);
       } else {
         charset = this.parseCharsets(topDict.getByName('charset'),
-                                     cff.charStrings.count, cff.strings, false);
+                                     charStringIndex.count, cff.strings, false);
         encoding = this.parseEncoding(topDict.getByName('Encoding'),
                                       properties,
                                       cff.strings, charset.charset);
       }
+
       cff.charset = charset;
       cff.encoding = encoding;
+
+      var charStringsAndSeacs = this.parseCharStrings(
+                                  charStringIndex,
+                                  topDict.privateDict.subrsIndex,
+                                  globalSubrIndex.obj,
+                                  cff.fdSelect,
+                                  cff.fdArray);
+      cff.charStrings = charStringsAndSeacs.charStrings;
+      cff.seacs = charStringsAndSeacs.seacs;
+      cff.widths = charStringsAndSeacs.widths;
 
       return cff;
     },
@@ -30849,118 +31685,201 @@ var CFFParser = (function CFFParserClosure() {
       }
       return cffDict;
     },
-    parseCharStrings: function CFFParser_parseCharStrings(charStringOffset) {
-      var charStrings = this.parseIndex(charStringOffset).obj;
+    parseCharString: function CFFParser_parseCharString(state, data,
+                                                        localSubrIndex,
+                                                        globalSubrIndex) {
+      if (state.callDepth > MAX_SUBR_NESTING) {
+        return false;
+      }
+      var stackSize = state.stackSize;
+      var stack = state.stack;
+
+      var length = data.length;
+
+      for (var j = 0; j < length;) {
+        var value = data[j++];
+        var validationCommand = null;
+        if (value === 12) {
+          var q = data[j++];
+          if (q === 0) {
+            // The CFF specification state that the 'dotsection' command
+            // (12, 0) is deprecated and treated as a no-op, but all Type2
+            // charstrings processors should support them. Unfortunately
+            // the font sanitizer don't. As a workaround the sequence (12, 0)
+            // is replaced by a useless (0, hmoveto).
+            data[j - 2] = 139;
+            data[j - 1] = 22;
+            stackSize = 0;
+          } else {
+            validationCommand = CharstringValidationData12[q];
+          }
+        } else if (value === 28) { // number (16 bit)
+          stack[stackSize] = ((data[j] << 24) | (data[j + 1] << 16)) >> 16;
+          j += 2;
+          stackSize++;
+        } else if (value === 14) {
+          if (stackSize >= 4) {
+            stackSize -= 4;
+            if (SEAC_ANALYSIS_ENABLED) {
+              state.seac = stack.slice(stackSize, stackSize + 4);
+              return false;
+            }
+          }
+          validationCommand = CharstringValidationData[value];
+        } else if (value >= 32 && value <= 246) {  // number
+          stack[stackSize] = value - 139;
+          stackSize++;
+        } else if (value >= 247 && value <= 254) {  // number (+1 bytes)
+          stack[stackSize] = (value < 251 ?
+                              ((value - 247) << 8) + data[j] + 108 :
+                              -((value - 251) << 8) - data[j] - 108);
+          j++;
+          stackSize++;
+        } else if (value === 255) {  // number (32 bit)
+          stack[stackSize] = ((data[j] << 24) | (data[j + 1] << 16) |
+                              (data[j + 2] << 8) | data[j + 3]) / 65536;
+          j += 4;
+          stackSize++;
+        } else if (value === 19 || value === 20) {
+          state.hints += stackSize >> 1;
+          // skipping right amount of hints flag data
+          j += (state.hints + 7) >> 3;
+          stackSize %= 2;
+          validationCommand = CharstringValidationData[value];
+        } else if (value === 10 || value === 29) {
+          var subrsIndex;
+          if (value === 10) {
+            subrsIndex = localSubrIndex;
+          } else {
+            subrsIndex = globalSubrIndex;
+          }
+          if (!subrsIndex) {
+            validationCommand = CharstringValidationData[value];
+            warn('Missing subrsIndex for ' + validationCommand.id);
+            return false;
+          }
+          var bias = 32768;
+          if (subrsIndex.count < 1240) {
+            bias = 107;
+          } else if (subrsIndex.count < 33900) {
+            bias = 1131;
+          }
+          var subrNumber = stack[--stackSize] + bias;
+          if (subrNumber < 0 || subrNumber >= subrsIndex.count) {
+            validationCommand = CharstringValidationData[value];
+            warn('Out of bounds subrIndex for ' + validationCommand.id);
+            return false;
+          }
+          state.stackSize = stackSize;
+          state.callDepth++;
+          var valid = this.parseCharString(state, subrsIndex.get(subrNumber),
+                                           localSubrIndex, globalSubrIndex);
+          if (!valid) {
+            return false;
+          }
+          state.callDepth--;
+          stackSize = state.stackSize;
+          continue;
+        } else if (value === 11) {
+          state.stackSize = stackSize;
+          return true;
+        } else {
+          validationCommand = CharstringValidationData[value];
+        }
+        if (validationCommand) {
+          if (validationCommand.stem) {
+            state.hints += stackSize >> 1;
+          }
+          if ('min' in validationCommand) {
+            if (!state.undefStack && stackSize < validationCommand.min) {
+              warn('Not enough parameters for ' + validationCommand.id +
+                   '; actual: ' + stackSize +
+                   ', expected: ' + validationCommand.min);
+              return false;
+            }
+          }
+          if (state.firstStackClearing && validationCommand.stackClearing) {
+            state.firstStackClearing = false;
+            // the optional character width can be found before the first
+            // stack-clearing command arguments
+            stackSize -= validationCommand.min;
+            if (stackSize >= 2 && validationCommand.stem) {
+              // there are even amount of arguments for stem commands
+              stackSize %= 2;
+            } else if (stackSize > 1) {
+              warn('Found too many parameters for stack-clearing command');
+            }
+            if (stackSize > 0 && stack[stackSize - 1] >= 0) {
+              state.width = stack[stackSize - 1];
+            }
+          }
+          if ('stackDelta' in validationCommand) {
+            if ('stackFn' in validationCommand) {
+              validationCommand.stackFn(stack, stackSize);
+            }
+            stackSize += validationCommand.stackDelta;
+          } else if (validationCommand.stackClearing) {
+            stackSize = 0;
+          } else if (validationCommand.resetStack) {
+            stackSize = 0;
+            state.undefStack = false;
+          } else if (validationCommand.undefStack) {
+            stackSize = 0;
+            state.undefStack = true;
+            state.firstStackClearing = false;
+          }
+        }
+      }
+      state.stackSize = stackSize;
+      return true;
+    },
+    parseCharStrings: function CFFParser_parseCharStrings(charStrings,
+                                                          localSubrIndex,
+                                                          globalSubrIndex,
+                                                          fdSelect,
+                                                          fdArray) {
       var seacs = [];
       var widths = [];
       var count = charStrings.count;
       for (var i = 0; i < count; i++) {
         var charstring = charStrings.get(i);
-
-        var stackSize = 0;
-        var stack = [];
-        var undefStack = true;
-        var hints = 0;
+        var state = {
+          callDepth: 0,
+          stackSize: 0,
+          stack: [],
+          undefStack: true,
+          hints: 0,
+          firstStackClearing: true,
+          seac: null,
+          width: null
+        };
         var valid = true;
-        var data = charstring;
-        var length = data.length;
-        var firstStackClearing = true;
-        for (var j = 0; j < length;) {
-          var value = data[j++];
-          var validationCommand = null;
-          if (value === 12) {
-            var q = data[j++];
-            if (q === 0) {
-              // The CFF specification state that the 'dotsection' command
-              // (12, 0) is deprecated and treated as a no-op, but all Type2
-              // charstrings processors should support them. Unfortunately
-              // the font sanitizer don't. As a workaround the sequence (12, 0)
-              // is replaced by a useless (0, hmoveto).
-              data[j - 2] = 139;
-              data[j - 1] = 22;
-              stackSize = 0;
-            } else {
-              validationCommand = CharstringValidationData12[q];
-            }
-          } else if (value === 28) { // number (16 bit)
-            stack[stackSize] = ((data[j] << 24) | (data[j + 1] << 16)) >> 16;
-            j += 2;
-            stackSize++;
-          } else if (value === 14) {
-            if (stackSize >= 4) {
-              stackSize -= 4;
-              if (SEAC_ANALYSIS_ENABLED) {
-                seacs[i] = stack.slice(stackSize, stackSize + 4);
-                valid = false;
-              }
-            }
-            validationCommand = CharstringValidationData[value];
-          } else if (value >= 32 && value <= 246) {  // number
-            stack[stackSize] = value - 139;
-            stackSize++;
-          } else if (value >= 247 && value <= 254) {  // number (+1 bytes)
-            stack[stackSize] = (value < 251 ?
-                                ((value - 247) << 8) + data[j] + 108 :
-                                -((value - 251) << 8) - data[j] - 108);
-            j++;
-            stackSize++;
-          } else if (value === 255) {  // number (32 bit)
-            stack[stackSize] = ((data[j] << 24) | (data[j + 1] << 16) |
-                                (data[j + 2] << 8) | data[j + 3]) / 65536;
-            j += 4;
-            stackSize++;
-          } else if (value === 19 || value === 20) {
-            hints += stackSize >> 1;
-            j += (hints + 7) >> 3; // skipping right amount of hints flag data
-            stackSize %= 2;
-            validationCommand = CharstringValidationData[value];
-          } else {
-            validationCommand = CharstringValidationData[value];
+        var localSubrToUse = null;
+        if (fdSelect && fdArray.length) {
+          var fdIndex = fdSelect.getFDIndex(i);
+          if (fdIndex === -1) {
+            warn('Glyph index is not in fd select.');
+            valid = false;
           }
-          if (validationCommand) {
-            if (validationCommand.stem) {
-              hints += stackSize >> 1;
-            }
-            if ('min' in validationCommand) {
-              if (!undefStack && stackSize < validationCommand.min) {
-                warn('Not enough parameters for ' + validationCommand.id +
-                     '; actual: ' + stackSize +
-                     ', expected: ' + validationCommand.min);
-                valid = false;
-                break;
-              }
-            }
-            if (firstStackClearing && validationCommand.stackClearing) {
-              firstStackClearing = false;
-              // the optional character width can be found before the first
-              // stack-clearing command arguments
-              stackSize -= validationCommand.min;
-              if (stackSize >= 2 && validationCommand.stem) {
-                // there are even amount of arguments for stem commands
-                stackSize %= 2;
-              } else if (stackSize > 1) {
-                warn('Found too many parameters for stack-clearing command');
-              }
-              if (stackSize > 0 && stack[stackSize - 1] >= 0) {
-                widths[i] = stack[stackSize - 1];
-              }
-            }
-            if ('stackDelta' in validationCommand) {
-              if ('stackFn' in validationCommand) {
-                validationCommand.stackFn(stack, stackSize);
-              }
-              stackSize += validationCommand.stackDelta;
-            } else if (validationCommand.stackClearing) {
-              stackSize = 0;
-            } else if (validationCommand.resetStack) {
-              stackSize = 0;
-              undefStack = false;
-            } else if (validationCommand.undefStack) {
-              stackSize = 0;
-              undefStack = true;
-              firstStackClearing = false;
-            }
+          if (fdIndex >= fdArray.length) {
+            warn('Invalid fd index for glyph index.');
+            valid = false;
           }
+          if (valid) {
+            localSubrToUse = fdArray[fdIndex].privateDict.subrsIndex;
+          }
+        } else if (localSubrIndex) {
+          localSubrToUse = localSubrIndex;
+        }
+        if (valid) {
+          valid = this.parseCharString(state, charstring, localSubrToUse,
+                                       globalSubrIndex);
+        }
+        if (state.width !== null) {
+          widths[i] = state.width;
+        }
+        if (state.seac !== null) {
+          seacs[i] = state.seac;
         }
         if (!valid) {
           // resetting invalid charstring to single 'endchar'
@@ -31455,6 +32374,14 @@ var CFFFDSelect = (function CFFFDSelectClosure() {
     this.fdSelect = fdSelect;
     this.raw = raw;
   }
+  CFFFDSelect.prototype = {
+    getFDIndex: function CFFFDSelect_get(glyphIndex) {
+      if (glyphIndex < 0 || glyphIndex >= this.fdSelect.length) {
+        return -1;
+      }
+      return this.fdSelect[glyphIndex];
+    }
+  };
   return CFFFDSelect;
 })();
 
@@ -35142,10 +36069,8 @@ var Pattern = (function PatternClosure() {
 var Shadings = {};
 
 // A small number to offset the first/last color stops so we can insert ones to
-// support extend.  Number.MIN_VALUE appears to be too small and breaks the
-// extend. 1e-7 works in FF but chrome seems to use an even smaller sized number
-// internally so we have to go bigger.
-Shadings.SMALL_NUMBER = 1e-2;
+// support extend. Number.MIN_VALUE is too small and breaks the extend.
+Shadings.SMALL_NUMBER = 1e-6;
 
 // Radial and axial shading have very similar implementations
 // If needed, the implementations can be broken into two classes
@@ -38882,6 +39807,9 @@ AnnotationFactory.prototype = /** @lends AnnotationFactory.prototype */ {
       case 'Popup':
         return new PopupAnnotation(parameters);
 
+      case 'Highlight':
+        return new HighlightAnnotation(parameters);
+
       case 'Underline':
         return new UnderlineAnnotation(parameters);
 
@@ -39579,6 +40507,22 @@ var PopupAnnotation = (function PopupAnnotationClosure() {
   Util.inherit(PopupAnnotation, Annotation, {});
 
   return PopupAnnotation;
+})();
+
+var HighlightAnnotation = (function HighlightAnnotationClosure() {
+  function HighlightAnnotation(parameters) {
+    Annotation.call(this, parameters);
+
+    this.data.annotationType = AnnotationType.HIGHLIGHT;
+    this.data.hasHtml = true;
+
+    // PDF viewers completely ignore any border styles.
+    this.data.borderStyle.setWidth(0);
+  }
+
+  Util.inherit(HighlightAnnotation, Annotation, {});
+
+  return HighlightAnnotation;
 })();
 
 var UnderlineAnnotation = (function UnderlineAnnotationClosure() {
@@ -40859,6 +41803,12 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
       }
     );
 
+    handler.on('GetPageLabels',
+      function wphSetupGetPageLabels(data) {
+        return pdfManager.ensureCatalog('pageLabels');
+      }
+    );
+
     handler.on('GetAttachments',
       function wphSetupGetAttachments(data) {
         return pdfManager.ensureCatalog('attachments');
@@ -41081,15 +42031,10 @@ exports.WorkerMessageHandler = WorkerMessageHandler;
 }));
 
 
-}).call((typeof window === 'undefined') ? this : window);
+  }).call(pdfjsLibs);
 
-if (!PDFJS.workerSrc && typeof document !== 'undefined') {
-  // workerSrc is not set -- using last script url to define default location
-  PDFJS.workerSrc = (function () {
-    'use strict';
-    var pdfJsSrc = document.currentScript.src;
-    return pdfJsSrc && pdfJsSrc.replace(/\.js$/i, '.worker.js');
-  })();
-}
+  exports.PDFJS = pdfjsLibs.pdfjsSharedGlobal.PDFJS;
+
+}));
 
 
