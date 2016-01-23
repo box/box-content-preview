@@ -23,6 +23,7 @@ class MarkDown extends TextBase {
         this.containerEl.innerHTML = '<pre class="hljs box-preview-text"><code></code></pre>';
         this.preEl = this.containerEl.firstElementChild;
         this.markDownEl = this.preEl.firstElementChild;
+        this.preEl.style.visibility = 'hidden'; // Hide the element till data loads
     }
 
     /**
@@ -56,6 +57,7 @@ class MarkDown extends TextBase {
 
             this.loaded = true;
             this.emit('load');
+            this.preEl.style.visibility = 'visible';
         });
 
         super.load();

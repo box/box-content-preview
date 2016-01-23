@@ -22,6 +22,7 @@ class PlainText extends TextBase {
         this.containerEl.innerHTML = '<pre class="hljs"><code></code></pre>';
         this.preEl = this.containerEl.firstElementChild;
         this.codeEl = this.preEl.firstElementChild;
+        this.preEl.style.visibility = 'hidden'; // Hide the element till data loads
     }
 
     /**
@@ -70,6 +71,7 @@ class PlainText extends TextBase {
 
         this.loaded = true;
         this.emit('load');
+        this.preEl.style.visibility = 'visible';
     }
 }
 
