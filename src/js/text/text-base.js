@@ -31,7 +31,7 @@ class TextBase extends Base {
         if (inOrOut === 'in') {
             el.style.fontSize = (size + 10) + '%';
         } else if (inOrOut === 'out') {
-            el.style.fontSize = (size - 10) + '%';    
+            el.style.fontSize = (size - 10) + '%';
         }
         this.emit('resize');
     }
@@ -64,7 +64,32 @@ class TextBase extends Base {
         this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-text-zoom-in-icon');
         this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-text-zoom-out-icon');
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-text-expand-icon');
-    }        
+    }
+
+    /**
+     * Handles keyboard events for media
+     *
+     * @private
+     * @param {String} key keydown key
+     * @returns {Boolean} consumed or not
+     */
+    onKeydown(key) {
+
+        // Return false when media controls are not ready or are focused
+        if (!this.controls) {
+            return false;
+        }
+
+        if (key === 'Shift++') {
+            this.zoomIn();
+            return true;
+        } else if (key === 'Shift+_') {
+            this.zoomOut();
+            return true;
+        }
+
+        return false;
+    }
 }
 
 export default TextBase;
