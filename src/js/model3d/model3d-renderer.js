@@ -164,7 +164,7 @@ class Model3dRenderer extends EventEmitter {
 
 		opts.token = options.token;
 		opts.apiBase = options.api;
-		opts.parentId = options.file.parent.id;
+		opts.parentId = options.file.parent ? options.file.parent.id : null;
 		opts.boxSdk = this.boxSdk;
 		resourceLoader = new Box3DResourceLoader(options.file.id, options.file.file_version.id, opts);
 
@@ -278,8 +278,10 @@ class Model3dRenderer extends EventEmitter {
 				let mat = materials[i];
 				mat.setProperty('useSceneLights', false);
 				mat.setProperty('useEnvironmentMap', true);
-				mat.setProperty('diffuseEnvironmentMap2D', 'HDR_DIFF_ENV_MAP');
-				mat.setProperty('specularEnvironmentMap2D', 'HDR_SPEC_ENV_MAP');
+                mat.setProperty('environmentMapProjection', 3);
+				mat.setProperty('environmentMapCube_0', 'HDR_ENV_MAP_CUBE_0');
+				mat.setProperty('environmentMapCube_1', 'HDR_ENV_MAP_CUBE_1');
+                mat.setProperty('environmentMapCube_2', 'HDR_ENV_MAP_CUBE_2');
 			}
 		}
 	}
@@ -385,15 +387,16 @@ class Model3dRenderer extends EventEmitter {
 			return;
 		}
 
-		let map = this.box3d.getEntityById('HDR_SPEC_ENV_MAP');
-		if (map) {
-			map.unload();
-		}
+        // TODO - Do we want to clean up and re-init these maps for every preview?
+		// let map = this.box3d.getEntityById('HDR_SPEC_ENV_MAP');
+		// if (map) {
+		// 	map.unload();
+		// }
 
-		map = this.box3d.getEntityById('HDR_DIFF_ENV_MAP');
-		if (map) {
-			map.unload();
-		}
+		// map = this.box3d.getEntityById('HDR_DIFF_ENV_MAP');
+		// if (map) {
+		// 	map.unload();
+		// }
 	}
 
 	/**
