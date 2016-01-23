@@ -63,6 +63,31 @@ class ImageBase extends Base {
         this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon');
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-image-expand-icon');
     }
+
+    /**
+     * Handles keyboard events for media
+     *
+     * @private
+     * @param {String} key keydown key
+     * @returns {Boolean} consumed or not
+     */
+    onKeydown(key) {
+
+        // Return false when media controls are not ready or are focused
+        if (!this.controls) {
+            return false;
+        }
+
+        if (key === 'Shift++') {
+            this.zoomIn();
+            return true;
+        } else if (key === 'Shift+_') {
+            this.zoomOut();
+            return true;
+        }
+
+        return false;
+    }
 }
 
 export default ImageBase;
