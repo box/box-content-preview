@@ -42,3 +42,12 @@
     font-size: 13px;
     line-height: 18px; /* 110px container height - 2px border - 90px filmstrip frame height */
 }
+
+.box-preview-media-crawler-wrapper {
+    width: 10px;
+    left: 50%;
+    margin: -15px 0 0 -5px;
+    position: relative;
+    z-index: 1;
+    top: 50%;
+}
