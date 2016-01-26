@@ -5,6 +5,7 @@ import EventEmitter from 'events';
 import controlsTemplate from 'raw!../../html/media/controls.html';
 import Scrubber from './scrubber';
 import Settings from './settings';
+import RepStatus from '../rep-status';
 
 const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
 const PLAYING_CLASS = 'box-preview-media-is-playing';
@@ -15,6 +16,7 @@ const VOLUME_LEVEL_CLASS_NAMES = [
     'box-preview-media-volume-icon-medium',
     'box-preview-media-volume-icon-high'
 ];
+const CRAWLER = '<div class="box-preview-media-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
 
 let document = global.document;
 
@@ -363,16 +365,18 @@ class MediaControls extends EventEmitter  {
      * Sets up the filmstrip
      *
      * @private
-     * @param {String} filmstripUrl url to filmstrip image
+     * @param {Object} representation filmstrip representation
      * @param {Number} aspect aspect ratio
+     * @param {String} token auth token
      * @returns {void}
      */
-    initFilmstrip(filmstripUrl, aspect) {
+    initFilmstrip(representation, aspect, token) {
 
-        this.filmstripUrl = filmstripUrl;
+        this.filmstripUrl = representation.links.content.url + '?access_token=' + token;
 
         this.filmstripContainerEl = this.containerEl.appendChild(document.createElement('div'));
         this.filmstripContainerEl.className = 'box-preview-media-filmstrip-container';
+        this.filmstripContainerEl.innerHTML = CRAWLER;
 
         this.filmstripEl = this.filmstripContainerEl.appendChild(document.createElement('img'));
         this.filmstripEl.className = 'box-preview-media-filmstrip';
@@ -394,11 +398,13 @@ class MediaControls extends EventEmitter  {
 
         this.filmstripEl.onload = () => {
             this.filmstripContainerEl.style.width = frameWidth + 2 + 'px'; // 2px for the borders on each side
+            this.filmstripContainerEl.querySelector('.box-preview-media-crawler-wrapper').style.display = 'none'; // Hide the crawler
         };
 
-        if (this.filmstripUrl) {
-            this.setFilmstrip();
-        }
+        let repStatus = new RepStatus();
+        repStatus.status(representation, {
+            authorization: 'Bearer ' + token
+        }).then(this.setFilmstrip);
     }
 
     /**
@@ -424,7 +430,7 @@ class MediaControls extends EventEmitter  {
     /**
      * Adjusts the video time
      *
-     * @param {Event} event
+     * @param {Event} event mouse event
      * @private
      * @returns {void}
      */
@@ -468,7 +474,7 @@ class MediaControls extends EventEmitter  {
 
         // If the filmstrip is not ready yet, we are using a placeholder
         // which has a fixed dimension of 160 x 90
-        if (!this.filmstripUrl) {
+        if (!this.filmstripEl.naturalWidth) {
             left = 0;
             top = 0;
             frameWidth = 160;
