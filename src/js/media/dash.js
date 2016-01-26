@@ -245,8 +245,7 @@ class Dash extends VideoBase {
     loadFilmStrip() {
         let filmstrip = this.options.file.representations.entries.find((entry) => 'filmstrip' === entry.representation);
         if (filmstrip) {
-            this.filmstripUrl = this.appendAuthParam(filmstrip.links.content.url);
-            this.mediaControls.initFilmstrip(this.filmstripUrl, this.aspect);
+            this.mediaControls.initFilmstrip(filmstrip, this.aspect, this.options.token);
         }
     }
 
