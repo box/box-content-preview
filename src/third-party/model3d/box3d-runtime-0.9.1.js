@@ -52665,6 +52665,9 @@
 	  };
 
 	  BaseTextureAsset.prototype.unload = function (options) {
+	    // abort any xhr request associated with this
+	    this.box3DRuntime.resourceLoader.abortRequest(this.id);
+
 	    if (this.runtimeData) {
 	      this.box3DRuntime.trigger('textureUnloaded', this.id);
 
@@ -52672,6 +52675,7 @@
 
 	      this.runtimeData.dispose();
 	    }
+
 	    Box3DAsset.prototype.unload.call(this, options);
 	    this.loadedBytes = 0;
 	  };
@@ -55803,7 +55807,7 @@
 	    var parentAssetId = this.get('parentAssetId');
 	    if (this.isAsset()) {
 	      return this;
-	    } else if (parentAssetId) {
+	    } else if (parentAssetId && this.box3DRuntime) {
 	      return this.box3DRuntime.assetRegistry.getAssetById(parentAssetId);
 	    } else {
 	      return null;
@@ -56563,7 +56567,7 @@
 	   * listed in the changes parameter. When overriding this method, always call
 	   * the super implementation first.
 	   * @method _applyPropertiesLoaded
-	   * @private 
+	   * @private
 	   * @param {Object} changes The names of properties that have changed
 	   * @param {String} reason One of: 'init' or 'propertyChanged'
 	   * @returns {void}
@@ -82704,15 +82708,7 @@
 
 	  PanoramaToCubeMap.prototype.attributesChanged = function (changes) {
 	    if (changes.panoramaTexture !== undefined) {
-	      if (this.panoramaTexture) {
-	        if (this.panoramaTexture.getProperty('isHDR')) {
-	          this.getEntity().setProperty('isHDR', true);
-	        } else {
-	          this.getEntity().setProperty('isHDR', false);
-	        }
-	        this.panoramaTexture.on('load', this.renderToCube, this);
-	        this.panoramaTexture.load();
-	      }
+	      this.updateTexture();
 	    }
 	  };
 
@@ -82723,13 +82719,7 @@
 	  };
 
 	  PanoramaToCubeMap.prototype.objectCreated = function () {
-	    if (this.panoramaTexture) {
-	      this.panoramaTexture.off('load', this.renderToCube, this);
-	      this.panoramaTexture.on('load', this.renderToCube, this);
-	      if (!this.panoramaTexture.isLoaded()) {
-	        this.panoramaTexture.load();
-	      }
-	    }
+	    this.updateTexture();
 	  };
 
 	  PanoramaToCubeMap.prototype.shutdown = function () {
@@ -82741,6 +82731,21 @@
 	    this.skyboxScene = undefined;
 	    this.skyboxMesh = undefined;
 	    this.panoramaTexture = undefined;
+	  };
+
+	  PanoramaToCubeMap.prototype.updateTexture = function () {
+	    if (this.panoramaTexture) {
+	      this.panoramaTexture.off('load', this.renderToCube, this);
+	      if (this.panoramaTexture.getProperty('isHDR')) {
+	        this.getEntity().setProperty('isHDR', true);
+	      } else {
+	        this.getEntity().setProperty('isHDR', false);
+	      }
+	      this.panoramaTexture.when('load', this.renderToCube, this);
+	      if (this.panoramaTexture.isUnloaded()) {
+	        this.panoramaTexture.load();
+	      }
+	    }
 	  };
 
 	  PanoramaToCubeMap.prototype.createSkybox = function () {
@@ -93304,7 +93309,15 @@
 
 	    renderer = this.box3DRuntime.getThreeRenderer();
 	    extensions = renderer.extensions;
+
+	    // Only unpack the HDR data if we can create a float texture on this
+	    // hardware AND we actually have valid source data (it may have failed to
+	    // download).
 	    if (extensions.get('OES_texture_float')) {
+	      if (!this.hdrSource) {
+	        log.warn('Unable to unpack HDR texture because the source data is missing.');
+	        return;
+	      }
 	      this.hdrSource.minFilter = THREE.NearestFilter;
 	      this.hdrSource.maxFilter = THREE.NearestFilter;
 	      if (!this.unpackHdrPass) {
