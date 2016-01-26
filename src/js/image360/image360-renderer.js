@@ -122,7 +122,7 @@ class Image360Renderer extends EventEmitter {
 
         opts.token = options.token;
         opts.apiBase = options.api;
-        opts.parentId = options.file.parent.id;
+        opts.parentId = options.file.parent ? options.file.parent.id : null;
         opts.boxSdk = this.boxSdk;
         resourceLoader = new Box3DResourceLoader(options.file.id, options.file.file_version.id, opts);
 
