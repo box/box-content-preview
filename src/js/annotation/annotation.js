@@ -1,6 +1,7 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
+import AnnotationService from './annotation-service';
 
 /**
  * Annotation class representing a single annotation.
@@ -26,7 +27,7 @@ class Annotation {
         this.text = data.text;
         this.location = data.location;
         this.user = data.user;
-        this.created = new Date();
+        this.created = (new Date()).getTime();
         this.updated = this.created;
     }
 

@@ -37,7 +37,7 @@ let Promise = global.Promise;
             // Sort annotations by date created
             for (let threadedAnnotations of result.values()) {
                 threadedAnnotations.sort((a, b) => {
-                    return a.created.getTime() - b.created.getTime();
+                    return a.created - b.created;
                 });
             }
 
@@ -58,7 +58,7 @@ let Promise = global.Promise;
 
             // Sort annotations by date created
             matchingAnnotations.sort((a, b) => {
-                return a.created.getTime() - b.created.getTime();
+                return a.created - b.created;
             });
 
             resolve(matchingAnnotations);
@@ -74,48 +74,9 @@ let Promise = global.Promise;
     create(annotation) {
         return new Promise((resolve, reject) => {
             let annotations = this.localAnnotations;
-            this.localAnnotations = annotations.push(annotation);
+            annotations.push(annotation);
+            this.localAnnotations = annotations;
             resolve(annotation);
-        });
-    }
-
-    /**
-     * @TODO(tjin): delete
-     * Get annotation corresponding to specified annotation ID
-     *
-     * @param {string} annotationID Annotation ID
-     * @returns {Promise} Promise to read annotation
-     */
-    read(annotationID) {
-        return new Promise((resolve, reject) => {
-            let annotations = this.localAnnotations;
-            let result = annotations.find((annotation) => annotation.annotationID = annotationID);
-
-            if (result) {
-                resolve(result);
-            } else {
-                reject('No annotation was found with ID ' + annotationID);
-            }
-        });
-    }
-
-    /**
-     * @TODO(tjin): delete
-     * Gets annotations corresponding to specified annotation IDs.
-     *
-     * @param {string[]} annotationIDs Array of annotation IDs
-     * @returns {Promise} Promise to read annotations
-     */
-    readAll(annotationIDs) {
-        return new Promise((resolve, reject) => {
-            let annotations = this.localAnnotations;
-            let result = annotations.filter((annotation) => annotationIDs.indexOf(annotation.annotationID) !== -1);
-
-            if (result) {
-                resolve(result);
-            } else {
-                reject('No annotations were found with IDs ' + annotationIDs.join(', '));
-            }
         });
     }
 

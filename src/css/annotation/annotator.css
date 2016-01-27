@@ -1,0 +1,163 @@
+.annotation-dialog {
+    position: absolute;
+    z-index: 9999; /* Annotation dialog should be above other content */
+}
+
+.annotation-dialog .hidden {
+    display: none;
+}
+
+.annotation-dialog .caret-up {
+    width: 0;
+    height: 0;
+    margin: 0 auto;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #333;
+}
+
+.annotation-dialog .annotation-container {
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #333;
+}
+
+.annotation-dialog .annotation-textarea {
+    min-width: 250px;
+    min-height: 50px;
+    padding: 7px;
+    font-size: 12px;
+    border-radius: 3px;
+}
+
+.annotation-dialog .annotation-textarea.reply {
+    min-width: 304px;
+}
+
+.annotation-dialog .annotation-comment {
+    position: relative;
+    padding: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.annotation-dialog .profile-image-container {
+    display: inline-block;
+    padding-top: 5px;
+    vertical-align: top;
+}
+
+.annotation-dialog .profile-image-container img {
+    width: 30px;
+    height: 30px;
+}
+
+.annotation-dialog .comment-container {
+    display: inline-block;
+    width: 250px;
+    padding-left: 10px;
+}
+
+.annotation-dialog .comment-container .user-name {
+    color: #eee;
+    font-size: 13px;
+}
+
+.annotation-dialog .comment-container .comment-date {
+    padding-top: 2px;
+    color: #888;
+    font-size: 11px;
+}
+
+.annotation-dialog .comment-container .comment-text {
+    padding-top: 5px;
+    color: #afafaf;
+    font-size: 12px;
+}
+
+.annotation-dialog .delete-confirmation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #222;
+    border-radius: 3px;
+    z-index: 2; /* Above the delete button */
+}
+
+.annotation-dialog .delete-confirmation-message {
+    padding: 5px 0 3px 0;
+    text-align: center;
+    font-size: 12px;
+    color: #eee;
+}
+
+.annotation-dialog .button-container {
+    position: relative;
+    width: 100%;
+    height: 35px;
+    margin-top: 3px;
+}
+
+.annotation-dialog .btn {
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.annotation-dialog .btn span {
+    opacity: 0.7;
+}
+
+.annotation-dialog .btn:hover span {
+    opacity: 1;
+}
+
+.annotation-dialog .btn-plain {
+    color: #bbb;
+    border-style: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.annotation-dialog .delete-comment-btn {
+    position: absolute;
+    top: 8px;
+    right: 0;
+}
+
+.annotation-dialog .cancel-annotation-btn {
+    position: absolute;
+    left: 0;
+    color: #dbdbdb;
+    background-color: transparent;
+}
+
+.annotation-dialog .post-annotation-btn {
+    position: absolute;
+    right: 0;
+    color: #fff;
+    background-color: #555;
+}
+
+.annotation-dialog .add-reply-btn {
+    padding: 10px;
+    font-size: 13px;
+}
+
+.annotation-dialog .cancel-delete-btn {
+    position: absolute;
+    width: 80px;
+    left: 60px;
+    color: #fff;
+    background-color: #555;
+}
+
+.annotation-dialog .confirm-delete-btn {
+    position: absolute;
+    width: 80px;
+    right: 60px;
+    color: #fff;
+    background-color: #555;
+}
