@@ -5,8 +5,8 @@ import autobind from 'autobind-decorator';
 import AnnotationService from './annotation-service';
 
 const ANONYMOUS_USER = {
-    name: 'Anonymous',
-    avatarUrl: 'http://evansheline.com/wp-content/uploads/2011/02/facebook-Storm-Trooper.jpg'
+    name: 'Kylo Ren',
+    avatarUrl: 'https://cloud.box.com/shared/static/x0tgsfl8vo2umx9kumd4jsq1p74ah8sn.png'
 };
 
 /**
