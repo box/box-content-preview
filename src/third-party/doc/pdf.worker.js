@@ -28,8 +28,8 @@ factory((root.pdfjsDistBuildPdfWorker = {}));
   // Use strict in our context only - users might not want it
   'use strict';
 
-var pdfjsVersion = '1.3.231';
-var pdfjsBuild = '58329f7';
+var pdfjsVersion = '1.4.23';
+var pdfjsBuild = '252b9d5';
 
   var pdfjsFilePath =
     typeof document !== 'undefined' && document.currentScript ?
@@ -9713,6 +9713,21 @@ function combineUrl(baseUrl, url) {
   return new URL(url, baseUrl).href;
 }
 
+// Checks if URLs have the same origin. For non-HTTP based URLs, returns false.
+function isSameOrigin(baseUrl, otherUrl) {
+  try {
+    var base = new URL(baseUrl);
+    if (!base.origin || base.origin === 'null') {
+      return false; // non-HTTP url
+    }
+  } catch (e) {
+    return false;
+  }
+
+  var other = new URL(otherUrl, base);
+  return base.origin === other.origin;
+}
+
 // Validates if URL is safe and allowed, e.g. to avoid XSS.
 function isValidUrl(url, allowRelative) {
   if (!url) {
@@ -11106,13 +11121,15 @@ function loadJpegStream(id, imageUrl, objs) {
 
   // feature detect for URL constructor
   var hasWorkingUrl = false;
-  if (typeof URL === 'function' && ('origin' in URL.prototype)) {
-    try {
+  try {
+    if (typeof URL === 'function' &&
+        typeof URL.prototype === 'object' &&
+        ('origin' in URL.prototype)) {
       var u = new URL('b', 'http://a');
       u.pathname = 'c%20d';
       hasWorkingUrl = u.href === 'http://a/c%20d';
-    } catch(e) {}
-  }
+    }
+  } catch(e) { }
 
   if (hasWorkingUrl)
     return;
@@ -11755,6 +11772,7 @@ exports.isExternalLinkTargetSet = isExternalLinkTargetSet;
 exports.isInt = isInt;
 exports.isNum = isNum;
 exports.isString = isString;
+exports.isSameOrigin = isSameOrigin;
 exports.isValidUrl = isValidUrl;
 exports.addLinkAttributes = addLinkAttributes;
 exports.loadJpegStream = loadJpegStream;
@@ -21908,23 +21926,22 @@ var Parser = (function ParserClosure() {
             break;
           }
           found = false;
-          for (i = 0, j = 0; i < scanLength; i++) {
-            var b = scanBytes[i];
-            if (b !== ENDSTREAM_SIGNATURE[j]) {
-              i -= j;
-              j = 0;
-            } else {
+          i = 0;
+          while (i < scanLength) {
+            j = 0;
+            while (j < ENDSTREAM_SIGNATURE_LENGTH &&
+                   scanBytes[i + j] === ENDSTREAM_SIGNATURE[j]) {
               j++;
-              if (j >= ENDSTREAM_SIGNATURE_LENGTH) {
-                i++;
-                found = true;
-                break;
-              }
             }
+            if (j >= ENDSTREAM_SIGNATURE_LENGTH) {
+              found = true;
+              break;
+            }
+            i++;
           }
           if (found) {
-            skipped += i - ENDSTREAM_SIGNATURE_LENGTH;
-            stream.pos += i - ENDSTREAM_SIGNATURE_LENGTH;
+            skipped += i;
+            stream.pos += i;
             break;
           }
           skipped += scanLength;
@@ -23865,14 +23882,7 @@ var Catalog = (function CatalogClosure() {
         currentLabel = '';
         currentIndex++;
       }
-
-      // Ignore PageLabels if they correspond to standard page numbering.
-      for (i = 0, ii = this.numPages; i < ii; i++) {
-        if (pageLabels[i] !== (i + 1).toString()) {
-          break;
-        }
-      }
-      return (i === ii ? [] : pageLabels);
+      return pageLabels;
     },
 
     get attachments() {
