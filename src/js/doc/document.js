@@ -107,12 +107,12 @@ class Document extends DocBase {
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon');
 
         // Annotation buttons
-        if (this.options.viewerOptions && this.options.viewerOptions.annotations === true) {
+        if (this.options.viewers.Document && this.options.viewers.Document.annotations) {
             this.controls.add(__('add_highlight_annotation'),
-                this.annotator.addHighlightAnnotationHandler, 'box-preview-doc-zoom-in-icon');
+                this.annotator.addHighlightAnnotationHandler, '', 'H');
 
             this.controls.add(__('add_point_annotation'),
-                this.annotator.addPointAnnotationHandler, 'box-preview-doc-zoom-out-icon');
+                this.annotator.addPointAnnotationHandler, '', 'P');
         }
 
         this.controls.add(__('rotate_left'), () => {

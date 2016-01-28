@@ -1,5 +1,6 @@
 'use strict';
 
+import '../../css/annotation/annotator.css';
 import autobind from 'autobind-decorator';
 import AnnotationService from './annotation-service';
 

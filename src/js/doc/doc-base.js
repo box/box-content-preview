@@ -215,6 +215,9 @@ class DocBase extends Base {
         // When first page is rendered, message that preview has loaded
         this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
 
+        // When text layer is rendered, show annotations if enabled
+        this.docEl.addEventListener('textlayerrendered', this.textlayerrenderedHandler);
+
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
     }
@@ -355,7 +358,8 @@ class DocBase extends Base {
     pagesinitHandler() {
         this.pdfViewer.currentScaleValue = 'auto';
 
-        // Load annotations before controls since there are annotation controls
+        // Initialize annotations before loading controls since there are
+        // annotations controls
         // @TODO maybe this should move out to individual viewers
         if ((this.options.viewers.Document && this.options.viewers.Document.annotations) ||
             (this.options.viewers.Presentation && this.options.viewers.Presentation.annotations)) {
@@ -368,7 +372,7 @@ class DocBase extends Base {
     }
 
     /**
-     * Returns handler for 'pagesrendered' event
+     * Handler for 'pagerendered' event
      *
      * @private
      * @returns {void}
@@ -380,6 +384,19 @@ class DocBase extends Base {
 
         this.loaded = true;
         this.emit('load');
+    }
+
+    /**
+     * Handler for 'textlayerrendered' event
+     *
+     * @private
+     * @returns {void}
+     */
+    textlayerrenderedHandler() {
+        // Show existing annotations after text layer is rendered
+        if (this.annotator) {
+            this.annotator.showAnnotations();
+        }
     }
 
     /**
