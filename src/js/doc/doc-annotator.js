@@ -20,7 +20,7 @@ let document = global.document;
 /**
  * Recreates rangy's highlighter.serialize() for a single highlight
  *
- * @param {Object} highlight Rangy highlight
+ * @param {Highlight} highlight Rangy highlight
  * @returns {string} Serialized highlight string
  */
 function serializeHighlight(highlight) {
@@ -77,6 +77,7 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     init() {
+        // Event handler map for cleanup
         this.handlerMap = new Map();
         this.setupAnnotations();
     }
@@ -135,7 +136,8 @@ class DocAnnotator extends Annotator {
 
             // Generate arrays of highlight and point threads
             for (let [threadID, threadedAnnotations] of annotationsMap) {
-                let annotationType = threadedAnnotations[0].type;
+                let firstAnnotation = threadedAnnotations[0],
+                    annotationType = firstAnnotation.type;
 
                 // Highlights can be shown with just the thread ID since it
                 // contains serialized location data
@@ -145,7 +147,7 @@ class DocAnnotator extends Annotator {
                 // Point annotations need the first annotation in the thread
                 // for location data
                 } else if (annotationType === POINT_ANNOTATION_TYPE) {
-                    pointAnnotations.push(threadedAnnotations[0]);
+                    pointAnnotations.push(firstAnnotation);
                 }
             }
 
@@ -172,8 +174,8 @@ class DocAnnotator extends Annotator {
             user: this.user
         };
 
-        // For highlight annotations, we store the serialized highlight as the
-        // thread ID. Point annotations have a randomly generated thread ID.
+        // Highlight annotations have a serialized highlight thread ID. Point
+        // annotations have a randomly generated thread ID.
         if (annotationType === HIGHLIGHT_ANNOTATION_TYPE) {
             data.threadID = serializeHighlight(locationData.highlight);
         }
@@ -196,6 +198,8 @@ class DocAnnotator extends Annotator {
         highlightThreads.unshift('type:textContent');
         let serializedHighlights = highlightThreads.join('|');
         this.highlighter.deserialize(serializedHighlights);
+
+        // @NOTE(tjin): how do I build up a highlight map here?
     }
 
     /**
@@ -379,7 +383,7 @@ class DocAnnotator extends Annotator {
 
             // Remove Rangy highlight if needed
             if (locationData.highlight) {
-                this.highlighter.removeHighlights([locationData.highlight]);
+                this.removeHighlight(locationData.highlight);
             }
         });
 
@@ -393,7 +397,7 @@ class DocAnnotator extends Annotator {
 
                 // Remove Rangy highlight if needed
                 if (locationData.highlight) {
-                    this.highlighter.removeHighlights([locationData.highlight]);
+                    this.removeHighlight(locationData.highlight);
                 }
             }
         });
@@ -526,7 +530,7 @@ class DocAnnotator extends Annotator {
 
                             // Remove highlight or point element
                             if (annotation.type === HIGHLIGHT_ANNOTATION_TYPE) {
-                                this.highlighter.removeHighlights([annotation.location.highlight]);
+                                this.removeHighlight(annotation.location.highlight);
                             } else if (annotation.type === POINT_ANNOTATION_TYPE) {
                                 let pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
 
@@ -647,6 +651,23 @@ class DocAnnotator extends Annotator {
     }
 
     /*---------- Helpers ----------*/
+    /**
+     * Helper to remove a highlight by deleting the highlight in the internal
+     * highlighter list that has a matching ID. We can't directly use the
+     * highlighter's removeHighlights since the highlight could possibly not be
+     * a true Rangy highlight object.
+     *
+     * @param {Object} highlight Highlight to delete.
+     * @returns {void}
+     */
+    removeHighlight(highlight) {
+        let matchingHighlights = this.highlighter.highlights.filter((internalHighlight) => {
+            return internalHighlight.id === highlight.id;
+        });
+
+        this.highlighter.removeHighlights(matchingHighlights);
+    }
+
     /**
      * Helper to add event handler to an element and save a reference for
      * cleanup.
