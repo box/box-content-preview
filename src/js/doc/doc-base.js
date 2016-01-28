@@ -393,10 +393,13 @@ class DocBase extends Base {
      * @returns {void}
      */
     textlayerrenderedHandler() {
-        // Show existing annotations after text layer is rendered
-        if (this.annotator) {
-            this.annotator.showAnnotations();
+        if (!this.annotator || this.annotationsLoaded) {
+            return;
         }
+
+        // Show existing annotations after text layer is rendered
+        this.annotator.showAnnotations();
+        this.annotationsLoaded = true;
     }
 
     /**

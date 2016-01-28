@@ -121,13 +121,12 @@ class DocAnnotator extends Annotator {
 
     /**
      * Show saved annotations.
-     * @TODO(tjin): Add input for page number here so document viewer can pass
-     * in page loaded and then this can show the annotations for that page
      *
      * @returns {void}
      */
     showAnnotations() {
-        // @NOTE(tjin): How do we show annotations for pages that aren't loaded yet?... --- answer is above
+        // @NOTE(tjin): Need to figure out how to load annotations by page...
+        // That will be difficult since deserialize does everything in one go
 
         // Fetch map of thread ID to annotations
         this.annotationService.getAnnotationsForFile(this.fileID).then((annotationsMap) => {
@@ -210,7 +209,6 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     addHighlightAnnotationHandler(event) {
-        event.preventDefault();
         event.stopPropagation();
 
         // Get selection location and dimensions
@@ -246,6 +244,45 @@ class DocAnnotator extends Annotator {
     /*---------- Point Annotations ----------*/
 
     /**
+     * Shows a single point annotation (annotation on specific points).
+     *
+     * @param {Annotation} annotation Point annotation to show
+     * @returns {void}
+     */
+    showPointAnnotation(annotation) {
+        // Create point annotation HTML
+        let pointAnnotationEl = document.createElement('div'),
+            annotationElString = `
+            <div class="caret-up"></div>
+            <div class="annotation-container">
+                <button class="btn show-point-annotation-btn">
+                    <span>P</span>
+                </button>
+            </div>`.trim();
+        pointAnnotationEl.classList.add('annotation-dialog');
+        // Note casing of threadId translates to data-thread-id
+        pointAnnotationEl.dataset.threadId = annotation.threadID;
+        pointAnnotationEl.innerHTML = annotationElString;
+
+        let location = annotation.location,
+            pageScale = this.getScale(),
+            x = location.x * pageScale,
+            y = location.y * pageScale,
+            page = location.page,
+            pageEl = document.querySelector('[data-page-number="' + page + '"]');
+
+        pageEl.appendChild(pointAnnotationEl);
+        pointAnnotationEl.style.left = (x - 25) + 'px';
+        pointAnnotationEl.style.top = y + 'px';
+
+        let showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
+        this.addEventHandler(showPointAnnotationButtonEl, (event) => {
+            event.stopPropagation();
+            this.showAnnotationDialog(annotation.threadID);
+        });
+    }
+
+    /**
      * Shows point annotations (annotations on specific points).
      *
      * @param {Annotation[]} pointAnnotations Array of point annotations
@@ -253,29 +290,7 @@ class DocAnnotator extends Annotator {
      */
     showPointAnnotations(pointAnnotations) {
         pointAnnotations.forEach((annotation) => {
-            // Create point annotation HTML
-            let pointAnnotationEl = document.createElement('span');
-            pointAnnotation.classList.add('point-annotation');
-            // Note casing of threadId translates to data-thread-id
-            pointAnnotation.dataset.threadId = annotation.threadID;
-
-            let location = annotation.location,
-                pageScale = this.getScale(),
-                x = location.x * pageScale,
-                y = location.y * pageScale,
-                page = location.page,
-                pageEl = document.querySelector('[data-page-number="' + page + '"]');
-
-            pageEl.appendChild(pointAnnotationEl);
-            pointAnnotationEl.style.left = x + 'px';
-            pointAnnotationEl.style.top = y + 'px';
-
-            this.addEventHandler(pointAnnotationEl, (event) => {
-                event.stopPropagation();
-
-                let threadID = event.target.dataset.threadId;
-                showAnnotationDialog(threadID);
-            });
+            this.showPointAnnotation(annotation);
         });
     }
 
@@ -287,8 +302,9 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     addPointAnnotationHandler(event) {
-        event.preventDefault();
         event.stopPropagation();
+
+        // @TODO(tjin): Close existing open annotations
 
         // @TODO(tjin): Investigate edge cases with existing highlights in 'bindOnClickCreateComment'
 
@@ -302,15 +318,12 @@ class DocAnnotator extends Annotator {
                 return;
             }
 
-            // Remove handler so we don't create multiple point annotations
-            this.removeEventHandlers(document);
-
             // Generate annotation parameters and location data to store
             let pageDimensions = pageEl.getBoundingClientRect(),
                 page = pageEl.dataset.pageNumber,
                 pageScale = this.getScale(),
-                x = (e.offsetX + pageDimensions.left) / pageScale,
-                y = (e.offsetY + pageDimensions.top) / pageScale,
+                x = (event.clientX - pageDimensions.left) / pageScale,
+                y = (event.clientY - pageDimensions.top) / pageScale,
                 locationData = {
                     x: x,
                     y: y,
@@ -318,6 +331,9 @@ class DocAnnotator extends Annotator {
                 };
 
             this.createAnnotationDialog(locationData, POINT_ANNOTATION_TYPE);
+
+            // Cleanup handler
+            this.removeEventHandlers(document);
         });
     }
 
@@ -371,7 +387,15 @@ class DocAnnotator extends Annotator {
             // Save annotation
             this.annotationService.create(annotation).then(() => {
                 closeCreateDialog();
-                // Show newly created annotation
+
+                // If annotation is a point annotation, show the point
+                // annotation indicator
+                if (annotation.type === POINT_ANNOTATION_TYPE) {
+                    // @TODO(tjin): Only show point annotation if one doesn't exist already
+                    this.showPointAnnotation(annotation);
+                }
+
+                // Show newly created annotation text on top
                 this.showAnnotationDialog(annotation.threadID);
             });
         });
@@ -528,14 +552,15 @@ class DocAnnotator extends Annotator {
 
                             annotationDialogEl.parentNode.removeChild(annotationDialogEl);
 
-                            // Remove highlight or point element
+                            // Remove highlight or point element when we delete the whole thread
                             if (annotation.type === HIGHLIGHT_ANNOTATION_TYPE) {
                                 this.removeHighlight(annotation.location.highlight);
                             } else if (annotation.type === POINT_ANNOTATION_TYPE) {
                                 let pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
 
                                 if (pointAnnotationEl) {
-                                    this.removeEventHandlers(pointAnnotationEl);
+                                    let showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
+                                    this.removeEventHandlers(showPointAnnotationButtonEl);
                                     pointAnnotationEl.parentNode.removeChild(pointAnnotationEl);
                                 }
                             }
