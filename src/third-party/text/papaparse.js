@@ -552,6 +552,11 @@
                 xhr.setRequestHeader('If-None-Match', 'webkit-no-cache'); // https://bugs.webkit.org/show_bug.cgi?id=82672
             }
 
+            if (this._config.authorization)
+            {
+                xhr.setRequestHeader('Authorization', this._config.authorization);
+            }
+
             try {
                 xhr.send();
             }
