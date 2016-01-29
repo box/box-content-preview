@@ -161,3 +161,10 @@
     color: #fff;
     background-color: #555;
 }
+
+.annotation-dialog .show-point-annotation-btn {
+    padding: 10px 15px;
+    color: #eee;
+    background-color: #333;
+    font-size: 14px;
+}
