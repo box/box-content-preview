@@ -114,6 +114,6 @@ module.exports = languagesArray.map(function(language, index) {
         stats: {
             colors: true
         },
-        devtool: 'source-map'
+        devtool: isRelease ? 'source-map' : 'inline-source-map'
     };
 });
