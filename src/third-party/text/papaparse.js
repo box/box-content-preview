@@ -1299,7 +1299,7 @@
         var workerUrl = Papa.SCRIPT_PATH || AUTO_SCRIPT_PATH;
         // Append 'papaworker' to the search string to tell papaparse that this is our worker.
         //workerUrl += (workerUrl.indexOf('?') !== -1 ? '&' : '?') + 'papaworker';
-        var w = new Worker(workerUrl);
+        var w = new global.Worker(workerUrl);
         w.onmessage = mainThreadReceivedMessage;
         w.id = workerIdCounter++;
         workers[w.id] = w;
