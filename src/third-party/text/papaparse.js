@@ -552,6 +552,11 @@
                 xhr.setRequestHeader('If-None-Match', 'webkit-no-cache'); // https://bugs.webkit.org/show_bug.cgi?id=82672
             }
 
+            if (this._config.authorization)
+            {
+                xhr.setRequestHeader('Authorization', this._config.authorization);
+            }
+
             try {
                 xhr.send();
             }
@@ -1294,7 +1299,7 @@
         var workerUrl = Papa.SCRIPT_PATH || AUTO_SCRIPT_PATH;
         // Append 'papaworker' to the search string to tell papaparse that this is our worker.
         //workerUrl += (workerUrl.indexOf('?') !== -1 ? '&' : '?') + 'papaworker';
-        var w = new global.Worker(workerUrl);
+        var w = new Worker(workerUrl);
         w.onmessage = mainThreadReceivedMessage;
         w.id = workerIdCounter++;
         workers[w.id] = w;

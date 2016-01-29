@@ -44,14 +44,15 @@ class CSV extends TextBase {
         .then((response) => response.blob())
         .then((papaWorkerBlob) => {
             Papa.SCRIPT_PATH = URL.createObjectURL(papaWorkerBlob);
-            Papa.parse(this.appendAuthParam(csvUrl), {
+            Papa.parse(csvUrl, {
                 worker: true,
                 download: true,
+                authorization: 'Bearer ' + this.options.token,
                 error: (err, file, inputElem, reason) => {
                     this.emit('error', reason);
                 },
                 complete: (results) => {
-                    if (this.destroyed) {
+                    if (this.destroyed || !results) {
                         return;
                     }
                     this.finishLoading(results.data);

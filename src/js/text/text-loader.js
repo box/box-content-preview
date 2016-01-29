@@ -19,7 +19,8 @@ const VIEWERS = [
         EXTENSIONS: [ 'csv' ],
         SCRIPTS: [ STATIC_URI + 'papaparse.js', 'csv.js' ],
         STYLESHEETS: [ 'csv.css' ],
-        CONSTRUCTOR: 'CSV'
+        CONSTRUCTOR: 'CSV',
+        PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'original',

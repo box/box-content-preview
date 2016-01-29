@@ -9501,7 +9501,7 @@ var PDFWorker = (function PDFWorkerClosure() {
           }
           // Some versions of FF can't create a worker on localhost, see:
           // https://bugzilla.mozilla.org/show_bug.cgi?id=683280
-          var worker = new Worker(workerSrc);
+          var worker = new global.Worker(workerSrc);
           var messageHandler = new MessageHandler('main', 'worker', worker);
           messageHandler.on('test', function PDFWorker_test(data) {
             if (this.destroyed) {

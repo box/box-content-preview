@@ -82,22 +82,12 @@ class DocBase extends Base {
         let pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
         let pdfCMapBaseURI = this.options.location.staticBaseURI + 'doc/cmaps/';
 
-        fetch(pdfWorkerUrl)
-        .then((response) => response.blob())
-        .then((pdfWorkerBlob) => {
-            if (this.destroyed) {
-                return;
-            }
-            PDFJS.workerSrc = URL.createObjectURL(pdfWorkerBlob);
-            PDFJS.cMapUrl = pdfCMapBaseURI;
-            PDFJS.cMapPacked = true;
-            PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab
+        PDFJS.workerSrc = pdfWorkerUrl;
+        PDFJS.cMapUrl = pdfCMapBaseURI;
+        PDFJS.cMapPacked = true;
+        PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab
 
-            this.initViewer(pdfUrl);
-
-            // Releases worker blob
-            URL.revokeObjectURL(pdfWorkerBlob);
-        });
+        this.initViewer(pdfUrl);
 
         super.load();
     }
