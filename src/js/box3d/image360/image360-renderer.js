@@ -20,9 +20,10 @@ const INPUT_SETTINGS = {
 @autobind
 class Image360Renderer extends Box3DRenderer {
     /**
-     * [constructor]
-     * @param {HTMLElement} containerEl the container element
-     * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
+     * Handles creating and caching a Box3DRuntime, and creating a scene made for
+     * previewing 360 images
+     * @constructor
+     * @inheritdoc
      * @returns {Image360Renderer} Image360Renderer instance
      */
     constructor(containerEl, boxSdk) {
@@ -57,9 +58,9 @@ class Image360Renderer extends Box3DRenderer {
 
     /**
      * Load a box3d json
+     * @inheritdoc
      * @param  {string} jsonUrl The url to the box3d json
-     * @param  {object} options Options object
-     * @returns {void}
+     * @returns {Promise} a promise that resolves with the newly created runtime
      */
     load(jsonUrl, options = {}) {
         options.sceneEntities = sceneEntities;
@@ -76,10 +77,8 @@ class Image360Renderer extends Box3DRenderer {
      * @returns {void}
      */
     loadPanoramaFile(fileProperties) {
-        let scene;
-        let skybox;
-        scene = this.box3d.getEntityById('SCENE_ID');
-        skybox = scene.getComponentByScriptId('skybox_renderer');
+        const scene = this.box3d.getEntityById('SCENE_ID');
+        const skybox = scene.getComponentByScriptId('skybox_renderer');
         skybox.setSkyboxTexture(null);
 
         this.textureAsset = this.box3d.assetRegistry.createAsset({

@@ -23,10 +23,11 @@ const INPUT_SETTINGS = {
 class Box3DRenderer extends EventEmitter {
 
     /**
-     * [constructor description]
-     * @param {[type]} containerEl [description]
-     * @param {[type]} boxSdk      [description]
-     * @returns {[type]} [description]
+     * Base class that handles creation of and communication with Box3DRuntime
+     * @constructor
+     * @param {HTMLElement} containerEl the container element
+     * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
+     * @returns {Image360Renderer} Image360Renderer instance
      */
     constructor(containerEl, boxSdk) {
         super();
@@ -43,11 +44,15 @@ class Box3DRenderer extends EventEmitter {
 
     /**
      * Load a box3d json
-     * @param  {string} jsonUrl The url to the box3d json
-     * @param  {object} options Options object
+     * @param {object} options Options object, used to initialize the Box3DRuntime
+     * and BoxSDK
+     * @param {string} [options.token] The OAuth2 Token used for authentication of asset requests
+     * @param {string} [options.api] API URL base to make requests to
+     * @param {object|null} [options.file] Information about the current box file we're using.
+     * Used to get the parent.id of the box file.
      * @returns {Promise} A promise resulting in the newly created box3d
      */
-    load(jsonUrl, options) {
+    load(options) {
         return this.initBox3d(options);
     }
 
@@ -70,7 +75,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {void}
      */
     reset() {
-        let camera = this.getCamera();
+        const camera = this.getCamera();
 
         // Reset camera settings to default.
         if (camera) {
@@ -99,6 +104,10 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Initialize the Box3D engine.
      * @param {object} options the preview options object
+     * @param {string} [options.token] The OAuth2 Token used for authentication of asset requests
+     * @param {string} [options.api] API URL base to make requests to
+     * @param {object|null} [options.file] Information about the current box file we're using.
+     * Used to get the parent.id of the box file.
      * @returns {Promise} A promise that resolves with the created/cached box3d
      */
     initBox3d(options) {

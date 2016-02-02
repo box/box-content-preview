@@ -18,7 +18,8 @@ let Box = global.Box || {};
  */
 class Image360 extends Box3D {
     /**
-     * [constructor]
+     * Ties together all 360 image rendering and controls
+     * @constructor
      * @param {string|HTMLElement} container node
      * @param {object} [options] some options
      * @returns {Image360} the Image360 object instance
@@ -28,8 +29,7 @@ class Image360 extends Box3D {
     }
 
     /**
-     * Create controls and renderer sub module
-     * @returns {void}
+     * @inheritdoc
      */
     createSubModules() {
         this.controls = new Image360Controls(this.wrapperEl);
@@ -37,8 +37,7 @@ class Image360 extends Box3D {
     }
 
     /**
-     * Attaches event handlers
-     * @returns {void}
+    * @inheritdoc
      */
     attachEventHandlers() {
         super.attachEventHandlers();
@@ -46,8 +45,7 @@ class Image360 extends Box3D {
     }
 
     /**
-     * Detaches event handlers
-     * @returns {void}
+     * @inheritdoc
      */
     detachEventHandlers() {
         super.detachEventHandlers();

@@ -12,7 +12,10 @@ import {
 class Box3DControls extends EventEmitter {
 
     /**
-     * [constructor]
+     * Base class for building 3D previews on. Contains events for VR, Fullscreen,
+     * Scene Reset, and Scene Loaded. Also, used for programmatic building of control
+     * bar UI.
+     * @constructor
      * @param {HTMLElement} containerEl The container element to put controls ui into
      * @returns {Box3DControls} Instance of Box3DControls
      */
@@ -37,19 +40,10 @@ class Box3DControls extends EventEmitter {
     }
 
     /**
-     * Emit scene loaded message
-     * @returns {void}
-     */
-    handleSceneLoaded() {
-        this.emit(EVENT_SCENE_LOADED);
-    }
-
-    /**
      * Add and create any UI to the container element and control bar
      * @returns {void}
      */
     addUi() {
-
         this.vrControl = this.createControlItem('icon-vr-toggle', this.handleToggleVr.bind(this));
         this.setElementVisibility(this.vrControl, false);
         this.controlBar.appendChild(this.vrControl);
@@ -63,6 +57,15 @@ class Box3DControls extends EventEmitter {
         this.exitFullscreenControl = this.createControlItem('icon-minimize', this.handleToggleFullscreen.bind(this));
         this.setElementVisibility(this.exitFullscreenControl, false);
         this.controlBar.appendChild(this.exitFullscreenControl);
+    }
+
+
+    /**
+     * Emit scene loaded message
+     * @returns {void}
+     */
+    handleSceneLoaded() {
+        this.emit(EVENT_SCENE_LOADED);
     }
 
     /**
@@ -107,16 +110,16 @@ class Box3DControls extends EventEmitter {
      * Create a button for the control bar
      * @param {string} iconClass The name of the class for the icon the user can click
      * @param {function} [callback] A callback to call on click of this button
-     * @param {HtmlElement|string} [content] Additional HTML|string content to insert into the
+     * @param {HTMLElement|string} [content] Additional HTML|string content to insert into the
      * control item, after the icon
-     * @returns {HtmlElement} The button that has been create for the control bar
+     * @returns {HTMLElement} The button that has been create for the control bar
      */
     createControlItem(iconClass, callback = null, content = null) {
-        let iconContainer = document.createElement('li');
-        let iconContainerName = iconClass + 'control';
+        const iconContainer = document.createElement('li');
+        const iconContainerName = iconClass + 'control';
         iconContainer.classList.add('control-item', iconContainerName);
 
-        let icon = document.createElement('span');
+        const icon = document.createElement('span');
         icon.classList.add(iconClass);
 
         iconContainer.appendChild(icon);
@@ -139,7 +142,7 @@ class Box3DControls extends EventEmitter {
     /**
      * Register an element for automatic event unbinding and cleanup
      * @param {string} uniqueId  A unique identifier for accessing the given element
-     * @param {HtmlElement} element   The element we are registering
+     * @param {HTMLElement} element   The element we are registering
      * @param {string} [eventName] An event we want to bind to
      * @param {Function} [callback]  A function we want to call, on the provided event happening
      * @returns {void}
@@ -155,7 +158,7 @@ class Box3DControls extends EventEmitter {
         if (eventName && callback) {
             element.addEventListener(eventName, callback);
 
-            let registeredEvents = this.eventRegistry[uniqueId].events;
+            const registeredEvents = this.eventRegistry[uniqueId].events;
             registeredEvents[eventName] = registeredEvents[eventName] || [];
             registeredEvents[eventName].push(callback);
         }
@@ -177,7 +180,7 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Toggle the visibility of an elements
-     * @param {HtmlElement} element The element we want to toggle visibility on
+     * @param {HTMLElement} element The element we want to toggle visibility on
      * @returns {void}
      */
     toggleElementVisibility(element) {
@@ -191,8 +194,8 @@ class Box3DControls extends EventEmitter {
      */
     destroyControls() {
         //remove all controls from control bar
-        Object.keys(this.eventRegistry).forEach(itemKey => {
-            let controlItem = this.eventRegistry[itemKey];
+        Object.keys(this.eventRegistry).forEach((itemKey) => {
+            const controlItem = this.eventRegistry[itemKey];
             this.destroyControlItem(controlItem);
             delete this.eventRegistry[itemKey];
         });
@@ -214,11 +217,10 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     clearControlItem(controlItem) {
-        let events = controlItem.events;
-        Object.keys(events).forEach(eventName => {
-            events[eventName].forEach(callback => controlItem.el.removeEventListener(eventName, callback));
+        const events = controlItem.events;
+        Object.keys(events).forEach((eventName) => {
+            events[eventName].forEach((callback) => controlItem.el.removeEventListener(eventName, callback));
             delete events[eventName];
-            console.log(controlItem.el + ' ' + eventName + ' unregistered');
         });
     }
 

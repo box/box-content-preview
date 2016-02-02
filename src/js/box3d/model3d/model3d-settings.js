@@ -27,7 +27,8 @@ const ROTATION_STEP = 90;
 @autobind
 class Model3dSettings extends EventEmitter  {
     /**
-     * [constructor]
+     * Creates UI panel for Metadata saving and modification
+     * @constructor
      * @param {HTMLElement} containerEl the container element
      * @returns {Model3dControls} Model3dControls instance
      */
@@ -36,7 +37,7 @@ class Model3dSettings extends EventEmitter  {
 
         this.containerEl = containerEl;
 
-        let template = settingsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        const template = settingsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
 
         this.containerEl.appendChild(document.createRange().createContextualFragment(template));
 
@@ -224,7 +225,7 @@ class Model3dSettings extends EventEmitter  {
      * @returns {void}
      */
     rotateOnCurrentAxis(direction) {
-        let axis = {};
+        const axis = {};
         axis[this.currentAxis] = direction * ROTATION_STEP;
 
         this.emit(EVENT_ROTATE_ON_AXIS, axis);

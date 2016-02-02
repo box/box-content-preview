@@ -28,7 +28,8 @@ const MISSING_MAX = 4;
 @autobind
 class Model3d extends Box3D {
     /**
-     * [constructor]
+     * Ties together rendering, settings, and controls modules
+     * @constructor
      * @param {string|HTMLElement} container node
      * @param {object} [options] some options
      * @returns {Model3d} the Model3d object instance
@@ -36,6 +37,7 @@ class Model3d extends Box3D {
     constructor(container, options) {
         super(container, options);
 
+        this.missingAssets = null;
         this.loadTimeout = 100000;
         this.instances = [];
         this.assets = [];
@@ -46,8 +48,7 @@ class Model3d extends Box3D {
     }
 
     /**
-     * Create any submodules required for previewing this document
-     * @returns {void}
+    * @inheritdoc
      */
     createSubModules() {
         this.controls = new Model3dControls(this.wrapperEl);
@@ -56,8 +57,7 @@ class Model3d extends Box3D {
     }
 
     /**
-     * Attaches event handlers
-     * @returns {void}
+     * @inheritdoc
      */
     attachEventHandlers() {
         super.attachEventHandlers();
@@ -69,8 +69,7 @@ class Model3d extends Box3D {
     }
 
     /**
-     * Detaches event handlers
-     * @returns {void}
+     * @inheritdoc
      */
     detachEventHandlers() {
         super.detachEventHandlers();
@@ -82,17 +81,15 @@ class Model3d extends Box3D {
     }
 
     /**
-     * Called on preview destroy
-     * @returns {void}
+     * @inheritdoc
      */
     destroy() {
         super.destroy();
 
-        // @FIXME
-        // if (this.missingAssets) {
-        // 	this.missingAssets.length = 0;
-        // }
-        //
+        if (this.missingAssets) {
+            this.missingAssets.length = 0;
+        }
+
         this.settings.destroy();
     }
 
@@ -111,7 +108,7 @@ class Model3d extends Box3D {
         }
 
         //storing in a dictionary due to progressive texture loading using the same name for different resolutions
-        let key = data.fileName || data.assetName;
+        const key = data.fileName || data.assetName;
         this.missingAssets[key] = this.missingAssets[key] || data;
     }
 
@@ -138,13 +135,11 @@ class Model3d extends Box3D {
     }
 
     /**
-     * Handle scene loaded event
-     * @returns {void}
+     * @inheritdoc
      */
     @autobind
     handleSceneLoaded() {
-        //@TODO: implememnt notifyAssetsMissing()
-        //this.notifyAssetsMissing();
+        this.notifyAssetsMissing();
 
         // Get scene defaults for up/forward axes, and render mode
         this.boxSdk.getMetadataClient().get(this.options.file.id, 'global', 'box3d')
@@ -161,12 +156,19 @@ class Model3d extends Box3D {
 
                 this.handleRotationAxisSet(defaults.upAxis, defaults.forwardAxis, false);
                 this.handleSetRenderMode(defaults.defaultRenderMode);
-                //this.settings.setDefaultRenderMode(defaults.defaultRenderMode);
 
             })
             .catch((err) => {
                 console.error(err);
             });
+    }
+
+    /**
+     * Emit a message with a list of assets that are unavailable
+     * @returns {void}
+     */
+    notifyAssetsMissing() {
+        this.emit(EVENT_MISSING_ASSET, this.missingAssets);
     }
 
     /**
@@ -176,8 +178,7 @@ class Model3d extends Box3D {
      */
     @autobind
     handleSceneSave(renderMode) {
-
-        let metadata = this.boxSdk.getMetadataClient(),
+        const metadata = this.boxSdk.getMetadataClient(),
             operations = [];
 
         operations.push(metadata.createOperation('replace', '/defaultRenderMode', renderMode));
@@ -191,11 +192,10 @@ class Model3d extends Box3D {
 
             metadata.update(this.options.file.id, 'global', 'box3d', operations)
                 .then((resp) => {
-                    let event = resp.status === '200' ? EVENT_METADATA_UPDATE_SUCCESS : EVENT_METADATA_UPDATE_FAILURE;
+                    const event = resp.status === '200' ? EVENT_METADATA_UPDATE_SUCCESS : EVENT_METADATA_UPDATE_FAILURE;
                     this.emit(event, resp);
                 });
         });
-
     }
 
     /**

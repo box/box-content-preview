@@ -10,49 +10,37 @@ const RENDER_MODES = {
     lit: {
         name: 'Lit',
         key: 'lit',
-        icon: 'icon-rm-lit',
-        renderMode: 'Lit',
-        elQuery: '.rm-lit',//class associated with the unique menu item  rmunlit rm-normals rm-wireframe rm-untexturedwireframe rm-uvoverlay
+        baseClass: 'lit', // add rm- for control, and icon-rm, and .rm- for query selector
         el: null
     },
     unlit: {
         name: 'Unlit',
         key: 'unlit',
-        icon: 'icon-rm-unlit',
-        renderMode: 'Unlit',
-        elQuery: '.rm-unlit',
+        baseClass: 'unlit',
         el: null
     },
     normals: {
         name: 'Normals',
         key: 'normals',
-        icon: 'icon-rm-normals',
-        renderMode: 'Normals',
-        elQuery: '.rm-normals',
+        baseClass: 'normals',
         el: null
     },
     wireframe: {
         name: 'Wireframe',
         key: 'wireframe',
-        icon: 'icon-rm-wireframe',
-        renderMode: 'Wireframe',
-        elQuery: '.rm-wireframe',
+        baseClass: 'wireframe',
         el: null
     },
     flatwire: {
         name: 'Untextured Wireframe',
         key: 'flatwire',
-        icon: 'icon-rm-untexturedwireframe',
-        renderMode: 'Untextured Wireframe',
-        elQuery: '.rm-untexturedwireframe',
+        baseClass: 'untexturedwireframe',
         el: null
     },
     uv: {
         name: 'UV Overlay',
         key: 'uv',
-        icon: 'icon-rm-uvoverlay',
-        renderMode: 'UV Overlay',
-        elQuery: '.rm-uvoverlay',
+        baseClass: 'uvoverlay',
         el: null
     }
 };
@@ -67,8 +55,9 @@ const RENDER_MODES = {
 @autobind
 class Model3dControls extends Box3DControls  {
     /**
-     * [constructor]
-     * @param {HTMLElement} containerEl the container element
+     * Creates UI and Handles events for 3D Model Preview
+     * @constructor
+     * @inheritdoc
      * @returns {Model3dControls} Model3dControls instance
      */
     constructor(containerEl) {
@@ -77,12 +66,10 @@ class Model3dControls extends Box3DControls  {
         this.renderModeCurrent = RENDER_MODES.lit.name;
 
         this.renderModesSelectorEl = this.el.querySelector('.render-mode-selector');
-
     }
 
     /**
-     * Create and add all UI to the Preview, here
-     * @returns {void}
+     * @inheritdoc
      */
     addUi() {
         super.addUi();
@@ -90,49 +77,38 @@ class Model3dControls extends Box3DControls  {
         this.renderModesSelectorEl = document.createElement('ul');
         this.renderModesSelectorEl.classList.add('preview-overlay', 'preview-pullup', 'render-mode-selector', CSS_CLASS_HIDDEN);
 
-        let renderModeLit = this.createRenderModeItem('rm-lit', RENDER_MODES.lit);
-        this.renderModesSelectorEl.appendChild(renderModeLit);
-        renderModeLit.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
-
-        renderModeLit = this.createRenderModeItem('rm-unlit', RENDER_MODES.unlit);
-        this.renderModesSelectorEl.appendChild(renderModeLit);
-
-        renderModeLit = this.createRenderModeItem('rm-normals', RENDER_MODES.normals);
-        this.renderModesSelectorEl.appendChild(renderModeLit);
-
-        renderModeLit = this.createRenderModeItem('rm-wireframe', RENDER_MODES.wireframe);
-        this.renderModesSelectorEl.appendChild(renderModeLit);
-
-        renderModeLit = this.createRenderModeItem('rm-untexturedwireframe', RENDER_MODES.flatwire);
-        this.renderModesSelectorEl.appendChild(renderModeLit);
-
-        renderModeLit = this.createRenderModeItem('rm-uvoverlay', RENDER_MODES.uv);
-        this.renderModesSelectorEl.appendChild(renderModeLit);
+        Object.keys(RENDER_MODES).forEach((mode) => {
+            const renderModeEl = this.createRenderModeItem(RENDER_MODES[mode]);
+            this.renderModesSelectorEl.appendChild(renderModeEl);
+        });
 
         this.renderModeControl = this.createControlItem('icon-rendermodes',
             this.handleToggleRenderModes.bind(this), this.renderModesSelectorEl);
         this.controlBar.appendChild(this.renderModeControl);
+
+        // Set default to lit!
+        this.handleSetRenderMode(RENDER_MODES.lit);
     }
 
     /**
      * Create a render mode selector for the render mode controls
-     * @param {string} className The class name to attach to the created element,
-     * and to build icons from
      * @param {Object} renderModeDescriptor Description of render mode data. See RENDER_MODES
-     * @returns {HtmlElement} The built render mode item to add to render modes list UI
+     * @returns {HTMLElement} The built render mode item to add to render modes list UI
      */
-    createRenderModeItem(className, renderModeDescriptor) {
+    createRenderModeItem(renderModeDescriptor) {
 
-        let renderModeItem = document.createElement('li');
-        renderModeItem.classList.add(className, 'rendermode-item');
+        const className = renderModeDescriptor.baseClass;
+
+        const renderModeItem = document.createElement('li');
+        renderModeItem.classList.add('rm-' + className, 'rendermode-item');
         renderModeDescriptor.el = renderModeItem;
 
-        let onRenderModeChange = this.handleSetRenderMode.bind(this, renderModeDescriptor);
+        const onRenderModeChange = this.handleSetRenderMode.bind(this, renderModeDescriptor);
 
         this.registerUiItem(className, renderModeItem, 'click', onRenderModeChange);
 
-        let renderModeIcon = document.createElement('span');
-        renderModeIcon.classList.add('icon-' + className, 'inline-icon');
+        const renderModeIcon = document.createElement('span');
+        renderModeIcon.classList.add('icon-rm-' + className, 'inline-icon');
 
         renderModeItem.appendChild(renderModeIcon);
         renderModeItem.innerHTML += renderModeDescriptor.name;
@@ -149,12 +125,13 @@ class Model3dControls extends Box3DControls  {
     }
 
     /**
-     * [handleSetRenderMode description]
-     * @param {[type]} renderMode [description]
-     * @returns {[type]} [description]
+     * Handle a change of render mode
+     * @param {object} renderMode A render mode descriptor, used to set the current
+     * render mode icon, and send an event
+     * @returns {void}
      */
     handleSetRenderMode(renderMode) {
-        let current = this.renderModeControl.querySelector('.' + CSS_CLASS_CURRENT_RENDER_MODE);
+        const current = this.renderModeControl.querySelector('.' + CSS_CLASS_CURRENT_RENDER_MODE);
         if (current) {
             current.classList.remove(CSS_CLASS_CURRENT_RENDER_MODE);
         }
@@ -162,12 +139,11 @@ class Model3dControls extends Box3DControls  {
         this.renderModeCurrent = renderMode.key;
         this.emit(EVENT_SET_RENDER_MODE, renderMode.name);
 
-        this.setRenderModeUI(renderMode.icon);
+        this.setRenderModeUI('icon-rm-' + renderMode.baseClass);
     }
 
     /**
-     * Handles the reset event
-     * @returns {void}
+     * @inheritdoc
      */
     handleReset() {
         super.handleReset();

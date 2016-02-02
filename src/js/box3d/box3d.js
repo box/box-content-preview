@@ -26,9 +26,14 @@ import {
 class Box3D extends Base {
 
     /**
-     * [constructor]
+     * Provides base functionality that ties together submodules that handle things like
+     * Rendering webgl, Rendering UI, and handling communication between these
+     * @inheritdoc
+     * @constructor
      * @param {string|HTMLElement} container node
      * @param {object} [options] some options
+     * @param {string} [options.token] OAuth2 token used for authorizing API requests
+     * @param {string} [options.api] Base URL to use for all api requests
      * @returns {Box3D} the Box3D object instance
      */
     constructor(container, options) {
@@ -41,7 +46,7 @@ class Box3D extends Base {
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_BOX3D;
 
-        let sdkOpts = { token: options.token, apiBase: options.api };
+        const sdkOpts = { token: options.token, apiBase: options.api };
         this.boxSdk = new BoxSDK(sdkOpts);
 
         this.loadTimeout = 50000;
@@ -145,6 +150,7 @@ class Box3D extends Base {
      * Handle fullscreen enter event
      * @returns {void}
      */
+    @autobind
     handleEnterFullscreen() {
         this.renderer.enterFullscreen();
     }
@@ -153,6 +159,7 @@ class Box3D extends Base {
      * Handles fullscreen exit event
      * @returns {void}
      */
+    @autobind
     handleExitFullscreen() {
         this.renderer.exitFullscreen();
     }

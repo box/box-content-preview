@@ -24,6 +24,7 @@ class Image360Loader extends AssetLoader {
 
     /**
      * [constructor]
+     * @constructor
      * @returns {Image360Loader} The image360 loader instance
      */
     constructor() {

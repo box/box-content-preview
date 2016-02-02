@@ -10,18 +10,21 @@ import Box3DControls from '../box3d-controls';
  */
 class Image360Controls extends Box3DControls  {
     /**
-     * [constructor]
-     * @param {HTMLElement} containerEl the container element
-     * @returns {Image360Controls} Image360Controls instance
+     * Create additional controls for the control bar, that pertain to Image360 viewing
+     * @inheritdoc
+     * @constructor
      */
     constructor(containerEl) {
         super(containerEl);
     }
 
+    /**
+     * @inheritdoc
+     */
     addUi() {
         super.addUi();
 
-        let switch2DControl = this.createControlItem('controls-2d', this.switchTo2dViewer.bind(this), '2D');
+        const switch2DControl = this.createControlItem('controls-2d', this.switchTo2dViewer.bind(this), '2D');
         this.controlBar.appendChild(switch2DControl);
     }
 

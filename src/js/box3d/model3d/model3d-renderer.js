@@ -14,7 +14,9 @@ import {EVENT_SET_RENDER_MODE, EVENT_MISSING_ASSET} from './model3d-constants';
  */
 class Model3dRenderer extends Box3DRenderer {
     /**
-     * [constructor]
+     * Creates a 3D runtime and loads in a 3D model for rendering
+     * @constructor
+     * @inheritdoc
      * @param {HTMLElement} containerEl the container element
      * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
      * @returns {Model3dRenderer} Model3dRenderer instance
@@ -28,6 +30,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Called on preview destroy
+     * @inheritdoc
      * @returns {void}
      */
     destroy() {
@@ -48,9 +51,9 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Load a box3d json
+     * @inheritdoc
      * @param  {string} jsonUrl The url to the box3d json
-     * @param  {object} options Options object
-     * @returns {void}
+     * @returns {Promise} a promise that resolves with the newly created runtime
      */
     load(jsonUrl, options = {}) {
 
@@ -95,7 +98,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     loadBox3dFile(fileUrl) {
-        let loader = new VAPI.JSONLoader(this.box3d);
+        const loader = new VAPI.JSONLoader(this.box3d);
 
         this.registerMissingEvents(this.box3d.resourceLoader);
 
@@ -225,7 +228,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Enable VR and reset the scene, on scene load event fired from Box3DRuntime
-     * @returns {[type]} [description]
+     * @inheritdoc
      */
     onSceneLoad() {
         this.reset();
