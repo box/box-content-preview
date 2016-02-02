@@ -2,44 +2,62 @@
 'use strict';
 
 import EventEmitter from 'events';
-import autobind from 'autobind-decorator';
-import sceneEntities from './scene-entities';
 import Cache from '../cache';
-import {EVENT_SHOW_VR_BUTTON} from './image360-constants';
-
-const CACHE_KEY_BOX3D = 'box3d';
+import {
+    CACHE_KEY_BOX3D,
+    EVENT_SHOW_VR_BUTTON,
+    EVENT_SCENE_LOADED
+} from './box3d-constants';
 
 const INPUT_SETTINGS = {
+    mouseEvents: {
+        scroll: true,
+        scroll_preventDefault: true
+    },
     vrEvents: {
         enable: true,
         position: false
     }
 };
 
-/**
- * Image360Renderer
- * This class handles rendering the preview of the 3D model using the Box3D
- * Runtime library.
- * @class
- */
-@autobind
-class Image360Renderer extends EventEmitter {
+class Box3DRenderer extends EventEmitter {
+
     /**
-     * [constructor]
+     * Base class that handles creation of and communication with Box3DRuntime
+     * @constructor
      * @param {HTMLElement} containerEl the container element
      * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
      * @returns {Image360Renderer} Image360Renderer instance
      */
     constructor(containerEl, boxSdk) {
         super();
+
         this.containerEl = containerEl;
+        // Instances and assets created, that are not scene default entities, are
+        // tracked for cleanup during recycling of box3d runtime
+        this.instances = [];
+        this.assets = [];
         this.vrEnabled = false;
+        this.vrDevice = null;
         this.boxSdk = boxSdk;
-        this.textureAsset;
     }
 
     /**
-     * Called on preview destroy
+     * Load a box3d json
+     * @param {object} options Options object, used to initialize the Box3DRuntime
+     * and BoxSDK
+     * @param {string} [options.token] The OAuth2 Token used for authentication of asset requests
+     * @param {string} [options.api] API URL base to make requests to
+     * @param {object|null} [options.file] Information about the current box file we're using.
+     * Used to get the parent.id of the box file.
+     * @returns {Promise} A promise resulting in the newly created box3d
+     */
+    load(options) {
+        return this.initBox3d(options);
+    }
+
+    /**
+     * Hide 3d preview and destroy the loader
      * @returns {void}
      */
     destroy() {
@@ -47,38 +65,22 @@ class Image360Renderer extends EventEmitter {
             return;
         }
 
-        this.cleanupTexture();
-
         this.hideBox3d();
 
         this.box3d.resourceLoader.destroy();
-        this.box3d.resourceLoader = null;
-        this.box3d = null;
     }
 
     /**
-     * Destroy the texture asset created from the Box file and unallocate any GPU memory
-     * consumed by it.
-     * @private
-     * @method cleanupTexture
+     * Reset preview state to defaults.
      * @returns {void}
      */
-    cleanupTexture() {
-        if (this.textureAsset) {
-            this.textureAsset.destroy();
-            this.textureAsset = undefined;
+    reset() {
+        const camera = this.getCamera();
+
+        // Reset camera settings to default.
+        if (camera) {
+            camera.trigger('resetOrbitCameraController');
         }
-    }
-
-    /**
-     * Load a box3d json
-     * @param  {string} jsonUrl The url to the box3d json
-     * @param  {object} options Options object
-     * @returns {void}
-     */
-    load(jsonUrl, options) {
-        return this.initBox3d(options)
-            .then(this.loadPanoramaFile.bind(this, options.file));
     }
 
     /**
@@ -98,10 +100,15 @@ class Image360Renderer extends EventEmitter {
         return this.box3d ? this.box3d.assetRegistry.getAssetById('SCENE_ID') : null;
     }
 
+
     /**
      * Initialize the Box3D engine.
      * @param {object} options the preview options object
-     * @returns {void} nothing
+     * @param {string} [options.token] The OAuth2 Token used for authentication of asset requests
+     * @param {string} [options.api] API URL base to make requests to
+     * @param {object|null} [options.file] Information about the current box file we're using.
+     * Used to get the parent.id of the box file.
+     * @returns {Promise} A promise that resolves with the created/cached box3d
      */
     initBox3d(options) {
         let resourceLoader,
@@ -129,6 +136,7 @@ class Image360Renderer extends EventEmitter {
         return this.createBox3d(resourceLoader, options);
     }
 
+
     /**
      * Create a new Box3D engine.
      * @param {object} resourceLoader The resource loader instance that should be used
@@ -150,66 +158,27 @@ class Image360Renderer extends EventEmitter {
             this.box3d.initialize({
                 container: this.containerEl,
                 engineName: 'Default',
-                entities: sceneEntities,
-                inputSettings: INPUT_SETTINGS,
+                entities: options.sceneEntities,
+                inputSettings: options.inputSettings || INPUT_SETTINGS,
                 resourceLoader
             }, () => {
                 let app = this.box3d.assetRegistry.getAssetById('APP_ASSET_ID');
                 app.load(() => {
-                    Cache.set('box3d', this.box3d);
+                    Cache.set(CACHE_KEY_BOX3D, this.box3d);
                     resolve(this.box3d);
                 });
-            }.bind(this));
-        });
-    }
-
-    /**
-     * Parse out the proper components to assemble a threejs mesh
-     * @param {object} fileProperties The Box3D file properties
-     * @returns {void}
-     */
-    loadPanoramaFile(fileProperties) {
-        let scene;
-        let skybox;
-        scene = this.box3d.getEntityById('SCENE_ID');
-        skybox = scene.getComponentByScriptId('skybox_renderer');
-        skybox.setSkyboxTexture(null);
-
-        this.textureAsset = this.box3d.assetRegistry.createAsset({
-            type: 'texture2D',
-            properties: {
-                ignoreStream: true,
-                generateMipmaps: false,
-                filtering: 'Linear',
-                uMapping: 'Clamp',
-                vMapping: 'Clamp',
-                fileId: fileProperties.id,
-                filename: fileProperties.name,
-                originalImage: fileProperties.extension === 'jpg' ||
-                    fileProperties.fileExtension === 'png' ? true : false
-            }
-        });
-        return new Promise((resolve, reject) => {
-            this.textureAsset.load((texAsset) => {
-                skybox.setSkyboxTexture(this.textureAsset.id);
-                resolve();
             });
         });
     }
 
+
     /**
-     * Enables VR if present
-     * @returns {void}
+     * Enable VR and reset the scene, on scene load event fired from Box3DRuntime
+     * @returns {[type]} [description]
      */
-    enableVrIfPresent() {
-        // Get the vrDevice to pass to the fullscreen API
-        this.input = this.box3d.getApplication().getComponentByScriptId('input_controller_component');
-        if (this.input) {
-            this.input.whenVrDeviceAvailable((device) => {
-                this.vrDevice = device;
-                this.emit(EVENT_SHOW_VR_BUTTON);
-            });
-        }
+    onSceneLoad() {
+        this.enableVrIfPresent();
+        this.emit(EVENT_SCENE_LOADED);
     }
 
     /**
@@ -222,9 +191,7 @@ class Image360Renderer extends EventEmitter {
         this.box3d.trigger('render');
 
         if (this.box3d.container) {
-            if (this.box3d.canvas) {
-                this.box3d.container.removeChild(this.box3d.canvas);
-            }
+            this.box3d.container.removeChild(this.box3d.canvas);
             this.box3d.container = null;
         }
 
@@ -308,6 +275,21 @@ class Image360Renderer extends EventEmitter {
 
         this.box3d.getBaseRenderer().setAttribute('clearAlpha', 0.0);
     }
+
+    /**
+     * Enables VR if present
+     * @returns {void}
+     */
+    enableVrIfPresent() {
+        // Get the vrDevice to pass to the fullscreen API
+        this.input = this.box3d.getApplication().getComponentByScriptId('input_controller_component');
+        if (this.input) {
+            this.input.whenVrDeviceAvailable((device) => {
+                this.vrDevice = device;
+                this.emit(EVENT_SHOW_VR_BUTTON);
+            });
+        }
+    }
 }
 
-export default Image360Renderer;
+export default Box3DRenderer;

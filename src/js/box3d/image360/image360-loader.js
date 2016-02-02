@@ -1,6 +1,6 @@
 'use strict';
 
-import AssetLoader from '../asset-loader';
+import AssetLoader from '../../asset-loader';
 
 const STATIC_URI = 'third-party/model3d/';
 const VIEWERS = [
@@ -24,6 +24,7 @@ class Image360Loader extends AssetLoader {
 
     /**
      * [constructor]
+     * @constructor
      * @returns {Image360Loader} The image360 loader instance
      */
     constructor() {
