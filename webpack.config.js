@@ -85,6 +85,7 @@ module.exports = languagesArray.map(function(language, index) {
             mp3: js + '/media/mp3.js',
             dash: js + '/media/dash.js',
             error: js + '/error/error.js',
+            box3d: [js + '/box3d/box3d.js'],
             model3d: js + '/box3d/model3d/model3d.js',
             image360: js + '/box3d/image360/image360.js'
         },
