@@ -6,6 +6,7 @@ import autobind from 'autobind-decorator';
 import throttle from 'lodash/function/throttle';
 import fetch from 'isomorphic-fetch';
 import Browser from './browser';
+import Logger from './logger';
 import loaders from './loaders';
 import cache from './cache';
 import ErrorLoader from './error/error-loader';
@@ -177,6 +178,9 @@ class Preview {
 
         let promise;
 
+        // Init performance logging
+        this.logger = new Logger(this.options);
+
         // Nuke everything in the box-preview wrapper to prepare for this preview.
         this.container.firstElementChild.innerHTML = '';
 
@@ -211,6 +215,10 @@ class Preview {
     loadFromCache(file, checkStaleness = true) {
         this.file = file;
 
+        // Add details to the logger
+        this.logger.setFile(file);
+        this.logger.setCached();
+
         // Even though we are showing a file from cache, still make
         // a server request to check if something changed aka check
         // for cache being stale.
@@ -244,6 +252,7 @@ class Preview {
             if (file.type === 'file') {
                 cache.set(id, file);
                 this.file = file;
+                this.logger.setFile(file);
                 return this.loadViewer();
             } else {
                 throw file.message;
@@ -329,6 +338,8 @@ class Preview {
                 this.deferred.resolve(this.viewer);
                 this.deferred = {};
             }
+            // Log perf metrics
+            this.logger.done();
         });
     }
 

@@ -1,0 +1,87 @@
+'use strict';
+
+import autobind from 'autobind-decorator';
+import Browser from './browser';
+
+const BROWSER_INFO = {
+    'name': Browser.getName(),
+    'swf': Browser.hasFlash(),
+    'svg': Browser.hasSVG(),
+    'mse': Browser.hasMSE(),
+    'webgl': Browser.hasWebGL(),
+    'mp3': Browser.canPlayMP3(),
+    'dash': Browser.canPlayDash(),
+    'h264': {
+        'baseline': Browser.canPlayH264Baseline(),
+        'main': Browser.canPlayH264Main(),
+        'high': Browser.canPlayH264High()
+    }
+};
+
+@autobind
+class Logger {
+
+    /**
+     * [constructor]
+     * @param {Object} options options
+     * @returns {Logger} Logger instance
+     */
+    constructor(options) {
+        this.start = Date.now();
+        this.metricsCallback = options.metricsCallback;
+        this.log = {
+            event: 'preview',
+            browser: BROWSER_INFO,
+            locale: options.location.locale,
+            cache: {
+                hit: false,
+                stale: false
+            }
+        };
+    }
+
+    /**
+     * Marks file as cached.
+     * @public
+     * @returns {void}
+     */
+    setCached() {
+        this.log.cache.hit = true;
+    }
+
+    /**
+     * Marks file as stale cache.
+     * @public
+     * @returns {void}
+     */
+    setCacheStale() {
+        this.log.cache.stale = true;
+    }
+
+    /**
+     * Sets the file object.
+     * @public
+     * @param {Object} file file object
+     * @returns {void}
+     */
+    setFile(file) {
+        this.log.file = file;
+    }
+
+    /**
+     * Finishes logging.
+     * @public
+     * @returns {void}
+     */
+    done() {
+        this.log.time = Date.now() - this.start;
+        if (typeof this.metricsCallback === 'function') {
+            this.metricsCallback(this.log);
+        } else {
+            console.log(this.log);
+        }
+    }
+
+}
+
+export default Logger;

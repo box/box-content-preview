@@ -7,13 +7,37 @@ const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
 const EXT_STANDARD_DERIVATIVES = 'OES_standard_derivatives';
 const EXT_FLOATING_POINT_TEXTURES = 'OES_texture_float';
+const USER_AGENT = navigator.userAgent;
 
-let document = global.document;
+let name = undefined;
 let gl = undefined;
 let supportsWebGL = undefined;
 
 @autobind
 class Browser {
+
+    static getName() {
+
+        if (name) {
+            return name;
+        }
+
+        if (USER_AGENT.indexOf('Edge/') > 0) {
+            name = 'Edge';
+        } else if (USER_AGENT.indexOf('OPR/') > 0) {
+            name = 'Opera';
+        } else if (USER_AGENT.indexOf('Chrome/') > 0) {
+            name = 'Chrome';
+        } else if (USER_AGENT.indexOf('Safari/') > 0) {
+            name = 'Safari';
+        } else if (USER_AGENT.indexOf('Trident/') > 0) {
+            name = 'Explorer';
+        } else if (USER_AGENT.indexOf('Firefox/') > 0) {
+            name = 'Firefox';
+        }
+
+        return name;
+    }
 
     /**
      * Mimicks HTML <audio> <video> canPlayType() and calls the native function.

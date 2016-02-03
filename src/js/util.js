@@ -5,6 +5,39 @@ let loadedCSSAssets = [];
 let prefetchedAssets = [];
 
 /**
+ * Converts a json object to query string
+ * @param {Object} obj Object to flatten
+ * @param {String} [prefix] optional prefix from prior recursion
+ * @param {Object} [parts] flattened object parts
+ * @returns {String} Query string
+ */
+export function flatten(obj, prefix = '', parts = {}) {
+    Object.keys(obj).forEach((k) => {
+        let key = prefix ? prefix + '[' + k + ']' : k;
+        let value = obj[k];
+
+        if (typeof value === 'object') {
+            flatten(value, key, parts);
+        } else {
+            parts[key] = value;
+        }
+    });
+    return parts;
+}
+
+/**
+ * Converts a json object to query string
+ * @param {Object} obj Object to change to query string
+ * @returns {String} Query string
+ */
+export function generateQueryString(obj) {
+    let flattenedObj = flatten(obj);
+    return '?' + Object.keys(flattenedObj).map((key) => {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(flattenedObj[key]);
+    }).join('&');
+}
+
+/**
  * Create <script> element to load external script
  *
  * @public
