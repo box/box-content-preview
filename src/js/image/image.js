@@ -3,6 +3,7 @@
 import '../../css/image/image.css';
 import autobind from 'autobind-decorator';
 import Base from './image-base';
+import Browser from '../browser';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -340,7 +341,9 @@ class Image extends Base {
     loadUI() {
         super.loadUI();
         this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon');
-        this.controls.add('View in 3D', this.switchTo3D, 'box-preview-image-switch-3d-icon', '3D');
+        if (Browser.supportsBox3D()) {
+            this.controls.add('View in 3D', this.switchTo3D, 'box-preview-image-switch-3d-icon', '3D');
+        }
     }
 }
 
