@@ -16,6 +16,7 @@
     bottom: 60px;
     right: 16px;
     display: none;
+    line-height: normal;
 }
 
 .box-preview-media-settings-item-speed,

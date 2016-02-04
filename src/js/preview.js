@@ -10,6 +10,7 @@ import Logger from './logger';
 import loaders from './loaders';
 import cache from './cache';
 import ErrorLoader from './error/error-loader';
+import RepStatus from './rep-status';
 import { decodeKeydown } from './util';
 
 const PREFETCH_COUNT = 3;
@@ -286,6 +287,9 @@ class Preview {
         // Determine the asset loader to use
         let loader = this.getLoader(this.file);
 
+        // Log the type of file
+        this.logger.setType(loader.getType());
+
         // Determine the viewer to use
         let viewer = loader.determineViewer(this.file);
 
@@ -295,8 +299,11 @@ class Preview {
         // Load all the static assets
         let promiseToLoadAssets = loader.load(viewer, this.options.location);
 
+        // Status checker
+        let repStatus = new RepStatus(this.logger);
+
         // Load the representation assets
-        let promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(representation, this.getRequestHeaders());
+        let promiseToGetRepresentationStatusSuccess = repStatus.status(representation, this.getRequestHeaders());
 
         // Proceed only when both static and representation assets have been loaded
         Promise.all([ promiseToLoadAssets, promiseToGetRepresentationStatusSuccess ]).then(() => {
@@ -515,8 +522,8 @@ class Preview {
         let file = this.files[index];
         this.load(file);
         this.updateNavigation();
-        if (typeof this.onNavigate === 'function') {
-            this.onNavigate(file);
+        if (typeof this.options.callbacks.navigation === 'function') {
+            this.options.callbacks.navigation(file);
         }
     }
 
@@ -596,8 +603,8 @@ class Preview {
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 
-        // Save the navigation callback
-        this.onNavigate = options.onNavigate;
+        // Save the callbacks
+        this.options.callbacks = options.callbacks || {};
 
         // Normalize by putting file inside files array if the latter
         // is empty. If its not empty, then it is assumed that file is

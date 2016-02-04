@@ -40,6 +40,7 @@ class TextLoader extends AssetLoader {
      */
     constructor() {
         super();
+        this.type = 'text';
         this.viewers = VIEWERS;
     }
 }

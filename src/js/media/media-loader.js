@@ -48,6 +48,7 @@ class MediaLoader extends AssetLoader {
      */
     constructor() {
         super();
+        this.type = 'media';
         this.viewers = VIEWERS;
     }
 }

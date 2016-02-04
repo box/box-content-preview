@@ -28,11 +28,12 @@ class Logger {
      */
     constructor(options) {
         this.start = Date.now();
-        this.metricsCallback = options.metricsCallback;
+        this.metricsCallback = options.callbacks.metrics;
         this.log = {
             event: 'preview',
             browser: BROWSER_INFO,
             locale: options.location.locale,
+            converted: true,
             cache: {
                 hit: false,
                 stale: false
@@ -59,6 +60,15 @@ class Logger {
     }
 
     /**
+     * Marks file as converted.
+     * @public
+     * @returns {void}
+     */
+    setUnConverted() {
+        this.log.converted = false;
+    }
+
+    /**
      * Sets the file object.
      * @public
      * @param {Object} file file object
@@ -66,6 +76,16 @@ class Logger {
      */
     setFile(file) {
         this.log.file = file;
+    }
+
+    /**
+     * Sets the file type.
+     * @public
+     * @param {String} type content type
+     * @returns {void}
+     */
+    setType(type) {
+        this.log.type = type;
     }
 
     /**

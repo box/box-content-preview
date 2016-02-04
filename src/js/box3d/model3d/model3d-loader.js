@@ -23,6 +23,7 @@ class Model3dLoader extends AssetLoader {
      */
     constructor() {
         super();
+        this.type = '3d';
         this.viewers = VIEWERS;
     }
 }
