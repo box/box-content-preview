@@ -31,6 +31,7 @@ class VideoBase extends MediaBase {
     destroy() {
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('mousemove', this.mousemoveHandler);
+            this.mediaEl.removeEventListener('click', this.togglePlay);
         }
         super.destroy();
     }
@@ -65,6 +66,7 @@ class VideoBase extends MediaBase {
         }, MOUSE_MOVE_TIMEOUT_IN_MILLIS);
 
         this.mediaEl.addEventListener('mousemove', this.mousemoveHandler);
+        this.mediaEl.addEventListener('click', this.togglePlay);
     }
 
     /**
