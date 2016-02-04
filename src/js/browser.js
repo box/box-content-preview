@@ -5,8 +5,12 @@ import autobind from 'autobind-decorator';
 const MIME_H264_BASELINE = 'video/mp4; codecs="avc1.42E01E"';
 const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
+const EXT_STANDARD_DERIVATIVES = 'OES_standard_derivatives';
+const EXT_FLOATING_POINT_TEXTURES = 'OES_texture_float';
 
 let document = global.document;
+let gl = undefined;
+let supportsWebGL = undefined;
 
 @autobind
 class Browser {
@@ -139,16 +143,36 @@ class Browser {
      * @returns {Boolean} - returns true if the browser supports WebGL
      */
     static hasWebGL() {
-        let gl,
-            canvas = document.createElement('canvas');
+        if (!gl) {
+            const canvas = document.createElement('canvas');
 
-        try {
-            gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        } catch (e) {
-            // no-op
+            try {
+                gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            } catch (e) {
+                // no-op
+            }
+            supportsWebGL = (gl !== null && gl !== undefined);
         }
 
-        return gl !== null && gl !== undefined;
+        return supportsWebGL;
+    }
+
+    /**
+     * Returns true if the browser supports full capabilities required by
+     * the Box3DRuntime
+     *
+     * @public
+     * @returns {Boolean} true if browser fully supports Box3DRuntime
+     */
+    static supportsBox3D() {
+        if (!Browser.hasWebGL()) {
+            return false;
+        }
+
+        const hasStandardDerivatives = gl.getExtension(EXT_STANDARD_DERIVATIVES);
+        const hasFloatingPointTextures = gl.getExtension(EXT_FLOATING_POINT_TEXTURES);
+
+        return hasStandardDerivatives && hasFloatingPointTextures;
     }
 
     /**
