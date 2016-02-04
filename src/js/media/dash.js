@@ -191,7 +191,7 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     adaptationHandler(adaptation) {
-        if (adaptation.type === 'video') {
+        if (adaptation.contentType === 'video') {
             if (adaptation.bandwidth === this.maxBandwidth) {
                 this.wrapperEl.classList.add(CSS_CLASS_HD);
             } else {
