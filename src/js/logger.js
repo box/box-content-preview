@@ -11,6 +11,7 @@ const BROWSER_INFO = {
     'webgl': Browser.hasWebGL(),
     'mp3': Browser.canPlayMP3(),
     'dash': Browser.canPlayDash(),
+    'box3d': Browser.supportsBox3D(),
     'h264': {
         'baseline': Browser.canPlayH264Baseline(),
         'main': Browser.canPlayH264Main(),
