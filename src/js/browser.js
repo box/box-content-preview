@@ -143,7 +143,7 @@ class Browser {
      * @returns {Boolean} - returns true if the browser supports WebGL
      */
     static hasWebGL() {
-        if (supportsWebGL === undefined) {
+        if (!gl) {
             const canvas = document.createElement('canvas');
 
             try {
