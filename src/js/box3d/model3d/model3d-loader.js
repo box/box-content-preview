@@ -8,7 +8,7 @@ const VIEWERS = [
         REPRESENTATION: '3d',
         EXTENSIONS: [ 'fbx', 'obj', 'dae', '3ds', 'ply'  ],
         SCRIPTS: [ STATIC_URI + 'boxsdk-0.1.1.js', STATIC_URI + 'box3d-resource-loader-0.1.1.js', STATIC_URI + 'box3d-runtime-0.9.1.js', 'model3d.js' ],
-        STYLESHEETS: [ 'model3d.css' ],
+        STYLESHEETS: [ 'box3d.css', 'model3d.css' ],
         CONSTRUCTOR: 'Model3d'
     }
 ];
