@@ -20,7 +20,8 @@ class AssetLoader {
      * @returns {String} content type
      */
     getType() {
-        return this.type || 'none';
+        let name = this.constructor.name || 'none';
+        return name.replace('Loader', '').toLowerCase();
     }
 
     /**
