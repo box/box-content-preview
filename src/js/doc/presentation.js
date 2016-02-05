@@ -57,12 +57,12 @@ class Presentation extends DocBase {
     addEventListenersForDocControls() {
         super.addEventListenersForDocControls();
 
-        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon');
+        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon previous-page');
 
         let buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
 
-        this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon');
+        this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon next-page');
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
     }
 

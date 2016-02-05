@@ -99,12 +99,12 @@ class Document extends DocBase {
             this.zoomOut();
         }, 'box-preview-doc-zoom-out-icon');
 
-        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-previous-page-icon');
+        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-previous-page-icon previous-page');
 
         let buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
 
-        this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon');
+        this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon next-page');
 
         // Annotation buttons
         if (this.options.viewers.Document && this.options.viewers.Document.annotations) {
