@@ -144,8 +144,8 @@ class DocBase extends Base {
      */
     checkPaginationButtons() {
         let currentPageNum = this.pdfViewer.currentPageNumber,
-            previousPageButtonEl = this.containerEl.querySelector('button.previous-page'),
-            nextPageButtonEl = this.containerEl.querySelector('button.next-page');
+            previousPageButtonEl = this.containerEl.querySelector('.box-preview-previous-page'),
+            nextPageButtonEl = this.containerEl.querySelector('.box-preview-next-page');
 
         // Disable previous page if on first page, otherwise enable
         if (previousPageButtonEl) {
