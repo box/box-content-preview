@@ -4,7 +4,6 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
-import fetch from 'isomorphic-fetch';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator } from '../util';
 
@@ -111,6 +110,7 @@ class DocBase extends Base {
      */
     previousPage() {
         this.pdfViewer.currentPageNumber--;
+        this.checkPaginationButtons();
     }
 
     /**
@@ -121,6 +121,7 @@ class DocBase extends Base {
      */
     nextPage() {
         this.pdfViewer.currentPageNumber++;
+        this.checkPaginationButtons();
     }
 
     /**
@@ -132,6 +133,37 @@ class DocBase extends Base {
      */
     setPage(pageNum) {
         this.pdfViewer.currentPageNumber = pageNum;
+        this.checkPaginationButtons();
+    }
+
+    /**
+     * Disables or enables previous/next pagination buttons depending on
+     * current page number.
+     *
+     * @returns {void}
+     */
+    checkPaginationButtons() {
+        let currentPageNum = this.pdfViewer.currentPageNumber,
+            previousPageButtonEl = this.containerEl.querySelector('.box-preview-previous-page'),
+            nextPageButtonEl = this.containerEl.querySelector('.box-preview-next-page');
+
+        // Disable previous page if on first page, otherwise enable
+        if (previousPageButtonEl) {
+            if (currentPageNum === 1) {
+                previousPageButtonEl.disabled = true;
+            } else {
+                previousPageButtonEl.disabled = false;
+            }
+        }
+
+        // Disable next page if on last page, otherwise enable
+        if (nextPageButtonEl) {
+            if (currentPageNum === this.pdfViewer.pagesCount) {
+                nextPageButtonEl.disabled = true;
+            } else {
+                nextPageButtonEl.disabled = false;
+            }
+        }
     }
 
     /**
@@ -142,7 +174,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     rotateLeft(delta = -90) {
-        let pageNumber = this.pdfViewer.currentPageNumber;
+        let currentPageNum = this.pdfViewer.currentPageNumber;
 
         // Calculate and set rotation
         this.pageRotation = this.pageRotation || 0;
@@ -151,7 +183,7 @@ class DocBase extends Base {
 
         // Re-render and scroll to appropriate page
         this.pdfViewer.forceRendering();
-        this.pdfViewer.scrollPageIntoView(pageNumber);
+        this.setPage(currentPageNum);
     }
 
     /**
@@ -161,8 +193,11 @@ class DocBase extends Base {
      * @returns {void}
      */
     toggleFullscreen() {
-        super.toggleFullscreen();
+        // Need to save current page number and restore once fullscreen
+        // animation is complete
+        this.currentPageNum = this.pdfViewer.currentPageNumber;
 
+        super.toggleFullscreen();
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
 
@@ -359,6 +394,8 @@ class DocBase extends Base {
         if (this.options.ui !== false) {
             this.loadUI();
         }
+
+        this.checkPaginationButtons();
     }
 
     /**
@@ -456,6 +493,11 @@ class DocBase extends Base {
     enterfullscreenHandler() {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.FULLSCREEN;
         this.pdfViewer.currentScaleValue = 'page-fit';
+
+        // Restore current page if needed
+        if (this.currentPageNum) {
+            this.setPage(this.currentPageNum);
+        }
     }
 
     /**
@@ -468,6 +510,11 @@ class DocBase extends Base {
     exitfullscreenHandler() {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.NORMAL;
         this.pdfViewer.currentScaleValue = 'auto';
+
+        // Restore current page if needed
+        if (this.currentPageNum) {
+            this.setPage(this.currentPageNum);
+        }
     }
 }
 
