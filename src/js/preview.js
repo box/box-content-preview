@@ -664,10 +664,6 @@ class Preview {
                     this.navigateRight();
                     consumed = true;
                     break;
-                case 'Escape':
-                    this.hide(true);
-                    consumed = true;
-                    break;
             }
         }
 
