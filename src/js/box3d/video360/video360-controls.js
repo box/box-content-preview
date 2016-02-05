@@ -2,7 +2,6 @@
 
 import EventEmitter from 'events';
 import {
-    CSS_CLASS_HIDDEN,
     EVENT_ENABLE_VR,
     EVENT_DISABLE_VR
 } from '../box3d-constants';
