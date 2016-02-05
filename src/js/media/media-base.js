@@ -249,6 +249,18 @@ class MediaBase extends Base {
     }
 
     /**
+     * Toggle playback
+     *
+     * @private
+     * @returns {void}
+     */
+    togglePlay() {
+        if (this.mediaControls) {
+            this.mediaControls.togglePlay();
+        }
+    }
+
+    /**
      * Adds event listeners to the media element.
      * Makes changes to the media controls.
      *
@@ -279,7 +291,7 @@ class MediaBase extends Base {
         }
 
         if (key === 'Space') {
-            this.mediaControls.togglePlay();
+            this.togglePlay();
             return true;
         }
 

@@ -21,6 +21,7 @@ class SwfLoader extends AssetLoader {
      */
     constructor() {
         super();
+        this.type = 'swf';
         this.viewers = VIEWERS;
     }
 }

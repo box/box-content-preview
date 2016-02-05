@@ -1,7 +1,6 @@
 'use strict';
 
 import autobind from 'autobind-decorator';
-import RepStatus from './rep-status';
 import {
     createContentUrl,
     prefetchAssets,
@@ -12,6 +11,17 @@ import {
 
 @autobind
 class AssetLoader {
+
+    /**
+     * Returns the high level content type for
+     * logging purposes.
+     *
+     * @public
+     * @returns {String} content type
+     */
+    getType() {
+        return this.type || 'none';
+    }
 
     /**
      * Determines if this loader can be used
@@ -64,19 +74,6 @@ class AssetLoader {
      */
     determineRepresentation(file, viewer) {
         return file.representations.entries.find((entry) => viewer.REPRESENTATION === entry.representation);
-    }
-
-    /**
-     * Gets the status of a representation asset
-     *
-     * @public
-     * @param {Object} representation box representation
-     * @param {Object} headers request headers
-     * @returns {Promise} Promise to load a preview
-     */
-    determineRepresentationStatus(representation, headers) {
-        let repStatus = new RepStatus();
-        return repStatus.status(representation, headers);
     }
 
     /**

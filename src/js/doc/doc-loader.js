@@ -43,6 +43,7 @@ class DocLoader extends AssetLoader {
      */
     constructor() {
         super();
+        this.type = 'document';
         this.viewers = VIEWERS;
     }
 

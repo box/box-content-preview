@@ -42,6 +42,9 @@
     align-items: center;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: rgba(90, 90, 90, 0.90);
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-font-smoothing: subpixel-antialiased;
+    font-smoothing: subpixel-antialiased;
     transform: translateZ(0);
 }
 

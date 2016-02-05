@@ -10,10 +10,11 @@ class RepLoader {
 
     /**
      * [constructor]
-     *
+     * @param {Object} logger logger instance
      * @returns {RepLoader} RepLoader instance
      */
-    constructor() {
+    constructor(logger) {
+        this.logger = logger;
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -69,6 +70,10 @@ class RepLoader {
                 break;
             case 'none':
             case 'pending':
+                if (this.logger) {
+                    // If we are doing some loggin, log that file needed conversion
+                    this.logger.setUnConverted();
+                }
                 this.updateStatus(url, headers);
                 break;
         }
