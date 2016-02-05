@@ -25,7 +25,7 @@ class Video360 extends Dash {
      * Ties together all 360 video rendering and controls
      * @constructor
      * @param {string|HTMLElement} container node
-     * @param {object} [options] some options
+     * @param {object} [options] Options to be passed to Dash. See Dash constructor
      * @returns {Video360} the Video360 object instance
      */
     constructor(container, options) {
@@ -71,7 +71,7 @@ class Video360 extends Dash {
      * @description Create UI specific to 360 degree video.
      * @method create360VideoUI
      * @private
-     * @returns {undefined}
+     * @returns {void}
      */
     create360VideoUI() {
         this.controls = new Video360Controls(this.mediaContainerEl);
@@ -122,7 +122,7 @@ class Video360 extends Dash {
      * using the Box3D runtime.
      * @method create360Environment
      * @private
-     * @returns {undefined}
+     * @returns {void}
      */
     create360Environment() {
         const box3d = this.renderer.box3d;
