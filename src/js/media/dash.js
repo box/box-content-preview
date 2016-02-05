@@ -53,6 +53,9 @@ class Dash extends VideoBase {
      */
     load(mediaUrl) {
 
+        // Polyfill
+        shaka.polyfill.installAll();
+
         this.mediaUrl = mediaUrl;
         this.mediaEl.addEventListener('loadedmetadata', this.loadedmetadataHandler);
         this.loadDashPlayer();

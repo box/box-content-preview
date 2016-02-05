@@ -5,6 +5,20 @@ let loadedCSSAssets = [];
 let prefetchedAssets = [];
 
 /**
+ * Inserts template string into dom node
+ *
+ * @public
+ * @param {Element} node dom node
+ * @param {String} template  html template
+ * @returns {void}
+ */
+export function insertTemplate(node, template) {
+    let range = document.createRange();
+    range.selectNode(node);
+    node.appendChild(range.createContextualFragment(template));
+}
+
+/**
  * Create <script> element to load external script
  *
  * @public

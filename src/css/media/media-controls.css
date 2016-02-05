@@ -24,7 +24,8 @@
 .box-preview-media-volume-scrubber-container {
     display: inline-block;
     width: 80px;
-    margin-bottom: 15px;
+    vertical-align: top;
+    margin-top: 10px;
 }
 
 .box-preview-media-controls-container {
@@ -71,6 +72,7 @@
     height: 40px;
     overflow: hidden;
     display: inline-block;
+    vertical-align: top;
     transition: width 0.2s ease-in-out;
 }
 
