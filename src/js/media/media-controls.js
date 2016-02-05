@@ -6,6 +6,7 @@ import controlsTemplate from 'raw!../../html/media/controls.html';
 import Scrubber from './scrubber';
 import Settings from './settings';
 import RepStatus from '../rep-status';
+import { insertTemplate } from '../util';
 
 const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
 const PLAYING_CLASS = 'box-preview-media-is-playing';
@@ -36,8 +37,8 @@ class MediaControls extends EventEmitter  {
         this.containerEl = containerEl;
         this.mediaEl = mediaEl;
 
-        let template = controlsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
-        this.containerEl.appendChild(document.createRange().createContextualFragment(template));
+        const template = controlsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        insertTemplate(this.containerEl, template);
 
         this.wrapperEl = this.containerEl.querySelector('.box-preview-media-controls-wrapper');
 

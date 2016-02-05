@@ -3,7 +3,8 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import settingsTemplate from 'raw!../../../html/model3d/settings.html';
-import {EVENT_RESET_SCENE_DEFAULTS, EVENT_ROTATE_ON_AXIS, EVENT_SAVE_SCENE_DEFAULTS} from './model3d-constants';
+import { EVENT_RESET_SCENE_DEFAULTS, EVENT_ROTATE_ON_AXIS, EVENT_SAVE_SCENE_DEFAULTS } from './model3d-constants';
+import { insertTemplate } from '../../util';
 
 const AXIS_X = 'x';
 const AXIS_Y = 'y';
@@ -38,8 +39,7 @@ class Model3dSettings extends EventEmitter  {
         this.containerEl = containerEl;
 
         const template = settingsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
-
-        this.containerEl.appendChild(document.createRange().createContextualFragment(template));
+        insertTemplate(this.containerEl, template);
 
         this.currentAxis = AXIS_Y;
         this.currentDefaultRenderMode = RENDER_MODE_LIT;

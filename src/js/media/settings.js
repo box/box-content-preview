@@ -4,6 +4,7 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import cache from '../cache';
 import settingTemplate from 'raw!../../html/media/settings.html';
+import { insertTemplate } from '../util';
 
 const CLASS_SETTINGS = 'box-preview-media-settings';
 const CLASS_SETTINGS_SELECTED = 'box-preview-media-settings-icon-selected';
@@ -24,8 +25,9 @@ class Settings extends EventEmitter {
         super();
         this.containerEl = containerEl;
 
-        let template = settingTemplate.replace(/\>\s*\</g, '><'); // removing new lines
-        this.containerEl.appendChild(document.createRange().createContextualFragment(template));
+        const template = settingTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        insertTemplate(this.containerEl, template);
+
         this.settings = this.containerEl.lastElementChild;
         this.settings.addEventListener('click', this.menuClickHandler);
         this.visible = false;
