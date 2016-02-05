@@ -35,9 +35,9 @@ class PlainText extends TextBase {
     load(textUrl) {
         fetch(textUrl, {
             headers: this.appendAuthHeader()
-        }).then((response) => {
-            return response.text();
-        }).then((txt) => {
+        })
+        .then((response) => response.text())
+        .then((txt) => {
             if (this.destroyed) {
                 return;
             }
