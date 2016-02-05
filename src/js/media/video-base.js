@@ -78,7 +78,9 @@ class VideoBase extends MediaBase {
      * @returns {void}
      */
     resize() {
-        this.mediaControls.resizeTimeScrubber();
+        if (this.mediaControls) {
+            this.mediaControls.resizeTimeScrubber();
+        }
     }
 }
 
