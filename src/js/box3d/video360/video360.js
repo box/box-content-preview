@@ -68,7 +68,7 @@ class Video360 extends Dash {
     }
 
     /**
-     * @description Create UI specific to 360 degree video.
+     * Create UI specific to 360 degree video.
      * @method create360VideoUI
      * @private
      * @returns {void}
@@ -118,7 +118,7 @@ class Video360 extends Dash {
     }
 
     /**
-     * @description Create the environment that will render the 360 video
+     * Create the environment that will render the 360 video
      * using the Box3D runtime.
      * @method create360Environment
      * @private
