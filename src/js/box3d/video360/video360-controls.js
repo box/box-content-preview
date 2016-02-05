@@ -37,7 +37,7 @@ class Video360Controls extends EventEmitter {
      * @returns {void}
      */
     addUi() {
-        let mediaControlsEl = this.el.querySelector('.box-preview-media-controls-container');
+        const mediaControlsEl = this.el.querySelector('.box-preview-media-controls-container');
 
         // Create the VR toggle button and then hide it.
         this.vrButton = mediaControlsEl.appendChild(document.createElement('button'));
@@ -45,21 +45,20 @@ class Video360Controls extends EventEmitter {
         this.vrButton.title = 'Enable VR Mode';
         this.vrButtonSpan = this.vrButton.appendChild(document.createElement('span'));
         this.vrButtonSpan.classList.add('icon-vr-toggle');
-        this.vrButtonSpan.style.display = 'none';
-        this.vrButton.style.display = 'none';
+        this.vrButtonSpan.classList.add('box-preview-media-hidden');
+        this.vrButton.classList.add('box-preview-media-hidden');
 
-        // Cretae the button to toggle back to 2D viewing
+        // Create the button to toggle back to 2D viewing
         this.toggle2dButton = mediaControlsEl.appendChild(document.createElement('button'));
         this.toggle2dButton.classList.add('box-preview-media-controls-btn', 'controls-2d');
         this.toggle2dButton.title = 'Switch to 2D Viewer';
-        let toggle2dButtonSpan = this.toggle2dButton.appendChild(document.createElement('span'));
+        const toggle2dButtonSpan = this.toggle2dButton.appendChild(document.createElement('span'));
         toggle2dButtonSpan.classList.add('switch-2d');
-        toggle2dButtonSpan.innerText = 'Back to 2D';
-        toggle2dButtonSpan.style.display = 'inline-block';
+        toggle2dButtonSpan.innerText = '2D';
 
         // Hide the 360 button that Dash creates
-        let toggle360Button = this.el.querySelector('.box-preview-image-switch-360-icon');
-        toggle360Button.style.display = 'none';
+        const toggle360Button = this.el.querySelector('.box-preview-image-switch-360-icon');
+        toggle360Button.classList.add('box-preview-media-hidden');
     }
 
     /**

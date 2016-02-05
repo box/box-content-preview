@@ -19,7 +19,7 @@ const VIEWERS = [
 class Video360Loader extends AssetLoader {
 
     /**
-     * [constructor]
+     * Instantiates a loader for 360 degree video preview.
      * @returns {Video360Loader} Video360Loader instance
      */
     constructor() {

@@ -1,6 +1,5 @@
 'use strict';
 
-// import '../../../css/video360/video360.css';
 import autobind from 'autobind-decorator';
 import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';
@@ -8,13 +7,8 @@ import Box3dRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
 import {
     EVENT_ENABLE_VR,
-    EVENT_ENTER_FULLSCREEN,
-    EVENT_EXIT_FULLSCREEN,
     EVENT_DISABLE_VR,
-    EVENT_RESET,
-    EVENT_SCENE_LOADED,
-    EVENT_SHOW_VR_BUTTON,
-    EVENT_TOGGLE_FULLSCREEN
+    EVENT_SHOW_VR_BUTTON
 } from '../box3d-constants';
 import {
     EVENT_RELOAD,

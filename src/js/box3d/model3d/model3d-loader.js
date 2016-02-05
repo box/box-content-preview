@@ -16,7 +16,7 @@ const VIEWERS = [
 class Model3dLoader extends AssetLoader {
 
     /**
-     * [constructor]
+     * Instantiates a loader for 3D model preview.
      * @constructor
      * @inheritdoc
      * @returns {Model3dLoader} The model3d loader instance

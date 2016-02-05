@@ -1,6 +1,6 @@
 'use strict';
 
-const sceneEntities = [{
+export default [{
     id: 'CAMERA_ID',
     type: 'camera',
     parentId: 'SCENE_ID',
@@ -79,5 +79,3 @@ const sceneEntities = [{
         }
     }
 }];
-
-export default sceneEntities;
