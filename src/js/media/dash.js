@@ -41,6 +41,7 @@ class Dash extends VideoBase {
         if (this.mediaControls) {
             this.mediaControls.removeListener('qualitychange', this.handleQuality);
         }
+        this.switchTo360El.removeEventListener('click', this.switchTo360);
         super.destroy();
     }
 
@@ -120,6 +121,20 @@ class Dash extends VideoBase {
                 headers.authorization = 'Bearer ' + token;
             }
         };
+    }
+
+    /**
+     * Switches the viewer to 3D
+     * @public
+     * @returns {void}
+     */
+    switchTo360() {
+        let el = this.mediaContainerEl;
+        let button360 =  el.querySelector('.box-preview-image-switch-360-icon');
+        button360.style.display = 'none';
+        Box.Preview.disableViewers('Dash');
+        Box.Preview.disableViewers('MP4');
+        this.emit('reload');
     }
 
     /**
@@ -234,6 +249,10 @@ class Dash extends VideoBase {
         this.calculateVideoDimensions();
         this.resize();
         this.loadFilmStrip();
+
+        this.switchTo360El = this.containerEl.querySelector('.box-preview-image-switch-360-icon');
+        this.switchTo360El.addEventListener('click', this.switchTo360.bind(this));
+        this.switchTo360El.style.display = 'inline-block';
     }
 
     /**

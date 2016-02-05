@@ -54,7 +54,7 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(14), __webpack_require__(72), __webpack_require__(146), __webpack_require__(147), __webpack_require__(148), __webpack_require__(149), __webpack_require__(150), __webpack_require__(152), __webpack_require__(153), __webpack_require__(154), __webpack_require__(2), __webpack_require__(155), __webpack_require__(65), __webpack_require__(156), __webpack_require__(157), __webpack_require__(158), __webpack_require__(66), __webpack_require__(159), __webpack_require__(86), __webpack_require__(160)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, RuntimeEvents, Box3DRuntime) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(14), __webpack_require__(72), __webpack_require__(147), __webpack_require__(148), __webpack_require__(149), __webpack_require__(90), __webpack_require__(150), __webpack_require__(152), __webpack_require__(153), __webpack_require__(154), __webpack_require__(2), __webpack_require__(155), __webpack_require__(65), __webpack_require__(156), __webpack_require__(157), __webpack_require__(158), __webpack_require__(66), __webpack_require__(159), __webpack_require__(86), __webpack_require__(160)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, RuntimeEvents, Box3DRuntime) {
 	  'use strict';
 
 	  _.noConflict();
@@ -54841,9 +54841,9 @@
 
 	    this.id = undefined;
 	    this.type = undefined;
-	    this.stateBase = 'pending';
-	    this.stateHierarchy = 'pending';
-	    this.stateDependencies = 'pending';
+	    this.stateBase = 'destroyed';
+	    this.stateHierarchy = 'destroyed';
+	    this.stateDependencies = 'destroyed';
 
 	    this.runtimeData = undefined;
 
@@ -55807,7 +55807,7 @@
 	    var parentAssetId = this.get('parentAssetId');
 	    if (this.isAsset()) {
 	      return this;
-	    } else if (parentAssetId && this.box3DRuntime) {
+	    } else if (parentAssetId) {
 	      return this.box3DRuntime.assetRegistry.getAssetById(parentAssetId);
 	    } else {
 	      return null;
@@ -56119,6 +56119,8 @@
 	    if (this.isInstance()) {
 	      this._unintPrefabBindings();
 	    }
+
+	    this.componentRegistry.unloadComponents();
 
 	    // Remove the old runtimeData from its parent.
 	    var parent = this.runtimeData && this.runtimeData.parent;
@@ -56572,7 +56574,7 @@
 	   * @param {String} reason One of: 'init' or 'propertyChanged'
 	   * @returns {void}
 	   */
-	  Box3DEntity.prototype._applyPropertiesLoaded = function (changes, reason) {};
+	  Box3DEntity.prototype._applyPropertiesLoaded = function () /*changes, reason*/{};
 
 	  //Update the settings for the object that don't require the Three.JS data to exist.
 	  //This method is called after loading an object and whenever there is a
@@ -56763,6 +56765,9 @@
 	        }
 	      });
 	    })).then(function () {
+	      if (_this7.stateBase === 'destroyed') {
+	        return;
+	      }
 	      if (_this7.stateHierarchy !== 'pending') {
 	        _this7.when('loadBase', function () {
 	          _this7.trigger('loadHierarchy', _this7);
@@ -64804,7 +64809,7 @@
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(144);
+	var _raf = __webpack_require__(145);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -66550,7 +66555,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(13), __webpack_require__(14), __webpack_require__(80), __webpack_require__(81), __webpack_require__(87), __webpack_require__(78), __webpack_require__(88), __webpack_require__(89), __webpack_require__(90), __webpack_require__(91), __webpack_require__(92), __webpack_require__(136), __webpack_require__(143)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, uuid, RuntimeEvents, ApplicationRegistry, DocumentRegistry, SceneRegistry, PrefabRegistry, GeometryRegistry, MaterialRegistry, TextureRegistry, AnimationRegistry, ScriptRegistry, ShaderRegistry, AudioRegistry) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(13), __webpack_require__(14), __webpack_require__(80), __webpack_require__(81), __webpack_require__(87), __webpack_require__(78), __webpack_require__(88), __webpack_require__(89), __webpack_require__(91), __webpack_require__(92), __webpack_require__(93), __webpack_require__(137), __webpack_require__(144)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, uuid, RuntimeEvents, ApplicationRegistry, DocumentRegistry, SceneRegistry, PrefabRegistry, GeometryRegistry, MaterialRegistry, TextureRegistry, AnimationRegistry, ScriptRegistry, ShaderRegistry, AudioRegistry) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -67519,7 +67524,7 @@
 
 	    _.extend(properties, this.mapMaterialProperties(matProps, undefined,
 	      'reflectionFactor', 'reflectionTexture', 'reflectivityF0',
-	      'specularEnvironmentMap2D', true));
+	      'environmentMap2D_0', true));
 	  }
 
 	  // Ambient
@@ -69249,10 +69254,12 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(79)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseRegistry) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(79), __webpack_require__(90)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseRegistry, MaterialAsset) {
 	  'use strict';
 
 	  /**
@@ -69334,10 +69341,34 @@
 	        name: 'Missing Material',
 	        properties: {
 	          shader: this.defaultShaderId,
-	          baseAlbedo: 9671571
+	          baseAlbedo: 13882323
 	        }
 	      }
 	    }, this.timeValueInUse = false;
+
+	    this.standInTextures = {};
+	    this.standInTextures[MaterialAsset.STANDIN_TEXTURE_WHITE] = {
+	      texture: null,
+	      color: [255, 255, 255]
+	    };
+	    this.standInTextures[MaterialAsset.STANDIN_TEXTURE_WHITE_CUBE] = {
+	      texture: null,
+	      color: [255, 255, 255],
+	      type: 'Cube'
+	    };
+	    this.standInTextures[MaterialAsset.STANDIN_TEXTURE_BLACK] = {
+	      texture: null,
+	      color: [0, 0, 0]
+	    };
+	    this.standInTextures[MaterialAsset.STANDIN_TEXTURE_BLACK_CUBE] = {
+	      texture: null,
+	      color: [0, 0, 0],
+	      type: 'Cube'
+	    };
+	    this.standInTextures[MaterialAsset.STANDIN_TEXTURE_NORMAL] = {
+	      texture: null,
+	      color: [127, 127, 255]
+	    };
 	  };
 
 	  MaterialRegistry.prototype = new BaseRegistry();
@@ -69354,12 +69385,46 @@
 	    this.box3DRuntime.off('rebuildMaterials', this.rebuildAll, this);
 	    this.box3DRuntime.off('resize', this.onResize, this);
 	    this.box3DRuntime.off('textureDeleted', this.onTextureDeleted, this);
-
+	    for (var i in this.standInTextures) {
+	      if (this.standInTextures.hasOwnProperty(i) && this.standInTextures[i].texture) {
+	        this.standInTextures[i].texture.dispose();
+	      }
+	    }
 	    BaseRegistry.prototype.uninitialize.call(this);
 	  };
 
+	  /**
+	   * Returns a material asset to be used in place of missing assets.
+	   * @method getMissingMaterial
+	   * @public
+	   * @return {Object} MaterialAsset
+	   */
 	  MaterialRegistry.prototype.getMissingMaterial = function () {
 	    return this.getAssetById('missingMaterial');
+	  };
+
+	  /**
+	   * Returns a texture intended to be used as a placeholder while another texture loads.
+	   * e.g. MaterialAsset.STANDIN_TEXTURE_NORMAL results in a 1x1 normal map and can allow a
+	   * material to render without artifacts while a full-res normal map loads.
+	   * @method getStandInTexture
+	   * @public
+	   * @param {String} texEnum Texture stand-in type. MaterialAsset.STANDIN_TEXTURE_WHITE, etc.
+	   * @return {Object} THREE.DataTexture or THREE.CubeTexture
+	   */
+	  MaterialRegistry.prototype.getStandInTexture = function (texEnum) {
+	    if (!this.standInTextures[texEnum]) {
+	      return null;
+	    }
+	    if (!this.standInTextures[texEnum].texture) {
+	      var textureReg = this.box3DRuntime.assetRegistry.Textures;
+	      if (this.standInTextures[texEnum].type === 'Cube') {
+	        this.standInTextures[texEnum].texture = textureReg.createColorTextureCube.apply(textureReg, _toConsumableArray(this.standInTextures[texEnum].color));
+	      } else {
+	        this.standInTextures[texEnum].texture = textureReg.createColorTexture.apply(textureReg, _toConsumableArray(this.standInTextures[texEnum].color));
+	      }
+	    }
+	    return this.standInTextures[texEnum].texture;
 	  };
 
 	  MaterialRegistry.prototype.getSharedUniform = function (uniformName) {
@@ -69423,6 +69488,1148 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
+	/**
+	 * @module VAPI
+	 */
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(9)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DAsset) {
+	  'use strict';
+
+	  var VAPI = window.VAPI = window.VAPI || {};
+
+	  var MaterialAsset = function MaterialAsset(json) {
+	    Box3DAsset.call(this, json);
+	  };
+
+	  /**
+	   * Stand-in textures are substituted while a real texture loads so that
+	   * the material can properly render in the meantime.
+	   * @type {String}
+	   */
+	  MaterialAsset.STANDIN_TEXTURE_WHITE = 'STANDIN_TEXTURE_WHITE';
+	  MaterialAsset.STANDIN_TEXTURE_WHITE_CUBE = 'STANDIN_TEXTURE_WHITE_CUBE';
+	  MaterialAsset.STANDIN_TEXTURE_BLACK = 'STANDIN_TEXTURE_BLACK';
+	  MaterialAsset.STANDIN_TEXTURE_BLACK_CUBE = 'STANDIN_TEXTURE_BLACK_CUBE';
+	  MaterialAsset.STANDIN_TEXTURE_NORMAL = 'STANDIN_TEXTURE_NORMAL';
+
+	  MaterialAsset.prototype = new Box3DAsset();
+
+	  MaterialAsset.prototype.defaultProperties = _.extend({}, Box3DAsset.prototype.defaultProperties, {
+	    shader: 'box3d_pbr_spec_gloss_shader'
+	  });
+
+	  MaterialAsset.prototype.events = {
+	    setColor: {
+	      scope: 'local',
+	      action: true,
+	      category: 'Materials',
+	      params: [{
+	        name: 'parameter',
+	        type: 'dd',
+	        description: 'The colour parameter to modify.',
+	        default: 'albedoColor',
+	        options: {
+	          Diffuse: 'albedoColor',
+	          Specular: 'specularColor',
+	          Emissive: 'emissiveColor'
+	        }
+	      }, {
+	        name: 'value',
+	        type: 'c',
+	        description: 'The colour to set.',
+	        default: 0xff0000
+	      }, {
+	        name: 'animationTime',
+	        type: 'f',
+	        description: 'The length of time that the change will take. i.e. this ' + 'lets you animate the change.',
+	        default: 0.0,
+	        min: 0.0
+	      }]
+	    },
+	    setNumber: {
+	      scope: 'local',
+	      action: true,
+	      category: 'Materials',
+	      params: [{
+	        name: 'parameter',
+	        type: 'dd',
+	        description: 'The number parameter to modify.',
+	        default: 'colorOpacity',
+	        options: {
+	          'Opacity': 'opacity',
+	          'Rimlight Falloff': 'rimPower',
+	          'Glossiness': 'gloss',
+	          'Scattering Amount': 'scatterLocalScale',
+	          'Normal Map Scale': 'normalScale',
+	          'Parallax Scale': 'parallaxScale',
+	          'Reflectivity': 'reflectivityF0'
+	        }
+	      }, {
+	        name: 'value',
+	        type: 'f',
+	        description: 'The value to set.',
+	        default: 1.0
+	      }, {
+	        name: 'animationTime',
+	        type: 'f',
+	        description: 'The length of time that the change will take. i.e. ' + ' this lets you animate the change.',
+	        default: 0.0,
+	        min: 0.0
+	      }]
+	    },
+	    setVector2: {
+	      scope: 'local',
+	      action: true,
+	      category: 'Materials',
+	      params: [{
+	        name: 'parameter',
+	        type: 'dd',
+	        description: 'The vector parameter to modify.',
+	        default: 'diffuseTextureOffset',
+	        options: {
+	          'Diffuse Texture Offset': 'diffuseTextureOffset',
+	          'Diffuse Texture Scale': 'diffuseTextureScale',
+	          'Diffuse Texture Pan': 'diffuseTexturePan',
+	          'AO Texture Offset': 'aoTextureOffset',
+	          'AO Texture Scale': 'aoTextureScale',
+	          'AO Texture Pan': 'aoTexturePan',
+	          'Specular Texture Offset': 'specularTextureOffset',
+	          'Specular Texture Scale': 'specularTextureScale',
+	          'Specular Texture Pan': 'specularTexturePan',
+	          'Normal Map Offset': 'normalTextureOffset',
+	          'Normal Map Scale': 'normalTextureScale',
+	          'Normal Map Pan': 'normalTexturePan',
+	          'SSS Texture Offset': 'sssTextureOffset',
+	          'SSS Texture Scale': 'sssTextureScale',
+	          'SSS Texture Pan': 'sssTexturePan',
+	          'Displacement Map Offset': 'displacementTextureOffset',
+	          'Displacement Map Scale': 'displacementTextureScale',
+	          'Displacement Map Pan': 'displacementTexturePan',
+	          'Emissive Texture Offset': 'emissiveTextureOffset',
+	          'Emissive Texture Scale': 'emissiveTextureScale',
+	          'Emissive Texture Pan': 'emissiveTexturePan'
+	        }
+	      }, {
+	        name: 'value',
+	        type: 'v2',
+	        description: 'The colour to set.',
+	        default: {
+	          x: 1.0,
+	          y: 1.0
+	        }
+	      }, {
+	        name: 'animationTime',
+	        type: 'f',
+	        description: 'The length of time that the change will take. i.e.' + ' this lets you animate the change.',
+	        default: 0.0,
+	        min: 0.0
+	      }]
+	    }
+	  };
+
+	  MaterialAsset.prototype.initialize = function (properties) {
+	    Box3DAsset.prototype.initialize.call(this, properties);
+
+	    //Materials don't have a hierarchy so we'll mark it as already loaded.
+	    this.trigger('loadHierarchy', this);
+	    this.trigger('loadComponents', this);
+
+	    this.on('setColor', this.setColor, this);
+	    this.on('setNumber', this.setNumber, this);
+	    this.on('setVector2', this.setVector2, this);
+	  };
+
+	  MaterialAsset.prototype.uninitialize = function () {
+	    Box3DAsset.prototype.uninitialize.call(this);
+	    this.off('setColor', this.setColor, this);
+	    this.off('setNumber', this.setNumber, this);
+	    this.off('setVector2', this.setVector2, this);
+	  };
+
+	  /**
+	   * Rebuild dependencies for this material.
+	   * @method registerDependencies
+	   * @private
+	   */
+	  MaterialAsset.prototype.registerDependencies = function () {
+	    var textures = this.getReferencedAssetsList(true);
+	    // Register fresh list of dependencies
+	    textures.forEach(function (texAsset) {
+	      if (texAsset) {
+	        this.registerDependency(texAsset.id);
+	      }
+	    }, this);
+	  };
+
+	  /** @inheritdoc */
+	  MaterialAsset.prototype.getProperty = function (propName) {
+	    var value = Box3DAsset.prototype.getProperty.call(this, propName);
+	    if (value === undefined) {
+	      var shaderParams = this.getShader().getProperty('parameters');
+	      if (shaderParams[propName]) {
+	        value = shaderParams[propName].default;
+	      }
+	    }
+	    return value;
+	  };
+
+	  /**
+	   * Return a list of texture assets that this material currently uses.
+	   * This takes enabled/disabled features into account as well as conditional
+	   * logic for the individual parameter.
+	   * @return {[type]} [description]
+	   */
+	  MaterialAsset.prototype.getReferencedAssetsList = function (allowDuplicates) {
+	    var refTextures = [];
+	    var refTextureMap = {};
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var shaderUniforms = shaderAsset.getProperty('uniforms');
+	    var shaderFeatures = shaderAsset.getProperty('features');
+	    // For each enabled feature for this material, go through
+	    // the parameters and see what textures are being used.
+	    _.each(shaderFeatures, function (feature, featureName) {
+	      if (this.isFeatureEnabled(featureName)) {
+	        _.each(feature.parameters, function (param) {
+	          var textureId;
+	          var textureAsset;
+	          if (shaderParams[param].type === 't') {
+	            if (this.isParameterUsed(param)) {
+	              textureId = this.getMaterialParameter(param);
+	            }
+	            if (textureId) {
+	              textureAsset = this.getAssetById(textureId);
+	              if (!refTextureMap[textureId]) {
+	                refTextureMap[textureId] = textureAsset;
+	                refTextures.push(textureAsset);
+	              } else if (allowDuplicates) {
+	                refTextures.push(textureAsset);
+	              }
+	            }
+	          }
+	        }, this);
+	      }
+	    }, this);
+
+	    _.each(shaderUniforms, function (uniform) {
+	      if (uniform.type === 't' && uniform.default) {
+	        if (this.getAssetById(uniform.default)) {
+	          if (!refTextureMap[uniform.default]) {
+	            refTextureMap[uniform.default] = this.getAssetById(uniform.default);
+	            refTextures.push(this.getAssetById(uniform.default));
+	          } else if (allowDuplicates) {
+	            refTextures.push(this.getAssetById(uniform.default));
+	          }
+	        }
+	      }
+	    }, this);
+
+	    return refTextures;
+	  };
+
+	  MaterialAsset.prototype.getShader = function () {
+	    var shaderId = this.getProperty('shader');
+	    var shaderAsset = this.getAssetById(shaderId);
+	    if (!shaderAsset) {
+	      shaderAsset = this.getAssetById(this.registry.defaultShaderId);
+	    }
+	    return shaderAsset;
+	  };
+
+	  /**
+	   * Return the value of the given material parameter.
+	   * @param  {String} name The name of the parameter
+	   * @return {Mixed}      The value of the parameter, if it exists.
+	   */
+	  MaterialAsset.prototype.getMaterialParameter = function (name) {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var value;
+	    if (shaderParams[name]) {
+	      if (!_.isUndefined(this.getProperty(name))) {
+	        value = this.getProperty(name);
+	      } else {
+	        value = shaderParams[name].default;
+	      }
+	    }
+	    return value;
+	  };
+
+	  /**
+	   * Return the value of the given material parameter.
+	   * @return {Object}      All parameters and their current values.
+	   */
+	  MaterialAsset.prototype.getMaterialParameters = function () {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var returnParams = {};
+	    _.each(shaderParams, function (param, name) {
+	      returnParams[name] = this.getMaterialParameter(name);
+	    }, this);
+	    return returnParams;
+	  };
+
+	  MaterialAsset.prototype.getMaterialParameterDefault = function (name) {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    if (shaderParams[name]) {
+	      return shaderParams[name].default;
+	    }
+	  };
+
+	  /** @inheritdoc */
+	  MaterialAsset.prototype.createRuntimeData = function (callback) {
+	    var shaderAsset = this.getShader();
+
+	    shaderAsset.when('load', function () {
+	      this.runtimeData = {};
+	      _.each(this.registry.materialObjectTypes, function (type, typeName) {
+	        var matParams = {};
+	        matParams.vertexShader = shaderAsset.runtimeData.vertexShader;
+	        matParams.fragmentShader = shaderAsset.runtimeData.fragmentShader;
+	        // Copy the uniforms from the source shader
+	        matParams.uniforms = THREE.UniformsUtils.clone(shaderAsset.runtimeData.uniforms);
+	        // Add the uniforms that are shared between all materials
+	        this._addSharedUniforms(matParams.uniforms);
+
+	        this.runtimeData[typeName] = new THREE.ShaderMaterial(matParams);
+	        this.runtimeData[typeName].name = this.getName();
+	        this.runtimeData[typeName].box3DEntityId = this.id;
+
+	        // Assign default renderParams for shader.
+	        for (var key in shaderAsset.runtimeData.renderParams) {
+	          if (this.runtimeData[typeName].hasOwnProperty(key)) {
+	            if (this.isParameterUsed(key)) {
+	              this.runtimeData[typeName][key] = shaderAsset.runtimeData.renderParams[key];
+	            } else {
+	              delete this.runtimeData[typeName][key];
+	            }
+	          }
+	        }
+
+	        // Assign override renderParams from material object type.
+	        _.each(type, function (value, key) {
+	          if (this.runtimeData[typeName].hasOwnProperty(key)) {
+	            this.runtimeData[typeName][key] = value;
+	          }
+	        }, this);
+	      }, this);
+
+	      // Rebuild list of preprocessor defines for each material type
+	      this._updateMaterialDefines();
+
+	      // Done.
+	      callback();
+	    }, this);
+
+	    shaderAsset.load();
+	  };
+
+	  MaterialAsset.prototype._convertToDefine = function (name) {
+	    function unCamelCase(str) {
+	      return str
+	      // insert an underscore between lower & upper
+	      .replace(/([a-z])([A-Z])/g, '$1_$2')
+	      // underscore before last upper in a sequence followed by lower
+	      .replace(/([A-Z]+)([A-Z])([a-z])/, '$1_$2$3')
+	      // uppercase the first character
+	      .toUpperCase();
+	    }
+
+	    var friendlyStr = _.isString(name) ? name : '';
+
+	    friendlyStr = friendlyStr.replace(/_([a-z])/gi, function (m, w) {
+	      return '_' + w.toUpperCase();
+	    });
+
+	    friendlyStr = friendlyStr.replace(/\s+/g, '_');
+
+	    // Find where a number follows a letter and insert an underscore
+	    friendlyStr = friendlyStr.replace(/([a-z])([0-9])/g, '$1_$2');
+
+	    // Find where a letter follows a number and insert an underscore
+	    // friendlyStr = friendlyStr.replace(/([0-9])([A-z])/g, '$1_$2');
+
+	    friendlyStr = unCamelCase(friendlyStr);
+
+	    return friendlyStr;
+	  };
+
+	  MaterialAsset.prototype._testParameterCondition = function (param, condition) {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    if (!shaderParams[param]) {
+	      return false;
+	    }
+	    var value = this.getMaterialParameter(param);
+
+	    // If this parameter is a texture and is assigned a texture that no longer
+	    // exists, consider its value as null.
+	    if (shaderParams[param].type === 't') {
+	      if (!this.getAssetById(value)) {
+	        value = null;
+	      }
+	    }
+	    for (var i in condition) {
+	      if (condition.hasOwnProperty(i)) {
+	        switch (i) {
+	          case 'equal':
+	            if (value !== condition[i]) {
+	              return false;
+	            }
+	            break;
+	          case 'notEqual':
+	            if (value === condition[i]) {
+	              return false;
+	            }
+	            break;
+	          case 'equalDefault':
+	            if (value !== shaderParams[param].default) {
+	              return false;
+	            }
+	            break;
+	          case 'notEqualDefault':
+	            if (value === shaderParams[param].default) {
+	              return false;
+	            }
+	            break;
+	          default:
+	            return false;
+	        }
+	      }
+	    }
+	    return true;
+	  };
+
+	  /**
+	   * Test whether the conditions specified for a parameter are satisfied or not. Performs
+	   * a logic AND on all properties in the given object
+	   * @method  testParameterConditions
+	   * @param  {Object} conditions Json object structure specifying the AND conditional
+	   * @return {Boolean}            True if the result of the test is true
+	   */
+	  MaterialAsset.prototype.testParameterConditions = function (conditions) {
+	    var i;
+	    var result = true;
+
+	    //Loop through and test each conditional
+	    for (i in conditions) {
+	      if (conditions.hasOwnProperty(i)) {
+	        if (i === 'or') {
+	          if (!this._testParameterConditionsOr(conditions[i])) {
+	            result = false;
+	            break;
+	          }
+	        } else if (!this._testParameterCondition(i, conditions[i])) {
+	          result = false;
+	          break;
+	        }
+	      }
+	    }
+	    return result;
+	  };
+
+	  MaterialAsset.prototype._testParameterConditionsOr = function (conditions) {
+	    var i;
+	    var result = false;
+
+	    //Loop through and test each conditional
+	    for (i = 0; i < conditions.length; i++) {
+	      if (this.testParameterConditions(conditions[i])) {
+	        result = true;
+	        break;
+	      }
+	    }
+	    return result;
+	  };
+
+	  /**
+	   * Calculate and return all of the defines for this material based
+	   * on the features enabled and the conditions for each parameter.
+	   * @return {Object} The defines for this material.
+	   */
+	  MaterialAsset.prototype._getPreprocessorDefines = function () {
+	    var shaderAsset = this.getShader();
+	    var shaderFeatures = shaderAsset.getProperty('features');
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var defines = {};
+	    _.each(shaderFeatures, function (feature, featureName) {
+	      // If the feature is enabled, go through each parameter and
+	      // build a list of defines
+	      if (this.isFeatureEnabled(featureName)) {
+	        // Add a define for the feature itself.
+	        defines[this._convertToDefine(featureName)] = 0;
+
+	        // Add defines for each enabled parameter.
+	        _.each(feature.parameters, function (paramName) {
+	          var useDefines = false;
+	          if (shaderParams[paramName].enabledWhen) {
+	            // Handle conditional logic
+	            if (this.testParameterConditions(shaderParams[paramName].enabledWhen)) {
+	              useDefines = true;
+	            }
+	          } else if (!shaderParams[paramName].isRenderParam) {
+	            useDefines = true;
+	          }
+	          if (useDefines) {
+	            var defineName = this._convertToDefine(paramName);
+	            defines[defineName] = 0;
+	            if (shaderParams[paramName].type === 'dd') {
+	              defines[defineName] = this.getMaterialParameter(paramName);
+	            } else if (shaderParams[paramName].type === 't') {
+	              var texId = this.getMaterialParameter(paramName);
+	              var texture = this.getAssetById(texId);
+	              var mipsDefine = defineName + '_NUM_MIPS';
+	              if (texture) {
+	                defines[mipsDefine] = texture.getNumMips();
+	              } else {
+	                defines[mipsDefine] = 0;
+	              }
+	            }
+	            if (shaderParams[paramName].defines) {
+	              _.extend(defines, shaderParams[paramName].defines);
+	            }
+	          }
+	        }, this);
+	      }
+	    }, this);
+	    return defines;
+	  };
+
+	  MaterialAsset.prototype._updateMaterialDefines = function () {
+	    var defines = this._getPreprocessorDefines();
+	    _.each(this.registry.materialObjectTypes, function (type, typeName) {
+	      var matDefines = _.clone(defines);
+	      for (var y in type) {
+	        if (type.hasOwnProperty(y) && y === 'defines') {
+	          for (var d in type.defines) {
+	            if (type.defines.hasOwnProperty(d)) {
+	              matDefines[d] = type.defines[d];
+	            }
+	          }
+	        } else {
+	          matDefines[y] = type[y];
+	        }
+	      }
+
+	      this.runtimeData[typeName].defines = matDefines;
+	      this.runtimeData[typeName].needsUpdate = true;
+	    }, this);
+	  };
+
+	  //Link up a uniform that is shared between materials
+	  //For now, just hardcode this for the 'time' uniform...
+	  MaterialAsset.prototype._addSharedUniforms = function (uniforms) {
+	    uniforms.time = this.registry.getSharedUniform('time');
+	    uniforms.screenDimensions = this.registry.getSharedUniform('screenDimensions');
+	  };
+
+	  MaterialAsset.prototype._updateAllShaderParameters = function () {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var allParams = {};
+	    // Build a list of all parameters. Supplying undefined values forces update
+	    // to default shader param values.
+	    _.each(shaderParams, function (param, key) {
+	      allParams[key] = undefined;
+	    }, this);
+	    allParams = _.extend(allParams, this.getProperties());
+	    this._updateShaderParameters(allParams);
+	  };
+
+	  MaterialAsset.prototype._updateShaderParameters = function (changes) {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    _.each(changes, function (value, key) {
+	      if (shaderParams[key]) {
+	        this._updateShaderParameter(key);
+	      }
+	    }, this);
+	  };
+
+	  /** @inheritdoc */
+	  MaterialAsset.prototype._applyPropertiesLoaded = function (changes, reason) {
+	    var _this = this;
+
+	    Box3DAsset.prototype._applyPropertiesLoaded.call(this, changes, reason);
+
+	    if (changes.hasOwnProperty('shader')) {
+	      (function () {
+	        // TODO - we could store and compare previously-enabled features so that
+	        // we can maintain state for the user after switching shaders. This, of course,
+	        // assumes that there would be overlapping features between shaders...
+
+	        var shaderAsset = _this.getShader();
+	        shaderAsset.when('load', function onShaderLoad() {
+	          for (var x in this.registry.materialObjectTypes) {
+	            if (this.runtimeData.hasOwnProperty(x)) {
+	              var material = this.runtimeData[x];
+	              material.fragmentShader = shaderAsset.runtimeData.fragmentShader;
+	              material.vertexShader = shaderAsset.runtimeData.vertexShader;
+	              material.uniforms = THREE.UniformsUtils.clone(shaderAsset.runtimeData.uniforms);
+
+	              for (var key in shaderAsset.runtimeData.renderParams) {
+	                if (this.runtimeData[x].hasOwnProperty(key)) {
+	                  if (this.isParameterUsed(key)) {
+	                    this.runtimeData[x][key] = shaderAsset.runtimeData.renderParams[key];
+	                  } else {
+	                    delete this.runtimeData[x][key];
+	                  }
+	                }
+	              }
+
+	              this.runtimeData[x].needsUpdate = true;
+	              this._updateMaterialDefines();
+	              this._updateAllShaderParameters();
+	              this._updateTransparency();
+	              this._updateDerivatives();
+	              this.box3DRuntime.needsRender = true;
+	            }
+	          }
+	        }, _this);
+
+	        if (shaderAsset.isUnloaded()) {
+	          shaderAsset.load();
+	        }
+	      })();
+	    } else if (changes.hasOwnProperty('enabledFeatures')) {
+	      this._updateMaterialDefines();
+	      this._updateShaderParameters(changes);
+	      this._updateTransparency();
+	      this._updateDerivatives();
+	      this.box3DRuntime.needsRender = true;
+	    } else {
+	      var shaderAsset = this.getShader();
+	      var shaderParams = shaderAsset.getProperty('parameters');
+	      var transparencyNeedsUpdate = false;
+	      var derivativesNeedsUpdate = false;
+	      var definesNeedUpdate = false;
+
+	      for (var p in changes) {
+	        if (changes.hasOwnProperty(p)) {
+	          if (shaderParams[p]) {
+	            if (shaderParams[p].transparency) {
+	              transparencyNeedsUpdate = true;
+	            }
+	            if (!_.isUndefined(shaderParams[p].derivatives)) {
+	              derivativesNeedsUpdate = true;
+	            }
+	            // If there are any parameters that are dependent on the value
+	            // of this one, we'll need to break out and rebuild preprocessor
+	            // defines.
+	            if (shaderAsset.getDependentParameters(p).length || shaderParams[p].forceUpdate) {
+	              definesNeedUpdate = true;
+	              break;
+	            }
+	            this._updateShaderParameter(p);
+	          }
+	        }
+	      }
+
+	      if (definesNeedUpdate) {
+	        this._updateMaterialDefines();
+	        this._updateAllShaderParameters();
+	        // Merge defines with existing set and force materials to update.
+	        transparencyNeedsUpdate = true;
+	        derivativesNeedsUpdate = true;
+	      }
+
+	      if (transparencyNeedsUpdate) {
+	        this._updateTransparency();
+	      }
+
+	      if (derivativesNeedsUpdate) {
+	        this._updateDerivatives();
+	      }
+
+	      this.box3DRuntime.needsRender = true;
+	    }
+	  };
+
+	  MaterialAsset.prototype._applyPropertiesUnloaded = function (changes) {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var value, prevValue;
+	    var dependenciesNeedUpdate = false;
+
+	    if (changes) {
+	      _.each(changes, function (param, key) {
+	        if (shaderParams[key]) {
+	          //If a texture has changed, update the size of all objects that rely on this material.
+	          if (shaderParams[key].type === 't') {
+	            value = this.getProperty(key);
+	            prevValue = this.getPreviousProperty(key);
+	            // Only register the dependency if the parameter is actually being used.
+	            if (this.isParameterUsed(key)) {
+	              if (prevValue !== value) {
+	                this.registerDependency(value);
+	                this.unregisterDependency(prevValue);
+	              }
+	              // If the parameter isn't currently used, we can't be absolutely sure whether it was
+	              // previously used (and therefore previously registered) so just rebuild all of the
+	              // dependencies.
+	            } else if (prevValue !== value) {
+	                dependenciesNeedUpdate = true;
+	              }
+	          }
+	          // If there are any parameters that are dependent on the value
+	          // of this one, we'll need to rebuild dependencies
+	          if (shaderAsset.getDependentParameters(key).length || shaderParams[key].forceUpdate) {
+	            dependenciesNeedUpdate = true;
+	          }
+	        }
+	      }, this);
+
+	      if (changes.enabledFeatures || dependenciesNeedUpdate) {
+	        this._resetDependencies();
+	      }
+	    }
+	  };
+
+	  /**
+	   * Rebuild a fresh list of dependencies for this material and reregister them.
+	   * @method
+	   * @private
+	   */
+	  MaterialAsset.prototype._resetDependencies = function () {
+	    this.unregisterDependencies();
+	    this.registerDependencies();
+	  };
+
+	  MaterialAsset.prototype._updateDerivatives = function () {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var useDerivatives = false;
+
+	    for (var paramName in shaderParams) {
+	      if (shaderParams.hasOwnProperty(paramName)) {
+	        if (shaderParams[paramName].derivatives && this.isParameterUsed(paramName)) {
+	          useDerivatives = true;
+	          break;
+	        }
+	      }
+	    }
+
+	    this.setExtension('derivatives', useDerivatives);
+	  };
+
+	  /**
+	   * Go through all the properties of the material that affect transparency and make
+	   * sure the 'transparent' flag in Three.JS is appropriately set.
+	   */
+	  MaterialAsset.prototype._updateTransparency = function () {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var transparencyOn = false;
+
+	    for (var paramName in shaderParams) {
+	      if (shaderParams.hasOwnProperty(paramName)) {
+	        transparencyOn = this._testParameterTransparency(paramName);
+	        if (transparencyOn) {
+	          break;
+	        }
+	      }
+	    }
+
+	    this.setRenderParam('transparent', transparencyOn);
+	  };
+
+	  /**
+	   * Test whether transparency should be enabled based on the conditions
+	   * specified for the given parameter.
+	   * @param  {String} paramName The name of the parameter to check.
+	   * @return {Boolean}           True if the value of the parameter should result
+	   * in this material being transparent (assuming that this parameter is currently
+	   * being used.)
+	   */
+	  MaterialAsset.prototype._testParameterTransparency = function (paramName) {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var transparencyCondition;
+
+	    if (shaderParams.hasOwnProperty(paramName)) {
+	      transparencyCondition = shaderParams[paramName].transparency;
+	      if (transparencyCondition && this.isParameterUsed(paramName)) {
+	        if (transparencyCondition === 'LessThanOne') {
+	          if (this.getMaterialParameter(paramName) < 1.0) {
+	            return true;
+	          }
+	        } else if (transparencyCondition === 'GreaterThanOne') {
+	          if (this.getMaterialParameter(paramName) > 1.0) {
+	            return true;
+	          }
+	        }
+	      }
+	    }
+	    return false;
+	  };
+
+	  /**
+	   * Given a parameter name, determine whether it is currently being used
+	   * for this material, taking into account enabled features and conditional
+	   * logic for the parameter.
+	   * @param  {String}  name Parameter name
+	   * @return {Boolean}     True if the parameter is being used in the current material.
+	   */
+	  MaterialAsset.prototype.isParameterUsed = function (name) {
+	    var shader = this.getShader();
+	    var shaderParams, shaderFeatures;
+	    var result = false;
+	    if (shader) {
+	      shaderParams = shader.getProperty('parameters');
+	      shaderFeatures = shader.getProperty('features');
+	      if (shaderParams[name]) {
+	        _.each(shaderFeatures, function (feature, featureName) {
+	          // If the param is part of this feature and this feature is enabled
+	          if (feature.parameters.indexOf(name) !== -1 && this.isFeatureEnabled(featureName)) {
+	            // If there are additional conditions for this parameter, test them.
+	            if (shaderParams[name].enabledWhen) {
+	              result = this.testParameterConditions(shaderParams[name].enabledWhen);
+	            } else {
+	              result = true;
+	            }
+	          }
+	        }, this);
+	      }
+	    }
+	    return result;
+	  };
+
+	  MaterialAsset.prototype.isParameterEditable = function (name) {
+	    var shader = this.getShader();
+	    var shaderParams, shaderFeatures;
+	    var result = false;
+	    if (shader) {
+	      shaderParams = shader.getProperty('parameters');
+	      shaderFeatures = shader.getProperty('features');
+	      if (shaderParams[name]) {
+	        _.each(shaderFeatures, function (feature, featureName) {
+	          // If the param is part of this feature and this feature is enabled
+	          if (feature.parameters.indexOf(name) !== -1 && this.isFeatureEnabled(featureName)) {
+	            // If there are additional conditions for this parameter, test them.
+	            if (shaderParams[name].displayWhen) {
+	              result = this.testParameterConditions(shaderParams[name].displayWhen);
+	            } else {
+	              result = true;
+	            }
+	          }
+	        }, this);
+	      }
+	    }
+	    return result;
+	  };
+
+	  // Update a uniform (or other type of parameter) for the Three.JS material from a key and
+	  // value pair. The key is checked against the material definition for the given type.
+	  MaterialAsset.prototype._updateShaderParameter = function (key) {
+	    var shaderAsset = this.getShader();
+	    var shaderParams = shaderAsset.getProperty('parameters');
+	    var value;
+
+	    var onTexLoaded = function (textureAsset) {
+	      // If the texture failed to load, the runtimeData will be empty
+	      // and we don't want to overwrite the stand-in texture assigned already.
+	      if (!textureAsset.failure) {
+	        this.setUniform(key, textureAsset.runtimeData);
+	        this.box3DRuntime.needsRender = true;
+	      }
+	    }.bind(this);
+
+	    if (shaderParams[key]) {
+	      if (shaderParams[key].isUniform) {
+	        value = this.getMaterialParameter(key);
+	        // TODO - 'new' statements here should be avoided if an object already exists
+	        switch (shaderParams[key].type) {
+	          case 't':
+	            var tex;
+	            var prevTex;
+	            tex = this.box3DRuntime.assetRegistry.Textures.getAssetById(value);
+	            if (tex && this.isParameterUsed(key)) {
+	              prevTex = this.getPreviousProperty(key);
+	              if (prevTex !== this.getProperty(key)) {
+	                prevTex = this.box3DRuntime.getEntityById(prevTex);
+	                if (prevTex) {
+	                  this.stopListening(prevTex, 'load', onTexLoaded);
+	                }
+	              }
+	              //Unbind before binding to catch cases where this texture is already bound.
+	              //This probably shouldn't be needed but will require a bit of a refactor to avoid.
+	              this.stopListening(tex, 'load', onTexLoaded);
+	              this.listenTo(tex, 'load', onTexLoaded);
+	              if (!tex.isLoaded()) {
+	                //Assign the missing texture so that this material can render cleanly until
+	                //the real texture loads.
+	                var standinTex = undefined;
+	                if (!shaderParams[key].textureUsage) {
+	                  if (!shaderParams[key].textureType) {
+	                    standinTex = MaterialAsset.STANDIN_TEXTURE_WHITE;
+	                  } else {
+	                    standinTex = MaterialAsset.STANDIN_TEXTURE_WHITE_CUBE;
+	                  }
+	                } else if (shaderParams[key].textureUsage === 'normal') {
+	                  standinTex = MaterialAsset.STANDIN_TEXTURE_NORMAL;
+	                } else if (shaderParams[key].textureUsage === 'bump') {
+	                  standinTex = MaterialAsset.STANDIN_TEXTURE_BLACK;
+	                }
+	                this.setUniform(key, this.registry.getStandInTexture(standinTex));
+	                this.box3DRuntime.needsRender = true;
+	                tex.load();
+	              } else {
+	                onTexLoaded.call(this, tex);
+	              }
+	            }
+	            break;
+	          case 'c':
+	            if (_.isString(value)) {
+	              if (value.slice(0, 2) !== '0x') {
+	                value = parseInt(value, 10);
+	                value = '0x' + value.toString(16);
+	              }
+	              value = parseInt(value, 16);
+	            }
+	            var newColour = new THREE.Color(value);
+	            if (this.box3DRuntime.getThreeRenderer().gammaInput) {
+	              newColour.copyGammaToLinear(newColour);
+	            }
+	            this.setUniform(key, newColour);
+	            break;
+	          case 'b':
+	            if (shaderParams[key].animation && value) {
+	              this.registry.timeValueInUse = true;
+	            }
+	            this.setUniform(key, value ? 1 : 0);
+	            break;
+	          case 'v2':
+	            if (shaderParams[key].animation && (value.x || value.y)) {
+	              this.registry.timeValueInUse = true;
+	            }
+	            value = new THREE.Vector2(value.x, value.y);
+	            break;
+	          case 'v3':
+	            if (shaderParams[key].animation && (value.x || value.y || value.z)) {
+	              this.registry.timeValueInUse = true;
+	            }
+	            value = new THREE.Vector3(value.x, value.y, value.z);
+	            break;
+	          case 'v4':
+	            if (shaderParams[key].animation && (value.x || value.y || value.z || value.w)) {
+	              this.registry.timeValueInUse = true;
+	            }
+	            value = new THREE.Vector4(value.x, value.y, value.z, value.w);
+	            break;
+	          default:
+	            this.setUniform(key, value);
+	        }
+	      } else if (shaderParams[key].isRenderParam) {
+	        value = this.isParameterUsed(key) ? this.getMaterialParameter(key) : undefined;
+	        this.setRenderParam(key, value);
+	      }
+	      // If the parameter changing always requires a material update, do it.
+	      if (shaderParams[key].forceUpdate) {
+	        _.each(this.registry.materialObjectTypes, function (def, matObjType) {
+	          this.runtimeData[matObjType].needsUpdate = true;
+	        }, this);
+	      }
+	    }
+	  };
+
+	  MaterialAsset.prototype.setUniform = function (uniformName, value) {
+	    if (this.runtimeData) {
+	      _.each(this.registry.materialObjectTypes, function (def, matObjType) {
+	        if (!def.uniforms || def.uniforms && def.uniforms[uniformName] === undefined) {
+	          if (this.runtimeData[matObjType].uniforms[uniformName]) {
+	            this.runtimeData[matObjType].uniforms[uniformName].value = value;
+	          } else {
+	            log.warn('MaterialAsset.setUniform - Trying to set non-existent uniform, ' + uniformName);
+	          }
+	        }
+	      }, this);
+	    }
+	  };
+
+	  MaterialAsset.prototype.setRenderParam = function (key, value) {
+	    if (this.runtimeData) {
+	      _.each(this.registry.materialObjectTypes, function (def, matObjType) {
+	        if (this.runtimeData[matObjType].hasOwnProperty(key)) {
+	          this.runtimeData[matObjType][key] = value;
+	        }
+	      }, this);
+	    }
+	  };
+
+	  MaterialAsset.prototype.setExtension = function (key, value) {
+	    if (this.runtimeData) {
+	      _.each(this.registry.materialObjectTypes, function (def, matObjType) {
+	        if (this.runtimeData[matObjType].extensions.hasOwnProperty(key)) {
+	          this.runtimeData[matObjType].extensions[key] = value;
+	        }
+	      }, this);
+	    }
+	  };
+
+	  /**
+	   * Returns whether the specified feature is currently enabled.
+	   * @method isFeatureEnabled
+	   * @param  {String}  featureName The name of the material feature
+	   * @return {Boolean}             True is the feature is enabled.
+	   */
+	  MaterialAsset.prototype.isFeatureEnabled = function (featureName) {
+	    var shaderAsset = this.getShader();
+	    var enabledFeatures = this.getProperty('enabledFeatures');
+	    var features = shaderAsset.getProperty('features');
+	    if (_.isUndefined(features[featureName])) {
+	      return false;
+	    }
+	    if (enabledFeatures && enabledFeatures[featureName] !== undefined) {
+	      return enabledFeatures[featureName];
+	    }
+	    return features[featureName].defaultEnabled || features[featureName].alwaysEnabled;
+	  };
+
+	  /**
+	   * Programmatically turn a material feature on or off. Changing a material feature
+	   * requires a material compilation so a slight pause will accompany a call to this
+	   * function.
+	   * @method enableFeature
+	   * @param  {String} featureName  Name of the primary feature to toggle.
+	   * @param  {Boolean} on          Are we turning the feature on or off.
+	   */
+	  MaterialAsset.prototype.enableFeature = function (featureName, on) {
+
+	    on = !!on;
+	    var shaderAsset = this.getShader();
+	    var enabledFeatures = this.getProperty('enabledFeatures');
+	    var features = shaderAsset.getProperty('features');
+	    var newFeatures = _.clone(enabledFeatures) || {};
+	    if (_.isUndefined(features[featureName])) {
+	      return;
+	    }
+	    newFeatures[featureName] = on;
+	    this.setProperty('enabledFeatures', newFeatures);
+	  };
+
+	  MaterialAsset.prototype.unload = function () {
+	    if (this.runtimeData) {
+	      this.box3DRuntime.trigger('materialUnloaded', this.id);
+	      log.info(this.box3DRuntime.engineName + ' - Unloading material, ' + this.getName());
+	      for (var x in this.runtimeData) {
+	        if (this.runtimeData.hasOwnProperty(x)) {
+	          this.runtimeData[x].dispose();
+	          delete this.runtimeData[x];
+	        }
+	      }
+	      this.runtimeData = null;
+
+	      Box3DAsset.prototype.unload.call(this);
+	    }
+	  };
+
+	  MaterialAsset.prototype.setColor = function (attribute, newValue, animationTime) {
+	    var that = this;
+	    var ellapsedTime = 0.0;
+	    var newR, newG, newB, oldR, oldG, oldB;
+	    var oldValue;
+
+	    function animateValue(delta) {
+	      ellapsedTime += delta;
+	      if (ellapsedTime > animationTime) {
+	        that.box3DRuntime.off('update', animateValue, this);
+	        that.setProperty(attribute, newValue);
+	      } else {
+	        //Interpolate
+	        var interp = Math.min(ellapsedTime / animationTime, 1.0);
+	        var interpR = (1.0 - interp) * oldR + interp * newR;
+	        var interpG = (1.0 - interp) * oldG + interp * newG;
+	        var interpB = (1.0 - interp) * oldB + interp * newB;
+	        var color = that.runtimeData.static.uniforms[attribute].value;
+	        color.setRGB(interpR, interpG, interpB);
+	        if (that.box3DRuntime.getThreeRenderer().gammaInput) {
+	          color.copyGammaToLinear(color);
+	        }
+	        // that.setUniform( attribute, interpValue );
+	      }
+	    }
+	    if (animationTime) {
+	      oldValue = that.getProperty(attribute);
+	      oldR = (oldValue >> 16 & 255) / 255;
+	      oldG = (oldValue >> 8 & 255) / 255;
+	      oldB = (oldValue & 255) / 255;
+	      newR = (newValue >> 16 & 255) / 255;
+	      newG = (newValue >> 8 & 255) / 255;
+	      newB = (newValue & 255) / 255;
+	      this.box3DRuntime.on('update', animateValue, this);
+	    } else {
+	      this.setProperty(attribute, newValue);
+	    }
+	  };
+
+	  MaterialAsset.prototype.setNumber = function (attribute, newValue, animationTime) {
+	    var that = this;
+	    var ellapsedTime = 0.0;
+	    var oldValue;
+
+	    function animateValue(delta) {
+	      ellapsedTime += delta;
+	      if (ellapsedTime > animationTime) {
+	        that.box3DRuntime.off('update', animateValue, this);
+	        that.setProperty(attribute, newValue);
+	      } else {
+	        //Interpolate
+	        var interp = Math.min(ellapsedTime / animationTime, 1.0);
+	        var interpValue = (1.0 - interp) * oldValue + interp * newValue;
+	        that.setUniform(attribute, interpValue);
+	      }
+	    }
+	    if (animationTime) {
+	      oldValue = that.getProperty(attribute);
+	      this.box3DRuntime.on('update', animateValue, this);
+	    } else {
+	      this.setProperty(attribute, newValue);
+	    }
+	  };
+
+	  MaterialAsset.prototype.setVector2 = function (attribute, newValue, animationTime) {
+	    var that = this;
+	    var ellapsedTime = 0.0;
+	    var newX, newY, oldX, oldY;
+	    var oldValue;
+
+	    function animateValue(delta) {
+	      ellapsedTime += delta;
+	      if (ellapsedTime > animationTime) {
+	        that.box3DRuntime.off('update', animateValue, this);
+	        that.setProperty(attribute, newValue);
+	      } else {
+	        //Interpolate
+	        var interp = Math.min(ellapsedTime / animationTime, 1.0);
+	        var interpX = (1.0 - interp) * oldX + interp * newX;
+	        var interpY = (1.0 - interp) * oldY + interp * newY;
+	        that.runtimeData.static.uniforms[attribute].value.x = interpX;
+	        that.runtimeData.static.uniforms[attribute].value.y = interpY;
+	      }
+	    }
+	    if (animationTime) {
+	      oldValue = that.getProperty(attribute);
+	      oldX = oldValue.x;
+	      oldY = oldValue.y;
+	      newX = newValue.x;
+	      newY = newValue.y;
+	      this.box3DRuntime.on('update', animateValue, this);
+	    } else {
+	      this.setProperty(attribute, newValue);
+	    }
+	  };
+
+	  VAPI.MaterialAsset = MaterialAsset;
+
+	  return MaterialAsset;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 91 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(79)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseRegistry) {
 	  'use strict';
 
@@ -69457,36 +70664,101 @@
 
 	  TextureRegistry.prototype = new BaseRegistry();
 
-	  TextureRegistry.prototype.getMissingTexture = function () {
-	    var data;
-	    if (!this.missingTexture) {
-	      data = new Uint8Array(3);
-	      data[0] = 255;
-	      data[1] = 255;
-	      data[2] = 255;
-
-	      this.missingTexture = new THREE.DataTexture(data, 1, 1, THREE.RGBFormat);
-	      this.missingTexture.needsUpdate = true;
+	  TextureRegistry.prototype.uninitialize = function () {
+	    if (this.missingTexture2d) {
+	      this.missingTexture2d.dispose();
 	    }
-
-	    return this.missingTexture;
+	    if (this.missingTextureCube) {
+	      this.missingTextureCube.dispose();
+	    }
 	  };
 
-	  // Implement this later, when resource loader supports fileId
-	  // TextureRegistry.prototype.createTexture2DFromFileId = function(fileId) {
-	  //   return this.createAsset({
-	  //     name: 'New Texture 2D',
-	  //     properties: {
-	  //       fileId: fileId
-	  //     }
-	  //   });
-	  // };
+	  /**
+	   * Create a 2D Three.js texture with the specified colour.
+	   * @param  {Number} r Red value (0-255)
+	   * @param  {Number} g Green value (0-255)
+	   * @param  {Number} b Blue value (0-255)
+	   * @param  {Number} a Alpha value (0-255). If undefined, an RGB texture will be created.
+	   * @return {Object}   A THREE.DataTexture
+	   */
+	  TextureRegistry.prototype.createColorTexture = function () {
+	    var r = arguments.length <= 0 || arguments[0] === undefined ? 255 : arguments[0];
+	    var g = arguments.length <= 1 || arguments[1] === undefined ? 255 : arguments[1];
+	    var b = arguments.length <= 2 || arguments[2] === undefined ? 255 : arguments[2];
+	    var a = arguments[3];
+
+	    var format = THREE.RGBFormat;
+	    var byteSize = a !== undefined ? 4 : 3;
+	    var data = new Uint8Array(byteSize);
+	    data[0] = r;
+	    data[1] = g;
+	    data[2] = b;
+	    if (byteSize === 4) {
+	      data[3] = a;
+	      format = THREE.RGBAFormat;
+	    }
+
+	    var texture = new THREE.DataTexture(data, 1, 1, format);
+	    texture.needsUpdate = true;
+	    return texture;
+	  };
+
+	  /**
+	   * Create a cubemap Three.js texture with the specified colour.
+	   * @param  {Number} r Red value (0-255)
+	   * @param  {Number} g Green value (0-255)
+	   * @param  {Number} b Blue value (0-255)
+	   * @param  {Number} a Alpha value (0-255). If undefined, an RGB texture will be created.
+	   * @return {Object}   A THREE.CubeTexture
+	   */
+	  TextureRegistry.prototype.createColorTextureCube = function () {
+	    var r = arguments.length <= 0 || arguments[0] === undefined ? 255 : arguments[0];
+	    var g = arguments.length <= 1 || arguments[1] === undefined ? 255 : arguments[1];
+	    var b = arguments.length <= 2 || arguments[2] === undefined ? 255 : arguments[2];
+	    var a = arguments[3];
+
+	    var sides = new Array(6);
+	    for (var i = 0; i < sides.length; i++) {
+	      sides[i] = this.createColorTexture(r, g, b, a);
+	    }
+	    var texture = new THREE.CubeTexture(sides);
+	    texture.generateMipmaps = false;
+	    texture.format = sides[0].format;
+	    texture.minFilter = THREE.NearestFilter;
+	    texture.magFilter = THREE.NearestFilter;
+	    texture.needsUpdate = true;
+	    return texture;
+	  };
+
+	  /**
+	   * Returns a 2D texture to be used in place of missing assets.
+	   * @return {Object} THREE.Texture
+	   */
+	  TextureRegistry.prototype.getMissingTexture = function () {
+	    if (!this.missingTexture2d) {
+	      this.missingTexture2d = this.createColorTexture();
+	    }
+
+	    return this.missingTexture2d;
+	  };
+
+	  /**
+	   * Returns a cube texture to be used in place of missing assets.
+	   * @return {Object} THREE.CubeTexture
+	   */
+	  TextureRegistry.prototype.getMissingTextureCube = function () {
+	    if (!this.missingTextureCube) {
+	      this.missingTextureCube = this.createColorTextureCube();
+	    }
+
+	    return this.missingTextureCube;
+	  };
 
 	  return TextureRegistry;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -69536,7 +70808,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -69573,7 +70845,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(79), __webpack_require__(93)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseRegistry, registerScripts) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(79), __webpack_require__(94)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseRegistry, registerScripts) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -69661,11 +70933,11 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(96),__webpack_require__(116),__webpack_require__(97),__webpack_require__(98),__webpack_require__(99),__webpack_require__(100),__webpack_require__(101),__webpack_require__(102),__webpack_require__(103),__webpack_require__(104),__webpack_require__(105),__webpack_require__(106),__webpack_require__(107),__webpack_require__(108),__webpack_require__(109),__webpack_require__(110),__webpack_require__(111),__webpack_require__(112),__webpack_require__(113),__webpack_require__(114),__webpack_require__(115),__webpack_require__(94),__webpack_require__(117),__webpack_require__(118),__webpack_require__(119),__webpack_require__(120),__webpack_require__(121),__webpack_require__(122),__webpack_require__(123),__webpack_require__(124),__webpack_require__(125),__webpack_require__(126),__webpack_require__(127),__webpack_require__(128),__webpack_require__(129),__webpack_require__(130),__webpack_require__(131),__webpack_require__(132),__webpack_require__(133),__webpack_require__(134),__webpack_require__(135) 
+	  __webpack_require__(97),__webpack_require__(117),__webpack_require__(98),__webpack_require__(99),__webpack_require__(100),__webpack_require__(101),__webpack_require__(102),__webpack_require__(103),__webpack_require__(104),__webpack_require__(105),__webpack_require__(106),__webpack_require__(107),__webpack_require__(108),__webpack_require__(109),__webpack_require__(110),__webpack_require__(111),__webpack_require__(112),__webpack_require__(113),__webpack_require__(114),__webpack_require__(115),__webpack_require__(116),__webpack_require__(95),__webpack_require__(118),__webpack_require__(119),__webpack_require__(120),__webpack_require__(121),__webpack_require__(122),__webpack_require__(123),__webpack_require__(124),__webpack_require__(125),__webpack_require__(126),__webpack_require__(127),__webpack_require__(128),__webpack_require__(129),__webpack_require__(130),__webpack_require__(131),__webpack_require__(132),__webpack_require__(133),__webpack_require__(134),__webpack_require__(135),__webpack_require__(136) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
 	  Component2DTextLabel,ComponentAnnotation,ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentCustomControl,ComponentDebugConsoleDisplay,ComponentDebugTextureRender,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderTargetViewer,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentShots,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentSphereMapCapture,ComponentTextRenderer
 	) { return function(VAPI) {
@@ -74167,7 +75439,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -74209,7 +75481,7 @@
 	 * @vevent other endHover { action: false, category: 'General', parameters: []}
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
 	  /* global VAPI */
 	  'use strict';
 
@@ -74699,7 +75971,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -75104,7 +76376,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -75119,7 +76391,7 @@
 	 * @vattr String text { default: '2D Font Label', description: 'The text to render' }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  /* global VAPI */
 	  'use strict';
 
@@ -75190,7 +76462,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -75201,7 +76473,7 @@
 	 * @vcategory Audio
 	 * @vdescription Audio listener for 3D, positional sound effects
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, THREE, Box3DComponent) {
 	  'use strict';
 
 	  function AudioListener() {
@@ -75235,7 +76507,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -75269,7 +76541,7 @@
 	 * @vevent local toggleAudio {'scope': 'local', 'action': true, 'category': 'Audio',
 	 *   'parameters': []}
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, THREE, Box3DComponent) {
 	  /* global VAPI */
 	  'use strict';
 
@@ -75581,7 +76853,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -75636,7 +76908,7 @@
 	 *   default: true
 	 * }
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 	  /**
 	   * @author Mike Bond
@@ -75997,7 +77269,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -76019,7 +77291,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -76331,7 +77603,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -76347,7 +77619,7 @@
 	 *   subType: { type: 's' }
 	 * }
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -76398,7 +77670,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -76409,7 +77681,7 @@
 	 * @vcategory Debug
 	 * @vfilter Application
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -76454,7 +77726,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -76487,7 +77759,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -76624,7 +77896,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -76714,7 +77986,7 @@
 	@vattr video video { description: '' }
 	*/
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Box3DComponent) {
 	  'use strict';
 
 	  function DefaultFilters() {}
@@ -76785,7 +78057,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -76822,7 +78094,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, THREE, Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -76855,6 +78127,7 @@
 	      if (materials.hasOwnProperty(i)) {
 	        mat = materials[i];
 	        mat.setProperty('useSceneLights', this.enableSceneLights);
+	        log.error('Refactor me for new HDR environment map setup.');
 	        mat.setProperty('useEnvironmentMap', !!(this.envDiffuseTexture || this.envSpecularTexture));
 	        tex = this.envDiffuseTexture;
 	        mat.setProperty('diffuseEnvironmentMap2D', tex ? tex.id : null);
@@ -76872,7 +78145,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -76890,7 +78163,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, Box3DComponent) {
 	  'use strict';
 
 	  function callEvent(object, eventName, parameters) {
@@ -77003,7 +78276,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -77036,7 +78309,7 @@
 	@vevent other endContract { 'action':false, 'category':'Exploder', 'parameters' : [] }
 	*/
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  var tmpVec = new THREE.Vector3();
@@ -77234,7 +78507,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -77268,7 +78541,7 @@
 	 * @vevent local toggleFreeCameraController { parameters: [] }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
 
 	  'use strict';
 
@@ -77748,7 +79021,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -77763,7 +79036,7 @@
 	 * @vevent local toggleFullscreen {'scope' : 'local', 'action':true, 'category':'Rendering', 'parameters' : []}
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  // The MIT License
@@ -77867,7 +79140,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -77881,7 +79154,7 @@
 	 * @vcategory Rendering
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  // The MIT License
@@ -77967,10 +79240,11 @@
 	    }
 	  };
 
-	  HMDRenderEffect.prototype.renderView = function () {
+	  HMDRenderEffect.prototype.renderView = function (delta) {
 
 	    var scene;
 	    var renderer;
+	    var threeRenderer;
 	    var camera;
 	    var cameraL = this.cameraL;
 	    var cameraR = this.cameraR;
@@ -77978,16 +79252,17 @@
 	    if (this.isEnabled()) {
 
 	      scene = this.getThreeScene();
-	      renderer = this.getThreeRenderer();
+	      renderer = this.getRenderer();
+	      threeRenderer = this.getThreeRenderer();
 	      camera = this.getRuntimeData();
 
 	      if (camera && scene) {
 
-	        var size = renderer.getSize();
+	        var size = threeRenderer.getSize();
 	        size.width /= 2;
 
-	        renderer.enableScissorTest(true);
-	        renderer.clear();
+	        threeRenderer.enableScissorTest(true);
+	        threeRenderer.clear();
 
 	        if (camera.parent === null) camera.updateMatrixWorld();
 
@@ -78004,16 +79279,31 @@
 	        // component whether we're rendering to the back buffer or whether we're rendering to
 	        // a texture;
 	        // render left eye
-	        renderer.setViewport(0, 0, size.width, size.height);
-	        renderer.setScissor(0, 0, size.width, size.height);
-	        renderer.render(scene, cameraL);
+	        threeRenderer.setScissor(0, 0, size.width, size.height);
+	        renderer.renderView(scene, cameraL, {
+	          viewPort: {
+	            x: 0,
+	            y: 0,
+	            width: size.width,
+	            height: size.height
+	          },
+	          clearColor: false,
+	          clearDepth: false,
+	          delta: delta });
 
 	        // render right eye
-	        renderer.setViewport(size.width, 0, size.width, size.height);
-	        renderer.setScissor(size.width, 0, size.width, size.height);
-	        renderer.render(scene, cameraR);
-
-	        renderer.enableScissorTest(false);
+	        threeRenderer.setScissor(size.width, 0, size.width, size.height);
+	        renderer.renderView(scene, cameraR, {
+	          viewPort: {
+	            x: size.width,
+	            y: 0,
+	            width: size.width,
+	            height: size.height
+	          },
+	          clearColor: false,
+	          clearDepth: false,
+	          delta: delta });
+	        threeRenderer.enableScissorTest(false);
 	      }
 	    }
 	  };
@@ -78112,7 +79402,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -78221,7 +79511,7 @@
 	*/
 	/* eslint-enable */
 	/* global PositionSensorVRDevice, HMDVRDevice */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(7), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, log, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(7), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, log, Box3DComponent) {
 	  'use strict';
 
 	  function Box3DMouseVector(x, y) {
@@ -79047,7 +80337,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -79152,7 +80442,7 @@
 	 *   parameters: []
 	 * }
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -79638,7 +80928,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -79663,7 +80953,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -79772,7 +81062,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -79790,7 +81080,7 @@
 	 * @vevent local renderNormalMap { action: true, category: 'Rendering', parameters: []}
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
 	  'use strict';
 
 	  function NormalMapGenerator() {
@@ -79929,7 +81219,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -80012,7 +81302,7 @@
 	 * @vevent lcoal endAnimateTranslation {'action': false, 'category': 'Animation', 'parameters': []}
 	 */
 	/* eslint-enable*/
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
 	  'use strict';
 
 	  function ObjectAnimator() {
@@ -80557,7 +81847,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -80626,7 +81916,7 @@
 	  }
 	*/
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  /* global VAPI */
 	  'use strict';
 
@@ -81641,7 +82931,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -81765,7 +83055,7 @@
 	@vevent local focusOnTarget {'scope' : 'local', 'description': 'Look at the center of the current target and zoom so that the object nicely fills the field of view.', 'action':true, 'category':'Orbit Camera', 'parameters' : []}
 	*/
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
 	  'use strict';
 	  /**
 	   * A custom component class.
@@ -82679,7 +83969,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -82696,7 +83986,7 @@
 	 *   description : 'The texture to convert to a cube map.'
 	 * }
 	*/
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  function PanoramaToCubeMap() {
@@ -82837,7 +84127,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -83121,7 +84411,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -84163,7 +85453,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 121 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -84389,7 +85679,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 122 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -84461,7 +85751,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 123 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -84487,7 +85777,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, THREE, Box3DComponent) {
 	  'use strict';
 	  /**
 	   * @author Mike Bond
@@ -84821,7 +86111,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 124 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -84918,7 +86208,7 @@
 	@vattr video video { description: '' }
 	*/
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -85343,7 +86633,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 125 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -85357,7 +86647,7 @@
 	 * @vreserved
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -85902,7 +87192,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 126 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -85936,7 +87226,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -86305,7 +87595,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 127 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -86342,7 +87632,7 @@
 	 * @vevent local toggleRenderView {'category': 'Rendering', 'parameters': [{'name': 'fade', 'type': 'f', 'description': 'Defined in seconds', 'default': 0.0}]}
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -86385,6 +87675,7 @@
 	  RenderView.prototype.shutdown = function () {
 	    this.getRuntime().off(this.renderEventName, this.renderView, this);
 	    this.getRuntime().off('resize', this.resize, this);
+	    this.stopListening();
 	  };
 
 	  RenderView.prototype.componentsLoaded = function () {
@@ -86615,7 +87906,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 128 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -86703,7 +87994,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DComponent) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -87065,7 +88356,7 @@
 	    var i = 0;
 	    var screenDimensions;
 	    options = options || {};
-	    if (scene && camera) {
+	    if (camera) {
 	      if (options.enablePreRenderFunctions) {
 	        this.getRuntime().trigger('preRenderView', scene, camera, options);
 	      }
@@ -87133,6 +88424,9 @@
 	        var renderer = options.effect ? options.effect : this.threeRenderer;
 
 	        for (i = 0; i < this.renderPasses.length; i++) {
+	          if (!this.renderPasses[i].pass.scene) {
+	            continue;
+	          }
 	          var prevOverrideMat = this.renderPasses[i].pass.scene.overrideMaterial;
 	          if (this.renderPasses[i].pass.overrideMaterial) {
 	            this.renderPasses[i].pass.scene.overrideMaterial = this.renderPasses[i].pass.overrideMaterial;
@@ -87195,17 +88489,19 @@
 
 	  DefaultRenderer.prototype.resize = function () {
 
-	    var w = this.canvas.parentElement.clientWidth;
-	    var h = this.canvas.parentElement.clientHeight;
+	    if (this.canvas.parentElement) {
+	      var w = this.canvas.parentElement.clientWidth;
+	      var h = this.canvas.parentElement.clientHeight;
 
-	    this.threeRenderer.setSize(w, h, true);
+	      this.threeRenderer.setSize(w, h, true);
+	    }
 	  };
 
 	  return DefaultRenderer;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 129 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87267,7 +88563,7 @@
 	 */
 	/* eslint-enable */
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
 	  'use strict';
 
 	  var tmpVec = new THREE.Vector3(),
@@ -87382,7 +88678,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 130 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87398,7 +88694,7 @@
 	 * @vattr Asset scene { description: 'The scene to load.', filter: { scene: true } }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, Box3DComponent) {
 	  'use strict';
 
 	  function SceneLoader() {
@@ -87455,7 +88751,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 131 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87486,7 +88782,7 @@
 	 * @vevent local playShot {'action': true, 'category': 'General', 'parameters': [ {'name': 'shotNumber', 'type': 'i', 'description': 'The index of shot that you want to play.', 'default': 0} ]}
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -87794,7 +89090,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 132 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -87823,7 +89119,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, THREE, Box3DComponent) {
 	  'use strict';
 
 	  function SimplexNoiseRenderer() {
@@ -87995,7 +89291,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 133 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88038,7 +89334,7 @@
 	 * }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -88314,7 +89610,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 134 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88332,7 +89628,7 @@
 	 * @vattr Integer updateFrameInterval { type: 'i', 'description': 'The number of frames to skip in between updates of the reflection. Default is 0.', default: 0 }
 	 */
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  /**
@@ -88550,7 +89846,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88568,7 +89864,7 @@
 	@vattr integer pointSize { default : 48, description : 'Font size', min : 2, max : 100 }
 	*/
 	/* eslint-enable */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(95)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
 	  'use strict';
 
 	  function Component() {
@@ -88715,7 +90011,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88723,7 +90019,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(79), __webpack_require__(137), __webpack_require__(138), __webpack_require__(142)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, BaseRegistry, ShaderAsset, Box3DShaderPBR_Metalness, Box3DShaderPBR_Specular) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(79), __webpack_require__(138), __webpack_require__(139), __webpack_require__(143)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, BaseRegistry, ShaderAsset, Box3DShaderPBR_Metalness, Box3DShaderPBR_Specular) {
 	  'use strict';
 
 	  var ShaderRegistry = function ShaderRegistry() {
@@ -88742,7 +90038,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -88930,12 +90226,12 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(139), __webpack_require__(140), __webpack_require__(141)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(140), __webpack_require__(141), __webpack_require__(142)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -88995,7 +90291,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -89481,6 +90777,7 @@
 	      default: null,
 	      isUniform: true,
 	      derivatives: true,
+	      textureUsage: 'normal',
 	      enabledWhen: {
 	        useBump: {
 	          equal: false
@@ -89564,6 +90861,7 @@
 	      default: null,
 	      isUniform: true,
 	      derivatives: true,
+	      textureUsage: 'bump',
 	      enabledWhen: {
 	        useBump: {
 	          equal: true
@@ -90124,24 +91422,24 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports) {
 
 	module.exports = "\r\n/**\r\n * Shader used as a Box3D material type\r\n *\r\n * Written by Mike Bond\r\n */\r\n#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\tattribute vec4 tangent;\r\n#endif\r\n\r\nattribute vec2 uv2;\r\n\r\nuniform float time;\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n\tuniform float logDepthBufFC;\r\n#endif\r\n\r\n#ifdef DISPLACEMENT_MAP_RGBA\r\n\tuniform float displacementMag;\r\n\tuniform float displacementBias;\r\n\tuniform sampler2D displacementTexture;\r\n\tuniform int displacementUVChannel;\r\n\tuniform vec2 displacementTextureOffset;\r\n\tuniform vec2 displacementTextureScale;\r\n\tuniform vec2 displacementTexturePan;\r\n#endif\r\n\r\nvarying vec4 vNormal_VS;\r\n\r\n#if ( defined(NORMAL_MAP) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\nvarying vec4 vTangent_VS;\r\nvarying vec4 vBinormal_VS;\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR ) && defined( ALBEDO )\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#if defined( USE_SHADOWMAP ) && defined( USE_SCENE_LIGHTS )\r\n\t\t#if NUM_SHADOWS > 0\r\n\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\tuniform mat4 shadowMatrix[ NUM_SHADOWS ];\r\n\t\t#endif\r\n\t#endif\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tuniform mat4 bindMatrix;\r\n\tuniform mat4 bindMatrixInverse;\r\n\r\n\t#ifdef BONE_TEXTURE\r\n\r\n\t\tuniform sampler2D boneTexture;\r\n\t\tuniform int boneTextureWidth;\r\n\t\tuniform int boneTextureHeight;\r\n\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tfloat j = i * 4.0;\r\n\t\t\tfloat x = mod( j, float( boneTextureWidth ) );\r\n\t\t\tfloat y = floor( j / float( boneTextureHeight ) );\r\n\r\n\t\t\tfloat dx = 1.0 / float( boneTextureWidth );\r\n\t\t\tfloat dy = 1.0 / float( boneTextureHeight );\r\n\r\n\t\t\ty = dy * ( y + 0.5 );\r\n\r\n\t\t\tvec4 v1 = texture2D( boneTexture, vec2( dx * ( x + 0.5 ), y ) );\r\n\t\t\tvec4 v2 = texture2D( boneTexture, vec2( dx * ( x + 1.5 ), y ) );\r\n\t\t\tvec4 v3 = texture2D( boneTexture, vec2( dx * ( x + 2.5 ), y ) );\r\n\t\t\tvec4 v4 = texture2D( boneTexture, vec2( dx * ( x + 3.5 ), y ) );\r\n\r\n\t\t\tmat4 bone = mat4( v1, v2, v3, v4 );\r\n\r\n\t\t\treturn bone;\r\n\t\t}\r\n\t#else\r\n\r\n\t\tuniform mat4 boneGlobalMatrices[ NUM_BONES ];\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tmat4 bone = boneGlobalMatrices[ int(i) ];\r\n\t\t\treturn bone;\r\n\t\t}\r\n\r\n\t#endif\r\n#endif\r\n\r\n//Only for m * v (not v * m!)\r\nvec3 mulVectorByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn (v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] ) )).xyz;\r\n}\r\n\r\n//Only for m * p (not p * m!)\r\nvec4 mulPointByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] + m[3] ) );\r\n}\r\n\r\n\r\n\r\nvoid main() {\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvUv.xy = uv;\r\n\tvUv.y = 1.0 - vUv.y;\r\n\tvUv.zw = uv2;\r\n\tvUv.w = 1.0 - vUv.w;\r\n#endif\r\n\r\n#if defined( DISPLACEMENT_MAP_RGBA )\r\n\tfloat texDisplacement = 0.0;\r\n\t#if ( DISPLACEMENT_MAP_RGBA == 0 )\r\n\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\t\ttexDisplacement = displacementMag * displacementMap.x + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\r\n\t#elif ( DISPLACEMENT_MAP_RGBA == 1 )\r\n\t\t#define DISPLACEMENT_WITH_NORMAL\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\r\n\t\ttexDisplacement = displacementMag * displacementMap.a + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\t#endif\r\n\tvec4 displacedPosition = vec4( (normal * texDisplacement ) + position.xyz, 1.0 );\r\n#else\r\n\tvec4 displacedPosition = vec4( position, 1.0 );\r\n\r\n#endif\r\n\r\n\r\nhighp vec3 vNormal = normal;\r\n#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\thighp vec3 vTangent = tangent.xyz;\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tmat4 boneMatX = getBoneMatrix( skinIndex.x );\r\n\tmat4 boneMatY = getBoneMatrix( skinIndex.y );\r\n\tmat4 boneMatZ = getBoneMatrix( skinIndex.z );\r\n\tmat4 boneMatW = getBoneMatrix( skinIndex.w );\r\n\r\n\tmat4 skinMatrix = mat4( 0.0 );\r\n        skinMatrix += skinWeight.x * boneMatX;\r\n\tskinMatrix += skinWeight.y * boneMatY;\r\n\tskinMatrix += skinWeight.z * boneMatZ;\r\n\tskinMatrix += skinWeight.w * boneMatW;\r\n        skinMatrix  = bindMatrixInverse * skinMatrix * bindMatrix;\r\n\r\n\tvNormal = (skinMatrix * vec4( vNormal, 0.0 )).xyz;\r\n\t#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\t\tvTangent = (skinMatrix * vec4( vTangent, 0.0 )).xyz;\r\n\t#endif\r\n\r\n\tvec4 skinVertex    = bindMatrix * displacedPosition;\r\n\tdisplacedPosition  = boneMatX * skinVertex * skinWeight.x;\r\n\tdisplacedPosition += boneMatY * skinVertex * skinWeight.y;\r\n\tdisplacedPosition += boneMatZ * skinVertex * skinWeight.z;\r\n\tdisplacedPosition += boneMatW * skinVertex * skinWeight.w;\r\n\tdisplacedPosition  = bindMatrixInverse * displacedPosition;\r\n#endif\r\n\r\nvPosition_VS = modelViewMatrix * displacedPosition;\r\n\r\n#ifdef USE_BILLBOARDING\r\n\tgl_Position = projectionMatrix * (viewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + modelViewMatrix * displacedPosition );\r\n#else\r\n\tgl_Position = projectionMatrix * modelViewMatrix * displacedPosition;\r\n#endif\r\n\r\n#if defined( USE_LOGDEPTHBUF ) && !defined(DEPTH_PASS)\r\n\tgl_Position.z = log2(max(1e-6, gl_Position.w + 1.0)) * logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvFragDepth = 1.0 + gl_Position.w;\r\n\t#else\r\n\t\tgl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;\r\n\t#endif\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR )\r\n\t\t#if defined( ALBEDO )\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t\tvColor = color * color;\r\n\t\t\t#else\r\n\t\t\t\tvColor = color;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#endif\r\n\r\n\tvNormal_VS.xyz = normalMatrix * vNormal;\r\n\r\n\t#ifdef FLIP_SIDED\r\n\t\tvNormal_VS = -vNormal_VS;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\r\n\t\t#if defined( NORMAL_MAP ) && defined(USE_TANGENTS)\r\n\t\t\tvTangent_VS.xyz = normalMatrix * vTangent.xyz;\r\n\t\t\tvBinormal_VS.xyz = cross( vNormal_VS.xyz, vTangent_VS.xyz ) * tangent.w;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t \t#if NUM_SHADOWS > 0\r\n\r\n\t\t\t\tfor( int i = 0; i < NUM_SHADOWS; i ++ ) {\r\n\r\n\t\t\t\t\t#ifdef USE_MORPHTARGETS\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * vec4( morphed, 1.0 );\r\n\r\n\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * displacedPosition;\r\n\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z = log2(max(1e-6, 1.0 + vShadowCoord[ i ].w)) * logDepthBufFC - 1.0;\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z *= vShadowCoord[ i ].w;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t}\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t#endif\r\n#endif\r\n}"
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports) {
 
 	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t#extension GL_EXT_frag_depth : enable\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\tuniform float reflectionFresnel;\r\n\t\t#ifdef ENVIRONMENT_MAP_CUBE_0\r\n\t\t\tuniform samplerCube environmentMapCube_0;\r\n\t\t\tuniform samplerCube environmentMapCube_1;\r\n\t\t\tuniform samplerCube environmentMapCube_2;\r\n\t\t#elif defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\tuniform sampler2D environmentMap2D_0;\r\n\t\t\tuniform sampler2D environmentMap2D_1;\r\n\t\t\tuniform sampler2D environmentMap2D_2;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t#if NUM_SHADOWS > 0\r\n\t\t\t\tuniform sampler2D shadowMap[ NUM_SHADOWS ];\r\n\t\t\t\tuniform vec2 shadowMapSize[ NUM_SHADOWS ];\r\n\t\t\t\tuniform float shadowBias[ NUM_SHADOWS ];\r\n\t\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\t#endif\r\n\r\n\t\t\tfloat unpackDepth( const in vec4 rgba_depth ) {\r\n\t\t\t\tconst vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\r\n\t\t\t\tfloat depth = dot( rgba_depth, bit_shift );\r\n\t\t\t\treturn depth;\r\n\t\t\t}\r\n\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\n#ifdef USE_ENVIRONMENT_MAP\r\nvec3 getReflectionFromRoughness(in vec3 ref0, in vec3 ref1, in vec3 ref2, in float roughness) {\r\n\tvec3 colour1, colour2;\r\n\tfloat interp = roughness * 2.0;\r\n\tif (roughness <= 0.5) {\r\n\t\tcolour1 = ref0;\r\n\t\tcolour2 = ref1;\r\n\t} else {\r\n\t\tinterp -= 1.0;\r\n\t\tcolour1 = ref1;\r\n\t\tcolour2 = ref2;\r\n\t}\r\n\treturn mix(colour1, colour2, interp);\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t#ifdef GAMMA_INPUT\r\n\t\t  albedoTex.xyz *= albedoTex.xyz;\r\n\t\t#endif\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  emissiveTex *= emissiveTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  sssTex *= sssTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 envMapReflectedColor;\r\n\t\t\tvec3 envMapDiffuseColor;\r\n\r\n\t\t\t#if defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\t\tvec3 reflectedColor0 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor1 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor2 = vec3(0.0);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 sampleUV;\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tmipBias = roughnessValue * 6.0;\r\n\t\t\t\t\treflectedColor0 = textureCube( environmentMapCube_0, sampleUV, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 3.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = textureCube( environmentMapCube_1, sampleUV, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 sampleUV;\r\n\t\t\t\t\t//Sphere map reflection\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t\t\t\t\t//Planar reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tmipBias = roughnessValue * 10.0;\r\n\t\t\t\t\treflectedColor0 = texture2D( environmentMap2D_0, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 5.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = texture2D( environmentMap2D_1, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\tenvMapReflectedColor = getReflectionFromRoughness(reflectedColor0, reflectedColor1, reflectedColor2, roughnessValue);\r\n\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\tenvMapDiffuseColor = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tenvMapDiffuseColor = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t\t#if NUM_SHADOWS > 0 && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\t\t\t\t\tfloat shadowValues[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\tfloat shadowValuesScatter[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\t\t\t\t\t\tvec3 shadowColour = vec3(1.0);\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_DIR_LIGHTS; s ++ ) {\r\n\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\tvec3 frustumColors[3];\r\n\t\t\t\t\t\tfrustumColors[0] = vec3( 1.0, 0.5, 0.0 );\r\n\t\t\t\t\t\tfrustumColors[1] = vec3( 0.0, 1.0, 0.8 );\r\n\t\t\t\t\t\tfrustumColors[2] = vec3( 0.0, 0.5, 1.0 );\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\tint inFrustumCount = 0;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat fDepth;\r\n\t\t\t\t\t//int lightIndex = 0;\r\n\t\t\t\t\tint frustumIndex = 0;\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_SHADOWS; s ++ ) {\r\n\r\n\t\t\t\t\t\tvec3 shadowCoord = vShadowCoord[ s ].xyz / vShadowCoord[ s ].w;\r\n\t\t\t\t\t\t// \"if ( something && something )\" \t\t breaks ATI OpenGL shader compiler\r\n\t\t\t\t\t\t// \"if ( all( something, something ) )\"  using this instead\r\n\r\n\t\t\t\t\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\r\n\t\t\t\t\t\tbool inFrustum = all( inFrustumVec );\r\n\r\n\t\t\t\t\t\t// don't shadow pixels outside of light frustum\r\n\t\t\t\t\t\t// use just first frustum (for cascades)\r\n\t\t\t\t\t\t// don't shadow pixels behind far plane of light frustum\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\tinFrustumCount += int( inFrustum );\r\n\t\t\t\t\t\t\tbvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\tbool frustumTest = all( frustumTestVec );\r\n\r\n\t\t\t\t\t\tif ( frustumTest ) {\r\n\r\n\t\t\t\t\t\t\tshadowCoord.z += shadowBias[ s ];\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_TYPE_PCF_SOFT\r\n\r\n\t\t\t\t\t\t\t\t// Percentage-close filtering\r\n\t\t\t\t\t\t\t\t// (9 pixel kernel)\r\n\t\t\t\t\t\t\t\t// http://fabiensanglard.net/shadowmappingPCF/\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\r\n\r\n\t\t\t\t\t\t\t\t//const float shadowDelta = 1.0 / 9.0;\r\n\t\t\t\t\t\t\t\t//const float kernelCornerWeight = 1.0 / 16.0;\r\n\t\t\t\t\t\t\t\t//const float kernelEdgeWeight = 1.0 / 8.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.0 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.0 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tmat3 shadowKernel;\r\n\t\t\t\t\t\t\t\tmat3 depthKernel;\r\n\r\n\t\t\t\t\t\t\t\tdepthKernel[0][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\r\n\t\t\t\t\t\t\t\tvec3 shadowZ = vec3( shadowCoord.z );\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[0] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[1] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[2] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tvec2 fractionalCoord = 1.0 - fract(shadowCoord.xy * shadowMapSize[s].xy );\r\n\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\tvec4 shadowValueVector;\r\n\t\t\t\t\t\t\t\tshadowValueVector.x = mix(shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.y = mix(shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.z = mix(shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.w = mix(shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\r\n\r\n\t\t\t\t\t\t\t\tshadow = dot(shadowValueVector, vec4(1.0));\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\t\tdepthKernel[0] = mix( depthKernel[1], depthKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\t\tdepthKernel[1] = mix( depthKernel[2], depthKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\t\tvec4 depthValues;\r\n\t\t\t\t\t\t\t\t\tdepthValues.x = mix(depthKernel[0][1], depthKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.y = mix(depthKernel[0][2], depthKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.z = mix(depthKernel[1][1], depthKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.w = mix(depthKernel[1][2], depthKernel[1][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tfloat totalDepth = dot(depthValues, vec4(1.0));// + dot(depthKernel[1], vec3(1.0)) + dot(depthKernel[2], vec3(1.0));\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 4.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 100.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 1000.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#elif defined( SHADOWMAP_TYPE_PCF )\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\t\t\t\t\t\t\t\tconst float shadowDelta = 1.0 / 9.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.25 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.25 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tfloat totalDepth = 0.0;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy, 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 9.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 10000.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 100.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tvec4 rgbaDepth = texture2DProj( shadowMap[ s ], vec4( vShadowCoord[ s ].w * ( shadowCoord.xy ), 0.05, vShadowCoord[ s ].w ) );\r\n\t\t\t\t\t\t\t\t// vec4 rgbaDepth = texture2D( shadowMap[ s ], shadowCoord.xy );\r\n\t\t\t\t\t\t\t\tfloat fDepth = unpackDepth( rgbaDepth );\r\n\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) {\r\n\r\n\t\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= 0.0;\r\n\t\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 0.0;\r\n\t\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - fDepth );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum && inFrustumCount == 1 ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t//frustumIndex ++;\r\n\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\t\t\t\t\tfloat shadowValue = 1.0;\r\n\t\t\t\t\tfloat shadowValueScatter = 1.0;\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0) && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\r\n\t\t\t\t\t\tshadowValue = shadowValues[ i ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0)\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValueScatter = shadowValuesScatter[ i ];\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * (specWeight * shadowValue) + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * shadowValue * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && defined( SHADOWMAP_DEBUG )\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\ttotalDiffuse *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t#ifdef SPECULAR_COLOR\r\n\t\t\t\t\t\t\ttotalSpecular *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && (defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0))\r\n\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\t\tvec3 reflectance_term = envMapReflectedColor.xyz * fresnel;\r\n\t\t\t\t#if !defined(METALNESS)\r\n\t\t\t\t\treflectance_term *= (1.0 - roughnessValue);\r\n\t\t\t\t#endif\r\n\t\t\t\ttotalSpecular += reflectance_term * specularColorValue;\r\n\r\n\t\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\ttotalDiffuse += envMapDiffuseColor;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t#ifdef GAMMA_OUTPUT\r\n\t\t\tfinalColor = sqrt( finalColor );\r\n\t\t#endif\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(139), __webpack_require__(140), __webpack_require__(141)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(140), __webpack_require__(141), __webpack_require__(142)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -90201,7 +91499,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -90235,10 +91533,10 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var now = __webpack_require__(145)
+	var now = __webpack_require__(146)
 	  , global = typeof window === 'undefined' ? {} : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -90309,7 +91607,7 @@
 
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -90348,7 +91646,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(75)))
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -90848,7 +92146,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -90897,7 +92195,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -90951,1106 +92249,6 @@
 	  VAPI.AudioAsset = AudioAsset;
 
 	  return AudioAsset;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 149 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	/**
-	 * @module VAPI
-	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(9)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DAsset) {
-	  'use strict';
-
-	  var VAPI = window.VAPI = window.VAPI || {};
-
-	  var MaterialAsset = function MaterialAsset(json) {
-	    Box3DAsset.call(this, json);
-	  };
-
-	  MaterialAsset.prototype = new Box3DAsset();
-
-	  MaterialAsset.prototype.defaultProperties = _.extend({}, Box3DAsset.prototype.defaultProperties, {
-	    shader: 'box3d_pbr_spec_gloss_shader'
-	  });
-
-	  MaterialAsset.prototype.events = {
-	    setColor: {
-	      scope: 'local',
-	      action: true,
-	      category: 'Materials',
-	      params: [{
-	        name: 'parameter',
-	        type: 'dd',
-	        description: 'The colour parameter to modify.',
-	        default: 'albedoColor',
-	        options: {
-	          Diffuse: 'albedoColor',
-	          Specular: 'specularColor',
-	          Emissive: 'emissiveColor'
-	        }
-	      }, {
-	        name: 'value',
-	        type: 'c',
-	        description: 'The colour to set.',
-	        default: 0xff0000
-	      }, {
-	        name: 'animationTime',
-	        type: 'f',
-	        description: 'The length of time that the change will take. i.e. this ' + 'lets you animate the change.',
-	        default: 0.0,
-	        min: 0.0
-	      }]
-	    },
-	    setNumber: {
-	      scope: 'local',
-	      action: true,
-	      category: 'Materials',
-	      params: [{
-	        name: 'parameter',
-	        type: 'dd',
-	        description: 'The number parameter to modify.',
-	        default: 'colorOpacity',
-	        options: {
-	          'Opacity': 'opacity',
-	          'Rimlight Falloff': 'rimPower',
-	          'Glossiness': 'gloss',
-	          'Scattering Amount': 'scatterLocalScale',
-	          'Normal Map Scale': 'normalScale',
-	          'Parallax Scale': 'parallaxScale',
-	          'Reflectivity': 'reflectivityF0'
-	        }
-	      }, {
-	        name: 'value',
-	        type: 'f',
-	        description: 'The value to set.',
-	        default: 1.0
-	      }, {
-	        name: 'animationTime',
-	        type: 'f',
-	        description: 'The length of time that the change will take. i.e. ' + ' this lets you animate the change.',
-	        default: 0.0,
-	        min: 0.0
-	      }]
-	    },
-	    setVector2: {
-	      scope: 'local',
-	      action: true,
-	      category: 'Materials',
-	      params: [{
-	        name: 'parameter',
-	        type: 'dd',
-	        description: 'The vector parameter to modify.',
-	        default: 'diffuseTextureOffset',
-	        options: {
-	          'Diffuse Texture Offset': 'diffuseTextureOffset',
-	          'Diffuse Texture Scale': 'diffuseTextureScale',
-	          'Diffuse Texture Pan': 'diffuseTexturePan',
-	          'AO Texture Offset': 'aoTextureOffset',
-	          'AO Texture Scale': 'aoTextureScale',
-	          'AO Texture Pan': 'aoTexturePan',
-	          'Specular Texture Offset': 'specularTextureOffset',
-	          'Specular Texture Scale': 'specularTextureScale',
-	          'Specular Texture Pan': 'specularTexturePan',
-	          'Normal Map Offset': 'normalTextureOffset',
-	          'Normal Map Scale': 'normalTextureScale',
-	          'Normal Map Pan': 'normalTexturePan',
-	          'SSS Texture Offset': 'sssTextureOffset',
-	          'SSS Texture Scale': 'sssTextureScale',
-	          'SSS Texture Pan': 'sssTexturePan',
-	          'Displacement Map Offset': 'displacementTextureOffset',
-	          'Displacement Map Scale': 'displacementTextureScale',
-	          'Displacement Map Pan': 'displacementTexturePan',
-	          'Emissive Texture Offset': 'emissiveTextureOffset',
-	          'Emissive Texture Scale': 'emissiveTextureScale',
-	          'Emissive Texture Pan': 'emissiveTexturePan'
-	        }
-	      }, {
-	        name: 'value',
-	        type: 'v2',
-	        description: 'The colour to set.',
-	        default: {
-	          x: 1.0,
-	          y: 1.0
-	        }
-	      }, {
-	        name: 'animationTime',
-	        type: 'f',
-	        description: 'The length of time that the change will take. i.e.' + ' this lets you animate the change.',
-	        default: 0.0,
-	        min: 0.0
-	      }]
-	    }
-	  };
-
-	  MaterialAsset.prototype.initialize = function (properties) {
-	    Box3DAsset.prototype.initialize.call(this, properties);
-
-	    //Materials don't have a hierarchy so we'll mark it as already loaded.
-	    this.trigger('loadHierarchy', this);
-	    this.trigger('loadComponents', this);
-
-	    this.on('setColor', this.setColor, this);
-	    this.on('setNumber', this.setNumber, this);
-	    this.on('setVector2', this.setVector2, this);
-	  };
-
-	  MaterialAsset.prototype.uninitialize = function () {
-	    Box3DAsset.prototype.uninitialize.call(this);
-	    this.off('setColor', this.setColor, this);
-	    this.off('setNumber', this.setNumber, this);
-	    this.off('setVector2', this.setVector2, this);
-	  };
-
-	  /**
-	   * Rebuild dependencies for this material.
-	   * @method registerDependencies
-	   * @private
-	   */
-	  MaterialAsset.prototype.registerDependencies = function () {
-	    var textures = this.getReferencedAssetsList(true);
-	    // Register fresh list of dependencies
-	    textures.forEach(function (texAsset) {
-	      if (texAsset) {
-	        this.registerDependency(texAsset.id);
-	      }
-	    }, this);
-	  };
-
-	  /**
-	   * Return a list of texture assets that this material currently uses.
-	   * This takes enabled/disabled features into account as well as conditional
-	   * logic for the individual parameter.
-	   * @return {[type]} [description]
-	   */
-	  MaterialAsset.prototype.getReferencedAssetsList = function (allowDuplicates) {
-	    var refTextures = [];
-	    var refTextureMap = {};
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var shaderUniforms = shaderAsset.getProperty('uniforms');
-	    var shaderFeatures = shaderAsset.getProperty('features');
-	    // For each enabled feature for this material, go through
-	    // the parameters and see what textures are being used.
-	    _.each(shaderFeatures, function (feature, featureName) {
-	      if (this.isFeatureEnabled(featureName)) {
-	        _.each(feature.parameters, function (param) {
-	          var textureId;
-	          var textureAsset;
-	          var texDependencies;
-	          if (shaderParams[param].type === 't') {
-	            if (this.isParameterUsed(param)) {
-	              textureId = this.getMaterialParameter(param);
-	            }
-	            if (textureId) {
-	              textureAsset = this.getAssetById(textureId);
-	              if (!refTextureMap[textureId]) {
-	                refTextureMap[textureId] = textureAsset;
-	                refTextures.push(textureAsset);
-	              } else if (allowDuplicates) {
-	                refTextures.push(textureAsset);
-	              }
-	            }
-	          }
-	        }, this);
-	      }
-	    }, this);
-
-	    _.each(shaderUniforms, function (uniform) {
-	      if (uniform.type === 't' && uniform.default) {
-	        if (this.getAssetById(uniform.default)) {
-	          if (!refTextureMap[uniform.default]) {
-	            refTextureMap[uniform.default] = this.getAssetById(uniform.default);
-	            refTextures.push(this.getAssetById(uniform.default));
-	          } else if (allowDuplicates) {
-	            refTextures.push(this.getAssetById(uniform.default));
-	          }
-	        }
-	      }
-	    }, this);
-
-	    return refTextures;
-	  };
-
-	  MaterialAsset.prototype.getShader = function () {
-	    var shaderId = this.getProperty('shader');
-	    var shaderAsset = this.getAssetById(shaderId);
-	    if (!shaderAsset) {
-	      shaderAsset = this.getAssetById(this.registry.defaultShaderId);
-	    }
-	    return shaderAsset;
-	  };
-
-	  /**
-	   * Return the value of the given material parameter.
-	   * @param  {String} name The name of the parameter
-	   * @return {Mixed}      The value of the parameter, if it exists.
-	   */
-	  MaterialAsset.prototype.getMaterialParameter = function (name) {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var value;
-	    if (shaderParams[name]) {
-	      if (!_.isUndefined(this.getProperty(name))) {
-	        value = this.getProperty(name);
-	      } else {
-	        value = shaderParams[name].default;
-	      }
-	    }
-	    return value;
-	  };
-
-	  /**
-	   * Return the value of the given material parameter.
-	   * @return {Object}      All parameters and their current values.
-	   */
-	  MaterialAsset.prototype.getMaterialParameters = function () {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var returnParams = {};
-	    _.each(shaderParams, function (param, name) {
-	      returnParams[name] = this.getMaterialParameter(name);
-	    }, this);
-	    return returnParams;
-	  };
-
-	  MaterialAsset.prototype.getMaterialParameterDefault = function (name) {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    if (shaderParams[name]) {
-	      return shaderParams[name].default;
-	    }
-	  };
-
-	  /** @inheritdoc */
-	  MaterialAsset.prototype.createRuntimeData = function (callback) {
-	    var shaderAsset = this.getShader();
-
-	    shaderAsset.when('load', function () {
-	      this.runtimeData = {};
-	      _.each(this.registry.materialObjectTypes, function (type, typeName) {
-	        var matParams = {};
-	        matParams.vertexShader = shaderAsset.runtimeData.vertexShader;
-	        matParams.fragmentShader = shaderAsset.runtimeData.fragmentShader;
-	        // Copy the uniforms from the source shader
-	        matParams.uniforms = THREE.UniformsUtils.clone(shaderAsset.runtimeData.uniforms);
-	        // Add the uniforms that are shared between all materials
-	        this._addSharedUniforms(matParams.uniforms);
-
-	        this.runtimeData[typeName] = new THREE.ShaderMaterial(matParams);
-	        this.runtimeData[typeName].name = this.getName();
-	        this.runtimeData[typeName].box3DEntityId = this.id;
-
-	        // Assign default renderParams for shader.
-	        for (var key in shaderAsset.runtimeData.renderParams) {
-	          if (this.runtimeData[typeName].hasOwnProperty(key)) {
-	            if (this.isParameterUsed(key)) {
-	              this.runtimeData[typeName][key] = shaderAsset.runtimeData.renderParams[key];
-	            } else {
-	              delete this.runtimeData[typeName][key];
-	            }
-	          }
-	        }
-
-	        // Assign override renderParams from material object type.
-	        _.each(type, function (value, key) {
-	          if (this.runtimeData[typeName].hasOwnProperty(key)) {
-	            this.runtimeData[typeName][key] = value;
-	          }
-	        }, this);
-	      }, this);
-
-	      // Rebuild list of preprocessor defines for each material type
-	      this._updateMaterialDefines();
-
-	      // Done.
-	      callback();
-	    }, this);
-
-	    shaderAsset.load();
-	  };
-
-	  MaterialAsset.prototype._convertToDefine = function (name) {
-	    function unCamelCase(str) {
-	      return str
-	      // insert an underscore between lower & upper
-	      .replace(/([a-z])([A-Z])/g, '$1_$2')
-	      // underscore before last upper in a sequence followed by lower
-	      .replace(/([A-Z]+)([A-Z])([a-z])/, '$1_$2$3')
-	      // uppercase the first character
-	      .toUpperCase();
-	    }
-
-	    var friendlyStr = _.isString(name) ? name : '';
-
-	    friendlyStr = friendlyStr.replace(/_([a-z])/gi, function (m, w) {
-	      return '_' + w.toUpperCase();
-	    });
-
-	    friendlyStr = friendlyStr.replace(/\s+/g, '_');
-
-	    // Find where a number follows a letter and insert an underscore
-	    friendlyStr = friendlyStr.replace(/([a-z])([0-9])/g, '$1_$2');
-
-	    // Find where a letter follows a number and insert an underscore
-	    // friendlyStr = friendlyStr.replace(/([0-9])([A-z])/g, '$1_$2');
-
-	    friendlyStr = unCamelCase(friendlyStr);
-
-	    return friendlyStr;
-	  };
-
-	  MaterialAsset.prototype._testParameterCondition = function (param, condition) {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    if (!shaderParams[param]) {
-	      return false;
-	    }
-	    var value = this.getMaterialParameter(param);
-
-	    // If this parameter is a texture and is assigned a texture that no longer
-	    // exists, consider its value as null.
-	    if (shaderParams[param].type === 't') {
-	      if (!this.getAssetById(value)) {
-	        value = null;
-	      }
-	    }
-	    for (var i in condition) {
-	      if (condition.hasOwnProperty(i)) {
-	        switch (i) {
-	          case 'equal':
-	            if (value !== condition[i]) {
-	              return false;
-	            }
-	            break;
-	          case 'notEqual':
-	            if (value === condition[i]) {
-	              return false;
-	            }
-	            break;
-	          case 'equalDefault':
-	            if (value !== shaderParams[param].default) {
-	              return false;
-	            }
-	            break;
-	          case 'notEqualDefault':
-	            if (value === shaderParams[param].default) {
-	              return false;
-	            }
-	            break;
-	          default:
-	            return false;
-	        }
-	      }
-	    }
-	    return true;
-	  };
-
-	  /**
-	   * Test whether the conditions specified for a parameter are satisfied or not. Performs
-	   * a logic AND on all properties in the given object
-	   * @method  testParameterConditions
-	   * @param  {Object} conditions Json object structure specifying the AND conditional
-	   * @return {Boolean}            True if the result of the test is true
-	   */
-	  MaterialAsset.prototype.testParameterConditions = function (conditions) {
-	    var i;
-	    var result = true;
-
-	    //Loop through and test each conditional
-	    for (i in conditions) {
-	      if (conditions.hasOwnProperty(i)) {
-	        if (i === 'or') {
-	          if (!this._testParameterConditionsOr(conditions[i])) {
-	            result = false;
-	            break;
-	          }
-	        } else if (!this._testParameterCondition(i, conditions[i])) {
-	          result = false;
-	          break;
-	        }
-	      }
-	    }
-	    return result;
-	  };
-
-	  MaterialAsset.prototype._testParameterConditionsOr = function (conditions) {
-	    var i;
-	    var result = false;
-
-	    //Loop through and test each conditional
-	    for (i = 0; i < conditions.length; i++) {
-	      if (this.testParameterConditions(conditions[i])) {
-	        result = true;
-	        break;
-	      }
-	    }
-	    return result;
-	  };
-
-	  /**
-	   * Calculate and return all of the defines for this material based
-	   * on the features enabled and the conditions for each parameter.
-	   * @return {Object} The defines for this material.
-	   */
-	  MaterialAsset.prototype._getPreprocessorDefines = function () {
-	    var shaderAsset = this.getShader();
-	    var shaderFeatures = shaderAsset.getProperty('features');
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var defines = {};
-	    _.each(shaderFeatures, function (feature, featureName) {
-	      // If the feature is enabled, go through each parameter and
-	      // build a list of defines
-	      if (this.isFeatureEnabled(featureName)) {
-	        // Add a define for the feature itself.
-	        defines[this._convertToDefine(featureName)] = 0;
-
-	        // Add defines for each enabled parameter.
-	        _.each(feature.parameters, function (paramName) {
-	          var useDefines = false;
-	          if (shaderParams[paramName].enabledWhen) {
-	            // Handle conditional logic
-	            if (this.testParameterConditions(shaderParams[paramName].enabledWhen)) {
-	              useDefines = true;
-	            }
-	          } else if (!shaderParams[paramName].isRenderParam) {
-	            useDefines = true;
-	          }
-	          if (useDefines) {
-	            var defineName = this._convertToDefine(paramName);
-	            defines[defineName] = 0;
-	            if (shaderParams[paramName].type === 'dd') {
-	              defines[defineName] = this.getMaterialParameter(paramName);
-	            } else if (shaderParams[paramName].type === 't') {
-	              var texId = this.getMaterialParameter(paramName);
-	              var texture = this.getAssetById(texId);
-	              var mipsDefine = defineName + '_NUM_MIPS';
-	              if (texture) {
-	                defines[mipsDefine] = texture.getNumMips();
-	              } else {
-	                defines[mipsDefine] = 0;
-	              }
-	            }
-	            if (shaderParams[paramName].defines) {
-	              _.extend(defines, shaderParams[paramName].defines);
-	            }
-	          }
-	        }, this);
-	      }
-	    }, this);
-	    return defines;
-	  };
-
-	  MaterialAsset.prototype._updateMaterialDefines = function () {
-	    var defines = this._getPreprocessorDefines();
-	    _.each(this.registry.materialObjectTypes, function (type, typeName) {
-	      var matDefines = _.clone(defines);
-	      for (var y in type) {
-	        if (type.hasOwnProperty(y) && y === 'defines') {
-	          for (var d in type.defines) {
-	            if (type.defines.hasOwnProperty(d)) {
-	              matDefines[d] = type.defines[d];
-	            }
-	          }
-	        } else {
-	          matDefines[y] = type[y];
-	        }
-	      }
-
-	      this.runtimeData[typeName].defines = matDefines;
-	      this.runtimeData[typeName].needsUpdate = true;
-	    }, this);
-	  };
-
-	  //Link up a uniform that is shared between materials
-	  //For now, just hardcode this for the 'time' uniform...
-	  MaterialAsset.prototype._addSharedUniforms = function (uniforms) {
-	    uniforms.time = this.registry.getSharedUniform('time');
-	    uniforms.screenDimensions = this.registry.getSharedUniform('screenDimensions');
-	  };
-
-	  MaterialAsset.prototype._updateAllShaderParameters = function () {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var allParams = {};
-	    // Build a list of all parameters. Supplying undefined values forces update
-	    // to default shader param values.
-	    _.each(shaderParams, function (param, key) {
-	      allParams[key] = undefined;
-	    }, this);
-	    allParams = _.extend(allParams, this.getProperties());
-	    this._updateShaderParameters(allParams);
-	  };
-
-	  MaterialAsset.prototype._updateShaderParameters = function (changes) {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    _.each(changes, function (value, key) {
-	      if (shaderParams[key]) {
-	        this._updateShaderParameter(key);
-	      }
-	    }, this);
-	  };
-
-	  /** @inheritdoc */
-	  MaterialAsset.prototype._applyPropertiesLoaded = function (changes, reason) {
-	    var _this = this;
-
-	    Box3DAsset.prototype._applyPropertiesLoaded.call(this, changes, reason);
-
-	    if (changes.hasOwnProperty('shader')) {
-	      (function () {
-	        // TODO - we could store and compare previously-enabled features so that
-	        // we can maintain state for the user after switching shaders. This, of course,
-	        // assumes that there would be overlapping features between shaders...
-
-	        var shaderAsset = _this.getShader();
-	        shaderAsset.when('load', function onShaderLoad() {
-	          for (var x in this.registry.materialObjectTypes) {
-	            if (this.runtimeData.hasOwnProperty(x)) {
-	              var material = this.runtimeData[x];
-	              material.fragmentShader = shaderAsset.runtimeData.fragmentShader;
-	              material.vertexShader = shaderAsset.runtimeData.vertexShader;
-	              material.uniforms = THREE.UniformsUtils.clone(shaderAsset.runtimeData.uniforms);
-
-	              for (var key in shaderAsset.runtimeData.renderParams) {
-	                if (this.runtimeData[x].hasOwnProperty(key)) {
-	                  if (this.isParameterUsed(key)) {
-	                    this.runtimeData[x][key] = shaderAsset.runtimeData.renderParams[key];
-	                  } else {
-	                    delete this.runtimeData[x][key];
-	                  }
-	                }
-	              }
-
-	              this.runtimeData[x].needsUpdate = true;
-	              this._updateMaterialDefines();
-	              this._updateAllShaderParameters();
-	              this._updateTransparency();
-	              this._updateDerivatives();
-	              this.box3DRuntime.needsRender = true;
-	            }
-	          }
-	        }, _this);
-
-	        if (shaderAsset.isUnloaded()) {
-	          shaderAsset.load();
-	        }
-	      })();
-	    } else if (changes.hasOwnProperty('enabledFeatures')) {
-	      this._updateMaterialDefines();
-	      this._updateShaderParameters(changes);
-	      this._updateTransparency();
-	      this._updateDerivatives();
-	      this.box3DRuntime.needsRender = true;
-	    } else {
-	      var shaderAsset = this.getShader();
-	      var shaderParams = shaderAsset.getProperty('parameters');
-	      var transparencyNeedsUpdate = false;
-	      var derivativesNeedsUpdate = false;
-	      var definesNeedUpdate = false;
-
-	      for (var p in changes) {
-	        if (changes.hasOwnProperty(p)) {
-	          if (shaderParams[p]) {
-	            if (shaderParams[p].transparency) {
-	              transparencyNeedsUpdate = true;
-	            }
-	            if (!_.isUndefined(shaderParams[p].derivatives)) {
-	              derivativesNeedsUpdate = true;
-	            }
-	            // If there are any parameters that are dependent on the value
-	            // of this one, we'll need to break out and rebuild preprocessor
-	            // defines.
-	            if (shaderAsset.getDependentParameters(p).length || shaderParams[p].forceUpdate) {
-	              definesNeedUpdate = true;
-	              break;
-	            }
-	            this._updateShaderParameter(p);
-	          }
-	        }
-	      }
-
-	      if (definesNeedUpdate) {
-	        this._updateMaterialDefines();
-	        this._updateAllShaderParameters();
-	        // Merge defines with existing set and force materials to update.
-	        transparencyNeedsUpdate = true;
-	        derivativesNeedsUpdate = true;
-	      }
-
-	      if (transparencyNeedsUpdate) {
-	        this._updateTransparency();
-	      }
-
-	      if (derivativesNeedsUpdate) {
-	        this._updateDerivatives();
-	      }
-
-	      this.box3DRuntime.needsRender = true;
-	    }
-	  };
-
-	  MaterialAsset.prototype._applyPropertiesUnloaded = function (changes) {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var value, prevValue;
-	    var dependenciesNeedUpdate = false;
-
-	    if (changes) {
-	      _.each(changes, function (param, key) {
-	        if (shaderParams[key]) {
-	          //If a texture has changed, update the size of all objects that rely on this material.
-	          if (shaderParams[key].type === 't') {
-	            value = this.getProperty(key);
-	            prevValue = this.getPreviousProperty(key);
-	            // Only register the dependency if the parameter is actually being used.
-	            if (this.isParameterUsed(key)) {
-	              if (prevValue !== value) {
-	                this.registerDependency(value);
-	                this.unregisterDependency(prevValue);
-	              }
-	              // If the parameter isn't currently used, we can't be absolutely sure whether it was
-	              // previously used (and therefore previously registered) so just rebuild all of the
-	              // dependencies.
-	            } else if (prevValue !== value) {
-	                dependenciesNeedUpdate = true;
-	              }
-	          }
-	          // If there are any parameters that are dependent on the value
-	          // of this one, we'll need to rebuild dependencies
-	          if (shaderAsset.getDependentParameters(key).length || shaderParams[key].forceUpdate) {
-	            dependenciesNeedUpdate = true;
-	          }
-	        }
-	      }, this);
-
-	      if (changes.enabledFeatures || dependenciesNeedUpdate) {
-	        this._resetDependencies();
-	      }
-	    }
-	  };
-
-	  /**
-	   * Rebuild a fresh list of dependencies for this material and reregister them.
-	   * @method
-	   * @private
-	   */
-	  MaterialAsset.prototype._resetDependencies = function () {
-	    this.unregisterDependencies();
-	    this.registerDependencies();
-	  };
-
-	  MaterialAsset.prototype._updateDerivatives = function () {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var useDerivatives = false;
-
-	    for (var paramName in shaderParams) {
-	      if (shaderParams.hasOwnProperty(paramName)) {
-	        if (shaderParams[paramName].derivatives && this.isParameterUsed(paramName)) {
-	          useDerivatives = true;
-	          break;
-	        }
-	      }
-	    }
-
-	    this.setExtension('derivatives', useDerivatives);
-	  };
-
-	  /**
-	   * Go through all the properties of the material that affect transparency and make
-	   * sure the 'transparent' flag in Three.JS is appropriately set.
-	   */
-	  MaterialAsset.prototype._updateTransparency = function () {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var transparencyOn = false;
-
-	    for (var paramName in shaderParams) {
-	      if (shaderParams.hasOwnProperty(paramName)) {
-	        transparencyOn = this._testParameterTransparency(paramName);
-	        if (transparencyOn) {
-	          break;
-	        }
-	      }
-	    }
-
-	    this.setRenderParam('transparent', transparencyOn);
-	  };
-
-	  /**
-	   * Test whether transparency should be enabled based on the conditions
-	   * specified for the given parameter.
-	   * @param  {String} paramName The name of the parameter to check.
-	   * @return {Boolean}           True if the value of the parameter should result
-	   * in this material being transparent (assuming that this parameter is currently
-	   * being used.)
-	   */
-	  MaterialAsset.prototype._testParameterTransparency = function (paramName) {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var transparencyCondition;
-
-	    if (shaderParams.hasOwnProperty(paramName)) {
-	      transparencyCondition = shaderParams[paramName].transparency;
-	      if (transparencyCondition && this.isParameterUsed(paramName)) {
-	        if (transparencyCondition === 'LessThanOne') {
-	          if (this.getMaterialParameter(paramName) < 1.0) {
-	            return true;
-	          }
-	        } else if (transparencyCondition === 'GreaterThanOne') {
-	          if (this.getMaterialParameter(paramName) > 1.0) {
-	            return true;
-	          }
-	        }
-	      }
-	    }
-	    return false;
-	  };
-
-	  /**
-	   * Given a parameter name, determine whether it is currently being used
-	   * for this material, taking into account enabled features and conditional
-	   * logic for the parameter.
-	   * @param  {String}  name Parameter name
-	   * @return {Boolean}     True if the parameter is being used in the current material.
-	   */
-	  MaterialAsset.prototype.isParameterUsed = function (name) {
-	    var shader = this.getShader();
-	    var shaderParams, shaderFeatures;
-	    var result = false;
-	    if (shader) {
-	      shaderParams = shader.getProperty('parameters');
-	      shaderFeatures = shader.getProperty('features');
-	      if (shaderParams[name]) {
-	        _.each(shaderFeatures, function (feature, featureName) {
-	          // If the param is part of this feature and this feature is enabled
-	          if (feature.parameters.indexOf(name) !== -1 && this.isFeatureEnabled(featureName)) {
-	            // If there are additional conditions for this parameter, test them.
-	            if (shaderParams[name].enabledWhen) {
-	              result = this.testParameterConditions(shaderParams[name].enabledWhen);
-	            } else {
-	              result = true;
-	            }
-	          }
-	        }, this);
-	      }
-	    }
-	    return result;
-	  };
-
-	  MaterialAsset.prototype.isParameterEditable = function (name) {
-	    var shader = this.getShader();
-	    var shaderParams, shaderFeatures;
-	    var result = false;
-	    if (shader) {
-	      shaderParams = shader.getProperty('parameters');
-	      shaderFeatures = shader.getProperty('features');
-	      if (shaderParams[name]) {
-	        _.each(shaderFeatures, function (feature, featureName) {
-	          // If the param is part of this feature and this feature is enabled
-	          if (feature.parameters.indexOf(name) !== -1 && this.isFeatureEnabled(featureName)) {
-	            // If there are additional conditions for this parameter, test them.
-	            if (shaderParams[name].displayWhen) {
-	              result = this.testParameterConditions(shaderParams[name].displayWhen);
-	            } else {
-	              result = true;
-	            }
-	          }
-	        }, this);
-	      }
-	    }
-	    return result;
-	  };
-
-	  // Update a uniform (or other type of parameter) for the Three.JS material from a key and
-	  // value pair. The key is checked against the material definition for the given type.
-	  MaterialAsset.prototype._updateShaderParameter = function (key) {
-	    var shaderAsset = this.getShader();
-	    var shaderParams = shaderAsset.getProperty('parameters');
-	    var value;
-
-	    var onTexLoaded = function (textureAsset) {
-	      this.setUniform(key, textureAsset.runtimeData);
-	      this.box3DRuntime.needsRender = true;
-	    }.bind(this);
-
-	    if (shaderParams[key]) {
-	      if (shaderParams[key].isUniform) {
-	        value = this.getMaterialParameter(key);
-	        // TODO - 'new' statements here should be avoided if an object already exists
-	        switch (shaderParams[key].type) {
-	          case 't':
-	            var tex;
-	            var prevTex;
-	            tex = this.box3DRuntime.assetRegistry.Textures.getAssetById(value);
-	            if (tex && this.isParameterUsed(key)) {
-	              prevTex = this.getPreviousProperty(key);
-	              if (prevTex !== this.getProperty(key)) {
-	                prevTex = this.box3DRuntime.getEntityById(prevTex);
-	                if (prevTex) {
-	                  this.stopListening(prevTex, 'load', onTexLoaded);
-	                }
-	              }
-	              //Unbind before binding to catch cases where this texture is already bound.
-	              //This probably shouldn't be needed but will require a bit of a refactor to avoid.
-	              this.stopListening(tex, 'load', onTexLoaded);
-	              this.listenTo(tex, 'load', onTexLoaded);
-	              if (!tex.isLoaded()) {
-	                tex.load();
-	              } else {
-	                onTexLoaded.call(this, tex);
-	              }
-	            }
-	            break;
-	          case 'c':
-	            if (_.isString(value)) {
-	              if (value.slice(0, 2) !== '0x') {
-	                value = parseInt(value, 10);
-	                value = '0x' + value.toString(16);
-	              }
-	              value = parseInt(value, 16);
-	            }
-	            var newColour = new THREE.Color(value);
-	            if (this.box3DRuntime.getThreeRenderer().gammaInput) {
-	              newColour.copyGammaToLinear(newColour);
-	            }
-	            this.setUniform(key, newColour);
-	            break;
-	          case 'b':
-	            if (shaderParams[key].animation && value) {
-	              this.registry.timeValueInUse = true;
-	            }
-	            this.setUniform(key, value ? 1 : 0);
-	            break;
-	          case 'v2':
-	            if (shaderParams[key].animation && (value.x || value.y)) {
-	              this.registry.timeValueInUse = true;
-	            }
-	            value = new THREE.Vector2(value.x, value.y);
-	            break;
-	          case 'v3':
-	            if (shaderParams[key].animation && (value.x || value.y || value.z)) {
-	              this.registry.timeValueInUse = true;
-	            }
-	            value = new THREE.Vector3(value.x, value.y, value.z);
-	            break;
-	          case 'v4':
-	            if (shaderParams[key].animation && (value.x || value.y || value.z || value.w)) {
-	              this.registry.timeValueInUse = true;
-	            }
-	            value = new THREE.Vector4(value.x, value.y, value.z, value.w);
-	            break;
-	          default:
-	            this.setUniform(key, value);
-	        }
-	      } else if (shaderParams[key].isRenderParam) {
-	        value = this.isParameterUsed(key) ? this.getMaterialParameter(key) : undefined;
-	        this.setRenderParam(key, value);
-	      }
-	      // If the parameter changing always requires a material update, do it.
-	      if (shaderParams[key].forceUpdate) {
-	        _.each(this.registry.materialObjectTypes, function (def, matObjType) {
-	          this.runtimeData[matObjType].needsUpdate = true;
-	        }, this);
-	      }
-	    }
-	  };
-
-	  MaterialAsset.prototype.setUniform = function (uniformName, value) {
-	    if (this.runtimeData) {
-	      _.each(this.registry.materialObjectTypes, function (def, matObjType) {
-	        if (!def.uniforms || def.uniforms && def.uniforms[uniformName] === undefined) {
-	          if (this.runtimeData[matObjType].uniforms[uniformName]) {
-	            this.runtimeData[matObjType].uniforms[uniformName].value = value;
-	          } else {
-	            log.warn('MaterialAsset.setUniform - Trying to set non-existent uniform, ' + uniformName);
-	          }
-	        }
-	      }, this);
-	    }
-	  };
-
-	  MaterialAsset.prototype.setRenderParam = function (key, value) {
-	    if (this.runtimeData) {
-	      _.each(this.registry.materialObjectTypes, function (def, matObjType) {
-	        if (this.runtimeData[matObjType].hasOwnProperty(key)) {
-	          this.runtimeData[matObjType][key] = value;
-	        }
-	      }, this);
-	    }
-	  };
-
-	  MaterialAsset.prototype.setExtension = function (key, value) {
-	    if (this.runtimeData) {
-	      _.each(this.registry.materialObjectTypes, function (def, matObjType) {
-	        if (this.runtimeData[matObjType].extensions.hasOwnProperty(key)) {
-	          this.runtimeData[matObjType].extensions[key] = value;
-	        }
-	      }, this);
-	    }
-	  };
-
-	  /**
-	   * Returns whether the specified feature is currently enabled.
-	   * @method isFeatureEnabled
-	   * @param  {String}  featureName The name of the material feature
-	   * @return {Boolean}             True is the feature is enabled.
-	   */
-	  MaterialAsset.prototype.isFeatureEnabled = function (featureName) {
-	    var shaderAsset = this.getShader();
-	    var enabledFeatures = this.getProperty('enabledFeatures');
-	    var features = shaderAsset.getProperty('features');
-	    if (_.isUndefined(features[featureName])) {
-	      return false;
-	    }
-	    if (enabledFeatures && enabledFeatures[featureName] !== undefined) {
-	      return enabledFeatures[featureName];
-	    }
-	    return features[featureName].defaultEnabled || features[featureName].alwaysEnabled;
-	  };
-
-	  /**
-	   * Programmatically turn a material feature on or off. Changing a material feature
-	   * requires a material compilation so a slight pause will accompany a call to this
-	   * function.
-	   * @method enableFeature
-	   * @param  {String} featureName  Name of the primary feature to toggle.
-	   * @param  {Boolean} on          Are we turning the feature on or off.
-	   */
-	  MaterialAsset.prototype.enableFeature = function (featureName, on) {
-
-	    on = !!on;
-	    var shaderAsset = this.getShader();
-	    var enabledFeatures = this.getProperty('enabledFeatures');
-	    var features = shaderAsset.getProperty('features');
-	    var newFeatures = _.clone(enabledFeatures) || {};
-	    if (_.isUndefined(features[featureName])) {
-	      return;
-	    }
-	    newFeatures[featureName] = on;
-	    this.setProperty('enabledFeatures', newFeatures);
-	  };
-
-	  MaterialAsset.prototype.unload = function () {
-	    if (this.runtimeData) {
-	      this.box3DRuntime.trigger('materialUnloaded', this.id);
-	      log.info(this.box3DRuntime.engineName + ' - Unloading material, ' + this.getName());
-	      for (var x in this.runtimeData) {
-	        if (this.runtimeData.hasOwnProperty(x)) {
-	          this.runtimeData[x].dispose();
-	          delete this.runtimeData[x];
-	        }
-	      }
-	      this.runtimeData = null;
-
-	      Box3DAsset.prototype.unload.call(this);
-	    }
-	  };
-
-	  MaterialAsset.prototype.setColor = function (attribute, newValue, animationTime) {
-	    var that = this;
-	    var ellapsedTime = 0.0;
-	    var newR, newG, newB, oldR, oldG, oldB;
-	    var oldValue;
-
-	    function animateValue(delta) {
-	      ellapsedTime += delta;
-	      if (ellapsedTime > animationTime) {
-	        that.box3DRuntime.off('update', animateValue, this);
-	        that.setProperty(attribute, newValue);
-	      } else {
-	        //Interpolate
-	        var interp = Math.min(ellapsedTime / animationTime, 1.0);
-	        var interpR = (1.0 - interp) * oldR + interp * newR;
-	        var interpG = (1.0 - interp) * oldG + interp * newG;
-	        var interpB = (1.0 - interp) * oldB + interp * newB;
-	        var color = that.runtimeData.static.uniforms[attribute].value;
-	        color.setRGB(interpR, interpG, interpB);
-	        if (that.box3DRuntime.getThreeRenderer().gammaInput) {
-	          color.copyGammaToLinear(color);
-	        }
-	        // that.setUniform( attribute, interpValue );
-	      }
-	    }
-	    if (animationTime) {
-	      oldValue = that.getProperty(attribute);
-	      oldR = (oldValue >> 16 & 255) / 255;
-	      oldG = (oldValue >> 8 & 255) / 255;
-	      oldB = (oldValue & 255) / 255;
-	      newR = (newValue >> 16 & 255) / 255;
-	      newG = (newValue >> 8 & 255) / 255;
-	      newB = (newValue & 255) / 255;
-	      this.box3DRuntime.on('update', animateValue, this);
-	    } else {
-	      this.setProperty(attribute, newValue);
-	    }
-	  };
-
-	  MaterialAsset.prototype.setNumber = function (attribute, newValue, animationTime) {
-	    var that = this;
-	    var ellapsedTime = 0.0;
-	    var oldValue;
-
-	    function animateValue(delta) {
-	      ellapsedTime += delta;
-	      if (ellapsedTime > animationTime) {
-	        that.box3DRuntime.off('update', animateValue, this);
-	        that.setProperty(attribute, newValue);
-	      } else {
-	        //Interpolate
-	        var interp = Math.min(ellapsedTime / animationTime, 1.0);
-	        var interpValue = (1.0 - interp) * oldValue + interp * newValue;
-	        that.setUniform(attribute, interpValue);
-	      }
-	    }
-	    if (animationTime) {
-	      oldValue = that.getProperty(attribute);
-	      this.box3DRuntime.on('update', animateValue, this);
-	    } else {
-	      this.setProperty(attribute, newValue);
-	    }
-	  };
-
-	  MaterialAsset.prototype.setVector2 = function (attribute, newValue, animationTime) {
-	    var that = this;
-	    var ellapsedTime = 0.0;
-	    var newX, newY, oldX, oldY;
-	    var oldValue;
-
-	    function animateValue(delta) {
-	      ellapsedTime += delta;
-	      if (ellapsedTime > animationTime) {
-	        that.box3DRuntime.off('update', animateValue, this);
-	        that.setProperty(attribute, newValue);
-	      } else {
-	        //Interpolate
-	        var interp = Math.min(ellapsedTime / animationTime, 1.0);
-	        var interpX = (1.0 - interp) * oldX + interp * newX;
-	        var interpY = (1.0 - interp) * oldY + interp * newY;
-	        that.runtimeData.static.uniforms[attribute].value.x = interpX;
-	        that.runtimeData.static.uniforms[attribute].value.y = interpY;
-	      }
-	    }
-	    if (animationTime) {
-	      oldValue = that.getProperty(attribute);
-	      oldX = oldValue.x;
-	      oldY = oldValue.y;
-	      newX = newValue.x;
-	      newY = newValue.y;
-	      this.box3DRuntime.on('update', animateValue, this);
-	    } else {
-	      this.setProperty(attribute, newValue);
-	    }
-	  };
-
-	  VAPI.MaterialAsset = MaterialAsset;
-
-	  return MaterialAsset;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -93170,14 +93368,13 @@
 
 	    var onTexture2DLoadError = function onTexture2DLoadError(err) {
 	      log.debug('There was an error loading the texture, ' + _this.getName(), err);
-
 	      // Only set the missing texture if there isn't loaded data already present.
 	      // This allows streamed textures to continue to be used, even if a higher-res
 	      // mip failed to load.
 	      if (!_this.runtimeData) {
 	        _this.runtimeData = _this.registry.getMissingTexture();
+	        _this.failure = true;
 	      }
-
 	      _this.loadedBytes = _this.getDataSizeDownload();
 	      _this.trigger('loadProgress', _this);
 	      callback();
@@ -93190,13 +93387,6 @@
 	      }
 	      _this.trigger('loadProgress', _this);
 	    };
-
-	    // Assign a temporary texture so that materials rendering with this texture
-	    // work before the texture data is loaded. We clone the texture so that we can
-	    // safely clean it up afterwards without worrying about it being shared data.
-	    // TODO: I think MaterialAssets handle assigning the missing material before the "real" texture loads, no?
-	    this.runtimeData = this.registry.getMissingTexture().clone();
-	    this.runtimeData.needsUpdate = true;
 
 	    var width = this.getProperty('originalWidth');
 	    var height = this.getProperty('originalHeight');
@@ -93395,7 +93585,8 @@
 	      callback();
 	    }).catch(function (err) {
 	      log.debug('There was an error loading the texture, ' + _this.getName(), err);
-	      _this.runtimeData = _this.registry.getMissingTexture();
+	      _this.runtimeData = _this.registry.getMissingTextureCube();
+	      _this.failure = true;
 	      _this.trigger('loadProgress', _this);
 	      callback();
 	    });
@@ -93519,7 +93710,14 @@
 	  /** @inheritdoc */
 	  TextureVideoAsset.prototype.createRuntimeData = function (callback) {
 	    // TODO: Reimplement video loading in new Resource Loader
-	    log.info('TODO: Reimplement video loading');
+	    var cssSelector = this.getProperty('querySelector');
+	    if (cssSelector) {
+	      var parentEl = this.box3DRuntime.getRenderer().getCanvas().parentElement;
+	      var videoEl = parentEl.querySelector(cssSelector);
+	      if (videoEl) {
+	        this.runtimeData = new THREE.VideoTexture(videoEl);
+	      }
+	    }
 	    callback();
 	  },
 
@@ -94081,20 +94279,20 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./AssetRegistry/AnimationAsset": 146,
-		"./AssetRegistry/AnimationAsset.js": 146,
-		"./AssetRegistry/AnimationRegistry": 91,
-		"./AssetRegistry/AnimationRegistry.js": 91,
-		"./AssetRegistry/ApplicationAsset": 147,
-		"./AssetRegistry/ApplicationAsset.js": 147,
+		"./AssetRegistry/AnimationAsset": 147,
+		"./AssetRegistry/AnimationAsset.js": 147,
+		"./AssetRegistry/AnimationRegistry": 92,
+		"./AssetRegistry/AnimationRegistry.js": 92,
+		"./AssetRegistry/ApplicationAsset": 148,
+		"./AssetRegistry/ApplicationAsset.js": 148,
 		"./AssetRegistry/ApplicationRegistry": 80,
 		"./AssetRegistry/ApplicationRegistry.js": 80,
 		"./AssetRegistry/AssetRegistry": 77,
 		"./AssetRegistry/AssetRegistry.js": 77,
-		"./AssetRegistry/AudioAsset": 148,
-		"./AssetRegistry/AudioAsset.js": 148,
-		"./AssetRegistry/AudioRegistry": 143,
-		"./AssetRegistry/AudioRegistry.js": 143,
+		"./AssetRegistry/AudioAsset": 149,
+		"./AssetRegistry/AudioAsset.js": 149,
+		"./AssetRegistry/AudioRegistry": 144,
+		"./AssetRegistry/AudioRegistry.js": 144,
 		"./AssetRegistry/BaseGeometryAsset": 151,
 		"./AssetRegistry/BaseGeometryAsset.js": 151,
 		"./AssetRegistry/BaseRegistry": 79,
@@ -94109,8 +94307,8 @@
 		"./AssetRegistry/DocumentRegistry.js": 81,
 		"./AssetRegistry/GeometryRegistry": 88,
 		"./AssetRegistry/GeometryRegistry.js": 88,
-		"./AssetRegistry/MaterialAsset": 149,
-		"./AssetRegistry/MaterialAsset.js": 149,
+		"./AssetRegistry/MaterialAsset": 90,
+		"./AssetRegistry/MaterialAsset.js": 90,
 		"./AssetRegistry/MaterialRegistry": 89,
 		"./AssetRegistry/MaterialRegistry.js": 89,
 		"./AssetRegistry/MeshGeometryAsset": 150,
@@ -94131,106 +94329,106 @@
 		"./AssetRegistry/SceneRegistry.js": 87,
 		"./AssetRegistry/ScriptAsset": 65,
 		"./AssetRegistry/ScriptAsset.js": 65,
-		"./AssetRegistry/ScriptRegistry": 92,
-		"./AssetRegistry/ScriptRegistry.js": 92,
-		"./AssetRegistry/ShaderAsset": 137,
-		"./AssetRegistry/ShaderAsset.js": 137,
-		"./AssetRegistry/ShaderRegistry": 136,
-		"./AssetRegistry/ShaderRegistry.js": 136,
+		"./AssetRegistry/ScriptRegistry": 93,
+		"./AssetRegistry/ScriptRegistry.js": 93,
+		"./AssetRegistry/ShaderAsset": 138,
+		"./AssetRegistry/ShaderAsset.js": 138,
+		"./AssetRegistry/ShaderRegistry": 137,
+		"./AssetRegistry/ShaderRegistry.js": 137,
 		"./AssetRegistry/Texture2DAsset": 156,
 		"./AssetRegistry/Texture2DAsset.js": 156,
 		"./AssetRegistry/TextureCubeAsset": 157,
 		"./AssetRegistry/TextureCubeAsset.js": 157,
-		"./AssetRegistry/TextureRegistry": 90,
-		"./AssetRegistry/TextureRegistry.js": 90,
+		"./AssetRegistry/TextureRegistry": 91,
+		"./AssetRegistry/TextureRegistry.js": 91,
 		"./AssetRegistry/TextureVideoAsset": 158,
 		"./AssetRegistry/TextureVideoAsset.js": 158,
 		"./Box3DEntity": 12,
 		"./Box3DEntity.js": 12,
-		"./Components/Box3DComponent": 95,
-		"./Components/Box3DComponent.js": 95,
-		"./Components/BuiltIn/2DTextLabel": 96,
-		"./Components/BuiltIn/2DTextLabel.js": 96,
-		"./Components/BuiltIn/Annotation": 116,
-		"./Components/BuiltIn/Annotation.js": 116,
-		"./Components/BuiltIn/AudioListener": 97,
-		"./Components/BuiltIn/AudioListener.js": 97,
-		"./Components/BuiltIn/AudioSource": 98,
-		"./Components/BuiltIn/AudioSource.js": 98,
-		"./Components/BuiltIn/CubeMapCapture": 99,
-		"./Components/BuiltIn/CubeMapCapture.js": 99,
-		"./Components/BuiltIn/Curve": 100,
-		"./Components/BuiltIn/Curve.js": 100,
-		"./Components/BuiltIn/CustomControl": 101,
-		"./Components/BuiltIn/CustomControl.js": 101,
-		"./Components/BuiltIn/DebugConsoleDisplay": 102,
-		"./Components/BuiltIn/DebugConsoleDisplay.js": 102,
-		"./Components/BuiltIn/DebugTextureRender": 103,
-		"./Components/BuiltIn/DebugTextureRender.js": 103,
-		"./Components/BuiltIn/DefaultFilters": 104,
-		"./Components/BuiltIn/DefaultFilters.js": 104,
-		"./Components/BuiltIn/Environment": 105,
-		"./Components/BuiltIn/Environment.js": 105,
-		"./Components/BuiltIn/EventHandler": 106,
-		"./Components/BuiltIn/EventHandler.js": 106,
-		"./Components/BuiltIn/Exploder": 107,
-		"./Components/BuiltIn/Exploder.js": 107,
-		"./Components/BuiltIn/FreeCamera": 108,
-		"./Components/BuiltIn/FreeCamera.js": 108,
-		"./Components/BuiltIn/Fullscreen": 109,
-		"./Components/BuiltIn/Fullscreen.js": 109,
-		"./Components/BuiltIn/HMDEffect": 110,
-		"./Components/BuiltIn/HMDEffect.js": 110,
-		"./Components/BuiltIn/InputController": 111,
-		"./Components/BuiltIn/InputController.js": 111,
-		"./Components/BuiltIn/KeyframeAnimation": 112,
-		"./Components/BuiltIn/KeyframeAnimation.js": 112,
-		"./Components/BuiltIn/LookAtTarget": 113,
-		"./Components/BuiltIn/LookAtTarget.js": 113,
-		"./Components/BuiltIn/NormalMapGenerator": 114,
-		"./Components/BuiltIn/NormalMapGenerator.js": 114,
-		"./Components/BuiltIn/ObjectAnimator": 115,
-		"./Components/BuiltIn/ObjectAnimator.js": 115,
-		"./Components/BuiltIn/ObjectPicker": 94,
-		"./Components/BuiltIn/ObjectPicker.js": 94,
-		"./Components/BuiltIn/OrbitCameraController": 117,
-		"./Components/BuiltIn/OrbitCameraController.js": 117,
-		"./Components/BuiltIn/PanoramaToCubeMap": 118,
-		"./Components/BuiltIn/PanoramaToCubeMap.js": 118,
-		"./Components/BuiltIn/PreviewAxisRotation": 119,
-		"./Components/BuiltIn/PreviewAxisRotation.js": 119,
-		"./Components/BuiltIn/PreviewCameraController": 120,
-		"./Components/BuiltIn/PreviewCameraController.js": 120,
-		"./Components/BuiltIn/PreviewCameraFocus": 121,
-		"./Components/BuiltIn/PreviewCameraFocus.js": 121,
-		"./Components/BuiltIn/PreviewVRControls": 122,
-		"./Components/BuiltIn/PreviewVRControls.js": 122,
-		"./Components/BuiltIn/ReflectionCapturePlane": 123,
-		"./Components/BuiltIn/ReflectionCapturePlane.js": 123,
-		"./Components/BuiltIn/RenderFilters": 124,
-		"./Components/BuiltIn/RenderFilters.js": 124,
-		"./Components/BuiltIn/RenderModes": 125,
-		"./Components/BuiltIn/RenderModes.js": 125,
-		"./Components/BuiltIn/RenderTargetViewer": 126,
-		"./Components/BuiltIn/RenderTargetViewer.js": 126,
-		"./Components/BuiltIn/RenderView": 127,
-		"./Components/BuiltIn/RenderView.js": 127,
-		"./Components/BuiltIn/Renderer": 128,
-		"./Components/BuiltIn/Renderer.js": 128,
-		"./Components/BuiltIn/Rotate": 129,
-		"./Components/BuiltIn/Rotate.js": 129,
-		"./Components/BuiltIn/SceneLoader": 130,
-		"./Components/BuiltIn/SceneLoader.js": 130,
-		"./Components/BuiltIn/Shots": 131,
-		"./Components/BuiltIn/Shots.js": 131,
-		"./Components/BuiltIn/SimplexNoiseGenerator": 132,
-		"./Components/BuiltIn/SimplexNoiseGenerator.js": 132,
-		"./Components/BuiltIn/Skybox": 133,
-		"./Components/BuiltIn/Skybox.js": 133,
-		"./Components/BuiltIn/SphereMapCapture": 134,
-		"./Components/BuiltIn/SphereMapCapture.js": 134,
-		"./Components/BuiltIn/TextRenderer": 135,
-		"./Components/BuiltIn/TextRenderer.js": 135,
+		"./Components/Box3DComponent": 96,
+		"./Components/Box3DComponent.js": 96,
+		"./Components/BuiltIn/2DTextLabel": 97,
+		"./Components/BuiltIn/2DTextLabel.js": 97,
+		"./Components/BuiltIn/Annotation": 117,
+		"./Components/BuiltIn/Annotation.js": 117,
+		"./Components/BuiltIn/AudioListener": 98,
+		"./Components/BuiltIn/AudioListener.js": 98,
+		"./Components/BuiltIn/AudioSource": 99,
+		"./Components/BuiltIn/AudioSource.js": 99,
+		"./Components/BuiltIn/CubeMapCapture": 100,
+		"./Components/BuiltIn/CubeMapCapture.js": 100,
+		"./Components/BuiltIn/Curve": 101,
+		"./Components/BuiltIn/Curve.js": 101,
+		"./Components/BuiltIn/CustomControl": 102,
+		"./Components/BuiltIn/CustomControl.js": 102,
+		"./Components/BuiltIn/DebugConsoleDisplay": 103,
+		"./Components/BuiltIn/DebugConsoleDisplay.js": 103,
+		"./Components/BuiltIn/DebugTextureRender": 104,
+		"./Components/BuiltIn/DebugTextureRender.js": 104,
+		"./Components/BuiltIn/DefaultFilters": 105,
+		"./Components/BuiltIn/DefaultFilters.js": 105,
+		"./Components/BuiltIn/Environment": 106,
+		"./Components/BuiltIn/Environment.js": 106,
+		"./Components/BuiltIn/EventHandler": 107,
+		"./Components/BuiltIn/EventHandler.js": 107,
+		"./Components/BuiltIn/Exploder": 108,
+		"./Components/BuiltIn/Exploder.js": 108,
+		"./Components/BuiltIn/FreeCamera": 109,
+		"./Components/BuiltIn/FreeCamera.js": 109,
+		"./Components/BuiltIn/Fullscreen": 110,
+		"./Components/BuiltIn/Fullscreen.js": 110,
+		"./Components/BuiltIn/HMDEffect": 111,
+		"./Components/BuiltIn/HMDEffect.js": 111,
+		"./Components/BuiltIn/InputController": 112,
+		"./Components/BuiltIn/InputController.js": 112,
+		"./Components/BuiltIn/KeyframeAnimation": 113,
+		"./Components/BuiltIn/KeyframeAnimation.js": 113,
+		"./Components/BuiltIn/LookAtTarget": 114,
+		"./Components/BuiltIn/LookAtTarget.js": 114,
+		"./Components/BuiltIn/NormalMapGenerator": 115,
+		"./Components/BuiltIn/NormalMapGenerator.js": 115,
+		"./Components/BuiltIn/ObjectAnimator": 116,
+		"./Components/BuiltIn/ObjectAnimator.js": 116,
+		"./Components/BuiltIn/ObjectPicker": 95,
+		"./Components/BuiltIn/ObjectPicker.js": 95,
+		"./Components/BuiltIn/OrbitCameraController": 118,
+		"./Components/BuiltIn/OrbitCameraController.js": 118,
+		"./Components/BuiltIn/PanoramaToCubeMap": 119,
+		"./Components/BuiltIn/PanoramaToCubeMap.js": 119,
+		"./Components/BuiltIn/PreviewAxisRotation": 120,
+		"./Components/BuiltIn/PreviewAxisRotation.js": 120,
+		"./Components/BuiltIn/PreviewCameraController": 121,
+		"./Components/BuiltIn/PreviewCameraController.js": 121,
+		"./Components/BuiltIn/PreviewCameraFocus": 122,
+		"./Components/BuiltIn/PreviewCameraFocus.js": 122,
+		"./Components/BuiltIn/PreviewVRControls": 123,
+		"./Components/BuiltIn/PreviewVRControls.js": 123,
+		"./Components/BuiltIn/ReflectionCapturePlane": 124,
+		"./Components/BuiltIn/ReflectionCapturePlane.js": 124,
+		"./Components/BuiltIn/RenderFilters": 125,
+		"./Components/BuiltIn/RenderFilters.js": 125,
+		"./Components/BuiltIn/RenderModes": 126,
+		"./Components/BuiltIn/RenderModes.js": 126,
+		"./Components/BuiltIn/RenderTargetViewer": 127,
+		"./Components/BuiltIn/RenderTargetViewer.js": 127,
+		"./Components/BuiltIn/RenderView": 128,
+		"./Components/BuiltIn/RenderView.js": 128,
+		"./Components/BuiltIn/Renderer": 129,
+		"./Components/BuiltIn/Renderer.js": 129,
+		"./Components/BuiltIn/Rotate": 130,
+		"./Components/BuiltIn/Rotate.js": 130,
+		"./Components/BuiltIn/SceneLoader": 131,
+		"./Components/BuiltIn/SceneLoader.js": 131,
+		"./Components/BuiltIn/Shots": 132,
+		"./Components/BuiltIn/Shots.js": 132,
+		"./Components/BuiltIn/SimplexNoiseGenerator": 133,
+		"./Components/BuiltIn/SimplexNoiseGenerator.js": 133,
+		"./Components/BuiltIn/Skybox": 134,
+		"./Components/BuiltIn/Skybox.js": 134,
+		"./Components/BuiltIn/SphereMapCapture": 135,
+		"./Components/BuiltIn/SphereMapCapture.js": 135,
+		"./Components/BuiltIn/TextRenderer": 136,
+		"./Components/BuiltIn/TextRenderer.js": 136,
 		"./Components/ComponentRegistry": 15,
 		"./Components/ComponentRegistry.js": 15,
 		"./Engine": 72,
@@ -94241,14 +94439,14 @@
 		"./Loaders/DevResourceLoader.js": 160,
 		"./Logger": 7,
 		"./Logger.js": 7,
-		"./Materials/Box3DShaderPBR_MetalRoughness": 138,
-		"./Materials/Box3DShaderPBR_MetalRoughness.js": 138,
-		"./Materials/Box3DShaderPBR_SpecGloss": 142,
-		"./Materials/Box3DShaderPBR_SpecGloss.js": 142,
-		"./Materials/Box3DShaderParameters": 139,
-		"./Materials/Box3DShaderParameters.js": 139,
-		"./Materials/Uber.frag": 141,
-		"./Materials/Uber.vert": 140,
+		"./Materials/Box3DShaderPBR_MetalRoughness": 139,
+		"./Materials/Box3DShaderPBR_MetalRoughness.js": 139,
+		"./Materials/Box3DShaderPBR_SpecGloss": 143,
+		"./Materials/Box3DShaderPBR_SpecGloss.js": 143,
+		"./Materials/Box3DShaderParameters": 140,
+		"./Materials/Box3DShaderParameters.js": 140,
+		"./Materials/Uber.frag": 142,
+		"./Materials/Uber.vert": 141,
 		"./Objects/BaseMeshObject": 69,
 		"./Objects/BaseMeshObject.js": 69,
 		"./Objects/Box3DObject": 11,
@@ -94273,8 +94471,8 @@
 		"./Util/JSONLoader.js": 86,
 		"./VAPI": 1,
 		"./VAPI.js": 1,
-		"./generated/components-builtin": 93,
-		"./generated/components-builtin.js": 93,
+		"./generated/components-builtin": 94,
+		"./generated/components-builtin.js": 94,
 		"./libs/loglevel/loglevel": 8,
 		"./libs/loglevel/loglevel.js": 8,
 		"./libs/three/effects/AnaglyphEffect": 162,

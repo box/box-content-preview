@@ -83,10 +83,11 @@ module.exports = languagesArray.map(function(language, index) {
             markdown: js + '/text/markdown.js',
             mp4: js + '/media/mp4.js',
             mp3: js + '/media/mp3.js',
-            dash: js + '/media/dash.js',
+            dash: [js + '/media/dash.js'],
             error: js + '/error/error.js',
             model3d: js + '/box3d/model3d/model3d.js',
-            image360: js + '/box3d/image360/image360.js'
+            image360: js + '/box3d/image360/image360.js',
+            video360: js + '/box3d/video360/video360.js'
         },
         output: {
             path: dist,

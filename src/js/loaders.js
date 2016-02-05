@@ -5,6 +5,7 @@ import Image360Loader from './box3d/image360/image360-loader';
 import SwfLoader from './swf/swf-loader';
 import TextLoader from './text/text-loader';
 import MediaLoader from './media/media-loader';
+import Video360Loader from './box3d/video360/video360-loader';
 import DocLoader from './doc/doc-loader';
 import Model3dLoader from './box3d/model3d/model3d-loader';
 import ErrorLoader from './error/error-loader';
@@ -13,6 +14,7 @@ import ErrorLoader from './error/error-loader';
 export default [
     SwfLoader,
     MediaLoader,
+    Video360Loader,
     TextLoader, // should come before document
     DocLoader, // should come after text
     ImageLoader,
