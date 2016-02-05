@@ -11,7 +11,8 @@ const VIEWERS = [
         EXTENSIONS: [ 'gif' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
-        CONSTRUCTOR: 'Image'
+        CONSTRUCTOR: 'Image',
+        PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'multi-image',
@@ -25,14 +26,16 @@ const VIEWERS = [
         EXTENSIONS: [ 'jpeg', 'jpg' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
-        CONSTRUCTOR: 'Image'
+        CONSTRUCTOR: 'Image',
+        PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'png',
         EXTENSIONS: [ 'ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
-        CONSTRUCTOR: 'Image'
+        CONSTRUCTOR: 'Image',
+        PREFETCH: 'xhr'
     }
 ];
 

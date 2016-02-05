@@ -57,11 +57,12 @@ class Image extends Base {
      * @returns {void}
      */
     load(imageUrl) {
-        this.imageUrl = this.appendAuthParam(imageUrl);
+
         this.imageEl.addEventListener('load', () => {
             if (this.destroyed) {
                 return;
             }
+            URL.revokeObjectURL(this.imageEl.src);
             this.loaded = true;
             this.emit('load');
             this.zoom();
@@ -69,7 +70,18 @@ class Image extends Base {
                 this.loadUI();
             }
         });
-        this.imageEl.src = this.imageUrl;
+
+        fetch(imageUrl, {
+            headers: this.appendAuthHeader()
+        })
+        .then((response) => response.blob())
+        .then((img) => {
+            if (this.destroyed) {
+                return;
+            }
+            this.imageEl.src = URL.createObjectURL(img);
+        });
+
         super.load();
     }
 
