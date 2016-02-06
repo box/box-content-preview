@@ -212,7 +212,6 @@ class Box3DRenderer extends EventEmitter {
 
             // Resume updates and rendering.
             this.box3d.unpause();
-            this.box3d.trigger('resize');
         }
     }
 
@@ -251,8 +250,8 @@ class Box3DRenderer extends EventEmitter {
         let vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
         vrControlsComponent.enable();
 
-        this.box3d.getRenderer().setAttribute('clearAlpha', 1.0);
-        this.box3d.getRenderer().setAttribute('clearColor', 0x000000);
+        this.box3d.getBaseRenderer().setAttribute('clearAlpha', 1.0);
+        this.box3d.getBaseRenderer().setAttribute('clearColor', 0x000000);
     }
 
     /**
@@ -274,7 +273,7 @@ class Box3DRenderer extends EventEmitter {
         let vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
         vrControlsComponent.disable();
 
-        this.box3d.getRenderer().setAttribute('clearAlpha', 0.0);
+        this.box3d.getBaseRenderer().setAttribute('clearAlpha', 0.0);
     }
 
     /**
