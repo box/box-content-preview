@@ -2,6 +2,7 @@
 
 import autobind from 'autobind-decorator';
 import Base from '../base';
+import Browser from '../browser';
 import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
@@ -76,12 +77,18 @@ class DocBase extends Base {
      * @returns {Promise} Promise to load a pdf
      */
     load(pdfUrl) {
-        // Workers cannot be loaded via XHR when not from the same domain, so we load it as a blob
-        let assetUrlCreator = createAssetUrlCreator(this.options.location);
-        let pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
-        let pdfCMapBaseURI = this.options.location.staticBaseURI + 'doc/cmaps/';
 
-        PDFJS.workerSrc = pdfWorkerUrl;
+        // Disable worker in IE and Edge due to a CORS origin bug: https://goo.gl/G9iR54
+        if (Browser.getName() === 'Edge' || Browser.getName() === 'Explorer') {
+            PDFJS.disableWorker = true;
+        } else {
+            // Workers cannot be loaded via XHR when not from the same domain, so we load it as a blob
+            let assetUrlCreator = createAssetUrlCreator(this.options.location);
+            let pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
+            PDFJS.workerSrc = pdfWorkerUrl;
+        }
+
+        let pdfCMapBaseURI = this.options.location.staticBaseURI + 'doc/cmaps/';
         PDFJS.cMapUrl = pdfCMapBaseURI;
         PDFJS.cMapPacked = true;
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab
