@@ -4,6 +4,8 @@
 import '../../css/box3d/box3d.css';
 import Base from '../base';
 import autobind from 'autobind-decorator';
+import Box3DControls from './box3d-controls';
+import Box3DRenderer from './box3d-renderer';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ENABLE_VR,
