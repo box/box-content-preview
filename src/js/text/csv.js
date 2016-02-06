@@ -4,6 +4,7 @@ import '../../css/text/csv.css';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
 import fetch from 'isomorphic-fetch';
+import Browser from '../browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Table, Column } from 'fixed-data-table';
@@ -45,7 +46,7 @@ class CSV extends TextBase {
         .then((papaWorkerBlob) => {
             Papa.SCRIPT_PATH = URL.createObjectURL(papaWorkerBlob);
             Papa.parse(csvUrl, {
-                worker: true,
+                worker: Browser.getName() !== 'Edge' && Browser.getName() !== 'Explorer', // IE and Edge don't work with worker
                 download: true,
                 authorization: 'Bearer ' + this.options.token,
                 error: (err, file, inputElem, reason) => {
