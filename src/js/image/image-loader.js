@@ -47,7 +47,6 @@ class ImageLoader extends AssetLoader {
      */
     constructor() {
         super();
-        this.type = 'image';
         this.viewers = VIEWERS;
     }
 }

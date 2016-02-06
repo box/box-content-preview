@@ -29,7 +29,6 @@ class Image360Loader extends AssetLoader {
      */
     constructor() {
         super();
-        this.type = 'image-360';
         this.viewers = VIEWERS;
     }
 }
