@@ -23,7 +23,7 @@ const VIEWERS = [
 class Image360Loader extends AssetLoader {
 
     /**
-     * Instantiates a loader for 360 degree image preview.
+     * [constructor]
      * @constructor
      * @returns {Image360Loader} The image360 loader instance
      */
