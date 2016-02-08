@@ -23,7 +23,6 @@ class Box3DControls extends EventEmitter {
         super();
 
         this.vrEnabled = false;
-        this.fullscreenEnabled = false;
 
         // List of registered elements and their events
         this.eventRegistry = {};
@@ -83,10 +82,6 @@ class Box3DControls extends EventEmitter {
      */
     handleToggleFullscreen() {
         this.emit(EVENT_TOGGLE_FULLSCREEN);
-        this.fullscreenEnabled = !this.fullscreenEnabled;
-
-        this.setElementVisibility(this.enterFullscreenControl, !this.fullscreenEnabled);
-        this.setElementVisibility(this.exitFullscreenControl, this.fullscreenEnabled);
     }
 
     /**
