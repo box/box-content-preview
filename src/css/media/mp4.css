@@ -23,3 +23,7 @@
 .box-preview-media-mp4 .box-preview-media-settings-item-quality {
     display: none;
 }
+
+.box-preview-media-mp4 .box-preview-image-switch-360-icon {
+    display: none;
+}
