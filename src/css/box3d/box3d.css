@@ -122,10 +122,10 @@
     display: none;
 }
 
-.is-fullscreen .box-preview-box3d .controls-fullscreen {
+.box-preview-is-fullscreen .icon-fullscreencontrol {
     display: none;
 }
 
-.is-fullscreen .box-preview-box3d .controls-minimize {
+.box-preview-is-fullscreen .icon-minimizecontrol {
     display: inline-block;
 }

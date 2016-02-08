@@ -9,15 +9,14 @@ import Box3DRenderer from './box3d-renderer';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ENABLE_VR,
-    EVENT_ENTER_FULLSCREEN,
     EVENT_ERROR,
-    EVENT_EXIT_FULLSCREEN,
     EVENT_DISABLE_VR,
     EVENT_LOAD,
     EVENT_RESET,
     EVENT_SCENE_LOADED,
     EVENT_SHOW_VR_BUTTON,
-    EVENT_TOGGLE_FULLSCREEN
+    EVENT_TOGGLE_FULLSCREEN,
+    EVENT_TRIGGER_RENDER
 } from './box3d-constants';
 
 /**
@@ -82,9 +81,6 @@ class Box3D extends Base {
             this.renderer.on(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         }
-
-        this.on(EVENT_ENTER_FULLSCREEN, this.handleEnterFullscreen);
-        this.on(EVENT_EXIT_FULLSCREEN, this.handleExitFullscreen);
     }
 
     /**
@@ -103,9 +99,6 @@ class Box3D extends Base {
             this.renderer.removeListener(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         }
-
-        this.removeListener(EVENT_ENTER_FULLSCREEN, this.handleEnterFullscreen);
-        this.removeListener(EVENT_EXIT_FULLSCREEN, this.handleExitFullscreen);
     }
 
     /**
@@ -149,21 +142,10 @@ class Box3D extends Base {
     }
 
     /**
-     * Handle fullscreen enter event
-     * @returns {void}
+     * @inheritdoc
      */
-    @autobind
-    handleEnterFullscreen() {
-        this.renderer.enterFullscreen();
-    }
-
-    /**
-     * Handles fullscreen exit event
-     * @returns {void}
-     */
-    @autobind
-    handleExitFullscreen() {
-        this.renderer.exitFullscreen();
+    resize() {
+        this.renderer.emit(EVENT_TRIGGER_RENDER);
     }
 
     /**
