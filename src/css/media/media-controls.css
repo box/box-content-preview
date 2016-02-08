@@ -83,7 +83,8 @@
 }
 
 .box-preview-media-expand-icon,
-.box-preview-media-gear-icon {
+.box-preview-media-gear-icon,
+.box-preview-image-switch-360-icon {
     float: right;
 }
 
