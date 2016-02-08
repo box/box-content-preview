@@ -7,6 +7,7 @@ import debounce from 'lodash/function/debounce';
 import { createContentUrl } from './util';
 
 const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
+const CLASS_FULLSCREEN_DISABLED = 'box-preview-fullscreen-disabled';
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 const OPTIONS = {
     ui: true
@@ -113,16 +114,20 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     addCommonListeners() {
-        // Attach common full screen event listeners
-        fullscreen.on('enter', () => {
-            this.containerEl.classList.add(CLASS_FULLSCREEN);
-            this.emit('enterfullscreen');
-        });
+        if (fullscreen.isSupported()) {
+            // Attach common full screen event listeners
+            fullscreen.on('enter', () => {
+                this.containerEl.classList.add(CLASS_FULLSCREEN);
+                this.emit('enterfullscreen');
+            });
 
-        fullscreen.on('exit', () => {
-            this.containerEl.classList.remove(CLASS_FULLSCREEN);
-            this.emit('exitfullscreen');
-        });
+            fullscreen.on('exit', () => {
+                this.containerEl.classList.remove(CLASS_FULLSCREEN);
+                this.emit('exitfullscreen');
+            });
+        } else {
+            this.containerEl.classList.add(CLASS_FULLSCREEN_DISABLED);
+        }
 
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler());

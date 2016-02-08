@@ -57,7 +57,12 @@
 }
 
 .box-preview-controls-btn.disabled,
-.box-preview-controls-btn:disabled {
-    opacity: 0.4;
+.box-preview-controls-btn:disabled,
+.box-preview-fullscreen-disabled .box-preview-image-expand-icon:before,
+.box-preview-fullscreen-disabled .box-preview-text-expand-icon:before,
+.box-preview-fullscreen-disabled .box-preview-doc-expand-icon:before,
+.box-preview-fullscreen-disabled .box-preview-media-expand-icon:before {
+    pointer-events: none;
+    opacity: 0.2;
     cursor: default;
 }
