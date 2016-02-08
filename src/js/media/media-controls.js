@@ -398,8 +398,10 @@ class MediaControls extends EventEmitter  {
         this.timeScrubber.getConvertedEl().addEventListener('mouseleave', this.filmstripHideHandler);
 
         this.filmstripEl.onload = () => {
-            this.filmstripContainerEl.style.width = frameWidth + 2 + 'px'; // 2px for the borders on each side
-            this.filmstripContainerEl.querySelector('.box-preview-media-crawler-wrapper').style.display = 'none'; // Hide the crawler
+            if (this.filmstripContainerEl) {
+                this.filmstripContainerEl.style.width = frameWidth + 2 + 'px'; // 2px for the borders on each side
+                this.filmstripContainerEl.querySelector('.box-preview-media-crawler-wrapper').style.display = 'none'; // Hide the crawler
+            }
         };
 
         let repStatus = new RepStatus();
