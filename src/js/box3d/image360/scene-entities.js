@@ -21,8 +21,7 @@ export default [{
         orbit_camera_controller: {
             componentData: {
                 enablePan: false,
-                enableZoom: false,
-                usePointerLock: true
+                enableZoom: false
             },
             enabled: true,
             scriptId: 'orbit_camera_controller'
