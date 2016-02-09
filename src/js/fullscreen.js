@@ -60,21 +60,22 @@ class Fullscreen extends EventEmitter {
      *
      * @private
      * @param {HTMLElement} element fullscreen element
+     * @param {Object} vrDevice The HMD device used by WebVR
      * @returns {void}
      */
-    toggle(element) {
-
+    toggle(element, vrDevice) {
+        const options = vrDevice ? {vrDisplay: vrDevice} : Element.ALLOW_KEYBOARD_INPUT;
         element = element || document.documentElement;
 
         if (!this.isFullscreen()) {
             if (element.requestFullscreen) {
-                element.requestFullscreen();
+                element.requestFullscreen(options);
             } else if (element.msRequestFullscreen) {
-                element.msRequestFullscreen();
+                element.msRequestFullscreen(options);
             } else if (element.mozRequestFullScreen) {
-                element.mozRequestFullScreen();
+                element.mozRequestFullScreen(options);
             } else if (element.webkitRequestFullscreen) {
-                element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                element.webkitRequestFullscreen(options);
             }
         } else {
             if (document.exitFullscreen) {

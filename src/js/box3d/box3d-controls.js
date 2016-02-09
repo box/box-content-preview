@@ -59,7 +59,6 @@ class Box3DControls extends EventEmitter {
         this.controlBar.appendChild(this.exitFullscreenControl);
     }
 
-
     /**
      * Emit scene loaded message
      * @returns {void}
@@ -103,7 +102,7 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     showVrButton() {
-        this.vrButtonEl.classList.remove(CSS_CLASS_HIDDEN);
+        this.vrControl.classList.remove(CSS_CLASS_HIDDEN);
     }
 
     /**

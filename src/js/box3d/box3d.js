@@ -172,6 +172,7 @@ class Box3D extends Base {
      */
     @autobind
     handleEnableVr() {
+        this.vrDevice = this.renderer.vrDevice;
         this.renderer.enableVr();
     }
 
@@ -181,6 +182,7 @@ class Box3D extends Base {
      */
     @autobind
     handleDisableVr() {
+        this.vrDevice = undefined;
         this.renderer.disableVr();
     }
 
