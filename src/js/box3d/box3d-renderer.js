@@ -271,6 +271,17 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
+     * Trigger an update and render event on the runtime
+     * @returns {void}
+     */
+    handleOnRender() {
+        if (!this.box3d) {
+            return;
+        }
+        this.box3d.trigger('render');
+    }
+
+    /**
      * Disable the VR system (HMD)
      * @returns {void}
      */
