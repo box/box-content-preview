@@ -243,12 +243,14 @@ class Box3DRenderer extends EventEmitter {
 
         this.vrEnabled = true;
 
-        let camera = this.getCamera();
+        this.disableCameraControls();
 
-        let hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
+        const camera = this.getCamera();
+
+        const hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
         hmdComponent.enable();
 
-        let vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
+        const vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
         vrControlsComponent.enable();
 
         this.box3d.getRenderer().setAttribute('clearAlpha', 1.0);
@@ -266,15 +268,37 @@ class Box3DRenderer extends EventEmitter {
 
         this.vrEnabled = false;
 
-        let camera = this.getCamera();
+        this.enableCameraControls();
 
-        let hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
+        const camera = this.getCamera();
+
+        const hmdComponent = camera.getComponentByScriptId('hmd_renderer_script');
         hmdComponent.disable();
 
-        let vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
+        const vrControlsComponent = camera.getComponentByScriptId('preview_vr_controls');
         vrControlsComponent.disable();
 
         this.box3d.getRenderer().setAttribute('clearAlpha', 0.0);
+    }
+
+    /**
+     * Enable the regular camera controls.
+     * @returns {void}
+     */
+    enableCameraControls() {
+        const camera = this.getCamera();
+        const cameraControls = camera.getComponentByScriptId('preview_camera_controller');
+        cameraControls.enable();
+    }
+
+    /**
+     * Disable the regular camera controls. Useful when VR device is controlling camera.
+     * @returns {void}
+     */
+    disableCameraControls() {
+        const camera = this.getCamera();
+        const cameraControls = camera.getComponentByScriptId('preview_camera_controller');
+        cameraControls.disable();
     }
 
     /**

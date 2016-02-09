@@ -103,7 +103,23 @@ class Image360Renderer extends Box3DRenderer {
         });
     }
 
+    /**
+     * @inheritdoc
+     */
+    enableCameraControls() {
+        const camera = this.getCamera();
+        const cameraControls = camera.getComponentByScriptId('orbit_camera_controller');
+        cameraControls.enable();
+    }
 
+    /**
+     * @inheritdoc
+     */
+    disableCameraControls() {
+        const camera = this.getCamera();
+        const cameraControls = camera.getComponentByScriptId('orbit_camera_controller');
+        cameraControls.disable();
+    }
 }
 
 export default Image360Renderer;

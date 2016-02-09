@@ -198,6 +198,7 @@ class Box3D extends Base {
      */
     @autobind
     handleShowVrButton() {
+        this.vrDevice = this.renderer.vrDevice;
         this.controls.showVrButton();
     }
 

@@ -27,7 +27,9 @@ export default [{
             scriptId: 'orbit_camera_controller'
         },
         previewVrController: {
-            componentData: {},
+            componentData: {
+                cameraControllerName: 'Orbit Camera Controller'
+            },
             enabled: false,
             scriptId: 'preview_vr_controls'
         },
