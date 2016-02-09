@@ -300,7 +300,7 @@ class Preview {
         let promiseToLoadAssets = loader.load(viewer, this.options.location);
 
         // Status checker
-        let repStatus = new RepStatus(this.logger);
+        let repStatus = new RepStatus(this.logger, viewer.REQUIRED_REPRESENTATIONS);
 
         // Load the representation assets
         let promiseToGetRepresentationStatusSuccess = repStatus.status(representation, this.getRequestHeaders());

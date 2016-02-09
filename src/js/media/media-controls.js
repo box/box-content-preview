@@ -359,7 +359,9 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     setFilmstrip() {
-        this.filmstripEl.src = this.filmstripUrl;
+        if (this.filmstripEl) {
+            this.filmstripEl.src = this.filmstripUrl;
+        }
     }
 
     /**
