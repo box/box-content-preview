@@ -64,7 +64,7 @@ class Fullscreen extends EventEmitter {
      * @returns {void}
      */
     toggle(element, vrDevice) {
-        const options = vrDevice ? {vrDisplay: vrDevice} : null;
+        const options = vrDevice ? {vrDisplay: vrDevice} : Element.ALLOW_KEYBOARD_INPUT;
         element = element || document.documentElement;
 
         if (!this.isFullscreen()) {
