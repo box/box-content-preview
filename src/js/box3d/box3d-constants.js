@@ -17,7 +17,7 @@ export const EVENT_TRIGGER_RENDER = 'triggerRender';
 
 // CSS CLASSES
 export const CSS_CLASS_BOX3D = 'box-preview-box3d';
-export const CSS_CLASS_HIDDEN = 'hidden';
+export const CSS_CLASS_HIDDEN = 'box-preview-hidden';
 
 // OTHER CONSTANT VARIABLES
 export const CACHE_KEY_BOX3D = 'box3d';
