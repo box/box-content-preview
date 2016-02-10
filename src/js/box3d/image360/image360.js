@@ -32,7 +32,9 @@ class Image360 extends Box3D {
      * @inheritdoc
      */
     createSubModules() {
-        this.controls = new Image360Controls(this.wrapperEl);
+        if (this.options.ui !== false) {
+            this.controls = new Image360Controls(this.wrapperEl);
+        }
         this.renderer = new Image360Renderer(this.wrapperEl, this.boxSdk);
     }
 
@@ -41,7 +43,9 @@ class Image360 extends Box3D {
      */
     attachEventHandlers() {
         super.attachEventHandlers();
-        this.controls.on(EVENT_SWITCH_2D, this.switchTo2dViewer);
+        if (this.controls) {
+            this.controls.on(EVENT_SWITCH_2D, this.switchTo2dViewer);
+        }
     }
 
     /**
@@ -49,7 +53,9 @@ class Image360 extends Box3D {
      */
     detachEventHandlers() {
         super.detachEventHandlers();
-        this.controls.removeListener(EVENT_SWITCH_2D, this.switchTo2dViewer);
+        if (this.controls) {
+            this.controls.removeListener(EVENT_SWITCH_2D, this.switchTo2dViewer);
+        }
     }
 
     /**
