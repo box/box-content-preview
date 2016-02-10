@@ -9,8 +9,8 @@ import { insertTemplate } from '../../util';
 const AXIS_X = 'x';
 const AXIS_Y = 'y';
 const AXIS_Z = 'z';
-const CSS_CLASS_HIDDEN = 'hidden';
-const CSS_CLASS_CURRENT_AXIS = 'current-axis';
+const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
+const CSS_CLASS_CURRENT_AXIS = 'box-preview-current-axis';
 const RENDER_MODE_LIT = 'Lit';
 const RENDER_MODE_UNLIT = 'Unlit';
 const RENDER_MODE_NORMALS = 'Normals';
@@ -45,27 +45,27 @@ class Model3dSettings extends EventEmitter  {
         this.currentDefaultRenderMode = RENDER_MODE_LIT;
         this.defaultRenderMode = RENDER_MODE_LIT;
 
-        this.el = this.containerEl.querySelector('.preview-settings-wrapper');
-        this.settingsButtonEl = this.el.querySelector('.icon-cog');
-        this.settingsPanelEl = this.el.querySelector('.settings-panel');
-        this.orientationXButton = this.el.querySelector('.orientation-x');
-        this.orientationYButton = this.el.querySelector('.orientation-y');
-        this.orientationZButton = this.el.querySelector('.orientation-z');
+        this.el = this.containerEl.querySelector('.box-preview-settings-wrapper');
+        this.settingsButtonEl = this.el.querySelector('.box-preview-icon-cog');
+        this.settingsPanelEl = this.el.querySelector('.box-preview-settings-panel');
+        this.orientationXButton = this.el.querySelector('.box-preview-orientation-x');
+        this.orientationYButton = this.el.querySelector('.box-preview-orientation-y');
+        this.orientationZButton = this.el.querySelector('.box-preview-orientation-z');
         this.currentAxisEl = this.el.querySelector('.' + CSS_CLASS_CURRENT_AXIS);
-        this.rotateNegativeButtonEl = this.el.querySelector('.icon-setting-arrow-left');
-        this.rotatePositiveButtonEl = this.el.querySelector('.icon-setting-arrow-right');
+        this.rotateNegativeButtonEl = this.el.querySelector('.box-preview-icon-setting-arrow-left');
+        this.rotatePositiveButtonEl = this.el.querySelector('.box-preview-icon-setting-arrow-right');
         // Default render modes
-        this.renderModeDefaultEl = this.el.querySelector('.render-mode-selected');
-        this.renderModeDefaultListEl = this.el.querySelector('.render-mode-list');
-        this.renderModeDefaultLit = this.el.querySelector('.render-mode-lit');
-        this.renderModeDefaultUnlit = this.el.querySelector('.render-mode-unlit');
-        this.renderModeDefaultNormals = this.el.querySelector('.render-mode-normals');
-        this.renderModeDefaultWireframe = this.el.querySelector('.render-mode-wire');
-        this.renderModeDefaultUntexturedWireframe = this.el.querySelector('.render-mode-wire-untextured');
-        this.renderModeDefaultUVOverlay = this.el.querySelector('.render-mode-uv');
+        this.renderModeDefaultEl = this.el.querySelector('.box-preview-render-mode-selected');
+        this.renderModeDefaultListEl = this.el.querySelector('.box-preview-render-mode-list');
+        this.renderModeDefaultLit = this.el.querySelector('.box-preview-render-mode-lit');
+        this.renderModeDefaultUnlit = this.el.querySelector('.box-preview-render-mode-unlit');
+        this.renderModeDefaultNormals = this.el.querySelector('.box-preview-render-mode-normals');
+        this.renderModeDefaultWireframe = this.el.querySelector('.box-preview-render-mode-wire');
+        this.renderModeDefaultUntexturedWireframe = this.el.querySelector('.box-preview-render-mode-wire-untextured');
+        this.renderModeDefaultUVOverlay = this.el.querySelector('.box-preview-render-mode-uv');
         // Save and Reset buttons
-        this.saveSettingsEl = this.el.querySelector('.settings-save-btn');
-        this.resetSettingsEl = this.el.querySelector('.settings-reset-btn');
+        this.saveSettingsEl = this.el.querySelector('.box-preview-settings-save-btn');
+        this.resetSettingsEl = this.el.querySelector('.box-preview-settings-reset-btn');
 
         this.attachEventHandlers();
     }

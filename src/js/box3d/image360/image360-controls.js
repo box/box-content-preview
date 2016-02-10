@@ -24,8 +24,7 @@ class Image360Controls extends Box3DControls  {
     addUi() {
         super.addUi();
 
-        const switch2DControl = this.createControlItem('controls-2d', this.switchTo2dViewer.bind(this), '2D');
-        this.controlBar.appendChild(switch2DControl);
+        this.controls.add(__('2D Preview'), this.switchTo2dViewer.bind(this), 'controls-2d', '2D');
     }
 
     /**

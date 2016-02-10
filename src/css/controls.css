@@ -61,7 +61,8 @@
 .box-preview-fullscreen-disabled .box-preview-image-expand-icon,
 .box-preview-fullscreen-disabled .box-preview-text-expand-icon,
 .box-preview-fullscreen-disabled .box-preview-doc-expand-icon,
-.box-preview-fullscreen-disabled .box-preview-media-expand-icon {
+.box-preview-fullscreen-disabled .box-preview-media-expand-icon,
+.box-preview-fullscreen-disabled .box-preview-box3d-expand-icon {
     pointer-events: none;
     opacity: 0.2;
     cursor: default;

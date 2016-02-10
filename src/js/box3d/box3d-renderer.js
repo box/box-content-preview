@@ -6,7 +6,8 @@ import Cache from '../cache';
 import {
     CACHE_KEY_BOX3D,
     EVENT_SHOW_VR_BUTTON,
-    EVENT_SCENE_LOADED
+    EVENT_SCENE_LOADED,
+    EVENT_TRIGGER_RENDER
 } from './box3d-constants';
 
 const INPUT_SETTINGS = {
@@ -40,6 +41,7 @@ class Box3DRenderer extends EventEmitter {
         this.vrEnabled = false;
         this.vrDevice = null;
         this.boxSdk = boxSdk;
+        this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
     }
 
     /**
@@ -68,6 +70,8 @@ class Box3DRenderer extends EventEmitter {
         this.hideBox3d();
 
         this.box3d.resourceLoader.destroy();
+
+        this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
     }
 
     /**
@@ -199,7 +203,7 @@ class Box3DRenderer extends EventEmitter {
     hideBox3d() {
         // Trigger a render to remove any artifacts.
         this.box3d.trigger('update');
-        this.box3d.trigger('render');
+        this.handleOnRender();
 
         if (this.box3d.container) {
             this.box3d.container.removeChild(this.box3d.canvas);
@@ -266,6 +270,17 @@ class Box3DRenderer extends EventEmitter {
 
         this.box3d.getRenderer().setAttribute('clearAlpha', 1.0);
         this.box3d.getRenderer().setAttribute('clearColor', 0x000000);
+    }
+
+    /**
+     * Trigger an update and render event on the runtime
+     * @returns {void}
+     */
+    handleOnRender() {
+        if (!this.box3d) {
+            return;
+        }
+        this.box3d.trigger('render');
     }
 
     /**

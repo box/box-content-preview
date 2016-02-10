@@ -2,10 +2,10 @@
 
 import Box3DControls from '../box3d-controls';
 import autobind from 'autobind-decorator';
-import {EVENT_SET_RENDER_MODE, EVENT_SET_CAMERA_PROJECTION} from './model3d-constants';
-import {CSS_CLASS_HIDDEN} from '../box3d-constants';
+import {EVENT_SET_RENDER_MODE} from './model3d-constants';
+const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
+const CSS_CLASS_CURRENT_RENDER_MODE = 'box-preview-current-render-mode';
 
-const CSS_CLASS_CURRENT_RENDER_MODE = 'current-render-mode';
 const RENDER_MODES = {
     lit: {
         name: 'Lit',
@@ -63,8 +63,6 @@ class Model3dControls extends Box3DControls  {
     constructor(containerEl) {
         super(containerEl);
         this.renderModeCurrent = RENDER_MODES.lit.name;
-
-        this.renderModesSelectorEl = this.el.querySelector('.render-mode-selector');
     }
 
     /**
@@ -74,16 +72,17 @@ class Model3dControls extends Box3DControls  {
         super.addUi();
 
         this.renderModesSelectorEl = document.createElement('ul');
-        this.renderModesSelectorEl.classList.add('preview-overlay', 'preview-pullup', 'render-mode-selector', CSS_CLASS_HIDDEN);
+        this.renderModesSelectorEl.classList.add('box-preview-overlay',
+            'box-preview-pullup', 'box-preview-render-mode-selector', CSS_CLASS_HIDDEN);
 
         Object.keys(RENDER_MODES).forEach((mode) => {
             const renderModeEl = this.createRenderModeItem(RENDER_MODES[mode]);
             this.renderModesSelectorEl.appendChild(renderModeEl);
         });
 
-        this.renderModeControl = this.createControlItem('icon-rendermodes',
-            this.handleToggleRenderModes.bind(this), this.renderModesSelectorEl);
-        this.controlBar.appendChild(this.renderModeControl);
+        const renderModesEl = this.controls.add(__('render mode'), this.handleToggleRenderModes, 'box-preview-rendermodes-icon');
+        renderModesEl.parentElement.appendChild(this.renderModesSelectorEl);
+
 
         // Set default to lit!
         this.handleSetRenderMode(RENDER_MODES.lit);
@@ -99,7 +98,7 @@ class Model3dControls extends Box3DControls  {
         const className = renderModeDescriptor.baseClass;
 
         const renderModeItem = document.createElement('li');
-        renderModeItem.classList.add('rm-' + className, 'rendermode-item');
+        renderModeItem.classList.add('box-preview-rm-' + className, 'box-preview-rendermode-item');
         renderModeDescriptor.el = renderModeItem;
 
         const onRenderModeChange = this.handleSetRenderMode.bind(this, renderModeDescriptor);
@@ -107,7 +106,7 @@ class Model3dControls extends Box3DControls  {
         this.registerUiItem(className, renderModeItem, 'click', onRenderModeChange);
 
         const renderModeIcon = document.createElement('span');
-        renderModeIcon.classList.add('icon-rm-' + className, 'inline-icon');
+        renderModeIcon.classList.add('box-preview-icon-rm-' + className, 'box-preview-inline-icon');
 
         renderModeItem.appendChild(renderModeIcon);
         renderModeItem.innerHTML += renderModeDescriptor.name;
@@ -130,15 +129,13 @@ class Model3dControls extends Box3DControls  {
      * @returns {void}
      */
     handleSetRenderMode(renderMode) {
-        const current = this.renderModeControl.querySelector('.' + CSS_CLASS_CURRENT_RENDER_MODE);
+        const current = this.renderModesSelectorEl.querySelector('.' + CSS_CLASS_CURRENT_RENDER_MODE);
         if (current) {
             current.classList.remove(CSS_CLASS_CURRENT_RENDER_MODE);
         }
         renderMode.el.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
         this.renderModeCurrent = renderMode.key;
         this.emit(EVENT_SET_RENDER_MODE, renderMode.name);
-
-        this.setRenderModeUI('icon-rm-' + renderMode.baseClass);
     }
 
     /**
