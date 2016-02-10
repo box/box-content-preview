@@ -2,7 +2,7 @@
 
 import Box3DControls from '../box3d-controls';
 import autobind from 'autobind-decorator';
-import {EVENT_SET_RENDER_MODE} from './model3d-constants';
+import {EVENT_SET_RENDER_MODE, EVENT_SET_CAMERA_PROJECTION} from './model3d-constants';
 import {CSS_CLASS_HIDDEN} from '../box3d-constants';
 
 const CSS_CLASS_CURRENT_RENDER_MODE = 'current-render-mode';
@@ -62,7 +62,6 @@ class Model3dControls extends Box3DControls  {
      */
     constructor(containerEl) {
         super(containerEl);
-
         this.renderModeCurrent = RENDER_MODES.lit.name;
 
         this.renderModesSelectorEl = this.el.querySelector('.render-mode-selector');

@@ -4,7 +4,12 @@
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
 import {EVENT_SCENE_LOADED} from '../box3d-constants';
-import {EVENT_SET_RENDER_MODE, EVENT_MISSING_ASSET} from './model3d-constants';
+import {
+    EVENT_SET_RENDER_MODE,
+    EVENT_MISSING_ASSET,
+    CAMERA_PROJECTION_PERSPECTIVE,
+    CAMERA_PROJECTION_ORTHOGRAPHIC
+} from './model3d-constants';
 
 /**
  * Model3dRenderer
@@ -296,6 +301,44 @@ class Model3dRenderer extends Box3DRenderer {
     setRenderMode(mode) {
         if (this.box3d) {
             VAPI.globalEvents.trigger(EVENT_SET_RENDER_MODE, mode);
+        }
+    }
+
+    /**
+     * Sets the projection type for the camera
+     * @param {string} projection The projection identifier
+     * @returns {void}
+     */
+    setCameraProjection(projection) {
+        if (this.box3d) {
+            const camera = this.getCamera();
+
+            if (camera) {
+                const aspect = this.getAspect();
+                let enableZoom;
+                switch (projection) {
+                    case CAMERA_PROJECTION_ORTHOGRAPHIC:
+                        camera.setProperties({
+                            top: 50,
+                            bottom: -50,
+                            left: -50 * aspect,
+                            right: 50 * aspect,
+                            type: 'OrthographicCamera'
+                        });
+                        enableZoom = false;
+                        break;
+                    case CAMERA_PROJECTION_PERSPECTIVE:
+                        camera.setProperties({
+                            aspect: this.getAspect(),
+                            type: 'PerspectiveCamera'
+                        });
+                        enableZoom = true;
+                        break;
+                }
+                const controllerComponent = camera.getComponentById('previewCameraController');
+                controllerComponent.setAttribute('enableZoom', enableZoom);
+                camera.trigger('resetOrbitCameraController');
+            }
         }
     }
 

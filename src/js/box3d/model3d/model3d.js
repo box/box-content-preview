@@ -10,6 +10,7 @@ import {
     EVENT_MISSING_ASSET,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SET_RENDER_MODE,
+    EVENT_SET_CAMERA_PROJECTION,
     EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_METADATA_UPDATE_SUCCESS,
     EVENT_METADATA_UPDATE_FAILURE,
@@ -62,6 +63,7 @@ class Model3d extends Box3D {
     attachEventHandlers() {
         super.attachEventHandlers();
         this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+        this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.renderer.on(EVENT_MISSING_ASSET, this.handleMissingAsset);
         this.settings.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
         this.settings.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
@@ -74,6 +76,7 @@ class Model3d extends Box3D {
     detachEventHandlers() {
         super.detachEventHandlers();
         this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+        this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.renderer.removeListener(EVENT_MISSING_ASSET, this.handleMissingAsset);
         this.settings.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
         this.settings.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
@@ -215,6 +218,16 @@ class Model3d extends Box3D {
     @autobind
     handleSetRenderMode(mode) {
         this.renderer.setRenderMode(mode);
+    }
+
+    /**
+     * Handle setting camera projection
+     * @private
+     * @returns {void}
+     */
+    @autobind
+    handleSetCameraProjection(projection) {
+        this.renderer.setCameraProjection(projection);
     }
 }
 
