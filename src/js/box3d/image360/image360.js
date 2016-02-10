@@ -1,5 +1,6 @@
 'use strict';
 
+import '../../../css/image360/image360.css';
 import Box3D from '../box3d';
 import autobind from 'autobind-decorator';
 import Image360Controls from './image360-controls';

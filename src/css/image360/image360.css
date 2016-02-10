@@ -1,25 +1,3 @@
-.box-preview-image360 {
-    padding: 0;
-    margin: 0;
-    border: 0 none;
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.box-preview-image360 canvas {
-    cursor: move; /* fallback if grab cursor is unsupported */
-    cursor: -moz-grab;
-    cursor: -webkit-grab;
-    cursor: grab;
-}
-
-.box-preview-image360 canvas:active {
-    cursor: -moz-grabbing;
-    cursor: -webkit-grabbing;
-    cursor: grabbing;
-}
-
-.box-preview-image360 .box-preview-preview-overlay .box-preview-switch-2d {
-    top: 0;
+.box-preview-box3d .box-preview-reset-icon {
+    display: none;
 }
