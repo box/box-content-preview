@@ -5,6 +5,7 @@ import autobind from 'autobind-decorator';
 import {EVENT_SET_RENDER_MODE} from './model3d-constants';
 const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
 const CSS_CLASS_CURRENT_RENDER_MODE = 'box-preview-current-render-mode';
+
 const RENDER_MODES = {
     lit: {
         name: 'Lit',
@@ -61,7 +62,6 @@ class Model3dControls extends Box3DControls  {
      */
     constructor(containerEl) {
         super(containerEl);
-
         this.renderModeCurrent = RENDER_MODES.lit.name;
     }
 

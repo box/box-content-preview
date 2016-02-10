@@ -97,6 +97,17 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
+     * Get the current aspect ratio of the preview area.
+     * @private
+     * @returns {float} Aspect ratio of the preview area
+     */
+    getAspect() {
+        const width = this.containerEl.clientWidth,
+            height = this.containerEl.clientHeight;
+        return width / height;
+    }
+
+    /**
      * Get the scene asset.
      * @returns {Box3DEntity} The scene asset
      */
