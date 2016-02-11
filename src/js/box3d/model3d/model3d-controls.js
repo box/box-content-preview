@@ -80,7 +80,7 @@ class Model3dControls extends Box3DControls  {
             this.renderModesSelectorEl.appendChild(renderModeEl);
         });
 
-        const renderModesEl = this.controls.add(__('render mode'), this.handleToggleRenderModes, 'box-preview-rendermodes-icon');
+        const renderModesEl = this.controls.add(__('render_mode'), this.handleToggleRenderModes, 'box-preview-rendermodes-icon');
         renderModesEl.parentElement.appendChild(this.renderModesSelectorEl);
 
 
