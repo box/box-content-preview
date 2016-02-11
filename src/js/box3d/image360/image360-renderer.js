@@ -97,6 +97,7 @@ class Image360Renderer extends Box3DRenderer {
         });
         return new Promise((resolve, reject) => {
             this.textureAsset.load((texAsset) => {
+                skybox.enable();
                 skybox.setSkyboxTexture(this.textureAsset.id);
                 resolve();
             });

@@ -52652,7 +52652,8 @@
 	    useHardwareCompression: false,
 	    generateMipmaps: true,
 	    type: THREE.UnsignedByteType,
-	    format: THREE.RGBFormat
+	    format: THREE.RGBFormat,
+	    ignoreStream: true
 	  });
 
 	  BaseTextureAsset.prototype.initialize = function (properties) {
@@ -85280,8 +85281,7 @@
 
 	    if (this.isEnabled() && this.previewCamControl) {
 
-	      var camera = this.previewCamControl.getEntity();
-	      var threeCamera = camera.runtimeData;
+	      var threeCamera = this.previewCamControl.getEntity().runtimeData;
 
 	      // Apply the saved orientation from the VR device to update the orbit of the camera.
 	      threeCamera.quaternion.set(this.vrOrientation.x, this.vrOrientation.y, this.vrOrientation.z, this.vrOrientation.w);
@@ -88999,7 +88999,7 @@
 	  SkyboxRenderer.prototype.enable = function () {
 	    if (this.skyboxScene) {
 	      this.skyboxScene.add(this.skyboxMesh);
-	      if (!this.skyboxTexture.isLoaded()) {
+	      if (this.skyboxTexture && !this.skyboxTexture.isLoaded()) {
 	        this.skyboxTexture.load();
 	      }
 	    }
@@ -92388,35 +92388,50 @@
 	   * @returns {void}
 	   */
 	  BaseGeometryAsset.prototype.setGeometry = function (type, geometry) {
-	    var maxMaterialIndex = -1,
-	        missingMaterial = false;
-
 	    if (geometry) {
 	      // Flag the geometry as dynamic or static.
 	      geometry.dynamic = this.getProperty('dynamic') || false;
-
-	      // Correct negative material indices and compute the maximum material
-	      // index for this geometry.
-	      if (geometry instanceof THREE.BufferGeometry && geometry.groups) {
-	        geometry.groups.forEach(function (group) {
-	          maxMaterialIndex = Math.max(maxMaterialIndex, group.materialIndex);
-	        });
-
-	        geometry.groups.forEach(function (group) {
-	          if (group.materialIndex < 0) {
-	            group.materialIndex = maxMaterialIndex + 1;
-	            missingMaterial = true;
-	          }
-	        });
-
-	        if (missingMaterial) {
-	          maxMaterialIndex++;
-	        }
-	      }
 	    }
 
 	    this.geometries[type] = geometry;
-	    this.maxMaterialIndices[type] = maxMaterialIndex;
+	    this.maxMaterialIndices[type] = this.computeMaxMaterialIndex(geometry);
+	  };
+
+	  /**
+	   * Figures out the highest material index referenced by a piece of three.js geometry.
+	   * @param {Object} a THREE.Geometry or THREE.BufferGeometry object
+	   * @return {Number}    The maximum material index
+	   */
+	  BaseGeometryAsset.prototype.computeMaxMaterialIndex = function (geometry) {
+	    var maxMaterialIndex = -1;
+	    var missingMaterial = false;
+	    var geoGroups = undefined;
+	    if (!geometry) {
+	      return maxMaterialIndex;
+	    }
+	    // Correct negative material indices and compute the maximum material
+	    // index for this geometry.
+	    if (geometry instanceof THREE.BufferGeometry && geometry.groups) {
+	      geoGroups = geometry.groups;
+	    } else if (geometry instanceof THREE.Geometry) {
+	      geoGroups = geometry.faces;
+	    }
+	    geoGroups.forEach(function (group) {
+	      maxMaterialIndex = Math.max(maxMaterialIndex, group.materialIndex);
+	    });
+
+	    geoGroups.forEach(function (group) {
+	      if (group.materialIndex >= 0) {
+	        return;
+	      }
+	      group.materialIndex = maxMaterialIndex + 1;
+	      missingMaterial = true;
+	    });
+
+	    if (missingMaterial) {
+	      maxMaterialIndex++;
+	    }
+	    return maxMaterialIndex;
 	  };
 
 	  /**
