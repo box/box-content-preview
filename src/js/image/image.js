@@ -354,7 +354,7 @@ class Image extends Base {
         super.loadUI();
         this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon');
         if (Browser.supportsBox3D()) {
-            this.controls.add('View in 3D', this.switchTo3D, 'box-preview-image-switch-3d-icon', '3D');
+            this.controls.add('View in 3D', this.switchTo3D, 'box-preview-image-switch-3d-icon', '360°');
         }
     }
 }

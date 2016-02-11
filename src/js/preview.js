@@ -273,6 +273,10 @@ class Preview {
         // If it was showing make sure to destroy it to do any cleanup.
         this.destroy();
 
+        if (this.container && this.container.firstElementChild) {
+            this.container.firstElementChild.classList.remove(CLASS_PREVIEW_LOADED);
+        }
+
         // Check if preview permissions exist
         if (!this.file.permissions.can_preview) {
             throw PERMISSIONS_ERROR;

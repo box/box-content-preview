@@ -128,8 +128,6 @@ class Box3D extends Base {
             if (this.destroyed) {
                 return;
             }
-            this.emit(EVENT_LOAD);
-            this.loaded = true;
         })
         .catch((err) => {
             /*eslint-disable*/
@@ -174,6 +172,8 @@ class Box3D extends Base {
      */
     @autobind
     handleSceneLoaded() {
+        this.emit(EVENT_LOAD);
+        this.loaded = true;
     }
 
     /**

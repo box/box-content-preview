@@ -52,7 +52,7 @@ export default [{
             componentData: {
                 size: 1000
             },
-            enabled: true,
+            enabled: false,
             scriptId: 'skybox_renderer'
         }
     }

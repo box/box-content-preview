@@ -167,9 +167,10 @@ class Model3d extends Box3D {
 
                 this.handleRotationAxisSet(defaults.upAxis, defaults.forwardAxis, false);
                 this.handleSetRenderMode(defaults.defaultRenderMode);
-
+                super.handleSceneLoaded();
             })
             .catch((err) => {
+                super.handleSceneLoaded();
                 console.error(err);
             });
     }
