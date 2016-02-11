@@ -1532,9 +1532,16 @@
 
           return new _lie2['default'](function (resolve, reject) {
 
+            var nameAndExtension = name.split('.');
+            name = nameAndExtension[0];
+
             var searchParams = {
               type: 'file'
             };
+
+            if (nameAndExtension[1]) {
+              searchParams.file_extensions = nameAndExtension[1];
+            }
 
             if (ancestorFolderId) {
               searchParams.ancestor_folder_ids = ancestorFolderId;
@@ -1773,10 +1780,11 @@
           var queryParams = '';
 
           if (params) {
-            queryParams = '&';
-            var keys = Object.keys(params);
-            queryParams += keys.reduce(function (previous, current) {
-              return previous + '=' + params[previous] + '&' + current + '=' + params[current];
+            Object.keys(params).forEach(function (key) {
+              var value = params[key];
+              if (value) {
+                queryParams += '&' + key + '=' + value;
+              }
             });
           }
 
