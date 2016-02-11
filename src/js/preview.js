@@ -370,7 +370,7 @@ class Preview {
         if (reason instanceof Error) {
             reason = reason.message;
         }
-        reason = reason || 'An error has occurered while loading the preview';
+        reason = reason || 'An error has occurred while loading the preview';
 
         let viewer = ErrorLoader.determineViewer();
         ErrorLoader.load(viewer, this.options.location).then(() => {

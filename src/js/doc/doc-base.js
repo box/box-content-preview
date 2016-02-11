@@ -149,9 +149,21 @@ class DocBase extends Base {
      * @returns {void}
      */
     checkPaginationButtons() {
-        let currentPageNum = this.pdfViewer.currentPageNumber,
+        let pagesCount = this.pdfViewer.pagesCount,
+            currentPageNum = this.pdfViewer.currentPageNumber,
+            pageNumButtonEl = this.containerEl.querySelector('.box-preview-doc-page-num'),
             previousPageButtonEl = this.containerEl.querySelector('.box-preview-previous-page'),
             nextPageButtonEl = this.containerEl.querySelector('.box-preview-next-page');
+
+        // Disable page number selector for Safari fullscreen, see https://jira.inside-box.net/browse/COXP-997
+        let isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen();
+
+        // Disable page number selector if there is only one page or less
+        if (pagesCount <= 1 || isSafariFullscreen) {
+            pageNumButtonEl.disabled = true;
+        } else {
+            pageNumButtonEl.disabled = false;
+        }
 
         // Disable previous page if on first page, otherwise enable
         if (previousPageButtonEl) {
@@ -235,9 +247,15 @@ class DocBase extends Base {
         PDFJS.getDocument({
             url: pdfUrl,
             httpHeaders: this.appendAuthHeader(),
-            rangeChunkSize: 524288
+            rangeChunkSize: 262144
         }).then((doc) => {
             this.pdfViewer.setDocument(doc);
+        }).catch((err) => {
+            /*eslint-disable*/
+            console.error(err);
+            console.error(err.message);
+            /*eslint-enable*/
+            this.emit(EVENT_ERROR, err.message);
         });
 
         // When page structure is initialized, set default zoom and load controls
@@ -328,14 +346,14 @@ class DocBase extends Base {
 	 * @returns {void}
 	 */
 	showPageNumInput() {
-		// show the input box with the current page number selected within it
+        // show the input box with the current page number selected within it
         this.controls.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
 
-		this.pageNumInputEl.value = this.currentPageEl.textContent;
-		this.pageNumInputEl.focus();
-		this.pageNumInputEl.select();
+        this.pageNumInputEl.value = this.currentPageEl.textContent;
+        this.pageNumInputEl.focus();
+        this.pageNumInputEl.select();
 
-		// finish input when input is blurred or enter key is pressed
+        // finish input when input is blurred or enter key is pressed
         this.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler);
         this.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler);
 	}

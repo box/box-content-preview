@@ -66,7 +66,11 @@ class RepLoader {
                 this.resolve();
                 break;
             case 'error':
-                this.reject();
+                if (representation.message) {
+                    this.reject(representation.message.message);
+                } else {
+                    this.reject();
+                }
                 break;
             case 'none':
             case 'pending':

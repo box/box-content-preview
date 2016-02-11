@@ -39,7 +39,7 @@ class Fullscreen extends EventEmitter {
      * @returns {Boolean} In fullscreen or not
      */
     isFullscreen() {
-        return document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+        return !!(document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
     }
 
     /**
