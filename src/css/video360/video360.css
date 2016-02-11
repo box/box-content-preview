@@ -1,0 +1,5 @@
+@import '../media/dash.css';
+
+.box-preview-media-dash .box-preview-image-switch-360-icon {
+    display: none;
+}

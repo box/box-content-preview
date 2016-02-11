@@ -1,10 +1,12 @@
 'use strict';
 
+import '../../../css/video360/video360.css';
 import autobind from 'autobind-decorator';
 import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';
 import Box3dRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
+
 import {
     EVENT_ENABLE_VR,
     EVENT_DISABLE_VR,

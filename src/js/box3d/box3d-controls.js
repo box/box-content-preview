@@ -46,7 +46,7 @@ class Box3DControls extends EventEmitter {
      */
     addUi() {
         this.controls = new Controls(this.el);
-        this.resetButtonEl = this.controls.add(__('reset'), this.handleReset, 'box-preview-reset-icon');
+        this.resetButtonEl = this.controls.add(__('reset_camera'), this.handleReset, 'box-preview-reset-icon');
         this.fullscreenButtonEl = this.controls.add(__('fullscreen'), this.handleToggleFullscreen, 'box-preview-image-expand-icon');
         this.vrButtonEl = this.controls.add(__('vr'), this.handleToggleVr, 'box-preview-vr-toggle-icon');
 
