@@ -9,10 +9,25 @@ const VIEWERS = [
     {
         REPRESENTATION: 'dash',
         EXTENSIONS: VIDEO_FORMATS,
-        SCRIPTS: [ STATIC_URI + 'media/shaka-player.js', STATIC_URI + 'model3d/boxsdk-0.1.1.js', STATIC_URI + 'model3d/box3d-resource-loader-0.1.1.js', STATIC_URI + 'model3d/box3d-runtime-0.9.1.js', 'video360.js' ],
+        SCRIPTS: [
+            STATIC_URI + 'media/shaka-player.js',
+            STATIC_URI + 'model3d/boxsdk-0.1.1.js',
+            STATIC_URI + 'model3d/box3d-resource-loader-0.1.1.js',
+            STATIC_URI + 'model3d/box3d-runtime-0.9.1.js',
+            'video360.js'
+        ],
         STYLESHEETS: [ 'dash.css', 'video360.css' ],
         CONSTRUCTOR: 'Video360',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        REQUIRED_REPRESENTATIONS: [
+            'manifest.mpd',
+            'video/480/init.m4s',
+            'video/1080/init.m4s',
+            'audio/0/init.m4s',
+            'video/480/1.m4s',
+            'video/1080/1.m4s',
+            'audio/0/1.m4s'
+        ]
     }
 ];
 

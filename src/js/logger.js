@@ -38,6 +38,11 @@ class Logger {
             cache: {
                 hit: false,
                 stale: false
+            },
+            time: {
+                conversion: 0,
+                rendering: 0,
+                total: 0
             }
         };
     }
@@ -67,6 +72,7 @@ class Logger {
      */
     setUnConverted() {
         this.log.converted = false;
+        this.log.time.conversion = Date.now() - this.start;
     }
 
     /**
@@ -95,7 +101,9 @@ class Logger {
      * @returns {void}
      */
     done() {
-        this.log.time = Date.now() - this.start;
+        this.log.time.total = Date.now() - this.start;
+        this.log.time.rendering = this.log.time.total - this.log.time.conversion;
+
         if (typeof this.metricsCallback === 'function') {
             this.metricsCallback(this.log);
         } else {
