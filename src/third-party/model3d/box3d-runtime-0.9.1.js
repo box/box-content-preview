@@ -77,7 +77,7 @@
 	      if (tem != null) return 'Opera ' + tem[1];
 	    }
 	    M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
-	    if (tem = ua.match(/version\/(\d+)/i) != null) M.splice(1, 1, tem[1]);
+	    if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
 	    return M.join(' ');
 	  };
 
@@ -53080,6 +53080,7 @@
 
 	    var DDS_MAGIC = 0x20534444,
 
+
 	    //DDSD_CAPS = 0x1,
 	    //DDSD_HEIGHT = 0x2,
 	    //DDSD_WIDTH = 0x4,
@@ -64774,13 +64775,14 @@
 	* @module VAPI
 	*/
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	// requstAnimationFrame polyfill only used in cases where native version is not
 	// available.
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _log = __webpack_require__(7);
 
@@ -64903,6 +64905,7 @@
 	   * listen to global events.
 	   * @param {Function} [callback] Called when initialization is complete.
 	   */
+
 
 	  _createClass(Engine, [{
 	    key: 'initialize',
@@ -67046,7 +67049,13 @@
 
 	    if (properties.gloss) {
 	      // Convert phong shininess value to our 0-1 gloss value.
-	      properties.gloss = 1.0 - Math.exp(-properties.gloss * 0.04);
+	      // 512 is assumed to be the maximum specular power in our conversion
+	      properties.gloss = Math.log10(properties.gloss / 512) / 2.5 + 1.0;
+	      properties.gloss = Math.min(Math.max(properties.gloss, 0.0), 1.0);
+	    } else {
+	      // Turn off specular entirely if gloss is 0. For dielectric materials,
+	      // no specular is visible if the material is fully 'rough'.
+	      properties.enabledFeatures.specular = false;
 	    }
 	  }
 
@@ -67057,7 +67066,7 @@
 
 	    _.extend(properties, this.mapMaterialProperties(matProps, undefined,
 	      'reflectionFactor', 'reflectionTexture', 'reflectivityF0',
-	      'specularEnvironmentMap2D', true));
+	      'environmentMap2D_0', true));
 	  }
 
 	  // Ambient
@@ -77980,7 +77989,7 @@
 	        var startX = -xInc * (square - 1) * 0.5;
 	        var startY = (square - 1) / 2 * yInc;
 	        var row = 0;
-	        func = function (index, outVec) {
+	        func = function func(index, outVec) {
 	          var x = startX + index % square * xInc;
 	          var y = startY - row * yInc;
 	          outVec.set(x, y, 0).applyQuaternion(rotation);
@@ -77992,7 +78001,7 @@
 	        break;
 	      case 'Scale':
 
-	        func = function (index, outVec, child) {
+	        func = function func(index, outVec, child) {
 
 	          child.getCenterInWorldSpace(outVec);
 
@@ -78003,7 +78012,7 @@
 	        break;
 	      case 'Circle':
 	      default:
-	        func = function (index, outVec) {
+	        func = function func(index, outVec) {
 	          var x = center.x + scale.x * Math.cos(2 * Math.PI * index / length);
 	          var y = center.y + scale.y * Math.sin(2 * Math.PI * index / length);
 	          outVec.set(x, y, center.z).applyQuaternion(rotation);
