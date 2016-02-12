@@ -53080,6 +53080,7 @@
 
 	    var DDS_MAGIC = 0x20534444,
 
+
 	    //DDSD_CAPS = 0x1,
 	    //DDSD_HEIGHT = 0x2,
 	    //DDSD_WIDTH = 0x4,
@@ -64774,13 +64775,14 @@
 	* @module VAPI
 	*/
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	// requstAnimationFrame polyfill only used in cases where native version is not
 	// available.
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _log = __webpack_require__(7);
 
@@ -64904,6 +64906,7 @@
 	   * @param {Function} [callback] Called when initialization is complete.
 	   */
 
+
 	  _createClass(Engine, [{
 	    key: 'initialize',
 	    value: function initialize(properties, callback) {
@@ -65011,6 +65014,7 @@
 
 	        this.onResize = function () {
 	          _this.trigger('resize');
+	          _this.needsRender = true;
 	        };
 
 	        this.onBlur = function () {

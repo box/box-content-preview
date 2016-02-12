@@ -18,6 +18,12 @@
     cursor: -moz-grab;
     cursor: -webkit-grab;
     cursor: grab;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .box-preview-box3d canvas:active {
@@ -36,12 +42,6 @@
     margin: auto;
     border: 0;
     outline: 0;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 .box-preview-box3d .box-preview-overlay span {

@@ -1165,6 +1165,8 @@
               // Status codes relevant to BoxSDK
               if (status === 200 || status === 202 || status === 404) {
                 resolve(xhr);
+              } else {
+                reject(new Error('Failed request for ' + url));
               }
 
               _this.removeRequest(key);

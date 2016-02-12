@@ -140,13 +140,6 @@ class Box3D extends Base {
     }
 
     /**
-     * @inheritdoc
-     */
-    resize() {
-        this.renderer.emit(EVENT_TRIGGER_RENDER);
-    }
-
-    /**
      * Handles enable VR event
      * @returns {void}
      */
