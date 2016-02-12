@@ -42,7 +42,7 @@ shows a preview. Clients are still responsible for showing the constainer if it 
   * (required) `token` is the api auth token.
   * (optional) `api` is the api host like `https://ldap.dev.box.net/api`. Defaults to `https://api.box.com`.
   * (optional) `files` is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
-  * (optional) `container` is the container dom node for preview. Can be a selector or html node.
+  * (optional) `container` is the container dom node for preview. Can be a CSS selector (e.g. '.className' or '#idName') or HTML node.
   * (optional) `sharedLink` is the fully qualified shared url that needs to passed on to the api.
   * (optional) `viewers` is a json object that has options for individual viewers with viewer name as the key.
 
