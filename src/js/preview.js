@@ -1,7 +1,7 @@
 'use strict';
 
 import '../css/preview.css';
-import './polyfill';
+import 'babel-polyfill';
 import autobind from 'autobind-decorator';
 import throttle from 'lodash/function/throttle';
 import fetch from 'isomorphic-fetch';
