@@ -91,12 +91,26 @@ class MediaControls extends EventEmitter  {
             this.settings = undefined;
         }
 
-        this.playButtonEl.removeEventListener('click', this.togglePlay);
-        this.volButtonEl.removeEventListener('click', this.toggleMute);
-        this.fullscreenButtonEl.removeEventListener('click', this.toggleFullscreen);
-        this.settingsButtonEl.removeEventListener('click', this.toggleSettings);
-        this.wrapperEl.removeEventListener('mouseenter', this.mouseenterHandler);
-        this.wrapperEl.removeEventListener('mouseleave', this.mouseleaveHandler);
+        if (this.playButtonEl) {
+            this.playButtonEl.removeEventListener('click', this.togglePlay);
+        }
+
+        if (this.volButtonEl) {
+            this.volButtonEl.removeEventListener('click', this.toggleMute);
+        }
+
+        if (this.fullscreenButtonEl) {
+            this.fullscreenButtonEl.removeEventListener('click', this.toggleFullscreen);
+        }
+
+        if (this.settingsButtonEl) {
+            this.settingsButtonEl.removeEventListener('click', this.toggleSettings);
+        }
+
+        if (this.wrapperEl) {
+            this.wrapperEl.removeEventListener('mouseenter', this.mouseenterHandler);
+            this.wrapperEl.removeEventListener('mouseleave', this.mouseleaveHandler);
+        }
 
         this.wrapperEl = undefined;
         this.timeScrubberEl = undefined;
