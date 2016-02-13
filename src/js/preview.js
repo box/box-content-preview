@@ -605,7 +605,7 @@ class Preview {
         this.options.viewers = options.viewers || {};
 
         // Save the callbacks
-        this.options.callbacks = options.viewers || {};
+        this.options.callbacks = options.callbacks || {};
 
         // Normalize by putting file inside files array if the latter
         // is empty. If its not empty, then it is assumed that file is
