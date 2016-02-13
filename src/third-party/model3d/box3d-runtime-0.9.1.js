@@ -53080,7 +53080,6 @@
 
 	    var DDS_MAGIC = 0x20534444,
 
-
 	    //DDSD_CAPS = 0x1,
 	    //DDSD_HEIGHT = 0x2,
 	    //DDSD_WIDTH = 0x4,
@@ -63857,7 +63856,6 @@
 	   */
 	  var BaseMeshObject = function BaseMeshObject(json) {
 	    Box3DObject.call(this, json);
-	    this.prevGeometryId = null;
 	  };
 
 	  BaseMeshObject.prototype = new Box3DObject();
@@ -64326,7 +64324,11 @@
 	        var materialIds = _this.getProperty('materials');
 	        var maxMaterialIndex = geometryAsset ? geometryAsset.getMaxMaterialIndex('triangles') : -1;
 	        var nMaterials = Math.max(maxMaterialIndex + 1, materialIds.length);
-	        var extraMaterialIds = Array(nMaterials - materialIds.length).fill(null);
+	        var extraMaterialIds = Array(nMaterials - materialIds.length);
+	        // Fill out the array (note: not using Array.prototype.fill because IE11 lacks support)
+	        for (var i = 0; i < extraMaterialIds.length; i++) {
+	          extraMaterialIds[i] = null;
+	        }
 	        _this.setProperty('materials', materialIds.concat(extraMaterialIds));
 
 	        // Inform anyone who cares that a new mesh has been loaded.
@@ -64352,7 +64354,7 @@
 	  BaseMeshObject.prototype.loadMissingMaterial = function () {
 	    var _this2 = this;
 
-	    return new Promise(function (resolve, reject) {
+	    return new Promise(function (resolve) {
 	      var materialRegistry = _this2.box3DRuntime.assetRegistry.Materials;
 	      var missingMaterial = materialRegistry.getMissingMaterial();
 
@@ -64387,7 +64389,7 @@
 	      var newGeometryId = this.getProperty('geometryId');
 
 	      // Stop listening to the old geometry, start listening to the new one.
-	      this.registerChangeListener(this.prevGeometryId, this.onGeometryChanged, false);
+	      this.registerChangeListener(prevGeometryId, this.onGeometryChanged, false);
 	      this.registerChangeListener(newGeometryId, this.onGeometryChanged, true);
 
 	      // Reload the runtime data.
@@ -64775,14 +64777,13 @@
 	* @module VAPI
 	*/
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	// requstAnimationFrame polyfill only used in cases where native version is not
 	// available.
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(7);
 
@@ -64905,7 +64906,6 @@
 	   * listen to global events.
 	   * @param {Function} [callback] Called when initialization is complete.
 	   */
-
 
 	  _createClass(Engine, [{
 	    key: 'initialize',
