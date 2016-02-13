@@ -33,12 +33,16 @@
     width: 100%;
     height: 100%;
     display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
     -webit-flex-direction: column;
+    -ms-flex-direction: column;
     flex-direction: column;
     -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
     -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: rgba(90, 90, 90, 0.90);
