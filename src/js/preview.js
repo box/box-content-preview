@@ -383,11 +383,8 @@ class Preview {
                 this.deferred = {};
             }
 
-            this.options.viewers.Error = {
-                reason: reason
-            };
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
-            this.viewer.load();
+            this.viewer.load('', reason);
             this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
         });
     }
@@ -725,7 +722,7 @@ class Preview {
 
         // Setup the UI. Navigation is only shown if we are prevewing a collection
         // and if the client has not prevented us from showing the navigation.
-        this.setup(options.container, this.files.length > 1 && this.options.navigation !== false);
+        this.setup(options.container, this.files.length > 1 && options.navigation !== false);
 
         // Finally load the 1st preview
         return this.load(typeof file === 'string' ? file : file.id);
