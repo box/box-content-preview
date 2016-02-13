@@ -13,10 +13,6 @@
 }
 
 /* Fullscreen CSS */
-.box-preview-is-fullscreen .box-preview-doc {
-    overflow: hidden;
-}
-
 .box-preview-is-fullscreen .pdfViewer .page {
     padding: 0;
 }

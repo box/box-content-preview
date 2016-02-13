@@ -79,7 +79,11 @@ class RepStatus {
     handleResponse(representation, headers) {
         switch (representation.status) {
             case 'error':
-                this.reject();
+                if (representation.message) {
+                    this.reject(representation.message.message);
+                } else {
+                    this.reject();
+                }
                 break;
             case 'success':
                 this.resolve();
