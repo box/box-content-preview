@@ -41,7 +41,9 @@ class Dash extends VideoBase {
         if (this.mediaControls) {
             this.mediaControls.removeListener('qualitychange', this.handleQuality);
         }
-        this.switchTo360El.removeEventListener('click', this.switchTo360);
+        if (this.switchTo360El) {
+            this.switchTo360El.removeEventListener('click', this.switchTo360);
+        }
         super.destroy();
     }
 

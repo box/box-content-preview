@@ -75,7 +75,7 @@ class Settings extends EventEmitter {
     findParentDataType(target) {
         let currentNode = target;
         while (currentNode && currentNode !== this.settings) {
-            if (typeof currentNode.dataset.type === 'string') {
+            if (typeof currentNode.getAttribute('data-type') === 'string') {
                 return currentNode;
             } else {
                 currentNode = currentNode.parentNode;
@@ -98,8 +98,8 @@ class Settings extends EventEmitter {
             return;
         }
 
-        let type = target.dataset.type;
-        let value = target.dataset.value;
+        let type = target.getAttribute('data-type');
+        let value = target.getAttribute('data-value');
 
         if (type === 'menu') {
             // We are in the sub menu and going back to the main menu
