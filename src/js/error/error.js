@@ -28,12 +28,12 @@ class Error extends Base {
      * Shows an error message to the user.
      *
      * @public
-     * @param {String} extension file extension
+     * @param {String} url rep to load
+     * @param {String} reason error reason
      * @returns {void}
      */
-    load() {
+    load(url, reason = '') {
         let className = 'blank';
-        let reason = this.options.viewers.Error ? this.options.viewers.Error.reason : '';
 
         if (!reason) {
             switch (this.options.file.extension) {
