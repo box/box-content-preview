@@ -23,8 +23,9 @@ rpmDir="/tmp"
 rpm="$KIND-$VERSION.noarch.rpm"
 
 
-# Major or minor release
+# Major, minor, or patch release
 major_release=false
+minor_release=false
 
 
 # Maven info
@@ -54,8 +55,10 @@ increment_version_and_push() {
     echo "----------------------------------------------------"
     if $major_release; then
         npm version major --no-git-tag-version
-    else
+    else if $minor_release; then
         npm version minor --no-git-tag-version
+    else
+        npm version patch --no-git-tag-version
     fi
 
     new_version=$(./build/current_version.sh)
@@ -177,11 +180,14 @@ push_new_release() {
 }
 
 
-# Check if we are doing major or minor release
+# Check if we are doing major, minor, or patch release
 while getopts "em" opt; do
     case "$opt" in
         m)
         major_release=true
+        ;;
+        n)
+        minor_release=true
         ;;
     esac
 done
