@@ -55,7 +55,7 @@ increment_version_and_push() {
     echo "----------------------------------------------------"
     if $major_release; then
         npm version major --no-git-tag-version
-    else if $minor_release; then
+    elif $minor_release; then
         npm version minor --no-git-tag-version
     else
         npm version patch --no-git-tag-version
