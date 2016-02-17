@@ -150,7 +150,7 @@ build_assets() {
     echo "Starting release build for version" $VERSION
     echo "----------------------------------------------------"
 
-    if npm run build; then
+    if npm run release; then
         echo "----------------------------------------------------"
         echo "Built release assets for version" $VERSION
         echo "----------------------------------------------------"
@@ -170,7 +170,10 @@ push_new_release() {
     git reset --hard origin/master || exit 1
     sudo git clean -fdX || exit 1
 
+    # Bump the version number
     increment_version
+    
+    # Webpack build
     build_assets
 
     # Pushes artifact to maven
