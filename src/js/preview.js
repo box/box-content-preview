@@ -142,19 +142,18 @@ class Preview {
         } else if (!container) {
             // Create the container if nothing was passed.
             container = document.body.appendChild(document.createElement('div'));
-            container.className = 'box-preview-container';
         }
 
+        // Decorate the container with absolute positioning
+        container.innerHTML = '<div class="box-preview-container"></div>';
+
         // Save a handle to the container for future references.
-        this.container = container;
+        this.container = container.firstElementChild;
 
         // Prepare the container by adding our viewer wrapper.
         this.container.innerHTML = '<div class="box-preview"></div>' + CRAWLER;
 
-        // Position the container as absolute so that the children
-        // can be positioned absolute, this includes the viewer wrapper
-        // as well as the left and right navigation arrows.
-        this.container.style.position = 'absolute';
+        // Show the container
         this.container.style.display = 'block';
 
         // If we are showing navigation, create arrows and attach
@@ -816,4 +815,5 @@ class Preview {
 // Create a singleton instance for preview.
 Box.Preview = new Preview();
 global.Box = Box;
+global.Preview = Preview;
 export default Box.Preview;

@@ -141,16 +141,18 @@ export function loadStylesheets(urls) {
 
     // Before adding new stylesheets, remove prior ones
     // This is because stylesheets can conflict
-    loadedCSSAssets.forEach((url) => {
-        let link = head.querySelector('link[rel="stylesheet"][href="' + url + '"]');
-        head.removeChild(link);
-    });
+    // loadedCSSAssets.forEach((url) => {
+    //     let link = head.querySelector('link[rel="stylesheet"][href="' + url + '"]');
+    //     //head.removeChild(link);
+    // });
 
     loadedCSSAssets = [];
 
     urls.forEach((url) => {
-        loadedCSSAssets.push(url);
-        head.appendChild(createStylesheet(url));
+        if (loadedJSAssets.indexOf(url) === -1) {
+            loadedCSSAssets.push(url);
+            head.appendChild(createStylesheet(url));
+        }
     });
 }
 
