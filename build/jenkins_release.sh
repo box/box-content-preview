@@ -41,8 +41,7 @@ mavenPassword=$(grep '^password=' $credentialsFile | sed 's/^password=//')
 
 
 
-increment_version_and_push() {
-
+increment_version() {
     if $major_release; then
         echo "----------------------------------------------------"
         echo "Bumping major version..."
@@ -59,7 +58,10 @@ increment_version_and_push() {
         echo "----------------------------------------------------"
         npm version patch
     fi
+}
 
+
+push_to_github() {
     new_version=$(./build/current_version.sh)
     git commit -am $new_version
     
@@ -165,6 +167,7 @@ push_new_release() {
     git reset --hard origin/master || exit 1
     sudo git clean -fdX || exit 1
 
+    increment_version
     build_assets
 
     # Pushes artifact to maven
@@ -175,8 +178,8 @@ push_new_release() {
         exit 1
     fi
 
-    # Finally Bump up the version and push to github
-    increment_version_and_push
+    # Finally push to github
+    push_to_github
 }
 
 
