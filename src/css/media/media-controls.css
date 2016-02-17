@@ -84,7 +84,9 @@
 
 .box-preview-media-expand-icon,
 .box-preview-media-gear-icon,
-.box-preview-image-switch-360-icon {
+.box-preview-image-switch-360-icon,
+.box-preview-media-controls-2d,
+.box-preview-controls-vr {
     float: right;
 }
 

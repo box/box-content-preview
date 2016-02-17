@@ -9,6 +9,8 @@ import {
     EVENT_SWITCH_2D
 } from './video360-constants';
 
+const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
+
 class Video360Controls extends EventEmitter {
 
     /**
@@ -40,16 +42,15 @@ class Video360Controls extends EventEmitter {
 
         // Create the VR toggle button and then hide it.
         this.vrButton = mediaControlsEl.appendChild(document.createElement('button'));
-        this.vrButton.classList.add('box-preview-media-controls-btn', 'controls-vr');
+        this.vrButton.classList.add('box-preview-media-controls-btn', 'box-preview-controls-vr');
         this.vrButton.title = 'Enable VR Mode';
         this.vrButtonSpan = this.vrButton.appendChild(document.createElement('span'));
-        this.vrButtonSpan.classList.add('icon-vr-toggle');
-        this.vrButtonSpan.classList.add('box-preview-media-hidden');
-        this.vrButton.classList.add('box-preview-media-hidden');
+        this.vrButtonSpan.classList.add('box-preview-vr-toggle-icon');
+        this.vrButton.classList.add(CSS_CLASS_HIDDEN);
 
         // Create the button to toggle back to 2D viewing
         this.toggle2dButton = mediaControlsEl.appendChild(document.createElement('button'));
-        this.toggle2dButton.classList.add('box-preview-media-controls-btn', 'controls-2d');
+        this.toggle2dButton.classList.add('box-preview-media-controls-btn', 'box-preview-media-controls-2d');
         this.toggle2dButton.title = 'Switch to 2D Viewer';
         const toggle2dButtonSpan = this.toggle2dButton.appendChild(document.createElement('span'));
         toggle2dButtonSpan.classList.add('switch-2d');
@@ -57,7 +58,7 @@ class Video360Controls extends EventEmitter {
 
         // Hide the 360 button that Dash creates
         const toggle360Button = this.el.querySelector('.box-preview-image-switch-360-icon');
-        toggle360Button.classList.add('box-preview-media-hidden');
+        toggle360Button.classList.add(CSS_CLASS_HIDDEN);
     }
 
     /**
@@ -83,8 +84,7 @@ class Video360Controls extends EventEmitter {
      * @returns {void}
      */
     showVrButton() {
-        this.vrButtonSpan.style.display = 'inline-block';
-        this.vrButton.style.display = 'inline';
+        this.vrButton.classList.remove(CSS_CLASS_HIDDEN);
     }
 
     /**

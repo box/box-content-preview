@@ -2,7 +2,11 @@
 
 import Box3DControls from '../box3d-controls';
 import autobind from 'autobind-decorator';
-import {EVENT_SET_RENDER_MODE} from './model3d-constants';
+import {
+    EVENT_CLOSE_RENDER_MODE_UI,
+    EVENT_CLOSE_SETTINGS_UI,
+    EVENT_SET_RENDER_MODE
+} from './model3d-constants';
 const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
 const CSS_CLASS_CURRENT_RENDER_MODE = 'box-preview-current-render-mode';
 
@@ -86,6 +90,9 @@ class Model3dControls extends Box3DControls  {
 
         // Set default to lit!
         this.handleSetRenderMode(RENDER_MODES.lit);
+
+        this.addListener(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseUi);
+        this.controls.controlsEl.addEventListener('click', this.handleControlsClick);
     }
 
     /**
@@ -148,6 +155,22 @@ class Model3dControls extends Box3DControls  {
     }
 
     /**
+     * Close the render mode ui
+     * @returns {void}
+     */
+    handleCloseUi() {
+        this.setElementVisibility(this.renderModesSelectorEl, false);
+    }
+
+    /**
+     * Handle controls click Event
+     * @returns {void}
+     */
+    handleControlsClick() {
+        this.emit(EVENT_CLOSE_SETTINGS_UI);
+    }
+
+    /**
      * Set a the render mode, from a key in the Render Modes dictionary
      * @param {string} modeIcon The key in the RENDER_MODES dictionary to use to
      * get the icon class that we'll change the render mode button to
@@ -156,6 +179,15 @@ class Model3dControls extends Box3DControls  {
     setRenderModeUI(modeIcon) {
         let icon = this.renderModeControl.querySelector('span');
         icon.className = modeIcon;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    destroy() {
+        this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
+        this.removeListener(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseUi);
+        super.destroy();
     }
 }
 
