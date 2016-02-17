@@ -145,10 +145,10 @@ class Preview {
         }
 
         // Decorate the container with absolute positioning
-        container.className = 'box-preview-container';
+        container.innerHTML = '<div class="box-preview-container"></div>';
 
         // Save a handle to the container for future references.
-        this.container = container;
+        this.container = container.firstElementChild;
 
         // Prepare the container by adding our viewer wrapper.
         this.container.innerHTML = '<div class="box-preview"></div>' + CRAWLER;
