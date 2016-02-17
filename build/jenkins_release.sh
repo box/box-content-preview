@@ -202,8 +202,8 @@ done
 
 # Execute this entire script
 if ! push_new_release; then
-  echo "----------------------------------------------------"
-  echo "Error: failure in push_new_release!"
-  echo "----------------------------------------------------"
-  exit 1
+    echo "----------------------------------------------------"
+    echo "Error: failure in push_new_release!"
+    echo "----------------------------------------------------"
+    exit 1
 fi
