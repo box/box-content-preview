@@ -187,7 +187,7 @@ push_new_release() {
 
 
 # Check if we are doing major, minor, or patch release
-while getopts "em" opt; do
+while getopts "mn" opt; do
     case "$opt" in
         m )
             major_release=true ;;
