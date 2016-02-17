@@ -1,5 +1,5 @@
 // Rsync plugin that copies things from the dist folder to our dev machine
-var exec = require('child_process').exec;
+var exec = require('child_process').execSync;
 
 function RsyncPlugin(source, destination) {
     this.source = source;
