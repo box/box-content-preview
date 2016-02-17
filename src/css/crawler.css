@@ -33,7 +33,7 @@
     -webkit-transform: scale(1.7);
     left: 50%;
     margin: -9px 0 0 -5px;
-    position: fixed;
+    position: absolute;
     z-index: 1;
     top: 50%;
 }

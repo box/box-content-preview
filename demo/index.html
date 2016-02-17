@@ -2,44 +2,118 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Files App</title>
-    <link rel="stylesheet" type="text/css" href="/css/files-app.css"></link>
-    <link rel="stylesheet" type="text/css" href="dist/en-US/preview.css"></link>
+    <link rel="stylesheet" type="text/css" href="https://phora.dev.box.net/content-experience/dev/en-US/preview.css"></link>
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0 none;
+        }
+
+        .preview-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: table-cell;
+            border: 2px solid red;
+        }
+
+        .table {
+            display: table;
+            table-layout: fixed;
+        }
+
+        .table-row {
+            display: table-row;
+        }
+    </style>
 </head>
 <body>
-    
-    <div class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Enter the following data</h4>
-                </div>
-                <div class="modal-body">
-                    <p><label>Api Host: <span>(https://api.box.com or https://app.yourdomain.inside-box.net/api)</span><input type="text" class="host" placeholder="Enter the host" value="https://app.phora.inside-box.net/api"></label></p>
-                    <p><label>Auth Token: <input type="text" class="token" placeholder="Enter an auth token"></label></p>
-                    <p><label>Folder Shared Link: <input type="text" class="shared-link" placeholder="Enter a shared name" value="https://mordor.phora.inside-box.net/s/z1rbfpmtdfqrj0nrm7m32303r2gdyssb"></label></p> 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="load" data-dismiss="modal" onclick="load()">Load</button>
-                </div>
-            </div>
-        </div>
+
+<div class='table'>
+
+    <div class='table-row'>
+
+        <div class='preview-container'><div class='preview1'></div></div>
+        <div class='preview-container'><div class='preview2'></div></div>
+        <div class='preview-container'><div class='preview3'></div></div>
+
     </div>
 
+    <div class='table-row'>
 
-    <table class='file-list'></table>
+        <div class='preview-container'><div class='preview4'></div></div>
+        <div class='preview-container'><div class='preview5'></div></div>
+        <div class='preview-container'><div class='preview6'></div></div>
 
-    <div class='preview'>
-        <div class='header'>
-            <button type="button" class="close-preview" onclick="closePreview()">Close Preview</button>
-        </div>
-        <div class='content'></div>
     </div>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="dist/en-US/preview.js"></script>
-    <script src="/js/files-app.js"></script>
+
+</div>
+
+<script src="https://phora.dev.box.net/content-experience/dev/en-US/preview.js"></script>
+<script>
+
+    var token = '5ML76glc7YvX0M1XwKMNpaBo65RYGdlj';
+    var api = 'https://phora.dev.box.net/api';
+
+    var f1 = '5016367809';
+    var f2 = '5022184309';
+    var f3 = '5015726469';
+    var f4 = '5015769901';
+    var f5 = '5015726453';
+    var f6 = '5015726461';
+
+    var c1 = document.querySelector('.preview1');
+    var c2 = document.querySelector('.preview2');
+    var c3 = document.querySelector('.preview3');
+    var c4 = document.querySelector('.preview4');
+    var c5 = document.querySelector('.preview5');
+    var c6 = document.querySelector('.preview6');
+
+    var p1 = new Preview();
+    var p2 = new Preview();
+    var p3 = new Preview();
+    var p4 = new Preview();
+    var p5 = new Preview();
+    var p6 = new Preview();
+
+    p1.show(f1, {
+        container: c1,
+        token: token,
+        api: api
+    });
+
+    p2.show(f2, {
+        container: c2,
+        token: token,
+        api: api
+    });
+
+    p3.show(f3, {
+        container: c3,
+        token: token,
+        api: api
+    });
+
+    p4.show(f4, {
+        container: c4,
+        token: token,
+        api: api
+    });
+
+    p5.show(f5, {
+        container: c5,
+        token: token,
+        api: api
+    });
+
+    p6.show(f6, {
+        container: c6,
+        token: token,
+        api: api
+    });
+</script>
 </body>
 </html>
