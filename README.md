@@ -2,7 +2,7 @@ Box.Preview
 ============
 Overview
 -----------------
-Use the Box Client-Side Preview SDK to embed a Preview of your Box file in your application. The SDK fetches representations through the Box Content API, chooses the appropriate viewer for the file type, and renders a preview of the file. The SDK currently supports most types of documents, images, videos, audio files, and 3D files.
+The Box Client-Side Preview SDK allows developers to embed a Preview of their Box file(s) in an application. The SDK fetches representations through the Box Content API, chooses the appropriate viewer for the file type, and renders a preview of the file. The SDK currently supports most types of documents, images, videos, audio files, and 3D files.
 
 
 Clone and compile
