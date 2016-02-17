@@ -7,10 +7,6 @@ export NODE_PATH=$NODE_PATH:./node_modules
 KIND="content-experience-assets"
 
 
-# The current version being built
-VERSION=$(./build/current_version.sh)
-
-
 # The static asset path where deploy needs to happen
 installDir="/box/www/content-experience-assets"
 
@@ -19,8 +15,8 @@ installDir="/box/www/content-experience-assets"
 rpmDir="/tmp"
 
 
-# RPM name
-rpm="$KIND-$VERSION.noarch.rpm"
+# Temp version
+VERSION="XXX"
 
 
 # Major, minor, or patch release
@@ -33,7 +29,6 @@ MAVEN="maven-vip.dev.box.net"
 MAVEN_PORT="8150"
 MAVEN_PATH="nexus/content/repositories"
 MAVEN_URL="http://$MAVEN:$MAVEN_PORT/$MAVEN_PATH"
-publishURL="$MAVEN_URL/releases/net/box/$KIND/$VERSION/$rpm"
 credentialsFile="/home/jenkins/.ivy2/boxmaven.credentials"
 [ -r "$credentialsFile" ] || (echo "Error: maven credentials file not found" && exit 1)
 mavenUser=$(grep '^user=' $credentialsFile | sed 's/^user=//')
@@ -58,24 +53,27 @@ increment_version() {
         echo "----------------------------------------------------"
         npm version patch
     fi
+    
+    # The current version being built
+    VERSION=$(./build/current_version.sh)
 }
 
 
 push_to_github() {
-    new_version=$(./build/current_version.sh)
-    git commit -am $new_version
+    
+    git commit -am $VERSION
     
     echo "----------------------------------------------------"
-    echo "Master version is now at" $new_version
+    echo "Master version is now at" $VERSION
     echo "----------------------------------------------------"
 
     if git push origin master --tags; then
         echo "----------------------------------------------------"
-        echo "Pushed version" $new_version "to git successfully"
+        echo "Pushed version" $VERSION "to git successfully"
         echo "----------------------------------------------------"
     else
         echo "----------------------------------------------------"
-        echo "Error while pushing version" $new_version "to git"
+        echo "Error while pushing version" $VERSION "to git"
         echo "----------------------------------------------------"
         exit 1
     fi
@@ -87,6 +85,11 @@ push_to_maven() {
     echo "----------------------------------------------------"
     echo "Starting a Maven push for" $KIND-$VERSION
     echo "----------------------------------------------------"
+    
+    
+    rpm="$KIND-$VERSION.noarch.rpm"
+    publishURL="$MAVEN_URL/releases/net/box/$KIND/$VERSION/$rpm"
+
 
     shopt -s dotglob
 
