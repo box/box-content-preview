@@ -43,26 +43,26 @@ mavenPassword=$(grep '^password=' $credentialsFile | sed 's/^password=//')
 
 increment_version_and_push() {
 
-    tag_version="v$VERSION"
-    echo "----------------------------------------------------"
-    echo "Release version is" $VERSION
-    echo "Tagging version" $tag_version
-    echo "----------------------------------------------------"
-    git tag -a $tag_version -m $tag_version
-
-    echo "----------------------------------------------------"
-    echo "Bumping master version..."
-    echo "----------------------------------------------------"
     if $major_release; then
-        npm version major --no-git-tag-version
+        echo "----------------------------------------------------"
+        echo "Bumping major version..."
+        echo "----------------------------------------------------"
+        npm version major
     elif $minor_release; then
-        npm version minor --no-git-tag-version
+        echo "----------------------------------------------------"
+        echo "Bumping minor version..."
+        echo "----------------------------------------------------"
+        npm version minor
     else
-        npm version patch --no-git-tag-version
+        echo "----------------------------------------------------"
+        echo "Bumping patch version..."
+        echo "----------------------------------------------------"
+        npm version patch
     fi
 
     new_version=$(./build/current_version.sh)
     git commit -am $new_version
+    
     echo "----------------------------------------------------"
     echo "Master version is now at" $new_version
     echo "----------------------------------------------------"
@@ -145,7 +145,7 @@ build_assets() {
     echo "Starting release build for version" $VERSION
     echo "----------------------------------------------------"
 
-    if npm run release; then
+    if npm run build; then
         echo "----------------------------------------------------"
         echo "Built release assets for version" $VERSION
         echo "----------------------------------------------------"
