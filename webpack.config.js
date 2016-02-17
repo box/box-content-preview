@@ -45,7 +45,7 @@ var isRelease = process.env.BUILD_PROD === '1';
 var languagesArray = isRelease ? Object.keys(languages) : [ 'en-US' ];
 
 // Get the version from package.json
-var version = isRelease ? require('./package.json').version : 'dev';
+var version = require('./package.json').version;
 
 
 module.exports = languagesArray.map(function(language, index) {
@@ -67,7 +67,7 @@ module.exports = languagesArray.map(function(language, index) {
     // If this is not a release build, add the Rsync plugin for local
     // development where copying to dev VM is needed.
     if (!isRelease) {
-        plugins.push(new RsyncPlugin('dist/.', '${USER}@${USER}.dev.box.net:/box/www/assets/content-experience'));
+        //plugins.push(new RsyncPlugin('dist/.', '${USER}@${USER}.dev.box.net:/box/www/assets/content-experience'));
     }
 
     return {
