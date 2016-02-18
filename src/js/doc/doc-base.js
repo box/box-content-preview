@@ -87,7 +87,7 @@ class DocBase extends Base {
         let pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
         PDFJS.workerSrc = pdfWorkerUrl;
 
-        let pdfCMapBaseURI = this.options.location.staticBaseURI + 'doc/cmaps/';
+        let pdfCMapBaseURI = this.options.location.staticBaseURI + 'third-party/doc/cmaps/';
         PDFJS.cMapUrl = pdfCMapBaseURI;
         PDFJS.cMapPacked = true;
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab

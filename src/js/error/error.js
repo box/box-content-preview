@@ -19,7 +19,7 @@ class Error extends Base {
     constructor(container, options) {
         super(container, options);
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));
-        this.iconEl = this.infoEl.appendChild(document.createElement('div'));
+        this.iconEl = this.infoEl.appendChild(document.createElement('img'));
         this.messageEl = this.infoEl.appendChild(document.createElement('div'));
         this.infoEl.className = 'box-preview-error';
     }
@@ -33,22 +33,26 @@ class Error extends Base {
      * @returns {void}
      */
     load(url, reason = '') {
-        let className = 'blank';
+        let extension = 'blank';
 
         if (!reason) {
             switch (this.options.file.extension) {
                 case 'zip':
-                    className = 'zip';
+                    extension = 'zip';
                     break;
                 case 'flv':
-                    className = 'flv';
+                    extension = 'flv';
                     break;
-                default:
-                    className = 'blank';
+                case 'boxnote':
+                    extension = 'boxnote';
+                    break;
+                case 'boxdicom':
+                    extension = 'boxdicom';
+                    break;
             }
         }
 
-        this.iconEl.className = 'box-preview-file-' + className;
+        this.iconEl.src = this.options.location.staticBaseURI + 'img/files/160-' + extension + '.png';
         this.messageEl.innerHTML = reason ? reason : 'Not supported';
 
         this.loaded = true;

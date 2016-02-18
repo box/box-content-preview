@@ -61,7 +61,8 @@ module.exports = languagesArray.map(function(language, index) {
         new webpack.NoErrorsPlugin(),
         new ExtractTextPlugin('[Name].css', { allChunks: true }),
         new I18nPlugin(languages[language]),
-        new RsyncPlugin(thirdParty, static)
+        new RsyncPlugin(thirdParty, static),
+        new RsyncPlugin(img, static)
     ];
 
     // If this is not a release build, add the Rsync plugin for local
