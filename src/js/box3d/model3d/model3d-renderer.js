@@ -1,10 +1,12 @@
 /* global VAPI */
 'use strict';
 
+import autobind from 'autobind-decorator';
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
 import {EVENT_SCENE_LOADED} from '../box3d-constants';
 import {
+    EVENT_CLOSE_UI,
     EVENT_SET_RENDER_MODE,
     EVENT_MISSING_ASSET,
     CAMERA_PROJECTION_PERSPECTIVE,
@@ -40,6 +42,8 @@ class Model3dRenderer extends Box3DRenderer {
      */
     destroy() {
         this.unregisterMissingEvents(this.box3d.resourceLoader);
+
+        this.box3d.canvas.removeEventListener('click', this.handleCanvasClick);
 
         this.cleanupScene();
         this.unloadAssets([
@@ -89,6 +93,15 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
+     * Handle the canvas being selected
+     * @returns {void}
+     */
+    @autobind
+    handleCanvasClick() {
+        this.emit(EVENT_CLOSE_UI);
+    }
+
+    /**
      * Handle missing asset event
      * @param {Object} data Missing asset information
      * @returns {void}
@@ -106,6 +119,7 @@ class Model3dRenderer extends Box3DRenderer {
         const loader = new VAPI.JSONLoader(this.box3d);
 
         this.registerMissingEvents(this.box3d.resourceLoader);
+        this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
 
         return new Promise((resolve, reject) => {
             loader

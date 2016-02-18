@@ -7,6 +7,9 @@ import Model3dControls from './model3d-controls';
 import Model3dSettings from './model3d-settings';
 import Model3dRenderer from './model3d-renderer';
 import {
+    EVENT_CLOSE_RENDER_MODE_UI,
+    EVENT_CLOSE_SETTINGS_UI,
+    EVENT_CLOSE_UI,
     EVENT_MISSING_ASSET,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SET_RENDER_MODE,
@@ -65,14 +68,19 @@ class Model3d extends Box3D {
     attachEventHandlers() {
         super.attachEventHandlers();
 
-        if (this.controls) {
-            this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
-            this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
-        }
-        this.renderer.on(EVENT_MISSING_ASSET, this.handleMissingAsset);
         this.settings.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
         this.settings.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         this.settings.on(EVENT_RESET_SCENE_DEFAULTS, this.handleSceneReset);
+
+        if (this.controls) {
+            this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+            this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+            // UI Closing events
+            this.controls.on(EVENT_CLOSE_SETTINGS_UI, this.handleCloseSettingUi);
+            this.settings.on(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseRenderUi);
+            this.renderer.on(EVENT_CLOSE_UI, this.handleCloseUi);
+        }
+        this.renderer.on(EVENT_MISSING_ASSET, this.handleMissingAsset);
     }
 
     /**
@@ -84,6 +92,10 @@ class Model3d extends Box3D {
         if (this.controls) {
             this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+            // UI Closing events
+            this.controls.removeListener(EVENT_CLOSE_SETTINGS_UI, this.handleCloseSettingUi);
+            this.settings.removeListener(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseRenderUi);
+            this.renderer.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
         }
         this.renderer.removeListener(EVENT_MISSING_ASSET, this.handleMissingAsset);
         this.settings.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
@@ -102,6 +114,39 @@ class Model3d extends Box3D {
         }
 
         this.settings.destroy();
+    }
+
+    /**
+     * Emit a message with a list of assets that are unavailable
+     * @returns {void}
+     */
+    notifyAssetsMissing() {
+        this.emit(EVENT_MISSING_ASSET, this.missingAssets);
+    }
+
+    /**
+     * Handle the close settings ui event
+     * @returns {void}
+     */
+    handleCloseSettingUi() {
+        this.settings.emit(EVENT_CLOSE_SETTINGS_UI);
+    }
+
+    /**
+     * Handle closing render mode ui event
+     * @returns {void}
+     */
+    handleCloseRenderUi() {
+        this.controls.emit(EVENT_CLOSE_RENDER_MODE_UI);
+    }
+
+    /**
+     * Handle closing of all ui
+     * @returns {void}
+     */
+    handleCloseUi() {
+        this.controls.emit(EVENT_CLOSE_RENDER_MODE_UI);
+        this.settings.emit(EVENT_CLOSE_SETTINGS_UI);
     }
 
     /**
@@ -173,14 +218,6 @@ class Model3d extends Box3D {
                 super.handleSceneLoaded();
                 console.error(err);
             });
-    }
-
-    /**
-     * Emit a message with a list of assets that are unavailable
-     * @returns {void}
-     */
-    notifyAssetsMissing() {
-        this.emit(EVENT_MISSING_ASSET, this.missingAssets);
     }
 
     /**

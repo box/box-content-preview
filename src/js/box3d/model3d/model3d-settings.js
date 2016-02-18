@@ -3,7 +3,13 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import settingsTemplate from 'raw!../../../html/model3d/settings.html';
-import { EVENT_RESET_SCENE_DEFAULTS, EVENT_ROTATE_ON_AXIS, EVENT_SAVE_SCENE_DEFAULTS } from './model3d-constants';
+import {
+    EVENT_CLOSE_RENDER_MODE_UI,
+    EVENT_CLOSE_SETTINGS_UI,
+    EVENT_RESET_SCENE_DEFAULTS,
+    EVENT_ROTATE_ON_AXIS,
+    EVENT_SAVE_SCENE_DEFAULTS
+} from './model3d-constants';
 import { insertTemplate } from '../../util';
 
 const AXIS_X = 'x';
@@ -101,6 +107,9 @@ class Model3dSettings extends EventEmitter  {
         // Save and Reset buttons
         this.saveSettingsEl.addEventListener('click', this.handleSettingSelectSave);
         this.resetSettingsEl.addEventListener('click', this.handleSettingSelectReset);
+
+        this.addListener(EVENT_CLOSE_SETTINGS_UI, this.handleHideUi);
+        this.el.addEventListener('click', this.handleSettingsClick);
     }
 
     /**
@@ -126,6 +135,9 @@ class Model3dSettings extends EventEmitter  {
         // Save and Reset Buttons
         this.saveSettingsEl.addEventListener('click', this.handleSettingSelectSave);
         this.resetSettingsEl.addEventListener('click', this.handleSettingSelectReset);
+
+        this.removeListener(EVENT_CLOSE_SETTINGS_UI, this.handleHideUi);
+        this.el.removeEventListener('click', this.handleSettingsClick);
     }
 
     /**
@@ -174,6 +186,22 @@ class Model3dSettings extends EventEmitter  {
      */
     handleToggleSettingsPanel() {
         this.settingsPanelEl.classList.toggle(CSS_CLASS_HIDDEN);
+    }
+
+    /**
+     * Close the settings panel
+     * @returns {void}
+     */
+    handleHideUi() {
+        this.settingsPanelEl.classList.add(CSS_CLASS_HIDDEN);
+    }
+
+    /**
+     * Handle the settings panel being clicked
+     * @returns {void}
+     */
+    handleSettingsClick() {
+        this.emit(EVENT_CLOSE_RENDER_MODE_UI);
     }
 
     /**

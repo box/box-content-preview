@@ -203,7 +203,8 @@
 }
 
 .box-preview-vr-toggle-icon:before {
-    width: 26px;
+    width: 24px;
+    height: 16px;
     -shalam-sprite: 'controls/controls-vr.png' dest-size(24px 16px);
     /* shalam! */;
     background: url(../img/sprite.compat.png) 0 -480px;
