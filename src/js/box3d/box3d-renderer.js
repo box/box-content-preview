@@ -314,7 +314,9 @@ class Box3DRenderer extends EventEmitter {
     enableCameraControls() {
         const camera = this.getCamera();
         const cameraControls = camera.getComponentByScriptId('preview_camera_controller');
-        cameraControls.enable();
+        if (cameraControls) {
+            cameraControls.enable();
+        }
     }
 
     /**
@@ -324,7 +326,9 @@ class Box3DRenderer extends EventEmitter {
     disableCameraControls() {
         const camera = this.getCamera();
         const cameraControls = camera.getComponentByScriptId('preview_camera_controller');
-        cameraControls.disable();
+        if (cameraControls) {
+            cameraControls.disable();
+        }
     }
 
     /**

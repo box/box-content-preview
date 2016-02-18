@@ -4,7 +4,7 @@ import '../../../css/video360/video360.css';
 import autobind from 'autobind-decorator';
 import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';
-import Box3dRenderer from '../box3d-renderer';
+import Video360Renderer from './video360-renderer';
 import sceneEntities from './scene-entities';
 
 import {
@@ -43,7 +43,7 @@ class Video360 extends Dash {
 
         const sdkOpts = { token: options.token, apiBase: options.api };
         this.boxSdk = new BoxSDK(sdkOpts);
-        this.createSubModules(options);
+        this.optionsObj = options;
     }
 
     /**
@@ -76,17 +76,11 @@ class Video360 extends Dash {
      * @returns {void}
      */
     create360VideoUI() {
+        this.renderer = new Video360Renderer(this.mediaContainerEl, this.boxSdk);
+        this.optionsObj.sceneEntities = sceneEntities;
+        this.renderer.initBox3d(this.optionsObj).then(this.create360Environment.bind(this));
         this.controls = new Video360Controls(this.mediaContainerEl);
         this.attachEventHandlers();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    createSubModules(options) {
-        this.renderer = new Box3dRenderer(this.mediaContainerEl, this.boxSdk);
-        options.sceneEntities = sceneEntities;
-        this.renderer.initBox3d(options).then(this.create360Environment.bind(this));
     }
 
     /**
@@ -98,10 +92,10 @@ class Video360 extends Dash {
             this.controls.on(EVENT_DISABLE_VR, this.handleDisableVr);
             this.controls.on(EVENT_SWITCH_2D, this.switchTo2dViewer);
         }
-
         if (this.renderer) {
             this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         }
+
     }
 
     /**
@@ -133,8 +127,10 @@ class Video360 extends Dash {
         skybox.setSkyboxTexture(null);
 
         this.textureAsset = box3d.assetRegistry.createAsset({
+            id: 'VIDEO_TEX_ID',
             type: 'textureVideo',
             properties: {
+                layout: window.VAPI.BaseTextureAsset.LAYOUT.STEREO_2D_OVER_UNDER,
                 ignoreStream: true,
                 generateMipmaps: false,
                 filtering: 'Linear',
