@@ -165,6 +165,7 @@ class Video360 extends Dash {
      */
     @autobind
     handleEnableVr() {
+        this.vrDevice = this.renderer.vrDevice;
         this.renderer.enableVr();
     }
 
