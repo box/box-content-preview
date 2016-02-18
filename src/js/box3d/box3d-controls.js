@@ -154,7 +154,7 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     showVrButton() {
-        this.vrControl.classList.remove(CSS_CLASS_HIDDEN);
+        this.vrButtonEl.classList.remove(CSS_CLASS_HIDDEN);
     }
 
     /**
