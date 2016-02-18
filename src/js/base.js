@@ -3,8 +3,7 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
-import debounce from 'lodash/function/debounce';
-import { createContentUrl } from './util';
+import { debounce, createContentUrl } from './util';
 
 const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 const CLASS_FULLSCREEN_DISABLED = 'box-preview-fullscreen-disabled';

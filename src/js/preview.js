@@ -3,7 +3,6 @@
 import '../css/preview.css';
 import './polyfill';
 import autobind from 'autobind-decorator';
-import throttle from 'lodash/function/throttle';
 import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import Logger from './logger';
@@ -11,7 +10,7 @@ import loaders from './loaders';
 import cache from './cache';
 import ErrorLoader from './error/error-loader';
 import RepStatus from './rep-status';
-import { decodeKeydown } from './util';
+import { throttle, decodeKeydown } from './util';
 
 const PREFETCH_COUNT = 3;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
@@ -595,7 +594,7 @@ class Preview {
         }
 
         // Save the reference to the api endpoint
-        this.options.api = options.api || 'https://api.box.com';
+        this.options.api = options.api.replace(/\/$/, '') || 'https://api.box.com';
 
         // Save the reference to the auth token
         this.options.token = this.token || options.token;

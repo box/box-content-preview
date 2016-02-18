@@ -33,9 +33,7 @@ class Annotator {
         // Default to local storage annotations service
         this.annotationService = options.annotationService || new AnnotationService();
         // Default to return always returning scale of 1
-        this.getScale = options.getScaleFunc || () => {
-            return 1;
-        };
+        this.getScale = options.getScaleFunc || (() => 1);
     }
 
 }
