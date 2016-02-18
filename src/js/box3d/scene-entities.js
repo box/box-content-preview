@@ -2,10 +2,9 @@
 
 /**
  * Returns the default scene entities array for a base 3d preview. Comes with a box!
- * @param  {string} prefix Prefix to be used for loading static assets
  * @returns {array} Array of scene entities
  */
-function sceneEntities(prefix) {
+function sceneEntities() {
 	return [{
 		id: 'CAMERA_ID',
 		type: 'camera',

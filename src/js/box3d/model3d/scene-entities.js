@@ -107,7 +107,7 @@ function sceneEntities(prefix) {
             vMapping: 'Clamp'
 		},
 		resources: [{
-			path: prefix + 'model3d/HDR_Env0.png',
+			path: prefix + 'third-party/model3d/HDR_Env0.png',
 			contentType: 'image/png',
 			contentEncoding: 'identity',
 			properties: {
@@ -132,7 +132,7 @@ function sceneEntities(prefix) {
             vMapping: 'Clamp'
         },
         resources: [{
-            path: prefix + 'model3d/HDR_Env1.png',
+            path: prefix + 'third-party/model3d/HDR_Env1.png',
             contentType: 'image/png',
             contentEncoding: 'identity',
             properties: {
@@ -157,7 +157,7 @@ function sceneEntities(prefix) {
             vMapping: 'Clamp'
         },
         resources: [{
-            path: prefix + 'model3d/HDR_Env2.png',
+            path: prefix + 'third-party/model3d/HDR_Env2.png',
             contentType: 'image/png',
             contentEncoding: 'identity',
             properties: {

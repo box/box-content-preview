@@ -103,7 +103,7 @@ export function createAssetUrlCreator(location) {
             asset = name;
         } else if (name.indexOf('third-party') === 0) {
             // This is a static third-party asset thats not localized
-            asset = staticBaseURI + name.replace('third-party/', '');
+            asset = staticBaseURI + name;
         } else {
             // This is our own asset that is localized
             asset = baseURI + name;

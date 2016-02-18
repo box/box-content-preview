@@ -95,7 +95,7 @@ class Preview {
         let version = pathFragments[fragmentLength - 3];
 
         let baseURI = anchor.href.replace(fileName, '');
-        let staticBaseURI = baseURI.replace(locale, 'third-party');
+        let staticBaseURI = baseURI.replace(locale + '/', '');
 
         this.options.location = {
             origin: anchor.origin,
@@ -144,7 +144,7 @@ class Preview {
             container = document.body.appendChild(document.createElement('div'));
         }
 
-        // Decorate the container with absolute positioning
+        // Create the container with absolute positioning
         container.innerHTML = '<div class="box-preview-container"></div>';
 
         // Save a handle to the container for future references.
