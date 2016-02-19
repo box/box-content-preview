@@ -40,7 +40,7 @@
 		"no-floating-decimal": 2,
 		"no-underscore-dangle": 0,
 		"no-nested-ternary": 2,
-		"space-after-keywords": 2,
+		"keyword-spacing": 2,
 		"valid-jsdoc": [2, {
 			"prefer": {
 				"return": "returns"
