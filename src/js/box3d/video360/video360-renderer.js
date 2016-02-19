@@ -72,12 +72,13 @@ class Video360Renderer extends Box3DRenderer {
      * @inheritdoc
      */
     enableCameraControls() {
+        const camControllerId = 'orbit_camera_controller';
         const camera = this.getCamera();
-        const cameraControls = camera.getComponentByScriptId('orbit_camera_controller');
+        const cameraControls = camera.getComponentByScriptId(camControllerId);
         cameraControls.enable();
         if (this.rightEyeCamera) {
             const cameraControls =
-                this.rightEyeCamera.getComponentByScriptId('orbit_camera_controller');
+                this.rightEyeCamera.getComponentByScriptId(camControllerId);
             if (cameraControls) {
                 cameraControls.enable();
             }
@@ -88,12 +89,13 @@ class Video360Renderer extends Box3DRenderer {
      * @inheritdoc
      */
     disableCameraControls() {
+        const camControllerId = 'orbit_camera_controller';
         const camera = this.getCamera();
-        const cameraControls = camera.getComponentByScriptId('orbit_camera_controller');
+        const cameraControls = camera.getComponentByScriptId(camControllerId);
         cameraControls.disable();
         if (this.rightEyeCamera) {
             const cameraControls =
-                this.rightEyeCamera.getComponentByScriptId('orbit_camera_controller');
+                this.rightEyeCamera.getComponentByScriptId(camControllerId);
             if (cameraControls) {
                 cameraControls.disable();
             }
