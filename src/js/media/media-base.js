@@ -44,20 +44,25 @@ class MediaBase extends Base {
             this.mediaControls.destroy();
         }
 
-        if (this.mediaEl) {
-            this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
-            this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
-            this.mediaEl.removeEventListener('playing', this.playingHandler);
-            this.mediaEl.removeEventListener('pause', this.pauseHandler);
-            this.mediaEl.removeEventListener('waiting', this.waitingHandler);
-            this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
+        // Try catch is needed due to wierd behavior when src is removed
+        try {
+            if (this.mediaEl) {
+                this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
+                this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
+                this.mediaEl.removeEventListener('playing', this.playingHandler);
+                this.mediaEl.removeEventListener('pause', this.pauseHandler);
+                this.mediaEl.removeEventListener('waiting', this.waitingHandler);
+                this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
 
-            this.mediaEl.removeAttribute('src');
-            this.mediaEl.load();
-        }
+                this.mediaEl.removeAttribute('src');
+                this.mediaEl.load();
+            }
 
-        if (this.mediaContainerEl) {
-            this.mediaContainerEl.removeChild(this.mediaEl);
+            if (this.mediaContainerEl) {
+                this.mediaContainerEl.removeChild(this.mediaEl);
+            }
+        } catch (e) {
+            // do nothing
         }
 
         super.destroy();
