@@ -29,7 +29,6 @@
         "no-proto": 2,
         "quotes": [2, "single"],
         "no-undef": 0,
-        "no-unused-vars": 2,
         "no-script-url": 2,
         "dot-notation": 2,
         "camelcase": 0,
@@ -41,7 +40,6 @@
 		"no-floating-decimal": 2,
 		"no-underscore-dangle": 0,
 		"no-nested-ternary": 2,
-		"wrap-iife": 2,
 		"space-after-keywords": 2,
 		"valid-jsdoc": [2, {
 			"prefer": {
