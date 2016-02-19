@@ -99,21 +99,6 @@ class Video360Renderer extends Box3DRenderer {
             }
         }
     }
-
-    /**
-     * Enables VR if present
-     * @returns {void}
-     */
-    enableVrIfPresent() {
-        // Get the vrDevice to pass to the fullscreen API
-        this.input = this.box3d.getApplication().getComponentByScriptId('input_controller_component');
-        if (this.input) {
-            this.input.whenVrDeviceAvailable((device) => {
-                this.vrDevice = device;
-                this.emit(EVENT_SHOW_VR_BUTTON);
-            });
-        }
-    }
 }
 
 export default Box3DRenderer;
