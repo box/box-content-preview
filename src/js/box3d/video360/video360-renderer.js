@@ -39,9 +39,10 @@ class Video360Renderer extends Box3DRenderer {
             this.rightEyeScene = scene.clone({id: 'SCENE_ID_RIGHT_EYE'});
             this.rightEyeCamera = this.rightEyeScene.getObjectByType('camera');
         }
-        let renderViewComponent = camera.getComponentByScriptId('render_view_component');
+        const renderViewId = 'render_view_component';
+        let renderViewComponent = camera.getComponentByScriptId(renderViewComponent);
         renderViewComponent.setViewport(0, 0, '50%', '100%');
-        renderViewComponent = this.rightEyeCamera.getComponentByScriptId('render_view_component');
+        renderViewComponent = this.rightEyeCamera.getComponentByScriptId(renderViewComponent);
         renderViewComponent.setViewport('50%', 0, '50%', '100%');
         renderViewComponent.enable();
 
@@ -61,10 +62,10 @@ class Video360Renderer extends Box3DRenderer {
         }
 
         super.disableVr();
-
-        let renderViewComponent = camera.getComponentByScriptId('render_view_component');
+        const renderViewId = 'render_view_component';
+        let renderViewComponent = camera.getComponentByScriptId(renderViewId);
         renderViewComponent.setViewport(0, 0, '100%', '100%');
-        renderViewComponent = this.rightEyeCamera.getComponentByScriptId('render_view_component');
+        renderViewComponent = this.rightEyeCamera.getComponentByScriptId(renderViewId);
         renderViewComponent.disable();
     }
 
