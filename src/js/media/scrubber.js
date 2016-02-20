@@ -24,7 +24,7 @@ class Scrubber extends EventEmitter {
      * @param {number} [convertedValue] optional initial converted value
      * @returns {Scrubber}
      */
-    constructor(containerEl, accessibilityText, value, bufferedValue, convertedValue) {
+    constructor(containerEl, accessibilityText, value = MIN_VALUE, bufferedValue = MAX_VALUE, convertedValue = MAX_VALUE) {
 
         super();
 
@@ -151,9 +151,9 @@ class Scrubber extends EventEmitter {
 
         // Set the new scrubber buffered value. However this value should be
         //  no more than 1
-        //  no less than 0
-        //  no less than the last buffered value
-        this.bufferedValue = Math.max(Math.min(Math.max(value, this.bufferedValue || MAX_VALUE), this.convertedValue), MIN_VALUE);
+        //  no less than actual value
+        //  no more than converted value
+        this.bufferedValue = Math.max(Math.min(value, this.convertedValue), this.value || MIN_VALUE);
         this.bufferedEl.style.width = this.bufferedValue * 100 + '%';
     }
 
@@ -174,7 +174,7 @@ class Scrubber extends EventEmitter {
         //  no more than 1
         //  no less than 0
         //  no less than the last converted value
-        this.convertedValue = Math.max(Math.min(Math.max(value, this.convertedValue || MAX_VALUE), MAX_VALUE), MIN_VALUE);
+        this.convertedValue = Math.max(Math.min(Math.max(value, this.convertedValue || MIN_VALUE), MAX_VALUE), MIN_VALUE);
         this.convertedEl.style.width = this.convertedValue * 100 + '%';
     }
 

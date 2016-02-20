@@ -48,6 +48,7 @@ class MediaBase extends Base {
         try {
             if (this.mediaEl) {
                 this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
+                this.mediaEl.removeEventListener('progress', this.progressHandler);
                 this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
                 this.mediaEl.removeEventListener('playing', this.playingHandler);
                 this.mediaEl.removeEventListener('pause', this.pauseHandler);
@@ -108,7 +109,7 @@ class MediaBase extends Base {
      * @returns {void}
      */
     handleSpeed() {
-        let speed = cache.get('media-speed') - 0;
+        const speed = cache.get('media-speed') - 0;
         this.mediaEl.playbackRate = speed;
     }
 
@@ -119,7 +120,6 @@ class MediaBase extends Base {
      * @returns {void}
      */
     handleVolume() {
-
         let volume = DEFAULT_VOLUME;
 
         if (cache.has('media-volume')) {
@@ -193,7 +193,9 @@ class MediaBase extends Base {
      * @returns {void}
      */
     setTimeCode() {
-        this.mediaControls.setTimeCode(this.mediaEl.currentTime);
+        if (this.mediaControls) {
+            this.mediaControls.setTimeCode(this.mediaEl.currentTime);
+        }
     }
 
     /**
@@ -203,7 +205,9 @@ class MediaBase extends Base {
      * @returns {void}
      */
     updateVolumeIcon() {
-        this.mediaControls.updateVolumeIcon(this.mediaEl.volume);
+        if (this.mediaControls) {
+            this.mediaControls.updateVolumeIcon(this.mediaEl.volume);
+        }
     }
 
     /**
@@ -217,9 +221,23 @@ class MediaBase extends Base {
      */
     playingHandler() {
         this.containerEl.classList.add(CLASS_PREVIEW_LOADED);
-        this.mediaControls.showPauseIcon();
+        if (this.mediaControls) {
+            this.mediaControls.showPauseIcon();
+        }
         this.handleSpeed();
         this.handleVolume();
+    }
+
+    /**
+     * Updates progress.
+     *
+     * @private
+     * @returns {void}
+     */
+    progressHandler() {
+        if (this.mediaControls) {
+            this.mediaControls.updateProgress();
+        }
     }
 
     /**
@@ -239,7 +257,9 @@ class MediaBase extends Base {
      * @returns {void}
      */
     pauseHandler() {
-        this.mediaControls.showPlayIcon();
+        if (this.mediaControls) {
+            this.mediaControls.showPlayIcon();
+        }
     }
 
     /**
@@ -249,7 +269,9 @@ class MediaBase extends Base {
      * @returns {void}
      */
     resetPlayIcon() {
-        this.mediaControls.setTimeCode(0);
+        if (this.mediaControls) {
+            this.mediaControls.setTimeCode(0);
+        }
         this.pauseHandler();
     }
 
@@ -274,6 +296,7 @@ class MediaBase extends Base {
      */
     addEventListenersForMediaElement() {
         this.mediaEl.addEventListener('timeupdate', this.setTimeCode);
+        this.mediaEl.addEventListener('progress', this.progressHandler);
         this.mediaEl.addEventListener('volumechange', this.updateVolumeIcon);
         this.mediaEl.addEventListener('playing', this.playingHandler);
         this.mediaEl.addEventListener('pause', this.pauseHandler);

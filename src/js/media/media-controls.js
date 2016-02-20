@@ -150,6 +150,17 @@ class MediaControls extends EventEmitter  {
     }
 
     /**
+     * Playback rate handler
+     *
+     * @private
+     * @param {String} speed playback rate
+     * @returns {void}
+     */
+    handleSpeed(speed) {
+        this.emit('speedchange');
+    }
+
+    /**
      * Attaches settings menu
      * @private
      * @returns {void}
@@ -166,12 +177,12 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     setupScrubbers() {
-        this.timeScrubber = new Scrubber(this.timeScrubberEl, 'Time');
+        this.timeScrubber = new Scrubber(this.timeScrubberEl, 'Time', 0, 0, 1);
         this.timeScrubber.on('valuechange', (value) => {
             this.emit('timeupdate', value);
         });
 
-        this.volScrubber = new Scrubber(this.volScrubberEl, 'Volume');
+        this.volScrubber = new Scrubber(this.volScrubberEl, 'Volume', 0 , 1, 1);
         this.volScrubber.on('valuechange', (value) => {
             this.emit('volumeupdate', value);
         });
@@ -209,6 +220,19 @@ class MediaControls extends EventEmitter  {
         let duration = this.mediaEl.duration;
         this.timeScrubber.setValue(duration ? time / duration : 0);
         this.timecodeEl.textContent = this.formatTime(time || 0);
+    }
+
+    /**
+     * Updates progress.
+     *
+     * @returns {void}
+     */
+    updateProgress() {
+        const buffered = this.mediaEl.buffered;
+        const duration = this.mediaEl.duration || 1;
+        const bufferedLength = buffered.length;
+        const bufferedValue = bufferedLength ? buffered.end(bufferedLength - 1) : 0; // Get the new last buffered value
+        this.timeScrubber.setBufferedValue(bufferedValue / duration);
     }
 
     /**
