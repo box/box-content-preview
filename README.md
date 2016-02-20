@@ -34,12 +34,16 @@ https://gitenterprise.inside-box.net/Preview/demo
 API
 ---
 
+To show a preview call
 ```javascript
-Box.Preview.show(file, { options }).then(function(viewer) {
-    // do something with the viewer object if needed
-});
+Box.Preview.show(file, { options });
 ```
-shows a preview. Clients are still responsible for showing the constainer if it was hidden.
+Clients are still responsible for showing the container in which preview shows up, if it was hidden. `Box.Preview` is a singleton instance of the `Preview` class. Another way to show a preview or multiple previews is
+
+```javascript
+let preview = new Preview();
+preview.show(file, { options });
+```
 
 * `file` is either a string file id OR JSON file object response from https://box-content.readme.io/reference#files
 * `options` is an object with the following attribute
@@ -49,6 +53,9 @@ shows a preview. Clients are still responsible for showing the constainer if it 
   * (optional) `container` is the container dom node for preview. Can be a CSS selector (e.g. '.className' or '#idName') or HTML node. If a container is supplied, it must be styled with a width and height. If no container is supplied, a container will be created that fills the viewport.
   * (optional) `sharedLink` is the fully qualified shared url that needs to passed on to the api.
   * (optional) `viewers` is a json object that has options for individual viewers with viewer name as the key.
+  * (optional) `callbacks` is a json object that has callbacks
+    * `navigation(fileId)` function called with file id when inter-preview navigation happens
+    * `metrics(data)` function called with metrics / performance data
 
 ```javascript
 Box.Preview.hide(/* optional boolean */ destroy);
