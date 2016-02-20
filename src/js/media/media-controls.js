@@ -150,17 +150,6 @@ class MediaControls extends EventEmitter  {
     }
 
     /**
-     * Playback rate handler
-     *
-     * @private
-     * @param {String} speed playback rate
-     * @returns {void}
-     */
-    handleSpeed(speed) {
-        this.emit('speedchange');
-    }
-
-    /**
      * Attaches settings menu
      * @private
      * @returns {void}
