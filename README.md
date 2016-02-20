@@ -47,15 +47,27 @@ preview.show(file, { options });
 
 * `file` is either a string file id OR JSON file object response from https://box-content.readme.io/reference#files
 * `options` is an object with the following attribute
-  * (required) `token` is the api auth token.
-  * (optional) `api` is the api host like `https://ldap.dev.box.net/api`. Defaults to `https://api.box.com`.
-  * (optional) `files` is either an array of string file ids OR an array of JSON file objects from the content api as shown above.
-  * (optional) `container` is the container dom node for preview. Can be a CSS selector (e.g. '.className' or '#idName') or HTML node. If a container is supplied, it must be styled with a width and height. If no container is supplied, a container will be created that fills the viewport.
-  * (optional) `sharedLink` is the fully qualified shared url that needs to passed on to the api.
-  * (optional) `viewers` is a json object that has options for individual viewers with viewer name as the key.
-  * (optional) `callbacks` is a json object that has callbacks
-    * `navigation(fileId)` function called with file id when inter-preview navigation happens
-    * `metrics(data)` function called with metrics / performance data
+
+```javascript
+{
+    token: 'api auth token',
+    container: '.preview-container', // optional dom node or selector where preview should be placed
+    api: 'https://api.box.com',      // optional api host like https://ldap.dev.box.net/api
+    files: [ '123', '234', ... ],    // optional list of file ids
+    viewers: {                       // optional arguments to pass on to viewers
+        Document: {                     // viewer class name
+            disabled: true,             // disables the viewer
+            annotations: true           // other args
+            ...
+        },
+        ...
+    },
+    callbacks: {                                 // optional callbacks
+        navigation: function(fileId) { ... },       // when navigation happens to fileId
+        metrics: function(data) { ... }             // preview performance metrics
+    }
+}
+```
 
 ```javascript
 Box.Preview.hide(/* optional boolean */ destroy);
