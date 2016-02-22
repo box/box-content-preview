@@ -9,7 +9,7 @@ Clone and compile
 -----------------
 1. `git clone git@gitenterprise.inside-box.net:Preview/Preview.git`
 2. `cd Preview`
-3. `npm install`
+3. `npm install --registry https://registry.nodejitsu.com` (The explicit registry is a workaround, will be fixed soon)
 4. `npm run build` (does a clean build)
 
 Note: If you get a rsync error while running the build for the 1st time, it probably failed to copy the built assets to your dev VM. In that case go to your dev VM and manually create the folder `/box/www/assets/content-experience` and give it 777 permissions. This folder acts as your static server for local development.
