@@ -12,7 +12,7 @@ const VIEWERS = [
     {
         REPRESENTATION: 'original',
         EXTENSIONS: [ 'pdf' ],
-        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', 'document.js' ],
+        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', STATIC_URI + 'rangefix.js', 'document.js' ],
         STYLESHEETS: [ STATIC_URI + 'pdf_viewer.css', 'document.css' ],
         CONSTRUCTOR: 'Document',
         PREFETCH: 'xhr'
@@ -20,7 +20,7 @@ const VIEWERS = [
     {
         REPRESENTATION: 'pdf',
         EXTENSIONS: [ 'ppt', 'pptx' ],
-        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', 'presentation.js' ],
+        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', STATIC_URI + 'rangefix.js', 'presentation.js' ],
         STYLESHEETS: [ STATIC_URI + 'pdf_viewer.css', 'presentation.css' ],
         CONSTRUCTOR: 'Presentation',
         PREFETCH: 'xhr'
@@ -28,7 +28,7 @@ const VIEWERS = [
     {
         REPRESENTATION: 'pdf',
         EXTENSIONS: [ 'doc', 'docx', 'gdoc', 'gsheet', 'msg', 'odp', 'odt', 'ods', 'pdf', 'ppt', 'pptx', 'rtf', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl' ],
-        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', 'document.js' ],
+        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', STATIC_URI + 'rangefix.js', 'document.js' ],
         STYLESHEETS: [ STATIC_URI + 'pdf_viewer.css', 'document.css' ],
         CONSTRUCTOR: 'Document',
         PREFETCH: 'xhr'

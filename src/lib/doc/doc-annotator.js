@@ -3,7 +3,6 @@
 import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
 import Annotator from '../annotation/annotator';
-//import AnnotationService from '../annotation/annotation-service';
 import rangy from 'rangy';
 // @NOTE(tjin): Workaround npm rangy issue: https://github.com/timdown/rangy/issues/342
 import rangyClassApplier from 'rangy/lib/rangy-classapplier';
@@ -17,22 +16,6 @@ const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && docu
 let document = global.document;
 
 /*---------- Helpers ----------*/
-/**
- * Recreates rangy's highlighter.serialize() for a single highlight
- *
- * @param {Highlight} highlight Rangy highlight
- * @returns {string} Serialized highlight string
- */
-function serializeHighlight(highlight) {
-    return [
-        highlight.characterRange.start,
-        highlight.characterRange.end,
-        highlight.id,
-        highlight.classApplier.className,
-        highlight.containerElementId
-    ].join('$');
-}
-
 /**
  * Finds the closest ancestor DOM element with the specified class
  *
@@ -48,6 +31,66 @@ function findClosestElWithClass(element, className) {
     }
 
     return null;
+}
+
+/**
+ * Returns the coordinates of the quadrilateral representing this element per
+ * the PDF text markup annotation spec.
+ *
+ * We do this by letting the browser figure out the coordinates for us. See:
+ * http://stackoverflow.com/a/17098667
+ *
+ * @param {HTMLElement} element Element to get quad points for
+ * @param {HTMLElement} relativeEl Element quad points should be relative to
+ * @returns {number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3, x4,
+ * y4] with (x1, y1) being the lower left (untransformed) corner of the element
+ * and the other 3 vertices in counterclockwise order
+ */
+function getQuadPoints(element, relativeEl) {
+    // Create zero-size elements that map to 4 corners of quadrilateral around
+    // element
+    let corner1El = document.createElement('div');
+    let corner2El = document.createElement('div');
+    let corner3El = document.createElement('div');
+    let corner4El = document.createElement('div');
+
+    corner1El.classList.add('box-preview-quad-corner', 'corner1');
+    corner2El.classList.add('box-preview-quad-corner', 'corner2');
+    corner3El.classList.add('box-preview-quad-corner', 'corner3');
+    corner4El.classList.add('box-preview-quad-corner', 'corner4');
+
+    element.appendChild(corner1El);
+    element.appendChild(corner2El);
+    element.appendChild(corner3El);
+    element.appendChild(corner4El);
+
+    const corner1Rect = corner1El.getBoundingClientRect();
+    const corner2Rect = corner2El.getBoundingClientRect();
+    const conrer3Rect = corner3El.getBoundingClientRect();
+    const conrer4Rect = corner4El.getBoundingClientRect();
+    const relativeRect = relativeEl.getBoundingClientRect();
+    const relativeLeft = relativeRect.left;
+    const relativeTop = relativeRect.top;
+
+    // Calculate coordinates of these 4 corners
+    const quadPoints = [
+        corner1Rect.left - relativeLeft,
+        corner1Rect.top - relativeTop,
+        corner2Rect.left - relativeLeft,
+        corner2Rect.top - relativeTop,
+        conrer3Rect.left - relativeLeft,
+        conrer3Rect.top - relativeTop,
+        conrer4Rect.left - relativeLeft,
+        conrer4Rect.top - relativeTop
+    ];
+
+    // Clean up corner elements
+    element.removeChild(corner1El);
+    element.removeChild(corner2El);
+    element.removeChild(corner3El);
+    element.removeChild(corner4El);
+
+    return quadPoints;
 }
 
 /**
@@ -104,18 +147,7 @@ class DocAnnotator extends Annotator {
         // Init rangy highlight classapplier
         this.highlighter.addClassApplier(rangy.createClassApplier('highlight', {
             ignoreWhiteSpace: true,
-            tagNames: ['span', 'a'],
-            // When highlight element is created, add an event handler to show the annotation
-            onElementCreate: (element) => {
-                this.addEventHandler(element, (event) => {
-                    event.stopPropagation();
-
-                    let currentHighlight = this.highlighter.getHighlightForElement(event.target);
-                    if (currentHighlight) {
-                        this.showAnnotationDialog(serializeHighlight(currentHighlight));
-                    }
-                });
-            }
+            tagNames: ['span', 'a']
         }));
     }
 
@@ -130,28 +162,24 @@ class DocAnnotator extends Annotator {
 
         // Fetch map of thread ID to annotations
         this.annotationService.getAnnotationsForFile(this.fileID).then((annotationsMap) => {
-            let highlightThreads = [];
+            let highlightAnnotations = [];
             let pointAnnotations = [];
 
             // Generate arrays of highlight and point threads
-            for (let [threadID, threadedAnnotations] of annotationsMap) {
+            for (let threadedAnnotations of annotationsMap.values()) {
                 let firstAnnotation = threadedAnnotations[0],
                     annotationType = firstAnnotation.type;
 
-                // Highlights can be shown with just the thread ID since it
-                // contains serialized location data
+                // We only need to show the first annotation in a thread
                 if (annotationType === HIGHLIGHT_ANNOTATION_TYPE) {
-                    highlightThreads.push(threadID);
-
-                // Point annotations need the first annotation in the thread
-                // for location data
+                    highlightAnnotations.push(firstAnnotation);
                 } else if (annotationType === POINT_ANNOTATION_TYPE) {
                     pointAnnotations.push(firstAnnotation);
                 }
             }
 
             // Show highlight and point annotations
-            this.showHighlightAnnotations(highlightThreads);
+            this.showHighlightAnnotations(highlightAnnotations);
             this.showPointAnnotations(pointAnnotations);
         });
     }
@@ -173,12 +201,6 @@ class DocAnnotator extends Annotator {
             user: this.user
         };
 
-        // Highlight annotations have a serialized highlight thread ID. Point
-        // annotations have a randomly generated thread ID.
-        if (annotationType === HIGHLIGHT_ANNOTATION_TYPE) {
-            data.threadID = serializeHighlight(locationData.highlight);
-        }
-
         return new Annotation(data);
     }
 
@@ -186,19 +208,85 @@ class DocAnnotator extends Annotator {
     /*---------- Highlight Annotations ----------*/
 
     /**
-     * Shows highlight annotations (annotations on selected text).
+     * Shows a single highlight annotation (annotations on selected text).
      *
-     * @param {string[]} highlightThreads Array of highlight thread IDs
+     * @param {Annotation} annotation Highlight annotation to show
      * @returns {void}
      */
-    showHighlightAnnotations(highlightThreads) {
-        // Recreate rangy highlight serialization format from thread IDs and
-        // then deserialize to show highlights
-        highlightThreads.unshift('type:textContent');
-        let serializedHighlights = highlightThreads.join('|');
-        this.highlighter.deserialize(serializedHighlights);
+    showHighlightAnnotation(annotation) {
+        if (!annotation.location || !annotation.location.quadPoints) {
+            return;
+        }
 
-        // @NOTE(tjin): how do I build up a highlight map here?
+        const location = annotation.location;
+        const page = location.page;
+        const pageEl = document.querySelector('[data-page-number="' + page + '"]');
+        const textLayerEl = pageEl.querySelector('.textLayer');
+        const pageDimensions = pageEl.getBoundingClientRect();
+        let upperRightX = 0;
+        let upperRightY = pageDimensions.height;
+
+        location.quadPoints.forEach((quadPoints) => {
+            let [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
+
+            upperRightX = Math.max(upperRightX, Math.max(x1, x2, x3, x4));
+            upperRightY = Math.min(upperRightY, Math.min(y1, y2, y3, y4));
+
+            console.log(`These are the quadpoints of a highlight rectangle associated with highlight ${annotation.annotationID}: (${x1},${y1}) (${x2},${y2}) (${x3},${y3}) (${x4},${y4})`);
+
+            // Get rotation of element
+            // radians = arctan(opposite/adj) = arctan((y3-y4)/(x3-x4))
+            const rotationRad = Math.atan((y3 - y4) / (x3 - x4));
+
+            // Calculate dimensions of highlight rectangle
+            const centerX = (x3 - x1) / 2 + x1;
+            const centerY = (y1 - y3) / 2 + y3;
+            const newRectWidth = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+            const newRectHeight = Math.sqrt(Math.pow(y4 - y1, 2) + Math.pow(x4 - x1, 2));
+            const newRectLeft = centerX - newRectWidth/2;
+            const newRectTop = centerY - newRectHeight/2;
+
+            // Construct and insert highlight rectangle
+            let newRectEl = document.createElement('div');
+            newRectEl.style.left = newRectLeft + 'px';
+            newRectEl.style.top = newRectTop + 'px';
+            newRectEl.style.width = newRectWidth + 'px';
+            newRectEl.style.height = newRectHeight + 'px';
+            newRectEl.style.transform = 'rotate(' + rotationRad + 'rad)';
+            newRectEl.dataset.annotationId = annotation.annotationID;
+            newRectEl.classList.add('box-preview-highlight');
+            textLayerEl.insertBefore(newRectEl, textLayerEl.firstChild);
+        });
+
+        // Construct remove highlight button
+        let removeHighlightButtonEl = document.createElement('button');
+        removeHighlightButtonEl.textContent = 'x';
+        removeHighlightButtonEl.style.left = upperRightX - 8 + 'px'; // move 'x' slightly into highlight
+        removeHighlightButtonEl.style.top = upperRightY - 8 + 'px'; // move 'x' slightly into highlight
+        removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
+        pageEl.appendChild(removeHighlightButtonEl);
+
+        this.addEventHandler(removeHighlightButtonEl, (event) => {
+            event.stopPropagation();
+
+            this.annotationService.delete(annotation.annotationID).then(() => {
+                this.removeHighlight(annotation.annotationID);
+                this.removeEventHandlers(removeHighlightButtonEl);
+                removeHighlightButtonEl.parentNode.removeChild(removeHighlightButtonEl);
+            });
+        });
+    }
+
+    /**
+     * Shows highlight annotations (annotations on selected text).
+     *
+     * @param {Annotation[]} highlightAnnotations Array of highlight annotations
+     * @returns {void}
+     */
+    showHighlightAnnotations(highlightAnnotations) {
+        highlightAnnotations.forEach((highlightAnnotation) => {
+            this.showHighlightAnnotation(highlightAnnotation);
+        });
     }
 
     /**
@@ -217,28 +305,39 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        let selectionDimensions = selection.getRangeAt(0).getBoundingClientRect(),
-            pageEl = findClosestElWithClass(selection.anchorNode.parentNode, 'page'),
-            pageDimensions = pageEl.getBoundingClientRect(),
-            page = pageEl ? pageEl.dataset.pageNumber : 1,
-            pageScale = this.getScale(),
-            highlight = this.highlighter.highlightSelection('highlight', {
-                containerElementId: pageEl.id
-            })[0];
+        const pageEl = findClosestElWithClass(selection.anchorNode.parentNode, 'page');
+        const page = pageEl ? pageEl.dataset.pageNumber : 1;
 
-        let x = selectionDimensions.left + selectionDimensions.width / 2 + window.scrollX,
-            y = selectionDimensions.top + selectionDimensions.height + window.scrollY;
-        x = (x - pageDimensions.left) / pageScale;
-        y = (y - pageDimensions.top) / pageScale;
+        // We use Rangy to turn the selection into a highlight, which creates
+        // spans around the selection that we can then turn into quadpoints
+        let highlight = this.highlighter.highlightSelection('highlight', {
+            containerElementId: pageEl.id
+        })[0];
+        let highlightElements = [].slice.call(document.querySelectorAll('.highlight'), 0);
+        if (highlightElements.length === 0) {
+            return;
+        }
 
-        let locationData = {
-            x: x,
-            y: y,
+        // Get quad points for each highlight element
+        let highlightQuadPoints = [];
+        highlightElements.forEach((element) => {
+            highlightQuadPoints.push(getQuadPoints(element, pageEl));
+        });
+
+        // Unselect text and remove rangy highlight
+        selection.removeAllRanges();
+        this.removeRangyHighlight(highlight);
+
+        // Create annotation
+        const annotation = this.createAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '', {
             page: page,
-            highlight: highlight
-        };
+            quadPoints: highlightQuadPoints
+        });
 
-        this.createAnnotationDialog(locationData, HIGHLIGHT_ANNOTATION_TYPE);
+        // Save and show annotation
+        this.annotationService.create(annotation).then((annotation) => {
+            this.showHighlightAnnotation(annotation);
+        });
     }
 
     /*---------- Point Annotations ----------*/
@@ -407,7 +506,7 @@ class DocAnnotator extends Annotator {
 
             // Remove Rangy highlight if needed
             if (locationData.highlight) {
-                this.removeHighlight(locationData.highlight);
+                this.removeRangyHighlight(locationData.highlight);
             }
         });
 
@@ -421,7 +520,7 @@ class DocAnnotator extends Annotator {
 
                 // Remove Rangy highlight if needed
                 if (locationData.highlight) {
-                    this.removeHighlight(locationData.highlight);
+                    this.removeRangyHighlight(locationData.highlight);
                 }
             }
         });
@@ -554,7 +653,7 @@ class DocAnnotator extends Annotator {
 
                             // Remove highlight or point element when we delete the whole thread
                             if (annotation.type === HIGHLIGHT_ANNOTATION_TYPE) {
-                                this.removeHighlight(annotation.location.highlight);
+                                this.removeRangyHighlight(annotation.location.highlight);
                             } else if (annotation.type === POINT_ANNOTATION_TYPE) {
                                 let pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
 
@@ -677,7 +776,22 @@ class DocAnnotator extends Annotator {
 
     /*---------- Helpers ----------*/
     /**
-     * Helper to remove a highlight by deleting the highlight in the internal
+     * Removes a highlight by finding all highlight divs corresponding to the
+     * provided annotation ID and removing them
+     *
+     * @param {number} annotationId Annotation ID of highlight to remove
+     * @returns {void}
+     */
+    removeHighlight(annotationId) {
+        let matchingHighlights = [].slice.call(document.querySelectorAll('[data-annotation-id="' + annotationId + '"]'));
+
+        matchingHighlights.forEach((highlightEl) => {
+            highlightEl.parentNode.removeChild(highlightEl);
+        });
+    }
+
+    /**
+     * Helper to remove a Rangy highlight by deleting the highlight in the internal
      * highlighter list that has a matching ID. We can't directly use the
      * highlighter's removeHighlights since the highlight could possibly not be
      * a true Rangy highlight object.
@@ -685,7 +799,7 @@ class DocAnnotator extends Annotator {
      * @param {Object} highlight Highlight to delete.
      * @returns {void}
      */
-    removeHighlight(highlight) {
+    removeRangyHighlight(highlight) {
         let matchingHighlights = this.highlighter.highlights.filter((internalHighlight) => {
             return internalHighlight.id === highlight.id;
         });
