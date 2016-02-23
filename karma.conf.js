@@ -6,56 +6,29 @@ var css = path.join(__dirname, 'src/css');
 var img = path.join(__dirname, 'src/img');
 var test = path.join(__dirname, 'test');
 
+var webpackConfig = require('./webpack.karma.config');
+
 module.exports = function(config) {
-    
+
     config.set({
 
         basePath: '',
 
-        frameworks: ['mocha', 'chai-sinon', 'chai-as-promised', 'chai', 'fixture'],
+        frameworks: ['mocha', 'sinon-stub-promise', 'chai-sinon', 'chai-as-promised', 'chai', 'sinon', 'fixture'],
 
         files: [
-            'test/**/*.js',
-            'test/**/*.html'
+            'src/**/*-test.js'
         ],
 
-       exclude: [],
+        exclude: [],
 
         preprocessors: {
-            'test/**/*.js': ['webpack'],
-            'test/**/*.html': ['html2js']
+            'src/**/*-test.js': [ 'webpack', 'sourcemap' ]
         },
 
-        reporters: ['progress', 'coverage', 'threshold'],
+        reporters: ['mocha', 'coverage', 'threshold'],
 
-        webpack: {
-            module: {
-                preLoaders: [
-                    {
-                        test: [ js, test ],
-                        loader: 'babel-loader'
-                    },
-                    
-                    {
-                        test: [ js, test ],
-                        include: js,
-                        loader: 'isparta'
-                    }
-                ],
-
-                loaders: [
-                    {
-                        test: css,
-                        loader: 'style-loader!css-loader'
-                    },
-                    
-                    {
-                        test: img,
-                        loader: 'url-loader?limit=1'
-                    }
-                ]
-            }
-        },
+        webpack: webpackConfig,
 
         webpackMiddleware: {
             noInfo: true
@@ -67,10 +40,10 @@ module.exports = function(config) {
         },
 
         thresholdReporter: {
-            statements: 80,
-            branches: 80,
-            functions: 80,
-            lines: 80
+            statements: 1,
+            branches: 1,
+            functions: 1,
+            lines: 1
         },
 
         port: 9876,
@@ -79,10 +52,14 @@ module.exports = function(config) {
 
         logLevel: config.LOG_INFO,
 
-        autoWatch: true,
+        autoWatch: false,
 
         browsers: ['Chrome'],
 
-        singleRun: false
+        browserNoActivityTimeout: 100000,
+
+        captureConsole: true,
+
+        singleRun: true
     });
 };
