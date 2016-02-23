@@ -7,7 +7,7 @@ The Box Client-Side Preview SDK allows developers to embed a Preview of their Bo
 
 Latest CDN version
 -----------------
-https://cdn01.boxcdn.net/content-experience/0.41.0/en-US/preview.js
+https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.js
 
 
 Clone and compile
