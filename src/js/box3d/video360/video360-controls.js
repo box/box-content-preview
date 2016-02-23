@@ -54,7 +54,7 @@ class Video360Controls extends EventEmitter {
         this.toggle2dButton.title = 'Switch to 2D Viewer';
         const toggle2dButtonSpan = this.toggle2dButton.appendChild(document.createElement('span'));
         toggle2dButtonSpan.classList.add('switch-2d');
-        toggle2dButtonSpan.innerText = '2D';
+        toggle2dButtonSpan.textContent = '2D';
 
         // Hide the 360 button that Dash creates
         const toggle360Button = this.el.querySelector('.box-preview-image-switch-360-icon');
