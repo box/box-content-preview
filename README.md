@@ -5,7 +5,7 @@ Overview
 The Box Client-Side Preview SDK allows developers to embed a Preview of their Box file(s) in an application. The SDK fetches representations through the Box Content API, chooses the appropriate viewer for the file type, and renders a preview of the file. The SDK currently supports most types of documents, images, videos, audio files, and 3D files.
 
 
-Latest CDN version
+Latest version hosted on CDN
 -----------------
 https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.js
 
