@@ -52625,729 +52625,641 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	/**
+	 * @module VAPI
+	 */
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(9)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DAsset) {
+	  'use strict';
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	  var VAPI = window.VAPI = window.VAPI || {};
 
-	var _log = __webpack_require__(7);
+	  var BaseTextureAsset = function BaseTextureAsset(json) {
+	    Box3DAsset.call(this, json);
+	    this.loadedBytes = 0;
+	  };
 
-	var _log2 = _interopRequireDefault(_log);
+	  BaseTextureAsset.prototype = new Box3DAsset();
 
-	var _lodash = __webpack_require__(3);
+	  BaseTextureAsset.prototype.defaultProperties = _.extend({}, Box3DAsset.prototype.defaultProperties, {
+	    uMapping: 'Wrap',
+	    vMapping: 'Wrap',
+	    filtering: 'Trilinear',
+	    anisotropy: 8,
+	    flipY: false,
+	    isHdr: false,
+	    useHardwareCompression: false,
+	    generateMipmaps: true,
+	    type: THREE.UnsignedByteType,
+	    format: THREE.RGBFormat,
+	    ignoreStream: true
+	  });
 
-	var _lodash2 = _interopRequireDefault(_lodash);
+	  BaseTextureAsset.prototype.initialize = function (properties) {
+	    Box3DAsset.prototype.initialize.call(this, properties);
 
-	var _three = __webpack_require__(5);
+	    this.loadComponents = true;
 
-	var _three2 = _interopRequireDefault(_three);
+	    this.trigger('loadHierarchy', this);
+	    this.trigger('loadHierarchyAndDependencies', this);
+	  };
 
-	var _Box3DAsset2 = __webpack_require__(9);
+	  BaseTextureAsset.prototype.unload = function (options) {
+	    // abort any xhr request associated with this
+	    this.box3DRuntime.resourceLoader.abortRequest(this.id);
 
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+	    if (this.runtimeData) {
+	      this.box3DRuntime.trigger('textureUnloaded', this.id);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	      log.info(this.box3DRuntime.engineName + ' - Unloading texture, ' + this.getName());
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var VAPI = window.VAPI = window.VAPI || {};
-
-	var BaseTextureAsset = function (_Box3DAsset) {
-	  _inherits(BaseTextureAsset, _Box3DAsset);
-
-	  function BaseTextureAsset(json) {
-	    _classCallCheck(this, BaseTextureAsset);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTextureAsset).call(this, json));
-
-	    _this.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.prototype.defaultProperties, {
-	      uMapping: 'Wrap',
-	      vMapping: 'Wrap',
-	      filtering: 'Trilinear',
-	      anisotropy: 8,
-	      flipY: false,
-	      isHdr: false,
-	      useHardwareCompression: false,
-	      generateMipmaps: true,
-	      type: _three2.default.UnsignedByteType,
-	      format: _three2.default.RGBFormat,
-	      ignoreStream: true,
-	      layout: BaseTextureAsset.LAYOUT.NORMAL
-	    });
-
-	    _this.loadedBytes = 0;
-	    return _this;
-	  }
-
-	  _createClass(BaseTextureAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
-
-	      this.loadComponents = true;
-
-	      this.trigger('loadHierarchy', this);
-	      this.trigger('loadHierarchyAndDependencies', this);
-	    }
-	  }, {
-	    key: 'unload',
-	    value: function unload(options) {
-	      // abort any xhr request associated with this
-	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
-
-	      if (this.runtimeData) {
-	        this.box3DRuntime.trigger('textureUnloaded', this.id);
-
-	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading texture, ' + this.getName());
-
-	        this.runtimeData.dispose();
-	      }
-
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
-	      this.loadedBytes = 0;
+	      this.runtimeData.dispose();
 	    }
 
-	    /** @inheritdoc */
+	    Box3DAsset.prototype.unload.call(this, options);
+	    this.loadedBytes = 0;
+	  };
 
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	  /** @inheritdoc */
+	  BaseTextureAsset.prototype._applyPropertiesLoaded = function (changes, reason) {
+	    Box3DAsset.prototype._applyPropertiesLoaded.call(this, changes, reason);
 
-	      var texture = this.runtimeData instanceof _three2.default.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
+	    var texture = this.runtimeData instanceof THREE.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
 
-	      if (changes.hasOwnProperty('uMapping')) {
-	        texture.wrapS = this.registry.textureUVMappingsMap[this.getProperty('uMapping')];
+	    if (changes.hasOwnProperty('uMapping')) {
+	      texture.wrapS = this.registry.textureUVMappingsMap[this.getProperty('uMapping')];
+	    }
+
+	    if (changes.hasOwnProperty('vMapping')) {
+	      texture.wrapT = this.registry.textureUVMappingsMap[this.getProperty('vMapping')];
+	    }
+
+	    if (changes.hasOwnProperty('anisotropy')) {
+	      texture.anisotropy = this.getProperty('anisotropy');
+	    }
+
+	    if (changes.hasOwnProperty('premultiplyAlpha')) {
+	      texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
+	    }
+
+	    texture.flipY = false; // TODO: is this necessary here?
+
+	    if (changes.hasOwnProperty('generateMipmaps')) {
+	      var generateMipmaps = this.getProperty('generateMipmaps');
+	      texture.generateMipmaps = generateMipmaps && this.isPowerOfTwo() && !this.isCompressed();
+	    }
+
+	    if (changes.hasOwnProperty('premultiplyAlpha')) {
+	      texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
+	    }
+
+	    if (changes.hasOwnProperty('filtering')) {
+	      var filtering = this.getProperty('filtering');
+	      if (!this.registry.textureFiltersMap[filtering]) {
+	        filtering = 'Linear';
 	      }
 
-	      if (changes.hasOwnProperty('vMapping')) {
-	        texture.wrapT = this.registry.textureUVMappingsMap[this.getProperty('vMapping')];
-	      }
-
-	      if (changes.hasOwnProperty('anisotropy')) {
-	        texture.anisotropy = this.getProperty('anisotropy');
-	      }
-
-	      if (changes.hasOwnProperty('premultiplyAlpha')) {
-	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
-	      }
-
-	      texture.flipY = false; // TODO: is this necessary here?
-
-	      if (changes.hasOwnProperty('generateMipmaps')) {
-	        var generateMipmaps = this.getProperty('generateMipmaps');
-	        texture.generateMipmaps = generateMipmaps && this.isPowerOfTwo() && !this.isCompressed();
-	      }
-
-	      if (changes.hasOwnProperty('premultiplyAlpha')) {
-	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
-	      }
-
-	      if (changes.hasOwnProperty('filtering')) {
-	        var filtering = this.getProperty('filtering');
-	        if (!this.registry.textureFiltersMap[filtering]) {
-	          filtering = 'Linear';
+	      if (this.isHdr()) {
+	        var extensions = this.box3DRuntime.getThreeRenderer().extensions;
+	        if (!extensions.get('OES_texture_float_linear') && !extensions.get('OES_texture_half_float_linear')) {
+	          filtering = 'Nearest';
 	        }
-
-	        if (this.isHdr()) {
-	          var extensions = this.box3DRuntime.getThreeRenderer().extensions;
-	          if (!extensions.get('OES_texture_float_linear') && !extensions.get('OES_texture_half_float_linear')) {
-	            filtering = 'Nearest';
-	          }
-	        }
-
-	        texture.minFilter = this.registry.textureFiltersMap[filtering].minFilter;
-	        texture.magFilter = this.registry.textureFiltersMap[filtering].magFilter;
 	      }
 
-	      if (this.isHdr() && this.packingFormat) {
-	        this._unpackToHdr();
-	      }
-
-	      this.box3DRuntime.needsRender = true;
-	    }
-	  }, {
-	    key: '_applyPropertiesUnloaded',
-	    value: function _applyPropertiesUnloaded(changes) {
-	      if (changes.useHardwareCompression !== undefined) {
-	        this.defaultResource = undefined;
-	        this.defaultResources = undefined;
-	      }
-	      this.box3DRuntime.trigger('textureChanged', this.id, changes);
-	    }
-	  }, {
-	    key: '_unpackToHdr',
-	    value: function _unpackToHdr() {
-	      _log2.default.warn('Must implement _unpackToHdr for this texture type.');
-	      return;
+	      texture.minFilter = this.registry.textureFiltersMap[filtering].minFilter;
+	      texture.magFilter = this.registry.textureFiltersMap[filtering].magFilter;
 	    }
 
-	    /**
-	     * Returns the byte size of the data that has already been loaded by this asset and its
-	     * hierarchy.
-	     * @public
-	     * @method getDataSizeLoaded
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @return {Integer} The number of bytes of data.
-	     */
+	    if (this.isHdr() && this.packingFormat) {
+	      this._unpackToHdr();
+	    }
 
-	  }, {
-	    key: 'getDataSizeLoaded',
-	    value: function getDataSizeLoaded(dependencyType) {
-	      if (!dependencyType || dependencyType === 'textures') {
-	        return this.loadedBytes;
-	      } else {
+	    this.box3DRuntime.needsRender = true;
+	  };
+
+	  BaseTextureAsset.prototype._applyPropertiesUnloaded = function (changes) {
+	    if (changes.useHardwareCompression !== undefined) {
+	      this.defaultResource = undefined;
+	      this.defaultResources = undefined;
+	    }
+	    this.box3DRuntime.trigger('textureChanged', this.id, changes);
+	  };
+
+	  BaseTextureAsset.prototype._unpackToHdr = function () {
+	    log.warn('Must implement _unpackToHdr for this texture type.');
+	    return;
+	  };
+
+	  /**
+	   * Returns the byte size of the data that has already been loaded by this asset and its
+	   * hierarchy.
+	   * @public
+	   * @method getDataSizeLoaded
+	   * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	   * @return {Integer} The number of bytes of data.
+	   */
+	  BaseTextureAsset.prototype.getDataSizeLoaded = function (dependencyType) {
+	    if (!dependencyType || dependencyType === 'textures') {
+	      return this.loadedBytes;
+	    } else {
+	      return 0;
+	    }
+	  };
+
+	  /**
+	   * Returns the download size of this texture. Specify filters to query the
+	   * desired texture. If no filters are specified, the default texture for the
+	   * current device will be queried.
+	   * @method getDataSizeDownload
+	   * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	   * @param {Object} params Specify parameters to narrow down the type of asset to
+	   * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	   * @return {Integer} The number of bytes of data.
+	   */
+	  BaseTextureAsset.prototype.getDataSizeDownload = function (dependencyType) {
+	    if (!dependencyType || dependencyType === 'textures') {
+	      return this.get('bufferSize') || 1024;
+	    } else {
+	      return 0;
+	    }
+	  };
+
+	  /**
+	   * Returns the total amount of GPU memory occupied by this texture. Specify
+	   * filters to query the desired texture. If no filters are specified, the
+	   * default texture for the current device will be queried.
+	   * @method getDataSizeTextureInMemory
+	   * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	   * @param {Object} overrideParams Specify parameters to narrow down the type of asset to
+	   * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	   * @return {Integer} The number of bytes of data.
+	   */
+	  BaseTextureAsset.prototype.getDataSizeInMemory = function (dependencyType, overrideParams) {
+	    var width;
+	    var height;
+	    var compression;
+	    var numChannels;
+	    var channelSize;
+	    var dataType;
+
+	    if (dependencyType && dependencyType !== 'textures') {
+	      return 0;
+	    }
+
+	    width = this.getWidth();
+	    height = this.getHeight();
+	    overrideParams = overrideParams || {};
+	    compression = overrideParams.compression || this.getCompressionFormat();
+
+	    if (compression !== 'none') {
+	      return this.getDataSizeDownload();
+	    }
+
+	    numChannels = this.getNumChannels(overrideParams.format);
+	    dataType = overrideParams.type || this.getDataType();
+
+	    switch (dataType) {
+	      case THREE.FloatType:
+	      case THREE.UnsignedIntType:
+	      case THREE.IntType:
+	        channelSize = 4;
+	        break;
+
+	      case THREE.ShortType:
+	      case THREE.UnsignedShortType:
+	        channelSize = 2;
+	        break;
+
+	      case THREE.UnsignedByteType:
+	      case THREE.ByteType:
+	        channelSize = 1;
+	        break;
+
+	      // The following types dictate the bpp directly.
+	      case THREE.UnsignedShort4444Type:
+	      case THREE.UnsignedShort5551Type:
+	      case THREE.UnsignedShort565Type:
+	        return width * height * 2;
+	    }
+	    return width * height * channelSize * numChannels;
+	  };
+
+	  /** Returns the maximum texture size supported by the device.
+	   * @return {Integer} The maximum texture size.
+	   */
+	  BaseTextureAsset.prototype.getMaxTextureSize = function () {
+	    return VAPI.isMobile() ? 1024 : this.box3DRuntime.getGPUCapability('MAX_TEXTURE_SIZE');
+	  };
+
+	  /**
+	   * Returns the pixel format of the texture. e.g. THREE.RGBAFormat, THREE.LuminanceFormat, etc.
+	   * @return {String} The texture pixel format.
+	   */
+	  BaseTextureAsset.prototype.getFormat = function () {
+	    var format = this.getProperty('format');
+	    return format;
+	  };
+
+	  /**
+	   * Returns the data type of the texture. e.g. THREE.UnsignedByteType, THREE.FloatType, etc.
+	   * @return {Number} The texture pixel type.
+	   */
+	  BaseTextureAsset.prototype.getDataType = function () {
+	    var dataType = this.getProperty('type');
+	    return dataType;
+	  };
+
+	  /**
+	   * Return the number of color or luminance channels in the texture. An optional override lets
+	   * you query the value for a different pixel format.
+	   * @method getNumChannels
+	   * @public
+	   * @param {Number} overrideFormat Query the number of channels for a different pixel format
+	   * by specifying a format here.
+	   * @return {Number} Returns the number of color or luminance channels in the texture.
+	   */
+	  BaseTextureAsset.prototype.getNumChannels = function (overrideFormat) {
+	    var format = overrideFormat || this.getFormat();
+	    switch (format) {
+	      case THREE.AlphaFormat:
+	      case THREE.LuminanceFormat:
+	        return 1;
+	      case THREE.LuminanceAlphaFormat:
+	        return 2;
+	      case THREE.RGBFormat:
+	        return 3;
+	      case THREE.RGBAFormat:
+	        return 4;
+	      default:
 	        return 0;
+	    }
+	  };
+
+	  /**
+	   * @public
+	   * @return {Number} Returns the total number of mip levels used by this texture.
+	   */
+	  BaseTextureAsset.prototype.getNumMips = function () {
+	    var width = this.getWidth();
+	    var height = this.getHeight();
+	    var max = Math.max(width, height);
+	    max = Math.max(max, 1);
+	    return Math.floor(Math.log2(max));
+	  };
+
+	  /**
+	   * @public
+	   * @return {Boolean} True iff the texture contains high dynamic range, floating point data
+	   */
+	  BaseTextureAsset.prototype.isHdr = function () {
+	    return !!this.getProperty('isHdr');
+	  };
+
+	  /**
+	   * @public
+	   * @return {Boolean} True iff the texture is using a hardware compression format.
+	   */
+	  BaseTextureAsset.prototype.isCompressed = function () {
+	    if (this.runtimeData) {
+	      return this.runtimeData instanceof THREE.CompressedTexture;
+	    } else {
+	      return this.getProperty('useHardwareCompression');
+	    }
+	  };
+
+	  /**
+	   * @public
+	   * @return {Boolean} True iff both dimensions of the texture are a power of two.
+	   */
+	  BaseTextureAsset.prototype.isPowerOfTwo = function () {
+	    var width = this.getWidth();
+	    var height = this.getHeight();
+	    return THREE.Math.isPowerOfTwo(width) && THREE.Math.isPowerOfTwo(height);
+	  };
+
+	  /**
+	  * Returns the preferred texture compression format for the device.
+	  * @return {String} 'atc', 'dxt', 'pvrtc' or 'none'
+	  */
+	  BaseTextureAsset.prototype.getCompressionFormat = function () {
+	    var compression = 'none';
+
+	    // If a compressed format is preferred, get one based on the device caps.
+	    if (this.getProperty('useHardwareCompression')) {
+	      if (this.box3DRuntime.supportsCompressedTextureS3TC()) {
+	        compression = 'dxt';
+	      } else if (this.box3DRuntime.supportsCompressedTexturePVRTC()) {
+	        compression = 'pvrtc';
+	      } else if (this.box3DRuntime.supportsCompressedTextureATC()) {
+	        compression = 'atc';
 	      }
 	    }
+	    return compression;
+	  };
 
-	    /**
-	     * Returns the download size of this texture. Specify filters to query the
-	     * desired texture. If no filters are specified, the default texture for the
-	     * current device will be queried.
-	     * @method getDataSizeDownload
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} params Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeDownload',
-	    value: function getDataSizeDownload(dependencyType) {
-	      if (!dependencyType || dependencyType === 'textures') {
-	        return this.get('bufferSize') || 1024;
-	      } else {
-	        return 0;
+	  /**
+	   * Returns the width of the texture.
+	   * @return {Integer} The texture width.
+	   */
+	  BaseTextureAsset.prototype.getWidth = function () {
+	    var width = this.getProperty('width');
+	    if (_.isUndefined(width)) {
+	      width = this.getProperty('originalWidth');
+	      if (_.isUndefined(width) && this.runtimeData) {
+	        width = this.runtimeData.width;
+	      }
+	      if (width > this.getMaxTextureSize()) {
+	        width = this.getMaxTextureSize();
 	      }
 	    }
+	    return width || 1;
+	  };
 
-	    /**
-	     * Returns the total amount of GPU memory occupied by this texture. Specify
-	     * filters to query the desired texture. If no filters are specified, the
-	     * default texture for the current device will be queried.
-	     * @method getDataSizeTextureInMemory
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} overrideParams Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeInMemory',
-	    value: function getDataSizeInMemory(dependencyType, overrideParams) {
-	      var width;
-	      var height;
-	      var compression;
-	      var numChannels;
-	      var channelSize;
-	      var dataType;
-
-	      if (dependencyType && dependencyType !== 'textures') {
-	        return 0;
+	  /**
+	   * Returns the height of the texture.
+	   * @return {Integer} The texture height.
+	   */
+	  BaseTextureAsset.prototype.getHeight = function () {
+	    var height = this.getProperty('height');
+	    if (_.isUndefined(height)) {
+	      height = this.getProperty('originalHeight');
+	      if (_.isUndefined(height) && this.runtimeData) {
+	        height = this.runtimeData.height;
 	      }
-
-	      width = this.getWidth();
-	      height = this.getHeight();
-	      overrideParams = overrideParams || {};
-	      compression = overrideParams.compression || this.getCompressionFormat();
-
-	      if (compression !== 'none') {
-	        return this.getDataSizeDownload();
-	      }
-
-	      numChannels = this.getNumChannels(overrideParams.format);
-	      dataType = overrideParams.type || this.getDataType();
-
-	      switch (dataType) {
-	        case _three2.default.FloatType:
-	        case _three2.default.UnsignedIntType:
-	        case _three2.default.IntType:
-	          channelSize = 4;
-	          break;
-
-	        case _three2.default.ShortType:
-	        case _three2.default.UnsignedShortType:
-	          channelSize = 2;
-	          break;
-
-	        case _three2.default.UnsignedByteType:
-	        case _three2.default.ByteType:
-	          channelSize = 1;
-	          break;
-
-	        // The following types dictate the bpp directly.
-	        case _three2.default.UnsignedShort4444Type:
-	        case _three2.default.UnsignedShort5551Type:
-	        case _three2.default.UnsignedShort565Type:
-	          return width * height * 2;
-	      }
-	      return width * height * channelSize * numChannels;
-	    }
-
-	    /** Returns the maximum texture size supported by the device.
-	     * @return {Integer} The maximum texture size.
-	     */
-
-	  }, {
-	    key: 'getMaxTextureSize',
-	    value: function getMaxTextureSize() {
-	      return VAPI.isMobile() ? 1024 : this.box3DRuntime.getGPUCapability('MAX_TEXTURE_SIZE');
-	    }
-
-	    /**
-	     * Returns the pixel format of the texture. e.g. THREE.RGBAFormat, THREE.LuminanceFormat, etc.
-	     * @return {String} The texture pixel format.
-	     */
-
-	  }, {
-	    key: 'getFormat',
-	    value: function getFormat() {
-	      var format = this.getProperty('format');
-	      return format;
-	    }
-
-	    /**
-	     * Returns the data type of the texture. e.g. THREE.UnsignedByteType, THREE.FloatType, etc.
-	     * @return {Number} The texture pixel type.
-	     */
-
-	  }, {
-	    key: 'getDataType',
-	    value: function getDataType() {
-	      var dataType = this.getProperty('type');
-	      return dataType;
-	    }
-
-	    /**
-	     * Return the number of color or luminance channels in the texture. An optional override lets
-	     * you query the value for a different pixel format.
-	     * @method getNumChannels
-	     * @public
-	     * @param {Number} overrideFormat Query the number of channels for a different pixel format
-	     * by specifying a format here.
-	     * @return {Number} Returns the number of color or luminance channels in the texture.
-	     */
-
-	  }, {
-	    key: 'getNumChannels',
-	    value: function getNumChannels(overrideFormat) {
-	      var format = overrideFormat || this.getFormat();
-	      switch (format) {
-	        case _three2.default.AlphaFormat:
-	        case _three2.default.LuminanceFormat:
-	          return 1;
-	        case _three2.default.LuminanceAlphaFormat:
-	          return 2;
-	        case _three2.default.RGBFormat:
-	          return 3;
-	        case _three2.default.RGBAFormat:
-	          return 4;
-	        default:
-	          return 0;
+	      if (height > this.getMaxTextureSize()) {
+	        height = this.getMaxTextureSize();
 	      }
 	    }
+	    return height || 1;
+	  };
 
-	    /**
-	     * @public
-	     * @return {Number} Returns the total number of mip levels used by this texture.
-	     */
+	  BaseTextureAsset.prototype.createCompressedTextureData = function (buffer) {
+	    var texture = new THREE.CompressedTexture(),
+	        dds = this._parseDDS(buffer, true),
+	        iFace,
+	        iMip,
+	        nFaces;
 
-	  }, {
-	    key: 'getNumMips',
-	    value: function getNumMips() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-	      var max = Math.max(width, height);
-	      max = Math.max(max, 1);
-	      return Math.floor(Math.log2(max));
-	    }
+	    texture.format = dds.format;
+	    texture.generateMipmaps = false;
+	    texture.needsUpdate = true;
 
-	    /**
-	     * @public
-	     * @return {Boolean} True iff the texture contains high dynamic range, floating point data
-	     */
+	    if (dds.isCubemap) {
+	      texture.flipY = false;
+	      texture.image = [];
 
-	  }, {
-	    key: 'isHdr',
-	    value: function isHdr() {
-	      return !!this.getProperty('isHdr');
-	    }
+	      nFaces = dds.mipmaps.length / dds.mipmapCount;
 
-	    /**
-	     * @public
-	     * @return {Boolean} True iff the texture is using a hardware compression format.
-	     */
+	      for (iFace = 0; iFace < nFaces; iFace += 1) {
+	        texture.image[iFace] = {
+	          mipmaps: []
+	        };
 
-	  }, {
-	    key: 'isCompressed',
-	    value: function isCompressed() {
-	      if (this.runtimeData) {
-	        return this.runtimeData instanceof _three2.default.CompressedTexture;
-	      } else {
-	        return this.getProperty('useHardwareCompression');
-	      }
-	    }
+	        for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
+	          texture.image[iFace].mipmaps.push(dds.mipmaps[iFace * dds.mipmapCount + iMip]);
 
-	    /**
-	     * @public
-	     * @return {Boolean} True iff both dimensions of the texture are a power of two.
-	     */
-
-	  }, {
-	    key: 'isPowerOfTwo',
-	    value: function isPowerOfTwo() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-	      return _three2.default.Math.isPowerOfTwo(width) && _three2.default.Math.isPowerOfTwo(height);
-	    }
-
-	    /**
-	    * Returns the preferred texture compression format for the device.
-	    * @return {String} 'atc', 'dxt', 'pvrtc' or 'none'
-	    */
-
-	  }, {
-	    key: 'getCompressionFormat',
-	    value: function getCompressionFormat() {
-	      var compression = 'none';
-
-	      // If a compressed format is preferred, get one based on the device caps.
-	      if (this.getProperty('useHardwareCompression')) {
-	        if (this.box3DRuntime.supportsCompressedTextureS3TC()) {
-	          compression = 'dxt';
-	        } else if (this.box3DRuntime.supportsCompressedTexturePVRTC()) {
-	          compression = 'pvrtc';
-	        } else if (this.box3DRuntime.supportsCompressedTextureATC()) {
-	          compression = 'atc';
+	          texture.image[iFace].format = dds.format;
+	          texture.image[iFace].width = dds.width;
+	          texture.image[iFace].height = dds.height;
 	        }
 	      }
-	      return compression;
+	    } else {
+	      texture.mipmaps = dds.mipmaps;
+	      texture.image.width = dds.width;
+	      texture.image.height = dds.height;
 	    }
-	  }, {
-	    key: 'getWidth',
+	    return texture;
+	  };
 
-	    /**
-	     * Returns the width of the texture.
-	     * @return {Integer} The texture width.
-	     */
-	    value: function getWidth() {
-	      var width = this.getProperty('width');
-	      if (_lodash2.default.isUndefined(width)) {
-	        width = this.getProperty('originalWidth');
-	        if (_lodash2.default.isUndefined(width) && this.runtimeData) {
-	          width = this.runtimeData.width;
-	        }
-	        if (width > this.getMaxTextureSize()) {
-	          width = this.getMaxTextureSize();
-	        }
-	      }
-	      return width || 1;
+	  BaseTextureAsset.prototype._parseDDS = function (buffer, loadMipmaps) {
+	    // Adapted from @toji's DDS utils
+	    //  https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
+
+	    // All values and structures referenced from:
+	    // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
+
+	    function fourCCToInt32(value) {
+	      return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
 	    }
-	  }, {
-	    key: 'getHeight',
 
-	    /**
-	     * Returns the height of the texture.
-	     * @return {Integer} The texture height.
-	     */
-	    value: function getHeight() {
-	      var height = this.getProperty('height');
-	      if (_lodash2.default.isUndefined(height)) {
-	        height = this.getProperty('originalHeight');
-	        if (_lodash2.default.isUndefined(height) && this.runtimeData) {
-	          height = this.runtimeData.height;
-	        }
-	        if (height > this.getMaxTextureSize()) {
-	          height = this.getMaxTextureSize();
-	        }
-	      }
-	      return height || 1;
+	    function int32ToFourCC(value) {
+	      return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
 	    }
-	  }, {
-	    key: 'createCompressedTextureData',
-	    value: function createCompressedTextureData(buffer) {
-	      var texture = new _three2.default.CompressedTexture(),
-	          dds = this._parseDDS(buffer, true),
-	          iFace,
-	          iMip,
-	          nFaces;
 
-	      texture.format = dds.format;
-	      texture.generateMipmaps = false;
-	      texture.needsUpdate = true;
+	    function loadARGBMip(buffer, dataOffset, width, height) {
+	      var dataLength = width * height * 4,
+	          srcBuffer = new Uint8Array(buffer, dataOffset, dataLength),
+	          byteArray = new Uint8Array(dataLength),
+	          dst = 0,
+	          src = 0,
+	          x,
+	          y,
+	          r,
+	          g,
+	          b,
+	          a;
 
-	      if (dds.isCubemap) {
-	        texture.flipY = false;
-	        texture.image = [];
-
-	        nFaces = dds.mipmaps.length / dds.mipmapCount;
-
-	        for (iFace = 0; iFace < nFaces; iFace += 1) {
-	          texture.image[iFace] = {
-	            mipmaps: []
-	          };
-
-	          for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
-	            texture.image[iFace].mipmaps.push(dds.mipmaps[iFace * dds.mipmapCount + iMip]);
-
-	            texture.image[iFace].format = dds.format;
-	            texture.image[iFace].width = dds.width;
-	            texture.image[iFace].height = dds.height;
-	          }
+	      for (y = 0; y < height; y += 1) {
+	        for (x = 0; x < width; x += 1) {
+	          b = srcBuffer[src];
+	          g = srcBuffer[src + 1];
+	          r = srcBuffer[src + 2];
+	          a = srcBuffer[src + 3];
+	          byteArray[dst] = r; // r
+	          byteArray[dst + 1] = g; // g
+	          byteArray[dst + 2] = b; // b
+	          byteArray[dst + 3] = a; // a
+	          src += 4;
+	          dst += 4;
 	        }
-	      } else {
-	        texture.mipmaps = dds.mipmaps;
-	        texture.image.width = dds.width;
-	        texture.image.height = dds.height;
 	      }
-	      return texture;
+
+	      return byteArray;
 	    }
-	  }, {
-	    key: '_parseDDS',
-	    value: function _parseDDS(buffer, loadMipmaps) {
-	      // Adapted from @toji's DDS utils
-	      //  https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
 
-	      // All values and structures referenced from:
-	      // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
+	    var DDS_MAGIC = 0x20534444,
 
-	      function fourCCToInt32(value) {
-	        return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
-	      }
 
-	      function int32ToFourCC(value) {
-	        return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
-	      }
+	    //DDSD_CAPS = 0x1,
+	    //DDSD_HEIGHT = 0x2,
+	    //DDSD_WIDTH = 0x4,
+	    //DDSD_PITCH = 0x8,
+	    //DDSD_PIXELFORMAT = 0x1000,
+	    DDSD_MIPMAPCOUNT = 0x20000,
 
-	      function loadARGBMip(buffer, dataOffset, width, height) {
-	        var dataLength = width * height * 4,
-	            srcBuffer = new Uint8Array(buffer, dataOffset, dataLength),
-	            byteArray = new Uint8Array(dataLength),
-	            dst = 0,
-	            src = 0,
-	            x,
-	            y,
-	            r,
-	            g,
-	            b,
-	            a;
+	    //DDSD_LINEARSIZE = 0x80000,
+	    //DDSD_DEPTH = 0x800000,
 
-	        for (y = 0; y < height; y += 1) {
-	          for (x = 0; x < width; x += 1) {
-	            b = srcBuffer[src];
-	            g = srcBuffer[src + 1];
-	            r = srcBuffer[src + 2];
-	            a = srcBuffer[src + 3];
-	            byteArray[dst] = r; // r
-	            byteArray[dst + 1] = g; // g
-	            byteArray[dst + 2] = b; // b
-	            byteArray[dst + 3] = a; // a
-	            src += 4;
-	            dst += 4;
-	          }
+	    //DDSCAPS_COMPLEX = 0x8,
+	    //DDSCAPS_MIPMAP = 0x400000,
+	    //DDSCAPS_TEXTURE = 0x1000,
+
+	    DDSCAPS2_CUBEMAP = 0x200,
+
+	    //DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
+	    //DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
+	    //DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
+	    //DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
+	    //DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
+	    //DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
+	    //DDSCAPS2_VOLUME = 0x200000,
+
+	    //DDPF_ALPHAPIXELS = 0x1,
+	    //DDPF_ALPHA = 0x2,
+	    DDPF_FOURCC = 0x4,
+
+	    //DDPF_RGB = 0x40,
+	    //DDPF_YUV = 0x200,
+	    //DDPF_LUMINANCE = 0x20000,
+
+	    FOURCC_DXT1 = fourCCToInt32('DXT1'),
+	        FOURCC_DXT3 = fourCCToInt32('DXT3'),
+	        FOURCC_DXT5 = fourCCToInt32('DXT5'),
+	        headerLengthInt = 31,
+	        // The header length in 32 bit ints
+
+	    // Offsets into the header array
+	    off_magic = 0,
+	        off_size = 1,
+	        off_flags = 2,
+	        off_height = 3,
+	        off_width = 4,
+	        off_mipmapCount = 7,
+	        off_pfFlags = 20,
+	        off_pfFourCC = 21,
+	        off_RGBBitCount = 22,
+	        off_RBitMask = 23,
+	        off_GBitMask = 24,
+	        off_BBitMask = 25,
+	        off_ABitMask = 26,
+
+	    //off_caps = 27,
+	    off_caps2 = 28,
+
+	    //off_caps3 = 29,
+	    //off_caps4 = 30,
+
+	    header,
+	        blockBytes,
+	        fourCC,
+	        isRGBAUncompressed,
+	        dataOffset,
+	        width,
+	        height,
+	        iFace,
+	        nFaces,
+	        iMip,
+	        byteArray,
+	        dataLength,
+	        dds = {
+	      mipmaps: [],
+	      width: 0,
+	      height: 0,
+	      format: null,
+	      mipmapCount: 1
+	    };
+
+	    header = new Int32Array(buffer, 0, headerLengthInt);
+
+	    // Parse header
+
+	    if (header[off_magic] !== DDS_MAGIC) {
+	      log.error('THREE.DDSLoader.parse: Invalid magic number in DDS ' + 'header.');
+	      return dds;
+	    }
+
+	    if (!header[off_pfFlags] & DDPF_FOURCC) {
+	      log.error('THREE.DDSLoader.parse: Unsupported format, must ' + 'contain a FourCC code.');
+	      return dds;
+	    }
+
+	    fourCC = header[off_pfFourCC];
+	    isRGBAUncompressed = false;
+
+	    switch (fourCC) {
+	      case FOURCC_DXT1:
+	        blockBytes = 8;
+	        dds.format = THREE.RGB_S3TC_DXT1_Format;
+	        break;
+
+	      case FOURCC_DXT3:
+	        blockBytes = 16;
+	        dds.format = THREE.RGBA_S3TC_DXT3_Format;
+	        break;
+
+	      case FOURCC_DXT5:
+	        blockBytes = 16;
+	        dds.format = THREE.RGBA_S3TC_DXT5_Format;
+	        break;
+
+	      default:
+	        if (header[off_RGBBitCount] === 32 && header[off_RBitMask] & 0xff0000 && header[off_GBitMask] & 0xff00 && header[off_BBitMask] & 0xff && header[off_ABitMask] & 0xff000000) {
+	          isRGBAUncompressed = true;
+	          blockBytes = 64;
+	          dds.format = THREE.RGBAFormat;
+	        } else {
+	          log.error('THREE.DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
+	          return dds;
+	        }
+	    }
+
+	    dds.mipmapCount = 1;
+
+	    if (header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
+	      dds.mipmapCount = Math.max(1, header[off_mipmapCount]);
+	    }
+
+	    // TODO: Verify that all faces of the cubemap are present with
+	    // DDSCAPS2_CUBEMAP_POSITIVEX, etc.
+
+	    dds.isCubemap = header[off_caps2] & DDSCAPS2_CUBEMAP ? true : false;
+
+	    dds.width = header[off_width];
+	    dds.height = header[off_height];
+
+	    dataOffset = header[off_size] + 4;
+
+	    // Extract mipmaps buffers
+
+	    width = dds.width;
+	    height = dds.height;
+
+	    nFaces = dds.isCubemap ? 6 : 1;
+
+	    for (iFace = 0; iFace < nFaces; iFace += 1) {
+	      for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
+	        if (isRGBAUncompressed) {
+	          byteArray = loadARGBMip(buffer, dataOffset, width, height);
+	          dataLength = byteArray.length;
+	        } else {
+	          dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
+	          byteArray = new Uint8Array(buffer, dataOffset, dataLength);
 	        }
 
-	        return byteArray;
+	        dds.mipmaps.push({
+	          data: byteArray,
+	          width: width,
+	          height: height
+	        });
+
+	        dataOffset += dataLength;
+
+	        width = Math.max(width * 0.5, 1);
+	        height = Math.max(height * 0.5, 1);
 	      }
-
-	      var DDS_MAGIC = 0x20534444,
-
-	      //DDSD_CAPS = 0x1,
-	      //DDSD_HEIGHT = 0x2,
-	      //DDSD_WIDTH = 0x4,
-	      //DDSD_PITCH = 0x8,
-	      //DDSD_PIXELFORMAT = 0x1000,
-	      DDSD_MIPMAPCOUNT = 0x20000,
-
-	      //DDSD_LINEARSIZE = 0x80000,
-	      //DDSD_DEPTH = 0x800000,
-
-	      //DDSCAPS_COMPLEX = 0x8,
-	      //DDSCAPS_MIPMAP = 0x400000,
-	      //DDSCAPS_TEXTURE = 0x1000,
-
-	      DDSCAPS2_CUBEMAP = 0x200,
-
-	      //DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
-	      //DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
-	      //DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
-	      //DDSCAPS2_VOLUME = 0x200000,
-
-	      //DDPF_ALPHAPIXELS = 0x1,
-	      //DDPF_ALPHA = 0x2,
-	      DDPF_FOURCC = 0x4,
-
-	      //DDPF_RGB = 0x40,
-	      //DDPF_YUV = 0x200,
-	      //DDPF_LUMINANCE = 0x20000,
-
-	      FOURCC_DXT1 = fourCCToInt32('DXT1'),
-	          FOURCC_DXT3 = fourCCToInt32('DXT3'),
-	          FOURCC_DXT5 = fourCCToInt32('DXT5'),
-	          headerLengthInt = 31,
-	          // The header length in 32 bit ints
-
-	      // Offsets into the header array
-	      off_magic = 0,
-	          off_size = 1,
-	          off_flags = 2,
-	          off_height = 3,
-	          off_width = 4,
-	          off_mipmapCount = 7,
-	          off_pfFlags = 20,
-	          off_pfFourCC = 21,
-	          off_RGBBitCount = 22,
-	          off_RBitMask = 23,
-	          off_GBitMask = 24,
-	          off_BBitMask = 25,
-	          off_ABitMask = 26,
-
-	      //off_caps = 27,
-	      off_caps2 = 28,
-
-	      //off_caps3 = 29,
-	      //off_caps4 = 30,
-
-	      header,
-	          blockBytes,
-	          fourCC,
-	          isRGBAUncompressed,
-	          dataOffset,
-	          width,
-	          height,
-	          iFace,
-	          nFaces,
-	          iMip,
-	          byteArray,
-	          dataLength,
-	          dds = {
-	        mipmaps: [],
-	        width: 0,
-	        height: 0,
-	        format: null,
-	        mipmapCount: 1
-	      };
-
-	      header = new Int32Array(buffer, 0, headerLengthInt);
-
-	      // Parse header
-
-	      if (header[off_magic] !== DDS_MAGIC) {
-	        _log2.default.error('THREE.DDSLoader.parse: Invalid magic number in DDS ' + 'header.');
-	        return dds;
-	      }
-
-	      if (!header[off_pfFlags] & DDPF_FOURCC) {
-	        _log2.default.error('THREE.DDSLoader.parse: Unsupported format, must ' + 'contain a FourCC code.');
-	        return dds;
-	      }
-
-	      fourCC = header[off_pfFourCC];
-	      isRGBAUncompressed = false;
-
-	      switch (fourCC) {
-	        case FOURCC_DXT1:
-	          blockBytes = 8;
-	          dds.format = _three2.default.RGB_S3TC_DXT1_Format;
-	          break;
-
-	        case FOURCC_DXT3:
-	          blockBytes = 16;
-	          dds.format = _three2.default.RGBA_S3TC_DXT3_Format;
-	          break;
-
-	        case FOURCC_DXT5:
-	          blockBytes = 16;
-	          dds.format = _three2.default.RGBA_S3TC_DXT5_Format;
-	          break;
-
-	        default:
-	          if (header[off_RGBBitCount] === 32 && header[off_RBitMask] & 0xff0000 && header[off_GBitMask] & 0xff00 && header[off_BBitMask] & 0xff && header[off_ABitMask] & 0xff000000) {
-	            isRGBAUncompressed = true;
-	            blockBytes = 64;
-	            dds.format = _three2.default.RGBAFormat;
-	          } else {
-	            _log2.default.error('THREE.DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
-	            return dds;
-	          }
-	      }
-
-	      dds.mipmapCount = 1;
-
-	      if (header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
-	        dds.mipmapCount = Math.max(1, header[off_mipmapCount]);
-	      }
-
-	      // TODO: Verify that all faces of the cubemap are present with
-	      // DDSCAPS2_CUBEMAP_POSITIVEX, etc.
-
-	      dds.isCubemap = header[off_caps2] & DDSCAPS2_CUBEMAP ? true : false;
-
-	      dds.width = header[off_width];
-	      dds.height = header[off_height];
-
-	      dataOffset = header[off_size] + 4;
-
-	      // Extract mipmaps buffers
 
 	      width = dds.width;
 	      height = dds.height;
-
-	      nFaces = dds.isCubemap ? 6 : 1;
-
-	      for (iFace = 0; iFace < nFaces; iFace += 1) {
-	        for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
-	          if (isRGBAUncompressed) {
-	            byteArray = loadARGBMip(buffer, dataOffset, width, height);
-	            dataLength = byteArray.length;
-	          } else {
-	            dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
-	            byteArray = new Uint8Array(buffer, dataOffset, dataLength);
-	          }
-
-	          dds.mipmaps.push({
-	            data: byteArray,
-	            width: width,
-	            height: height
-	          });
-
-	          dataOffset += dataLength;
-
-	          width = Math.max(width * 0.5, 1);
-	          height = Math.max(height * 0.5, 1);
-	        }
-
-	        width = dds.width;
-	        height = dds.height;
-	      }
-
-	      return dds;
 	    }
-	  }]);
+
+	    return dds;
+	  };
+
+	  window.VAPI.BaseTextureAsset = BaseTextureAsset;
 
 	  return BaseTextureAsset;
-	}(_Box3DAsset3.default);
-
-	BaseTextureAsset.LAYOUT = {
-	  NORMAL: 101,
-	  STEREO_2D_OVER_UNDER: 102,
-	  STEREO_2D_LEFT_RIGHT: 103,
-	  STEREO_2D_RIGHT_LEFT: 104,
-	  STEREO_CUBE_HORIZONTAL: 105
-	};
-
-	window.VAPI.BaseTextureAsset = BaseTextureAsset;
-	// export default BaseTextureAsset;
-	module.exports = BaseTextureAsset;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 7 */
@@ -64866,13 +64778,14 @@
 	* @module VAPI
 	*/
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	// requstAnimationFrame polyfill only used in cases where native version is not
 	// available.
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _log = __webpack_require__(7);
 
@@ -64995,6 +64908,7 @@
 	   * listen to global events.
 	   * @param {Function} [callback] Called when initialization is complete.
 	   */
+
 
 	  _createClass(Engine, [{
 	    key: 'initialize',
@@ -74893,11 +74807,6 @@
 	        "min": 1,
 	        "max": 1000000
 	      },
-	      "leftEye": {
-	        "name": "leftEye",
-	        "type": "b",
-	        "default": true
-	      },
 	      "skyboxTexture": {
 	        "name": "skyboxTexture",
 	        "type": "asset",
@@ -74929,7 +74838,6 @@
 	    },
 	    "attributesOrder": [
 	      "size",
-	      "leftEye",
 	      "skyboxTexture",
 	      "skyboxFogPower",
 	      "skyboxFogScale"
@@ -87899,9 +87807,10 @@
 	        camera: pass.camera
 	      });
 	    }
-	    for (var i in this.renderPasses) {
-	      this.renderPasses[i].pass.clear = false;
-	    }
+	    this.renderPasses.forEach(function (pass) {
+	      pass.pass.clear = false;
+	    });
+
 	    this.renderPasses[0].pass.clear = true;
 	    this.renderPasses[0].pass.clearColor = this.clearColor;
 	    this.renderPasses[0].pass.clearAlpha = this.clearAlpha;
@@ -88939,6 +88848,8 @@
 /* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
 	/* eslint-disable */
 	/**
 	 * @vid skybox_renderer
@@ -88946,7 +88857,6 @@
 	 * @vcategory Rendering
 	 * @vfilter scene
 	 * @vattr Float size { 'default' : 100000, 'min' : 1.0, 'max' : 1000000.0 }
-	 * @vattr Boolean leftEye { 'default' : true }
 	 * @vattr Asset skyboxTexture {
 	 *   'description': '', 'type': 'asset',
 	 *   'filter': {
@@ -88978,36 +88888,8 @@
 	 * }
 	 */
 	/* eslint-enable */
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _three = __webpack_require__(5);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _lodash = __webpack_require__(3);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _Box3DComponent2 = __webpack_require__(93);
-
-	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	var _BaseTextureAsset = __webpack_require__(6);
-
-	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var SkyboxRenderer = function (_Box3DComponent) {
-	  _inherits(SkyboxRenderer, _Box3DComponent);
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(93)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	  'use strict';
 
 	  /**
 	   * A skybox component class.
@@ -89016,294 +88898,270 @@
 	   */
 
 	  function SkyboxRenderer() {
-	    _classCallCheck(this, SkyboxRenderer);
+	    this.skyboxScene = null;
+	    this.skyboxMesh = null;
+	    this.skyboxGeometry = null;
+	    this.skyboxMaterialCube = null;
+	    this.skyboxMaterial2D = null;
+	    this.skyboxUniforms = null;
+	    this.skyboxVShader = null;
+	    this.skyboxPShader = null;
+	    this.renderer = null;
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkyboxRenderer).call(this));
-
-	    _this.skyboxScene = null;
-	    _this.skyboxMesh = null;
-	    _this.skyboxGeometry = null;
-	    _this.skyboxMaterialCube = null;
-	    _this.skyboxMaterial2D = null;
-	    _this.skyboxUniforms = null;
-	    _this.skyboxVShader = null;
-	    _this.skyboxPShader = null;
-	    _this.renderer = null;
-
-	    _this.skyboxTexture = null;
-	    _this.size = 10000.0;
-	    _this.isEditor = false;
-	    return _this;
+	    this.skyboxTexture = null;
+	    this.size = 10000.0;
+	    this.isEditor = false;
 	  }
 
-	  _createClass(SkyboxRenderer, [{
-	    key: 'init',
-	    value: function init() {
+	  SkyboxRenderer.prototype = new Box3DComponent();
 
-	      this.renderer = this.getThreeRenderer();
+	  SkyboxRenderer.prototype.editorInit = function () {
+	    this.isEditor = true;
+	    this.init();
+	    this.getEntity().when('load', this.objectLoaded, this);
+	  };
 
-	      this.createGeometry();
-	      this.createScene();
+	  SkyboxRenderer.prototype.init = function () {
 
-	      this.skyboxRenderPass = new _three2.default.RenderPass(this.skyboxScene);
-	      this.skyboxRenderPass.clear = true;
-	      this.skyboxRenderPass.enabled = false;
+	    this.renderer = this.getThreeRenderer();
 
-	      this.createMaterial();
-	      this.initTexture();
-	      this.createMesh();
+	    this.createGeometry();
+	    this.createScene();
 
-	      this.mainScene = this.getEntity().getParentAsset();
+	    this.skyboxRenderPass = new THREE.RenderPass(this.skyboxScene);
+	    this.skyboxRenderPass.clear = true;
+	    this.skyboxRenderPass.enabled = false;
 
-	      this.on('enable', this.enable, this);
-	      this.on('disable', this.disable, this);
-	      this.getEntity().on('setSkyboxTexture', this.setSkyboxTexture, this);
-	      this.getRuntime().on('rebuildMaterials', this.rebuildMaterials, this);
-	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
-	      this.off('enable', this.enable, this);
-	      this.off('disable', this.disable, this);
-	      this.getRuntime().off('rebuildMaterials', this.rebuildMaterials, this);
-	      this.getEntity().off('setSkyboxTexture', this.setSkyboxTexture, this);
-	      if (this.skyboxScene) {
-	        this.skyboxScene.remove(this.skyboxMesh);
-	      }
-	      this.skyboxGeometry.dispose();
-	      this.skyboxMaterialCube.dispose();
-	      this.skyboxMaterial2D.dispose();
-	      this.skyboxScene = null;
-	      this.skyboxMesh = null;
-	      this.skyboxGeometry = null;
-	      this.skyboxMaterialCube = null;
-	      this.skyboxMaterial2D = null;
-	      this.skyboxUniforms = null;
-	      this.skyboxTexture = null;
-	    }
-	  }, {
-	    key: 'createScene',
-	    value: function createScene() {
-	      this.skyboxScene = new _three2.default.Scene();
-	      this.skyboxScene.matrixAutoUpdate = false;
-	    }
-	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changed) {
-	      if (changed.skyboxTexture !== undefined) {
-	        this.initTexture();
-	        this.skyboxMesh.material = this.currentMaterial;
-	      }
-	      if (changed.color) {
-	        this.skyboxUniforms.color.value = this.color;
-	      }
-	      if (changed.skyboxFogScale !== undefined) {
-	        this.skyboxMaterialCube.uniforms.skyboxFogScale.value = this.skyboxFogScale;
-	        this.skyboxMaterial2D.uniforms.skyboxFogScale.value = this.skyboxFogScale;
-	      }
-	      if (changed.skyboxFogPower !== undefined) {
-	        this.skyboxMaterialCube.uniforms.skyboxFogPower.value = this.skyboxFogPower;
-	        this.skyboxMaterial2D.uniforms.skyboxFogPower.value = this.skyboxFogPower;
-	      }
-	      if (this.skyboxScene && this.mainScene.runtimeData && this.mainScene.runtimeData.fog) {
-	        this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
-	      }
-	      if (changed.size) {
-	        if (this.skyboxMesh) {
-	          this.skyboxScene.remove(this.skyboxMesh);
-	          this.skyboxMesh.geometry = undefined;
-	          this.skyboxGeometry.dispose();
-	          this.createGeometry();
-	          this.createMesh();
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      if (this.skyboxScene) {
-	        this.skyboxScene.add(this.skyboxMesh);
-	        if (this.skyboxTexture && !this.skyboxTexture.isLoaded()) {
-	          this.skyboxTexture.load();
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      if (this.skyboxScene) {
-	        this.skyboxScene.remove(this.skyboxMesh);
-	      }
-	    }
-	  }, {
-	    key: 'objectLoaded',
-	    value: function objectLoaded() {
-	      this.getRenderer().addRenderPass(this.skyboxRenderPass, -1);
-	      if (this.mainScene.runtimeData.fog) {
-	        this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
-	      }
-	      this.rebuildMaterials();
-	    }
-	  }, {
-	    key: 'createGeometry',
-	    value: function createGeometry() {
-	      this.skyboxGeometry = new _three2.default.BoxGeometry(this.size, this.size, this.size, 32, 32, 32);
-	      this.skyboxGeometry.dynamic = false;
-	    }
-	  }, {
-	    key: 'createMesh',
-	    value: function createMesh() {
-	      this.skyboxMesh = new _three2.default.Mesh(this.skyboxGeometry, this.currentMaterial);
-	      this.skyboxMesh.frustumCulled = false;
-	      this.skyboxMesh.castShadow = false;
-	      this.skyboxMesh.receiveShadow = false;
-	      this.skyboxMesh.matrixAutoUpdate = false;
-	      this.skyboxMesh.name = 'Skybox';
-	      if (this.isEnabled()) {
-	        this.skyboxScene.add(this.skyboxMesh);
-	        this.skyboxMesh.updateMatrix();
-	      }
-	    }
-	  }, {
-	    key: 'initTexture',
-	    value: function initTexture() {
-	      var _this2 = this;
+	    this.createMaterial();
+	    this.initTexture();
+	    this.createMesh();
 
-	      if (!this.skyboxTexture) {
-	        this.currentMaterial = this.skyboxMaterialNoTex;
-	        this.currentMaterial.needsUpdate = true;
-	        this.skyboxRenderPass.enabled = true;
-	      } else {
-	        if (this.skyboxTexture.type === 'textureCube' || this.skyboxTexture.type === 'renderTextureCube') {
-	          this.currentMaterial = this.skyboxMaterialCube;
-	        } else {
-	          this.currentMaterial = this.skyboxMaterial2D;
-	        }
+	    this.mainScene = this.getEntity().getParentAsset();
 
-	        if (this.skyboxTexture.getProperty('layout') !== this.currentMaterial.defines.LAYOUT) {
-	          // Based on the layout being used and the eye that this skybox represents, use only the
-	          // appropriate part of the texture.
-	          this.currentMaterial.defines.STEREO_EYE = this.leftEye ? 'STEREO_EYE_LEFT' : 'STEREO_EYE_RIGHT';
-	          this.currentMaterial.defines.LAYOUT = this.skyboxTexture.getProperty('layout');
-	          this.currentMaterial.needsUpdate = true;
-	        }
+	    this.on('enable', this.enable, this);
+	    this.on('disable', this.disable, this);
+	    this.getEntity().on('setSkyboxTexture', this.setSkyboxTexture, this);
+	    this.getRuntime().on('rebuildMaterials', this.rebuildMaterials, this);
+	  };
 
-	        this.skyboxTexture.when('load', function () {
-	          _this2.skyboxUniforms.environmentTexture.value = _this2.skyboxTexture.runtimeData;
-	          _this2.currentMaterial.needsUpdate = true;
-	          _this2.skyboxRenderPass.enabled = true;
-	        }, this);
-	        if (this.isEnabled()) {
-	          this.skyboxTexture.load();
-	        }
-	      }
+	  SkyboxRenderer.prototype.editorShutdown = function () {
+
+	    this.shutdown();
+	  };
+
+	  SkyboxRenderer.prototype.shutdown = function () {
+	    this.off('enable', this.enable, this);
+	    this.off('disable', this.disable, this);
+	    this.getRuntime().off('rebuildMaterials', this.rebuildMaterials, this);
+	    this.getEntity().off('setSkyboxTexture', this.setSkyboxTexture, this);
+	    if (this.skyboxScene) {
+	      this.skyboxScene.remove(this.skyboxMesh);
 	    }
-	  }, {
-	    key: 'setSkyboxTexture',
-	    value: function setSkyboxTexture(textureId) {
-	      this.skyboxTexture = this.getAssetRegistry().Textures.getAssetById(textureId);
+	    this.skyboxGeometry.dispose();
+	    this.skyboxMaterialCube.dispose();
+	    this.skyboxMaterial2D.dispose();
+	    this.skyboxScene = null;
+	    this.skyboxMesh = null;
+	    this.skyboxGeometry = null;
+	    this.skyboxMaterialCube = null;
+	    this.skyboxMaterial2D = null;
+	    this.skyboxUniforms = null;
+	    this.skyboxTexture = null;
+	  };
+
+	  SkyboxRenderer.prototype.createScene = function () {
+	    this.skyboxScene = new THREE.Scene();
+	    this.skyboxScene.matrixAutoUpdate = false;
+	  };
+
+	  SkyboxRenderer.prototype.attributesChanged = function (changed) {
+	    if (changed.skyboxTexture !== undefined) {
 	      this.initTexture();
 	      this.skyboxMesh.material = this.currentMaterial;
 	    }
-	  }, {
-	    key: 'rebuildMaterials',
-	    value: function rebuildMaterials() {
-	      if (this.skyboxMaterialCube) {
-	        this.skyboxMaterialCube.needsUpdate = true;
-	      }
-	      if (this.skyboxMaterial2D) {
-	        this.skyboxMaterial2D.needsUpdate = true;
-	      }
-	      if (this.skyboxMaterialNoTex) {
-	        this.skyboxMaterialNoTex.needsUpdate = true;
+	    if (changed.color) {
+	      this.skyboxUniforms.color.value = this.color;
+	    }
+	    if (changed.skyboxFogScale !== undefined) {
+	      this.skyboxMaterialCube.uniforms.skyboxFogScale.value = this.skyboxFogScale;
+	      this.skyboxMaterial2D.uniforms.skyboxFogScale.value = this.skyboxFogScale;
+	    }
+	    if (changed.skyboxFogPower !== undefined) {
+	      this.skyboxMaterialCube.uniforms.skyboxFogPower.value = this.skyboxFogPower;
+	      this.skyboxMaterial2D.uniforms.skyboxFogPower.value = this.skyboxFogPower;
+	    }
+	    if (this.skyboxScene && this.mainScene.runtimeData && this.mainScene.runtimeData.fog) {
+	      this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
+	    }
+	    if (changed.size) {
+	      if (this.skyboxMesh) {
+	        this.skyboxScene.remove(this.skyboxMesh);
+	        this.skyboxMesh.geometry = undefined;
+	        this.skyboxGeometry.dispose();
+	        this.createGeometry();
+	        this.createMesh();
 	      }
 	    }
-	  }, {
-	    key: 'createMaterial',
-	    value: function createMaterial() {
-	      var _this3 = this;
+	  };
 
-	      this.skyboxUniforms = _three2.default.UniformsUtils.merge([{
-	        fogColor: {
-	          type: 'c',
-	          value: new _three2.default.Color()
-	        }
-	      }, {
-	        skyboxFogPower: {
-	          type: 'f',
-	          value: this.skyboxFogPower
-	        }
-	      }, {
-	        skyboxFogScale: {
-	          type: 'f',
-	          value: this.skyboxFogScale
-	        }
-	      }, {
-	        environmentTexture: {
-	          type: 't',
-	          value: null
-	        }
-	      }]), this.skyboxVShader = ['varying vec3 vCameraVector;', 'void main() {',
-	      // 'vec4 worldPosition = modelMatrix * vec4( position, 1.0 );',
-	      'vCameraVector = (modelMatrix * vec4( position, 1.0 )).xyz;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
+	  SkyboxRenderer.prototype.enable = function () {
+	    if (this.skyboxScene) {
+	      this.skyboxScene.add(this.skyboxMesh);
+	      if (this.skyboxTexture && !this.skyboxTexture.isLoaded()) {
+	        this.skyboxTexture.load();
+	      }
+	    }
+	  };
 
-	      this.skyboxPShader = ['#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', '#if (LAYOUT == LAYOUT_STEREO_2D_OVER_UNDER)', 'sampleUV.y *= 0.5;', '#if (STEREO_EYE == STEREO_EYE_LEFT)', 'sampleUV.y += 0.5;', '#endif', '#endif', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );', '}'].join('\n');
+	  SkyboxRenderer.prototype.disable = function () {
+	    if (this.skyboxScene) {
+	      this.skyboxScene.remove(this.skyboxMesh);
+	    }
+	  };
 
-	      this.skyboxMaterialCube = new _three2.default.ShaderMaterial({
-	        vertexShader: this.skyboxVShader,
-	        fragmentShader: this.skyboxPShader,
-	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
-	        depthTest: false,
-	        depthWrite: false,
-	        defines: {
-	          USE_CUBEMAP: ''
-	        }
-	      });
+	  SkyboxRenderer.prototype.objectLoaded = function () {
+	    this.getRenderer().addRenderPass(this.skyboxRenderPass, -1);
+	    if (this.mainScene.runtimeData.fog) {
+	      this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
+	    }
+	    this.rebuildMaterials();
+	  };
 
-	      this.skyboxMaterial2D = new _three2.default.ShaderMaterial({
-	        vertexShader: this.skyboxVShader,
-	        fragmentShader: this.skyboxPShader,
-	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
-	        depthTest: false,
-	        depthWrite: false,
-	        defines: {
-	          USE_2DMAP: ''
-	        }
-	      });
+	  SkyboxRenderer.prototype.createGeometry = function () {
+	    this.skyboxGeometry = new THREE.BoxGeometry(this.size, this.size, this.size, 32, 32, 32);
+	    this.skyboxGeometry.dynamic = false;
+	  };
 
-	      _lodash2.default.each(_BaseTextureAsset2.default.LAYOUT, function (value, name) {
-	        _this3.skyboxMaterialCube.defines['LAYOUT_' + name] = value;
-	        _this3.skyboxMaterial2D.defines['LAYOUT_' + name] = value;
+	  SkyboxRenderer.prototype.createMesh = function () {
+	    this.skyboxMesh = new THREE.Mesh(this.skyboxGeometry, this.currentMaterial);
+	    this.skyboxMesh.frustumCulled = false;
+	    this.skyboxMesh.castShadow = false;
+	    this.skyboxMesh.receiveShadow = false;
+	    this.skyboxMesh.matrixAutoUpdate = false;
+	    this.skyboxMesh.name = 'Skybox';
+	    if (this.isEnabled()) {
+	      this.skyboxScene.add(this.skyboxMesh);
+	      this.skyboxMesh.updateMatrix();
+	    }
+	  };
+
+	  SkyboxRenderer.prototype.initTexture = function () {
+	    if (!this.skyboxTexture) {
+	      this.currentMaterial = this.skyboxMaterialNoTex;
+	      this.currentMaterial.needsUpdate = true;
+	      this.skyboxRenderPass.enabled = true;
+	    } else {
+	      if (this.skyboxTexture.type === 'textureCube' || this.skyboxTexture.type === 'renderTextureCube') {
+	        this.currentMaterial = this.skyboxMaterialCube;
+	      } else {
+	        this.currentMaterial = this.skyboxMaterial2D;
+	      }
+
+	      this.skyboxTexture.when('load', function () {
+	        this.skyboxUniforms.environmentTexture.value = this.skyboxTexture.runtimeData;
+	        this.currentMaterial.needsUpdate = true;
+	        this.skyboxRenderPass.enabled = true;
 	      }, this);
-
-	      this.skyboxMaterial2D.defines.LAYOUT = 'LAYOUT_NORMAL';
-	      this.skyboxMaterialCube.defines.LAYOUT = 'LAYOUT_NORMAL';
-	      this.skyboxMaterial2D.defines.STEREO_EYE_LEFT = '1';
-	      this.skyboxMaterialCube.defines.STEREO_EYE_RIGHT = '2';
-	      this.skyboxMaterial2D.defines.STEREO_EYE = 'STEREO_EYE_LEFT';
-	      this.skyboxMaterialCube.defines.STEREO_EYE = 'STEREO_EYE_LEFT';
-
-	      this.skyboxMaterialNoTex = new _three2.default.ShaderMaterial({
-	        vertexShader: this.skyboxVShader,
-	        fragmentShader: this.skyboxPShader,
-	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
-	        depthTest: false,
-	        depthWrite: false
-	      });
-
-	      this.skyboxMaterialCube.precision = 'highp';
+	      if (this.isEnabled()) {
+	        this.skyboxTexture.load();
+	      }
 	    }
-	  }]);
+	  };
+
+	  SkyboxRenderer.prototype.setSkyboxTexture = function (textureId) {
+	    this.skyboxTexture = this.getAssetRegistry().Textures.getAssetById(textureId);
+	    this.initTexture();
+	    this.skyboxMesh.material = this.currentMaterial;
+	  };
+
+	  SkyboxRenderer.prototype.rebuildMaterials = function () {
+	    if (this.skyboxMaterialCube) {
+	      this.skyboxMaterialCube.needsUpdate = true;
+	    }
+	    if (this.skyboxMaterial2D) {
+	      this.skyboxMaterial2D.needsUpdate = true;
+	    }
+	    if (this.skyboxMaterialNoTex) {
+	      this.skyboxMaterialNoTex.needsUpdate = true;
+	    }
+	  };
+
+	  SkyboxRenderer.prototype.createMaterial = function () {
+
+	    this.skyboxUniforms = THREE.UniformsUtils.merge([{
+	      fogColor: {
+	        type: 'c',
+	        value: new THREE.Color()
+	      }
+	    }, {
+	      skyboxFogPower: {
+	        type: 'f',
+	        value: this.skyboxFogPower
+	      }
+	    }, {
+	      skyboxFogScale: {
+	        type: 'f',
+	        value: this.skyboxFogScale
+	      }
+	    }, {
+	      environmentTexture: {
+	        type: 't',
+	        value: null
+	      }
+	    }]), this.skyboxVShader = ['varying vec3 vCameraVector;', 'void main() {',
+	    // 'vec4 worldPosition = modelMatrix * vec4( position, 1.0 );',
+	    'vCameraVector = (modelMatrix * vec4( position, 1.0 )).xyz;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
+
+	    this.skyboxPShader = [
+
+	    // 'uniform vec3 fogColor;',
+	    // 'uniform float skyboxFogPower;',
+	    // 'uniform float skyboxFogScale;',
+	    '#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );',
+
+	    // 'float powThing = abs(pow( (1.0 - cameraVecN.y), ( skyboxFogPower) * 12.0 ));',
+	    // 'float fogFactor = clamp( powThing + (skyboxFogScale * 2.0 - 1.0), 0.0, 1.0);',
+	    // 'gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );',
+	    '}'].join('\n');
+
+	    this.skyboxMaterialCube = new THREE.ShaderMaterial({
+	      vertexShader: this.skyboxVShader,
+	      fragmentShader: this.skyboxPShader,
+	      uniforms: this.skyboxUniforms,
+	      side: THREE.BackSide,
+	      depthTest: false,
+	      depthWrite: false,
+	      defines: {
+	        USE_CUBEMAP: ''
+	      }
+	    });
+
+	    this.skyboxMaterial2D = new THREE.ShaderMaterial({
+	      vertexShader: this.skyboxVShader,
+	      fragmentShader: this.skyboxPShader,
+	      uniforms: this.skyboxUniforms,
+	      side: THREE.BackSide,
+	      depthTest: false,
+	      depthWrite: false,
+	      defines: {
+	        USE_2DMAP: ''
+	      }
+	    });
+
+	    this.skyboxMaterialNoTex = new THREE.ShaderMaterial({
+	      vertexShader: this.skyboxVShader,
+	      fragmentShader: this.skyboxPShader,
+	      uniforms: this.skyboxUniforms,
+	      side: THREE.BackSide,
+	      depthTest: false,
+	      depthWrite: false
+	    });
+
+	    this.skyboxMaterialCube.precision = 'highp';
+	  };
 
 	  return SkyboxRenderer;
-	}(_Box3DComponent3.default);
-
-	// export default SkyboxRenderer;
-
-	module.exports = SkyboxRenderer;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 132 */
