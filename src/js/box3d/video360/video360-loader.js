@@ -11,8 +11,8 @@ const VIEWERS = [
         EXTENSIONS: VIDEO_FORMATS,
         SCRIPTS: [
             STATIC_URI + 'media/shaka-player.js',
-            STATIC_URI + 'model3d/boxsdk-0.1.1.js',
-            STATIC_URI + 'model3d/box3d-resource-loader-0.1.1.js',
+            STATIC_URI + 'model3d/boxsdk-0.2.0.js',
+            STATIC_URI + 'model3d/box3d-resource-loader-0.1.2.js',
             STATIC_URI + 'model3d/box3d-runtime-0.9.1.js',
             'video360.js'
         ],

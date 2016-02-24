@@ -283,7 +283,7 @@ class Model3dSettings extends EventEmitter  {
     handleDefaultRenderModeSelected(mode) {
         // close the menu, first
         this.handleHideDefaultRenderMode();
-        this.renderModeDefaultEl.innerText = mode;
+        this.renderModeDefaultEl.textContent = mode;
         this.currentDefaultRenderMode = mode;
     }
 
