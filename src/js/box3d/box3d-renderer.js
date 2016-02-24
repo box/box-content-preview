@@ -205,10 +205,11 @@ class Box3DRenderer extends EventEmitter {
         this.box3d.trigger('update');
         this.handleOnRender();
 
-        if (this.box3d.container.querySelector('canvas')) {
+        if (this.box3d.container && this.box3d.container.querySelector('canvas')) {
             this.box3d.container.removeChild(this.box3d.canvas);
-            this.box3d.container = null;
         }
+        this.box3d.container = null;
+
 
         // Prevent background updates and rendering.
         this.box3d.pause();
