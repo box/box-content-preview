@@ -1,10 +1,7 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import Base from '../base';
 
 let Box = global.Box || {};
-let swfobject = global.swfobject;
 
 const SWF_PARAMS = {
     allowfullscreen: 'true',
@@ -40,7 +37,7 @@ class SWF extends Base {
      * @returns {Promise} Promise to load a swf
      */
     load(swfUrl) {
-        swfobject.embedSWF(this.appendAuthParam(swfUrl), 'flash-player', '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
+        swfobject.embedSWF(this.appendAuthParam(swfUrl), this.playerEl.id, '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
             if (this.destroyed) {
                 return;
             }

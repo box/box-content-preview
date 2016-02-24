@@ -34,7 +34,8 @@ module.exports = function(config) {
             test: js,
             loader: 'isparta',
             exclude: [
-                /__tests__/
+                /__tests__/,
+                /third\-party/
             ],
         });
     }

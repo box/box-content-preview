@@ -6,7 +6,8 @@ module.exports = {
 
     files: [
         'src/js/**/*-test.js',
-        'src/js/**/*-test.html'
+        'src/js/**/*-test.html',
+        'src/third-party/**/*.js'
     ],
 
     exclude: [],

@@ -24,6 +24,7 @@ module.exports = merge(commonConfig('en-US'), {
             {
                 test: js,
                 loader: 'babel',
+                query: { compact: false }
             }
         ],
         noParse: [

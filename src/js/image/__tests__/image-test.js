@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import Image from '../image';
 import fetchMock from 'fetch-mock';
 
@@ -19,7 +18,7 @@ function dataURLToBlob(dataURL) {
     const raw = window.atob(parts[1]);
     const rawLength = raw.length;
 
-    const uInt8Array = new Uint8Array(rawLength);
+    let uInt8Array = new Uint8Array(rawLength);
 
     for (let i = 0; i < rawLength; ++i) {
         uInt8Array[i] = raw.charCodeAt(i);
