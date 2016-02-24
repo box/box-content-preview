@@ -5,6 +5,6 @@ node_modules
 .idea
 .DS_Store
 npm-debug.log
-coverage
+reports
 dist
 src/i18n/json

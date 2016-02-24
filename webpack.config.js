@@ -1,9 +1,11 @@
-require('es6-promise').polyfill();
+require('babel-polyfill');
 
 var commonConfig = require('./webpack.common.config');
 var path = require('path');
 var RsyncPlugin = require('./build/RsyncPlugin');
 var js = path.join(__dirname, 'src/js');
+var thirdParty = path.join(__dirname, 'src/third-party');
+var img = path.join(__dirname, 'src/img');
 
 // Check if webpack was run with a production flag that signifies a release build
 var isRelease = process.env.BUILD_PROD === '1';
@@ -38,8 +40,11 @@ var languages = isRelease ? [
 
 module.exports = languages.map(function(language) {
 
+    // Static output path
+    var static = path.join(__dirname, 'dist', version);
+
     // Get the common config
-    var config = commonConfig(version, language);
+    var config = commonConfig(language);
 
     // Add output path
     config.output = {
@@ -47,12 +52,14 @@ module.exports = languages.map(function(language) {
         filename: '[Name].js'
     };
 
+    // Copy over image and 3rd party
+    config.plugins.push(new RsyncPlugin(thirdParty, static));
+    config.plugins.push(new RsyncPlugin(img, static));
+
     // If this is not a release build
     //      add the Rsync plugin for local development where copying to dev VM is needed.
     //      change source maps to be inline
     if (!isRelease) {
-        config.plugins.push(new RsyncPlugin(thirdParty, static));
-        config.plugins.push(new RsyncPlugin(img, static));
         config.plugins.push(new RsyncPlugin('dist/.', '${USER}@${USER}.dev.box.net:/box/www/assets/content-experience'));
         config.devtool = 'inline-source-map';
     }

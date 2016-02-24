@@ -3,7 +3,7 @@ var path = require('path');
 var commonConfig = require('./webpack.common.config');
 var js = path.join(__dirname, 'src/js');
 
-module.exports = merge(commonConfig('dev', 'en-US'), {
+module.exports = merge(commonConfig('en-US'), {
 
     isparta: {
         embedSource: true,
@@ -14,21 +14,15 @@ module.exports = merge(commonConfig('dev', 'en-US'), {
 
     resolve: {
         alias: {
-            sinon: 'sinon/pkg/sinon'
-        },
+            sinon: 'sinon/pkg/sinon',
+            'isomorphic-fetch': 'fetch-mock-forwarder'
+        }
     },
 
     module: {
         preLoaders: [
             {
                 test: js,
-                loader: 'isparta',
-                exclude: [
-                    /__tests__/
-                ],
-            },
-            {
-                test: /\-test.js$/,
                 loader: 'babel',
             }
         ],

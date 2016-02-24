@@ -1,5 +1,3 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import Controls from '../controls';
 import Base from '../base';

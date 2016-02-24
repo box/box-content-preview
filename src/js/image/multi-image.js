@@ -1,15 +1,10 @@
-'use strict';
-
 import '../../css/image/images.css';
 import autobind from 'autobind-decorator';
 import ImageBase from './image-base';
 
-
 const CSS_CLASS_IMAGE = 'box-preview-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
 
-let Promise = global.Promise;
-let document = global.document;
 let Box = global.Box || {};
 
 @autobind
