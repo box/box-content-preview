@@ -54,15 +54,15 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(14), __webpack_require__(72), __webpack_require__(145), __webpack_require__(146), __webpack_require__(147), __webpack_require__(87), __webpack_require__(148), __webpack_require__(150), __webpack_require__(151), __webpack_require__(152), __webpack_require__(2), __webpack_require__(153), __webpack_require__(65), __webpack_require__(154), __webpack_require__(155), __webpack_require__(156), __webpack_require__(66), __webpack_require__(157), __webpack_require__(83), __webpack_require__(158)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, RuntimeEvents, Box3DRuntime) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(14), __webpack_require__(72), __webpack_require__(146), __webpack_require__(147), __webpack_require__(148), __webpack_require__(87), __webpack_require__(149), __webpack_require__(151), __webpack_require__(152), __webpack_require__(153), __webpack_require__(2), __webpack_require__(154), __webpack_require__(65), __webpack_require__(155), __webpack_require__(156), __webpack_require__(157), __webpack_require__(66), __webpack_require__(158), __webpack_require__(83), __webpack_require__(159)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, RuntimeEvents, Box3DRuntime) {
 	  'use strict';
 
 	  _.noConflict();
 
 	  var VAPI = window.VAPI;
 
-	  VAPI.require = __webpack_require__(159);
-	  VAPI.define = __webpack_require__(163);
+	  VAPI.require = __webpack_require__(160);
+	  VAPI.define = __webpack_require__(164);
 
 	  VAPI.getBrowser = function () {
 	    var ua = navigator.userAgent,
@@ -52625,729 +52625,640 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	/**
+	 * @module VAPI
+	 */
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(9)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, Box3DAsset) {
+	  'use strict';
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	  var VAPI = window.VAPI = window.VAPI || {};
 
-	var _log = __webpack_require__(7);
+	  var BaseTextureAsset = function BaseTextureAsset(json) {
+	    Box3DAsset.call(this, json);
+	    this.loadedBytes = 0;
+	  };
 
-	var _log2 = _interopRequireDefault(_log);
+	  BaseTextureAsset.prototype = new Box3DAsset();
 
-	var _lodash = __webpack_require__(3);
+	  BaseTextureAsset.prototype.defaultProperties = _.extend({}, Box3DAsset.prototype.defaultProperties, {
+	    uMapping: 'Wrap',
+	    vMapping: 'Wrap',
+	    filtering: 'Trilinear',
+	    anisotropy: 8,
+	    flipY: false,
+	    isHdr: false,
+	    useHardwareCompression: false,
+	    generateMipmaps: true,
+	    type: THREE.UnsignedByteType,
+	    format: THREE.RGBFormat,
+	    ignoreStream: true
+	  });
 
-	var _lodash2 = _interopRequireDefault(_lodash);
+	  BaseTextureAsset.prototype.initialize = function (properties) {
+	    Box3DAsset.prototype.initialize.call(this, properties);
 
-	var _three = __webpack_require__(5);
+	    this.loadComponents = true;
 
-	var _three2 = _interopRequireDefault(_three);
+	    this.trigger('loadHierarchy', this);
+	    this.trigger('loadHierarchyAndDependencies', this);
+	  };
 
-	var _Box3DAsset2 = __webpack_require__(9);
+	  BaseTextureAsset.prototype.unload = function (options) {
+	    // abort any xhr request associated with this
+	    this.box3DRuntime.resourceLoader.abortRequest(this.id);
 
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+	    if (this.runtimeData) {
+	      this.box3DRuntime.trigger('textureUnloaded', this.id);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	      log.info(this.box3DRuntime.engineName + ' - Unloading texture, ' + this.getName());
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var VAPI = window.VAPI = window.VAPI || {};
-
-	var BaseTextureAsset = function (_Box3DAsset) {
-	  _inherits(BaseTextureAsset, _Box3DAsset);
-
-	  function BaseTextureAsset(json) {
-	    _classCallCheck(this, BaseTextureAsset);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTextureAsset).call(this, json));
-
-	    _this.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.prototype.defaultProperties, {
-	      uMapping: 'Wrap',
-	      vMapping: 'Wrap',
-	      filtering: 'Trilinear',
-	      anisotropy: 8,
-	      flipY: false,
-	      isHdr: false,
-	      useHardwareCompression: false,
-	      generateMipmaps: true,
-	      type: _three2.default.UnsignedByteType,
-	      format: _three2.default.RGBFormat,
-	      ignoreStream: true,
-	      layout: BaseTextureAsset.LAYOUT.NORMAL
-	    });
-
-	    _this.loadedBytes = 0;
-	    return _this;
-	  }
-
-	  _createClass(BaseTextureAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
-
-	      this.loadComponents = true;
-
-	      this.trigger('loadHierarchy', this);
-	      this.trigger('loadHierarchyAndDependencies', this);
-	    }
-	  }, {
-	    key: 'unload',
-	    value: function unload(options) {
-	      // abort any xhr request associated with this
-	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
-
-	      if (this.runtimeData) {
-	        this.box3DRuntime.trigger('textureUnloaded', this.id);
-
-	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading texture, ' + this.getName());
-
-	        this.runtimeData.dispose();
-	      }
-
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
-	      this.loadedBytes = 0;
+	      this.runtimeData.dispose();
 	    }
 
-	    /** @inheritdoc */
+	    Box3DAsset.prototype.unload.call(this, options);
+	    this.loadedBytes = 0;
+	  };
 
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	  /** @inheritdoc */
+	  BaseTextureAsset.prototype._applyPropertiesLoaded = function (changes, reason) {
+	    Box3DAsset.prototype._applyPropertiesLoaded.call(this, changes, reason);
 
-	      var texture = this.runtimeData instanceof _three2.default.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
+	    var texture = this.runtimeData instanceof THREE.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
 
-	      if (changes.hasOwnProperty('uMapping')) {
-	        texture.wrapS = this.registry.textureUVMappingsMap[this.getProperty('uMapping')];
+	    if (changes.hasOwnProperty('uMapping')) {
+	      texture.wrapS = this.registry.textureUVMappingsMap[this.getProperty('uMapping')];
+	    }
+
+	    if (changes.hasOwnProperty('vMapping')) {
+	      texture.wrapT = this.registry.textureUVMappingsMap[this.getProperty('vMapping')];
+	    }
+
+	    if (changes.hasOwnProperty('anisotropy')) {
+	      texture.anisotropy = this.getProperty('anisotropy');
+	    }
+
+	    if (changes.hasOwnProperty('premultiplyAlpha')) {
+	      texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
+	    }
+
+	    texture.flipY = false; // TODO: is this necessary here?
+
+	    if (changes.hasOwnProperty('generateMipmaps')) {
+	      var generateMipmaps = this.getProperty('generateMipmaps');
+	      texture.generateMipmaps = generateMipmaps && this.isPowerOfTwo() && !this.isCompressed();
+	    }
+
+	    if (changes.hasOwnProperty('premultiplyAlpha')) {
+	      texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
+	    }
+
+	    if (changes.hasOwnProperty('filtering')) {
+	      var filtering = this.getProperty('filtering');
+	      if (!this.registry.textureFiltersMap[filtering]) {
+	        filtering = 'Linear';
 	      }
 
-	      if (changes.hasOwnProperty('vMapping')) {
-	        texture.wrapT = this.registry.textureUVMappingsMap[this.getProperty('vMapping')];
-	      }
-
-	      if (changes.hasOwnProperty('anisotropy')) {
-	        texture.anisotropy = this.getProperty('anisotropy');
-	      }
-
-	      if (changes.hasOwnProperty('premultiplyAlpha')) {
-	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
-	      }
-
-	      texture.flipY = false; // TODO: is this necessary here?
-
-	      if (changes.hasOwnProperty('generateMipmaps')) {
-	        var generateMipmaps = this.getProperty('generateMipmaps');
-	        texture.generateMipmaps = generateMipmaps && this.isPowerOfTwo() && !this.isCompressed();
-	      }
-
-	      if (changes.hasOwnProperty('premultiplyAlpha')) {
-	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
-	      }
-
-	      if (changes.hasOwnProperty('filtering')) {
-	        var filtering = this.getProperty('filtering');
-	        if (!this.registry.textureFiltersMap[filtering]) {
-	          filtering = 'Linear';
+	      if (this.isHdr()) {
+	        var extensions = this.box3DRuntime.getThreeRenderer().extensions;
+	        if (!extensions.get('OES_texture_float_linear') && !extensions.get('OES_texture_half_float_linear')) {
+	          filtering = 'Nearest';
 	        }
-
-	        if (this.isHdr()) {
-	          var extensions = this.box3DRuntime.getThreeRenderer().extensions;
-	          if (!extensions.get('OES_texture_float_linear') && !extensions.get('OES_texture_half_float_linear')) {
-	            filtering = 'Nearest';
-	          }
-	        }
-
-	        texture.minFilter = this.registry.textureFiltersMap[filtering].minFilter;
-	        texture.magFilter = this.registry.textureFiltersMap[filtering].magFilter;
 	      }
 
-	      if (this.isHdr() && this.packingFormat) {
-	        this._unpackToHdr();
-	      }
-
-	      this.box3DRuntime.needsRender = true;
-	    }
-	  }, {
-	    key: '_applyPropertiesUnloaded',
-	    value: function _applyPropertiesUnloaded(changes) {
-	      if (changes.useHardwareCompression !== undefined) {
-	        this.defaultResource = undefined;
-	        this.defaultResources = undefined;
-	      }
-	      this.box3DRuntime.trigger('textureChanged', this.id, changes);
-	    }
-	  }, {
-	    key: '_unpackToHdr',
-	    value: function _unpackToHdr() {
-	      _log2.default.warn('Must implement _unpackToHdr for this texture type.');
-	      return;
+	      texture.minFilter = this.registry.textureFiltersMap[filtering].minFilter;
+	      texture.magFilter = this.registry.textureFiltersMap[filtering].magFilter;
 	    }
 
-	    /**
-	     * Returns the byte size of the data that has already been loaded by this asset and its
-	     * hierarchy.
-	     * @public
-	     * @method getDataSizeLoaded
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @return {Integer} The number of bytes of data.
-	     */
+	    if (this.isHdr() && this.packingFormat) {
+	      this._unpackToHdr();
+	    }
 
-	  }, {
-	    key: 'getDataSizeLoaded',
-	    value: function getDataSizeLoaded(dependencyType) {
-	      if (!dependencyType || dependencyType === 'textures') {
-	        return this.loadedBytes;
-	      } else {
+	    this.box3DRuntime.needsRender = true;
+	  };
+
+	  BaseTextureAsset.prototype._applyPropertiesUnloaded = function (changes) {
+	    if (changes.useHardwareCompression !== undefined) {
+	      this.defaultResource = undefined;
+	      this.defaultResources = undefined;
+	    }
+	    this.box3DRuntime.trigger('textureChanged', this.id, changes);
+	  };
+
+	  BaseTextureAsset.prototype._unpackToHdr = function () {
+	    log.warn('Must implement _unpackToHdr for this texture type.');
+	    return;
+	  };
+
+	  /**
+	   * Returns the byte size of the data that has already been loaded by this asset and its
+	   * hierarchy.
+	   * @public
+	   * @method getDataSizeLoaded
+	   * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	   * @return {Integer} The number of bytes of data.
+	   */
+	  BaseTextureAsset.prototype.getDataSizeLoaded = function (dependencyType) {
+	    if (!dependencyType || dependencyType === 'textures') {
+	      return this.loadedBytes;
+	    } else {
+	      return 0;
+	    }
+	  };
+
+	  /**
+	   * Returns the download size of this texture. Specify filters to query the
+	   * desired texture. If no filters are specified, the default texture for the
+	   * current device will be queried.
+	   * @method getDataSizeDownload
+	   * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	   * @param {Object} params Specify parameters to narrow down the type of asset to
+	   * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	   * @return {Integer} The number of bytes of data.
+	   */
+	  BaseTextureAsset.prototype.getDataSizeDownload = function (dependencyType) {
+	    if (!dependencyType || dependencyType === 'textures') {
+	      return this.get('bufferSize') || 1024;
+	    } else {
+	      return 0;
+	    }
+	  };
+
+	  /**
+	   * Returns the total amount of GPU memory occupied by this texture. Specify
+	   * filters to query the desired texture. If no filters are specified, the
+	   * default texture for the current device will be queried.
+	   * @method getDataSizeTextureInMemory
+	   * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	   * @param {Object} overrideParams Specify parameters to narrow down the type of asset to
+	   * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	   * @return {Integer} The number of bytes of data.
+	   */
+	  BaseTextureAsset.prototype.getDataSizeInMemory = function (dependencyType, overrideParams) {
+	    var width;
+	    var height;
+	    var compression;
+	    var numChannels;
+	    var channelSize;
+	    var dataType;
+
+	    if (dependencyType && dependencyType !== 'textures') {
+	      return 0;
+	    }
+
+	    width = this.getWidth();
+	    height = this.getHeight();
+	    overrideParams = overrideParams || {};
+	    compression = overrideParams.compression || this.getCompressionFormat();
+
+	    if (compression !== 'none') {
+	      return this.getDataSizeDownload();
+	    }
+
+	    numChannels = this.getNumChannels(overrideParams.format);
+	    dataType = overrideParams.type || this.getDataType();
+
+	    switch (dataType) {
+	      case THREE.FloatType:
+	      case THREE.UnsignedIntType:
+	      case THREE.IntType:
+	        channelSize = 4;
+	        break;
+
+	      case THREE.ShortType:
+	      case THREE.UnsignedShortType:
+	        channelSize = 2;
+	        break;
+
+	      case THREE.UnsignedByteType:
+	      case THREE.ByteType:
+	        channelSize = 1;
+	        break;
+
+	      // The following types dictate the bpp directly.
+	      case THREE.UnsignedShort4444Type:
+	      case THREE.UnsignedShort5551Type:
+	      case THREE.UnsignedShort565Type:
+	        return width * height * 2;
+	    }
+	    return width * height * channelSize * numChannels;
+	  };
+
+	  /** Returns the maximum texture size supported by the device.
+	   * @return {Integer} The maximum texture size.
+	   */
+	  BaseTextureAsset.prototype.getMaxTextureSize = function () {
+	    return VAPI.isMobile() ? 1024 : this.box3DRuntime.getGPUCapability('MAX_TEXTURE_SIZE');
+	  };
+
+	  /**
+	   * Returns the pixel format of the texture. e.g. THREE.RGBAFormat, THREE.LuminanceFormat, etc.
+	   * @return {String} The texture pixel format.
+	   */
+	  BaseTextureAsset.prototype.getFormat = function () {
+	    var format = this.getProperty('format');
+	    return format;
+	  };
+
+	  /**
+	   * Returns the data type of the texture. e.g. THREE.UnsignedByteType, THREE.FloatType, etc.
+	   * @return {Number} The texture pixel type.
+	   */
+	  BaseTextureAsset.prototype.getDataType = function () {
+	    var dataType = this.getProperty('type');
+	    return dataType;
+	  };
+
+	  /**
+	   * Return the number of color or luminance channels in the texture. An optional override lets
+	   * you query the value for a different pixel format.
+	   * @method getNumChannels
+	   * @public
+	   * @param {Number} overrideFormat Query the number of channels for a different pixel format
+	   * by specifying a format here.
+	   * @return {Number} Returns the number of color or luminance channels in the texture.
+	   */
+	  BaseTextureAsset.prototype.getNumChannels = function (overrideFormat) {
+	    var format = overrideFormat || this.getFormat();
+	    switch (format) {
+	      case THREE.AlphaFormat:
+	      case THREE.LuminanceFormat:
+	        return 1;
+	      case THREE.LuminanceAlphaFormat:
+	        return 2;
+	      case THREE.RGBFormat:
+	        return 3;
+	      case THREE.RGBAFormat:
+	        return 4;
+	      default:
 	        return 0;
+	    }
+	  };
+
+	  /**
+	   * @public
+	   * @return {Number} Returns the total number of mip levels used by this texture.
+	   */
+	  BaseTextureAsset.prototype.getNumMips = function () {
+	    var width = this.getWidth();
+	    var height = this.getHeight();
+	    var max = Math.max(width, height);
+	    max = Math.max(max, 1);
+	    return Math.floor(Math.log2(max));
+	  };
+
+	  /**
+	   * @public
+	   * @return {Boolean} True iff the texture contains high dynamic range, floating point data
+	   */
+	  BaseTextureAsset.prototype.isHdr = function () {
+	    return !!this.getProperty('isHdr');
+	  };
+
+	  /**
+	   * @public
+	   * @return {Boolean} True iff the texture is using a hardware compression format.
+	   */
+	  BaseTextureAsset.prototype.isCompressed = function () {
+	    if (this.runtimeData) {
+	      return this.runtimeData instanceof THREE.CompressedTexture;
+	    } else {
+	      return this.getProperty('useHardwareCompression');
+	    }
+	  };
+
+	  /**
+	   * @public
+	   * @return {Boolean} True iff both dimensions of the texture are a power of two.
+	   */
+	  BaseTextureAsset.prototype.isPowerOfTwo = function () {
+	    var width = this.getWidth();
+	    var height = this.getHeight();
+	    return THREE.Math.isPowerOfTwo(width) && THREE.Math.isPowerOfTwo(height);
+	  };
+
+	  /**
+	  * Returns the preferred texture compression format for the device.
+	  * @return {String} 'atc', 'dxt', 'pvrtc' or 'none'
+	  */
+	  BaseTextureAsset.prototype.getCompressionFormat = function () {
+	    var compression = 'none';
+
+	    // If a compressed format is preferred, get one based on the device caps.
+	    if (this.getProperty('useHardwareCompression')) {
+	      if (this.box3DRuntime.supportsCompressedTextureS3TC()) {
+	        compression = 'dxt';
+	      } else if (this.box3DRuntime.supportsCompressedTexturePVRTC()) {
+	        compression = 'pvrtc';
+	      } else if (this.box3DRuntime.supportsCompressedTextureATC()) {
+	        compression = 'atc';
 	      }
 	    }
+	    return compression;
+	  };
 
-	    /**
-	     * Returns the download size of this texture. Specify filters to query the
-	     * desired texture. If no filters are specified, the default texture for the
-	     * current device will be queried.
-	     * @method getDataSizeDownload
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} params Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeDownload',
-	    value: function getDataSizeDownload(dependencyType) {
-	      if (!dependencyType || dependencyType === 'textures') {
-	        return this.get('bufferSize') || 1024;
-	      } else {
-	        return 0;
+	  /**
+	   * Returns the width of the texture.
+	   * @return {Integer} The texture width.
+	   */
+	  BaseTextureAsset.prototype.getWidth = function () {
+	    var width = this.getProperty('width');
+	    if (_.isUndefined(width)) {
+	      width = this.getProperty('originalWidth');
+	      if (_.isUndefined(width) && this.runtimeData) {
+	        width = this.runtimeData.width;
+	      }
+	      if (width > this.getMaxTextureSize()) {
+	        width = this.getMaxTextureSize();
 	      }
 	    }
+	    return width || 1;
+	  };
 
-	    /**
-	     * Returns the total amount of GPU memory occupied by this texture. Specify
-	     * filters to query the desired texture. If no filters are specified, the
-	     * default texture for the current device will be queried.
-	     * @method getDataSizeTextureInMemory
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} overrideParams Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeInMemory',
-	    value: function getDataSizeInMemory(dependencyType, overrideParams) {
-	      var width;
-	      var height;
-	      var compression;
-	      var numChannels;
-	      var channelSize;
-	      var dataType;
-
-	      if (dependencyType && dependencyType !== 'textures') {
-	        return 0;
+	  /**
+	   * Returns the height of the texture.
+	   * @return {Integer} The texture height.
+	   */
+	  BaseTextureAsset.prototype.getHeight = function () {
+	    var height = this.getProperty('height');
+	    if (_.isUndefined(height)) {
+	      height = this.getProperty('originalHeight');
+	      if (_.isUndefined(height) && this.runtimeData) {
+	        height = this.runtimeData.height;
 	      }
-
-	      width = this.getWidth();
-	      height = this.getHeight();
-	      overrideParams = overrideParams || {};
-	      compression = overrideParams.compression || this.getCompressionFormat();
-
-	      if (compression !== 'none') {
-	        return this.getDataSizeDownload();
-	      }
-
-	      numChannels = this.getNumChannels(overrideParams.format);
-	      dataType = overrideParams.type || this.getDataType();
-
-	      switch (dataType) {
-	        case _three2.default.FloatType:
-	        case _three2.default.UnsignedIntType:
-	        case _three2.default.IntType:
-	          channelSize = 4;
-	          break;
-
-	        case _three2.default.ShortType:
-	        case _three2.default.UnsignedShortType:
-	          channelSize = 2;
-	          break;
-
-	        case _three2.default.UnsignedByteType:
-	        case _three2.default.ByteType:
-	          channelSize = 1;
-	          break;
-
-	        // The following types dictate the bpp directly.
-	        case _three2.default.UnsignedShort4444Type:
-	        case _three2.default.UnsignedShort5551Type:
-	        case _three2.default.UnsignedShort565Type:
-	          return width * height * 2;
-	      }
-	      return width * height * channelSize * numChannels;
-	    }
-
-	    /** Returns the maximum texture size supported by the device.
-	     * @return {Integer} The maximum texture size.
-	     */
-
-	  }, {
-	    key: 'getMaxTextureSize',
-	    value: function getMaxTextureSize() {
-	      return VAPI.isMobile() ? 1024 : this.box3DRuntime.getGPUCapability('MAX_TEXTURE_SIZE');
-	    }
-
-	    /**
-	     * Returns the pixel format of the texture. e.g. THREE.RGBAFormat, THREE.LuminanceFormat, etc.
-	     * @return {String} The texture pixel format.
-	     */
-
-	  }, {
-	    key: 'getFormat',
-	    value: function getFormat() {
-	      var format = this.getProperty('format');
-	      return format;
-	    }
-
-	    /**
-	     * Returns the data type of the texture. e.g. THREE.UnsignedByteType, THREE.FloatType, etc.
-	     * @return {Number} The texture pixel type.
-	     */
-
-	  }, {
-	    key: 'getDataType',
-	    value: function getDataType() {
-	      var dataType = this.getProperty('type');
-	      return dataType;
-	    }
-
-	    /**
-	     * Return the number of color or luminance channels in the texture. An optional override lets
-	     * you query the value for a different pixel format.
-	     * @method getNumChannels
-	     * @public
-	     * @param {Number} overrideFormat Query the number of channels for a different pixel format
-	     * by specifying a format here.
-	     * @return {Number} Returns the number of color or luminance channels in the texture.
-	     */
-
-	  }, {
-	    key: 'getNumChannels',
-	    value: function getNumChannels(overrideFormat) {
-	      var format = overrideFormat || this.getFormat();
-	      switch (format) {
-	        case _three2.default.AlphaFormat:
-	        case _three2.default.LuminanceFormat:
-	          return 1;
-	        case _three2.default.LuminanceAlphaFormat:
-	          return 2;
-	        case _three2.default.RGBFormat:
-	          return 3;
-	        case _three2.default.RGBAFormat:
-	          return 4;
-	        default:
-	          return 0;
+	      if (height > this.getMaxTextureSize()) {
+	        height = this.getMaxTextureSize();
 	      }
 	    }
+	    return height || 1;
+	  };
 
-	    /**
-	     * @public
-	     * @return {Number} Returns the total number of mip levels used by this texture.
-	     */
+	  BaseTextureAsset.prototype.createCompressedTextureData = function (buffer) {
+	    var texture = new THREE.CompressedTexture(),
+	        dds = this._parseDDS(buffer, true),
+	        iFace,
+	        iMip,
+	        nFaces;
 
-	  }, {
-	    key: 'getNumMips',
-	    value: function getNumMips() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-	      var max = Math.max(width, height);
-	      max = Math.max(max, 1);
-	      return Math.floor(Math.log2(max));
-	    }
+	    texture.format = dds.format;
+	    texture.generateMipmaps = false;
+	    texture.needsUpdate = true;
 
-	    /**
-	     * @public
-	     * @return {Boolean} True iff the texture contains high dynamic range, floating point data
-	     */
+	    if (dds.isCubemap) {
+	      texture.flipY = false;
+	      texture.image = [];
 
-	  }, {
-	    key: 'isHdr',
-	    value: function isHdr() {
-	      return !!this.getProperty('isHdr');
-	    }
+	      nFaces = dds.mipmaps.length / dds.mipmapCount;
 
-	    /**
-	     * @public
-	     * @return {Boolean} True iff the texture is using a hardware compression format.
-	     */
+	      for (iFace = 0; iFace < nFaces; iFace += 1) {
+	        texture.image[iFace] = {
+	          mipmaps: []
+	        };
 
-	  }, {
-	    key: 'isCompressed',
-	    value: function isCompressed() {
-	      if (this.runtimeData) {
-	        return this.runtimeData instanceof _three2.default.CompressedTexture;
-	      } else {
-	        return this.getProperty('useHardwareCompression');
-	      }
-	    }
+	        for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
+	          texture.image[iFace].mipmaps.push(dds.mipmaps[iFace * dds.mipmapCount + iMip]);
 
-	    /**
-	     * @public
-	     * @return {Boolean} True iff both dimensions of the texture are a power of two.
-	     */
-
-	  }, {
-	    key: 'isPowerOfTwo',
-	    value: function isPowerOfTwo() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-	      return _three2.default.Math.isPowerOfTwo(width) && _three2.default.Math.isPowerOfTwo(height);
-	    }
-
-	    /**
-	    * Returns the preferred texture compression format for the device.
-	    * @return {String} 'atc', 'dxt', 'pvrtc' or 'none'
-	    */
-
-	  }, {
-	    key: 'getCompressionFormat',
-	    value: function getCompressionFormat() {
-	      var compression = 'none';
-
-	      // If a compressed format is preferred, get one based on the device caps.
-	      if (this.getProperty('useHardwareCompression')) {
-	        if (this.box3DRuntime.supportsCompressedTextureS3TC()) {
-	          compression = 'dxt';
-	        } else if (this.box3DRuntime.supportsCompressedTexturePVRTC()) {
-	          compression = 'pvrtc';
-	        } else if (this.box3DRuntime.supportsCompressedTextureATC()) {
-	          compression = 'atc';
+	          texture.image[iFace].format = dds.format;
+	          texture.image[iFace].width = dds.width;
+	          texture.image[iFace].height = dds.height;
 	        }
 	      }
-	      return compression;
+	    } else {
+	      texture.mipmaps = dds.mipmaps;
+	      texture.image.width = dds.width;
+	      texture.image.height = dds.height;
 	    }
-	  }, {
-	    key: 'getWidth',
+	    return texture;
+	  };
 
-	    /**
-	     * Returns the width of the texture.
-	     * @return {Integer} The texture width.
-	     */
-	    value: function getWidth() {
-	      var width = this.getProperty('width');
-	      if (_lodash2.default.isUndefined(width)) {
-	        width = this.getProperty('originalWidth');
-	        if (_lodash2.default.isUndefined(width) && this.runtimeData) {
-	          width = this.runtimeData.width;
-	        }
-	        if (width > this.getMaxTextureSize()) {
-	          width = this.getMaxTextureSize();
-	        }
-	      }
-	      return width || 1;
+	  BaseTextureAsset.prototype._parseDDS = function (buffer, loadMipmaps) {
+	    // Adapted from @toji's DDS utils
+	    //  https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
+
+	    // All values and structures referenced from:
+	    // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
+
+	    function fourCCToInt32(value) {
+	      return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
 	    }
-	  }, {
-	    key: 'getHeight',
 
-	    /**
-	     * Returns the height of the texture.
-	     * @return {Integer} The texture height.
-	     */
-	    value: function getHeight() {
-	      var height = this.getProperty('height');
-	      if (_lodash2.default.isUndefined(height)) {
-	        height = this.getProperty('originalHeight');
-	        if (_lodash2.default.isUndefined(height) && this.runtimeData) {
-	          height = this.runtimeData.height;
-	        }
-	        if (height > this.getMaxTextureSize()) {
-	          height = this.getMaxTextureSize();
-	        }
-	      }
-	      return height || 1;
+	    function int32ToFourCC(value) {
+	      return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
 	    }
-	  }, {
-	    key: 'createCompressedTextureData',
-	    value: function createCompressedTextureData(buffer) {
-	      var texture = new _three2.default.CompressedTexture(),
-	          dds = this._parseDDS(buffer, true),
-	          iFace,
-	          iMip,
-	          nFaces;
 
-	      texture.format = dds.format;
-	      texture.generateMipmaps = false;
-	      texture.needsUpdate = true;
+	    function loadARGBMip(buffer, dataOffset, width, height) {
+	      var dataLength = width * height * 4,
+	          srcBuffer = new Uint8Array(buffer, dataOffset, dataLength),
+	          byteArray = new Uint8Array(dataLength),
+	          dst = 0,
+	          src = 0,
+	          x,
+	          y,
+	          r,
+	          g,
+	          b,
+	          a;
 
-	      if (dds.isCubemap) {
-	        texture.flipY = false;
-	        texture.image = [];
-
-	        nFaces = dds.mipmaps.length / dds.mipmapCount;
-
-	        for (iFace = 0; iFace < nFaces; iFace += 1) {
-	          texture.image[iFace] = {
-	            mipmaps: []
-	          };
-
-	          for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
-	            texture.image[iFace].mipmaps.push(dds.mipmaps[iFace * dds.mipmapCount + iMip]);
-
-	            texture.image[iFace].format = dds.format;
-	            texture.image[iFace].width = dds.width;
-	            texture.image[iFace].height = dds.height;
-	          }
+	      for (y = 0; y < height; y += 1) {
+	        for (x = 0; x < width; x += 1) {
+	          b = srcBuffer[src];
+	          g = srcBuffer[src + 1];
+	          r = srcBuffer[src + 2];
+	          a = srcBuffer[src + 3];
+	          byteArray[dst] = r; // r
+	          byteArray[dst + 1] = g; // g
+	          byteArray[dst + 2] = b; // b
+	          byteArray[dst + 3] = a; // a
+	          src += 4;
+	          dst += 4;
 	        }
-	      } else {
-	        texture.mipmaps = dds.mipmaps;
-	        texture.image.width = dds.width;
-	        texture.image.height = dds.height;
 	      }
-	      return texture;
+
+	      return byteArray;
 	    }
-	  }, {
-	    key: '_parseDDS',
-	    value: function _parseDDS(buffer, loadMipmaps) {
-	      // Adapted from @toji's DDS utils
-	      //  https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
 
-	      // All values and structures referenced from:
-	      // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
+	    var DDS_MAGIC = 0x20534444,
 
-	      function fourCCToInt32(value) {
-	        return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
-	      }
+	    //DDSD_CAPS = 0x1,
+	    //DDSD_HEIGHT = 0x2,
+	    //DDSD_WIDTH = 0x4,
+	    //DDSD_PITCH = 0x8,
+	    //DDSD_PIXELFORMAT = 0x1000,
+	    DDSD_MIPMAPCOUNT = 0x20000,
 
-	      function int32ToFourCC(value) {
-	        return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
-	      }
+	    //DDSD_LINEARSIZE = 0x80000,
+	    //DDSD_DEPTH = 0x800000,
 
-	      function loadARGBMip(buffer, dataOffset, width, height) {
-	        var dataLength = width * height * 4,
-	            srcBuffer = new Uint8Array(buffer, dataOffset, dataLength),
-	            byteArray = new Uint8Array(dataLength),
-	            dst = 0,
-	            src = 0,
-	            x,
-	            y,
-	            r,
-	            g,
-	            b,
-	            a;
+	    //DDSCAPS_COMPLEX = 0x8,
+	    //DDSCAPS_MIPMAP = 0x400000,
+	    //DDSCAPS_TEXTURE = 0x1000,
 
-	        for (y = 0; y < height; y += 1) {
-	          for (x = 0; x < width; x += 1) {
-	            b = srcBuffer[src];
-	            g = srcBuffer[src + 1];
-	            r = srcBuffer[src + 2];
-	            a = srcBuffer[src + 3];
-	            byteArray[dst] = r; // r
-	            byteArray[dst + 1] = g; // g
-	            byteArray[dst + 2] = b; // b
-	            byteArray[dst + 3] = a; // a
-	            src += 4;
-	            dst += 4;
-	          }
+	    DDSCAPS2_CUBEMAP = 0x200,
+
+	    //DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
+	    //DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
+	    //DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
+	    //DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
+	    //DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
+	    //DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
+	    //DDSCAPS2_VOLUME = 0x200000,
+
+	    //DDPF_ALPHAPIXELS = 0x1,
+	    //DDPF_ALPHA = 0x2,
+	    DDPF_FOURCC = 0x4,
+
+	    //DDPF_RGB = 0x40,
+	    //DDPF_YUV = 0x200,
+	    //DDPF_LUMINANCE = 0x20000,
+
+	    FOURCC_DXT1 = fourCCToInt32('DXT1'),
+	        FOURCC_DXT3 = fourCCToInt32('DXT3'),
+	        FOURCC_DXT5 = fourCCToInt32('DXT5'),
+	        headerLengthInt = 31,
+	        // The header length in 32 bit ints
+
+	    // Offsets into the header array
+	    off_magic = 0,
+	        off_size = 1,
+	        off_flags = 2,
+	        off_height = 3,
+	        off_width = 4,
+	        off_mipmapCount = 7,
+	        off_pfFlags = 20,
+	        off_pfFourCC = 21,
+	        off_RGBBitCount = 22,
+	        off_RBitMask = 23,
+	        off_GBitMask = 24,
+	        off_BBitMask = 25,
+	        off_ABitMask = 26,
+
+	    //off_caps = 27,
+	    off_caps2 = 28,
+
+	    //off_caps3 = 29,
+	    //off_caps4 = 30,
+
+	    header,
+	        blockBytes,
+	        fourCC,
+	        isRGBAUncompressed,
+	        dataOffset,
+	        width,
+	        height,
+	        iFace,
+	        nFaces,
+	        iMip,
+	        byteArray,
+	        dataLength,
+	        dds = {
+	      mipmaps: [],
+	      width: 0,
+	      height: 0,
+	      format: null,
+	      mipmapCount: 1
+	    };
+
+	    header = new Int32Array(buffer, 0, headerLengthInt);
+
+	    // Parse header
+
+	    if (header[off_magic] !== DDS_MAGIC) {
+	      log.error('THREE.DDSLoader.parse: Invalid magic number in DDS ' + 'header.');
+	      return dds;
+	    }
+
+	    if (!header[off_pfFlags] & DDPF_FOURCC) {
+	      log.error('THREE.DDSLoader.parse: Unsupported format, must ' + 'contain a FourCC code.');
+	      return dds;
+	    }
+
+	    fourCC = header[off_pfFourCC];
+	    isRGBAUncompressed = false;
+
+	    switch (fourCC) {
+	      case FOURCC_DXT1:
+	        blockBytes = 8;
+	        dds.format = THREE.RGB_S3TC_DXT1_Format;
+	        break;
+
+	      case FOURCC_DXT3:
+	        blockBytes = 16;
+	        dds.format = THREE.RGBA_S3TC_DXT3_Format;
+	        break;
+
+	      case FOURCC_DXT5:
+	        blockBytes = 16;
+	        dds.format = THREE.RGBA_S3TC_DXT5_Format;
+	        break;
+
+	      default:
+	        if (header[off_RGBBitCount] === 32 && header[off_RBitMask] & 0xff0000 && header[off_GBitMask] & 0xff00 && header[off_BBitMask] & 0xff && header[off_ABitMask] & 0xff000000) {
+	          isRGBAUncompressed = true;
+	          blockBytes = 64;
+	          dds.format = THREE.RGBAFormat;
+	        } else {
+	          log.error('THREE.DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
+	          return dds;
+	        }
+	    }
+
+	    dds.mipmapCount = 1;
+
+	    if (header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
+	      dds.mipmapCount = Math.max(1, header[off_mipmapCount]);
+	    }
+
+	    // TODO: Verify that all faces of the cubemap are present with
+	    // DDSCAPS2_CUBEMAP_POSITIVEX, etc.
+
+	    dds.isCubemap = header[off_caps2] & DDSCAPS2_CUBEMAP ? true : false;
+
+	    dds.width = header[off_width];
+	    dds.height = header[off_height];
+
+	    dataOffset = header[off_size] + 4;
+
+	    // Extract mipmaps buffers
+
+	    width = dds.width;
+	    height = dds.height;
+
+	    nFaces = dds.isCubemap ? 6 : 1;
+
+	    for (iFace = 0; iFace < nFaces; iFace += 1) {
+	      for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
+	        if (isRGBAUncompressed) {
+	          byteArray = loadARGBMip(buffer, dataOffset, width, height);
+	          dataLength = byteArray.length;
+	        } else {
+	          dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
+	          byteArray = new Uint8Array(buffer, dataOffset, dataLength);
 	        }
 
-	        return byteArray;
+	        dds.mipmaps.push({
+	          data: byteArray,
+	          width: width,
+	          height: height
+	        });
+
+	        dataOffset += dataLength;
+
+	        width = Math.max(width * 0.5, 1);
+	        height = Math.max(height * 0.5, 1);
 	      }
-
-	      var DDS_MAGIC = 0x20534444,
-
-	      //DDSD_CAPS = 0x1,
-	      //DDSD_HEIGHT = 0x2,
-	      //DDSD_WIDTH = 0x4,
-	      //DDSD_PITCH = 0x8,
-	      //DDSD_PIXELFORMAT = 0x1000,
-	      DDSD_MIPMAPCOUNT = 0x20000,
-
-	      //DDSD_LINEARSIZE = 0x80000,
-	      //DDSD_DEPTH = 0x800000,
-
-	      //DDSCAPS_COMPLEX = 0x8,
-	      //DDSCAPS_MIPMAP = 0x400000,
-	      //DDSCAPS_TEXTURE = 0x1000,
-
-	      DDSCAPS2_CUBEMAP = 0x200,
-
-	      //DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
-	      //DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
-	      //DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
-	      //DDSCAPS2_VOLUME = 0x200000,
-
-	      //DDPF_ALPHAPIXELS = 0x1,
-	      //DDPF_ALPHA = 0x2,
-	      DDPF_FOURCC = 0x4,
-
-	      //DDPF_RGB = 0x40,
-	      //DDPF_YUV = 0x200,
-	      //DDPF_LUMINANCE = 0x20000,
-
-	      FOURCC_DXT1 = fourCCToInt32('DXT1'),
-	          FOURCC_DXT3 = fourCCToInt32('DXT3'),
-	          FOURCC_DXT5 = fourCCToInt32('DXT5'),
-	          headerLengthInt = 31,
-	          // The header length in 32 bit ints
-
-	      // Offsets into the header array
-	      off_magic = 0,
-	          off_size = 1,
-	          off_flags = 2,
-	          off_height = 3,
-	          off_width = 4,
-	          off_mipmapCount = 7,
-	          off_pfFlags = 20,
-	          off_pfFourCC = 21,
-	          off_RGBBitCount = 22,
-	          off_RBitMask = 23,
-	          off_GBitMask = 24,
-	          off_BBitMask = 25,
-	          off_ABitMask = 26,
-
-	      //off_caps = 27,
-	      off_caps2 = 28,
-
-	      //off_caps3 = 29,
-	      //off_caps4 = 30,
-
-	      header,
-	          blockBytes,
-	          fourCC,
-	          isRGBAUncompressed,
-	          dataOffset,
-	          width,
-	          height,
-	          iFace,
-	          nFaces,
-	          iMip,
-	          byteArray,
-	          dataLength,
-	          dds = {
-	        mipmaps: [],
-	        width: 0,
-	        height: 0,
-	        format: null,
-	        mipmapCount: 1
-	      };
-
-	      header = new Int32Array(buffer, 0, headerLengthInt);
-
-	      // Parse header
-
-	      if (header[off_magic] !== DDS_MAGIC) {
-	        _log2.default.error('THREE.DDSLoader.parse: Invalid magic number in DDS ' + 'header.');
-	        return dds;
-	      }
-
-	      if (!header[off_pfFlags] & DDPF_FOURCC) {
-	        _log2.default.error('THREE.DDSLoader.parse: Unsupported format, must ' + 'contain a FourCC code.');
-	        return dds;
-	      }
-
-	      fourCC = header[off_pfFourCC];
-	      isRGBAUncompressed = false;
-
-	      switch (fourCC) {
-	        case FOURCC_DXT1:
-	          blockBytes = 8;
-	          dds.format = _three2.default.RGB_S3TC_DXT1_Format;
-	          break;
-
-	        case FOURCC_DXT3:
-	          blockBytes = 16;
-	          dds.format = _three2.default.RGBA_S3TC_DXT3_Format;
-	          break;
-
-	        case FOURCC_DXT5:
-	          blockBytes = 16;
-	          dds.format = _three2.default.RGBA_S3TC_DXT5_Format;
-	          break;
-
-	        default:
-	          if (header[off_RGBBitCount] === 32 && header[off_RBitMask] & 0xff0000 && header[off_GBitMask] & 0xff00 && header[off_BBitMask] & 0xff && header[off_ABitMask] & 0xff000000) {
-	            isRGBAUncompressed = true;
-	            blockBytes = 64;
-	            dds.format = _three2.default.RGBAFormat;
-	          } else {
-	            _log2.default.error('THREE.DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
-	            return dds;
-	          }
-	      }
-
-	      dds.mipmapCount = 1;
-
-	      if (header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
-	        dds.mipmapCount = Math.max(1, header[off_mipmapCount]);
-	      }
-
-	      // TODO: Verify that all faces of the cubemap are present with
-	      // DDSCAPS2_CUBEMAP_POSITIVEX, etc.
-
-	      dds.isCubemap = header[off_caps2] & DDSCAPS2_CUBEMAP ? true : false;
-
-	      dds.width = header[off_width];
-	      dds.height = header[off_height];
-
-	      dataOffset = header[off_size] + 4;
-
-	      // Extract mipmaps buffers
 
 	      width = dds.width;
 	      height = dds.height;
-
-	      nFaces = dds.isCubemap ? 6 : 1;
-
-	      for (iFace = 0; iFace < nFaces; iFace += 1) {
-	        for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
-	          if (isRGBAUncompressed) {
-	            byteArray = loadARGBMip(buffer, dataOffset, width, height);
-	            dataLength = byteArray.length;
-	          } else {
-	            dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
-	            byteArray = new Uint8Array(buffer, dataOffset, dataLength);
-	          }
-
-	          dds.mipmaps.push({
-	            data: byteArray,
-	            width: width,
-	            height: height
-	          });
-
-	          dataOffset += dataLength;
-
-	          width = Math.max(width * 0.5, 1);
-	          height = Math.max(height * 0.5, 1);
-	        }
-
-	        width = dds.width;
-	        height = dds.height;
-	      }
-
-	      return dds;
 	    }
-	  }]);
+
+	    return dds;
+	  };
+
+	  window.VAPI.BaseTextureAsset = BaseTextureAsset;
 
 	  return BaseTextureAsset;
-	}(_Box3DAsset3.default);
-
-	BaseTextureAsset.LAYOUT = {
-	  NORMAL: 101,
-	  STEREO_2D_OVER_UNDER: 102,
-	  STEREO_2D_LEFT_RIGHT: 103,
-	  STEREO_2D_RIGHT_LEFT: 104,
-	  STEREO_CUBE_HORIZONTAL: 105
-	};
-
-	window.VAPI.BaseTextureAsset = BaseTextureAsset;
-	// export default BaseTextureAsset;
-	module.exports = BaseTextureAsset;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 7 */
@@ -64902,7 +64813,7 @@
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(142);
+	var _raf = __webpack_require__(143);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -66186,7 +66097,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(13), __webpack_require__(14), __webpack_require__(77), __webpack_require__(78), __webpack_require__(84), __webpack_require__(75), __webpack_require__(85), __webpack_require__(86), __webpack_require__(88), __webpack_require__(89), __webpack_require__(90), __webpack_require__(134), __webpack_require__(141)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, uuid, RuntimeEvents, ApplicationRegistry, DocumentRegistry, SceneRegistry, PrefabRegistry, GeometryRegistry, MaterialRegistry, TextureRegistry, AnimationRegistry, ScriptRegistry, ShaderRegistry, AudioRegistry) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(13), __webpack_require__(14), __webpack_require__(77), __webpack_require__(78), __webpack_require__(84), __webpack_require__(75), __webpack_require__(85), __webpack_require__(86), __webpack_require__(88), __webpack_require__(89), __webpack_require__(90), __webpack_require__(135), __webpack_require__(142)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, uuid, RuntimeEvents, ApplicationRegistry, DocumentRegistry, SceneRegistry, PrefabRegistry, GeometryRegistry, MaterialRegistry, TextureRegistry, AnimationRegistry, ScriptRegistry, ShaderRegistry, AudioRegistry) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -70568,9 +70479,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(94),__webpack_require__(114),__webpack_require__(95),__webpack_require__(96),__webpack_require__(97),__webpack_require__(98),__webpack_require__(99),__webpack_require__(100),__webpack_require__(101),__webpack_require__(102),__webpack_require__(103),__webpack_require__(104),__webpack_require__(105),__webpack_require__(106),__webpack_require__(107),__webpack_require__(108),__webpack_require__(109),__webpack_require__(110),__webpack_require__(111),__webpack_require__(112),__webpack_require__(113),__webpack_require__(92),__webpack_require__(115),__webpack_require__(116),__webpack_require__(117),__webpack_require__(118),__webpack_require__(119),__webpack_require__(120),__webpack_require__(121),__webpack_require__(122),__webpack_require__(123),__webpack_require__(124),__webpack_require__(125),__webpack_require__(126),__webpack_require__(127),__webpack_require__(128),__webpack_require__(129),__webpack_require__(130),__webpack_require__(131),__webpack_require__(132),__webpack_require__(133) 
+	  __webpack_require__(94),__webpack_require__(114),__webpack_require__(95),__webpack_require__(96),__webpack_require__(97),__webpack_require__(98),__webpack_require__(99),__webpack_require__(100),__webpack_require__(101),__webpack_require__(102),__webpack_require__(103),__webpack_require__(104),__webpack_require__(105),__webpack_require__(106),__webpack_require__(107),__webpack_require__(108),__webpack_require__(109),__webpack_require__(110),__webpack_require__(111),__webpack_require__(112),__webpack_require__(113),__webpack_require__(92),__webpack_require__(115),__webpack_require__(116),__webpack_require__(117),__webpack_require__(118),__webpack_require__(119),__webpack_require__(120),__webpack_require__(121),__webpack_require__(122),__webpack_require__(123),__webpack_require__(124),__webpack_require__(125),__webpack_require__(126),__webpack_require__(127),__webpack_require__(128),__webpack_require__(129),__webpack_require__(130),__webpack_require__(131),__webpack_require__(132),__webpack_require__(133),__webpack_require__(134) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
-	  Component2DTextLabel,ComponentAnnotation,ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentCustomControl,ComponentDebugConsoleDisplay,ComponentDebugTextureRender,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderTargetViewer,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentShots,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentSphereMapCapture,ComponentTextRenderer
+	  Component2DTextLabel,ComponentAnnotation,ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentCustomControl,ComponentDebugConsoleDisplay,ComponentDebugTextureRender,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderTargetViewer,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentShots,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentSphereMapCapture,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(VAPI) {
 	   VAPI.ScriptRegistry.registerScript({
 	  "id": "text_label_component",
@@ -74893,11 +74804,6 @@
 	        "min": 1,
 	        "max": 1000000
 	      },
-	      "leftEye": {
-	        "name": "leftEye",
-	        "type": "b",
-	        "default": true
-	      },
 	      "skyboxTexture": {
 	        "name": "skyboxTexture",
 	        "type": "asset",
@@ -74929,7 +74835,6 @@
 	    },
 	    "attributesOrder": [
 	      "size",
-	      "leftEye",
 	      "skyboxTexture",
 	      "skyboxFogPower",
 	      "skyboxFogScale"
@@ -75080,7 +74985,43 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/TextRenderer"
 	  }
-	}, ComponentTextRenderer); 
+	}, ComponentTextRenderer);  VAPI.ScriptRegistry.registerScript({
+	  "id": "panorama_to_cubemap_script",
+	  "name": "Panorama To Cube Map",
+	  "properties": {
+	    "description": "A controller that allows a camera to easily orbit a target object.",
+	    "attributes": {
+	      "panoramaTexture": {
+	        "name": "panoramaTexture",
+	        "type": "asset",
+	        "default": null,
+	        "filter": {
+	          "texture2D": true,
+	          "renderTexture2D": true
+	        },
+	        "description": "The texture to convert to a cube map."
+	      }
+	    },
+	    "attributesOrder": [
+	      "panoramaTexture"
+	    ],
+	    "events": {},
+	    "externalDependencies": [],
+	    "filter": [
+	      "renderTextureCube"
+	    ],
+	    "category": "Rendering",
+	    "parsedComments": true,
+	    "flags": {
+	      "addremove": true,
+	      "disable": true,
+	      "persist": true,
+	      "unique": false,
+	      "display": true
+	    },
+	    "path": "Box3DRuntime/Components/BuiltIn/Texture2dToCubeMap"
+	  }
+	}, ComponentTexture2dToCubeMap); 
 	}
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -83231,6 +83172,7 @@
 	      runtimeData.position.applyQuaternion(runtimeData.quaternion);
 	      runtimeData.position.add(this._pivotWorldPos);
 	      runtimeData.lookAt(this._pivotWorldPos);
+	      this.getRuntime().needsRender = true;
 	    } else {
 	      // //If the camera isn't being controlled by the user, continue interpolating
 	      // to the desired position/quaternion
@@ -83249,6 +83191,7 @@
 	          this._tempVector.multiplyScalar(interpDistance * 10.0 * this.interpSpeed * delta);
 
 	          runtimeData.position.add(this._tempVector);
+	          this.getRuntime().needsRender = true;
 	        }
 	      } else {
 	        runtimeData.lookAt(this._pivotWorldPos);
@@ -83258,7 +83201,6 @@
 	      }
 	    }
 
-	    this.getRuntime().needsRender = true;
 	    this.hasChanged = true;
 
 	    this.orbitMovement.set(0.0, 0.0);
@@ -87899,9 +87841,10 @@
 	        camera: pass.camera
 	      });
 	    }
-	    for (var i in this.renderPasses) {
-	      this.renderPasses[i].pass.clear = false;
-	    }
+	    this.renderPasses.forEach(function (pass) {
+	      pass.pass.clear = false;
+	    });
+
 	    this.renderPasses[0].pass.clear = true;
 	    this.renderPasses[0].pass.clearColor = this.clearColor;
 	    this.renderPasses[0].pass.clearAlpha = this.clearAlpha;
@@ -88939,6 +88882,8 @@
 /* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
 	/* eslint-disable */
 	/**
 	 * @vid skybox_renderer
@@ -88946,7 +88891,6 @@
 	 * @vcategory Rendering
 	 * @vfilter scene
 	 * @vattr Float size { 'default' : 100000, 'min' : 1.0, 'max' : 1000000.0 }
-	 * @vattr Boolean leftEye { 'default' : true }
 	 * @vattr Asset skyboxTexture {
 	 *   'description': '', 'type': 'asset',
 	 *   'filter': {
@@ -88978,36 +88922,8 @@
 	 * }
 	 */
 	/* eslint-enable */
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _three = __webpack_require__(5);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _lodash = __webpack_require__(3);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _Box3DComponent2 = __webpack_require__(93);
-
-	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	var _BaseTextureAsset = __webpack_require__(6);
-
-	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var SkyboxRenderer = function (_Box3DComponent) {
-	  _inherits(SkyboxRenderer, _Box3DComponent);
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(93)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	  'use strict';
 
 	  /**
 	   * A skybox component class.
@@ -89016,294 +88932,270 @@
 	   */
 
 	  function SkyboxRenderer() {
-	    _classCallCheck(this, SkyboxRenderer);
+	    this.skyboxScene = null;
+	    this.skyboxMesh = null;
+	    this.skyboxGeometry = null;
+	    this.skyboxMaterialCube = null;
+	    this.skyboxMaterial2D = null;
+	    this.skyboxUniforms = null;
+	    this.skyboxVShader = null;
+	    this.skyboxPShader = null;
+	    this.renderer = null;
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkyboxRenderer).call(this));
-
-	    _this.skyboxScene = null;
-	    _this.skyboxMesh = null;
-	    _this.skyboxGeometry = null;
-	    _this.skyboxMaterialCube = null;
-	    _this.skyboxMaterial2D = null;
-	    _this.skyboxUniforms = null;
-	    _this.skyboxVShader = null;
-	    _this.skyboxPShader = null;
-	    _this.renderer = null;
-
-	    _this.skyboxTexture = null;
-	    _this.size = 10000.0;
-	    _this.isEditor = false;
-	    return _this;
+	    this.skyboxTexture = null;
+	    this.size = 10000.0;
+	    this.isEditor = false;
 	  }
 
-	  _createClass(SkyboxRenderer, [{
-	    key: 'init',
-	    value: function init() {
+	  SkyboxRenderer.prototype = new Box3DComponent();
 
-	      this.renderer = this.getThreeRenderer();
+	  SkyboxRenderer.prototype.editorInit = function () {
+	    this.isEditor = true;
+	    this.init();
+	    this.getEntity().when('load', this.objectLoaded, this);
+	  };
 
-	      this.createGeometry();
-	      this.createScene();
+	  SkyboxRenderer.prototype.init = function () {
 
-	      this.skyboxRenderPass = new _three2.default.RenderPass(this.skyboxScene);
-	      this.skyboxRenderPass.clear = true;
-	      this.skyboxRenderPass.enabled = false;
+	    this.renderer = this.getThreeRenderer();
 
-	      this.createMaterial();
-	      this.initTexture();
-	      this.createMesh();
+	    this.createGeometry();
+	    this.createScene();
 
-	      this.mainScene = this.getEntity().getParentAsset();
+	    this.skyboxRenderPass = new THREE.RenderPass(this.skyboxScene);
+	    this.skyboxRenderPass.clear = true;
+	    this.skyboxRenderPass.enabled = false;
 
-	      this.on('enable', this.enable, this);
-	      this.on('disable', this.disable, this);
-	      this.getEntity().on('setSkyboxTexture', this.setSkyboxTexture, this);
-	      this.getRuntime().on('rebuildMaterials', this.rebuildMaterials, this);
-	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
-	      this.off('enable', this.enable, this);
-	      this.off('disable', this.disable, this);
-	      this.getRuntime().off('rebuildMaterials', this.rebuildMaterials, this);
-	      this.getEntity().off('setSkyboxTexture', this.setSkyboxTexture, this);
-	      if (this.skyboxScene) {
-	        this.skyboxScene.remove(this.skyboxMesh);
-	      }
-	      this.skyboxGeometry.dispose();
-	      this.skyboxMaterialCube.dispose();
-	      this.skyboxMaterial2D.dispose();
-	      this.skyboxScene = null;
-	      this.skyboxMesh = null;
-	      this.skyboxGeometry = null;
-	      this.skyboxMaterialCube = null;
-	      this.skyboxMaterial2D = null;
-	      this.skyboxUniforms = null;
-	      this.skyboxTexture = null;
-	    }
-	  }, {
-	    key: 'createScene',
-	    value: function createScene() {
-	      this.skyboxScene = new _three2.default.Scene();
-	      this.skyboxScene.matrixAutoUpdate = false;
-	    }
-	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changed) {
-	      if (changed.skyboxTexture !== undefined) {
-	        this.initTexture();
-	        this.skyboxMesh.material = this.currentMaterial;
-	      }
-	      if (changed.color) {
-	        this.skyboxUniforms.color.value = this.color;
-	      }
-	      if (changed.skyboxFogScale !== undefined) {
-	        this.skyboxMaterialCube.uniforms.skyboxFogScale.value = this.skyboxFogScale;
-	        this.skyboxMaterial2D.uniforms.skyboxFogScale.value = this.skyboxFogScale;
-	      }
-	      if (changed.skyboxFogPower !== undefined) {
-	        this.skyboxMaterialCube.uniforms.skyboxFogPower.value = this.skyboxFogPower;
-	        this.skyboxMaterial2D.uniforms.skyboxFogPower.value = this.skyboxFogPower;
-	      }
-	      if (this.skyboxScene && this.mainScene.runtimeData && this.mainScene.runtimeData.fog) {
-	        this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
-	      }
-	      if (changed.size) {
-	        if (this.skyboxMesh) {
-	          this.skyboxScene.remove(this.skyboxMesh);
-	          this.skyboxMesh.geometry = undefined;
-	          this.skyboxGeometry.dispose();
-	          this.createGeometry();
-	          this.createMesh();
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      if (this.skyboxScene) {
-	        this.skyboxScene.add(this.skyboxMesh);
-	        if (this.skyboxTexture && !this.skyboxTexture.isLoaded()) {
-	          this.skyboxTexture.load();
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      if (this.skyboxScene) {
-	        this.skyboxScene.remove(this.skyboxMesh);
-	      }
-	    }
-	  }, {
-	    key: 'objectLoaded',
-	    value: function objectLoaded() {
-	      this.getRenderer().addRenderPass(this.skyboxRenderPass, -1);
-	      if (this.mainScene.runtimeData.fog) {
-	        this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
-	      }
-	      this.rebuildMaterials();
-	    }
-	  }, {
-	    key: 'createGeometry',
-	    value: function createGeometry() {
-	      this.skyboxGeometry = new _three2.default.BoxGeometry(this.size, this.size, this.size, 32, 32, 32);
-	      this.skyboxGeometry.dynamic = false;
-	    }
-	  }, {
-	    key: 'createMesh',
-	    value: function createMesh() {
-	      this.skyboxMesh = new _three2.default.Mesh(this.skyboxGeometry, this.currentMaterial);
-	      this.skyboxMesh.frustumCulled = false;
-	      this.skyboxMesh.castShadow = false;
-	      this.skyboxMesh.receiveShadow = false;
-	      this.skyboxMesh.matrixAutoUpdate = false;
-	      this.skyboxMesh.name = 'Skybox';
-	      if (this.isEnabled()) {
-	        this.skyboxScene.add(this.skyboxMesh);
-	        this.skyboxMesh.updateMatrix();
-	      }
-	    }
-	  }, {
-	    key: 'initTexture',
-	    value: function initTexture() {
-	      var _this2 = this;
+	    this.createMaterial();
+	    this.initTexture();
+	    this.createMesh();
 
-	      if (!this.skyboxTexture) {
-	        this.currentMaterial = this.skyboxMaterialNoTex;
-	        this.currentMaterial.needsUpdate = true;
-	        this.skyboxRenderPass.enabled = true;
-	      } else {
-	        if (this.skyboxTexture.type === 'textureCube' || this.skyboxTexture.type === 'renderTextureCube') {
-	          this.currentMaterial = this.skyboxMaterialCube;
-	        } else {
-	          this.currentMaterial = this.skyboxMaterial2D;
-	        }
+	    this.mainScene = this.getEntity().getParentAsset();
 
-	        if (this.skyboxTexture.getProperty('layout') !== this.currentMaterial.defines.LAYOUT) {
-	          // Based on the layout being used and the eye that this skybox represents, use only the
-	          // appropriate part of the texture.
-	          this.currentMaterial.defines.STEREO_EYE = this.leftEye ? 'STEREO_EYE_LEFT' : 'STEREO_EYE_RIGHT';
-	          this.currentMaterial.defines.LAYOUT = this.skyboxTexture.getProperty('layout');
-	          this.currentMaterial.needsUpdate = true;
-	        }
+	    this.on('enable', this.enable, this);
+	    this.on('disable', this.disable, this);
+	    this.getEntity().on('setSkyboxTexture', this.setSkyboxTexture, this);
+	    this.getRuntime().on('rebuildMaterials', this.rebuildMaterials, this);
+	  };
 
-	        this.skyboxTexture.when('load', function () {
-	          _this2.skyboxUniforms.environmentTexture.value = _this2.skyboxTexture.runtimeData;
-	          _this2.currentMaterial.needsUpdate = true;
-	          _this2.skyboxRenderPass.enabled = true;
-	        }, this);
-	        if (this.isEnabled()) {
-	          this.skyboxTexture.load();
-	        }
-	      }
+	  SkyboxRenderer.prototype.editorShutdown = function () {
+
+	    this.shutdown();
+	  };
+
+	  SkyboxRenderer.prototype.shutdown = function () {
+	    this.off('enable', this.enable, this);
+	    this.off('disable', this.disable, this);
+	    this.getRuntime().off('rebuildMaterials', this.rebuildMaterials, this);
+	    this.getEntity().off('setSkyboxTexture', this.setSkyboxTexture, this);
+	    if (this.skyboxScene) {
+	      this.skyboxScene.remove(this.skyboxMesh);
 	    }
-	  }, {
-	    key: 'setSkyboxTexture',
-	    value: function setSkyboxTexture(textureId) {
-	      this.skyboxTexture = this.getAssetRegistry().Textures.getAssetById(textureId);
+	    this.skyboxGeometry.dispose();
+	    this.skyboxMaterialCube.dispose();
+	    this.skyboxMaterial2D.dispose();
+	    this.skyboxScene = null;
+	    this.skyboxMesh = null;
+	    this.skyboxGeometry = null;
+	    this.skyboxMaterialCube = null;
+	    this.skyboxMaterial2D = null;
+	    this.skyboxUniforms = null;
+	    this.skyboxTexture = null;
+	  };
+
+	  SkyboxRenderer.prototype.createScene = function () {
+	    this.skyboxScene = new THREE.Scene();
+	    this.skyboxScene.matrixAutoUpdate = false;
+	  };
+
+	  SkyboxRenderer.prototype.attributesChanged = function (changed) {
+	    if (changed.skyboxTexture !== undefined) {
 	      this.initTexture();
 	      this.skyboxMesh.material = this.currentMaterial;
 	    }
-	  }, {
-	    key: 'rebuildMaterials',
-	    value: function rebuildMaterials() {
-	      if (this.skyboxMaterialCube) {
-	        this.skyboxMaterialCube.needsUpdate = true;
-	      }
-	      if (this.skyboxMaterial2D) {
-	        this.skyboxMaterial2D.needsUpdate = true;
-	      }
-	      if (this.skyboxMaterialNoTex) {
-	        this.skyboxMaterialNoTex.needsUpdate = true;
+	    if (changed.color) {
+	      this.skyboxUniforms.color.value = this.color;
+	    }
+	    if (changed.skyboxFogScale !== undefined) {
+	      this.skyboxMaterialCube.uniforms.skyboxFogScale.value = this.skyboxFogScale;
+	      this.skyboxMaterial2D.uniforms.skyboxFogScale.value = this.skyboxFogScale;
+	    }
+	    if (changed.skyboxFogPower !== undefined) {
+	      this.skyboxMaterialCube.uniforms.skyboxFogPower.value = this.skyboxFogPower;
+	      this.skyboxMaterial2D.uniforms.skyboxFogPower.value = this.skyboxFogPower;
+	    }
+	    if (this.skyboxScene && this.mainScene.runtimeData && this.mainScene.runtimeData.fog) {
+	      this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
+	    }
+	    if (changed.size) {
+	      if (this.skyboxMesh) {
+	        this.skyboxScene.remove(this.skyboxMesh);
+	        this.skyboxMesh.geometry = undefined;
+	        this.skyboxGeometry.dispose();
+	        this.createGeometry();
+	        this.createMesh();
 	      }
 	    }
-	  }, {
-	    key: 'createMaterial',
-	    value: function createMaterial() {
-	      var _this3 = this;
+	  };
 
-	      this.skyboxUniforms = _three2.default.UniformsUtils.merge([{
-	        fogColor: {
-	          type: 'c',
-	          value: new _three2.default.Color()
-	        }
-	      }, {
-	        skyboxFogPower: {
-	          type: 'f',
-	          value: this.skyboxFogPower
-	        }
-	      }, {
-	        skyboxFogScale: {
-	          type: 'f',
-	          value: this.skyboxFogScale
-	        }
-	      }, {
-	        environmentTexture: {
-	          type: 't',
-	          value: null
-	        }
-	      }]), this.skyboxVShader = ['varying vec3 vCameraVector;', 'void main() {',
-	      // 'vec4 worldPosition = modelMatrix * vec4( position, 1.0 );',
-	      'vCameraVector = (modelMatrix * vec4( position, 1.0 )).xyz;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
+	  SkyboxRenderer.prototype.enable = function () {
+	    if (this.skyboxScene) {
+	      this.skyboxScene.add(this.skyboxMesh);
+	      if (this.skyboxTexture && !this.skyboxTexture.isLoaded()) {
+	        this.skyboxTexture.load();
+	      }
+	    }
+	  };
 
-	      this.skyboxPShader = ['#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', '#if (LAYOUT == LAYOUT_STEREO_2D_OVER_UNDER)', 'sampleUV.y *= 0.5;', '#if (STEREO_EYE == STEREO_EYE_LEFT)', 'sampleUV.y += 0.5;', '#endif', '#endif', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );', '}'].join('\n');
+	  SkyboxRenderer.prototype.disable = function () {
+	    if (this.skyboxScene) {
+	      this.skyboxScene.remove(this.skyboxMesh);
+	    }
+	  };
 
-	      this.skyboxMaterialCube = new _three2.default.ShaderMaterial({
-	        vertexShader: this.skyboxVShader,
-	        fragmentShader: this.skyboxPShader,
-	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
-	        depthTest: false,
-	        depthWrite: false,
-	        defines: {
-	          USE_CUBEMAP: ''
-	        }
-	      });
+	  SkyboxRenderer.prototype.objectLoaded = function () {
+	    this.getRenderer().addRenderPass(this.skyboxRenderPass, -1);
+	    if (this.mainScene.runtimeData.fog) {
+	      this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
+	    }
+	    this.rebuildMaterials();
+	  };
 
-	      this.skyboxMaterial2D = new _three2.default.ShaderMaterial({
-	        vertexShader: this.skyboxVShader,
-	        fragmentShader: this.skyboxPShader,
-	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
-	        depthTest: false,
-	        depthWrite: false,
-	        defines: {
-	          USE_2DMAP: ''
-	        }
-	      });
+	  SkyboxRenderer.prototype.createGeometry = function () {
+	    this.skyboxGeometry = new THREE.BoxGeometry(this.size, this.size, this.size, 32, 32, 32);
+	    this.skyboxGeometry.dynamic = false;
+	  };
 
-	      _lodash2.default.each(_BaseTextureAsset2.default.LAYOUT, function (value, name) {
-	        _this3.skyboxMaterialCube.defines['LAYOUT_' + name] = value;
-	        _this3.skyboxMaterial2D.defines['LAYOUT_' + name] = value;
+	  SkyboxRenderer.prototype.createMesh = function () {
+	    this.skyboxMesh = new THREE.Mesh(this.skyboxGeometry, this.currentMaterial);
+	    this.skyboxMesh.frustumCulled = false;
+	    this.skyboxMesh.castShadow = false;
+	    this.skyboxMesh.receiveShadow = false;
+	    this.skyboxMesh.matrixAutoUpdate = false;
+	    this.skyboxMesh.name = 'Skybox';
+	    if (this.isEnabled()) {
+	      this.skyboxScene.add(this.skyboxMesh);
+	      this.skyboxMesh.updateMatrix();
+	    }
+	  };
+
+	  SkyboxRenderer.prototype.initTexture = function () {
+	    if (!this.skyboxTexture) {
+	      this.currentMaterial = this.skyboxMaterialNoTex;
+	      this.currentMaterial.needsUpdate = true;
+	      this.skyboxRenderPass.enabled = true;
+	    } else {
+	      if (this.skyboxTexture.type === 'textureCube' || this.skyboxTexture.type === 'renderTextureCube') {
+	        this.currentMaterial = this.skyboxMaterialCube;
+	      } else {
+	        this.currentMaterial = this.skyboxMaterial2D;
+	      }
+
+	      this.skyboxTexture.when('load', function () {
+	        this.skyboxUniforms.environmentTexture.value = this.skyboxTexture.runtimeData;
+	        this.currentMaterial.needsUpdate = true;
+	        this.skyboxRenderPass.enabled = true;
 	      }, this);
-
-	      this.skyboxMaterial2D.defines.LAYOUT = 'LAYOUT_NORMAL';
-	      this.skyboxMaterialCube.defines.LAYOUT = 'LAYOUT_NORMAL';
-	      this.skyboxMaterial2D.defines.STEREO_EYE_LEFT = '1';
-	      this.skyboxMaterialCube.defines.STEREO_EYE_RIGHT = '2';
-	      this.skyboxMaterial2D.defines.STEREO_EYE = 'STEREO_EYE_LEFT';
-	      this.skyboxMaterialCube.defines.STEREO_EYE = 'STEREO_EYE_LEFT';
-
-	      this.skyboxMaterialNoTex = new _three2.default.ShaderMaterial({
-	        vertexShader: this.skyboxVShader,
-	        fragmentShader: this.skyboxPShader,
-	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
-	        depthTest: false,
-	        depthWrite: false
-	      });
-
-	      this.skyboxMaterialCube.precision = 'highp';
+	      if (this.isEnabled()) {
+	        this.skyboxTexture.load();
+	      }
 	    }
-	  }]);
+	  };
+
+	  SkyboxRenderer.prototype.setSkyboxTexture = function (textureId) {
+	    this.skyboxTexture = this.getAssetRegistry().Textures.getAssetById(textureId);
+	    this.initTexture();
+	    this.skyboxMesh.material = this.currentMaterial;
+	  };
+
+	  SkyboxRenderer.prototype.rebuildMaterials = function () {
+	    if (this.skyboxMaterialCube) {
+	      this.skyboxMaterialCube.needsUpdate = true;
+	    }
+	    if (this.skyboxMaterial2D) {
+	      this.skyboxMaterial2D.needsUpdate = true;
+	    }
+	    if (this.skyboxMaterialNoTex) {
+	      this.skyboxMaterialNoTex.needsUpdate = true;
+	    }
+	  };
+
+	  SkyboxRenderer.prototype.createMaterial = function () {
+
+	    this.skyboxUniforms = THREE.UniformsUtils.merge([{
+	      fogColor: {
+	        type: 'c',
+	        value: new THREE.Color()
+	      }
+	    }, {
+	      skyboxFogPower: {
+	        type: 'f',
+	        value: this.skyboxFogPower
+	      }
+	    }, {
+	      skyboxFogScale: {
+	        type: 'f',
+	        value: this.skyboxFogScale
+	      }
+	    }, {
+	      environmentTexture: {
+	        type: 't',
+	        value: null
+	      }
+	    }]), this.skyboxVShader = ['varying vec3 vCameraVector;', 'void main() {',
+	    // 'vec4 worldPosition = modelMatrix * vec4( position, 1.0 );',
+	    'vCameraVector = (modelMatrix * vec4( position, 1.0 )).xyz;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
+
+	    this.skyboxPShader = [
+
+	    // 'uniform vec3 fogColor;',
+	    // 'uniform float skyboxFogPower;',
+	    // 'uniform float skyboxFogScale;',
+	    '#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );',
+
+	    // 'float powThing = abs(pow( (1.0 - cameraVecN.y), ( skyboxFogPower) * 12.0 ));',
+	    // 'float fogFactor = clamp( powThing + (skyboxFogScale * 2.0 - 1.0), 0.0, 1.0);',
+	    // 'gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );',
+	    '}'].join('\n');
+
+	    this.skyboxMaterialCube = new THREE.ShaderMaterial({
+	      vertexShader: this.skyboxVShader,
+	      fragmentShader: this.skyboxPShader,
+	      uniforms: this.skyboxUniforms,
+	      side: THREE.BackSide,
+	      depthTest: false,
+	      depthWrite: false,
+	      defines: {
+	        USE_CUBEMAP: ''
+	      }
+	    });
+
+	    this.skyboxMaterial2D = new THREE.ShaderMaterial({
+	      vertexShader: this.skyboxVShader,
+	      fragmentShader: this.skyboxPShader,
+	      uniforms: this.skyboxUniforms,
+	      side: THREE.BackSide,
+	      depthTest: false,
+	      depthWrite: false,
+	      defines: {
+	        USE_2DMAP: ''
+	      }
+	    });
+
+	    this.skyboxMaterialNoTex = new THREE.ShaderMaterial({
+	      vertexShader: this.skyboxVShader,
+	      fragmentShader: this.skyboxPShader,
+	      uniforms: this.skyboxUniforms,
+	      side: THREE.BackSide,
+	      depthTest: false,
+	      depthWrite: false
+	    });
+
+	    this.skyboxMaterialCube.precision = 'highp';
+	  };
 
 	  return SkyboxRenderer;
-	}(_Box3DComponent3.default);
-
-	// export default SkyboxRenderer;
-
-	module.exports = SkyboxRenderer;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 132 */
@@ -89713,9 +89605,167 @@
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	/**
+	 * @vid panorama_to_cubemap_script
+	 * @vname Panorama To Cube Map
+	 * @vdescription A controller that allows a camera to easily orbit a target object.
+	 * @vfilter renderTextureCube
+	 * @vcategory Rendering
+	 * @vattr asset panoramaTexture {
+	 *   default : null,
+	 *   filter : { texture2D: true, renderTexture2D: true },
+	 *   description : 'The texture to convert to a cube map.'
+	 * }
+	*/
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(93)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, Box3DComponent) {
+	  'use strict';
+
+	  function PanoramaToCubeMap() {
+	    this.skyboxScene = undefined;
+	    this.cameras = new Array(6);
+	  }
+
+	  PanoramaToCubeMap.prototype = new Box3DComponent();
+
+	  PanoramaToCubeMap.prototype.attributesChanged = function (changes) {
+	    if (changes.panoramaTexture !== undefined) {
+	      this.updateTexture();
+	    }
+	  };
+
+	  PanoramaToCubeMap.prototype.init = function () {
+	    this.skyboxScene = new THREE.Scene();
+	    this.initCameras();
+	    this.createSkybox();
+	  };
+
+	  PanoramaToCubeMap.prototype.objectCreated = function () {
+	    this.updateTexture();
+	  };
+
+	  PanoramaToCubeMap.prototype.shutdown = function () {
+	    if (this.panoramaTexture) {
+	      this.panoramaTexture.off('load', this.renderToCube, this);
+	    }
+	    this.skyboxGeometry.dispose();
+	    this.equirectMaterial.dispose();
+	    this.skyboxScene = undefined;
+	    this.skyboxMesh = undefined;
+	    this.panoramaTexture = undefined;
+	  };
+
+	  PanoramaToCubeMap.prototype.updateTexture = function () {
+	    if (this.panoramaTexture) {
+	      this.panoramaTexture.off('load', this.renderToCube, this);
+	      if (this.panoramaTexture.getProperty('isHDR')) {
+	        this.getEntity().setProperty('isHDR', true);
+	      } else {
+	        this.getEntity().setProperty('isHDR', false);
+	      }
+	      this.panoramaTexture.when('load', this.renderToCube, this);
+	      if (this.panoramaTexture.isUnloaded()) {
+	        this.panoramaTexture.load();
+	      }
+	    }
+	  };
+
+	  PanoramaToCubeMap.prototype.createSkybox = function () {
+	    var equirectShader = THREE.ShaderLib['equirect'];
+	    equirectShader.uniforms.tFlip.value = 1.0;
+	    this.equirectMaterial = new THREE.ShaderMaterial({
+	      fragmentShader: equirectShader.fragmentShader,
+	      vertexShader: equirectShader.vertexShader,
+	      uniforms: equirectShader.uniforms,
+	      depthWrite: false,
+	      side: THREE.BackSide
+	    });
+
+	    this.skyboxGeometry = new THREE.BoxGeometry(100, 100, 100, 1, 1, 1);
+	    this.skyboxGeometry.dynamic = false;
+	    this.skyboxMesh = new THREE.Mesh(this.skyboxGeometry, this.equirectMaterial);
+	    this.skyboxMesh.frustumCulled = false;
+	    this.skyboxMesh.castShadow = false;
+	    this.skyboxMesh.receiveShadow = false;
+	    if (this.isEnabled()) {
+	      this.skyboxScene.add(this.skyboxMesh);
+	    }
+	  };
+
+	  PanoramaToCubeMap.prototype.initCameras = function () {
+
+	    var fov = 90,
+	        aspect = 1;
+
+	    this.cameras[0] = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
+	    this.cameras[0].up.set(0, -1, 0);
+	    this.cameras[0].lookAt(new THREE.Vector3(1, 0, 0));
+	    this.cameras[0].rotationAutoUpdate = false;
+	    this.skyboxScene.add(this.cameras[0]);
+
+	    this.cameras[1] = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
+	    this.cameras[1].up.set(0, -1, 0);
+	    this.cameras[1].lookAt(new THREE.Vector3(-1, 0, 0));
+	    this.cameras[1].rotationAutoUpdate = false;
+	    this.skyboxScene.add(this.cameras[1]);
+
+	    this.cameras[2] = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
+	    this.cameras[2].up.set(0, 0, 1);
+	    this.cameras[2].lookAt(new THREE.Vector3(0, 1, 0));
+	    this.cameras[2].rotationAutoUpdate = false;
+	    this.skyboxScene.add(this.cameras[2]);
+
+	    this.cameras[3] = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
+	    this.cameras[3].up.set(0, 0, -1);
+	    this.cameras[3].lookAt(new THREE.Vector3(0, -1, 0));
+	    this.cameras[3].rotationAutoUpdate = false;
+	    this.skyboxScene.add(this.cameras[3]);
+
+	    this.cameras[4] = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
+	    this.cameras[4].up.set(0, -1, 0);
+	    this.cameras[4].lookAt(new THREE.Vector3(0, 0, 1));
+	    this.cameras[4].rotationAutoUpdate = false;
+	    this.skyboxScene.add(this.cameras[4]);
+
+	    this.cameras[5] = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
+	    this.cameras[5].up.set(0, -1, 0);
+	    this.cameras[5].lookAt(new THREE.Vector3(0, 0, -1));
+	    this.cameras[5].rotationAutoUpdate = false;
+	    this.skyboxScene.add(this.cameras[5]);
+	  };
+
+	  PanoramaToCubeMap.prototype.renderToCube = function () {
+	    if (this.hasThreeData()) {
+
+	      this.equirectMaterial.uniforms.tEquirect.value = this.panoramaTexture.runtimeData;
+	      var renderTarget = this.getRuntimeData();
+	      var renderer = this.getThreeRenderer();
+
+	      renderTarget.texture.generateMipmaps = false;
+
+	      renderer.setViewport(0, 0, renderTarget.width, renderTarget.height);
+	      for (var i = 0; i < 5; i++) {
+	        renderTarget.activeCubeFace = i;
+	        renderer.render(this.skyboxScene, this.cameras[i], renderTarget);
+	      }
+	      renderTarget.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
+
+	      renderTarget.activeCubeFace = 5;
+	      renderer.render(this.skyboxScene, this.cameras[5], renderTarget);
+	    }
+	  };
+
+	  return PanoramaToCubeMap;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 135 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(76), __webpack_require__(135), __webpack_require__(136), __webpack_require__(140)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, BaseRegistry, ShaderAsset, Box3DShaderPBR_Metalness, Box3DShaderPBR_Specular) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(76), __webpack_require__(136), __webpack_require__(137), __webpack_require__(141)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, BaseRegistry, ShaderAsset, Box3DShaderPBR_Metalness, Box3DShaderPBR_Specular) {
 	  'use strict';
 
 	  var ShaderRegistry = function ShaderRegistry() {
@@ -89734,7 +89784,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -89922,12 +89972,12 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(137), __webpack_require__(138), __webpack_require__(139)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(138), __webpack_require__(139), __webpack_require__(140)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -89987,7 +90037,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -91118,24 +91168,24 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports) {
 
 	module.exports = "\r\n/**\r\n * Shader used as a Box3D material type\r\n *\r\n * Written by Mike Bond\r\n */\r\n#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\tattribute vec4 tangent;\r\n#endif\r\n\r\nattribute vec2 uv2;\r\n\r\nuniform float time;\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n\tuniform float logDepthBufFC;\r\n#endif\r\n\r\n#ifdef DISPLACEMENT_MAP_RGBA\r\n\tuniform float displacementMag;\r\n\tuniform float displacementBias;\r\n\tuniform sampler2D displacementTexture;\r\n\tuniform int displacementUVChannel;\r\n\tuniform vec2 displacementTextureOffset;\r\n\tuniform vec2 displacementTextureScale;\r\n\tuniform vec2 displacementTexturePan;\r\n#endif\r\n\r\nvarying vec4 vNormal_VS;\r\n\r\n#if ( defined(NORMAL_MAP) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\nvarying vec4 vTangent_VS;\r\nvarying vec4 vBinormal_VS;\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR ) && defined( ALBEDO )\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#if defined( USE_SHADOWMAP ) && defined( USE_SCENE_LIGHTS )\r\n\t\t#if NUM_SHADOWS > 0\r\n\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\tuniform mat4 shadowMatrix[ NUM_SHADOWS ];\r\n\t\t#endif\r\n\t#endif\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tuniform mat4 bindMatrix;\r\n\tuniform mat4 bindMatrixInverse;\r\n\r\n\t#ifdef BONE_TEXTURE\r\n\r\n\t\tuniform sampler2D boneTexture;\r\n\t\tuniform int boneTextureWidth;\r\n\t\tuniform int boneTextureHeight;\r\n\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tfloat j = i * 4.0;\r\n\t\t\tfloat x = mod( j, float( boneTextureWidth ) );\r\n\t\t\tfloat y = floor( j / float( boneTextureHeight ) );\r\n\r\n\t\t\tfloat dx = 1.0 / float( boneTextureWidth );\r\n\t\t\tfloat dy = 1.0 / float( boneTextureHeight );\r\n\r\n\t\t\ty = dy * ( y + 0.5 );\r\n\r\n\t\t\tvec4 v1 = texture2D( boneTexture, vec2( dx * ( x + 0.5 ), y ) );\r\n\t\t\tvec4 v2 = texture2D( boneTexture, vec2( dx * ( x + 1.5 ), y ) );\r\n\t\t\tvec4 v3 = texture2D( boneTexture, vec2( dx * ( x + 2.5 ), y ) );\r\n\t\t\tvec4 v4 = texture2D( boneTexture, vec2( dx * ( x + 3.5 ), y ) );\r\n\r\n\t\t\tmat4 bone = mat4( v1, v2, v3, v4 );\r\n\r\n\t\t\treturn bone;\r\n\t\t}\r\n\t#else\r\n\r\n\t\tuniform mat4 boneGlobalMatrices[ NUM_BONES ];\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tmat4 bone = boneGlobalMatrices[ int(i) ];\r\n\t\t\treturn bone;\r\n\t\t}\r\n\r\n\t#endif\r\n#endif\r\n\r\n//Only for m * v (not v * m!)\r\nvec3 mulVectorByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn (v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] ) )).xyz;\r\n}\r\n\r\n//Only for m * p (not p * m!)\r\nvec4 mulPointByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] + m[3] ) );\r\n}\r\n\r\n\r\n\r\nvoid main() {\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvUv.xy = uv;\r\n\tvUv.y = 1.0 - vUv.y;\r\n\tvUv.zw = uv2;\r\n\tvUv.w = 1.0 - vUv.w;\r\n#endif\r\n\r\n#if defined( DISPLACEMENT_MAP_RGBA )\r\n\tfloat texDisplacement = 0.0;\r\n\t#if ( DISPLACEMENT_MAP_RGBA == 0 )\r\n\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\t\ttexDisplacement = displacementMag * displacementMap.x + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\r\n\t#elif ( DISPLACEMENT_MAP_RGBA == 1 )\r\n\t\t#define DISPLACEMENT_WITH_NORMAL\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\r\n\t\ttexDisplacement = displacementMag * displacementMap.a + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\t#endif\r\n\tvec4 displacedPosition = vec4( (normal * texDisplacement ) + position.xyz, 1.0 );\r\n#else\r\n\tvec4 displacedPosition = vec4( position, 1.0 );\r\n\r\n#endif\r\n\r\n\r\nhighp vec3 vNormal = normal;\r\n#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\thighp vec3 vTangent = tangent.xyz;\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tmat4 boneMatX = getBoneMatrix( skinIndex.x );\r\n\tmat4 boneMatY = getBoneMatrix( skinIndex.y );\r\n\tmat4 boneMatZ = getBoneMatrix( skinIndex.z );\r\n\tmat4 boneMatW = getBoneMatrix( skinIndex.w );\r\n\r\n\tmat4 skinMatrix = mat4( 0.0 );\r\n        skinMatrix += skinWeight.x * boneMatX;\r\n\tskinMatrix += skinWeight.y * boneMatY;\r\n\tskinMatrix += skinWeight.z * boneMatZ;\r\n\tskinMatrix += skinWeight.w * boneMatW;\r\n        skinMatrix  = bindMatrixInverse * skinMatrix * bindMatrix;\r\n\r\n\tvNormal = (skinMatrix * vec4( vNormal, 0.0 )).xyz;\r\n\t#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\t\tvTangent = (skinMatrix * vec4( vTangent, 0.0 )).xyz;\r\n\t#endif\r\n\r\n\tvec4 skinVertex    = bindMatrix * displacedPosition;\r\n\tdisplacedPosition  = boneMatX * skinVertex * skinWeight.x;\r\n\tdisplacedPosition += boneMatY * skinVertex * skinWeight.y;\r\n\tdisplacedPosition += boneMatZ * skinVertex * skinWeight.z;\r\n\tdisplacedPosition += boneMatW * skinVertex * skinWeight.w;\r\n\tdisplacedPosition  = bindMatrixInverse * displacedPosition;\r\n#endif\r\n\r\nvPosition_VS = modelViewMatrix * displacedPosition;\r\n\r\n#ifdef USE_BILLBOARDING\r\n\tgl_Position = projectionMatrix * (viewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + modelViewMatrix * displacedPosition );\r\n#else\r\n\tgl_Position = projectionMatrix * modelViewMatrix * displacedPosition;\r\n#endif\r\n\r\n#if defined( USE_LOGDEPTHBUF ) && !defined(DEPTH_PASS)\r\n\tgl_Position.z = log2(max(1e-6, gl_Position.w + 1.0)) * logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvFragDepth = 1.0 + gl_Position.w;\r\n\t#else\r\n\t\tgl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;\r\n\t#endif\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR )\r\n\t\t#if defined( ALBEDO )\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t\tvColor = color * color;\r\n\t\t\t#else\r\n\t\t\t\tvColor = color;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#endif\r\n\r\n\tvNormal_VS.xyz = normalMatrix * vNormal;\r\n\r\n\t#ifdef FLIP_SIDED\r\n\t\tvNormal_VS = -vNormal_VS;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\r\n\t\t#if defined( NORMAL_MAP ) && defined(USE_TANGENTS)\r\n\t\t\tvTangent_VS.xyz = normalMatrix * vTangent.xyz;\r\n\t\t\tvBinormal_VS.xyz = cross( vNormal_VS.xyz, vTangent_VS.xyz ) * tangent.w;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t \t#if NUM_SHADOWS > 0\r\n\r\n\t\t\t\tfor( int i = 0; i < NUM_SHADOWS; i ++ ) {\r\n\r\n\t\t\t\t\t#ifdef USE_MORPHTARGETS\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * vec4( morphed, 1.0 );\r\n\r\n\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * displacedPosition;\r\n\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z = log2(max(1e-6, 1.0 + vShadowCoord[ i ].w)) * logDepthBufFC - 1.0;\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z *= vShadowCoord[ i ].w;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t}\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t#endif\r\n#endif\r\n}"
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports) {
 
 	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t#extension GL_EXT_frag_depth : enable\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\tuniform float reflectionFresnel;\r\n\t\t#ifdef ENVIRONMENT_MAP_CUBE_0\r\n\t\t\tuniform samplerCube environmentMapCube_0;\r\n\t\t\tuniform samplerCube environmentMapCube_1;\r\n\t\t\tuniform samplerCube environmentMapCube_2;\r\n\t\t#elif defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\tuniform sampler2D environmentMap2D_0;\r\n\t\t\tuniform sampler2D environmentMap2D_1;\r\n\t\t\tuniform sampler2D environmentMap2D_2;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t#if NUM_SHADOWS > 0\r\n\t\t\t\tuniform sampler2D shadowMap[ NUM_SHADOWS ];\r\n\t\t\t\tuniform vec2 shadowMapSize[ NUM_SHADOWS ];\r\n\t\t\t\tuniform float shadowBias[ NUM_SHADOWS ];\r\n\t\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\t#endif\r\n\r\n\t\t\tfloat unpackDepth( const in vec4 rgba_depth ) {\r\n\t\t\t\tconst vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\r\n\t\t\t\tfloat depth = dot( rgba_depth, bit_shift );\r\n\t\t\t\treturn depth;\r\n\t\t\t}\r\n\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\n#ifdef USE_ENVIRONMENT_MAP\r\nvec3 getReflectionFromRoughness(in vec3 ref0, in vec3 ref1, in vec3 ref2, in float roughness) {\r\n\tvec3 colour1, colour2;\r\n\tfloat interp = roughness * 2.0;\r\n\tif (roughness <= 0.5) {\r\n\t\tcolour1 = ref0;\r\n\t\tcolour2 = ref1;\r\n\t} else {\r\n\t\tinterp -= 1.0;\r\n\t\tcolour1 = ref1;\r\n\t\tcolour2 = ref2;\r\n\t}\r\n\treturn mix(colour1, colour2, interp);\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t#ifdef GAMMA_INPUT\r\n\t\t  albedoTex.xyz *= albedoTex.xyz;\r\n\t\t#endif\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  emissiveTex *= emissiveTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  sssTex *= sssTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 envMapReflectedColor;\r\n\t\t\tvec3 envMapDiffuseColor;\r\n\r\n\t\t\t#if defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\t\tvec3 reflectedColor0 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor1 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor2 = vec3(0.0);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 sampleUV;\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tmipBias = roughnessValue * 6.0;\r\n\t\t\t\t\treflectedColor0 = textureCube( environmentMapCube_0, sampleUV, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 3.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = textureCube( environmentMapCube_1, sampleUV, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 sampleUV;\r\n\t\t\t\t\t//Sphere map reflection\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t\t\t\t\t//Planar reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tmipBias = roughnessValue * 10.0;\r\n\t\t\t\t\treflectedColor0 = texture2D( environmentMap2D_0, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 5.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = texture2D( environmentMap2D_1, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\tenvMapReflectedColor = getReflectionFromRoughness(reflectedColor0, reflectedColor1, reflectedColor2, roughnessValue);\r\n\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\tenvMapDiffuseColor = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tenvMapDiffuseColor = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t\t#if NUM_SHADOWS > 0 && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\t\t\t\t\tfloat shadowValues[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\tfloat shadowValuesScatter[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\t\t\t\t\t\tvec3 shadowColour = vec3(1.0);\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_DIR_LIGHTS; s ++ ) {\r\n\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\tvec3 frustumColors[3];\r\n\t\t\t\t\t\tfrustumColors[0] = vec3( 1.0, 0.5, 0.0 );\r\n\t\t\t\t\t\tfrustumColors[1] = vec3( 0.0, 1.0, 0.8 );\r\n\t\t\t\t\t\tfrustumColors[2] = vec3( 0.0, 0.5, 1.0 );\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\tint inFrustumCount = 0;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat fDepth;\r\n\t\t\t\t\t//int lightIndex = 0;\r\n\t\t\t\t\tint frustumIndex = 0;\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_SHADOWS; s ++ ) {\r\n\r\n\t\t\t\t\t\tvec3 shadowCoord = vShadowCoord[ s ].xyz / vShadowCoord[ s ].w;\r\n\t\t\t\t\t\t// \"if ( something && something )\" \t\t breaks ATI OpenGL shader compiler\r\n\t\t\t\t\t\t// \"if ( all( something, something ) )\"  using this instead\r\n\r\n\t\t\t\t\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\r\n\t\t\t\t\t\tbool inFrustum = all( inFrustumVec );\r\n\r\n\t\t\t\t\t\t// don't shadow pixels outside of light frustum\r\n\t\t\t\t\t\t// use just first frustum (for cascades)\r\n\t\t\t\t\t\t// don't shadow pixels behind far plane of light frustum\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\tinFrustumCount += int( inFrustum );\r\n\t\t\t\t\t\t\tbvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\tbool frustumTest = all( frustumTestVec );\r\n\r\n\t\t\t\t\t\tif ( frustumTest ) {\r\n\r\n\t\t\t\t\t\t\tshadowCoord.z += shadowBias[ s ];\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_TYPE_PCF_SOFT\r\n\r\n\t\t\t\t\t\t\t\t// Percentage-close filtering\r\n\t\t\t\t\t\t\t\t// (9 pixel kernel)\r\n\t\t\t\t\t\t\t\t// http://fabiensanglard.net/shadowmappingPCF/\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\r\n\r\n\t\t\t\t\t\t\t\t//const float shadowDelta = 1.0 / 9.0;\r\n\t\t\t\t\t\t\t\t//const float kernelCornerWeight = 1.0 / 16.0;\r\n\t\t\t\t\t\t\t\t//const float kernelEdgeWeight = 1.0 / 8.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.0 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.0 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tmat3 shadowKernel;\r\n\t\t\t\t\t\t\t\tmat3 depthKernel;\r\n\r\n\t\t\t\t\t\t\t\tdepthKernel[0][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\r\n\t\t\t\t\t\t\t\tvec3 shadowZ = vec3( shadowCoord.z );\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[0] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[1] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[2] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tvec2 fractionalCoord = 1.0 - fract(shadowCoord.xy * shadowMapSize[s].xy );\r\n\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\tvec4 shadowValueVector;\r\n\t\t\t\t\t\t\t\tshadowValueVector.x = mix(shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.y = mix(shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.z = mix(shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.w = mix(shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\r\n\r\n\t\t\t\t\t\t\t\tshadow = dot(shadowValueVector, vec4(1.0));\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\t\tdepthKernel[0] = mix( depthKernel[1], depthKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\t\tdepthKernel[1] = mix( depthKernel[2], depthKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\t\tvec4 depthValues;\r\n\t\t\t\t\t\t\t\t\tdepthValues.x = mix(depthKernel[0][1], depthKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.y = mix(depthKernel[0][2], depthKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.z = mix(depthKernel[1][1], depthKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.w = mix(depthKernel[1][2], depthKernel[1][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tfloat totalDepth = dot(depthValues, vec4(1.0));// + dot(depthKernel[1], vec3(1.0)) + dot(depthKernel[2], vec3(1.0));\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 4.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 100.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 1000.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#elif defined( SHADOWMAP_TYPE_PCF )\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\t\t\t\t\t\t\t\tconst float shadowDelta = 1.0 / 9.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.25 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.25 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tfloat totalDepth = 0.0;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy, 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 9.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 10000.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 100.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tvec4 rgbaDepth = texture2DProj( shadowMap[ s ], vec4( vShadowCoord[ s ].w * ( shadowCoord.xy ), 0.05, vShadowCoord[ s ].w ) );\r\n\t\t\t\t\t\t\t\t// vec4 rgbaDepth = texture2D( shadowMap[ s ], shadowCoord.xy );\r\n\t\t\t\t\t\t\t\tfloat fDepth = unpackDepth( rgbaDepth );\r\n\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) {\r\n\r\n\t\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= 0.0;\r\n\t\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 0.0;\r\n\t\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - fDepth );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum && inFrustumCount == 1 ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t//frustumIndex ++;\r\n\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\t\t\t\t\tfloat shadowValue = 1.0;\r\n\t\t\t\t\tfloat shadowValueScatter = 1.0;\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0) && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\r\n\t\t\t\t\t\tshadowValue = shadowValues[ i ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0)\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValueScatter = shadowValuesScatter[ i ];\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * (specWeight * shadowValue) + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * shadowValue * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && defined( SHADOWMAP_DEBUG )\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\ttotalDiffuse *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t#ifdef SPECULAR_COLOR\r\n\t\t\t\t\t\t\ttotalSpecular *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && (defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0))\r\n\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\t\tvec3 reflectance_term = envMapReflectedColor.xyz * fresnel;\r\n\t\t\t\t#if !defined(METALNESS)\r\n\t\t\t\t\treflectance_term *= (1.0 - roughnessValue);\r\n\t\t\t\t#endif\r\n\t\t\t\ttotalSpecular += reflectance_term * specularColorValue;\r\n\r\n\t\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\ttotalDiffuse += envMapDiffuseColor;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t#ifdef GAMMA_OUTPUT\r\n\t\t\tfinalColor = sqrt( finalColor );\r\n\t\t#endif\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(137), __webpack_require__(138), __webpack_require__(139)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(138), __webpack_require__(139), __webpack_require__(140)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -91195,7 +91245,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -91229,10 +91279,10 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var now = __webpack_require__(143)
+	var now = __webpack_require__(144)
 	  , global = typeof window === 'undefined' ? {} : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -91303,7 +91353,7 @@
 
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -91339,10 +91389,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(144)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(145)))
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -91439,7 +91489,7 @@
 
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -91939,7 +91989,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -91988,7 +92038,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -92045,7 +92095,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -92053,7 +92103,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(149)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseGeometryAsset) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(150)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseGeometryAsset) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -92415,7 +92465,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -92604,7 +92654,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -92612,7 +92662,7 @@
 	/**
 	 * @module VAPI
 	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(149)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseGeometryAsset) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(3), __webpack_require__(5), __webpack_require__(150)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, THREE, BaseGeometryAsset) {
 	  'use strict';
 
 	  var VAPI = window.VAPI = window.VAPI || {};
@@ -92718,7 +92768,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -92768,7 +92818,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -92905,7 +92955,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -93142,7 +93192,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -93342,7 +93392,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -93428,7 +93478,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -93586,7 +93636,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -93612,7 +93662,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -94082,26 +94132,26 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./AssetRegistry/AnimationAsset": 145,
-		"./AssetRegistry/AnimationAsset.js": 145,
+		"./AssetRegistry/AnimationAsset": 146,
+		"./AssetRegistry/AnimationAsset.js": 146,
 		"./AssetRegistry/AnimationRegistry": 89,
 		"./AssetRegistry/AnimationRegistry.js": 89,
-		"./AssetRegistry/ApplicationAsset": 146,
-		"./AssetRegistry/ApplicationAsset.js": 146,
+		"./AssetRegistry/ApplicationAsset": 147,
+		"./AssetRegistry/ApplicationAsset.js": 147,
 		"./AssetRegistry/ApplicationRegistry": 77,
 		"./AssetRegistry/ApplicationRegistry.js": 77,
 		"./AssetRegistry/AssetRegistry": 74,
 		"./AssetRegistry/AssetRegistry.js": 74,
-		"./AssetRegistry/AudioAsset": 147,
-		"./AssetRegistry/AudioAsset.js": 147,
-		"./AssetRegistry/AudioRegistry": 141,
-		"./AssetRegistry/AudioRegistry.js": 141,
-		"./AssetRegistry/BaseGeometryAsset": 149,
-		"./AssetRegistry/BaseGeometryAsset.js": 149,
+		"./AssetRegistry/AudioAsset": 148,
+		"./AssetRegistry/AudioAsset.js": 148,
+		"./AssetRegistry/AudioRegistry": 142,
+		"./AssetRegistry/AudioRegistry.js": 142,
+		"./AssetRegistry/BaseGeometryAsset": 150,
+		"./AssetRegistry/BaseGeometryAsset.js": 150,
 		"./AssetRegistry/BaseRegistry": 76,
 		"./AssetRegistry/BaseRegistry.js": 76,
 		"./AssetRegistry/BaseTextureAsset": 6,
@@ -94118,38 +94168,38 @@
 		"./AssetRegistry/MaterialAsset.js": 87,
 		"./AssetRegistry/MaterialRegistry": 86,
 		"./AssetRegistry/MaterialRegistry.js": 86,
-		"./AssetRegistry/MeshGeometryAsset": 148,
-		"./AssetRegistry/MeshGeometryAsset.js": 148,
-		"./AssetRegistry/PrefabAsset": 151,
-		"./AssetRegistry/PrefabAsset.js": 151,
+		"./AssetRegistry/MeshGeometryAsset": 149,
+		"./AssetRegistry/MeshGeometryAsset.js": 149,
+		"./AssetRegistry/PrefabAsset": 152,
+		"./AssetRegistry/PrefabAsset.js": 152,
 		"./AssetRegistry/PrefabRegistry": 75,
 		"./AssetRegistry/PrefabRegistry.js": 75,
-		"./AssetRegistry/PrimitiveGeometryAsset": 150,
-		"./AssetRegistry/PrimitiveGeometryAsset.js": 150,
-		"./AssetRegistry/RenderTexture2DAsset": 152,
-		"./AssetRegistry/RenderTexture2DAsset.js": 152,
+		"./AssetRegistry/PrimitiveGeometryAsset": 151,
+		"./AssetRegistry/PrimitiveGeometryAsset.js": 151,
+		"./AssetRegistry/RenderTexture2DAsset": 153,
+		"./AssetRegistry/RenderTexture2DAsset.js": 153,
 		"./AssetRegistry/RenderTextureCubeAsset": 2,
 		"./AssetRegistry/RenderTextureCubeAsset.js": 2,
-		"./AssetRegistry/SceneAsset": 153,
-		"./AssetRegistry/SceneAsset.js": 153,
+		"./AssetRegistry/SceneAsset": 154,
+		"./AssetRegistry/SceneAsset.js": 154,
 		"./AssetRegistry/SceneRegistry": 84,
 		"./AssetRegistry/SceneRegistry.js": 84,
 		"./AssetRegistry/ScriptAsset": 65,
 		"./AssetRegistry/ScriptAsset.js": 65,
 		"./AssetRegistry/ScriptRegistry": 90,
 		"./AssetRegistry/ScriptRegistry.js": 90,
-		"./AssetRegistry/ShaderAsset": 135,
-		"./AssetRegistry/ShaderAsset.js": 135,
-		"./AssetRegistry/ShaderRegistry": 134,
-		"./AssetRegistry/ShaderRegistry.js": 134,
-		"./AssetRegistry/Texture2DAsset": 154,
-		"./AssetRegistry/Texture2DAsset.js": 154,
-		"./AssetRegistry/TextureCubeAsset": 155,
-		"./AssetRegistry/TextureCubeAsset.js": 155,
+		"./AssetRegistry/ShaderAsset": 136,
+		"./AssetRegistry/ShaderAsset.js": 136,
+		"./AssetRegistry/ShaderRegistry": 135,
+		"./AssetRegistry/ShaderRegistry.js": 135,
+		"./AssetRegistry/Texture2DAsset": 155,
+		"./AssetRegistry/Texture2DAsset.js": 155,
+		"./AssetRegistry/TextureCubeAsset": 156,
+		"./AssetRegistry/TextureCubeAsset.js": 156,
 		"./AssetRegistry/TextureRegistry": 88,
 		"./AssetRegistry/TextureRegistry.js": 88,
-		"./AssetRegistry/TextureVideoAsset": 156,
-		"./AssetRegistry/TextureVideoAsset.js": 156,
+		"./AssetRegistry/TextureVideoAsset": 157,
+		"./AssetRegistry/TextureVideoAsset.js": 157,
 		"./Box3DEntity": 12,
 		"./Box3DEntity.js": 12,
 		"./Components/Box3DComponent": 93,
@@ -94236,24 +94286,26 @@
 		"./Components/BuiltIn/SphereMapCapture.js": 132,
 		"./Components/BuiltIn/TextRenderer": 133,
 		"./Components/BuiltIn/TextRenderer.js": 133,
+		"./Components/BuiltIn/Texture2dToCubeMap": 134,
+		"./Components/BuiltIn/Texture2dToCubeMap.js": 134,
 		"./Components/ComponentRegistry": 15,
 		"./Components/ComponentRegistry.js": 15,
 		"./Engine": 72,
 		"./Engine.js": 72,
 		"./EntityDispatcher": 73,
 		"./EntityDispatcher.js": 73,
-		"./Loaders/DevResourceLoader": 158,
-		"./Loaders/DevResourceLoader.js": 158,
+		"./Loaders/DevResourceLoader": 159,
+		"./Loaders/DevResourceLoader.js": 159,
 		"./Logger": 7,
 		"./Logger.js": 7,
-		"./Materials/Box3DShaderPBR_MetalRoughness": 136,
-		"./Materials/Box3DShaderPBR_MetalRoughness.js": 136,
-		"./Materials/Box3DShaderPBR_SpecGloss": 140,
-		"./Materials/Box3DShaderPBR_SpecGloss.js": 140,
-		"./Materials/Box3DShaderParameters": 137,
-		"./Materials/Box3DShaderParameters.js": 137,
-		"./Materials/Uber.frag": 139,
-		"./Materials/Uber.vert": 138,
+		"./Materials/Box3DShaderPBR_MetalRoughness": 137,
+		"./Materials/Box3DShaderPBR_MetalRoughness.js": 137,
+		"./Materials/Box3DShaderPBR_SpecGloss": 141,
+		"./Materials/Box3DShaderPBR_SpecGloss.js": 141,
+		"./Materials/Box3DShaderParameters": 138,
+		"./Materials/Box3DShaderParameters.js": 138,
+		"./Materials/Uber.frag": 140,
+		"./Materials/Uber.vert": 139,
 		"./Objects/BaseMeshObject": 69,
 		"./Objects/BaseMeshObject.js": 69,
 		"./Objects/Box3DObject": 11,
@@ -94272,8 +94324,8 @@
 		"./RuntimeEvents.js": 14,
 		"./Util/APIUtilities": 66,
 		"./Util/APIUtilities.js": 66,
-		"./Util/DOMUtilities": 157,
-		"./Util/DOMUtilities.js": 157,
+		"./Util/DOMUtilities": 158,
+		"./Util/DOMUtilities.js": 158,
 		"./Util/JSONLoader": 83,
 		"./Util/JSONLoader.js": 83,
 		"./VAPI": 1,
@@ -94282,8 +94334,8 @@
 		"./generated/components-builtin.js": 91,
 		"./libs/loglevel/loglevel": 8,
 		"./libs/loglevel/loglevel.js": 8,
-		"./libs/three/effects/AnaglyphEffect": 160,
-		"./libs/three/effects/AnaglyphEffect.js": 160,
+		"./libs/three/effects/AnaglyphEffect": 161,
+		"./libs/three/effects/AnaglyphEffect.js": 161,
 		"./libs/three/postprocessing/AdaptiveToneMappingPass": 64,
 		"./libs/three/postprocessing/AdaptiveToneMappingPass.js": 64,
 		"./libs/three/postprocessing/BloomPass": 18,
@@ -94338,8 +94390,8 @@
 		"./libs/three/shaders/EdgeShader.js": 39,
 		"./libs/three/shaders/EdgeShader2": 40,
 		"./libs/three/shaders/EdgeShader2.js": 40,
-		"./libs/three/shaders/FPAccuracyShader": 161,
-		"./libs/three/shaders/FPAccuracyShader.js": 161,
+		"./libs/three/shaders/FPAccuracyShader": 162,
+		"./libs/three/shaders/FPAccuracyShader.js": 162,
 		"./libs/three/shaders/FXAAShader": 25,
 		"./libs/three/shaders/FXAAShader.js": 25,
 		"./libs/three/shaders/FilmShader": 41,
@@ -94384,8 +94436,8 @@
 		"./libs/three/shaders/VerticalTiltShiftShader.js": 61,
 		"./libs/three/shaders/VignetteShader": 62,
 		"./libs/three/shaders/VignetteShader.js": 62,
-		"./libs/three/stats": 162,
-		"./libs/three/stats.js": 162,
+		"./libs/three/stats": 163,
+		"./libs/three/stats.js": 163,
 		"./libs/three/three": 5,
 		"./libs/three/three.js": 5,
 		"./libs/uuid": 13,
@@ -94402,11 +94454,11 @@
 	};
 	webpackContext.resolve = webpackContextResolve;
 	module.exports = webpackContext;
-	webpackContext.id = 159;
+	webpackContext.id = 160;
 
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -94606,7 +94658,7 @@
 
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -94652,7 +94704,7 @@
 
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -94804,7 +94856,7 @@
 
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports) {
 
 	module.exports = function() { throw new Error("define cannot be used indirect"); };
