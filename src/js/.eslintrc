@@ -1,16 +1,16 @@
 {
-	"parser": "babel-eslint",
-	"plugins": [
-		"babel"
-	],
-	"globals": {
-		"window": false,
-		"document": false,
-		"Box": false,
-		"$": false
-	},
-	"rules": {
-		"semi": 2,
+    "parser": "babel-eslint",
+    "plugins": [
+        "babel"
+    ],
+    "globals": {
+        "window": false,
+        "document": false,
+        "Box": false,
+        "$": false
+    },
+    "rules": {
+        "semi": 2,
         "no-bitwise": 2,
         "no-cond-assign": 2,
         "curly": 0,
@@ -34,20 +34,20 @@
         "camelcase": 0,
         "radix": 2,
         "brace-style": 2,
-		"func-style": [2, "declaration"],
-		"strict": [2, "global"],
-		"guard-for-in": 2,
-		"no-floating-decimal": 2,
-		"no-underscore-dangle": 0,
-		"no-nested-ternary": 2,
-		"keyword-spacing": 2,
-		"valid-jsdoc": [2, {
-			"prefer": {
-				"return": "returns"
-			}
-		}],
-		// We allow unused args
-		"no-unused-vars": [2, {"args": "none"}]
-	},
-	"extends" : "eslint:recommended"
+        "func-style": [2, "declaration"],
+        "strict": [2, "global"],
+        "guard-for-in": 2,
+        "no-floating-decimal": 2,
+        "no-underscore-dangle": 0,
+        "no-nested-ternary": 2,
+        "keyword-spacing": 2,
+        "valid-jsdoc": [2, {
+            "prefer": {
+                "return": "returns"
+            }
+        }],
+        // We allow unused args
+        "no-unused-vars": [2, {"args": "none"}]
+    },
+    "extends" : "eslint:recommended"
 }
