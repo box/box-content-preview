@@ -176,13 +176,13 @@ class Box3DRenderer extends EventEmitter {
                 entities: options.sceneEntities,
                 inputSettings: options.inputSettings || INPUT_SETTINGS,
                 resourceLoader
-            }, function() {
+            }, () => {
                 let app = this.box3d.assetRegistry.getAssetById('APP_ASSET_ID');
                 app.load(() => {
                     Cache.set(CACHE_KEY_BOX3D, this.box3d);
                     resolve(this.box3d);
                 });
-            }.bind(this));
+            });
         });
     }
 
