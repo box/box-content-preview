@@ -94,6 +94,38 @@ function getQuadPoints(element, relativeEl) {
 }
 
 /**
+ * Creates a highlight DIV with corners corresponding to the supplied quad
+ * points
+ *
+ * @param {number[]} quadPoints Quad points corresponding to corners
+ * @returns {HTMLElement} Highlight div
+ */
+function createHighlightEl(quadPoints) {
+    const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
+
+    // Rotation radians = arctan(opposite/adj) = arctan((y3-y4)/(x3-x4))
+    const rotationRad = Math.atan((y3 - y4) / (x3 - x4));
+
+    // Calculate dimensions of highlight rectangle
+    const newRectWidth = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+    const newRectHeight = Math.sqrt(Math.pow(y4 - y1, 2) + Math.pow(x4 - x1, 2));
+
+    // Construct highlight div with same width and height as the rectangle
+    // represented by the quad points at the top left quad point and perform
+    // the appropriate rotation about the top left corner as the origin
+    let highlightEl = document.createElement('div');
+    highlightEl.style.left = x4 + 'px';
+    highlightEl.style.top = y4 + 'px';
+    highlightEl.style.width = newRectWidth + 'px';
+    highlightEl.style.height = newRectHeight + 'px';
+    highlightEl.style.transform = 'rotate(' + rotationRad + 'rad)';
+    highlightEl.style.transformOrigin = 'top left';
+    highlightEl.classList.add('box-preview-highlight');
+
+    return highlightEl;
+}
+
+/**
  * Escapes HTML
  *
  * @param {string} str Input string
@@ -206,7 +238,6 @@ class DocAnnotator extends Annotator {
 
 
     /*---------- Highlight Annotations ----------*/
-
     /**
      * Shows a single highlight annotation (annotations on selected text).
      *
@@ -214,51 +245,33 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showHighlightAnnotation(annotation) {
-        if (!annotation.location || !annotation.location.quadPoints) {
+        const location = annotation.location;
+        if (!location || !location.quadPoints) {
             return;
         }
 
-        const location = annotation.location;
         const page = location.page;
         const pageEl = document.querySelector('[data-page-number="' + page + '"]');
         const textLayerEl = pageEl.querySelector('.textLayer');
-        const pageDimensions = pageEl.getBoundingClientRect();
+
+        // Delete highlight button should be in upper right of the highlight in the upper right
         let upperRightX = 0;
-        let upperRightY = pageDimensions.height;
+        let upperRightY = pageEl.getBoundingClientRect().height;
 
         location.quadPoints.forEach((quadPoints) => {
             let [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
-
             upperRightX = Math.max(upperRightX, Math.max(x1, x2, x3, x4));
             upperRightY = Math.min(upperRightY, Math.min(y1, y2, y3, y4));
 
-            console.log(`These are the quadpoints of a highlight rectangle associated with highlight ${annotation.annotationID}: (${x1},${y1}) (${x2},${y2}) (${x3},${y3}) (${x4},${y4})`);
+            console.log(`Quadpoints for highlight "${annotation.annotationID}": (${x1},${y1}) (${x2},${y2}) (${x3},${y3}) (${x4},${y4})`);
 
-            // Get rotation of element
-            // radians = arctan(opposite/adj) = arctan((y3-y4)/(x3-x4))
-            const rotationRad = Math.atan((y3 - y4) / (x3 - x4));
-
-            // Calculate dimensions of highlight rectangle
-            const centerX = (x3 - x1) / 2 + x1;
-            const centerY = (y1 - y3) / 2 + y3;
-            const newRectWidth = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
-            const newRectHeight = Math.sqrt(Math.pow(y4 - y1, 2) + Math.pow(x4 - x1, 2));
-            const newRectLeft = centerX - newRectWidth/2;
-            const newRectTop = centerY - newRectHeight/2;
-
-            // Construct and insert highlight rectangle
-            let newRectEl = document.createElement('div');
-            newRectEl.style.left = newRectLeft + 'px';
-            newRectEl.style.top = newRectTop + 'px';
-            newRectEl.style.width = newRectWidth + 'px';
-            newRectEl.style.height = newRectHeight + 'px';
-            newRectEl.style.transform = 'rotate(' + rotationRad + 'rad)';
-            newRectEl.dataset.annotationId = annotation.annotationID;
-            newRectEl.classList.add('box-preview-highlight');
-            textLayerEl.insertBefore(newRectEl, textLayerEl.firstChild);
+            // Create highlight div from quadpoints and save reference to annotation
+            let highlightEl = createHighlightEl(quadPoints);
+            highlightEl.dataset.annotationId = annotation.annotationID;
+            textLayerEl.insertBefore(highlightEl, textLayerEl.firstChild);
         });
 
-        // Construct remove highlight button
+        // Construct delete highlight button
         let removeHighlightButtonEl = document.createElement('button');
         removeHighlightButtonEl.textContent = 'x';
         removeHighlightButtonEl.style.left = upperRightX - 8 + 'px'; // move 'x' slightly into highlight
@@ -266,6 +279,7 @@ class DocAnnotator extends Annotator {
         removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
         pageEl.appendChild(removeHighlightButtonEl);
 
+        // Delete highlight button deletes the highlight and removes highlights from DOM
         this.addEventHandler(removeHighlightButtonEl, (event) => {
             event.stopPropagation();
 
@@ -341,7 +355,6 @@ class DocAnnotator extends Annotator {
     }
 
     /*---------- Point Annotations ----------*/
-
     /**
      * Shows a single point annotation (annotation on specific points).
      *
