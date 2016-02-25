@@ -49,7 +49,8 @@ class Scrubber extends EventEmitter {
         this.setBufferedValue(bufferedValue);
         this.setValue(value);
 
-        this.convertedEl.addEventListener('mousedown', this.mouseDownHandler);
+        this.convertedEl.addEventListener('mousedown', this.mouseDownHandler, false);
+        this.handleEl.addEventListener('mousedown', this.mouseDownHandler, true);
         // On old browsers with no css pointer events we need to attach same handler to the scrubber handle
         //this.handleEl.addEventListener('mousedown', this.mouseDownHandler);
     }
