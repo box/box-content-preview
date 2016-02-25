@@ -51,7 +51,7 @@ class Base extends EventEmitter {
         this.addCommonListeners();
 
         // Timeout for loading the preview
-        this.loadTimeout = 10000;
+        this.loadTimeout = 15000;
     }
 
     /**
