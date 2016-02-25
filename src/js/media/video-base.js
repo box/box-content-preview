@@ -1,8 +1,6 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import MediaBase from './media-base';
-import { throttle } from '../util';
+import throttle  from 'lodash.throttle';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 

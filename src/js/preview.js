@@ -8,7 +8,8 @@ import loaders from './loaders';
 import cache from './cache';
 import ErrorLoader from './error/error-loader';
 import RepStatus from './rep-status';
-import { throttle, decodeKeydown } from './util';
+import { decodeKeydown } from './util';
+import throttle  from 'lodash.throttle';
 
 const PREFETCH_COUNT = 3;
 const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';

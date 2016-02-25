@@ -2,8 +2,7 @@ require('babel-polyfill');
 
 var baseConf = require('./karma.base.conf');
 var webpackConfig = require('./webpack.karma.config');
-var path = require('path');
-var js = path.join(__dirname, 'src/js');
+var ispartaConfig = require('./isparta.config');
 var coverage = process.env.COVERAGE === '1';
 
 module.exports = function(config) {
@@ -30,14 +29,7 @@ module.exports = function(config) {
     if (coverage) {
         devConf.reporters.push('coverage', 'threshold');
         devConf.browsers = [ 'PhantomJS' ];
-        devConf.webpack.module.preLoaders.push({
-            test: js,
-            loader: 'isparta',
-            exclude: [
-                /__tests__/,
-                /third\-party/
-            ],
-        });
+        devConf.webpack.module.preLoaders.push(ispartaConfig);
     }
 
     config.set(Object.assign({}, baseConf, devConf));

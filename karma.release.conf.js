@@ -2,8 +2,7 @@ require('babel-polyfill');
 
 var baseConf = require('./karma.base.conf');
 var webpackConfig = require('./webpack.karma.config');
-var path = require('path');
-var js = path.join(__dirname, 'src/js');
+var ispartaConfig = require('./isparta.config');
 
 module.exports = function(config) {
 
@@ -31,14 +30,7 @@ module.exports = function(config) {
 
     };
 
-    releaseConf.webpack.module.preLoaders.push({
-        test: js,
-        loader: 'isparta',
-        exclude: [
-            /__tests__/,
-            /third\-party/
-        ],
-    });
+    releaseConf.webpack.module.preLoaders.push(ispartaConfig);
 
     config.set(Object.assign({}, baseConf, releaseConf));
 };
