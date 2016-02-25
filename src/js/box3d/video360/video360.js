@@ -65,20 +65,6 @@ class Video360 extends Dash {
     }
 
     /**
-     * Create UI specific to 360 degree video.
-     * @method create360VideoUI
-     * @private
-     * @returns {void}
-     */
-    create360VideoUI() {
-        this.renderer = new Video360Renderer(this.mediaContainerEl, this.boxSdk);
-        this.optionsObj.sceneEntities = sceneEntities;
-        this.renderer.initBox3d(this.optionsObj).then(this.create360Environment.bind(this));
-        this.controls = new Video360Controls(this.mediaContainerEl);
-        this.attachEventHandlers();
-    }
-
-    /**
     * @inheritdoc
      */
     loadedmetadataHandler() {
