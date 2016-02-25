@@ -21,7 +21,8 @@ export default [{
         orbit_camera_controller: {
             componentData: {
                 enablePan: false,
-                enableZoom: false
+                enableZoom: false,
+                inertialDamping: 0.2
             },
             enabled: true,
             scriptId: 'orbit_camera_controller'
@@ -67,7 +68,7 @@ export default [{
         veroldRenderer: {
             componentData: {
                 antialias: true,
-                renderOnDemand: false
+                renderOnDemand: true
             },
             scriptId: 'box3d_renderer',
             isBuiltIn: true,
