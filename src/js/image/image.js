@@ -29,6 +29,7 @@ class Image extends Base {
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
+        this.currentRotationAngle = 0;
     }
 
     /**

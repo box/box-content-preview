@@ -18,6 +18,7 @@ const MOUSEMOVE_THROTTLE = 1500;
 const CRAWLER = '<div class="box-preview-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
 const PERMISSIONS_ERROR = 'Missing permissions to preview';
 
+// Do not const this as this check is done on each viewer
 let Box = global.Box || {};
 
 @autobind
@@ -75,24 +76,23 @@ class Preview {
      * @returns {void}
      */
     determinePreviewLocation() {
-        let scriptSrc = document.querySelector('script[src*="preview.js"]').src;
-        let anchor = document.createElement('a');
+        const scriptSrc = document.querySelector('script[src*="preview.js"]').src;
 
         if (!scriptSrc) {
             throw 'Missing or malformed preview library inclusion';
         }
 
+        let anchor = document.createElement('a');
         anchor.href = scriptSrc;
-        let pathname = anchor.pathname;
-        let pathFragments = pathname.split('/');
-        let fragmentLength = pathFragments.length;
 
-        let fileName = pathFragments[fragmentLength - 1];
-        let locale = pathFragments[fragmentLength - 2];
-        let version = pathFragments[fragmentLength - 3];
-
-        let baseURI = anchor.href.replace(fileName, '');
-        let staticBaseURI = baseURI.replace(locale + '/', '');
+        const pathname = anchor.pathname;
+        const pathFragments = pathname.split('/');
+        const fragmentLength = pathFragments.length;
+        const fileName = pathFragments[fragmentLength - 1];
+        const locale = pathFragments[fragmentLength - 2];
+        const version = pathFragments[fragmentLength - 3];
+        const baseURI = anchor.href.replace(fileName, '');
+        const staticBaseURI = baseURI.replace(locale + '/', '');
 
         this.options.location = {
             origin: anchor.origin,
@@ -141,17 +141,11 @@ class Preview {
             container = document.body.appendChild(document.createElement('div'));
         }
 
-        // Create the container with absolute positioning
-        container.innerHTML = '<div class="box-preview-container"></div>';
+        // Create the preview with absolute positioning inside a relative positioned container
+        container.innerHTML = '<div class="box-preview-container" style="display: block;"><div class="box-preview"></div>' + CRAWLER + '</div>';
 
         // Save a handle to the container for future references.
         this.container = container.firstElementChild;
-
-        // Prepare the container by adding our viewer wrapper.
-        this.container.innerHTML = '<div class="box-preview"></div>' + CRAWLER;
-
-        // Show the container
-        this.container.style.display = 'block';
 
         // If we are showing navigation, create arrows and attach
         // mouse move handler to show or hide them.
@@ -182,7 +176,7 @@ class Preview {
         this.container.firstElementChild.innerHTML = '';
 
         // Check the cache before making a network request.
-        let cached = cache.get(id);
+        const cached = cache.get(id);
 
         if (cached && cached.id === id && cached.representations) {
             // Cache hit, use that.
@@ -285,25 +279,25 @@ class Preview {
         });
 
         // Determine the asset loader to use
-        let loader = this.getLoader(this.file);
+        const loader = this.getLoader(this.file);
 
         // Log the type of file
         this.logger.setType(loader.getType());
 
         // Determine the viewer to use
-        let viewer = loader.determineViewer(this.file);
+        const viewer = loader.determineViewer(this.file);
 
         // Determine the representation to use
-        let representation = loader.determineRepresentation(this.file, viewer);
+        const representation = loader.determineRepresentation(this.file, viewer);
 
         // Load all the static assets
-        let promiseToLoadAssets = loader.load(viewer, this.options.location);
+        const promiseToLoadAssets = loader.load(viewer, this.options.location);
 
         // Status checker
-        let repStatus = new RepStatus(this.logger, viewer.REQUIRED_REPRESENTATIONS);
+        const repStatus = new RepStatus(this.logger, viewer.REQUIRED_REPRESENTATIONS);
 
         // Load the representation assets
-        let promiseToGetRepresentationStatusSuccess = repStatus.status(representation, this.getRequestHeaders());
+        const promiseToGetRepresentationStatusSuccess = repStatus.status(representation, this.getRequestHeaders());
 
         // Proceed only when both static and representation assets have been loaded
         Promise.all([ promiseToLoadAssets, promiseToGetRepresentationStatusSuccess ]).then(() => {
@@ -358,7 +352,6 @@ class Preview {
      * @returns {void}
      */
     triggerError(reason) {
-
         // Nuke the cache
         cache.unset(this.file.id);
 
@@ -368,7 +361,7 @@ class Preview {
         }
         reason = reason || 'An error has occurred while loading the preview';
 
-        let viewer = ErrorLoader.determineViewer();
+        const viewer = ErrorLoader.determineViewer();
         ErrorLoader.load(viewer, this.options.location).then(() => {
             // Destroy anything still showing
             this.destroy();
@@ -392,7 +385,7 @@ class Preview {
      * @returns {Object} Headers
      */
     getRequestHeaders() {
-        let headers = {
+        const headers = {
             'Authorization': 'Bearer ' + this.options.token,
             'X-Rep-Hints': '3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3' + (Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4')
         };
@@ -412,7 +405,7 @@ class Preview {
      */
     prefetch() {
 
-        let currentIndex = this.files.indexOf(this.file.id);
+        const currentIndex = this.files.indexOf(this.file.id);
         let count = 0;
 
         // Starting with the next file, prefetch specific numbers of files.
@@ -420,7 +413,7 @@ class Preview {
 
             count++;
 
-            let nextId = this.files[i];
+            const nextId = this.files[i];
 
             // If no file id left to prefetch then exit
             if (!nextId) {
@@ -448,7 +441,7 @@ class Preview {
 
                     // Pre-fetch content if applicable so that the
                     // Browser caches the content
-                    let loader = this.getLoader(file);
+                    const loader = this.getLoader(file);
                     if (loader && typeof loader.prefetch === 'function') {
                         loader.prefetch(file, this.options);
                     }
@@ -466,15 +459,15 @@ class Preview {
      * @returns {void}
      */
     showNavigation() {
-        let left = document.createElement('div');
-        let leftSpan = document.createElement('span');
+        const left = document.createElement('div');
+        const leftSpan = document.createElement('span');
         left.className = 'box-preview-navigate box-preview-navigate-left box-preview-is-hidden';
         leftSpan.className = 'box-preview-left-arrow';
         left.appendChild(leftSpan);
         left.addEventListener('click', this.navigateLeft);
 
-        let right = document.createElement('div');
-        let rightSpan = document.createElement('span');
+        const right = document.createElement('div');
+        const rightSpan = document.createElement('span');
         right.className = 'box-preview-navigate box-preview-navigate-right box-preview-is-hidden';
         rightSpan.className = 'box-preview-right-arrow';
         right.appendChild(rightSpan);
@@ -492,9 +485,9 @@ class Preview {
      * @returns {void}
      */
     updateNavigation() {
-        let currentIndex = this.files.indexOf(this.file.id);
-        let left = document.querySelector('.box-preview-navigate-left');
-        let right = document.querySelector('.box-preview-navigate-right');
+        const currentIndex = this.files.indexOf(this.file.id);
+        const left = document.querySelector('.box-preview-navigate-left');
+        const right = document.querySelector('.box-preview-navigate-right');
 
         left.classList.add(CLASS_HIDDEN);
         right.classList.add(CLASS_HIDDEN);
@@ -516,7 +509,7 @@ class Preview {
      * @returns {void}
      */
     navigateToIndex(index) {
-        let file = this.files[index];
+        const file = this.files[index];
         this.load(file);
         this.updateNavigation();
         if (typeof this.options.callbacks.navigation === 'function') {
@@ -531,8 +524,8 @@ class Preview {
      * @returns {void}
      */
     navigateLeft() {
-        let currentIndex = this.files.indexOf(this.file.id);
-        let newIndex = currentIndex === 0 ? 0 : currentIndex - 1;
+        const currentIndex = this.files.indexOf(this.file.id);
+        const newIndex = currentIndex === 0 ? 0 : currentIndex - 1;
         if (newIndex !== currentIndex) {
             this.navigateToIndex(newIndex);
         }
@@ -545,8 +538,8 @@ class Preview {
      * @returns {void}
      */
     navigateRight() {
-        let currentIndex = this.files.indexOf(this.file.id);
-        let newIndex = currentIndex === this.files.length - 1 ? this.files.length - 1 : currentIndex + 1;
+        const currentIndex = this.files.indexOf(this.file.id);
+        const newIndex = currentIndex === this.files.length - 1 ? this.files.length - 1 : currentIndex + 1;
         if (newIndex !== currentIndex) {
             this.navigateToIndex(newIndex);
         }
@@ -606,7 +599,7 @@ class Preview {
         // Normalize by putting file inside files array if the latter
         // is empty. If its not empty, then it is assumed that file is
         // already inside files array.
-        let files = options.files || [];
+        const files = options.files || [];
         if (files.length > 1) {
             this.files = files;
         } else {
@@ -641,7 +634,7 @@ class Preview {
      */
     keydownHandler(event) {
         let consumed = false;
-        let key = decodeKeydown(event);
+        const key = decodeKeydown(event);
 
         if (!key) {
             return;
@@ -737,7 +730,7 @@ class Preview {
         this.destroy();
 
         if (this.container) {
-            this.container.style.display = '';
+            this.container.style.display = 'none';
             this.container.removeEventListener('mousemove', this.throttledMousemoveHandler);
             if (destroy) {
                 this.container.innerHTML = '';

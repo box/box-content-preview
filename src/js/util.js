@@ -1,8 +1,6 @@
-'use strict';
-
-let loadedJSAssets = [];
-let loadedCSSAssets = [];
-let prefetchedAssets = [];
+const loadedJSAssets = [];
+const loadedCSSAssets = [];
+const prefetchedAssets = [];
 
 /**
  * Inserts template string into dom node
@@ -13,7 +11,7 @@ let prefetchedAssets = [];
  * @returns {void}
  */
 export function insertTemplate(node, template) {
-    let range = document.createRange();
+    const range = document.createRange();
     range.selectNode(node);
     node.appendChild(range.createContextualFragment(template));
 }
@@ -26,7 +24,7 @@ export function insertTemplate(node, template) {
  * @returns {Array} script element
  */
 export function createScript(url) {
-    let script = document.createElement('script');
+    const script = document.createElement('script');
     script.src = url;
     script.async = false;
     return script;
@@ -40,7 +38,7 @@ export function createScript(url) {
  * @returns {HTMLElement} prefetch link element
  */
 export function createPrefetch(url) {
-    let link = document.createElement('link');
+    const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = url;
     return link;
@@ -54,7 +52,7 @@ export function createPrefetch(url) {
  * @returns {HTMLElement} css link element
  */
 export function createStylesheet(url) {
-    let link = document.createElement('link');
+    const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.type = 'text/css';
     link.href = url;
@@ -70,7 +68,6 @@ export function createStylesheet(url) {
  * @returns {String} content urls
  */
 export function createContentUrl(url, token) {
-
     if (!token) {
         return url;
     }
@@ -92,8 +89,8 @@ export function createContentUrl(url, token) {
  * @returns {Function} factory for creating asset url
  */
 export function createAssetUrlCreator(location) {
-    let baseURI = location.baseURI;
-    let staticBaseURI = location.staticBaseURI;
+    const baseURI = location.baseURI;
+    const staticBaseURI = location.staticBaseURI;
 
     return (name) => {
         let asset;
@@ -120,7 +117,7 @@ export function createAssetUrlCreator(location) {
  * @returns {void}
  */
 export function prefetchAssets(urls) {
-    let head = document.getElementsByTagName('head')[0];
+    const head = document.getElementsByTagName('head')[0];
 
     urls.forEach((url) => {
         if (prefetchedAssets.indexOf(url) === -1) {
@@ -137,19 +134,10 @@ export function prefetchAssets(urls) {
  * @returns {void}
  */
 export function loadStylesheets(urls) {
-    let head = document.getElementsByTagName('head')[0];
-
-    // Before adding new stylesheets, remove prior ones
-    // This is because stylesheets can conflict
-    // loadedCSSAssets.forEach((url) => {
-    //     let link = head.querySelector('link[rel="stylesheet"][href="' + url + '"]');
-    //     //head.removeChild(link);
-    // });
-
-    loadedCSSAssets = [];
+    const head = document.getElementsByTagName('head')[0];
 
     urls.forEach((url) => {
-        if (loadedJSAssets.indexOf(url) === -1) {
+        if (loadedCSSAssets.indexOf(url) === -1) {
             loadedCSSAssets.push(url);
             head.appendChild(createStylesheet(url));
         }
@@ -163,8 +151,8 @@ export function loadStylesheets(urls) {
  * @returns {Promise} Promise to load scripts
  */
 export function loadScripts(urls) {
-    let head = document.getElementsByTagName('head')[0];
-    let promises = [];
+    const head = document.getElementsByTagName('head')[0];
+    const promises = [];
 
     urls.forEach((url) => {
         if (loadedJSAssets.indexOf(url) === -1) {
