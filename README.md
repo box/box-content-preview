@@ -108,5 +108,5 @@ to disable one or more viewers. Viewers can also be disabled by setting `disable
 Test
 ----
 
-1. `npm run karma`
-2. open `index.html` in `coverage\`
+* `npm run test` launches chrome testing
+* `npm run coverage` dumps converage inside `reports\coverage\index.html`
