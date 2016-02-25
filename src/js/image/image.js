@@ -1,9 +1,8 @@
-'use strict';
-
 import '../../css/image/image.css';
 import autobind from 'autobind-decorator';
 import Base from './image-base';
 import Browser from '../browser';
+import fetch from 'isomorphic-fetch';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';

@@ -53,16 +53,16 @@ increment_version() {
         echo "----------------------------------------------------"
         npm version patch
     fi
-    
+
     # The current version being built
     VERSION=$(./build/current_version.sh)
 }
 
 
 push_to_github() {
-    
+
     git commit -am $VERSION
-    
+
     echo "----------------------------------------------------"
     echo "Master version is now at" $VERSION
     echo "----------------------------------------------------"
@@ -85,8 +85,8 @@ push_to_maven() {
     echo "----------------------------------------------------"
     echo "Starting a Maven push for" $KIND-$VERSION
     echo "----------------------------------------------------"
-    
-    
+
+
     rpm="$KIND-$VERSION.noarch.rpm"
     publishURL="$MAVEN_URL/releases/net/box/$KIND/$VERSION/$rpm"
 
@@ -113,18 +113,18 @@ push_to_maven() {
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
 
-    echo "---------------------------------------------------------------------------------------------------------------------------"
-    echo "Installing node modules from http://maven-vip.dev.box.net:8150/nexus/content/groups/npm-all/ OR https://registry.npmjs.org"
-    echo "---------------------------------------------------------------------------------------------------------------------------"
-    if npm install; then
+    echo "-------------------------------------------------------------"
+    echo "Installing node modules from https://registry.nodejitsu.com"
+    echo "-------------------------------------------------------------"
+    if npm install --registry https://registry.nodejitsu.com; then
         echo "----------------------------------------------------"
         echo "Installed node modules."
         echo "----------------------------------------------------"
     else
-        echo "-------------------------------------------------------------"
-        echo "Installing node modules from https://registry.nodejitsu.com"
-        echo "-------------------------------------------------------------"
-        if npm install --registry https://registry.nodejitsu.com; then
+        echo "---------------------------------------------------------------------------------------------------------------------------"
+        echo "Installing node modules from http://maven-vip.dev.box.net:8150/nexus/content/groups/npm-all/ OR https://registry.npmjs.org"
+        echo "---------------------------------------------------------------------------------------------------------------------------"
+        if npm install; then
             echo "----------------------------------------------------"
             echo "Installed node modules."
             echo "----------------------------------------------------"
@@ -172,7 +172,7 @@ push_new_release() {
 
     # Bump the version number
     increment_version
-    
+
     # Webpack build
     build_assets
 

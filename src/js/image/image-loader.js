@@ -1,5 +1,3 @@
-'use strict';
-
 import AssetLoader from '../asset-loader';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
@@ -8,7 +6,7 @@ import AssetLoader from '../asset-loader';
 const VIEWERS = [
     {
         REPRESENTATION: 'original',
-        EXTENSIONS: [ 'gif' ],
+        EXTENSIONS: [ 'svg', 'gif' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image',
@@ -31,7 +29,7 @@ const VIEWERS = [
     },
     {
         REPRESENTATION: 'png',
-        EXTENSIONS: [ 'ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff' ],
+        EXTENSIONS: [ 'ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff' ],
         SCRIPTS: [ 'image.js' ],
         STYLESHEETS: [ 'image.css' ],
         CONSTRUCTOR: 'Image',

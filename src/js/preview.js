@@ -1,5 +1,3 @@
-'use strict';
-
 import '../css/preview.css';
 import './polyfill';
 import autobind from 'autobind-decorator';
@@ -594,7 +592,7 @@ class Preview {
         }
 
         // Save the reference to the api endpoint
-        this.options.api = options.api.replace(/\/$/, '') || 'https://api.box.com';
+        this.options.api = options.api ? options.api.replace(/\/$/, '') : 'https://api.box.com';
 
         // Save the reference to the auth token
         this.options.token = this.token || options.token;
