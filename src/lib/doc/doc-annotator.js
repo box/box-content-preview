@@ -1,26 +1,27 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
 import Annotator from '../annotation/annotator';
+import { debounce } from '../util';
 import rangy from 'rangy';
-// @NOTE(tjin): Workaround npm rangy issue: https://github.com/timdown/rangy/issues/342
+/*eslint-disable no-unused-vars*/
+// Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
 import rangyClassApplier from 'rangy/lib/rangy-classapplier';
 import rangyHighlight from 'rangy/lib/rangy-highlighter';
+/*eslint-enable no-unused-vars*/
 
-const HIGHLIGHT_ANNOTATION_TYPE = 'highlight',
-    POINT_ANNOTATION_TYPE = 'point';
-
+const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
+const POINT_ANNOTATION_TYPE = 'point';
+const HIGHLIGHT_HOVER_DELAY = 500;
 const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch)) ? 'touchstart' : 'click';
 
-let document = global.document;
+const document = global.document;
 
 /*---------- Helpers ----------*/
 /**
  * Finds the closest ancestor DOM element with the specified class
  *
  * @param {HTMLElement} element Element to search ancestors of
- * @param {string} className Class name to query
+ * @param {String} className Class name to query
  * @returns {HTMLElement|null} Closest ancestor with given class or null
  */
 function findClosestElWithClass(element, className) {
@@ -42,17 +43,18 @@ function findClosestElWithClass(element, className) {
  *
  * @param {HTMLElement} element Element to get quad points for
  * @param {HTMLElement} relativeEl Element quad points should be relative to
- * @returns {number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3, x4,
+ * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3, x4,
  * y4] with (x1, y1) being the lower left (untransformed) corner of the element
  * and the other 3 vertices in counterclockwise order
  */
 function getQuadPoints(element, relativeEl) {
-    // Create zero-size elements that map to 4 corners of quadrilateral around
-    // element
-    let corner1El = document.createElement('div');
-    let corner2El = document.createElement('div');
-    let corner3El = document.createElement('div');
-    let corner4El = document.createElement('div');
+    // Create zero-size elements that can be styled to the 4 corners of
+    // quadrilateral around element - using 4 divs is faster than using
+    // one div and moving it around
+    const corner1El = document.createElement('div');
+    const corner2El = document.createElement('div');
+    const corner3El = document.createElement('div');
+    const corner4El = document.createElement('div');
 
     corner1El.classList.add('box-preview-quad-corner', 'corner1');
     corner2El.classList.add('box-preview-quad-corner', 'corner2');
@@ -66,11 +68,17 @@ function getQuadPoints(element, relativeEl) {
 
     const corner1Rect = corner1El.getBoundingClientRect();
     const corner2Rect = corner2El.getBoundingClientRect();
-    const conrer3Rect = corner3El.getBoundingClientRect();
-    const conrer4Rect = corner4El.getBoundingClientRect();
+    const corner3Rect = corner3El.getBoundingClientRect();
+    const corner4Rect = corner4El.getBoundingClientRect();
     const relativeRect = relativeEl.getBoundingClientRect();
     const relativeLeft = relativeRect.left;
     const relativeTop = relativeRect.top;
+
+    // Cleanup elements
+    element.removeChild(corner1El);
+    element.removeChild(corner2El);
+    element.removeChild(corner3El);
+    element.removeChild(corner4El);
 
     // Calculate coordinates of these 4 corners
     const quadPoints = [
@@ -78,17 +86,11 @@ function getQuadPoints(element, relativeEl) {
         corner1Rect.top - relativeTop,
         corner2Rect.left - relativeLeft,
         corner2Rect.top - relativeTop,
-        conrer3Rect.left - relativeLeft,
-        conrer3Rect.top - relativeTop,
-        conrer4Rect.left - relativeLeft,
-        conrer4Rect.top - relativeTop
+        corner3Rect.left - relativeLeft,
+        corner3Rect.top - relativeTop,
+        corner4Rect.left - relativeLeft,
+        corner4Rect.top - relativeTop
     ];
-
-    // Clean up corner elements
-    element.removeChild(corner1El);
-    element.removeChild(corner2El);
-    element.removeChild(corner3El);
-    element.removeChild(corner4El);
 
     return quadPoints;
 }
@@ -97,11 +99,11 @@ function getQuadPoints(element, relativeEl) {
  * Creates a highlight DIV with corners corresponding to the supplied quad
  * points
  *
- * @param {number[]} quadPoints Quad points corresponding to corners
+ * @param {Number[]} quadPoints Quad points corresponding to corners
  * @returns {HTMLElement} Highlight div
  */
 function createHighlightEl(quadPoints) {
-    const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
+    const [ x1, y1, x2, y2, x3, y3, x4, y4 ] = quadPoints;
 
     // Rotation radians = arctan(opposite/adj) = arctan((y3-y4)/(x3-x4))
     const rotationRad = Math.atan((y3 - y4) / (x3 - x4));
@@ -113,7 +115,7 @@ function createHighlightEl(quadPoints) {
     // Construct highlight div with same width and height as the rectangle
     // represented by the quad points at the top left quad point and perform
     // the appropriate rotation about the top left corner as the origin
-    let highlightEl = document.createElement('div');
+    const highlightEl = document.createElement('div');
     highlightEl.style.left = x4 + 'px';
     highlightEl.style.top = y4 + 'px';
     highlightEl.style.width = newRectWidth + 'px';
@@ -126,10 +128,20 @@ function createHighlightEl(quadPoints) {
 }
 
 /**
+ * Find highlight elements matching given annotation ID
+ *
+ * @param {Number} annotationID Annotation ID of highlights to find
+ * @returns {HTMLElement[]} Array of highlight elements matching ID
+ */
+function findHighlightEls(annotationID) {
+    return [].slice.call(document.querySelectorAll('[data-annotation-id="' + annotationID + '"]'));
+}
+
+/**
  * Escapes HTML
  *
- * @param {string} str Input string
- * @returns {string} HTML escaped string
+ * @param {String} str Input string
+ * @returns {String} HTML escaped string
  */
 function htmlEscape(str) {
     return str.replace(/&/g, '&amp;') // first!
@@ -173,10 +185,8 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     setupAnnotations() {
-        // Init rangy
+        // Init rangy and rangy highlight
         this.highlighter = rangy.createHighlighter();
-
-        // Init rangy highlight classapplier
         this.highlighter.addClassApplier(rangy.createClassApplier('highlight', {
             ignoreWhiteSpace: true,
             tagNames: ['span', 'a']
@@ -194,13 +204,13 @@ class DocAnnotator extends Annotator {
 
         // Fetch map of thread ID to annotations
         this.annotationService.getAnnotationsForFile(this.fileID).then((annotationsMap) => {
-            let highlightAnnotations = [];
-            let pointAnnotations = [];
+            const highlightAnnotations = [];
+            const pointAnnotations = [];
 
             // Generate arrays of highlight and point threads
-            for (let threadedAnnotations of annotationsMap.values()) {
-                let firstAnnotation = threadedAnnotations[0],
-                    annotationType = firstAnnotation.type;
+            for (const threadedAnnotations of annotationsMap.values()) {
+                const firstAnnotation = threadedAnnotations[0];
+                const annotationType = firstAnnotation.type;
 
                 // We only need to show the first annotation in a thread
                 if (annotationType === HIGHLIGHT_ANNOTATION_TYPE) {
@@ -219,13 +229,13 @@ class DocAnnotator extends Annotator {
     /**
      * Create an annotation object from annotation data.
      *
-     * @param {string} annotationType Type of annotation
-     * @param {string} annotationText Comment text for annotation
+     * @param {String} annotationType Type of annotation
+     * @param {String} annotationText Comment text for annotation
      * @param {Object} locationData Location data
      * @returns {Annotation} Annotation
      */
     createAnnotation(annotationType, annotationText, locationData) {
-        let data = {
+        const data = {
             fileID: this.fileID,
             type: annotationType,
             text: annotationText,
@@ -257,22 +267,30 @@ class DocAnnotator extends Annotator {
         // Delete highlight button should be in upper right of the highlight in the upper right
         let upperRightX = 0;
         let upperRightY = pageEl.getBoundingClientRect().height;
+        const highlightContainerEl = document.createElement('div');
+        highlightContainerEl.dataset.annotationId = annotation.annotationID;
 
         location.quadPoints.forEach((quadPoints) => {
-            let [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
+            const [ x1, y1, x2, y2, x3, y3, x4, y4 ] = quadPoints;
             upperRightX = Math.max(upperRightX, Math.max(x1, x2, x3, x4));
             upperRightY = Math.min(upperRightY, Math.min(y1, y2, y3, y4));
 
+            /*eslint-disable no-console*/
             console.log(`Quadpoints for highlight "${annotation.annotationID}": (${x1},${y1}) (${x2},${y2}) (${x3},${y3}) (${x4},${y4})`);
+            /*eslint-enable no-console*/
 
             // Create highlight div from quadpoints and save reference to annotation
-            let highlightEl = createHighlightEl(quadPoints);
-            highlightEl.dataset.annotationId = annotation.annotationID;
-            textLayerEl.insertBefore(highlightEl, textLayerEl.firstChild);
+            const highlightEl = createHighlightEl(quadPoints);
+            //highlightEl.dataset.annotationId = annotation.annotationID;
+            //textLayerEl.insertBefore(highlightEl, textLayerEl.firstChild);
+            highlightContainerEl.appendChild(highlightEl);
         });
 
+        // Insert highlight elements onto DOM
+        textLayerEl.insertBefore(highlightContainerEl, textLayerEl.firstChild);
+
         // Construct delete highlight button
-        let removeHighlightButtonEl = document.createElement('button');
+        const removeHighlightButtonEl = document.createElement('button');
         removeHighlightButtonEl.textContent = 'x';
         removeHighlightButtonEl.style.left = upperRightX - 8 + 'px'; // move 'x' slightly into highlight
         removeHighlightButtonEl.style.top = upperRightY - 8 + 'px'; // move 'x' slightly into highlight
@@ -304,6 +322,43 @@ class DocAnnotator extends Annotator {
     }
 
     /**
+     * Changes color of highlight on hover and shows the delete highlight
+     * button.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    debouncedHoverHighlightAnnotationHandler(event) {
+        if (!this.hoverHighlightAnnotationHandler) {
+            this.hoverHighlightAnnotationHandler = debounce(() => {
+                const targetEl = event.target;
+
+                // If we are hovering over a highlight, change highlight
+                // elements to active state
+                if (targetEl.classList.contains('box-preview-highlight')) {
+                    const annotationID = targetEl.dataset.annotationId;
+                    const highlightEls = findHighlightEls(annotationID);
+                    highlightEls.forEach((highlightEl) => {
+                        highlightEl.classList.add('box-preview-highlight-active');
+                    });
+
+                    this.lastHoveredAnnotationID = annotationID;
+
+                // If we aren't hovering over a highlight, remove the hover
+                // effect over the previously hovered highlight
+                } else {
+                    const highlightEls = findHighlightEls(this.lastHoveredAnnotationID);
+                    highlightEls.forEach((highlightEl) => {
+                        highlightEl.classList.remove('box-preview-highlight-active');
+                    });
+                }
+            }, HIGHLIGHT_HOVER_DELAY);
+        }
+
+        return this.hoverHighlightAnnotationHandler;
+    }
+
+    /**
      * Event handler for adding a highlight annotation. Shows a create
      * highlight annotation dialog with the currently selected text.
      *
@@ -314,7 +369,7 @@ class DocAnnotator extends Annotator {
         event.stopPropagation();
 
         // Get selection location and dimensions
-        let selection = window.getSelection();
+        const selection = window.getSelection();
         if (selection.rangeCount < 1) {
             return;
         }
@@ -324,16 +379,16 @@ class DocAnnotator extends Annotator {
 
         // We use Rangy to turn the selection into a highlight, which creates
         // spans around the selection that we can then turn into quadpoints
-        let highlight = this.highlighter.highlightSelection('highlight', {
+        const highlight = this.highlighter.highlightSelection('highlight', {
             containerElementId: pageEl.id
         })[0];
-        let highlightElements = [].slice.call(document.querySelectorAll('.highlight'), 0);
+        const highlightElements = [].slice.call(document.querySelectorAll('.highlight'), 0);
         if (highlightElements.length === 0) {
             return;
         }
 
         // Get quad points for each highlight element
-        let highlightQuadPoints = [];
+        const highlightQuadPoints = [];
         highlightElements.forEach((element) => {
             highlightQuadPoints.push(getQuadPoints(element, pageEl));
         });
@@ -363,8 +418,8 @@ class DocAnnotator extends Annotator {
      */
     showPointAnnotation(annotation) {
         // Create point annotation HTML
-        let pointAnnotationEl = document.createElement('div'),
-            annotationElString = `
+        const pointAnnotationEl = document.createElement('div');
+        const annotationElString = `
             <div class="caret-up"></div>
             <div class="annotation-container">
                 <button class="btn show-point-annotation-btn">
@@ -376,18 +431,18 @@ class DocAnnotator extends Annotator {
         pointAnnotationEl.dataset.threadId = annotation.threadID;
         pointAnnotationEl.innerHTML = annotationElString;
 
-        let location = annotation.location,
-            pageScale = this.getScale(),
-            x = location.x * pageScale,
-            y = location.y * pageScale,
-            page = location.page,
-            pageEl = document.querySelector('[data-page-number="' + page + '"]');
+        const location = annotation.location;
+        const pageScale = this.getScale();
+        const x = location.x * pageScale;
+        const y = location.y * pageScale;
+        const page = location.page;
+        const pageEl = document.querySelector('[data-page-number="' + page + '"]');
 
         pageEl.appendChild(pointAnnotationEl);
         pointAnnotationEl.style.left = (x - 25) + 'px';
         pointAnnotationEl.style.top = y + 'px';
 
-        let showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
+        const showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
         this.addEventHandler(showPointAnnotationButtonEl, (event) => {
             event.stopPropagation();
             this.showAnnotationDialog(annotation.threadID);
@@ -423,7 +478,7 @@ class DocAnnotator extends Annotator {
         this.addEventHandler(document, (event) => {
             event.stopPropagation();
 
-            let pageEl = findClosestElWithClass(event.target, 'page');
+            const pageEl = findClosestElWithClass(event.target, 'page');
 
             // If click isn't on a page, disregard
             if (!pageEl) {
@@ -431,16 +486,16 @@ class DocAnnotator extends Annotator {
             }
 
             // Generate annotation parameters and location data to store
-            let pageDimensions = pageEl.getBoundingClientRect(),
-                page = pageEl.dataset.pageNumber,
-                pageScale = this.getScale(),
-                x = (event.clientX - pageDimensions.left) / pageScale,
-                y = (event.clientY - pageDimensions.top) / pageScale,
-                locationData = {
-                    x: x,
-                    y: y,
-                    page: page
-                };
+            const pageDimensions = pageEl.getBoundingClientRect();
+            const page = pageEl.dataset.pageNumber;
+            const pageScale = this.getScale();
+            const x = (event.clientX - pageDimensions.left) / pageScale;
+            const y = (event.clientY - pageDimensions.top) / pageScale;
+            const locationData = {
+                x: x,
+                y: y,
+                page: page
+            };
 
             this.createAnnotationDialog(locationData, POINT_ANNOTATION_TYPE);
 
@@ -454,13 +509,13 @@ class DocAnnotator extends Annotator {
      * Show a dialog that allows a user to create an annotation.
      *
      * @param {Object} locationData Location to place dialog
-     * @param {string} annotationType Type of annotation
+     * @param {String} annotationType Type of annotation
      * @returns {void}
      */
     createAnnotationDialog(locationData, annotationType) {
         // Create annotation dialog HTML
-        let annotationDialogEl = document.createElement('div'),
-            annotationElString = `
+        const annotationDialogEl = document.createElement('div');
+        const annotationElString = `
             <div class="caret-up"></div>
             <div class="annotation-container">
                 <textarea class="annotation-textarea"></textarea>
@@ -476,12 +531,12 @@ class DocAnnotator extends Annotator {
         annotationDialogEl.classList.add('annotation-dialog');
         annotationDialogEl.innerHTML = annotationElString;
 
-        let postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn'),
-            cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation-btn'),
-            annotationTextEl = annotationDialogEl.querySelector('.annotation-textarea');
+        const postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn');
+        const cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation-btn');
+        const annotationTextEl = annotationDialogEl.querySelector('.annotation-textarea');
 
         // Function to clean up event handlers and close dialog
-        let closeCreateDialog = () => {
+        const closeCreateDialog = () => {
             this.removeEventHandlers(document);
             this.removeEventHandlers(postButtonEl);
             this.removeEventHandlers(cancelButtonEl);
@@ -493,8 +548,8 @@ class DocAnnotator extends Annotator {
             event.stopPropagation();
 
             // Get annotation text and create annotation
-            let annotationText = annotationTextEl.value,
-                annotation = this.createAnnotation(annotationType, annotationText, locationData);
+            const annotationText = annotationTextEl.value;
+            const annotation = this.createAnnotation(annotationType, annotationText, locationData);
 
             // Save annotation
             this.annotationService.create(annotation).then(() => {
@@ -548,7 +603,7 @@ class DocAnnotator extends Annotator {
      * Show an existing annotation dialog that allows the user to delete and/or
      * reply to annotations on a thread if they have permissions to do so.
      *
-     * @param {string} threadID Thread ID of annotations to display
+     * @param {String} threadID Thread ID of annotations to display
      * @returns {void}
      */
     showAnnotationDialog(threadID) {
@@ -558,8 +613,8 @@ class DocAnnotator extends Annotator {
             }
 
             // View/reply to existing annotation dialog HTML
-            let annotationDialogEl = document.createElement('div'),
-                annotationElString = `
+            const annotationDialogEl = document.createElement('div');
+            const annotationElString = `
                 <div class="caret-up"></div>
                 <div class="annotation-container">
                     <div class="annotation-comments"></div>
@@ -585,16 +640,16 @@ class DocAnnotator extends Annotator {
 
             // Function to create a single comment element
             // @TODO(tjin): move into separate function
-            let createAnnotationCommentEl = (annotation) => {
-                let avatarUrl = htmlEscape(annotation.user.avatarUrl),
-                    userName = htmlEscape(annotation.user.name),
-                    created = new Date(annotation.created).toLocaleDateString(
-                        'en-US',
-                        {hour: '2-digit', minute:'2-digit'}
-                    ),
-                    text = htmlEscape(annotation.text);
+            const createAnnotationCommentEl = (annotation) => {
+                const avatarUrl = htmlEscape(annotation.user.avatarUrl);
+                const userName = htmlEscape(annotation.user.name);
+                const created = new Date(annotation.created).toLocaleDateString(
+                    'en-US',
+                    { hour: '2-digit', minute: '2-digit' }
+                );
+                const text = htmlEscape(annotation.text);
 
-                let annotationElString = `
+                const annotationElString = `
                     <div class="profile-image-container"><img src=${avatarUrl} alt="Profile"></div>
                     <div class="comment-container">
                         <div class="user-name">${userName}</div>
@@ -614,15 +669,15 @@ class DocAnnotator extends Annotator {
                     </div>
                     <button class="btn-plain delete-comment-btn">
                         <span>D</span>
-                    </button>`.trim(),
-                    annotationEl = document.createElement('div');
+                    </button>`.trim();
+                const annotationEl = document.createElement('div');
                 annotationEl.innerHTML = annotationElString;
                 annotationEl.classList.add('annotation-comment');
 
-                let deleteButtonEl = annotationEl.querySelector('.delete-comment-btn'),
-                    deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation'),
-                    cancelDeleteButtonEl = annotationEl.querySelector('.cancel-delete-btn'),
-                    confirmDeleteButtonEl = annotationEl.querySelector('.confirm-delete-btn');
+                const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
+                const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
+                const cancelDeleteButtonEl = annotationEl.querySelector('.cancel-delete-btn');
+                const confirmDeleteButtonEl = annotationEl.querySelector('.confirm-delete-btn');
 
                 // Clicking 'D' to initiate deletion of annotation
                 this.addEventHandler(deleteButtonEl, (event) => {
@@ -649,14 +704,14 @@ class DocAnnotator extends Annotator {
                         this.removeEventHandlers(cancelDeleteButtonEl);
                         this.removeEventHandlers(confirmDeleteButtonEl);
 
-                        let annotationParentEl = annotationEl.parentNode;
+                        const annotationParentEl = annotationEl.parentNode;
                         annotationParentEl.removeChild(annotationEl);
 
                         // If this was the root comment in this thread, remove the whole thread
                         if (annotationParentEl.childElementCount === 0) {
-                            let replyButtonEl = annotationDialogEl.querySelector('.add-reply-btn'),
-                                cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation-btn'),
-                                postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn');
+                            const replyButtonEl = annotationDialogEl.querySelector('.add-reply-btn');
+                            const cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation-btn');
+                            const postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn');
                             this.removeEventHandlers(document);
                             this.removeEventHandlers(replyButtonEl);
                             this.removeEventHandlers(cancelButtonEl);
@@ -668,10 +723,10 @@ class DocAnnotator extends Annotator {
                             if (annotation.type === HIGHLIGHT_ANNOTATION_TYPE) {
                                 this.removeRangyHighlight(annotation.location.highlight);
                             } else if (annotation.type === POINT_ANNOTATION_TYPE) {
-                                let pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
+                                const pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
 
                                 if (pointAnnotationEl) {
-                                    let showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
+                                    const showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
                                     this.removeEventHandlers(showPointAnnotationButtonEl);
                                     pointAnnotationEl.parentNode.removeChild(pointAnnotationEl);
                                 }
@@ -683,25 +738,27 @@ class DocAnnotator extends Annotator {
                 return annotationEl;
             };
 
+
+            // All annotations in a thread should have the same location
+            const firstAnnotation = annotations[0];
+            const locationData = firstAnnotation.location || {};
+
             // Loop through annotation comments to generate thread
-            let locationData = {},
-                annotationCommentsEl = annotationDialogEl.querySelector('.annotation-comments');
+            const annotationCommentsEl = annotationDialogEl.querySelector('.annotation-comments');
             annotations.forEach((annotation) => {
-                // All annotations in a thread should have the same location
-                locationData = annotation.location;
 
                 // Create annotation comment boxes per annotation in thread
-                let annotationEl = createAnnotationCommentEl(annotation);
+                const annotationEl = createAnnotationCommentEl(annotation);
                 annotationCommentsEl.appendChild(annotationEl);
             });
 
             // Add reply event handlers
-            let replyEl = annotationDialogEl.querySelector('.reply-container'),
-                replyButtonEl = replyEl.querySelector('.add-reply-btn'),
-                cancelButtonEl = replyEl.querySelector('.cancel-annotation-btn'),
-                postButtonEl = replyEl.querySelector('.post-annotation-btn'),
-                replyContainerEl = replyEl.querySelector('.reply-container'),
-                replyTextEl = replyEl.querySelector('.annotation-textarea');
+            const replyEl = annotationDialogEl.querySelector('.reply-container');
+            const replyButtonEl = replyEl.querySelector('.add-reply-btn');
+            const cancelButtonEl = replyEl.querySelector('.cancel-annotation-btn');
+            const postButtonEl = replyEl.querySelector('.post-annotation-btn');
+            const replyContainerEl = replyEl.querySelector('.reply-container');
+            const replyTextEl = replyEl.querySelector('.annotation-textarea');
 
             // Clicking '+ Add Reply' to initiate adding a reply annotation
             this.addEventHandler(replyButtonEl, () => {
@@ -726,13 +783,13 @@ class DocAnnotator extends Annotator {
                 replyButtonEl.classList.remove('hidden');
                 replyContainerEl.classList.add('hidden');
 
-                let newAnnotation = Annotation.copy(annotations[0], {
+                const newAnnotation = Annotation.copy(firstAnnotation, {
                     text: replyTextEl.value.trim(),
                     user: this.user
                 });
 
                 this.annotationService.create(newAnnotation).then((createdAnnotation) => {
-                    let annotationEl = createAnnotationCommentEl(createdAnnotation);
+                    const annotationEl = createAnnotationCommentEl(createdAnnotation);
                     annotationCommentsEl.appendChild(annotationEl);
                 });
             });
@@ -752,9 +809,9 @@ class DocAnnotator extends Annotator {
 
                     // Remove 'delete' event handlers
                     if (annotationCommentsEl && annotationCommentsEl.children) {
-                        let childrenEls = [].slice.call(annotationCommentsEl.children);
+                        const childrenEls = [].slice.call(annotationCommentsEl.children);
                         childrenEls.forEach((annotationEl) => {
-                            let deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
+                            const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
                             this.removeEventHandlers(deleteButtonEl);
                         });
                     }
@@ -772,12 +829,12 @@ class DocAnnotator extends Annotator {
      *
      * @param {HTMLElement} dialogEl Dialog element to position
      * @param {Object} locationData Data about where to position the dialog
-     * @param {number} dialogWidth Width of dialog
+     * @param {Number} dialogWidth Width of dialog
      * @returns {void}
      */
     positionDialog(dialogEl, locationData, dialogWidth) {
-        let page = locationData.page,
-            pageEl = document.querySelector('[data-page-number="' + page + '"]');
+        const page = locationData.page;
+        const pageEl = document.querySelector('[data-page-number="' + page + '"]');
 
         pageEl.appendChild(dialogEl);
         dialogEl.style.left = (locationData.x - dialogWidth/2) + 'px';
@@ -792,15 +849,22 @@ class DocAnnotator extends Annotator {
      * Removes a highlight by finding all highlight divs corresponding to the
      * provided annotation ID and removing them
      *
-     * @param {number} annotationId Annotation ID of highlight to remove
+     * @param {Number} annotationID Annotation ID of highlight to remove
      * @returns {void}
      */
-    removeHighlight(annotationId) {
-        let matchingHighlights = [].slice.call(document.querySelectorAll('[data-annotation-id="' + annotationId + '"]'));
+    removeHighlight(annotationID) {
+        const highlightContainerEl = document.querySelector('[data-annotation-id="' + annotationID + '"]');
+        while (highlightContainerEl.firstChild) {
+            highlightContainerEl.removeChild(highlightContainerEl.firstChild);
+        }
+        highlightContainerEl.parentNode.removeChild(highlightContainerEl);
 
-        matchingHighlights.forEach((highlightEl) => {
+        /*
+        const highlightEls = [].slice.call(document.querySelectorAll('[data-annotation-id="' + annotationID + '"]'));
+
+        highlightEls.forEach((highlightEl) => {
             highlightEl.parentNode.removeChild(highlightEl);
-        });
+        });*/
     }
 
     /**
@@ -813,7 +877,7 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     removeRangyHighlight(highlight) {
-        let matchingHighlights = this.highlighter.highlights.filter((internalHighlight) => {
+        const matchingHighlights = this.highlighter.highlights.filter((internalHighlight) => {
             return internalHighlight.id === highlight.id;
         });
 
@@ -826,12 +890,14 @@ class DocAnnotator extends Annotator {
      *
      * @param {HTMLElement} element Element to attach handler to
      * @param {Function} handler Event handler
+     * @param {String} [eventType] Optional type of event, defaults to a click or touch
      * @returns {void}
      */
-    addEventHandler(element, handler) {
-        element.addEventListener(TOUCH_EVENT, handler);
+    addEventHandler(element, handler, eventType) {
+        eventType = eventType || TOUCH_EVENT;
+        element.addEventListener(eventType, handler);
 
-        let handlers = this.handlerMap.get(element) || [];
+        const handlers = this.handlerMap.get(element) || [];
         handlers.push(handler);
 
         this.handlerMap.set(element, handlers);
@@ -844,7 +910,7 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     removeEventHandlers(element) {
-        let handlers = this.handlerMap.get(element) || [];
+        const handlers = this.handlerMap.get(element) || [];
 
         if (element && typeof element.removeEventListener === 'function') {
             handlers.forEach((handler) => {
@@ -861,7 +927,7 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     removeAllEventHandlers() {
-        for (let [element, handlers] of this.handlerMap) {
+        for (const [element, handlers] of this.handlerMap) {
             if (element && typeof element.removeEventListener === 'function') {
                 handlers.forEach((handler) => {
                     element.removeEventListener(TOUCH_EVENT, handler);
