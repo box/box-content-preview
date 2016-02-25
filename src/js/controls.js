@@ -1,7 +1,5 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
-import { throttle } from './util';
+import throttle  from 'lodash.throttle';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;

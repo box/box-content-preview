@@ -1,9 +1,8 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
-import { debounce, createContentUrl } from './util';
+import { createContentUrl } from './util';
+import debounce  from 'lodash.debounce';
 
 const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 const CLASS_FULLSCREEN_DISABLED = 'box-preview-fullscreen-disabled';
@@ -12,39 +11,35 @@ const OPTIONS = {
     ui: true
 };
 
-let document = global.document;
-
 @autobind
 class Base extends EventEmitter {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} container The container
-     * @param {object} [options] some options
+     * @param {String|HTMLElement} container The container
+     * @param {Object} [options] some options
      * @returns {Base} Instance of base
      */
     constructor(container, options) {
         super();
 
+        // Save the options
         this.options = Object.assign({}, OPTIONS, options) || OPTIONS;
-        this.currentRotationAngle = 0;
 
         // Get the container dom element if selector was passed
         if (typeof container === 'string') {
             container = document.querySelector(container);
         }
 
-        // Double check if the layout is accurate and if not create it.
+        // Double check if the layout is accurate and if not re-create it.
         // This code should never execute when using the wrapper preview.js
-        if (!container.firstElementChild || !container.firstElementChild.classList.contains('box-preview')) {
-            container.innerHTML = '<div class="box-preview"></div>';
-
-            // Make its position relative so that the childen can be positioned absolute
-            container.style.position = 'relative';
+        if (!container.classList.contains('box-preview-container') || !container.firstElementChild || !container.firstElementChild.classList.contains('box-preview')) {
+            const wrapper = container.parentElement;
+            wrapper.innerHTML = '<div class="box-preview-container" style="display: block;"><div class="box-preview"></div></div>';
+            container = wrapper.querySelector('.box-preview-container');
         }
 
-        // Save handles to the container and make its position relative
-        // so that the childen can be positioned absolute
+        // From the perspective of viewers box-preview holds everything
         this.containerEl = container.firstElementChild;
 
         // Attach event listeners
@@ -71,16 +66,37 @@ class Base extends EventEmitter {
 
     /**
      * Loads content.
+     * Sets a timeout for loading.
      *
      * @protected
      * @returns {Promise} Promise to load image
      */
     load() {
         setTimeout(() => {
-            if (!this.loaded && !this.destroyed) {
+            if (!this.isLoaded() && !this.isDestroyed()) {
                 this.emit('error');
             }
         }, this.loadTimeout);
+    }
+
+    /**
+     * Loads content.
+     *
+     * @protected
+     * @returns {Boolean} loaded
+     */
+    isLoaded() {
+        return this.loaded;
+    }
+
+    /**
+     * If preview destroyed
+     *
+     * @protected
+     * @returns {Boolean} destroyed
+     */
+    isDestroyed() {
+        return this.destroyed;
     }
 
     /**

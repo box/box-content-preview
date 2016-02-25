@@ -1,8 +1,6 @@
-'use strict';
-
-let loadedJSAssets = [];
-let loadedCSSAssets = [];
-let prefetchedAssets = [];
+const loadedJSAssets = [];
+const loadedCSSAssets = [];
+const prefetchedAssets = [];
 
 /**
  * Inserts template string into dom node
@@ -13,7 +11,7 @@ let prefetchedAssets = [];
  * @returns {void}
  */
 export function insertTemplate(node, template) {
-    let range = document.createRange();
+    const range = document.createRange();
     range.selectNode(node);
     node.appendChild(range.createContextualFragment(template));
 }
@@ -26,7 +24,7 @@ export function insertTemplate(node, template) {
  * @returns {Array} script element
  */
 export function createScript(url) {
-    let script = document.createElement('script');
+    const script = document.createElement('script');
     script.src = url;
     script.async = false;
     return script;
@@ -40,7 +38,7 @@ export function createScript(url) {
  * @returns {HTMLElement} prefetch link element
  */
 export function createPrefetch(url) {
-    let link = document.createElement('link');
+    const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = url;
     return link;
@@ -54,7 +52,7 @@ export function createPrefetch(url) {
  * @returns {HTMLElement} css link element
  */
 export function createStylesheet(url) {
-    let link = document.createElement('link');
+    const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.type = 'text/css';
     link.href = url;
@@ -70,7 +68,6 @@ export function createStylesheet(url) {
  * @returns {String} content urls
  */
 export function createContentUrl(url, token) {
-
     if (!token) {
         return url;
     }
@@ -92,8 +89,8 @@ export function createContentUrl(url, token) {
  * @returns {Function} factory for creating asset url
  */
 export function createAssetUrlCreator(location) {
-    let baseURI = location.baseURI;
-    let staticBaseURI = location.staticBaseURI;
+    const baseURI = location.baseURI;
+    const staticBaseURI = location.staticBaseURI;
 
     return (name) => {
         let asset;
@@ -120,7 +117,7 @@ export function createAssetUrlCreator(location) {
  * @returns {void}
  */
 export function prefetchAssets(urls) {
-    let head = document.getElementsByTagName('head')[0];
+    const head = document.getElementsByTagName('head')[0];
 
     urls.forEach((url) => {
         if (prefetchedAssets.indexOf(url) === -1) {
@@ -137,19 +134,10 @@ export function prefetchAssets(urls) {
  * @returns {void}
  */
 export function loadStylesheets(urls) {
-    let head = document.getElementsByTagName('head')[0];
-
-    // Before adding new stylesheets, remove prior ones
-    // This is because stylesheets can conflict
-    // loadedCSSAssets.forEach((url) => {
-    //     let link = head.querySelector('link[rel="stylesheet"][href="' + url + '"]');
-    //     //head.removeChild(link);
-    // });
-
-    loadedCSSAssets = [];
+    const head = document.getElementsByTagName('head')[0];
 
     urls.forEach((url) => {
-        if (loadedJSAssets.indexOf(url) === -1) {
+        if (loadedCSSAssets.indexOf(url) === -1) {
             loadedCSSAssets.push(url);
             head.appendChild(createStylesheet(url));
         }
@@ -163,8 +151,8 @@ export function loadStylesheets(urls) {
  * @returns {Promise} Promise to load scripts
  */
 export function loadScripts(urls) {
-    let head = document.getElementsByTagName('head')[0];
-    let promises = [];
+    const head = document.getElementsByTagName('head')[0];
+    const promises = [];
 
     urls.forEach((url) => {
         if (loadedJSAssets.indexOf(url) === -1) {
@@ -244,117 +232,4 @@ export function decodeKeydown(event) {
     }
 
     return modifier + key;
-}
-
-/**
- * Adapted from underscore.js http://underscorejs.org/docs/underscore.html
- *
- * Returns a function, that, as long as it continues to be invoked, will not be triggered.
- * The function will be called after it stops being called for N milliseconds.
- * If immediate is passed, trigger the function on the leading edge, instead of the trailing.
- *
- * Use debouncing when dealing with events like window resizing when you want to resize the content
- * only when the user has stopped resizing the browser. Debouncing can also be used for mousemove and mousescroll
- * depending upon the use case when you want the user to 1st stop before triggering the function.
- *
- * @param {Function} func The function for debounce
- * @param {number} wait How long should the time out be
- * @param {boolean} immediate If true, trigger the function on the leading edge, instead of the trailing.
- * @private
- * @returns {Function}
- */
-export function debounce(func, wait, immediate) {
-
-    var timeout,
-        args,
-        context,
-        timestamp,
-        result,
-        later = function() {
-            var last = (new Date().getTime()) - timestamp;
-
-            if (last < wait && last > 0) {
-                timeout = setTimeout(later, wait - last);
-            } else {
-                timeout = null;
-                if (!immediate) {
-                    result = func.apply(context, args);
-                    if (!timeout) {
-                        context = args = null;
-                    }
-                }
-            }
-        };
-
-    return function() {
-        var callNow = immediate && !timeout;
-
-        context = this;
-        args = arguments;
-        timestamp = (new Date().getTime());
-
-        if (!timeout) {
-            timeout = setTimeout(later, wait);
-        }
-
-        if (callNow) {
-            result = func.apply(context, args);
-            context = args = null;
-        }
-
-        return result;
-    };
-}
-
-/**
- * Adapted from underscore.js http://underscorejs.org/docs/underscore.html
- *
- * Returns a function, that, when invoked, will only be triggered at most once during a given window of time.
- * Normally, the throttled function will run as much as it can, without ever going more than once per wait duration.
- *
- * Use throttling when dealing with events like mousemove and mousescroll when you want the events to fire
- * periodically unlike debouncing where they are fired only when the user has stopped mousemoving or scrolling.
- *
- * @param {Function} func The function to throttle
- * @param {number} wait How long should the time out be
- * @private
- * @returns {Function}
- */
-export function throttle(func, wait) {
-
-    var context,
-        args,
-        result,
-        timeout = null,
-        previous = 0,
-        later = function() {
-            previous = (new Date().getTime());
-            timeout = null;
-            result = func.apply(context, args);
-            if (!timeout) {
-                context = args = null;
-            }
-        };
-
-    return function() {
-        var now = (new Date().getTime()),
-            remaining = wait - (now - previous);
-
-        context = this;
-        args = arguments;
-
-        if (remaining <= 0 || remaining > wait) {
-            clearTimeout(timeout);
-            timeout = null;
-            previous = now;
-            result = func.apply(context, args);
-            if (!timeout) {
-                context = args = null;
-            }
-        } else if (!timeout) {
-            timeout = setTimeout(later, remaining);
-        }
-
-        return result;
-    };
 }
