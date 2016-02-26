@@ -1,6 +1,4 @@
-'use strict';
-
-import '../../css/media/dash.css';
+import './dash.scss';
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 import cache from '../cache';

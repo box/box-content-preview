@@ -1,7 +1,7 @@
 /* global BoxSDK */
 'use strict';
 
-import '../../css/box3d/box3d.css';
+import './box3d.scss';
 import Base from '../base';
 import autobind from 'autobind-decorator';
 import Box3DControls from './box3d-controls';

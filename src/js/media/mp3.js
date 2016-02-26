@@ -1,6 +1,4 @@
-'use strict';
-
-import '../../css/media/mp3.css';
+import './mp3.scss';
 import autobind from 'autobind-decorator';
 import MediaBase from './media-base';
 

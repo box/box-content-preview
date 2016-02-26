@@ -1,5 +1,3 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import Controls from '../controls';
 import Base from '../base';
@@ -23,6 +21,7 @@ class TextBase extends Base {
     /**
      * Zooms by increasing or decreasing font size
      * @public
+     * @param {String} inOrOut in or out
      * @returns {void}
      */
     zoom(inOrOut) {

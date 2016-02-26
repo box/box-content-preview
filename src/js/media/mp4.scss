@@ -1,0 +1,30 @@
+@import 'media';
+
+.box-preview-media-mp4 {
+
+    video {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        width: 100%;
+        cursor: none;
+    }
+
+    .box-preview-media-controls-is-visible video {
+        cursor: default;
+    }
+
+    .box-preview-is-fullscreen & .box-preview-media-container {
+        width: 100%;
+    }
+
+    .box-preview-media-settings {
+        height: 23px;
+    }
+
+    .box-preview-media-settings-item-quality,
+    .box-preview-image-switch-360-icon {
+        display: none;
+    }
+
+}

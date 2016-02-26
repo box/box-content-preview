@@ -1,5 +1,3 @@
-'use strict';
-
 import AssetLoader from '../asset-loader';
 
 const STATIC_URI = 'third-party/media/';

@@ -1,6 +1,4 @@
-'use strict';
-
-import '../../css/media/mp4.css';
+import './mp4.scss';
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 

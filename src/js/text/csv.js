@@ -1,4 +1,4 @@
-import '../../css/text/csv.css';
+import './csv.scss';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
 import fetch from 'isomorphic-fetch';

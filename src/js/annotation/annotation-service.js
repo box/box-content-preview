@@ -1,5 +1,3 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 
 let Promise = global.Promise;
