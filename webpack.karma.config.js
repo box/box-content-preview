@@ -1,7 +1,6 @@
 var merge = require('deepmerge');
 var path = require('path');
 var commonConfig = require('./webpack.common.config');
-var js = path.join(__dirname, 'src/js');
 
 module.exports = merge(commonConfig('en-US'), {
 
@@ -22,8 +21,12 @@ module.exports = merge(commonConfig('en-US'), {
     module: {
         preLoaders: [
             {
-                test: js,
+                test: /\.js$/,
                 loader: 'babel',
+                exclude: [
+                    /third\-party/,
+                    path.resolve('node_modules')
+                ],
                 query: { compact: false }
             }
         ],

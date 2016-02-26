@@ -1,4 +1,4 @@
-import '../../css/image/image.css';
+import './image.scss';
 import autobind from 'autobind-decorator';
 import Base from './image-base';
 import Browser from '../browser';
