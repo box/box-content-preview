@@ -18,7 +18,6 @@ class VideoBase extends MediaBase {
 
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
-        this.mediaEl.setAttribute('autoplay', true);
         this.mediaEl.setAttribute('preload', 'auto');
     }
 
