@@ -1,7 +1,8 @@
 {
     "parser": "babel-eslint",
     "plugins": [
-        "babel"
+        "babel",
+        "react"
     ],
     "globals": {
         "window": false,
