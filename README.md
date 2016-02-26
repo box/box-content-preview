@@ -3,12 +3,12 @@ Box Preview
 
 Overview
 ---------
-The Box Preview library allows developers to preview their Box file(s) in an application. The library fetches representations through the Box Content API, chooses the appropriate viewer for the file type, and renders a preview of the file.
+The Box Preview library allows developers to preview their Box file(s) in an application. The library fetches representations through the Box Content API, chooses the appropriate viewer for the file type and finally renders the preview.
 
 Browser Support
 ----------------
-Chrome, Firefox, Safari and Edge.
-Limited support on Internet Explorer 10+
+* Chrome, Firefox, Safari and Edge.
+* Limited support on Internet Explorer 10+.
 
 The browser needs to have the Promise API implimented. If not, it can be polyfilled by including a promise library like bluebird before any other script includes: https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js
 
