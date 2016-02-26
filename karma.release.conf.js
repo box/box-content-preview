@@ -26,7 +26,9 @@ module.exports = function(config) {
 
         logLevel: config.LOG_INFO,
 
-        reporters: [ 'dots', 'junit', 'coverage', 'threshold' ]
+        reporters: [ 'dots', 'junit', 'coverage', 'threshold' ],
+
+        singleRun: true
 
     };
 

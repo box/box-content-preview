@@ -750,7 +750,7 @@ class Preview {
      * @public
      * @returns {Object|undefined} current viewer
      */
-    getViewer() {
+    getCurrentViewer() {
         return this.viewer;
     }
 
