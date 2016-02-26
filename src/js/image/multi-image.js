@@ -1,4 +1,4 @@
-import '../../css/image/images.css';
+import './multi-image.scss';
 import autobind from 'autobind-decorator';
 import ImageBase from './image-base';
 

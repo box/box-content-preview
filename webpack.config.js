@@ -3,7 +3,6 @@ require('babel-polyfill');
 var commonConfig = require('./webpack.common.config');
 var path = require('path');
 var RsyncPlugin = require('./build/RsyncPlugin');
-var js = path.join(__dirname, 'src/js');
 var thirdParty = path.join(__dirname, 'src/third-party');
 var img = path.join(__dirname, 'src/img');
 
@@ -66,8 +65,12 @@ module.exports = languages.map(function(language) {
 
     // Add the babel loader
     config.module.loaders.push({
-        test: js,
-        loader: 'babel'
+        test: /\.js$/,
+        loader: 'babel',
+        exclude: [
+            /third\-party/,
+            path.resolve('node_modules')
+        ]
     });
 
     return config;

@@ -38,8 +38,8 @@ module.exports = function(language) {
         module: {
             loaders: [
                 {
-                    test: css,
-                    loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+                    test: /\.s?css$/,
+                    loader: ExtractTextPlugin.extract('style', 'css!sass')
                 },
 
                 {
