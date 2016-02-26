@@ -52,7 +52,5 @@ module.exports = {
 
     browserNoActivityTimeout: 100000,
 
-    captureConsole: true,
-
-    singleRun: true
+    captureConsole: true
 };

@@ -22,13 +22,16 @@ module.exports = function(config) {
                 base: 'Chrome',
                 flags: ['--disable-web-security']
             }
-        }
+        },
+
+        singleRun: false
 
     };
 
     if (coverage) {
         devConf.reporters.push('coverage', 'threshold');
         devConf.browsers = [ 'PhantomJS' ];
+        devConf.singleRun = true;
         devConf.webpack.module.preLoaders.push(ispartaConfig);
     }
 
