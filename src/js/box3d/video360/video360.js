@@ -22,6 +22,7 @@ import {
  * This is the entry point for the video360 preview.
  * @class
  */
+@autobind
 class Video360 extends Dash {
     /**
      * Ties together all 360 video rendering and controls
@@ -49,14 +50,6 @@ class Video360 extends Dash {
     /**
      * @inheritdoc
      */
-    load(mediaUrl) {
-        super.load(mediaUrl);
-        this.mediaEl.addEventListener('loadedmetadata', this.create360VideoUI.bind(this));
-    }
-
-    /**
-     * @inheritdoc
-     */
     destroy() {
         super.destroy();
         const box3d = this.renderer.box3d;
@@ -64,52 +57,54 @@ class Video360 extends Dash {
         const skybox = scene.getComponentByScriptId('skybox_renderer');
         skybox.setSkyboxTexture(null);
         this.textureAsset.destroy();
-        this.detachEventHandlers();
-        this.controls.destroy();
-        this.renderer.destroy();
-    }
-
-    /**
-     * Create UI specific to 360 degree video.
-     * @method create360VideoUI
-     * @private
-     * @returns {void}
-     */
-    create360VideoUI() {
-        this.renderer = new Video360Renderer(this.mediaContainerEl, this.boxSdk);
-        this.optionsObj.sceneEntities = sceneEntities;
-        this.renderer.initBox3d(this.optionsObj).then(this.create360Environment.bind(this));
-        this.controls = new Video360Controls(this.mediaContainerEl);
-        this.attachEventHandlers();
+        this.destroyControls();
+        if (this.renderer) {
+            this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
+            this.renderer.destroy();
+        }
     }
 
     /**
     * @inheritdoc
      */
-    attachEventHandlers() {
-        if (this.controls) {
-            this.controls.on(EVENT_ENABLE_VR, this.handleEnableVr);
-            this.controls.on(EVENT_DISABLE_VR, this.handleDisableVr);
-            this.controls.on(EVENT_SWITCH_2D, this.switchTo2dViewer);
-        }
-        if (this.renderer) {
-            this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
-        }
-
+    loadedmetadataHandler() {
+        this.renderer = new Video360Renderer(this.mediaContainerEl, this.boxSdk);
+        this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
+        this.optionsObj.sceneEntities = sceneEntities;
+        this.renderer.initBox3d(this.optionsObj)
+            .then(this.create360Environment)
+            .then(() => {
+                super.loadedmetadataHandler();
+                this.renderer.enableVrIfPresent();
+                this.createControls();
+        });
     }
 
     /**
-     * @inheritdoc
+     * Create controls for 360 video.
+     * @method createControls
+     * @private
+     * @returns {void}
      */
-    detachEventHandlers() {
+    createControls() {
+        this.controls = new Video360Controls(this.mediaContainerEl);
+        this.controls.on(EVENT_ENABLE_VR, this.handleEnableVr);
+        this.controls.on(EVENT_DISABLE_VR, this.handleDisableVr);
+        this.controls.on(EVENT_SWITCH_2D, this.switchTo2dViewer);
+    }
+
+    /**
+     * Destroy controls for 360 video.
+     * @method destroyControls
+     * @private
+     * @returns {void}
+     */
+    destroyControls() {
         if (this.controls) {
             this.controls.removeListener(EVENT_ENABLE_VR, this.handleEnableVr);
             this.controls.removeListener(EVENT_DISABLE_VR, this.handleDisableVr);
             this.controls.removeListener(EVENT_SWITCH_2D, this.switchTo2dViewer);
-        }
-
-        if (this.renderer) {
-            this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
+            this.controls.destroy();
         }
     }
 
@@ -142,7 +137,7 @@ class Video360 extends Dash {
         return new Promise((resolve, reject) => {
             this.textureAsset.load((texAsset) => {
                 skybox.setSkyboxTexture(this.textureAsset.id);
-                this.renderer.enableVrIfPresent();
+                skybox.enable();
                 resolve();
             });
         });
