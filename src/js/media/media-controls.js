@@ -1,5 +1,3 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import controlsTemplate from 'raw!../../html/media/controls.html';

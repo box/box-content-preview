@@ -1,5 +1,3 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import scrubberTemplate from 'raw!../../html/media/scrubber.html';
@@ -7,8 +5,6 @@ import scrubberTemplate from 'raw!../../html/media/scrubber.html';
 const MIN_VALUE = 0;
 const MAX_VALUE = 1;
 const CLASS_SCRUBBER_HOVER = 'box-preview-media-scrubber-hover';
-
-let document = global.document;
 
 @autobind
 class Scrubber extends EventEmitter {
@@ -18,11 +14,11 @@ class Scrubber extends EventEmitter {
      *
      * [constructor]
      * @param {HTMLElement} containerEl container node
-     * @param {string} accessibilityText
+     * @param {string} accessibilityText text
      * @param {number} [value] optional initial value
      * @param {number} [bufferedValue] optional initial buffered value
      * @param {number} [convertedValue] optional initial converted value
-     * @returns {Scrubber}
+     * @returns {Scrubber} Scrubber instance
      */
     constructor(containerEl, accessibilityText, value = MIN_VALUE, bufferedValue = MAX_VALUE, convertedValue = MAX_VALUE) {
 

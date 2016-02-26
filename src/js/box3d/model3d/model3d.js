@@ -1,6 +1,6 @@
 'use strict';
 
-import '../../../css/model3d/model3d.css';
+import './model3d.scss';
 import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';

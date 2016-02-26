@@ -1,6 +1,6 @@
 'use strict';
 
-import '../../../css/video360/video360.css';
+import './video360.scss';
 import autobind from 'autobind-decorator';
 import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';

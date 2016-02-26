@@ -1,13 +1,10 @@
-'use strict';
-
-import '../../css/text/text.css';
+import './text.scss';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
 import fetch from 'isomorphic-fetch';
 import marked from 'marked';
 
 let Box = global.Box || {};
-let hljs = global.hljs;
 
 @autobind
 class MarkDown extends TextBase {
