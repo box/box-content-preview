@@ -14,8 +14,8 @@ The browser needs to have the Promise API implimented. If not, it can be polyfil
 
 Latest version hosted on CDN
 -----------------------------
-Version: 0.44.0
-Locale: en-US
+* Version: 0.44.0
+* Locale: en-US
 
 https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.js
 
@@ -29,11 +29,11 @@ Usage
     <title>Preview API Sample</title>
 
     <!-- Polyfill promise API if using Internet Explorer -->
-    <script src="https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js"></script>
+    <script src="//cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js"></script>
 
     <!-- version 0.44.0 of preview library for locale en-US -->
-    <script src="https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.css" />
+    <script src="//cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="width:500px; height:212px;"></div>
@@ -104,7 +104,7 @@ preview.show(fileId, { options });
     },
     callbacks: {                                 // optional callbacks
         navigation: function(fileId) { ... },       // when navigation happens to fileId
-        metrics: function(data) { ... }             // preview performance metrics
+        metrics: function(metricsData) { ... }      // preview performance metrics
     }
 }
 ```
