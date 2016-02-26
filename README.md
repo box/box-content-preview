@@ -1,38 +1,49 @@
-Box.Preview
+Box Preview
 ============
-Overview
------------------
-The Box Client-Side Preview SDK allows developers to embed a Preview of their Box file(s) in an application. The SDK fetches representations through the Box Content API, chooses the appropriate viewer for the file type, and renders a preview of the file. The SDK currently supports most types of documents, images, videos, audio files, and 3D files.
 
+Overview
+---------
+The Box Preview library allows developers to preview their Box file(s) in an application. The library fetches representations through the Box Content API, chooses the appropriate viewer for the file type, and renders a preview of the file.
+
+Browser Support
+----------------
+Chrome, Firefox, Safari and Edge.
+Limited support on Internet Explorer 10+
+
+The browser needs to have the Promise API implimented. If not, it can be polyfilled by including a promise library like bluebird before any other script includes: https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js
 
 Latest version hosted on CDN
------------------
+-----------------------------
+Version: 0.44.0
+Locale: en-US
+
 https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.js
 
 
 Clone and compile
------------------
+------------------
 1. `git clone git@gitenterprise.inside-box.net:Preview/Preview.git`
 2. `cd Preview`
-3. `npm install --registry https://registry.nodejitsu.com` (The explicit registry is a workaround, will be fixed soon)
-4. `npm run build` (does a clean build)
+3. `npm install`
+4. `npm run build` (builds resource bundles and does a clean build)
 
-Note: If you get a rsync error while running the build for the 1st time, it probably failed to copy the built assets to your dev VM. In that case go to your dev VM and manually create the folder `/box/www/assets/content-experience` and give it 777 permissions. This folder acts as your static server for local development.
+*Note: If you get a rsync error while running the build for the 1st time, it probably failed to copy the built assets to your dev VM. In that case go to your dev VM and manually create the folder `/box/www/assets/content-experience` and give it 777 permissions. This folder acts as your static server for local development.*
 
 
 While developing
-----------------
-1. `npm run mojito-rb-gen` to generate resource bundles (only if needed, `npm run watch` will re-generate resource bundles automatically)
-2. `npm run dev` (or `npm run watch`) to generate webpack bundles
-
+-----------------
+* `npm run build` to generate resource bundles and JS webpack bundles.
+* `npm run watch` to only generate JS webpack bundles on file changes.
+* `npm run test` launches karma tests with chrome testing.
+* `npm run coverage` launches karma tests and dumps converage inside `reports\coverage\index.html`.
 
 Release build
 --------------
-`npm run release`
+`npm run release` does a release build.
 
 
 Demo and testing local changes
-------------------------------
+-------------------------------
 https://gitenterprise.inside-box.net/Preview/demo
 
 
