@@ -3,7 +3,7 @@ Box Preview
 
 Overview
 ---------
-The Box Preview library allows developers to preview their Box file(s) in an application. The library fetches representations through the Box Content API, chooses the appropriate viewer for the file type and finally renders the preview.
+The Box Preview library allows developers to preview their Box file(s) in an application. The library fetches representations through the Box Content API, chooses the appropriate viewer for the file type and finally renders the preview. The library also allows back and forth navigation for previewing of multiple files.
 
 Browser Support
 ----------------
@@ -79,7 +79,7 @@ https://gitenterprise.inside-box.net/Preview/demo
 API
 ---
 
-To show a preview call `Box.Preview.show(fileId, { options })` where fileId is a `Box_File` id. `Box.Preview` is a singleton instance of the class `Preview`. Another way to show a preview or multiple previews is by creating instances of the `Preview` class as follows:
+The recommended way to show a preview is by calling `Box.Preview.show(fileId, { options })` where fileId is a `Box_File` id. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
 
 ```javascript
 let preview = new Preview();
@@ -94,7 +94,7 @@ preview.show(fileId, { options });
     token: 'api auth token',
     container: '.preview-container', // optional dom node or selector where preview should be placed
     api: 'https://api.box.com',      // optional api host like https://ldap.dev.box.net/api
-    files: [ '123', '234', ... ],    // optional list of file ids
+    files: [ '123', '234', ... ],    // optional list of file ids for back and forth navigation
     viewers: {                       // optional arguments to pass on to viewers
         VIEWERNAME: {                   // name of the viewer 
             disabled: false,            // disables the viewer
