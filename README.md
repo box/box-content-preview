@@ -19,6 +19,33 @@ Locale: en-US
 
 https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.js
 
+Usage
+------
+```html
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8" />
+    <title>Preview API Sample</title>
+
+    <!-- Polyfill promise API if using Internet Explorer -->
+    <script src="https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js"></script>
+
+    <!-- version 0.44.0 of preview library for locale en-US -->
+    <script src="https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/content-experience/0.44.0/en-US/preview.css" />
+</head>
+<body>
+    <div class="preview-container" style="width:500px; height:212px;"></div>
+    <script>
+        Box.Preview.show('47108636521', {
+            token: '1RVukPh5RkL23BEZqgbxc0xEowBthwGP',
+    	    container: '.preview-container'
+        });
+    </script>
+</body>
+</html>
+```
 
 Clone and compile
 ------------------
@@ -50,19 +77,15 @@ https://gitenterprise.inside-box.net/Preview/demo
 API
 ---
 
-To show a preview call
-```javascript
-Box.Preview.show(file, { options });
-```
-Clients are still responsible for showing the container in which preview shows up, if it was hidden. `Box.Preview` is a singleton instance of the `Preview` class. Another way to show a preview or multiple previews is
+To show a preview call `Box.Preview.show(fileId, { options })` where fileId is a `Box_File` id. `Box.Preview` is a singleton instance of the class `Preview`. Another way to show a preview or multiple previews is by creating instances of the `Preview` class as follows:
 
 ```javascript
 let preview = new Preview();
-preview.show(file, { options });
+preview.show(fileId, { options });
 ```
 
-* `file` is either a string file id OR JSON file object response from https://box-content.readme.io/reference#files
-* `options` is an object with the following attribute
+{ options }
+------------
 
 ```javascript
 {
@@ -71,9 +94,10 @@ preview.show(file, { options });
     api: 'https://api.box.com',      // optional api host like https://ldap.dev.box.net/api
     files: [ '123', '234', ... ],    // optional list of file ids
     viewers: {                       // optional arguments to pass on to viewers
-        Document: {                     // viewer class name
-            disabled: true,             // disables the viewer
-            annotations: true           // other args
+        VIEWERNAME: {                   // name of the viewer 
+            disabled: false,            // disables the viewer
+            annotations: false          // other args
+            controls: true              // disables the viewer controls
             ...
         },
         ...
@@ -85,39 +109,14 @@ preview.show(file, { options });
 }
 ```
 
-```javascript
-Box.Preview.hide(/* optional boolean */ destroy);
-```
-to hide and garbage collect the preview. If destroy is true, then container's contents are also removed. Clients are still responsible for hiding the container.
+VIEWERNAME can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be gotten by calling `Box.Preview.getViewers()`.
 
+`Box.Preview.hide(/* optional Boolean */ destroy)` hides the previewer. If destroy is true, then container's contents are also removed.
 
-```javascript
-Box.Preview.updateAuthToken(/* string */ token);
-```
-to update the auth token if needed, when it expires.
+`Box.Preview.updateAuthToken(/* String */ token);` updates the API auth token. Useful for when the token expires.
 
-```javascript
-Box.Preview.getViewer();
-```
-to get the current viewer. May return null till the viewer loads.
+`Box.Preview.getCurrentViewer()` returns the current viewer instance.
 
-```javascript
-Box.Preview.getViewers();
-```
-to get all the available viewers.
+`Box.Preview.enableViewers(/* String|Array[String] */ viewers)` enables one or more viewers based on VIEWERNAME.
 
-```javascript
-Box.Preview.enableViewers(/* String|Array */ viewers);
-```
-to enable one or more viewers.
-
-```javascript
-Box.Preview.disableViewers(/* String|Array */ viewers);
-```
-to disable one or more viewers. Viewers can also be disabled by setting `disabled: true` on the viewer inside viewers options.
-
-Test
-----
-
-* `npm run test` launches chrome testing
-* `npm run coverage` dumps converage inside `reports\coverage\index.html`
+`Box.Preview.disableViewers(/* String|Array[String] */ viewers)` disables one or more viewers based on VIEWERNAME. Viewers can also be disabled by setting `disabled: true` on the specific viewer option inside options.
