@@ -1,5 +1,3 @@
-'use strict';
-
 import '../../css/text/csv.css';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
@@ -7,7 +5,7 @@ import fetch from 'isomorphic-fetch';
 import Browser from '../browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Table, Column } from 'fixed-data-table';
+import { Table, Column, Cell } from 'fixed-data-table';
 import { createAssetUrlCreator } from '../util';
 
 let Box = global.Box || {};
@@ -56,7 +54,8 @@ class CSV extends TextBase {
                     if (this.destroyed || !results) {
                         return;
                     }
-                    this.finishLoading(results.data);
+                    this.data = results.data;
+                    this.finishLoading();
                     URL.revokeObjectURL(papaWorkerBlob);
                 }
             });
@@ -69,11 +68,10 @@ class CSV extends TextBase {
      * Finishes loading the csv data
      *
      * @private
-     * @param {String} data The data content to load
      * @returns {void}
      */
-    finishLoading(data) {
-        this.renderCSV(data);
+    finishLoading() {
+        this.renderCSV();
 
         if (this.options.ui !== false) {
             this.loadUI();
@@ -84,18 +82,46 @@ class CSV extends TextBase {
     }
 
     /**
+     * Resize handler
+     *
+     * @private
+     * @returns {void}
+     */
+    resize() {
+        this.renderCSV();
+    }
+
+    /**
+     * Renders cell
+     *
+     * @private
+     * @param {Number} cellIndex index of cell
+     * @returns {function} Cell renderer function
+     */
+    renderCell(cellIndex) {
+        return ({ rowIndex }) => <Cell>{ this.data[rowIndex][cellIndex]}</Cell>;
+    }
+
+    /**
+     * Renders column
+     *
+     * @private
+     * @returns {Array} columns
+     */
+    renderColumn() {
+        return this.data[0].map((val, cellIndex) => <Column width={150} allowCellsRecycling={true} cell={ this.renderCell(cellIndex) } />);
+    }
+
+    /**
      * Renders CSV into an html table
      *
      * @private
-     * @param {String} data The csv text to load
      * @returns {void}
      */
-    renderCSV(data) {
+    renderCSV() {
         ReactDOM.render(
-            <Table rowHeight={50} rowGetter={(index) => data[index]} rowsCount={data.length} width={this.csvEl.clientWidth} maxHeight={this.csvEl.clientHeight} headerHeight={10}>
-                {data[0].map((object, index) => {
-                    return <Column width={150} allowCellsRecycling={true} dataKey={index} />;
-                })}
+            <Table rowHeight={50} rowsCount={this.data.length} width={this.csvEl.clientWidth} maxHeight={this.csvEl.clientHeight} headerHeight={0}>
+                { this.renderColumn() }
             </Table>,
             this.csvEl
         );
