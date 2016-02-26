@@ -117,7 +117,7 @@ VIEWERNAME can be one of the following `Document`, `Presentation`, `MP3`, `MP4`,
 
 `Box.Preview.updateAuthToken(/* String */ token);` updates the API auth token. Useful for when the token expires.
 
-`Box.Preview.getCurrentViewer()` returns the current viewer instance.
+`Box.Preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
 
 `Box.Preview.enableViewers(/* String|Array[String] */ viewers)` enables one or more viewers based on VIEWERNAME.
 
