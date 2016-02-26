@@ -61,8 +61,10 @@ While developing
 -----------------
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
-* `npm run test` launches karma tests with chrome testing.
-* `npm run coverage` launches karma tests and dumps converage inside `reports\coverage\index.html`.
+* `npm run test` launches karma tests with chrome browser to debug tests.
+* `npm run coverage` launches karma tests with PhantomJS and dumps coverage inside `reports\coverage`.
+
+*For more script commands see `package.json`*
 
 Release build
 --------------
