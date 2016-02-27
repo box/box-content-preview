@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import controlsTemplate from 'raw!../../html/media/controls.html';
+import controlsTemplate from 'raw!./media-controls.html';
 import Scrubber from './scrubber';
 import Settings from './settings';
 import RepStatus from '../rep-status';

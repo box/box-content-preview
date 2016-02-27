@@ -1,7 +1,7 @@
 import './presentation.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
-import pageNumTemplate from 'raw!../../html/doc/page-num-button-content.html';
+import pageNumTemplate from 'raw!./page-num-button-content.html';
 
 let Box = global.Box || {};
 
