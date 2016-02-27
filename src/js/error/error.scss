@@ -1,0 +1,38 @@
+.box-preview-file-blank:before,
+.box-preview-file-zip:before,
+.box-preview-file-flv:before {
+    content: "";
+    width: 160px;
+    height: 160px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.box-preview-file-blank:before {
+    -shalam-sprite: '../../img/files_160/160-blank.png' dest-size(160px, 160px);
+    /* shalam! */;
+    background: url(../../img/sprite.compat.png) 0 0;
+    background: url(../../img/sprite.png) 0 0/256px 872px;
+    /* end shalam */
+}
+
+.box-preview-file-flv:before {
+    -shalam-sprite: '../../img/files_160/160-flv.png' dest-size(160px, 160px);
+    /* shalam! */;
+    background: url(../../img/sprite.compat.png) 0 -160px;
+    background: url(../../img/sprite.png) 0 -328px/256px 872px;
+    /* end shalam */
+}
+
+.box-preview-file-zip:before {
+    -shalam-sprite: '../../img/files_160/160-zip.png' dest-size(160px, 160px);
+    /* shalam! */;
+    background: url(../../img/sprite.compat.png) 0 -320px;
+    background: url(../../img/sprite.png) 0 -164px/256px 872px;
+    /* end shalam */
+}
+
+.box-preview-error {
+    color: #f5f5f5;
+    text-align: center;
+}

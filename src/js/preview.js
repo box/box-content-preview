@@ -1,4 +1,4 @@
-import '../css/preview.css';
+import './preview.scss';
 import './polyfill';
 import autobind from 'autobind-decorator';
 import fetch from 'isomorphic-fetch';

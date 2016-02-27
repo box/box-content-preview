@@ -1,6 +1,4 @@
-'use strict';
-
-import '../../css/error/error.css';
+import './error.scss';
 import autobind from 'autobind-decorator';
 import Base from '../base';
 

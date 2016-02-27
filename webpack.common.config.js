@@ -39,12 +39,20 @@ module.exports = function(language) {
             loaders: [
                 {
                     test: /\.s?css$/,
-                    loader: ExtractTextPlugin.extract('style', 'css!sass')
+                    loader: ExtractTextPlugin.extract('style', 'css!sass'),
+                    exclude: [
+                        /third\-party/,
+                        path.resolve('node_modules')
+                    ]
                 },
 
                 {
-                    test: img,
-                    loader: 'url-loader?limit=1'
+                    test: /\.(jpe?g|png|gif|svg|woff2|woff)$/,
+                    loader: 'url-loader?limit=10000',
+                    exclude: [
+                        /third\-party/,
+                        path.resolve('node_modules')
+                    ]
                 }
             ]
         },
