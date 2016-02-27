@@ -2,7 +2,7 @@
 
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
-import settingsTemplate from 'raw!../../../html/model3d/settings.html';
+import settingsTemplate from 'raw!./settings.html';
 import {
     EVENT_CLOSE_RENDER_MODE_UI,
     EVENT_CLOSE_SETTINGS_UI,

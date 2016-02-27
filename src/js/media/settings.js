@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import cache from '../cache';
-import settingTemplate from 'raw!../../html/media/settings.html';
+import settingTemplate from 'raw!./settings.html';
 import { insertTemplate } from '../util';
 
 const CLASS_SETTINGS = 'box-preview-media-settings';
