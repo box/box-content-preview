@@ -230,7 +230,7 @@ class DocAnnotator extends Annotator {
             const pointAnnotations = [];
 
             // Generate arrays of highlight and point threads
-            for (const threadedAnnotations of annotationsMap.values()) {
+            for (let threadedAnnotations of annotationsMap.values()) {
                 const firstAnnotation = threadedAnnotations[0];
                 const annotationType = firstAnnotation.type;
 
