@@ -7,7 +7,7 @@ let swf;
 describe('swf.js', function() {
 
     before(function() {
-        fixture.setBase('src/js');
+        fixture.setBase('src/lib');
     });
 
     beforeEach(function() {

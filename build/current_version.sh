@@ -1,3 +1,3 @@
 #!/bin/bash
 
-npm version | grep preview | sed "s/^.*'\([0-9.]*\)'.*$/\1/"
+node -pe 'JSON.parse(process.argv[1]).version' "$(cat package.json)"

@@ -3,10 +3,8 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var I18nPlugin = require('i18n-webpack-plugin');
 var RsyncPlugin = require('./build/RsyncPlugin');
 
-var js = path.join(__dirname, 'src/js');
+var lib = path.join(__dirname, 'src/lib');
 var i18n = path.join(__dirname, 'src/i18n/json');
-var css = path.join(__dirname, 'src/css');
-var img = path.join(__dirname, 'src/img');
 
 module.exports = function(language) {
 
@@ -16,23 +14,23 @@ module.exports = function(language) {
     return {
 
         entry: {
-            preview:        [ js + '/preview.js' ],
-            image:          [ js + '/image/image.js' ],
-            'multi-image':  [ js + '/image/multi-image.js' ],
-            swf:            [ js + '/swf/swf.js' ],
-            text:           [ js + '/text/text.js' ],
-            csv:            [ js + '/text/csv.js' ],
-            'document':     [ js + '/doc/document.js' ],
-            presentation:   [ js + '/doc/presentation.js' ],
-            markdown:       [ js + '/text/markdown.js' ],
-            mp4:            [ js + '/media/mp4.js' ],
-            mp3:            [ js + '/media/mp3.js' ],
-            dash:           [ js + '/media/dash.js' ],
-            error:          [ js + '/error/error.js' ],
-            box3d:          [ js + '/box3d/box3d.js' ],
-            model3d:        [ js + '/box3d/model3d/model3d.js' ],
-            image360:       [ js + '/box3d/image360/image360.js' ],
-            video360:       [ js + '/box3d/video360/video360.js' ]
+            preview:        [ lib + '/preview.js' ],
+            image:          [ lib + '/image/image.js' ],
+            'multi-image':  [ lib + '/image/multi-image.js' ],
+            swf:            [ lib + '/swf/swf.js' ],
+            text:           [ lib + '/text/text.js' ],
+            csv:            [ lib + '/text/csv.js' ],
+            'document':     [ lib + '/doc/document.js' ],
+            presentation:   [ lib + '/doc/presentation.js' ],
+            markdown:       [ lib + '/text/markdown.js' ],
+            mp4:            [ lib + '/media/mp4.js' ],
+            mp3:            [ lib + '/media/mp3.js' ],
+            dash:           [ lib + '/media/dash.js' ],
+            error:          [ lib + '/error/error.js' ],
+            box3d:          [ lib + '/box3d/box3d.js' ],
+            model3d:        [ lib + '/box3d/model3d/model3d.js' ],
+            image360:       [ lib + '/box3d/image360/image360.js' ],
+            video360:       [ lib + '/box3d/video360/video360.js' ]
         },
 
         module: {

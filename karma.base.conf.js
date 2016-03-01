@@ -5,16 +5,16 @@ module.exports = {
     frameworks: [ 'mocha', 'sinon-stub-promise', 'chai-sinon', 'chai-as-promised', 'chai', 'sinon', 'fixture', 'source-map-support' ],
 
     files: [
-        'src/js/**/*-test.js',
-        'src/js/**/*-test.html',
+        'src/lib/**/*-test.js',
+        'src/lib/**/*-test.html',
         'src/third-party/**/*.js'
     ],
 
     exclude: [],
 
     preprocessors: {
-        'src/js/**/*-test.js': [ 'webpack', 'sourcemap' ],
-        'src/js/**/*-test.html': [ 'html2js' ]
+        'src/lib/**/*-test.js': [ 'webpack', 'sourcemap' ],
+        'src/lib/**/*-test.html': [ 'html2js' ]
     },
 
     reporters: [ 'mocha', 'coverage', 'threshold' ],
