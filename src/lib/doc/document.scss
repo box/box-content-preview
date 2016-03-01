@@ -1,2 +1,6 @@
 @import '../annotation/annotator';
 @import './_doc-base';
+
+.box-preview-doc .textLayer > div {
+    z-index: 2;
+}

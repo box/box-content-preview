@@ -169,6 +169,18 @@
     font-size: 14px;
 }
 
+.box-preview-annotation-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.box-preview-doc-mousedown .box-preview-highlight-container {
+    z-index: 1;
+}
+
 .box-preview-doc .highlight {
     position: relative;
 }
@@ -177,11 +189,10 @@
     position: absolute;
     padding: 2px;
     border-radius: 3px;
-    color: transparent;
     background-color: #ff0;
 }
 
-.box-preview-highlight-active {
+.box-preview-highlight-active .box-preview-highlight {
     background-color: #000;
 }
 

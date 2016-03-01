@@ -1,8 +1,8 @@
 import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
 import Annotator from '../annotation/annotator';
-import { debounce } from '../util';
 import rangy from 'rangy';
+import throttle  from 'lodash.throttle';
 /*eslint-disable no-unused-vars*/
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
 import rangyClassApplier from 'rangy/lib/rangy-classapplier';
@@ -11,7 +11,6 @@ import rangyHighlight from 'rangy/lib/rangy-highlighter';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
-const HIGHLIGHT_HOVER_DELAY = 500;
 const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch)) ? 'touchstart' : 'click';
 
 const document = global.document;
@@ -128,16 +127,6 @@ function createHighlightEl(quadPoints) {
 }
 
 /**
- * Find highlight elements matching given annotation ID
- *
- * @param {Number} annotationID Annotation ID of highlights to find
- * @returns {HTMLElement[]} Array of highlight elements matching ID
- */
-function findHighlightEls(annotationID) {
-    return [].slice.call(document.querySelectorAll('[data-annotation-id="' + annotationID + '"]'));
-}
-
-/**
  * Escapes HTML
  *
  * @param {String} str Input string
@@ -191,6 +180,39 @@ class DocAnnotator extends Annotator {
             ignoreWhiteSpace: true,
             tagNames: ['span', 'a']
         }));
+
+        const docEl = document.querySelector('.box-preview-doc');
+        this.addEventHandler(docEl, (event) => {
+            docEl.classList.add('box-preview-doc-mousedown');
+        }, 'mousedown');
+
+        this.addEventHandler(docEl, (event) => {
+            docEl.classList.remove('box-preview-doc-mousedown');
+        }, 'mouseup');
+
+        // @TODO(tjin): annotation layer in-progress
+        //this.addEventHandler(docEl, this.throttledMousemoveHandler, 'mousemove');
+    }
+
+    // @TODO(tjin): annotation layer in-progress
+    throttledMousemoveHandler(event) {
+        if (!this.mousemoveHandler) {
+            this.mousemouseHandler = throttle((event) => {
+                const element = document.elementFromPoint(event.clientX, event.clientY);
+                if (element && element.classList.contains('box-preview-highlight')) {
+                    element.parentNode.classList.add('box-preview-highlight-active');
+
+                    this.lastHighlightId = element.parentNode.dataset.annotationId;
+                } else {
+                    const lastHighlightEl = document.querySelector('[data-annotation-id="' + this.lastHighlightId + '"]');
+                    if (lastHighlightEl) {
+                        lastHighlightEl.classList.remove('box-preview-highlight-active');
+                    }
+                }
+            }, 250);
+        }
+
+        return this.mousemoveHandler;
     }
 
     /**
@@ -264,10 +286,31 @@ class DocAnnotator extends Annotator {
         const pageEl = document.querySelector('[data-page-number="' + page + '"]');
         const textLayerEl = pageEl.querySelector('.textLayer');
 
+        // @TODO(tjin): annotation layer in-progress
+        /*let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
+        if (!annotationLayerEl) {
+            annotationLayerEl = document.createElement('div');
+            annotationLayerEl.classList.add('box-preview-annotation-layer');
+            pageEl.appendChild(annotationLayerEl);
+
+            this.addEventHandler(annotationLayerEl, (event) => {
+                textLayerEl.dispatchEvent(cloneMouseEvent(event));
+            }, 'mousedown');
+
+            this.addEventHandler(annotationLayerEl, (event) => {
+                textLayerEl.dispatchEvent(cloneMouseEvent(event));
+            }, 'mousemove');
+
+            this.addEventHandler(annotationLayerEl, (event) => {
+                textLayerEl.dispatchEvent(cloneMouseEvent(event));
+            }, 'mouseup');
+        }*/
+
         // Delete highlight button should be in upper right of the highlight in the upper right
         let upperRightX = 0;
         let upperRightY = pageEl.getBoundingClientRect().height;
         const highlightContainerEl = document.createElement('div');
+        highlightContainerEl.classList.add('box-preview-highlight-container');
         highlightContainerEl.dataset.annotationId = annotation.annotationID;
 
         location.quadPoints.forEach((quadPoints) => {
@@ -276,18 +319,21 @@ class DocAnnotator extends Annotator {
             upperRightY = Math.min(upperRightY, Math.min(y1, y2, y3, y4));
 
             /*eslint-disable no-console*/
-            console.log(`Quadpoints for highlight "${annotation.annotationID}": (${x1},${y1}) (${x2},${y2}) (${x3},${y3}) (${x4},${y4})`);
+            console.log(`Quadpoints for highlight "${annotation.annotationID}": (${x1.toFixed(2)}, ${y1.toFixed(2)}) (${x2.toFixed(2)}, ${y2.toFixed(2)}) (${x3.toFixed(2)}, ${y3.toFixed(2)}) (${x4.toFixed(2)}, ${y4.toFixed(2)})`);
             /*eslint-enable no-console*/
 
-            // Create highlight div from quadpoints and save reference to annotation
+            // Create highlight div from quadpoints
             const highlightEl = createHighlightEl(quadPoints);
-            //highlightEl.dataset.annotationId = annotation.annotationID;
-            //textLayerEl.insertBefore(highlightEl, textLayerEl.firstChild);
             highlightContainerEl.appendChild(highlightEl);
+
+            // @TODO(tjin): annotation layer in-progress
+            /*this.addEventHandler(highlightEl, this.throttledMouseenterHandler, 'mouseenter');
+            this.addEventHandler(highlightEl, this.throttledMouseleaveHandler, 'mouseleave');*/
         });
 
-        // Insert highlight elements onto DOM
-        textLayerEl.insertBefore(highlightContainerEl, textLayerEl.firstChild);
+        // Insert highlight elements onto DOM at the bottom of the invisible
+        // text layer so selection can still work
+        textLayerEl.appendChild(highlightContainerEl);
 
         // Construct delete highlight button
         const removeHighlightButtonEl = document.createElement('button');
@@ -295,6 +341,9 @@ class DocAnnotator extends Annotator {
         removeHighlightButtonEl.style.left = upperRightX - 8 + 'px'; // move 'x' slightly into highlight
         removeHighlightButtonEl.style.top = upperRightY - 8 + 'px'; // move 'x' slightly into highlight
         removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
+
+        // @TODO(tjin): annotation layer in-progress
+        //annotationLayerEl.appendChild(removeHighlightButtonEl);
         pageEl.appendChild(removeHighlightButtonEl);
 
         // Delete highlight button deletes the highlight and removes highlights from DOM
@@ -309,6 +358,28 @@ class DocAnnotator extends Annotator {
         });
     }
 
+    // @TODO(tjin): annotation layer in-progress
+    throttledMouseenterHandler() {
+        if (!this.mouseenterHandler) {
+            this.mouseenterHandler = throttle(() => {
+                this.parentNode.classList.add('box-preview-highlight-active');
+            }, 100);
+        }
+
+        return this.mouseenterHandler;
+    }
+
+    // @TODO(tjin): annotation layer in-progress
+    throttledMouseleaveHandler() {
+        if (!this.mouseleaveHandler) {
+            this.mouseleaveHandler = throttle(() => {
+                this.parentNode.classList.remove('box-preview-highlight-active');
+            }, 100);
+        }
+
+        return this.mouseleaveHandler;
+    }
+
     /**
      * Shows highlight annotations (annotations on selected text).
      *
@@ -319,43 +390,6 @@ class DocAnnotator extends Annotator {
         highlightAnnotations.forEach((highlightAnnotation) => {
             this.showHighlightAnnotation(highlightAnnotation);
         });
-    }
-
-    /**
-     * Changes color of highlight on hover and shows the delete highlight
-     * button.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     */
-    debouncedHoverHighlightAnnotationHandler(event) {
-        if (!this.hoverHighlightAnnotationHandler) {
-            this.hoverHighlightAnnotationHandler = debounce(() => {
-                const targetEl = event.target;
-
-                // If we are hovering over a highlight, change highlight
-                // elements to active state
-                if (targetEl.classList.contains('box-preview-highlight')) {
-                    const annotationID = targetEl.dataset.annotationId;
-                    const highlightEls = findHighlightEls(annotationID);
-                    highlightEls.forEach((highlightEl) => {
-                        highlightEl.classList.add('box-preview-highlight-active');
-                    });
-
-                    this.lastHoveredAnnotationID = annotationID;
-
-                // If we aren't hovering over a highlight, remove the hover
-                // effect over the previously hovered highlight
-                } else {
-                    const highlightEls = findHighlightEls(this.lastHoveredAnnotationID);
-                    highlightEls.forEach((highlightEl) => {
-                        highlightEl.classList.remove('box-preview-highlight-active');
-                    });
-                }
-            }, HIGHLIGHT_HOVER_DELAY);
-        }
-
-        return this.hoverHighlightAnnotationHandler;
     }
 
     /**
@@ -858,13 +892,6 @@ class DocAnnotator extends Annotator {
             highlightContainerEl.removeChild(highlightContainerEl.firstChild);
         }
         highlightContainerEl.parentNode.removeChild(highlightContainerEl);
-
-        /*
-        const highlightEls = [].slice.call(document.querySelectorAll('[data-annotation-id="' + annotationID + '"]'));
-
-        highlightEls.forEach((highlightEl) => {
-            highlightEl.parentNode.removeChild(highlightEl);
-        });*/
     }
 
     /**
