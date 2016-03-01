@@ -1,0 +1,75 @@
+.box-preview-doc {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    margin: 0;
+
+    /* Fullscreen CSS */
+    .box-preview-is-fullscreen & {
+        .pdfViewer .page {
+            padding: 0;
+        }
+
+        .textLayer {
+            margin: 0;
+        }
+    }
+
+    /*---------- Override CSS from generic PDFJS viewer build ----------*/
+    .pdfViewer .page {
+        box-sizing: content-box !important;
+    	-moz-box-sizing: content-box !important;
+    	-webkit-box-sizing: content-box !important;
+        position: relative;
+        margin: 10px auto;
+        padding: 0;
+        border: 0;
+        border-image: none;
+
+        .loadingIcon {
+            background: none;
+        }
+    }
+
+    /* Only show page loading indicator when viewer has loaded */
+    .box-preview-loaded & .pdfViewer .page .loadingIcon {
+        background: url('../../img/loading-icon.gif') center no-repeat;
+    }
+}
+
+.box-preview-controls {
+    /* Page num input CSS */
+    .box-preview-doc-page-num span {
+        display: inline;
+        font-size: 14px;
+    }
+
+    .box-preview-doc-page-num-input {
+        display: none;
+        margin: 0 auto;
+        width: auto;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    &.show-page-number-input {
+        .box-preview-doc-page-num {
+            opacity: 1;
+        }
+
+        .box-preview-doc-current-page,
+        .box-preview-doc-page-num-divider,
+        .box-preview-doc-total-pages {
+            display: none;
+        }
+
+        .box-preview-doc-page-num-input {
+            display: block;
+        }
+    }
+}
