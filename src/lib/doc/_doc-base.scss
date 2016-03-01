@@ -30,10 +30,10 @@
         padding: 0;
         border: 0;
         border-image: none;
-    }
 
-    .pdfViewer .page .loadingIcon {
-        background: none;
+        .loadingIcon {
+            background: none;
+        }
     }
 
     /* Only show page loading indicator when viewer has loaded */
@@ -57,17 +57,19 @@
         font-size: 14px;
     }
 
-    &.show-page-number-input .box-preview-doc-page-num {
-        opacity: 1;
-    }
+    &.show-page-number-input {
+        .box-preview-doc-page-num {
+            opacity: 1;
+        }
 
-    &.show-page-number-input .box-preview-doc-current-page,
-    &.show-page-number-input .box-preview-doc-page-num-divider,
-    &.show-page-number-input .box-preview-doc-total-pages {
-        display: none;
-    }
+        .box-preview-doc-current-page,
+        .box-preview-doc-page-num-divider,
+        .box-preview-doc-total-pages {
+            display: none;
+        }
 
-    &.show-page-number-input .box-preview-doc-page-num-input {
-        display: block;
+        .box-preview-doc-page-num-input {
+            display: block;
+        }
     }
 }
