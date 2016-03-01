@@ -59,6 +59,8 @@ Clone and compile
 
 While developing
 -----------------
+Install SCSS linter `gem install scss_lint` for linting SCSS files.
+
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
 * `npm run test` launches karma tests with chrome browser to debug tests.
