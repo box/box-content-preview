@@ -46,6 +46,11 @@
     display: block;
 }
 
+/*---------- Override Box CSS ----------*/
+input.box-preview-doc-page-num-input {
+    width: auto;
+}
+
 /*---------- Override CSS from generic PDFJS viewer build ----------*/
 .pdfViewer .page {
     box-sizing: content-box !important;

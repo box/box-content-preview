@@ -1,3 +1,5 @@
+ @import '../annotation/annotator';
+
 .box-preview-doc {
     position: absolute;
     top: 0;
@@ -53,13 +55,19 @@
     display: block;
 }
 
+/*---------- Override Box CSS ----------*/
+input.box-preview-doc-page-num-input {
+    width: auto;
+}
+
 /*---------- Override CSS from generic PDFJS viewer build ----------*/
 .pdfViewer .page {
     box-sizing: content-box !important;
 	-moz-box-sizing: content-box !important;
 	-webkit-box-sizing: content-box !important;
-    margin: 0 auto;
-    padding: 10px;
+    position: relative;
+    margin: 10px auto;
+    padding: 0;
     border: 0;
     border-image: none;
 }
@@ -71,8 +79,4 @@
 /* Only show page loading indicator when viewer has loaded */
 .box-preview-loaded .pdfViewer .page .loadingIcon {
     background: url('../../img/loading-icon.gif') center no-repeat;
-}
-
-.textLayer {
-    margin: 10px; /* align text layer with page content */
 }
