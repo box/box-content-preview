@@ -23,8 +23,7 @@ class Settings extends EventEmitter {
         super();
         this.containerEl = containerEl;
 
-        const template = settingTemplate.replace(/\>\s*\</g, '><'); // removing new lines
-        insertTemplate(this.containerEl, template);
+        insertTemplate(this.containerEl, settingTemplate);
 
         this.settings = this.containerEl.lastElementChild;
         this.settings.addEventListener('click', this.menuClickHandler);

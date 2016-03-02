@@ -35,8 +35,7 @@ class MediaControls extends EventEmitter  {
         this.containerEl = containerEl;
         this.mediaEl = mediaEl;
 
-        const template = controlsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
-        insertTemplate(this.containerEl, template);
+        insertTemplate(this.containerEl, controlsTemplate);
 
         this.wrapperEl = this.containerEl.querySelector('.box-preview-media-controls-wrapper');
 

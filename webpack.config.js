@@ -60,7 +60,7 @@ module.exports = languages.map(function(language) {
     //      change source maps to be inline
     if (!isRelease) {
         config.plugins.push(new RsyncPlugin('dist/.', '${USER}@${USER}.dev.box.net:/box/www/assets/content-experience'));
-        config.devtool = 'inline-source-map';
+        config.devtool = '#inline-source-map';
     }
 
     // Add the babel loader
