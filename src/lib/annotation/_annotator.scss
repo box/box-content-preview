@@ -175,25 +175,26 @@
     top: 0;
     right: 0;
     bottom: 0;
+    cursor: text;
+
+    .box-preview-highlight {
+        position: absolute;
+        border-radius: 3px;
+        background-color: rgba(255, 255, 0, 0.25);
+    }
+
+    .box-preview-doc-mousedown & {
+        pointer-events: none;
+    }
 }
 
-.box-preview-doc-mousedown .box-preview-highlight-container {
-    z-index: 1;
-}
-
+/* Quad point positioning - this highlight refers to the Rangy highlight */
 .box-preview-doc .highlight {
     position: relative;
 }
 
-.box-preview-highlight {
-    position: absolute;
-    padding: 2px;
-    border-radius: 3px;
-    background-color: #ff0;
-}
-
 .box-preview-highlight-active .box-preview-highlight {
-    background-color: #000;
+    background-color: rgba(255, 255, 0, 0.35);
 }
 
 .box-preview-remove-highlight-btn {
@@ -212,6 +213,14 @@
 }
 
 /* These helper divs allow us to calculate the quad points of an element */
+.box-preview-quad-corner-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
 .box-preview-quad-corner {
     position: absolute;
     background: none;

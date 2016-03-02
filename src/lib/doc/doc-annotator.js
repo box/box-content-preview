@@ -34,67 +34,6 @@ function findClosestElWithClass(element, className) {
 }
 
 /**
- * Returns the coordinates of the quadrilateral representing this element per
- * the PDF text markup annotation spec.
- *
- * We do this by letting the browser figure out the coordinates for us. See:
- * http://stackoverflow.com/a/17098667
- *
- * @param {HTMLElement} element Element to get quad points for
- * @param {HTMLElement} relativeEl Element quad points should be relative to
- * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3, x4,
- * y4] with (x1, y1) being the lower left (untransformed) corner of the element
- * and the other 3 vertices in counterclockwise order
- */
-function getQuadPoints(element, relativeEl) {
-    // Create zero-size elements that can be styled to the 4 corners of
-    // quadrilateral around element - using 4 divs is faster than using
-    // one div and moving it around
-    const corner1El = document.createElement('div');
-    const corner2El = document.createElement('div');
-    const corner3El = document.createElement('div');
-    const corner4El = document.createElement('div');
-
-    corner1El.classList.add('box-preview-quad-corner', 'corner1');
-    corner2El.classList.add('box-preview-quad-corner', 'corner2');
-    corner3El.classList.add('box-preview-quad-corner', 'corner3');
-    corner4El.classList.add('box-preview-quad-corner', 'corner4');
-
-    element.appendChild(corner1El);
-    element.appendChild(corner2El);
-    element.appendChild(corner3El);
-    element.appendChild(corner4El);
-
-    const corner1Rect = corner1El.getBoundingClientRect();
-    const corner2Rect = corner2El.getBoundingClientRect();
-    const corner3Rect = corner3El.getBoundingClientRect();
-    const corner4Rect = corner4El.getBoundingClientRect();
-    const relativeRect = relativeEl.getBoundingClientRect();
-    const relativeLeft = relativeRect.left;
-    const relativeTop = relativeRect.top;
-
-    // Cleanup elements
-    element.removeChild(corner1El);
-    element.removeChild(corner2El);
-    element.removeChild(corner3El);
-    element.removeChild(corner4El);
-
-    // Calculate coordinates of these 4 corners
-    const quadPoints = [
-        corner1Rect.left - relativeLeft,
-        corner1Rect.top - relativeTop,
-        corner2Rect.left - relativeLeft,
-        corner2Rect.top - relativeTop,
-        corner3Rect.left - relativeLeft,
-        corner3Rect.top - relativeTop,
-        corner4Rect.left - relativeLeft,
-        corner4Rect.top - relativeTop
-    ];
-
-    return quadPoints;
-}
-
-/**
  * Creates a highlight DIV with corners corresponding to the supplied quad
  * points
  *
@@ -182,6 +121,7 @@ class DocAnnotator extends Annotator {
         }));
 
         const docEl = document.querySelector('.box-preview-doc');
+
         this.addEventHandler(docEl, (event) => {
             docEl.classList.add('box-preview-doc-mousedown');
         }, 'mousedown');
@@ -190,29 +130,7 @@ class DocAnnotator extends Annotator {
             docEl.classList.remove('box-preview-doc-mousedown');
         }, 'mouseup');
 
-        // @TODO(tjin): annotation layer in-progress
-        //this.addEventHandler(docEl, this.throttledMousemoveHandler, 'mousemove');
-    }
-
-    // @TODO(tjin): annotation layer in-progress
-    throttledMousemoveHandler(event) {
-        if (!this.mousemoveHandler) {
-            this.mousemouseHandler = throttle((event) => {
-                const element = document.elementFromPoint(event.clientX, event.clientY);
-                if (element && element.classList.contains('box-preview-highlight')) {
-                    element.parentNode.classList.add('box-preview-highlight-active');
-
-                    this.lastHighlightId = element.parentNode.dataset.annotationId;
-                } else {
-                    const lastHighlightEl = document.querySelector('[data-annotation-id="' + this.lastHighlightId + '"]');
-                    if (lastHighlightEl) {
-                        lastHighlightEl.classList.remove('box-preview-highlight-active');
-                    }
-                }
-            }, 250);
-        }
-
-        return this.mousemoveHandler;
+        // @TODO(tjin): clean up these handlers
     }
 
     /**
@@ -284,27 +202,14 @@ class DocAnnotator extends Annotator {
 
         const page = location.page;
         const pageEl = document.querySelector('[data-page-number="' + page + '"]');
-        const textLayerEl = pageEl.querySelector('.textLayer');
 
-        // @TODO(tjin): annotation layer in-progress
-        /*let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
+        // Create an annotation layer on the page if it doesn't exist
+        let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
         if (!annotationLayerEl) {
             annotationLayerEl = document.createElement('div');
             annotationLayerEl.classList.add('box-preview-annotation-layer');
             pageEl.appendChild(annotationLayerEl);
-
-            this.addEventHandler(annotationLayerEl, (event) => {
-                textLayerEl.dispatchEvent(cloneMouseEvent(event));
-            }, 'mousedown');
-
-            this.addEventHandler(annotationLayerEl, (event) => {
-                textLayerEl.dispatchEvent(cloneMouseEvent(event));
-            }, 'mousemove');
-
-            this.addEventHandler(annotationLayerEl, (event) => {
-                textLayerEl.dispatchEvent(cloneMouseEvent(event));
-            }, 'mouseup');
-        }*/
+        }
 
         // Delete highlight button should be in upper right of the highlight in the upper right
         let upperRightX = 0;
@@ -326,14 +231,31 @@ class DocAnnotator extends Annotator {
             const highlightEl = createHighlightEl(quadPoints);
             highlightContainerEl.appendChild(highlightEl);
 
-            // @TODO(tjin): annotation layer in-progress
-            /*this.addEventHandler(highlightEl, this.throttledMouseenterHandler, 'mouseenter');
-            this.addEventHandler(highlightEl, this.throttledMouseleaveHandler, 'mouseleave');*/
+            // Set group of highlight elements to active when mouse enters a
+            // highlight element and we are not just leaving a highlight element
+            this.addEventHandler(highlightEl, (event) => {
+                if (event.relatedTarget && event.relatedTarget.classList.contains('box-preview-highlight')) {
+                    return;
+                }
+
+                event.target.parentNode.classList.add('box-preview-highlight-active');
+            }, 'mouseenter');
+
+            // Set group of highlight elements to inactive when mouse leaves a
+            // highlight element and we are not entering a highlight element
+            this.addEventHandler(highlightEl, (event) => {
+                if (event.relatedTarget && event.relatedTarget.classList.contains('box-preview-highlight')) {
+                    return;
+                }
+
+                event.target.parentNode.classList.remove('box-preview-highlight-active');
+            }, 'mouseleave');
+
+            // @TODO(tjin): clean up annotation layer event handlers
         });
 
-        // Insert highlight elements onto DOM at the bottom of the invisible
-        // text layer so selection can still work
-        textLayerEl.appendChild(highlightContainerEl);
+        // Insert highlight into annotation layer
+        annotationLayerEl.appendChild(highlightContainerEl);
 
         // Construct delete highlight button
         const removeHighlightButtonEl = document.createElement('button');
@@ -341,9 +263,6 @@ class DocAnnotator extends Annotator {
         removeHighlightButtonEl.style.left = upperRightX - 8 + 'px'; // move 'x' slightly into highlight
         removeHighlightButtonEl.style.top = upperRightY - 8 + 'px'; // move 'x' slightly into highlight
         removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
-
-        // @TODO(tjin): annotation layer in-progress
-        //annotationLayerEl.appendChild(removeHighlightButtonEl);
         pageEl.appendChild(removeHighlightButtonEl);
 
         // Delete highlight button deletes the highlight and removes highlights from DOM
@@ -424,7 +343,7 @@ class DocAnnotator extends Annotator {
         // Get quad points for each highlight element
         const highlightQuadPoints = [];
         highlightElements.forEach((element) => {
-            highlightQuadPoints.push(getQuadPoints(element, pageEl));
+            highlightQuadPoints.push(this.getQuadPoints(element, pageEl));
         });
 
         // Unselect text and remove rangy highlight
@@ -963,6 +882,74 @@ class DocAnnotator extends Annotator {
 
             this.handlerMap.delete(element);
         }
+    }
+
+    /**
+     * Returns the coordinates of the quadrilateral representing this element per
+     * the PDF text markup annotation spec.
+     *
+     * We do this by letting the browser figure out the coordinates for us. See:
+     * http://stackoverflow.com/a/17098667
+     *
+     * @param {HTMLElement} element Element to get quad points for
+     * @param {HTMLElement} relativeEl Element quad points should be relative to
+     * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3, x4,
+     * y4] with (x1, y1) being the lower left (untransformed) corner of the element
+     * and the other 3 vertices in counterclockwise order
+     */
+     getQuadPoints(element, relativeEl) {
+
+        // Create quad point helper elements once if needed
+        if (!this.quadCornerContainerEl) {
+            this.quadCornerContainerEl = document.createElement('div');
+            this.quadCornerContainerEl.classList.add('box-preview-quad-corner-container');
+
+            // Create zero-size elements that can be styled to the 4 corners of
+            // quadrilateral around element - using 4 divs is faster than using
+            // one div and moving it around
+            this.quadCorner1El = document.createElement('div');
+            this.quadCorner2El = document.createElement('div');
+            this.quadCorner3El = document.createElement('div');
+            this.quadCorner4El = document.createElement('div');
+
+            this.quadCorner1El.classList.add('box-preview-quad-corner', 'corner1');
+            this.quadCorner2El.classList.add('box-preview-quad-corner', 'corner2');
+            this.quadCorner3El.classList.add('box-preview-quad-corner', 'corner3');
+            this.quadCorner4El.classList.add('box-preview-quad-corner', 'corner4');
+
+            this.quadCornerContainerEl.appendChild(this.quadCorner1El);
+            this.quadCornerContainerEl.appendChild(this.quadCorner2El);
+            this.quadCornerContainerEl.appendChild(this.quadCorner3El);
+            this.quadCornerContainerEl.appendChild(this.quadCorner4El);
+        }
+
+        // Insert helper into element to calculate quad points for
+        element.appendChild(this.quadCornerContainerEl);
+
+        const corner1Rect = this.quadCorner1El.getBoundingClientRect();
+        const corner2Rect = this.quadCorner2El.getBoundingClientRect();
+        const corner3Rect = this.quadCorner3El.getBoundingClientRect();
+        const corner4Rect = this.quadCorner4El.getBoundingClientRect();
+        const relativeRect = relativeEl.getBoundingClientRect();
+        const relativeLeft = relativeRect.left;
+        const relativeTop = relativeRect.top;
+
+        // Cleanup helper element
+        element.removeChild(this.quadCornerContainerEl);
+
+        // Calculate coordinates of these 4 corners
+        const quadPoints = [
+            corner1Rect.left - relativeLeft,
+            corner1Rect.top - relativeTop,
+            corner2Rect.left - relativeLeft,
+            corner2Rect.top - relativeTop,
+            corner3Rect.left - relativeLeft,
+            corner3Rect.top - relativeTop,
+            corner4Rect.left - relativeLeft,
+            corner4Rect.top - relativeTop
+        ];
+
+        return quadPoints;
     }
 }
 
