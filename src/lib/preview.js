@@ -405,11 +405,12 @@ class Preview extends EventEmitter {
                 this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
             }
 
-            // Log perf metrics
-            this.emit('metrics', this.logger.done());
-
             // Finally emit the viewer instance back with a load event
-            this.emit('load', this.viewer);
+            this.emit('load', {
+                viewer: this.viewer,
+                metrics: this.logger.done(),
+                file: this.file
+            });
 
             // Prefetch other files
             this.prefetch();
@@ -423,13 +424,15 @@ class Preview extends EventEmitter {
      * @param {String|null|undefined|Error} reason error
      * @returns {void}
      */
-    triggerError(reason) {
+    triggerError(err) {
         // Nuke the cache
         cache.unset(this.file.id);
 
+        let reason;
+
         // Use a default reason if none was passed in
-        if (reason instanceof Error) {
-            reason = reason.message;
+        if (err instanceof Error) {
+            reason = err.message;
         }
         reason = reason || 'An error has occurred while loading the preview';
 
@@ -438,11 +441,8 @@ class Preview extends EventEmitter {
             // Destroy anything still showing
             this.destroy();
 
-            // Reject any pending promises
-            if (this.deferred.reject) {
-                this.deferred.reject(reason);
-                this.deferred = {};
-            }
+            // Emit error
+            this.emit('preview-error', reason);
 
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
             this.viewer.load('', reason);
@@ -457,13 +457,14 @@ class Preview extends EventEmitter {
      * @returns {Object} Headers
      */
     getRequestHeaders() {
+        const hints = Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4';
         const headers = {
-            'Authorization': 'Bearer ' + this.options.token,
-            'X-Rep-Hints': '3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3' + (Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4')
+            Authorization: `Bearer ${this.options.token}`,
+            'X-Rep-Hints': `3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
         };
 
         if (this.options.sharedLink) {
-            headers.BoxApi = 'shared_link=' + this.options.sharedLink;
+            headers.BoxApi = `shared_link=${this.options.sharedLink}`;
         }
 
         return headers;
@@ -566,8 +567,8 @@ class Preview extends EventEmitter {
      */
     navigateToIndex(index) {
         const file = this.files[index];
-        this.load(file);
         this.emit('navigation', file);
+        this.load(file);
     }
 
     /**
@@ -667,6 +668,8 @@ class Preview extends EventEmitter {
                     this.navigateRight();
                     consumed = true;
                     break;
+                default:
+                    // no-op
             }
         }
 

@@ -15,7 +15,6 @@
     height: 100%;
     display: none;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    background-color: rgba(90, 90, 90, 0.90);
     -webkit-font-smoothing: subpixel-antialiased;
     -moz-font-smoothing: subpixel-antialiased;
     font-smoothing: subpixel-antialiased;
@@ -54,6 +53,7 @@
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
+    background-color: rgba(90, 90, 90, 0.90);
     -webit-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;
@@ -65,7 +65,7 @@
     align-items: center;
 }
 
-.box-preview-header + .box-preview {
+.box-preview-header + .box-preview:not(.box-preview-is-fullscreen) {
     top: 40px;
 }
 

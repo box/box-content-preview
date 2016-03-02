@@ -98,18 +98,15 @@ preview.show(fileId, { options });
     container: '.preview-container', // optional dom node or selector where preview should be placed
     api: 'https://api.box.com',      // optional api host like https://ldap.dev.box.net/api
     files: [ '123', '234', ... ],    // optional list of file ids for back and forth navigation
+    header: true,                    // optional boolean to turn the header on or off
     viewers: {                       // optional arguments to pass on to viewers
-        VIEWERNAME: {                   // name of the viewer 
+        VIEWERNAME: {                   // name of the viewer
             disabled: false,            // disables the viewer
             annotations: false          // other args
             controls: true              // disables the viewer controls
             ...
         },
         ...
-    },
-    callbacks: {                                 // optional callbacks
-        navigation: function(fileId) { ... },       // when navigation happens to fileId
-        metrics: function(metricsData) { ... }      // preview performance metrics
     }
 }
 ```
@@ -125,3 +122,29 @@ VIEWERNAME can be one of the following `Document`, `Presentation`, `MP3`, `MP4`,
 `Box.Preview.enableViewers(/* String|Array[String] */ viewers)` enables one or more viewers based on VIEWERNAME.
 
 `Box.Preview.disableViewers(/* String|Array[String] */ viewers)` disables one or more viewers based on VIEWERNAME. Viewers can also be disabled by setting `disabled: true` on the specific viewer option inside options.
+
+
+Events
+-------
+
+The preview object exposes `addListener` and `removeListener` for binding to events. Events should be bound before calling `show()` otherwise they can be missed.
+
+```javascript
+Box.Preview.addListener(EVENTNAME, (value) => {
+    // do something with value
+});
+
+Box.Preview.show(...);
+```
+
+EVENTNAME can be one of the following
+
+* `load` event will be fired on every preview load if inter-preview navigation is happening. The value will be an object contaianing
+```javascript
+  {
+      viewer: {...},    // Instance of the current viewer
+      metrics: {...},   // Performance metrics
+      file: {...}       // Box file object as returned by the API
+  }
+```
+* `navigation` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event.
