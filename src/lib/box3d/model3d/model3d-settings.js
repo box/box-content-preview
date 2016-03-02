@@ -44,8 +44,7 @@ class Model3dSettings extends EventEmitter  {
 
         this.containerEl = containerEl;
 
-        const template = settingsTemplate.replace(/\>\s*\</g, '><'); // removing new lines
-        insertTemplate(this.containerEl, template);
+        insertTemplate(this.containerEl, settingsTemplate);
 
         this.currentAxis = AXIS_Y;
         this.currentDefaultRenderMode = RENDER_MODE_LIT;

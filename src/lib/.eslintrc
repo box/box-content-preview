@@ -1,54 +1,36 @@
-{
-    "parser": "babel-eslint",
-    "plugins": [
-        "babel",
-        "react"
-    ],
-    "globals": {
-        "window": false,
-        "document": false,
-        "Box": false,
-        "$": false
-    },
-    "rules": {
-        "semi": 2,
-        "no-bitwise": 2,
-        "no-cond-assign": 2,
-        "curly": 0,
-        "no-debugger": 2,
-        "no-console": 2,
-        "eqeqeq": 0,
-        "no-eq-null": 2,
-        "no-eval": 2,
-        "wrap-iife": 2,
-        "no-iterator": 2,
-        "no-loop-func": 0,
-        "no-multi-str": 2,
-        "new-cap": 2,
-        "no-caller": 2,
-        "no-new": 2,
-        "no-proto": 2,
-        "quotes": [2, "single"],
-        "no-undef": 0,
-        "no-script-url": 2,
-        "dot-notation": 2,
-        "camelcase": 0,
-        "radix": 2,
-        "brace-style": 2,
-        "func-style": [2, "declaration"],
-        "strict": [2, "global"],
-        "guard-for-in": 2,
-        "no-floating-decimal": 2,
-        "no-underscore-dangle": 0,
-        "no-nested-ternary": 2,
-        "keyword-spacing": 2,
-        "valid-jsdoc": [2, {
-            "prefer": {
-                "return": "returns"
-            }
-        }],
-        // We allow unused args
-        "no-unused-vars": [2, {"args": "none"}]
-    },
-    "extends" : "eslint:recommended"
-}
+---
+# Still require babel-eslint for spread
+parser: babel-eslint
+
+extends: 'airbnb'
+
+globals:
+    document: false
+    Box: false
+
+    # Mocha globals
+    after: false
+    afterEach: false
+    before: false
+    beforeEach: false
+    describe: false
+    expect: false
+    it: false
+    sinon: false
+
+rules:
+    # seems buggy, doesn't like object returns
+    arrow-body-style: [0]
+
+    # herp derp, box doesn't like 2 spaces
+    indent: [2, 4, {"SwitchCase": 1}]
+
+    jsx-quotes: [2, 'prefer-single']
+    max-len: [0, 120]
+
+    # consistent indentation with js
+    react/jsx-indent-props: [2, 4]
+
+    react/jsx-no-bind: [0]
+
+    comma-dangle: [2, "never"]
