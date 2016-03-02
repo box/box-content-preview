@@ -1,21 +1,19 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import Browser from './browser';
 
 const BROWSER_INFO = {
-    'name': Browser.getName(),
-    'swf': Browser.hasFlash(),
-    'svg': Browser.hasSVG(),
-    'mse': Browser.hasMSE(),
-    'webgl': Browser.hasWebGL(),
-    'mp3': Browser.canPlayMP3(),
-    'dash': Browser.canPlayDash(),
-    'box3d': Browser.supportsBox3D(),
-    'h264': {
-        'baseline': Browser.canPlayH264Baseline(),
-        'main': Browser.canPlayH264Main(),
-        'high': Browser.canPlayH264High()
+    name: Browser.getName(),
+    swf: Browser.hasFlash(),
+    svg: Browser.hasSVG(),
+    mse: Browser.hasMSE(),
+    webgl: Browser.hasWebGL(),
+    mp3: Browser.canPlayMP3(),
+    dash: Browser.canPlayDash(),
+    box3d: Browser.supportsBox3D(),
+    h264: {
+        baseline: Browser.canPlayH264Baseline(),
+        main: Browser.canPlayH264Main(),
+        high: Browser.canPlayH264High()
     }
 };
 
@@ -24,16 +22,15 @@ class Logger {
 
     /**
      * [constructor]
-     * @param {Object} options options
+     * @param {String} locale locale
      * @returns {Logger} Logger instance
      */
-    constructor(options) {
+    constructor(locale) {
         this.start = Date.now();
-        this.metricsCallback = options.callbacks.metrics;
         this.log = {
+            locale,
             event: 'preview',
             browser: BROWSER_INFO,
-            locale: options.location.locale,
             converted: true,
             cache: {
                 hit: false,
@@ -98,17 +95,12 @@ class Logger {
     /**
      * Finishes logging.
      * @public
-     * @returns {void}
+     * @returns {Object} metrics
      */
     done() {
         this.log.time.total = Date.now() - this.start;
         this.log.time.rendering = this.log.time.total - this.log.time.conversion;
-
-        if (typeof this.metricsCallback === 'function') {
-            this.metricsCallback(this.log);
-        } else {
-            console.log(this.log);
-        }
+        return this.log;
     }
 
 }

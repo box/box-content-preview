@@ -3,6 +3,20 @@ const loadedCSSAssets = [];
 const prefetchedAssets = [];
 
 /**
+ * Creates contextual fragment
+ *
+ * @public
+ * @param {Element} node dom node
+ * @param {String} template  html template
+ * @returns {HTMLElement}
+ */
+export function createFragment(node, template) {
+    const range = document.createRange();
+    range.selectNode(node);
+    return range.createContextualFragment(template.replace(/\>\s*\</g, '><')); // remove new lines
+}
+
+/**
  * Inserts template string into dom node
  *
  * @public
@@ -11,9 +25,7 @@ const prefetchedAssets = [];
  * @returns {void}
  */
 export function insertTemplate(node, template) {
-    const range = document.createRange();
-    range.selectNode(node);
-    node.appendChild(range.createContextualFragment(template));
+    node.appendChild(createFragment(node, template));
 }
 
 /**
@@ -177,7 +189,6 @@ export function loadScripts(urls) {
  * @returns {String} decoded keydown key
  */
 export function decodeKeydown(event) {
-
     let modifier = '';
 
     // KeyboardEvent.key is the new spec supported in Firefox and IE.
@@ -224,7 +235,7 @@ export function decodeKeydown(event) {
     // keyIdentifier spec does not prefix the word Arrow.
     // Newer key spec does it automatically.
     if (key === 'Right' || key === 'Left' || key === 'Down' || key === 'Up') {
-        key = 'Arrow' + key;
+        key = `Arrow${key}`;
     }
 
     if (modifier) {

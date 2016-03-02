@@ -1,6 +1,7 @@
 import './preview.scss';
 import './polyfill';
 import autobind from 'autobind-decorator';
+import EventEmitter from 'events';
 import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import Logger from './logger';
@@ -8,22 +9,29 @@ import loaders from './loaders';
 import cache from './cache';
 import ErrorLoader from './error/error-loader';
 import RepStatus from './rep-status';
-import { decodeKeydown } from './util';
-import throttle  from 'lodash.throttle';
+import { decodeKeydown, insertTemplate, createFragment } from './util';
+import throttle from 'lodash.throttle';
+import shell from 'raw!./shell.html';
+import header from 'raw!./header.html';
+
+import {
+    CLASS_NAVIGATION_VISIBILITY,
+    CLASS_HIDDEN,
+    CLASS_PREVIEW_LOADED,
+    SELECTOR_BOX_PREVIEW_CONTAINER,
+    SELECTOR_BOX_PREVIEW,
+    SELECTOR_NAVIGATION_LEFT,
+    SELECTOR_NAVIGATION_RIGHT
+} from './constants';
 
 const PREFETCH_COUNT = 3;
-const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
-const CLASS_HIDDEN = 'box-preview-is-hidden';
-const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 const MOUSEMOVE_THROTTLE = 1500;
-const CRAWLER = '<div class="box-preview-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
 const PERMISSIONS_ERROR = 'Missing permissions to preview';
-
-// Do not const this as this check is done on each viewer
-let Box = global.Box || {};
+const API = 'https://api.box.com';
+const Box = global.Box || {};
 
 @autobind
-class Preview {
+class Preview extends EventEmitter {
 
     //--------------------------------------------------------------------------
     // Private
@@ -34,6 +42,8 @@ class Preview {
      * @returns {Preview} Returns a preview
      */
     constructor() {
+        super();
+
         // Current file being previewed
         this.file = {};
 
@@ -45,9 +55,6 @@ class Preview {
 
         // Auth token
         this.token = '';
-
-        // Deferred promise for viewer
-        this.deferred = {};
 
         // Determine the location of preview.js since all
         // other files are relative to it.
@@ -80,10 +87,10 @@ class Preview {
         const scriptSrc = document.querySelector('script[src*="preview.js"]').src;
 
         if (!scriptSrc) {
-            throw 'Missing or malformed preview library inclusion';
+            throw new Error('Missing or malformed preview library inclusion');
         }
 
-        let anchor = document.createElement('a');
+        const anchor = document.createElement('a');
         anchor.href = scriptSrc;
 
         const pathname = anchor.pathname;
@@ -93,24 +100,22 @@ class Preview {
         const locale = pathFragments[fragmentLength - 2];
         const version = pathFragments[fragmentLength - 3];
         const baseURI = anchor.href.replace(fileName, '');
-        const staticBaseURI = baseURI.replace(locale + '/', '');
+        const staticBaseURI = baseURI.replace(`${locale}/`, '');
 
-        this.options.location = {
+        this.location = {
             origin: anchor.origin,
             host: anchor.host,
             hostname: anchor.hostname,
-            pathname: pathname,
             search: anchor.search,
             protocol: anchor.protocol,
             port: anchor.port,
             href: anchor.href,
-            locale: locale,
-            version: version,
-            baseURI: baseURI,
-            staticBaseURI: staticBaseURI
+            pathname,
+            locale,
+            version,
+            baseURI,
+            staticBaseURI
         };
-
-        anchor = undefined;
     }
 
     /**
@@ -121,38 +126,96 @@ class Preview {
      * @returns {String} API url
      */
     createUrl(id) {
-        return this.options.api + '/2.0/files/' + id + '?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,representations';
+        return `${this.options.api}/2.0/files/${id}?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,representations`;
+    }
+
+    /**
+     * Parses the preview options
+     *
+     * @private
+     * @returns {void}
+     */
+    parseOptions() {
+        // Grab the options from saved preview options
+        const options = this.previewOptions;
+
+        // Auth token should be available
+        if (!options.token) {
+            throw new Error('Missing Auth Token!');
+        }
+
+        // Reset all options
+        this.options = {};
+
+        // Save the location of preview for viewers
+        this.options.location = Object.assign({}, this.location);
+
+        // Save the reference to the api endpoint
+        this.options.api = options.api ? options.api.replace(/\/$/, '') : API;
+
+        // Save the reference to the auth token
+        this.options.token = this.token || options.token;
+
+        // Show or hide the header
+        this.options.header = !!options.header;
+
+        // Save the files to iterate through
+        this.files = options.files || [];
+
+        // Save the reference to any additional custom options for viewers
+        this.options.viewers = options.viewers || {};
+
+        // Iterate over all the viewer options and disable any viewer
+        // that has an option disabled set to true
+        this.disableViewers(Object.keys(this.options.viewers).filter((viewer) => !!this.options.viewers[viewer].disabled));
     }
 
     /**
      * Initializes the container for preview.
      *
-     * @param {String|HTMLElement} container where to load the preview
-     * @param {Boolean} hasNavigation If we allow navigation.
      * @private
      * @returns {void}
      */
-    setup(container, hasNavigation = false) {
+    setup() {
+        // box-preview-container's parent
+        let container = this.previewOptions.container;
 
         if (typeof container === 'string') {
             // Get the container dom element if a selector was passed instead.
             container = document.querySelector(container);
         } else if (!container) {
             // Create the container if nothing was passed.
-            container = document.body.appendChild(document.createElement('div'));
+            container = document.body;
+        }
+
+        // Check if the container was already created before and is ready
+        if (container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER)) {
+            // Nothing more to do
+            return;
         }
 
         // Create the preview with absolute positioning inside a relative positioned container
-        container.innerHTML = '<div class="box-preview-container" style="display: block;"><div class="box-preview"></div>' + CRAWLER + '</div>';
+        // <box-preview-container>
+        //      <box-preview>
+        //      <navigation>
+        // </box-preview-container>
+        insertTemplate(container, shell);
 
         // Save a handle to the container for future references.
         this.container = container.firstElementChild;
 
+        // Save a handle to the preview content
+        this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
+
+        // Add the header if needed
+        if (this.options.header) {
+            this.container.insertBefore(createFragment(this.container, header), this.contentContainer);
+        }
+
         // If we are showing navigation, create arrows and attach
         // mouse move handler to show or hide them.
-        if (hasNavigation) {
+        if (this.files.length > 1) {
             this.showNavigation();
-            this.container.addEventListener('mousemove', this.throttledMousemoveHandler);
         }
 
         // Attach keyboard events
@@ -162,70 +225,82 @@ class Preview {
     /**
      * Loads the preview for a file.
      *
-     * @param {String} id File to preview
+     * @param {String|Object} file File to preview
      * @private
-     * @returns {Promise} Promise to load a preview
+     * @returns {void}
      */
-    load(id) {
+    load(file) {
+        // Parse the preview options
+        this.parseOptions();
 
-        let promise;
+        // Check if a file id was passed in or a well formed file object
+        // Cache the file in the files array so that we don't prefetch it.
+        // If we don't have the file data, we create an empty file object.
+        // If we have the file data, we just use that.
+        if (typeof file === 'string') {
+            // String file id was passed in, check if its in the cache
+            this.file = cache.get(file) || { id: file };
+        } else {
+            // File object was passed in, treat it like cached
+            this.file = file;
+        }
 
-        // Init performance logging
-        this.logger = new Logger(this.options);
+        // Cache the file
+        cache.set(this.file.id, this.file);
 
-        // Nuke everything in the box-preview wrapper to prepare for this preview.
-        this.container.firstElementChild.innerHTML = '';
+        // Normalize files array by putting current file inside it
+        // if it was is empty. If its not empty, then it is assumed
+        // that current file is already inside files array.
+        if (this.files.length === 0) {
+            this.files = [this.file];
+        }
 
-        // Check the cache before making a network request.
-        const cached = cache.get(id);
+        // Setup the UI before anything else.
+        this.setup();
 
-        if (cached && cached.id === id && cached.representations) {
+        // If we are showing navigation, make any updates to it.
+        if (this.files.length > 1) {
+            this.updateNavigation();
+        }
+
+        if (this.file.representations) { // @TODO we need a better check to validate file object
             // Cache hit, use that.
-            promise = this.loadFromCache(cached);
+            this.loadFromCache();
         } else {
             // Cache miss, fetch from the server.
-            promise = this.loadFromServer(id);
+            this.loadFromServer();
         }
-
-        if (this.files.length > 1) {
-            promise.then(() => this.prefetch()).catch(() => {
-                // no-op
-            });
-        }
-
-        return promise;
     }
 
     /**
      * Loads a preview from cache.
      *
-     * @param {Object} file File to preview
-     * @param {Boolean} [checkStaleness] Check for cache staleness
      * @private
-     * @returns {Promise} Promise to load a preview from cache
+     * @param {Boolean} [checkStaleness] Check for cache staleness
+     * @returns {void}
      */
-    loadFromCache(file, checkStaleness = true) {
-        this.file = file;
-
+    loadFromCache(checkStaleness = true) {
         // Add details to the logger
-        this.logger.setFile(file);
+        this.logger.setFile(this.file);
         this.logger.setCached();
 
         // Even though we are showing a file from cache, still make
         // a server request to check if something changed aka check
         // for cache being stale.
         if (checkStaleness) {
-            fetch(this.createUrl(file.id), {
+            fetch(this.createUrl(this.file.id), {
                 headers: this.getRequestHeaders()
             })
             .then((response) => response.json())
             .then((file) => {
+                this.file = file;
                 cache.set(file.id, file);
-                // Reload the preview
+                // @TODO Reload the preview
             }).catch(this.triggerError);
         }
 
-        return this.loadViewer();
+        // Finally load the viewer
+        this.loadViewer();
     }
 
     /**
@@ -233,21 +308,26 @@ class Preview {
      *
      * @param {String} id File id to preview
      * @private
-     * @returns {Promise} Promise to load a preview from server
+     * @returns {void}
      */
-    loadFromServer(id) {
-        return fetch(this.createUrl(id), {
+    loadFromServer() {
+        fetch(this.createUrl(this.file.id), {
             headers: this.getRequestHeaders()
         })
         .then((response) => response.json())
         .then((file) => {
             if (file.type === 'file') {
-                cache.set(id, file);
+                // Save reference to the file and update logger
                 this.file = file;
                 this.logger.setFile(file);
-                return this.loadViewer();
+
+                // Cache the new file object
+                cache.set(file.id, file);
+
+                // Finally load the viewer
+                this.loadViewer();
             } else {
-                throw file.message;
+                throw new Error(file.message);
             }
         }).catch(this.triggerError);
     }
@@ -256,28 +336,21 @@ class Preview {
      * Loads a viewer.
      *
      * @private
-     * @returns {Promise} Promise to load a viewer
+     * @returns {void}
      */
     loadViewer() {
-
         // Before loading a new preview check if a prior preview was showing.
         // If it was showing make sure to destroy it to do any cleanup.
         this.destroy();
 
-        if (this.container && this.container.firstElementChild) {
-            this.container.firstElementChild.classList.remove(CLASS_PREVIEW_LOADED);
+        if (this.container && this.contentContainer) {
+            this.contentContainer.classList.remove(CLASS_PREVIEW_LOADED);
         }
 
         // Check if preview permissions exist
         if (!this.file.permissions.can_preview) {
-            throw PERMISSIONS_ERROR;
+            throw new Error(PERMISSIONS_ERROR);
         }
-
-        // Create a deferred promise
-        this.deferred.promise = new Promise((resolve, reject) => {
-            this.deferred.resolve = resolve;
-            this.deferred.reject = reject;
-        });
 
         // Determine the asset loader to use
         const loader = this.getLoader(this.file);
@@ -301,8 +374,7 @@ class Preview {
         const promiseToGetRepresentationStatusSuccess = repStatus.status(representation, this.getRequestHeaders());
 
         // Proceed only when both static and representation assets have been loaded
-        Promise.all([ promiseToLoadAssets, promiseToGetRepresentationStatusSuccess ]).then(() => {
-
+        Promise.all([promiseToLoadAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
             // Save reference to file to give to the viewer
             this.options.file = this.file;
 
@@ -314,10 +386,7 @@ class Preview {
 
             // Load the representation into the viewer
             this.viewer.load(representation.links.content.url);
-
         }).catch(this.triggerError);
-
-        return this.deferred.promise;
     }
 
     /**
@@ -333,15 +402,17 @@ class Preview {
         this.viewer.addListener('load', () => {
             // Once the viewer loads, hide the loading indicator
             if (this.container) {
-                this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
+                this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
             }
-            // Finally resolve with the viewer instance back to the caller
-            if (this.deferred.resolve) {
-                this.deferred.resolve(this.viewer);
-                this.deferred = {};
-            }
+
             // Log perf metrics
-            this.logger.done();
+            this.emit('metrics', this.logger.done());
+
+            // Finally emit the viewer instance back with a load event
+            this.emit('load', this.viewer);
+
+            // Prefetch other files
+            this.prefetch();
         });
     }
 
@@ -375,7 +446,7 @@ class Preview {
 
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
             this.viewer.load('', reason);
-            this.container.firstElementChild.classList.add(CLASS_PREVIEW_LOADED);
+            this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
         });
     }
 
@@ -405,13 +476,11 @@ class Preview {
      * @returns {void}
      */
     prefetch() {
-
         const currentIndex = this.files.indexOf(this.file.id);
         let count = 0;
 
         // Starting with the next file, prefetch specific numbers of files.
         for (let i = currentIndex + 1; count < PREFETCH_COUNT && i < this.files.length; i++) {
-
             count++;
 
             const nextId = this.files[i];
@@ -447,7 +516,7 @@ class Preview {
                         loader.prefetch(file, this.options);
                     }
                 }
-            }).catch((err) => {
+            }).catch(() => {
                 // no-op
             });
         }
@@ -460,23 +529,11 @@ class Preview {
      * @returns {void}
      */
     showNavigation() {
-        const left = document.createElement('div');
-        const leftSpan = document.createElement('span');
-        left.className = 'box-preview-navigate box-preview-navigate-left box-preview-is-hidden';
-        leftSpan.className = 'box-preview-left-arrow';
-        left.appendChild(leftSpan);
-        left.addEventListener('click', this.navigateLeft);
-
-        const right = document.createElement('div');
-        const rightSpan = document.createElement('span');
-        right.className = 'box-preview-navigate box-preview-navigate-right box-preview-is-hidden';
-        rightSpan.className = 'box-preview-right-arrow';
-        right.appendChild(rightSpan);
-        right.addEventListener('click', this.navigateRight);
-
-        this.container.appendChild(left);
-        this.container.appendChild(right);
-        this.updateNavigation();
+        this.leftNavigation = this.container.querySelector(SELECTOR_NAVIGATION_LEFT);
+        this.rightNavigation = this.container.querySelector(SELECTOR_NAVIGATION_RIGHT);
+        this.leftNavigation.addEventListener('click', this.navigateLeft);
+        this.rightNavigation.addEventListener('click', this.navigateRight);
+        this.contentContainer.addEventListener('mousemove', this.throttledMousemoveHandler);
     }
 
     /**
@@ -486,19 +543,17 @@ class Preview {
      * @returns {void}
      */
     updateNavigation() {
-        const currentIndex = this.files.indexOf(this.file.id);
-        const left = document.querySelector('.box-preview-navigate-left');
-        const right = document.querySelector('.box-preview-navigate-right');
+        const index = this.files.indexOf(this.file.id);
 
-        left.classList.add(CLASS_HIDDEN);
-        right.classList.add(CLASS_HIDDEN);
+        this.leftNavigation.classList.add(CLASS_HIDDEN);
+        this.rightNavigation.classList.add(CLASS_HIDDEN);
 
-        if (currentIndex > 0) {
-            left.classList.remove(CLASS_HIDDEN);
+        if (index > 0) {
+            this.leftNavigation.classList.remove(CLASS_HIDDEN);
         }
 
-        if (currentIndex < this.files.length - 1) {
-            right.classList.remove(CLASS_HIDDEN);
+        if (index < this.files.length - 1) {
+            this.rightNavigation.classList.remove(CLASS_HIDDEN);
         }
     }
 
@@ -512,10 +567,7 @@ class Preview {
     navigateToIndex(index) {
         const file = this.files[index];
         this.load(file);
-        this.updateNavigation();
-        if (typeof this.options.callbacks.navigation === 'function') {
-            this.options.callbacks.navigation(file);
-        }
+        this.emit('navigation', file);
     }
 
     /**
@@ -570,46 +622,6 @@ class Preview {
      */
     getLoader(file) {
         return loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
-    }
-
-    /**
-     * Parses the options
-     * @param {String|Object} file box file object or id
-     * @param {Object} options options
-     * @returns {void}
-     */
-    parseOptions(file, options) {
-
-        // Auth token should be available
-        if (!options.token) {
-            throw 'Missing Auth Token!';
-        }
-
-        // Save the reference to the api endpoint
-        this.options.api = options.api ? options.api.replace(/\/$/, '') : 'https://api.box.com';
-
-        // Save the reference to the auth token
-        this.options.token = this.token || options.token;
-
-        // Save the reference to any additional custom options for viewers
-        this.options.viewers = options.viewers || {};
-
-        // Save the callbacks
-        this.options.callbacks = options.callbacks || {};
-
-        // Normalize by putting file inside files array if the latter
-        // is empty. If its not empty, then it is assumed that file is
-        // already inside files array.
-        const files = options.files || [];
-        if (files.length > 1) {
-            this.files = files;
-        } else {
-            this.files = typeof file === 'string' ? [file] : [file.id];
-        }
-
-        // Iterate over all the viewer options and disable any viewer
-        // that has an option disabled set to true
-        this.disableViewers(Object.keys(this.options.viewers).filter((viewer) => !!this.options.viewers[viewer].disabled));
     }
 
     /**
@@ -683,39 +695,20 @@ class Preview {
     /**
      * Primary function to show a preview.
      *
+     * @public
      * @param {String|Object} file box file object or id
      * @param {Object} options options
-     * @public
-     * @returns {Promise} Promise to show a preview
+     * @returns {void}
      */
     show(file, options) {
+        // Init performance logging
+        this.logger = new Logger(this.location.locale);
 
-        // Options
-        this.parseOptions(file, options);
+        // Save a reference to the options to be used later
+        this.previewOptions = options;
 
-        // Check if file id was passed in or a well formed file object
-        // Cache the file in the files array so that we don't prefetch it.
-        // If we don't have the file data, we create an empty object.
-        // If we have the file data, we use that.
-        if (typeof file === 'string') {
-            // String file id was passed in
-            this.file = {
-                id: file
-            };
-        } else {
-            // File object was passed in
-            this.file = file;
-        }
-
-        // Cache the file
-        cache.set(file.id, this.file);
-
-        // Setup the UI. Navigation is only shown if we are prevewing a collection
-        // and if the client has not prevented us from showing the navigation.
-        this.setup(options.container, this.files.length > 1 && options.navigation !== false);
-
-        // Finally load the 1st preview
-        return this.load(typeof file === 'string' ? file : file.id);
+        // load the preview
+        this.load(file);
     }
 
     /**
@@ -726,7 +719,6 @@ class Preview {
      * @returns {void}
      */
     hide(destroy = false) {
-
         // Destroy the viewer
         this.destroy();
 
@@ -735,8 +727,8 @@ class Preview {
             this.container.removeEventListener('mousemove', this.throttledMousemoveHandler);
             if (destroy) {
                 this.container.innerHTML = '';
-            } else if (this.container.firstElementChild) {
-                this.container.firstElementChild.classList.remove(CLASS_PREVIEW_LOADED);
+            } else if (this.contentContainer) {
+                this.contentContainer.classList.remove(CLASS_PREVIEW_LOADED);
             }
         }
 

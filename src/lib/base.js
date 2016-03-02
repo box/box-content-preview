@@ -2,10 +2,17 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
 import { createContentUrl } from './util';
-import debounce  from 'lodash.debounce';
+import debounce from 'lodash.debounce';
 
-const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
-const CLASS_FULLSCREEN_DISABLED = 'box-preview-fullscreen-disabled';
+import {
+    CLASS_FULLSCREEN,
+    CLASS_FULLSCREEN_DISABLED,
+    CLASS_BOX_PREVIEW_CONTAINER,
+    CLASS_BOX_PREVIEW,
+    SELECTOR_BOX_PREVIEW_CONTAINER,
+    SELECTOR_BOX_PREVIEW
+} from './constants';
+
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 const OPTIONS = {
     ui: true
@@ -20,27 +27,28 @@ class Base extends EventEmitter {
      * @param {Object} [options] some options
      * @returns {Base} Instance of base
      */
-    constructor(container, options) {
+    constructor(containerEl, options) {
         super();
 
         // Save the options
         this.options = Object.assign({}, OPTIONS, options) || OPTIONS;
 
         // Get the container dom element if selector was passed
-        if (typeof container === 'string') {
-            container = document.querySelector(container);
+        let container = containerEl;
+        if (typeof containerEl === 'string') {
+            container = document.querySelector(containerEl);
         }
 
         // Double check if the layout is accurate and if not re-create it.
         // This code should never execute when using the wrapper preview.js
-        if (!container.classList.contains('box-preview-container') || !container.firstElementChild || !container.firstElementChild.classList.contains('box-preview')) {
+        if (!container.classList.contains(CLASS_BOX_PREVIEW_CONTAINER) || !container.firstElementChild) {
             const wrapper = container.parentElement;
-            wrapper.innerHTML = '<div class="box-preview-container" style="display: block;"><div class="box-preview"></div></div>';
-            container = wrapper.querySelector('.box-preview-container');
+            wrapper.innerHTML = `<div class="${CLASS_BOX_PREVIEW_CONTAINER}" style="display: block;"><div class="${CLASS_BOX_PREVIEW}"></div></div>`;
+            container = wrapper.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
         }
 
         // From the perspective of viewers box-preview holds everything
-        this.containerEl = container.firstElementChild;
+        this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW);
 
         // Attach event listeners
         this.addCommonListeners();
