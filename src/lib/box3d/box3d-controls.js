@@ -30,14 +30,13 @@ class Box3DControls extends EventEmitter {
         // List of registered elements and their events
         this.eventRegistry = {};
 
+
         this.el = containerEl;
 
-        this.vrButtonEl = null;
+        this.controls = null;
         this.fullscreenButtonEl = null;
         this.resetButtonEl = null;
-
-        // Add any ui you want, to the parent container
-        this.addUi();
+        this.vrButtonEl = null;
     }
 
     /**
@@ -193,7 +192,9 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        this.controls.destroy();
+        if (this.controls) {
+            this.controls.destroy();
+        }
         this.unregisterUiItems();
     }
 

@@ -87,7 +87,6 @@ class Model3dControls extends Box3DControls  {
         const renderModesEl = this.controls.add(__('render_mode'), this.handleToggleRenderModes, 'box-preview-rendermodes-icon');
         renderModesEl.parentElement.appendChild(this.renderModesSelectorEl);
 
-
         // Set default to lit!
         this.handleSetRenderMode(RENDER_MODES.lit);
 
@@ -140,18 +139,16 @@ class Model3dControls extends Box3DControls  {
         if (current) {
             current.classList.remove(CSS_CLASS_CURRENT_RENDER_MODE);
         }
+
+        // In the case the render mode name is passed, we'll use it to get the
+        // corresponding render mode info
+        if (typeof renderMode === 'string') {
+            renderMode = this.getModeByName(renderMode);
+        }
+
         renderMode.el.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
         this.renderModeCurrent = renderMode.key;
         this.emit(EVENT_SET_RENDER_MODE, renderMode.name);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    handleReset() {
-        super.handleReset();
-        // Reset the render mode to the default render mode of this preview.
-        this.handleSetRenderMode(RENDER_MODES.lit);
     }
 
     /**
@@ -176,9 +173,32 @@ class Model3dControls extends Box3DControls  {
      * get the icon class that we'll change the render mode button to
      * @returns {void}
      */
-    setRenderModeUI(modeIcon) {
+    setRenderModeIcon(modeIcon) {
         let icon = this.renderModeControl.querySelector('span');
         icon.className = modeIcon;
+    }
+
+
+    /**
+     * Given a render mode name, get the corresponding render mode info
+     * @param {String} renderModeName The name of the render mode
+     * @returns {Object} Render mode descriptor
+     */
+    getModeByName(renderModeName) {
+
+        let renderMode;
+
+        for (let renderModeKey in RENDER_MODES) {
+            if (RENDER_MODES.hasOwnProperty(renderModeKey)) {
+                const renderModeDesc = RENDER_MODES[renderModeKey];
+                if (renderModeDesc.name === renderModeName) {
+                    renderMode = renderModeDesc;
+                    break;
+                }
+            }
+        }
+
+        return renderMode;
     }
 
     /**
