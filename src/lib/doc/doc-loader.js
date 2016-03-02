@@ -1,5 +1,3 @@
-'use strict';
-
 import AssetLoader from '../asset-loader';
 import { createAssetUrlCreator, prefetchAssets } from '../util';
 

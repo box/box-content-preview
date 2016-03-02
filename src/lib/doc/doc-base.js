@@ -50,6 +50,8 @@ class DocBase extends Base {
         if (this.docEl) {
             this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
             this.docEl.removeEventListener('pagesrendered', this.pagesrenderedHandler);
+            this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
+            this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
         }
 
         // Destroy the controls
@@ -269,6 +271,10 @@ class DocBase extends Base {
 
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
+
+        // Mousedown and mouseup handler to enable and disable text selection
+        this.docEl.addEventListener('mousedown', this.mousedownHandler);
+        this.docEl.addEventListener('mouseup', this.mouseupHandler);
     }
 
     /**

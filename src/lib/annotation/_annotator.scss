@@ -168,3 +168,82 @@
     background-color: #333;
     font-size: 14px;
 }
+
+.box-preview-annotation-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    cursor: text;
+
+    .box-preview-highlight {
+        position: absolute;
+        border-radius: 3px;
+        background-color: rgba(255, 255, 0, 0.25);
+    }
+
+    .box-preview-doc-mousedown & {
+        pointer-events: none;
+    }
+}
+
+/* Quad point positioning - this highlight refers to the Rangy highlight */
+.box-preview-doc .highlight {
+    position: relative;
+}
+
+.box-preview-highlight-active .box-preview-highlight {
+    background-color: rgba(255, 255, 0, 0.35);
+}
+
+.box-preview-remove-highlight-btn {
+    position: absolute;
+    padding: 0 5px 3px 5px;
+    width: 16px;
+    height: 16px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
+.box-preview-remove-highlight-btn:hover {
+    background-color: rgba(255, 0, 0, 0.8);
+}
+
+/* These helper divs allow us to calculate the quad points of an element */
+.box-preview-quad-corner-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.box-preview-quad-corner {
+    position: absolute;
+    background: none;
+    height: 0px;
+    width: 0px;
+}
+
+.box-preview-quad-corner.corner1 {
+    left: 0;
+    bottom: 0;
+}
+
+.box-preview-quad-corner.corner2 {
+    right: 0;
+    bottom: 0;
+}
+
+.box-preview-quad-corner.corner3 {
+    right: 0;
+    top: 0;
+}
+
+.box-preview-quad-corner.corner4 {
+    left: 0;
+    top: 0;
+}

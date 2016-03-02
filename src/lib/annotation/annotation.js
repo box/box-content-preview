@@ -10,12 +10,12 @@ class Annotation {
     /**
      * @constructor
      * @param {Object} data Annotation data
-     * @param {string} data.fileID File ID
-     * @param {string} data.type Annotation type
-     * @param {string} data.text Annotation text
+     * @param {String} [data.threadID] Optional thread ID
+     * @param {String} data.fileID File ID
+     * @param {String} data.type Annotation type
+     * @param {String} data.text Annotation text
      * @param {Object} data.location Location object
      * @param {Object} data.user User object
-     * @param {string} [data.threadID] Optional thread ID
      */
     constructor(data) {
         this.annotationID = AnnotationService.generateID();

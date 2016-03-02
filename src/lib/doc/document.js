@@ -20,8 +20,8 @@ class Document extends DocBase {
 
     /**
      * @constructor
-     * @param {string|HTMLElement} container Container node
-     * @param {object} [options] Configuration options
+     * @param {String|HTMLElement} container Container node
+     * @param {Object} [options] Configuration options
      */
     constructor(container, options) {
         super(container, options);
@@ -47,8 +47,7 @@ class Document extends DocBase {
     /**
      * Zoom into document
      *
-     * @param {number} ticks Number of times to zoom in
-     * @public
+     * @param {Number} ticks Number of times to zoom in
      * @returns {void}
      */
     zoomIn(ticks = 1) {
@@ -64,8 +63,7 @@ class Document extends DocBase {
     /**
      * Zoom out of document
      *
-     * @param {number} ticks Number of times to zoom out
-     * @public
+     * @param {Number} ticks Number of times to zoom out
      * @returns {void}
      */
     zoomOut(ticks = 1) {
@@ -78,12 +76,11 @@ class Document extends DocBase {
         this.pdfViewer.currentScaleValue = newScale;
     }
 
-    /*----- Private Helpers -----*/
+    /*----- Helpers -----*/
 
     /**
      * Adds event listeners for document controls
      *
-     * @private
      * @returns {void}
      */
     addEventListenersForDocControls() {
@@ -123,7 +120,6 @@ class Document extends DocBase {
     /**
      * Adds event listeners for document element
      *
-     * @private
      * @returns {void}
      */
     addEventListenersForDocElement() {
@@ -136,7 +132,6 @@ class Document extends DocBase {
      * Mousewheel handler, scroll documents by page when in full screen mode.
      *
      * @param {Event} event Mousewheel event
-     * @private
      * @returns {void}
      */
     mousewheelHandler(event) {
