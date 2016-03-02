@@ -13,7 +13,6 @@
     border: 0 none;
     width: 100%;
     height: 100%;
-    display: none;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: subpixel-antialiased;
     -moz-font-smoothing: subpixel-antialiased;
@@ -33,8 +32,8 @@
     -webkit-justify-content: space-between;
     -ms-justify-content: space-between;
     justify-content: space-between;
-    padding: 0 6px;
-    border-bottom: 1px solid #dedede;
+    padding: 0 10px;
+    border: 1px solid #dedede;
 
     .box-preview-header-btns {
         display: none;

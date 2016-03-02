@@ -9,15 +9,15 @@ import loaders from './loaders';
 import cache from './cache';
 import ErrorLoader from './error/error-loader';
 import RepStatus from './rep-status';
-import { decodeKeydown, insertTemplate, createFragment } from './util';
+import { decodeKeydown, insertTemplate } from './util';
 import throttle from 'lodash.throttle';
-import shell from 'raw!./shell.html';
-import header from 'raw!./header.html';
+import shellTemplate from 'raw!./shell.html';
 
 import {
     CLASS_NAVIGATION_VISIBILITY,
     CLASS_HIDDEN,
     CLASS_PREVIEW_LOADED,
+    CLASS_BOX_PREVIEW_HEADER,
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_NAVIGATION_LEFT,
@@ -157,7 +157,7 @@ class Preview extends EventEmitter {
         this.options.token = this.token || options.token;
 
         // Show or hide the header
-        this.options.header = !!options.header;
+        this.options.header = typeof options.header === 'boolean' ? options.header : true;
 
         // Save the files to iterate through
         this.files = options.files || [];
@@ -188,28 +188,26 @@ class Preview extends EventEmitter {
             container = document.body;
         }
 
-        // Check if the container was already created before and is ready
-        if (container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER)) {
-            // Nothing more to do
-            return;
-        }
+        // Clear the content
+        container.innerHTML = '';
 
         // Create the preview with absolute positioning inside a relative positioned container
         // <box-preview-container>
+        //      <box-preview-header>
         //      <box-preview>
         //      <navigation>
         // </box-preview-container>
-        insertTemplate(container, shell);
+        insertTemplate(container, shellTemplate);
 
         // Save a handle to the container for future references.
-        this.container = container.firstElementChild;
+        this.container = container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
 
         // Save a handle to the preview content
         this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
 
         // Add the header if needed
         if (this.options.header) {
-            this.container.insertBefore(createFragment(this.container, header), this.contentContainer);
+            this.container.firstElementChild.className = CLASS_BOX_PREVIEW_HEADER;
         }
 
         // If we are showing navigation, create arrows and attach
@@ -257,11 +255,6 @@ class Preview extends EventEmitter {
 
         // Setup the UI before anything else.
         this.setup();
-
-        // If we are showing navigation, make any updates to it.
-        if (this.files.length > 1) {
-            this.updateNavigation();
-        }
 
         if (this.file.representations) { // @TODO we need a better check to validate file object
             // Cache hit, use that.
@@ -401,7 +394,7 @@ class Preview extends EventEmitter {
         this.viewer.addListener('reload', this.loadViewer);
         this.viewer.addListener('load', () => {
             // Once the viewer loads, hide the loading indicator
-            if (this.container) {
+            if (this.contentContainer) {
                 this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
             }
 
@@ -477,6 +470,11 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     prefetch() {
+        // Don't bother prefetching when there aren't more files
+        if (this.files.length < 2) {
+            return;
+        }
+
         const currentIndex = this.files.indexOf(this.file.id);
         let count = 0;
 
@@ -484,20 +482,29 @@ class Preview extends EventEmitter {
         for (let i = currentIndex + 1; count < PREFETCH_COUNT && i < this.files.length; i++) {
             count++;
 
-            const nextId = this.files[i];
+            let nextId = this.files[i];
 
-            // If no file id left to prefetch then exit
+            // Check if the list was an id or file object
+            if (typeof nextId === 'object') {
+                nextId = nextId.id;
+            }
+
+            // If no file id then exit
             if (!nextId) {
                 return;
             }
 
             // If the file was already prefetched then try the next file
-            if (cache.has(nextId)) {
+            const cached = cache.get(nextId);
+            if (cached && cached.representations) { // @TODO need better check
                 continue;
             }
 
             // Create an empty object to prevent further prefetches
-            cache.set(nextId, {});
+            cache.set(nextId, {
+                id: nextId,
+                representations: {}
+            });
 
             // Pre-fetch the file information
             fetch(this.createUrl(nextId), {
@@ -535,19 +542,8 @@ class Preview extends EventEmitter {
         this.leftNavigation.addEventListener('click', this.navigateLeft);
         this.rightNavigation.addEventListener('click', this.navigateRight);
         this.contentContainer.addEventListener('mousemove', this.throttledMousemoveHandler);
-    }
 
-    /**
-     * Updates navigation arrows
-     *
-     * @private
-     * @returns {void}
-     */
-    updateNavigation() {
         const index = this.files.indexOf(this.file.id);
-
-        this.leftNavigation.classList.add(CLASS_HIDDEN);
-        this.rightNavigation.classList.add(CLASS_HIDDEN);
 
         if (index > 0) {
             this.leftNavigation.classList.remove(CLASS_HIDDEN);
@@ -642,6 +638,9 @@ class Preview extends EventEmitter {
     /**
      * Keydown handler
      *
+     * @TODO fix multiple preview key issue
+     * @TODO fire key event
+     *
      * @private
      * @param {Event} event keydown event
      * @returns {void}
@@ -718,21 +717,18 @@ class Preview extends EventEmitter {
      * Destroys and hides the preview
      *
      * @public
-     * @param {Boolean} destroy destroys the container contents
      * @returns {void}
      */
-    hide(destroy = false) {
+    hide() {
         // Destroy the viewer
         this.destroy();
 
+        if (this.contentContainer) {
+            this.contentContainer.removeEventListener('mousemove', this.throttledMousemoveHandler);
+        }
+
         if (this.container) {
-            this.container.style.display = 'none';
-            this.container.removeEventListener('mousemove', this.throttledMousemoveHandler);
-            if (destroy) {
-                this.container.innerHTML = '';
-            } else if (this.contentContainer) {
-                this.contentContainer.classList.remove(CLASS_PREVIEW_LOADED);
-            }
+            this.container.innerHTML = '';
         }
 
         // Remove keyboard events
