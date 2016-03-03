@@ -21,7 +21,11 @@ import {
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_NAVIGATION_LEFT,
-    SELECTOR_NAVIGATION_RIGHT
+    SELECTOR_NAVIGATION_RIGHT,
+    COLOR_HEADER_LIGHT,
+    COLOR_HEADER_DARK,
+    COLOR_HEADER_BTN_LIGHT,
+    COLOR_HEADER_BTN_DARK
 } from './constants';
 
 const PREFETCH_COUNT = 3;
@@ -157,7 +161,7 @@ class Preview extends EventEmitter {
         this.options.token = this.token || options.token;
 
         // Show or hide the header
-        this.options.header = typeof options.header === 'boolean' ? options.header : true;
+        this.options.header = options.header || 'light';
 
         // Save the files to iterate through
         this.files = options.files || [];
@@ -168,6 +172,25 @@ class Preview extends EventEmitter {
         // Iterate over all the viewer options and disable any viewer
         // that has an option disabled set to true
         this.disableViewers(Object.keys(this.options.viewers).filter((viewer) => !!this.options.viewers[viewer].disabled));
+    }
+
+    /**
+     * Caches the preview header template with theme
+     *
+     * @private
+     * @returns {void}
+     */
+    setupTheme() {
+        if (this.shellTemplate) {
+            return;
+        }
+
+        // Theme the header
+        if (this.options.header === 'dark') {
+            this.shellTemplate = shellTemplate.replace(/\{COLOR_HEADER\}/g, COLOR_HEADER_DARK).replace(/\{COLOR_HEADER_BTN\}/g, COLOR_HEADER_BTN_LIGHT);
+        } else {
+            this.shellTemplate = shellTemplate.replace(/\{COLOR_HEADER\}/g, COLOR_HEADER_LIGHT).replace(/\{COLOR_HEADER_BTN\}/g, COLOR_HEADER_BTN_DARK);
+        }
     }
 
     /**
@@ -191,13 +214,16 @@ class Preview extends EventEmitter {
         // Clear the content
         container.innerHTML = '';
 
+        // Theme the shell
+        this.setupTheme();
+
         // Create the preview with absolute positioning inside a relative positioned container
         // <box-preview-container>
         //      <box-preview-header>
         //      <box-preview>
         //      <navigation>
         // </box-preview-container>
-        insertTemplate(container, shellTemplate);
+        insertTemplate(container, this.shellTemplate);
 
         // Save a handle to the container for future references.
         this.container = container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
@@ -206,7 +232,7 @@ class Preview extends EventEmitter {
         this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
 
         // Add the header if needed
-        if (this.options.header) {
+        if (this.options.header !== 'none') {
             this.container.firstElementChild.className = CLASS_BOX_PREVIEW_HEADER;
         }
 
