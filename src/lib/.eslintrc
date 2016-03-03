@@ -16,7 +16,11 @@ globals:
     describe: false
     expect: false
     it: false
-    sinon: false
+    sinon: false,
+    assert: false,
+    expect: false,
+    fixture: false
+
 
 rules:
     # seems buggy, doesn't like object returns
