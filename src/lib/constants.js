@@ -13,3 +13,8 @@ export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;
 export const SELECTOR_BOX_PREVIEW_HEADER_BTNS = `.${CLASS_BOX_PREVIEW_HEADER_BTNS}`;
 export const SELECTOR_NAVIGATION_LEFT = '.box-preview-navigate-left';
 export const SELECTOR_NAVIGATION_RIGHT = '.box-preview-navigate-right';
+
+export const COLOR_HEADER_LIGHT = '#fff';
+export const COLOR_HEADER_DARK = '#000';
+export const COLOR_HEADER_BTN_LIGHT = '#fff';
+export const COLOR_HEADER_BTN_DARK = '#000';
