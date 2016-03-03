@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 
-let Promise = global.Promise;
+const Promise = global.Promise;
 
 /**
  * Box annotations service that fetches, persists, and updates annotations.
@@ -10,7 +10,7 @@ let Promise = global.Promise;
  * @TODO(tjin): Separate this into Base + LocalStorage extension later
  */
  @autobind
- class AnnotationService {
+class AnnotationService {
 
     /**
      * Gets annotations on the specified file.
@@ -19,21 +19,21 @@ let Promise = global.Promise;
      * @returns {Map} Map of thread ID to annotations
      */
     getAnnotationsForFile(fileID) {
-        return new Promise((resolve, reject) => {
-            let result = new Map();
-            let annotations = this.localAnnotations;
-            let matchingAnnotations = annotations.filter((annotation) => annotation.fileID === fileID);
+        return new Promise((resolve) => {
+            const result = new Map();
+            const annotations = this.localAnnotations;
+            const matchingAnnotations = annotations.filter((annotation) => annotation.fileID === fileID);
 
             // Construct map of thread ID to annotations
             matchingAnnotations.forEach((annotation) => {
-                let threadID = annotation.threadID;
-                let annotationsInThread = result.get(threadID) || [];
+                const threadID = annotation.threadID;
+                const annotationsInThread = result.get(threadID) || [];
                 annotationsInThread.push(annotation);
                 result.set(threadID, annotationsInThread);
             });
 
             // Sort annotations by date created
-            for (let threadedAnnotations of result.values()) {
+            for (const threadedAnnotations of result.values()) {
                 threadedAnnotations.sort((a, b) => {
                     return a.created - b.created;
                 });
@@ -50,9 +50,9 @@ let Promise = global.Promise;
      * @returns {Annotation[]} Array of annotations in this thread
      */
     getAnnotationsForThread(threadID) {
-        return new Promise((resolve, reject) => {
-            let annotations = this.localAnnotations;
-            let matchingAnnotations = annotations.filter((annotation) => annotation.threadID === threadID);
+        return new Promise((resolve) => {
+            const annotations = this.localAnnotations;
+            const matchingAnnotations = annotations.filter((annotation) => annotation.threadID === threadID);
 
             // Sort annotations by date created
             matchingAnnotations.sort((a, b) => {
@@ -70,8 +70,8 @@ let Promise = global.Promise;
      * @returns {Promise} Promise to create annotation
      */
     create(annotation) {
-        return new Promise((resolve, reject) => {
-            let annotations = this.localAnnotations;
+        return new Promise((resolve) => {
+            const annotations = this.localAnnotations;
             annotations.push(annotation);
             this.localAnnotations = annotations;
             resolve(annotation);
@@ -86,9 +86,9 @@ let Promise = global.Promise;
      */
     update(annotation) {
         return new Promise((resolve, reject) => {
-            let annotationID = annotation.annotationID;
-            let annotations = this.localAnnotations;
-            let index = annotations.findIndex((storedAnnotation) => storedAnnotation.annotationID === annotationID);
+            const annotationID = annotation.annotationID;
+            const annotations = this.localAnnotations;
+            const index = annotations.findIndex((storedAnnotation) => storedAnnotation.annotationID === annotationID);
 
             if (index !== -1) {
                 annotation.updated = new Date(); // @TODO(tjin): not sure if updated belongs here or higher up
@@ -96,7 +96,7 @@ let Promise = global.Promise;
                 this.localAnnotations = annotations;
                 resolve(annotation);
             } else {
-                reject('Could not update annotation with ID ' + annotationID);
+                reject(`Could not update annotation with ID ${annotationID}`);
             }
         });
     }
@@ -109,19 +109,19 @@ let Promise = global.Promise;
      */
     delete(annotationID) {
         return new Promise((resolve, reject) => {
-            let annotations = this.localAnnotations;
-            let result = annotations.filter((annotation) => annotation.annotationID !== annotationID);
+            const annotations = this.localAnnotations;
+            const result = annotations.filter((annotation) => annotation.annotationID !== annotationID);
 
             if (result.length !== annotations.length) {
                 this.localAnnotations = result;
                 resolve();
             } else {
-                reject('Could not delete annotation with ID ' + annotationID);
+                reject(`Could not delete annotation with ID ${annotationID}`);
             }
         });
     }
 
-    /*---------- Static ----------*/
+    /* ---------- Static ---------- */
 
     /**
      * Generates a rfc4122v4-compliant GUID, from
@@ -130,22 +130,22 @@ let Promise = global.Promise;
      * @returns {string} UUID for annotation
      */
     static generateID() {
-        /* eslint-disable no-bitwise */
+        /* eslint-disable */
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
             var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
         });
-        /* eslint-enable no-bitwise */
+        /* eslint-enable */
     }
 
-    /*---------- Getters & Setters ----------*/
+    /* ---------- Getters & Setters ---------- */
     /**
      * Gets annotations saved in local storage
      *
      * @returns {Annotations[]} Annotations stored in local storage
      */
     get localAnnotations() {
-        let annotationsString = localStorage.getItem('annotationsLocalStorage');
+        const annotationsString = localStorage.getItem('annotationsLocalStorage');
         return (annotationsString === null) ? [] : JSON.parse(annotationsString);
     }
 
@@ -158,6 +158,6 @@ let Promise = global.Promise;
     set localAnnotations(annotations) {
         localStorage.setItem('annotationsLocalStorage', JSON.stringify(annotations));
     }
- }
+}
 
- export default AnnotationService;
+export default AnnotationService;

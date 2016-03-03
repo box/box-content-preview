@@ -1,5 +1,3 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import Base from '../base';
 import Browser from '../browser';
@@ -8,7 +6,7 @@ import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator } from '../util';
 
-let PDFJS = global.PDFJS;
+const PDFJS = global.PDFJS;
 
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 
@@ -79,17 +77,16 @@ class DocBase extends Base {
      * @returns {Promise} Promise to load a pdf
      */
     load(pdfUrl) {
-
         // Disable worker in IE and Edge due to a CORS origin bug: https://goo.gl/G9iR54
         if (Browser.getName() === 'Edge' || Browser.getName() === 'Explorer') {
             PDFJS.disableWorker = true;
         }
 
-        let assetUrlCreator = createAssetUrlCreator(this.options.location);
-        let pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
+        const assetUrlCreator = createAssetUrlCreator(this.options.location);
+        const pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
         PDFJS.workerSrc = pdfWorkerUrl;
 
-        let pdfCMapBaseURI = this.options.location.staticBaseURI + 'third-party/doc/cmaps/';
+        const pdfCMapBaseURI = `${this.options.location.staticBaseURI}third-party/doc/cmaps/`;
         PDFJS.cMapUrl = pdfCMapBaseURI;
         PDFJS.cMapPacked = true;
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab
@@ -151,14 +148,14 @@ class DocBase extends Base {
      * @returns {void}
      */
     checkPaginationButtons() {
-        let pagesCount = this.pdfViewer.pagesCount,
-            currentPageNum = this.pdfViewer.currentPageNumber,
-            pageNumButtonEl = this.containerEl.querySelector('.box-preview-doc-page-num'),
-            previousPageButtonEl = this.containerEl.querySelector('.box-preview-previous-page'),
-            nextPageButtonEl = this.containerEl.querySelector('.box-preview-next-page');
+        const pagesCount = this.pdfViewer.pagesCount;
+        const currentPageNum = this.pdfViewer.currentPageNumber;
+        const pageNumButtonEl = this.containerEl.querySelector('.box-preview-doc-page-num');
+        const previousPageButtonEl = this.containerEl.querySelector('.box-preview-previous-page');
+        const nextPageButtonEl = this.containerEl.querySelector('.box-preview-next-page');
 
         // Disable page number selector for Safari fullscreen, see https://jira.inside-box.net/browse/COXP-997
-        let isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen();
+        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen();
 
         // Disable page number selector if there is only one page or less
         if (pagesCount <= 1 || isSafariFullscreen) {
@@ -194,7 +191,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     rotateLeft(delta = -90) {
-        let currentPageNum = this.pdfViewer.currentPageNumber;
+        const currentPageNum = this.pdfViewer.currentPageNumber;
 
         // Calculate and set rotation
         this.pageRotation = this.pageRotation || 0;
@@ -230,7 +227,7 @@ class DocBase extends Base {
         return this.pdfViewer.currentScale || 1;
     }
 
-    /*----- Private Helpers -----*/
+    /* ----- Private Helpers ----- */
 
     /**
      * Loads PDF.js with provided PDF
@@ -257,7 +254,7 @@ class DocBase extends Base {
             console.error(err);
             console.error(err.message);
             /*eslint-enable*/
-            this.emit(EVENT_ERROR, err.message);
+            this.emit('error', err.message);
         });
 
         // When page structure is initialized, set default zoom and load controls
@@ -299,7 +296,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     initAnnotations() {
-        let fileID = this.options.file.id;
+        const fileID = this.options.file.id;
         this.annotator = new DocAnnotator(fileID, {
             getScale: this.getScale
         });
@@ -313,10 +310,10 @@ class DocBase extends Base {
      * @returns {void}
      */
     initPageNumEl() {
-        let pageNumEl = this.controls.controlsEl.querySelector('.box-preview-doc-page-num');
+        const pageNumEl = this.controls.controlsEl.querySelector('.box-preview-doc-page-num');
 
         // Update total page number
-        let totalPageEl = pageNumEl.querySelector('.box-preview-doc-total-pages');
+        const totalPageEl = pageNumEl.querySelector('.box-preview-doc-total-pages');
         totalPageEl.textContent = this.pdfViewer.pagesCount;
 
         // Keep reference to page number input and current page elements
@@ -351,7 +348,7 @@ class DocBase extends Base {
      * @private
 	 * @returns {void}
 	 */
-	showPageNumInput() {
+    showPageNumInput() {
         // show the input box with the current page number selected within it
         this.controls.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
 
@@ -362,7 +359,7 @@ class DocBase extends Base {
         // finish input when input is blurred or enter key is pressed
         this.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler);
         this.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler);
-	}
+    }
 
     /**
 	 * Hide the page number input
@@ -370,11 +367,11 @@ class DocBase extends Base {
      * @private
 	 * @returns {void}
 	 */
-	hidePageNumInput() {
+    hidePageNumInput() {
         this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
         this.pageNumInputEl.removeEventListener('blur', this.pageNumInputBlurHandler);
         this.pageNumInputEl.removeEventListener('keydown', this.pageNumInputKeydownHandler);
-	}
+    }
 
     /**
      * Update page number in page control widget
@@ -384,14 +381,14 @@ class DocBase extends Base {
      * @returns {void}
      */
     updateCurrentPage(pageNum) {
-        let pagesCount = this.pdfViewer.pagesCount;
+        const pagesCount = this.pdfViewer.pagesCount;
 
         // refine the page number to fall within bounds
-		if (pageNum > pagesCount) {
-			pageNum = pagesCount;
-		} else if (pageNum < 1) {
-			pageNum = 1;
-		}
+        if (pageNum > pagesCount) {
+            pageNum = pagesCount;
+        } else if (pageNum < 1) {
+            pageNum = 1;
+        }
 
         if (this.pageNumInputEl) {
             this.pageNumInputEl.value = pageNum;
@@ -402,7 +399,7 @@ class DocBase extends Base {
         }
     }
 
-    /*----- Event Handlers -----*/
+    /* ----- Event Handlers ----- */
 
     /**
      * Handler for 'pagesinit' event
@@ -467,7 +464,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     pagechangeHandler(event) {
-        let pageNum = event.pageNumber;
+        const pageNum = event.pageNumber;
         this.updateCurrentPage(pageNum);
     }
 
@@ -478,16 +475,16 @@ class DocBase extends Base {
      * @private
 	 * @returns {void}
 	 */
-	pageNumInputBlurHandler(event) {
-		let target = event.target,
-			pageNum = parseInt(target.value, 10);
+    pageNumInputBlurHandler(event) {
+        const target = event.target;
+        const pageNum = parseInt(target.value, 10);
 
-		if (!isNaN(pageNum)) {
-			this.setPage(pageNum);
-		}
+        if (!isNaN(pageNum)) {
+            this.setPage(pageNum);
+        }
 
-		this.hidePageNumInput();
-	}
+        this.hidePageNumInput();
+    }
 
 	/**
 	 * Keydown handler for page number input
@@ -496,22 +493,23 @@ class DocBase extends Base {
      * @private
 	 * @returns {void}
 	 */
-	pageNumInputKeydownHandler(event) {
-		switch (event.which) {
-			case 13: // ENTER
-				this.pageNumInputBlurHandler(event);
-				break;
+    pageNumInputKeydownHandler(event) {
+        switch (event.which) {
+            case 13: // ENTER
+                this.pageNumInputBlurHandler(event);
+                break;
 
-			case 27: // ESC
-				this.hidePageNumInput();
+            case 27: // ESC
+                this.hidePageNumInput();
 
-				event.preventDefault();
-				event.stopPropagation();
-				break;
+                event.preventDefault();
+                event.stopPropagation();
+                break;
 
-			// No default
-		}
-	}
+            default:
+                return;
+        }
+    }
 
     /**
      * Fullscreen entered handler. Add presentation mode class, set

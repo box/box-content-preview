@@ -38,3 +38,6 @@ rules:
     react/jsx-no-bind: [0]
 
     comma-dangle: [2, "never"]
+
+    # I have plenty of reasons to reassign params
+    no-param-reassign: [0]
