@@ -1,5 +1,3 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 
 const MIME_H264_BASELINE = 'video/mp4; codecs="avc1.42E01E"';
@@ -17,7 +15,6 @@ let supportsWebGL = undefined;
 class Browser {
 
     static getName() {
-
         if (name) {
             return name;
         }
@@ -139,15 +136,16 @@ class Browser {
      * @returns {Boolean} true if dash is usable
      */
     static canPlayDash() {
-        let mse = global.MediaSource;
+        const mse = global.MediaSource;
+        let canPlayDash = false;
         if (mse) {
             if (typeof mse.isTypeSupported === 'function') {
-                return mse.isTypeSupported(MIME_H264_HIGH);
+                canPlayDash = mse.isTypeSupported(MIME_H264_HIGH);
             } else {
-                return Browser.canPlayH264High();
+                canPlayDash = Browser.canPlayH264High();
             }
         }
-        return false;
+        return canPlayDash;
     }
 
     /**
@@ -210,7 +208,7 @@ class Browser {
         try {
             hasFlash = Boolean(new ActiveXObject('ShockwaveFlash.ShockwaveFlash'));
         } catch (exception) {
-            hasFlash = ('undefined' != typeof global.navigator.mimeTypes['application/x-shockwave-flash']);
+            hasFlash = (typeof global.navigator.mimeTypes['application/x-shockwave-flash'] !== 'undefined');
         }
         return hasFlash;
     }
@@ -223,6 +221,16 @@ class Browser {
      */
     static hasSVG() {
         return document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
+    }
+
+    /**
+     * Returns whether the browser is a mobile browser. Taken from Modernizr:
+     * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/touchevents.js
+     *
+     * @returns {Boolean} true if browser is mobile
+     */
+    static isMobile() {
+        return (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch));
     }
 }
 

@@ -7,6 +7,9 @@ extends: 'airbnb'
 globals:
     document: false
     Box: false
+    PDFJS: false
+    DocumentTouch: false
+    ActiveXObject: false
 
     # Mocha globals
     after: false
@@ -16,9 +19,9 @@ globals:
     describe: false
     expect: false
     it: false
-    sinon: false,
-    assert: false,
-    expect: false,
+    sinon: false
+    assert: false
+    expect: false
     fixture: false
 
 
@@ -38,6 +41,3 @@ rules:
     react/jsx-no-bind: [0]
 
     comma-dangle: [2, "never"]
-
-    # I have plenty of reasons to reassign params
-    no-param-reassign: [0]

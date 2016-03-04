@@ -1,7 +1,5 @@
 import autobind from 'autobind-decorator';
 
-const Promise = global.Promise;
-
 /**
  * Box annotations service that fetches, persists, and updates annotations.
  * Annotations will be saved to local storage for now. Applications that want

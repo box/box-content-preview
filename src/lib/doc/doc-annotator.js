@@ -27,13 +27,11 @@ const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && docu
  * @returns {HTMLElement|null} Closest ancestor with given class or null
  */
 function findClosestElWithClass(element, className) {
-    /* eslint-disable */
-    for (; element && element !== document; element = element.parentNode) {
-        if (element.classList && element.classList.contains(className)) {
+    for (let el = element; el && el !== document; el = el.parentNode) {
+        if (el.classList && el.classList.contains(className)) {
             return element;
         }
     }
-    /* eslint-enable */
 
     return null;
 }
@@ -764,13 +762,14 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     positionDialog(dialogEl, locationData, dialogWidth) {
+        const positionedDialogEl = dialogEl;
         const page = locationData.page;
         const pageEl = document.querySelector(`[data-page-number="${page}"]`);
 
         pageEl.appendChild(dialogEl);
-        dialogEl.style.left = `${(locationData.x - dialogWidth / 2)}px`;
-        dialogEl.style.top = `${locationData.y}px`;
-        dialogEl.style.transform = `scale(${this.getScale()})`;
+        positionedDialogEl.style.left = `${(locationData.x - dialogWidth / 2)}px`;
+        positionedDialogEl.style.top = `${locationData.y}px`;
+        positionedDialogEl.style.transform = `scale(${this.getScale()})`;
 
         // @TODO(tjin): reposition to avoid sides
     }
@@ -818,8 +817,8 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     addEventHandler(element, handler, eventType) {
-        eventType = eventType || TOUCH_EVENT;
-        element.addEventListener(eventType, handler);
+        const type = eventType || TOUCH_EVENT;
+        element.addEventListener(type, handler);
 
         const handlers = this.handlerMap.get(element) || [];
         handlers.push(handler);

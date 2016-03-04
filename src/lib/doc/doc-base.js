@@ -6,10 +6,7 @@ import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator } from '../util';
 
-const PDFJS = global.PDFJS;
-
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
-
 const PRESENTATION_MODE_STATE = {
     UNKNOWN: 0,
     NORMAL: 1,
@@ -381,21 +378,22 @@ class DocBase extends Base {
      * @returns {void}
      */
     updateCurrentPage(pageNum) {
+        let truePageNum = pageNum;
         const pagesCount = this.pdfViewer.pagesCount;
 
         // refine the page number to fall within bounds
         if (pageNum > pagesCount) {
-            pageNum = pagesCount;
+            truePageNum = pagesCount;
         } else if (pageNum < 1) {
-            pageNum = 1;
+            truePageNum = 1;
         }
 
         if (this.pageNumInputEl) {
-            this.pageNumInputEl.value = pageNum;
+            this.pageNumInputEl.value = truePageNum;
         }
 
         if (this.currentPageEl) {
-            this.currentPageEl.textContent = pageNum;
+            this.currentPageEl.textContent = truePageNum;
         }
     }
 
