@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
@@ -51,12 +51,13 @@ class Document extends DocBase {
      * @returns {void}
      */
     zoomIn(ticks = 1) {
+        let numTicks = ticks;
         let newScale = this.pdfViewer.currentScale;
         do {
             newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(2);
             newScale = Math.ceil(newScale * 10) / 10;
             newScale = Math.min(MAX_SCALE, newScale);
-        } while (--ticks > 0 && newScale < MAX_SCALE);
+        } while (--numTicks > 0 && newScale < MAX_SCALE);
         this.pdfViewer.currentScaleValue = newScale;
     }
 
@@ -67,16 +68,17 @@ class Document extends DocBase {
      * @returns {void}
      */
     zoomOut(ticks = 1) {
+        let numTicks = ticks;
         let newScale = this.pdfViewer.currentScale;
         do {
             newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(2);
             newScale = Math.floor(newScale * 10) / 10;
             newScale = Math.max(MIN_SCALE, newScale);
-        } while (--ticks > 0 && newScale > MIN_SCALE);
+        } while (--numTicks > 0 && newScale > MIN_SCALE);
         this.pdfViewer.currentScaleValue = newScale;
     }
 
-    /*----- Helpers -----*/
+    /* ----- Helpers ----- */
 
     /**
      * Adds event listeners for document controls
@@ -96,7 +98,7 @@ class Document extends DocBase {
 
         this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-previous-page-icon box-preview-previous-page');
 
-        let buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        const buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
 
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon box-preview-next-page');
@@ -142,8 +144,8 @@ class Document extends DocBase {
 
         // The mod 120 filters out track pad events. Mac inertia scrolling
         // fires lots of scroll events so we've chosen to just disable it
-        let currentWheelDelta = event.wheelDelta || event.detail,
-            isFromMouseWheel = (currentWheelDelta % 120 === 0);
+        const currentWheelDelta = event.wheelDelta || event.detail;
+        const isFromMouseWheel = (currentWheelDelta % 120 === 0);
 
         if (isFromMouseWheel) {
             // Wheeldata is used for IE8 support

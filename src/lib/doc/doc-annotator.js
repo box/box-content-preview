@@ -1,21 +1,19 @@
 import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
 import Annotator from '../annotation/annotator';
+import Browser from '../browser';
 import rangy from 'rangy';
-import throttle  from 'lodash.throttle';
-/*eslint-disable no-unused-vars*/
+/* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
 import rangyClassApplier from 'rangy/lib/rangy-classapplier';
 import rangyHighlight from 'rangy/lib/rangy-highlighter';
-/*eslint-enable no-unused-vars*/
+/* eslint-enable no-unused-vars */
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
-const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch)) ? 'touchstart' : 'click';
+const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 
-const document = global.document;
-
-/*---------- Helpers ----------*/
+/* ---------- Helpers ---------- */
 /**
  * Finds the closest ancestor DOM element with the specified class
  *
@@ -24,9 +22,9 @@ const document = global.document;
  * @returns {HTMLElement|null} Closest ancestor with given class or null
  */
 function findClosestElWithClass(element, className) {
-    for (; element && element !== document; element = element.parentNode) {
-        if (element.classList && element.classList.contains(className)) {
-            return element;
+    for (let el = element; el && el !== document; el = el.parentNode) {
+        if (el.classList && el.classList.contains(className)) {
+            return el;
         }
     }
 
@@ -41,7 +39,7 @@ function findClosestElWithClass(element, className) {
  * @returns {HTMLElement} Highlight div
  */
 function createHighlightEl(quadPoints) {
-    const [ x1, y1, x2, y2, x3, y3, x4, y4 ] = quadPoints;
+    const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
 
     // Rotation radians = arctan(opposite/adj) = arctan((y3-y4)/(x3-x4))
     const rotationRad = Math.atan((y3 - y4) / (x3 - x4));
@@ -54,11 +52,11 @@ function createHighlightEl(quadPoints) {
     // represented by the quad points at the top left quad point and perform
     // the appropriate rotation about the top left corner as the origin
     const highlightEl = document.createElement('div');
-    highlightEl.style.left = x4 + 'px';
-    highlightEl.style.top = y4 + 'px';
-    highlightEl.style.width = newRectWidth + 'px';
-    highlightEl.style.height = newRectHeight + 'px';
-    highlightEl.style.transform = 'rotate(' + rotationRad + 'rad)';
+    highlightEl.style.left = `${x4}px`;
+    highlightEl.style.top = `${y4}px`;
+    highlightEl.style.width = `${newRectWidth}px`;
+    highlightEl.style.height = `${newRectHeight}px`;
+    highlightEl.style.transform = `rotate(${rotationRad}rad)`;
     highlightEl.style.transformOrigin = 'top left';
     highlightEl.classList.add('box-preview-highlight');
 
@@ -106,7 +104,7 @@ class DocAnnotator extends Annotator {
         this.removeAllEventHandlers();
     }
 
-    /*---------- Generic Annotations ----------*/
+    /* ---------- Generic Annotations ---------- */
     /**
      * Annotations setup.
      *
@@ -122,11 +120,11 @@ class DocAnnotator extends Annotator {
 
         const docEl = document.querySelector('.box-preview-doc');
 
-        this.addEventHandler(docEl, (event) => {
+        this.addEventHandler(docEl, () => {
             docEl.classList.add('box-preview-doc-mousedown');
         }, 'mousedown');
 
-        this.addEventHandler(docEl, (event) => {
+        this.addEventHandler(docEl, () => {
             docEl.classList.remove('box-preview-doc-mousedown');
         }, 'mouseup');
 
@@ -148,7 +146,7 @@ class DocAnnotator extends Annotator {
             const pointAnnotations = [];
 
             // Generate arrays of highlight and point threads
-            for (let threadedAnnotations of annotationsMap.values()) {
+            for (const threadedAnnotations of annotationsMap.values()) {
                 const firstAnnotation = threadedAnnotations[0];
                 const annotationType = firstAnnotation.type;
 
@@ -187,7 +185,7 @@ class DocAnnotator extends Annotator {
     }
 
 
-    /*---------- Highlight Annotations ----------*/
+    /* ---------- Highlight Annotations ---------- */
     /**
      * Shows a single highlight annotation (annotations on selected text).
      *
@@ -201,7 +199,7 @@ class DocAnnotator extends Annotator {
         }
 
         const page = location.page;
-        const pageEl = document.querySelector('[data-page-number="' + page + '"]');
+        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
 
         // Create an annotation layer on the page if it doesn't exist
         let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
@@ -219,13 +217,13 @@ class DocAnnotator extends Annotator {
         highlightContainerEl.dataset.annotationId = annotation.annotationID;
 
         location.quadPoints.forEach((quadPoints) => {
-            const [ x1, y1, x2, y2, x3, y3, x4, y4 ] = quadPoints;
+            const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
             upperRightX = Math.max(upperRightX, Math.max(x1, x2, x3, x4));
             upperRightY = Math.min(upperRightY, Math.min(y1, y2, y3, y4));
 
-            /*eslint-disable no-console*/
+            /* eslint-disable no-console */
             console.log(`Quadpoints for highlight "${annotation.annotationID}": (${x1.toFixed(2)}, ${y1.toFixed(2)}) (${x2.toFixed(2)}, ${y2.toFixed(2)}) (${x3.toFixed(2)}, ${y3.toFixed(2)}) (${x4.toFixed(2)}, ${y4.toFixed(2)})`);
-            /*eslint-enable no-console*/
+            /* eslint-enable no-console */
 
             // Create highlight div from quadpoints
             const highlightEl = createHighlightEl(quadPoints);
@@ -260,8 +258,8 @@ class DocAnnotator extends Annotator {
         // Construct delete highlight button
         const removeHighlightButtonEl = document.createElement('button');
         removeHighlightButtonEl.textContent = 'x';
-        removeHighlightButtonEl.style.left = upperRightX - 8 + 'px'; // move 'x' slightly into highlight
-        removeHighlightButtonEl.style.top = upperRightY - 8 + 'px'; // move 'x' slightly into highlight
+        removeHighlightButtonEl.style.left = `${upperRightX - 8}px`; // move 'x' slightly into highlight
+        removeHighlightButtonEl.style.top = `${upperRightY - 8}px`; // move 'x' slightly into highlight
         removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
         pageEl.appendChild(removeHighlightButtonEl);
 
@@ -275,28 +273,6 @@ class DocAnnotator extends Annotator {
                 removeHighlightButtonEl.parentNode.removeChild(removeHighlightButtonEl);
             });
         });
-    }
-
-    // @TODO(tjin): annotation layer in-progress
-    throttledMouseenterHandler() {
-        if (!this.mouseenterHandler) {
-            this.mouseenterHandler = throttle(() => {
-                this.parentNode.classList.add('box-preview-highlight-active');
-            }, 100);
-        }
-
-        return this.mouseenterHandler;
-    }
-
-    // @TODO(tjin): annotation layer in-progress
-    throttledMouseleaveHandler() {
-        if (!this.mouseleaveHandler) {
-            this.mouseleaveHandler = throttle(() => {
-                this.parentNode.classList.remove('box-preview-highlight-active');
-            }, 100);
-        }
-
-        return this.mouseleaveHandler;
     }
 
     /**
@@ -341,9 +317,9 @@ class DocAnnotator extends Annotator {
         }
 
         // Get quad points for each highlight element
-        const highlightQuadPoints = [];
+        const quadPoints = [];
         highlightElements.forEach((element) => {
-            highlightQuadPoints.push(this.getQuadPoints(element, pageEl));
+            quadPoints.push(this.getQuadPoints(element, pageEl));
         });
 
         // Unselect text and remove rangy highlight
@@ -352,17 +328,17 @@ class DocAnnotator extends Annotator {
 
         // Create annotation
         const annotation = this.createAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '', {
-            page: page,
-            quadPoints: highlightQuadPoints
+            page,
+            quadPoints
         });
 
         // Save and show annotation
-        this.annotationService.create(annotation).then((annotation) => {
-            this.showHighlightAnnotation(annotation);
+        this.annotationService.create(annotation).then((createdAnnotation) => {
+            this.showHighlightAnnotation(createdAnnotation);
         });
     }
 
-    /*---------- Point Annotations ----------*/
+    /* ---------- Point Annotations ---------- */
     /**
      * Shows a single point annotation (annotation on specific points).
      *
@@ -389,11 +365,11 @@ class DocAnnotator extends Annotator {
         const x = location.x * pageScale;
         const y = location.y * pageScale;
         const page = location.page;
-        const pageEl = document.querySelector('[data-page-number="' + page + '"]');
+        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
 
         pageEl.appendChild(pointAnnotationEl);
-        pointAnnotationEl.style.left = (x - 25) + 'px';
-        pointAnnotationEl.style.top = y + 'px';
+        pointAnnotationEl.style.left = `${x - 25}px`;
+        pointAnnotationEl.style.top = `${y}px`;
 
         const showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
         this.addEventHandler(showPointAnnotationButtonEl, (event) => {
@@ -428,10 +404,10 @@ class DocAnnotator extends Annotator {
 
         // @TODO(tjin): Investigate edge cases with existing highlights in 'bindOnClickCreateComment'
 
-        this.addEventHandler(document, (event) => {
-            event.stopPropagation();
+        this.addEventHandler(document, (clickOutEvent) => {
+            clickOutEvent.stopPropagation();
 
-            const pageEl = findClosestElWithClass(event.target, 'page');
+            const pageEl = findClosestElWithClass(clickOutEvent.target, 'page');
 
             // If click isn't on a page, disregard
             if (!pageEl) {
@@ -442,13 +418,9 @@ class DocAnnotator extends Annotator {
             const pageDimensions = pageEl.getBoundingClientRect();
             const page = pageEl.dataset.pageNumber;
             const pageScale = this.getScale();
-            const x = (event.clientX - pageDimensions.left) / pageScale;
-            const y = (event.clientY - pageDimensions.top) / pageScale;
-            const locationData = {
-                x: x,
-                y: y,
-                page: page
-            };
+            const x = (clickOutEvent.clientX - pageDimensions.left) / pageScale;
+            const y = (clickOutEvent.clientY - pageDimensions.top) / pageScale;
+            const locationData = { x, y, page };
 
             this.createAnnotationDialog(locationData, POINT_ANNOTATION_TYPE);
 
@@ -457,7 +429,7 @@ class DocAnnotator extends Annotator {
         });
     }
 
-    /*---------- Dialogs ----------*/
+    /* ---------- Dialogs ---------- */
     /**
      * Show a dialog that allows a user to create an annotation.
      *
@@ -602,7 +574,7 @@ class DocAnnotator extends Annotator {
                 );
                 const text = htmlEscape(annotation.text);
 
-                const annotationElString = `
+                const newAnnotationElString = `
                     <div class="profile-image-container"><img src=${avatarUrl} alt="Profile"></div>
                     <div class="comment-container">
                         <div class="user-name">${userName}</div>
@@ -624,7 +596,7 @@ class DocAnnotator extends Annotator {
                         <span>D</span>
                     </button>`.trim();
                 const annotationEl = document.createElement('div');
-                annotationEl.innerHTML = annotationElString;
+                annotationEl.innerHTML = newAnnotationElString;
                 annotationEl.classList.add('annotation-comment');
 
                 const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
@@ -676,7 +648,7 @@ class DocAnnotator extends Annotator {
                             if (annotation.type === HIGHLIGHT_ANNOTATION_TYPE) {
                                 this.removeRangyHighlight(annotation.location.highlight);
                             } else if (annotation.type === POINT_ANNOTATION_TYPE) {
-                                const pointAnnotationEl = document.querySelector('[data-thread-id="' + annotation.threadID + '"]');
+                                const pointAnnotationEl = document.querySelector(`[data-thread-id="${annotation.threadID}"]`);
 
                                 if (pointAnnotationEl) {
                                     const showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
@@ -699,7 +671,6 @@ class DocAnnotator extends Annotator {
             // Loop through annotation comments to generate thread
             const annotationCommentsEl = annotationDialogEl.querySelector('.annotation-comments');
             annotations.forEach((annotation) => {
-
                 // Create annotation comment boxes per annotation in thread
                 const annotationEl = createAnnotationCommentEl(annotation);
                 annotationCommentsEl.appendChild(annotationEl);
@@ -786,18 +757,19 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     positionDialog(dialogEl, locationData, dialogWidth) {
+        const positionedDialogEl = dialogEl;
         const page = locationData.page;
-        const pageEl = document.querySelector('[data-page-number="' + page + '"]');
+        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
 
         pageEl.appendChild(dialogEl);
-        dialogEl.style.left = (locationData.x - dialogWidth/2) + 'px';
-        dialogEl.style.top = locationData.y + 'px';
-        dialogEl.style.transform = 'scale(' + this.getScale() + ')';
+        positionedDialogEl.style.left = `${(locationData.x - dialogWidth / 2)}px`;
+        positionedDialogEl.style.top = `${locationData.y}px`;
+        positionedDialogEl.style.transform = `scale(${this.getScale()})`;
 
         // @TODO(tjin): reposition to avoid sides
     }
 
-    /*---------- Helpers ----------*/
+    /* ---------- Helpers ---------- */
     /**
      * Removes a highlight by finding all highlight divs corresponding to the
      * provided annotation ID and removing them
@@ -806,7 +778,7 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     removeHighlight(annotationID) {
-        const highlightContainerEl = document.querySelector('[data-annotation-id="' + annotationID + '"]');
+        const highlightContainerEl = document.querySelector(`[data-annotation-id="${annotationID}"]`);
         while (highlightContainerEl.firstChild) {
             highlightContainerEl.removeChild(highlightContainerEl.firstChild);
         }
@@ -840,8 +812,8 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     addEventHandler(element, handler, eventType) {
-        eventType = eventType || TOUCH_EVENT;
-        element.addEventListener(eventType, handler);
+        const type = eventType || TOUCH_EVENT;
+        element.addEventListener(type, handler);
 
         const handlers = this.handlerMap.get(element) || [];
         handlers.push(handler);
@@ -897,8 +869,7 @@ class DocAnnotator extends Annotator {
      * y4] with (x1, y1) being the lower left (untransformed) corner of the element
      * and the other 3 vertices in counterclockwise order
      */
-     getQuadPoints(element, relativeEl) {
-
+    getQuadPoints(element, relativeEl) {
         // Create quad point helper elements once if needed
         if (!this.quadCornerContainerEl) {
             this.quadCornerContainerEl = document.createElement('div');

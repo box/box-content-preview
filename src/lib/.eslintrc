@@ -7,6 +7,10 @@ extends: 'airbnb'
 globals:
     document: false
     Box: false
+    PDFJS: false
+    DocumentTouch: false
+    ActiveXObject: false
+    __: false # webpack i18n plugin
 
     # Mocha globals
     after: false
@@ -16,9 +20,8 @@ globals:
     describe: false
     expect: false
     it: false
-    sinon: false,
-    assert: false,
-    expect: false,
+    sinon: false
+    assert: false
     fixture: false
 
 
