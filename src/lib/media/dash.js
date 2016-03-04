@@ -117,6 +117,7 @@ class Dash extends VideoBase {
      * @returns {Function} function to add shared name
      */
     requestInterceptor() {
+        const id = this.options.file.id;
         let token = this.options.token;
 
         return (url, headers) => {
@@ -261,6 +262,7 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     loadFilmStrip() {
+        const id = this.options.file.id;
         let filmstrip = this.options.file.representations.entries.find((entry) => 'filmstrip' === entry.representation);
         if (filmstrip) {
             this.mediaControls.initFilmstrip(filmstrip, this.aspect, this.options.token);

@@ -8,8 +8,7 @@ import ReactDOM from 'react-dom';
 import { Table, Column, Cell } from 'fixed-data-table';
 import { createAssetUrlCreator } from '../util';
 
-let Box = global.Box || {};
-let Papa = global.Papa;
+const Box = global.Box || {};
 
 @autobind
 class CSV extends TextBase {
@@ -35,9 +34,11 @@ class CSV extends TextBase {
      * @returns {Promise} Promise to load a CSV
      */
     load(csvUrl) {
+        /* global Papa */
 
-        let assetUrlCreator = createAssetUrlCreator(this.options.location);
-        let papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.js');
+        const token = this.options.token;
+        const assetUrlCreator = createAssetUrlCreator(this.options.location);
+        const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.js');
 
         fetch(papaWorkerUrl)
         .then((response) => response.blob())
@@ -46,7 +47,7 @@ class CSV extends TextBase {
             Papa.parse(csvUrl, {
                 worker: Browser.getName() !== 'Edge' && Browser.getName() !== 'Explorer', // IE and Edge don't work with worker
                 download: true,
-                authorization: 'Bearer ' + this.options.token,
+                authorization: `Bearer ${token}`,
                 error: (err, file, inputElem, reason) => {
                     this.emit('error', reason);
                 },
