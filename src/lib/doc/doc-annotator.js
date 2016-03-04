@@ -2,12 +2,14 @@ import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
 import Annotator from '../annotation/annotator';
 import Browser from '../browser';
+import { ICON_DELETE } from '../icons/icons';
 import rangy from 'rangy';
 /* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
 import rangyClassApplier from 'rangy/lib/rangy-classapplier';
 import rangyHighlight from 'rangy/lib/rangy-highlighter';
 /* eslint-enable no-unused-vars */
+import throttle from 'lodash.throttle';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
@@ -15,7 +17,7 @@ const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 
 /* ---------- Helpers ---------- */
 /**
- * Finds the closest ancestor DOM element with the specified class
+ * Finds the closest ancestor DOM element with the specified class.
  *
  * @param {HTMLElement} element Element to search ancestors of
  * @param {String} className Class name to query
@@ -32,39 +34,46 @@ function findClosestElWithClass(element, className) {
 }
 
 /**
- * Creates a highlight DIV with corners corresponding to the supplied quad
- * points
+ * Test if a given point is within a polygon. Taken from
+ * http://jsperf.com/ispointinpath-boundary-test-speed/6
  *
- * @param {Number[]} quadPoints Quad points corresponding to corners
- * @returns {HTMLElement} Highlight div
+ * @param {Number[]} poly Polygon defined by array of [x,y] coordinates
+ * @param {Number} x X coordinate of point to Test
+ * @param {Number} y Y coordinate of point to Test
+ * @returns {Boolean} Whether or not point is in the polygon
  */
-function createHighlightEl(quadPoints) {
-    const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
-
-    // Rotation radians = arctan(opposite/adj) = arctan((y3-y4)/(x3-x4))
-    const rotationRad = Math.atan((y3 - y4) / (x3 - x4));
-
-    // Calculate dimensions of highlight rectangle
-    const newRectWidth = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
-    const newRectHeight = Math.sqrt(Math.pow(y4 - y1, 2) + Math.pow(x4 - x1, 2));
-
-    // Construct highlight div with same width and height as the rectangle
-    // represented by the quad points at the top left quad point and perform
-    // the appropriate rotation about the top left corner as the origin
-    const highlightEl = document.createElement('div');
-    highlightEl.style.left = `${x4}px`;
-    highlightEl.style.top = `${y4}px`;
-    highlightEl.style.width = `${newRectWidth}px`;
-    highlightEl.style.height = `${newRectHeight}px`;
-    highlightEl.style.transform = `rotate(${rotationRad}rad)`;
-    highlightEl.style.transformOrigin = 'top left';
-    highlightEl.classList.add('box-preview-highlight');
-
-    return highlightEl;
+function isPointInPolyOpt(poly, x, y) {
+    /* eslint-disable */
+    for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+        ((poly[i][1] <= y && y < poly[j][1]) || (poly[j][1] <= y && y < poly[i][1])) && (x < (poly[j][0] - poly[i][0]) * (y - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0]) && (c = !c);
+    return c;
+    /* eslint-enable */
 }
 
 /**
- * Escapes HTML
+ * Gets coordinates representing upper right corner of the annotation
+ * represented by the provided quad points.
+ *
+ * @param {Number[]} quadPoints Quad points of annotation to get upper right
+ * corner for
+ * @returns {Number[]} [x,y] of upper right corner of quad points
+ */
+function getUpperRightCorner(quadPoints) {
+    let x = 0;
+    let y = 9999; // arbitrary large Y
+
+    quadPoints.forEach((quadPoint) => {
+        const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
+
+        x = Math.max(x, Math.max(x1, x2, x3, x4));
+        y = Math.min(y, Math.min(y1, y2, y3, y4));
+    });
+
+    return [x, y];
+}
+
+/**
+ * Escapes HTML.
  *
  * @param {String} str Input string
  * @returns {String} HTML escaped string
@@ -79,7 +88,7 @@ function htmlEscape(str) {
 }
 
 /**
- * Annotator base class. Viewer-specific annotators should extend this.
+ * Document annotator class. Extends base annotator class.
  */
 @autobind
 class DocAnnotator extends Annotator {
@@ -90,18 +99,22 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     init() {
-        // Event handler map for cleanup
-        this.handlerMap = new Map();
+        // Event handler refs for cleanup
+        this.handlerRefs = [];
         this.setupAnnotations();
     }
 
     /**
-     * Destructor
+     * Destructor.
      *
      * @returns {void}
      */
     destroy() {
+        // Remove click event handlers
         this.removeAllEventHandlers();
+
+        // Remove highlight mousemove handler
+        document.removeEventListener('mousemove', this.highlightMousemoveHandler());
     }
 
     /* ---------- Generic Annotations ---------- */
@@ -118,17 +131,16 @@ class DocAnnotator extends Annotator {
             tagNames: ['span', 'a']
         }));
 
-        const docEl = document.querySelector('.box-preview-doc');
+        // Set defaults for highlight annotations
+        this.highlightAnnotations = {};
+        this.hoverAnnotationID = ''; // ID of annotation user is hovered over
+        this.activeAnnotationID = ''; // ID of active annotation (clicked)
 
-        this.addEventHandler(docEl, () => {
-            docEl.classList.add('box-preview-doc-mousedown');
-        }, 'mousedown');
+        // Add mousemove handler for adding a hover effect to highlights
+        document.addEventListener('mousemove', this.highlightMousemoveHandler());
 
-        this.addEventHandler(docEl, () => {
-            docEl.classList.remove('box-preview-doc-mousedown');
-        }, 'mouseup');
-
-        // @TODO(tjin): clean up these handlers
+        // Add click handler for activating a highlight
+        this.addEventHandler(document, this.highlightClickHandler);
     }
 
     /**
@@ -137,29 +149,34 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showAnnotations() {
-        // @NOTE(tjin): Need to figure out how to load annotations by page...
-        // That will be difficult since deserialize does everything in one go
+        // @NOTE(tjin): Load/unload annotations by page based on pages loaded
+        // from document viewer
 
         // Fetch map of thread ID to annotations
         this.annotationService.getAnnotationsForFile(this.fileID).then((annotationsMap) => {
-            const highlightAnnotations = [];
+            // @TODO(tjin): Convert to map of page to point annotations
             const pointAnnotations = [];
 
-            // Generate arrays of highlight and point threads
-            for (const threadedAnnotations of annotationsMap.values()) {
-                const firstAnnotation = threadedAnnotations[0];
+            // Generate maps of page to highlight and point threads
+            for (const annotations of annotationsMap.values()) {
+                // We only need to show the first annotation in a thread
+                const firstAnnotation = annotations[0];
                 const annotationType = firstAnnotation.type;
 
-                // We only need to show the first annotation in a thread
                 if (annotationType === HIGHLIGHT_ANNOTATION_TYPE) {
-                    highlightAnnotations.push(firstAnnotation);
+                    const page = firstAnnotation.location.page || 1;
+                    if (!this.highlightAnnotations[page]) {
+                        this.highlightAnnotations[page] = [];
+                    }
+
+                    this.highlightAnnotations[page].push(firstAnnotation);
                 } else if (annotationType === POINT_ANNOTATION_TYPE) {
                     pointAnnotations.push(firstAnnotation);
                 }
             }
 
             // Show highlight and point annotations
-            this.showHighlightAnnotations(highlightAnnotations);
+            this.showHighlightAnnotations();
             this.showPointAnnotations(pointAnnotations);
         });
     }
@@ -187,92 +204,84 @@ class DocAnnotator extends Annotator {
 
     /* ---------- Highlight Annotations ---------- */
     /**
-     * Shows a single highlight annotation (annotations on selected text).
+    * Draws a single highlight annotation on the provided context.
+    *
+    * @param {Annotation} annotation Highlight annotation to show
+    * @param {RenderingContext} contex 2D drawing context to use
+    * @returns {void}
+    */
+    drawHighlightAnnotation(annotation, context) {
+        const ctx = context;
+        const annotationID = annotation.annotationID;
+        const quadPoints = annotation.location.quadPoints;
+        quadPoints.forEach((quadPoint) => {
+            const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
+
+            // If annotation being drawn is the annotation the mouse is over or
+            // the annotation is 'active' or clicked, draw the highlight with
+            // a different, darker color
+            if (annotationID === this.hoverAnnotationID ||
+                annotationID === this.activeAnnotationID) {
+                ctx.fillStyle = 'rgba(255, 233, 23, 0.5)';
+            } else {
+                ctx.fillStyle = 'rgba(255, 233, 23, 0.35)';
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x3, y3);
+            ctx.lineTo(x4, y4);
+            ctx.closePath();
+
+            // We 'cut out'/erase the highlight rectangle before drawing
+            // the actual highlight rectangle to prevent overlapping
+            // transparency
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+            ctx.fill();
+            ctx.restore();
+
+            // Draw actual highlight rectangle
+            ctx.fill();
+        });
+    }
+
+    /**
+     * Shows highlight annotations for the specified page by re-drawing all
+     * highlight annotations currently in memory for the specified page.
      *
-     * @param {Annotation} annotation Highlight annotation to show
+     * @param {Number} page Page to draw annotations for
      * @returns {void}
      */
-    showHighlightAnnotation(annotation) {
-        const location = annotation.location;
-        if (!location || !location.quadPoints) {
-            return;
-        }
-
-        const page = location.page;
+    drawHighlightAnnotationsOnPage(page) {
+        // let time = new Date().getTime();
         const pageEl = document.querySelector(`[data-page-number="${page}"]`);
 
         // Create an annotation layer on the page if it doesn't exist
         let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
         if (!annotationLayerEl) {
-            annotationLayerEl = document.createElement('div');
+            const pageDimensions = pageEl.getBoundingClientRect();
+            const textLayerEl = pageEl.querySelector('.textLayer');
+            annotationLayerEl = document.createElement('canvas');
             annotationLayerEl.classList.add('box-preview-annotation-layer');
-            pageEl.appendChild(annotationLayerEl);
+            annotationLayerEl.width = pageDimensions.width;
+            annotationLayerEl.height = pageDimensions.height;
+            pageEl.insertBefore(annotationLayerEl, textLayerEl);
         }
 
-        // Delete highlight button should be in upper right of the highlight in the upper right
-        let upperRightX = 0;
-        let upperRightY = pageEl.getBoundingClientRect().height;
-        const highlightContainerEl = document.createElement('div');
-        highlightContainerEl.classList.add('box-preview-highlight-container');
-        highlightContainerEl.dataset.annotationId = annotation.annotationID;
+        // Clear canvas
+        const ctx = annotationLayerEl.getContext('2d');
+        ctx.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);
 
-        location.quadPoints.forEach((quadPoints) => {
-            const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints;
-            upperRightX = Math.max(upperRightX, Math.max(x1, x2, x3, x4));
-            upperRightY = Math.min(upperRightY, Math.min(y1, y2, y3, y4));
-
-            /* eslint-disable no-console */
-            console.log(`Quadpoints for highlight "${annotation.annotationID}": (${x1.toFixed(2)}, ${y1.toFixed(2)}) (${x2.toFixed(2)}, ${y2.toFixed(2)}) (${x3.toFixed(2)}, ${y3.toFixed(2)}) (${x4.toFixed(2)}, ${y4.toFixed(2)})`);
-            /* eslint-enable no-console */
-
-            // Create highlight div from quadpoints
-            const highlightEl = createHighlightEl(quadPoints);
-            highlightContainerEl.appendChild(highlightEl);
-
-            // Set group of highlight elements to active when mouse enters a
-            // highlight element and we are not just leaving a highlight element
-            this.addEventHandler(highlightEl, (event) => {
-                if (event.relatedTarget && event.relatedTarget.classList.contains('box-preview-highlight')) {
-                    return;
-                }
-
-                event.target.parentNode.classList.add('box-preview-highlight-active');
-            }, 'mouseenter');
-
-            // Set group of highlight elements to inactive when mouse leaves a
-            // highlight element and we are not entering a highlight element
-            this.addEventHandler(highlightEl, (event) => {
-                if (event.relatedTarget && event.relatedTarget.classList.contains('box-preview-highlight')) {
-                    return;
-                }
-
-                event.target.parentNode.classList.remove('box-preview-highlight-active');
-            }, 'mouseleave');
-
-            // @TODO(tjin): clean up annotation layer event handlers
+        // Draw highlights
+        const highlights = this.highlightAnnotations[page] || [];
+        highlights.forEach((highlight) => {
+            this.drawHighlightAnnotation(highlight, ctx);
         });
 
-        // Insert highlight into annotation layer
-        annotationLayerEl.appendChild(highlightContainerEl);
-
-        // Construct delete highlight button
-        const removeHighlightButtonEl = document.createElement('button');
-        removeHighlightButtonEl.textContent = 'x';
-        removeHighlightButtonEl.style.left = `${upperRightX - 8}px`; // move 'x' slightly into highlight
-        removeHighlightButtonEl.style.top = `${upperRightY - 8}px`; // move 'x' slightly into highlight
-        removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
-        pageEl.appendChild(removeHighlightButtonEl);
-
-        // Delete highlight button deletes the highlight and removes highlights from DOM
-        this.addEventHandler(removeHighlightButtonEl, (event) => {
-            event.stopPropagation();
-
-            this.annotationService.delete(annotation.annotationID).then(() => {
-                this.removeHighlight(annotation.annotationID);
-                this.removeEventHandlers(removeHighlightButtonEl);
-                removeHighlightButtonEl.parentNode.removeChild(removeHighlightButtonEl);
-            });
-        });
+        // console.log(`Drawing annotations for page ${page} took ${new Date().getTime() - time}ms`);
     }
 
     /**
@@ -281,10 +290,170 @@ class DocAnnotator extends Annotator {
      * @param {Annotation[]} highlightAnnotations Array of highlight annotations
      * @returns {void}
      */
-    showHighlightAnnotations(highlightAnnotations) {
-        highlightAnnotations.forEach((highlightAnnotation) => {
-            this.showHighlightAnnotation(highlightAnnotation);
+    showHighlightAnnotations() {
+        const numPages = Object.keys(this.highlightAnnotations).length;
+        for (let i = 1; i <= numPages; i++) {
+            this.drawHighlightAnnotationsOnPage(i);
+        }
+    }
+
+    /**
+     * Shows the remove highlight button above the upper right corner.
+     *
+     * @param {Annotation} annotation Annotation to show remove button for
+     * @returns {void}
+     */
+    showRemoveHighlightButton(annotation) {
+        const page = annotation.location.page;
+        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
+
+        // Create remove highlight button and position it above the upper right
+        // corner of the highlight
+        const [upperRightX, upperRightY] = getUpperRightCorner(annotation.location.quadPoints);
+        const removeHighlightButtonEl = document.createElement('button');
+        removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
+        removeHighlightButtonEl.innerHTML = ICON_DELETE;
+        removeHighlightButtonEl.style.left = `${upperRightX - 20}px`;
+        removeHighlightButtonEl.style.top = `${upperRightY - 50}px`;
+        pageEl.appendChild(removeHighlightButtonEl);
+
+        // Delete highlight button deletes the highlight and removes the
+        // highlight from the canvas
+        this.addEventHandler(removeHighlightButtonEl, (e) => {
+            e.stopPropagation();
+
+            // Delete annotation via the annotation service
+            this.annotationService.delete(annotation.annotationID).then(() => {
+                // Remove highlight from in-memory store
+                this.removeHighlight(annotation.annotationID);
+
+                // Remove event handler and button
+                this.removeEventHandlers(removeHighlightButtonEl);
+                removeHighlightButtonEl.parentNode.removeChild(removeHighlightButtonEl);
+
+                // Redraw highlights on page
+                this.drawHighlightAnnotationsOnPage(page);
+            });
         });
+    }
+
+    /**
+     * Handler for mousemove over the document. Adds a hover effect for
+     * highlight annotations.
+     *
+     * @returns {Function} mousemove handler
+     */
+    highlightMousemoveHandler() {
+        if (!this.throttledHighlightMousemoveHandler) {
+            this.throttledHighlightMousemoveHandler = throttle((event) => {
+                const pageEl = findClosestElWithClass(event.target, 'page');
+                if (!pageEl) {
+                    return;
+                }
+
+                const page = pageEl.getAttribute('data-page-number');
+                const annotations = this.highlightAnnotations[page];
+                if (!annotations) {
+                    return;
+                }
+
+                const canvasEl = pageEl.querySelector('.box-preview-annotation-layer');
+                if (!canvasEl) {
+                    return;
+                }
+
+                const canvasDimensions = canvasEl.getBoundingClientRect();
+
+                // We loop through all the annotations on this page and see if the
+                // mouse is over some annotation. We use Array.prototype.some so
+                // we can stop iterating over annotations when we've found one.
+                let hoverAnnotationID = '';
+                annotations.some((annotation) => {
+                    return annotation.location.quadPoints.some((quadPoint) => {
+                        const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
+                        const mouseX = event.clientX - canvasDimensions.left;
+                        const mouseY = event.clientY - canvasDimensions.top;
+
+                        // Check if mouse is inside a rectangle of this
+                        // annotation
+                        const isPointInPoly = isPointInPolyOpt([
+                            [x1, y1],
+                            [x2, y2],
+                            [x3, y3],
+                            [x4, y4]
+                        ], mouseX, mouseY);
+
+                        if (isPointInPoly) {
+                            hoverAnnotationID = annotation.annotationID;
+                        }
+
+                        return isPointInPoly;
+                    });
+                });
+
+                // Redraw annotations only if annotation we're currently over
+                // has changed
+                if (hoverAnnotationID !== this.hoverAnnotationID) {
+                    // Cache which annotation we're currently over
+                    this.hoverAnnotationID = hoverAnnotationID;
+                    this.drawHighlightAnnotationsOnPage(page);
+                }
+            }, 100);
+        }
+
+        return this.throttledHighlightMousemoveHandler;
+    }
+
+    /**
+     * Handler for click on document for activating highlights. Changes style
+     * of highlight to show active state and shows a delete button.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    highlightClickHandler(event) {
+        event.stopPropagation();
+
+        const pageEl = findClosestElWithClass(event.target, 'page');
+        if (!pageEl) {
+            return;
+        }
+
+        const page = pageEl.getAttribute('data-page-number');
+        const annotations = this.highlightAnnotations[page];
+        if (!annotations) {
+            return;
+        }
+
+        // @TODO(tjin): will need to check if click is in an annotation on
+        // mobile since the hover handler isn't active there
+        // if (Browser.isMobile()) {
+        //     // check if click is in annotation
+        // }
+
+        // If we are clicking outside an annotation, unset the active annotation
+        if (!this.hoverAnnotationID || this.hoverAnnotationID === '') {
+            this.activeAnnotationID = '';
+        }
+
+        // Redraw page to show active annotation
+        this.activeAnnotationID = this.hoverAnnotationID;
+        this.drawHighlightAnnotationsOnPage(page);
+
+        // Delete and clean up after any existing delete highlight buttons
+        const removeHighlightButtonEls = [].slice.call(pageEl.querySelectorAll('.box-preview-remove-highlight-btn'), 0);
+        removeHighlightButtonEls.forEach((removeHighlightButtonEl) => {
+            this.removeEventHandlers(removeHighlightButtonEl);
+            removeHighlightButtonEl.parentNode.removeChild(removeHighlightButtonEl);
+        });
+
+        // Show delete highlight button for this annotation
+        const annotation = annotations.find((annot) => {
+            return annot.annotationID === this.activeAnnotationID;
+        });
+        if (annotation) {
+            this.showRemoveHighlightButton(annotation);
+        }
     }
 
     /**
@@ -304,7 +473,7 @@ class DocAnnotator extends Annotator {
         }
 
         const pageEl = findClosestElWithClass(selection.anchorNode.parentNode, 'page');
-        const page = pageEl ? pageEl.dataset.pageNumber : 1;
+        const page = pageEl ? pageEl.getAttribute('data-page-number') : 1;
 
         // We use Rangy to turn the selection into a highlight, which creates
         // spans around the selection that we can then turn into quadpoints
@@ -334,7 +503,16 @@ class DocAnnotator extends Annotator {
 
         // Save and show annotation
         this.annotationService.create(annotation).then((createdAnnotation) => {
-            this.showHighlightAnnotation(createdAnnotation);
+            if (!this.highlightAnnotations[page]) {
+                this.highlightAnnotations[page] = [];
+            }
+
+            this.highlightAnnotations[page].push(createdAnnotation);
+
+            // Redraw annotations and show new annotation in active state
+            this.activeAnnotationID = annotation.annotationID;
+            this.drawHighlightAnnotationsOnPage(page);
+            this.showRemoveHighlightButton(annotation);
         });
     }
 
@@ -355,9 +533,8 @@ class DocAnnotator extends Annotator {
                     <span>P</span>
                 </button>
             </div>`.trim();
-        pointAnnotationEl.classList.add('annotation-dialog');
-        // Note casing of threadId translates to data-thread-id
-        pointAnnotationEl.dataset.threadId = annotation.threadID;
+        pointAnnotationEl.classList.add('box-preview-annotation-dialog');
+        pointAnnotationEl.setAttribute('data-thread-id', annotation.threadID);
         pointAnnotationEl.innerHTML = annotationElString;
 
         const location = annotation.location;
@@ -416,7 +593,7 @@ class DocAnnotator extends Annotator {
 
             // Generate annotation parameters and location data to store
             const pageDimensions = pageEl.getBoundingClientRect();
-            const page = pageEl.dataset.pageNumber;
+            const page = pageEl.getAttribute('data-page-number');
             const pageScale = this.getScale();
             const x = (clickOutEvent.clientX - pageDimensions.left) / pageScale;
             const y = (clickOutEvent.clientY - pageDimensions.top) / pageScale;
@@ -453,7 +630,7 @@ class DocAnnotator extends Annotator {
                     </button>
                 </div>
             </div>`.trim();
-        annotationDialogEl.classList.add('annotation-dialog');
+        annotationDialogEl.classList.add('box-preview-annotation-dialog');
         annotationDialogEl.innerHTML = annotationElString;
 
         const postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn');
@@ -496,11 +673,6 @@ class DocAnnotator extends Annotator {
         this.addEventHandler(cancelButtonEl, (event) => {
             event.stopPropagation();
             closeCreateDialog();
-
-            // Remove Rangy highlight if needed
-            if (locationData.highlight) {
-                this.removeRangyHighlight(locationData.highlight);
-            }
         });
 
         // Clicking outside to close annotation dialog
@@ -508,13 +680,8 @@ class DocAnnotator extends Annotator {
             event.stopPropagation();
 
             // @TODO(tjin): what about other annotation dialogs? (may not be an issue)
-            if (!findClosestElWithClass(event.target, 'annotation-dialog')) {
+            if (!findClosestElWithClass(event.target, 'box-preview-annotation-dialog')) {
                 closeCreateDialog();
-
-                // Remove Rangy highlight if needed
-                if (locationData.highlight) {
-                    this.removeRangyHighlight(locationData.highlight);
-                }
             }
         });
 
@@ -560,7 +727,7 @@ class DocAnnotator extends Annotator {
                         </div>
                     </div>
                 </div>`.trim();
-            annotationDialogEl.classList.add('annotation-dialog');
+            annotationDialogEl.classList.add('box-preview-annotation-dialog');
             annotationDialogEl.innerHTML = annotationElString;
 
             // Function to create a single comment element
@@ -645,9 +812,7 @@ class DocAnnotator extends Annotator {
                             annotationDialogEl.parentNode.removeChild(annotationDialogEl);
 
                             // Remove highlight or point element when we delete the whole thread
-                            if (annotation.type === HIGHLIGHT_ANNOTATION_TYPE) {
-                                this.removeRangyHighlight(annotation.location.highlight);
-                            } else if (annotation.type === POINT_ANNOTATION_TYPE) {
+                            if (annotation.type === POINT_ANNOTATION_TYPE) {
                                 const pointAnnotationEl = document.querySelector(`[data-thread-id="${annotation.threadID}"]`);
 
                                 if (pointAnnotationEl) {
@@ -723,7 +888,7 @@ class DocAnnotator extends Annotator {
                 event.stopPropagation();
 
                 // @TODO(tjin): what about other annotation dialogs? (may not be an issue)
-                if (!findClosestElWithClass(event.target, 'annotation-dialog')) {
+                if (!findClosestElWithClass(event.target, 'box-preview-annotation-dialog')) {
                     this.removeEventHandlers(document);
 
                     // Remove 'reply' event handlers
@@ -771,25 +936,27 @@ class DocAnnotator extends Annotator {
 
     /* ---------- Helpers ---------- */
     /**
-     * Removes a highlight by finding all highlight divs corresponding to the
-     * provided annotation ID and removing them
+     * Remove highlight from in-memory highlight map.
      *
      * @param {Number} annotationID Annotation ID of highlight to remove
      * @returns {void}
      */
     removeHighlight(annotationID) {
-        const highlightContainerEl = document.querySelector(`[data-annotation-id="${annotationID}"]`);
-        while (highlightContainerEl.firstChild) {
-            highlightContainerEl.removeChild(highlightContainerEl.firstChild);
-        }
-        highlightContainerEl.parentNode.removeChild(highlightContainerEl);
+        Object.keys(this.highlightAnnotations).forEach((page) => {
+            const pageAnnotations = this.highlightAnnotations[page];
+            pageAnnotations.forEach((annotation, index) => {
+                if (annotation.annotationID === annotationID) {
+                    pageAnnotations.splice(index, 1);
+                }
+            });
+        });
     }
 
     /**
-     * Helper to remove a Rangy highlight by deleting the highlight in the internal
-     * highlighter list that has a matching ID. We can't directly use the
-     * highlighter's removeHighlights since the highlight could possibly not be
-     * a true Rangy highlight object.
+     * Helper to remove a Rangy highlight by deleting the highlight in the
+     * internal highlighter list that has a matching ID. We can't directly use
+     * the highlighter's removeHighlights since the highlight could possibly
+     * not be a true Rangy highlight object.
      *
      * @param {Object} highlight Highlight to delete.
      * @returns {void}
@@ -808,17 +975,25 @@ class DocAnnotator extends Annotator {
      *
      * @param {HTMLElement} element Element to attach handler to
      * @param {Function} handler Event handler
-     * @param {String} [eventType] Optional type of event, defaults to a click or touch
      * @returns {void}
      */
-    addEventHandler(element, handler, eventType) {
-        const type = eventType || TOUCH_EVENT;
-        element.addEventListener(type, handler);
+    addEventHandler(element, handler) {
+        element.addEventListener(TOUCH_EVENT, handler);
 
-        const handlers = this.handlerMap.get(element) || [];
-        handlers.push(handler);
+        let handlerRef = this.handlerRefs.find((ref) => {
+            return ref.element === element;
+        });
 
-        this.handlerMap.set(element, handlers);
+        if (!handlerRef) {
+            handlerRef = {
+                element,
+                handlers: [handler]
+            };
+
+            this.handlerRefs.push(handlerRef);
+        } else {
+            handlerRef.handlers.push(handler);
+        }
     }
 
     /**
@@ -828,15 +1003,25 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     removeEventHandlers(element) {
-        const handlers = this.handlerMap.get(element) || [];
-
-        if (element && typeof element.removeEventListener === 'function') {
-            handlers.forEach((handler) => {
-                element.removeEventListener(TOUCH_EVENT, handler);
-            });
+        if (!element || typeof element.removeEventListener !== 'function') {
+            return;
         }
 
-        this.handlerMap.delete(element);
+        // Find the matching element and handler ref
+        const handlerIndex = this.handlerRefs.findIndex((ref) => {
+            return ref.element === element;
+        });
+        if (handlerIndex === -1) {
+            return;
+        }
+
+        // Remove all the handlers in the handler ref from the element
+        this.handlerRefs[handlerIndex].handlers.forEach((handler) => {
+            element.removeEventListener(TOUCH_EVENT, handler);
+        });
+
+        // Remove handler ref entry
+        this.handlerRefs.splice(handlerIndex, 1);
     }
 
     /**
@@ -845,29 +1030,26 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     removeAllEventHandlers() {
-        for (const [element, handlers] of this.handlerMap) {
-            if (element && typeof element.removeEventListener === 'function') {
-                handlers.forEach((handler) => {
-                    element.removeEventListener(TOUCH_EVENT, handler);
-                });
-            }
-
-            this.handlerMap.delete(element);
-        }
+        this.handlerRefs.forEach((handlerRef) => {
+            const element = handlerRef.element;
+            handlerRef.handlers.forEach((handler) => {
+                element.removeEventListener(TOUCH_EVENT, handler);
+            });
+        });
     }
 
     /**
-     * Returns the coordinates of the quadrilateral representing this element per
-     * the PDF text markup annotation spec.
+     * Returns the coordinates of the quadrilateral representing this element
+     * per the PDF text markup annotation spec.
      *
-     * We do this by letting the browser figure out the coordinates for us. See:
-     * http://stackoverflow.com/a/17098667
+     * We do this by letting the browser figure out the coordinates for us.
+     * See http://stackoverflow.com/a/17098667
      *
      * @param {HTMLElement} element Element to get quad points for
      * @param {HTMLElement} relativeEl Element quad points should be relative to
-     * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3, x4,
-     * y4] with (x1, y1) being the lower left (untransformed) corner of the element
-     * and the other 3 vertices in counterclockwise order
+     * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3,
+     * x4, y4] with (x1, y1) being the lower left (untransformed) corner of the
+     * element and the other 3 vertices in counterclockwise order
      */
     getQuadPoints(element, relativeEl) {
         // Create quad point helper elements once if needed
