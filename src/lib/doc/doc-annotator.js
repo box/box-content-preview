@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
 import Annotator from '../annotation/annotator';
+import Browser from '../browser';
 import rangy from 'rangy';
 /* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
@@ -8,15 +9,9 @@ import rangyClassApplier from 'rangy/lib/rangy-classapplier';
 import rangyHighlight from 'rangy/lib/rangy-highlighter';
 /* eslint-enable no-unused-vars */
 
-const document = global.document;
-
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
-
-/* eslint-disable no-undef */
-// Taken from Modernizr https://github.com/Modernizr/Modernizr/blob/master/feature-detects/touchevents.js
-const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch)) ? 'touchstart' : 'click';
-/* eslint-enable no-undef */
+const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 
 /* ---------- Helpers ---------- */
 /**
@@ -29,7 +24,7 @@ const TOUCH_EVENT = (('ontouchstart' in window) || (window.DocumentTouch && docu
 function findClosestElWithClass(element, className) {
     for (let el = element; el && el !== document; el = el.parentNode) {
         if (el.classList && el.classList.contains(className)) {
-            return element;
+            return el;
         }
     }
 

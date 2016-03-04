@@ -21,7 +21,6 @@ globals:
     it: false
     sinon: false
     assert: false
-    expect: false
     fixture: false
 
 
