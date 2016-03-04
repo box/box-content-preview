@@ -4,7 +4,7 @@ import Browser from '../browser';
 import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
-import { createAssetUrlCreator } from '../util';
+import { createAssetUrlCreator, decodeKeydown } from '../util';
 
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const PRESENTATION_MODE_STATE = {
@@ -492,12 +492,14 @@ class DocBase extends Base {
 	 * @returns {void}
 	 */
     pageNumInputKeydownHandler(event) {
-        switch (event.which) {
-            case 13: // ENTER
+        const key = decodeKeydown(event);
+
+        switch (key) {
+            case 'Enter':
                 this.pageNumInputBlurHandler(event);
                 break;
 
-            case 27: // ESC
+            case 'Esc':
                 this.hidePageNumInput();
 
                 event.preventDefault();

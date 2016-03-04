@@ -53,7 +53,7 @@ class Presentation extends DocBase {
 
         this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon box-preview-previous-page');
 
-        let buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        const buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
 
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page');

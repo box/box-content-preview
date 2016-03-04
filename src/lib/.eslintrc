@@ -10,6 +10,7 @@ globals:
     PDFJS: false
     DocumentTouch: false
     ActiveXObject: false
+    __: false # webpack i18n plugin
 
     # Mocha globals
     after: false
