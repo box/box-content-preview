@@ -60,6 +60,8 @@ Clone and compile
 
 While developing
 -----------------
+Install git pre-commit hook `cp build/pre-commit.sh .git/hooks/pre-commit`.
+
 Install SCSS linter `gem install scss_lint` for linting SCSS files.
 
 * `npm run build` to generate resource bundles and JS webpack bundles.
