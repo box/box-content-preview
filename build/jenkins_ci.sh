@@ -2,16 +2,18 @@
 
 export NODE_PATH=$NODE_PATH:./node_modules
 
-# eslint - adapted from https://gist.github.com/jhartikainen/36a955f3bfe06557e16e
-# and https://coderwall.com/p/zq8jlq/eslint-pre-commit-hook
-# returns added (A), modified (M), untracked (??) filenames
-git_changed_files() {
+# Runs eslint on modified JS files. Adapted from
+# https://gist.github.com/jhartikainen/36a955f3bfe06557e16e and
+# https://coderwall.com/p/zq8jlq/eslint-pre-commit-hook
+
+# Returns added (A), modified (M), untracked (??) filenames
+get_git_changed_files() {
     echo $(git status -s | grep -E '[AM?]+\s.+?\.js$' | cut -c3-)
 }
 
-# run lint over changed files, if any
+# Run eslint over changed files, if any
 eslint_changed_files() {
-    files=$(git_changed_files);
+    files=$(get_git_changed_files);
     root=$(git rev-parse --show-toplevel);
 
     if [ ! -z "${files}" ]; then
