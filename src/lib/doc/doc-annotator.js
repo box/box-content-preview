@@ -15,6 +15,10 @@ const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
 const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 
+const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';
+const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 233, 23, 0.5)';
+const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 255, 255, 1)';
+
 /* ---------- Helpers ---------- */
 /**
  * Finds the closest ancestor DOM element with the specified class.
@@ -222,9 +226,9 @@ class DocAnnotator extends Annotator {
             // a different, darker color
             if (annotationID === this.hoverAnnotationID ||
                 annotationID === this.activeAnnotationID) {
-                ctx.fillStyle = 'rgba(255, 233, 23, 0.5)';
+                ctx.fillStyle = HIGHLIGHT_ACTIVE_FILL_STYLE;
             } else {
-                ctx.fillStyle = 'rgba(255, 233, 23, 0.35)';
+                ctx.fillStyle = HIGHLIGHT_NORMAL_FILL_STYLE;
             }
 
             ctx.beginPath();
@@ -239,7 +243,7 @@ class DocAnnotator extends Annotator {
             // transparency
             ctx.save();
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+            ctx.fillStyle = HIGHLIGHT_ERASE_FILL_STYLE;
             ctx.fill();
             ctx.restore();
 
