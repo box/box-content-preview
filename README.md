@@ -96,13 +96,13 @@ preview.show(fileId, { options });
 
 ```javascript
 {
-    token: 'api auth token',
+    token: 'api auth token',         // either a string auth token or a token generator function, see below for more details
     container: '.preview-container', // optional dom node or selector where preview should be placed
     api: 'https://api.box.com',      // optional api host like https://ldap.dev.box.net/api
     files: [ '123', '234', ... ],    // optional list of file ids for back and forth navigation
-    header: true,                    // optional boolean to turn the header on or off
+    header: 'light',                 // optional string value of 'none' or 'dark' or 'light' that controls header visibility and theme
     viewers: {                       // optional arguments to pass on to viewers
-        VIEWERNAME: {                   // name of the viewer
+        VIEWERNAME: {                   // name of the viewer, see below for more details
             disabled: false,            // disables the viewer
             annotations: false          // other args
             controls: true              // disables the viewer controls
@@ -113,11 +113,49 @@ preview.show(fileId, { options });
 }
 ```
 
-VIEWERNAME can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be gotten by calling `Box.Preview.getViewers()`.
+Token
+------
+
+In order for preview to work over the API it needs an auth token. The value passed in for the token option above can either be a string token or a token generator function. If passing a string, it is assumed that the token never expires or changes. If however the token expires or changes over time, then a generator function should be passed. The generator function should take in a file id or a list of file ids as argument and return a `Promise` which should resolve to a key/value pair of id/token. A sample implementation is below.
+
+```javascript
+/**
+ * Auth token fetcher
+ * @param {String|Array} id File id or array of file ids
+ * @returns {Promise} Promise to resolve to a map of ids and tokens
+ */
+function token(id) {
+    // id can be a single file id or an array of ids
+    const ids = Array.isArray(id) ? id : [id];
+
+    return new Promise((resolve, reject) => {
+        // Get tokens for all files with ids
+        // via some mechanism or network request
+        //    response should look like
+        //    {
+        //        id1: 'token1',
+        //        id2: 'token2',
+        //        id3: 'token3'
+        //        ...
+        //    }
+        fetch(tokenService)
+        .then((response) => response.json())
+        .then(resolve)
+        .catch(reject);
+    });
+}
+```
+
+VIEWERNAME
+-----------
+
+The name of the vewier. Can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be gotten by calling `Box.Preview.getViewers()`.
+
+
+Other Methods
+--------------
 
 `Box.Preview.hide(/* optional Boolean */ destroy)` hides the previewer. If destroy is true, then container's contents are also removed.
-
-`Box.Preview.updateAuthToken(/* String */ token);` updates the API auth token. Useful for when the token expires.
 
 `Box.Preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
 

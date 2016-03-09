@@ -53,6 +53,13 @@ class Preview extends EventEmitter {
         // State of preview
         this.open = false;
 
+        // Some analytics that span across preview sessions
+        this.count = {
+            success: 0,     // Counts how many previews have happened overall
+            error: 0,       // Counts how many errors have happened overall
+            navigation: 0   // Counts how many previews have happened by prev next navigation
+        };
+
         // Current file being previewed
         this.file = {};
 
@@ -551,10 +558,13 @@ class Preview extends EventEmitter {
                 this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
             }
 
+            // Bump up preview count
+            this.count.success++;
+
             // Finally emit the viewer instance back with a load event
             this.emit('load', {
                 viewer: this.viewer,
-                metrics: this.logger.done(),
+                metrics: this.logger.done(this.count),
                 file: this.file
             });
 
@@ -617,10 +627,18 @@ class Preview extends EventEmitter {
         const viewer = ErrorLoader.determineViewer();
 
         ErrorLoader.load(viewer, this.options.location).then(() => {
-            this.emit('preview-error', reason);
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
             this.viewer.load('', reason);
             this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+
+            // Bump up preview count
+            this.count.error++;
+
+            this.emit('load', {
+                error: reason,
+                metrics: this.logger.done(this.count),
+                file: this.file
+            });
         });
     }
 
@@ -751,6 +769,7 @@ class Preview extends EventEmitter {
     navigateToIndex(index) {
         const file = this.files[index];
         this.emit('navigate', file);
+        this.count.navigation++;
         this.load(file);
     }
 
