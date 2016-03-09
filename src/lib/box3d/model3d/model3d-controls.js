@@ -205,7 +205,9 @@ class Model3dControls extends Box3DControls  {
      * @inheritdoc
      */
     destroy() {
-        this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
+        if (this.controls) {
+            this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
+        }
         this.removeListener(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseUi);
         super.destroy();
     }

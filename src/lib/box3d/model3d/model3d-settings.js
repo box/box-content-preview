@@ -287,7 +287,7 @@ class Model3dSettings extends Box3DControls  {
      * @returns {HtmlElement} The newly created axis button
      */
     createOrientationAxis(axisLabel = '', callback) {
-        let axisEl = document.createElement('li');
+        const axisEl = document.createElement('li');
         axisEl.textContent = axisLabel.toUpperCase();
         this.registerUiItem('axis-item-li-' + axisLabel, axisEl, 'click', callback);
         return axisEl;
@@ -300,7 +300,7 @@ class Model3dSettings extends Box3DControls  {
      * @returns {HtmlElement} Teh newly created arrow button
      */
     createOrientationArrow(direction, callback) {
-        let arrowWrapperEl = document.createElement('div');
+        const arrowWrapperEl = document.createElement('div');
         arrowWrapperEl.classList.add('box-preview-orientation-controls');
         const arrowEl = document.createElement('span');
         arrowEl.classList.add('box-preview-icon-setting-arrow-' + direction);
