@@ -2,6 +2,29 @@
 
 export NODE_PATH=$NODE_PATH:./node_modules
 
+# Runs eslint on modified JS files. Adapted from
+# https://gist.github.com/jhartikainen/36a955f3bfe06557e16e and
+# https://coderwall.com/p/zq8jlq/eslint-pre-commit-hook
+
+# Returns added (A), modified (M), untracked (??) filenames
+get_git_changed_files() {
+    echo $(git status -s | grep -E '[AM?]+\s.+?\.js$' | cut -c3-)
+}
+
+# Run eslint over changed files, if any
+eslint_changed_files() {
+    files=$(get_git_changed_files);
+    root=$(git rev-parse --show-toplevel);
+
+    if [ ! -z "${files}" ]; then
+        e=$(${root}/node_modules/eslint/bin/eslint.js $files);
+        if [[ "$e" != *"0 problems"* ]]; then
+            echo "Eslint error: Check eslint hints."
+            exit 1 # reject
+        fi
+    fi
+}
+
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
 
@@ -54,10 +77,16 @@ build_assets() {
     fi
 }
 
+if ! eslint_changed_files; then
+    echo "----------------------------------------------------"
+    echo "Error: failure in build_pull_request - eslint errors"
+    echo "----------------------------------------------------"
+    exit 1
+fi
 
 if ! build_assets; then
-  echo "----------------------------------------------------"
-  echo "Error: failure in build_pull_request"
-  echo "----------------------------------------------------"
-  exit 1
+    echo "----------------------------------------------------"
+    echo "Error: failure in build_pull_request - build errors"
+    echo "----------------------------------------------------"
+    exit 1
 fi
