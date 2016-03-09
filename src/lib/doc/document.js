@@ -59,6 +59,12 @@ class Document extends DocBase {
             newScale = Math.min(MAX_SCALE, newScale);
         } while (--numTicks > 0 && newScale < MAX_SCALE);
         this.pdfViewer.currentScaleValue = newScale;
+
+        // Redraw annotations if needed
+        if (this.annotator) {
+            this.annotator.setScale(this.pdfViewer.currentScale);
+            this.annotator.showAnnotations();
+        }
     }
 
     /**
@@ -76,6 +82,12 @@ class Document extends DocBase {
             newScale = Math.max(MIN_SCALE, newScale);
         } while (--numTicks > 0 && newScale > MIN_SCALE);
         this.pdfViewer.currentScaleValue = newScale;
+
+        // Redraw annotations if needed
+        if (this.annotator) {
+            this.annotator.setScale(this.pdfViewer.currentScale);
+            this.annotator.showAnnotations();
+        }
     }
 
     /* ----- Helpers ----- */

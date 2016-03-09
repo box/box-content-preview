@@ -19,18 +19,17 @@ class Annotator {
      * @param {Object} [options.user] Optional user for annotations
      * @param {AnnotationService} [options.annotationService] Optional
      * annotations service for annotations persistence
-     * @param {function} [getScale] Optional function that returns zoom scale
      * @returns {void}
      */
     constructor(fileID, options) {
+        const opts = options || {};
+
         this.fileID = fileID;
         // Default to anonymous user
-        this.user = options.user || ANONYMOUS_USER;
+        this.user = opts.user || ANONYMOUS_USER;
         // @TODO(tjin): new LocalStorageAnnotationService
         // Default to local storage annotations service
-        this.annotationService = options.annotationService || new AnnotationService();
-        // Default to return always returning scale of 1
-        this.getScale = options.getScaleFunc || (() => 1);
+        this.annotationService = opts.annotationService || new AnnotationService();
     }
 
 }
