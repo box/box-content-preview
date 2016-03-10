@@ -1,188 +1,189 @@
+$annotation-base-color: #fafafa;
+$annotation-border-color: #dfdfdf;
+$annotation-separator-color: #444;
+$annotation-button-background-color: #555;
+$white-color: #fff;
+$shadow-color: rgba(0, 0, 0, .25);
+
 .box-preview-annotation-dialog {
     position: absolute;
-    z-index: 9999; /* Annotation dialog should be above other content */
+    z-index: 9999; // Annotation dialog should be above other content
 
     .hidden {
         display: none;
     }
 
     .caret-up {
-        width: 0;
-        height: 0;
-        margin: 0 auto;
+        border-bottom: 5px solid $annotation-base-color;
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
-        border-bottom: 5px solid #333;
+        height: 0;
+        margin: 0 auto;
+        width: 0;
     }
 
     .annotation-container {
-        padding: 5px;
+        background-color: $annotation-base-color;
         border-radius: 5px;
-        background-color: #333;
+        padding: 5px;
     }
 
     .annotation-textarea {
-        min-width: 250px;
-        min-height: 50px;
-        padding: 7px;
-        font-size: 12px;
         border-radius: 3px;
-    }
+        font-size: 12px;
+        min-height: 50px;
+        min-width: 250px;
+        padding: 7px;
 
-    .annotation-textarea.reply {
-        min-width: 304px;
+        .reply {
+            min-width: 304px;
+        }
     }
 
     .annotation-comment {
-        position: relative;
+        border-bottom: 1px solid $annotation-separator-color;
         padding: 10px;
-        border-bottom: 1px solid #444;
+        position: relative;
     }
 
     .profile-image-container {
         display: inline-block;
         padding-top: 5px;
         vertical-align: top;
-    }
 
-    .profile-image-container img {
-        width: 30px;
-        height: 30px;
+        img {
+            height: 30px;
+            width: 30px;
+        }
     }
 
     .comment-container {
         display: inline-block;
-        width: 250px;
         padding-left: 10px;
-    }
+        width: 250px;
 
-    .comment-container .user-name {
-        color: #eee;
-        font-size: 13px;
-    }
+        .user-name {
+            color: $white-color;
+            font-size: 13px;
+        }
 
-    .comment-container .comment-date {
-        padding-top: 2px;
-        color: #888;
-        font-size: 11px;
-    }
+        .comment-date {
+            color: $white-color;
+            font-size: 11px;
+            padding-top: 2px;
+        }
 
-    .comment-container .comment-text {
-        padding-top: 5px;
-        color: #afafaf;
-        font-size: 12px;
+        .comment-text {
+            color: $white-color;
+            font-size: 12px;
+            padding-top: 5px;
+        }
     }
 
     .delete-confirmation {
+        background-color: $annotation-border-color;
+        border-radius: 3px;
+        height: 100%;
+        left: 0;
         position: absolute;
         top: 0;
-        left: 0;
         width: 100%;
-        height: 100%;
-        background-color: #222;
-        border-radius: 3px;
-        z-index: 2; /* Above the delete button */
+        z-index: 2; // Above the delete button
     }
 
     .delete-confirmation-message {
-        padding: 5px 0 3px 0;
-        text-align: center;
+        color: $white-color;
         font-size: 12px;
-        color: #eee;
+        padding: 5px 0 3px;
+        text-align: center;
     }
 
     .button-container {
-        position: relative;
-        width: 100%;
         height: 35px;
         margin-top: 3px;
+        position: relative;
+        width: 100%;
     }
 
     .btn {
-        padding: 10px 20px;
         border: 0;
         border-radius: 2px;
         cursor: pointer;
-    }
+        padding: 10px 20px;
 
-    .btn span {
-        opacity: 0.7;
-    }
+        span {
+            opacity: .7;
+        }
 
-    .btn:hover span {
-        opacity: 1;
+        &:hover span {
+            opacity: 1;
+        }
     }
 
     .btn-plain {
-        color: #bbb;
-        border-style: none;
         background-color: transparent;
+        border-style: none;
+        color: $annotation-base-color;
         cursor: pointer;
     }
 
     .delete-comment-btn {
         position: absolute;
-        top: 8px;
         right: 0;
+        top: 8px;
     }
 
     .cancel-annotation-btn {
-        position: absolute;
-        left: 0;
-        color: #dbdbdb;
         background-color: transparent;
+        color: $annotation-button-background-color;
+        left: 0;
+        position: absolute;
     }
 
     .post-annotation-btn {
+        background-color: $annotation-button-background-color;
+        color: $white-color;
         position: absolute;
         right: 0;
-        color: #fff;
-        background-color: #555;
     }
 
     .add-reply-btn {
-        padding: 10px;
         font-size: 13px;
+        padding: 10px;
     }
 
     .cancel-delete-btn {
+        background-color: $annotation-button-background-color;
+        color: $white-color;
+        left: 60px;
         position: absolute;
         width: 80px;
-        left: 60px;
-        color: #fff;
-        background-color: #555;
     }
 
     .confirm-delete-btn {
+        background-color: $annotation-button-background-color;
+        color: $white-color;
         position: absolute;
-        width: 80px;
         right: 60px;
-        color: #fff;
-        background-color: #555;
+        width: 80px;
     }
 
     .show-point-annotation-btn {
-        padding: 10px 15px;
-        color: #eee;
-        background-color: #333;
+        background-color: $annotation-base-color;
+        color: $white-color;
         font-size: 14px;
+        padding: 10px 15px;
     }
 }
 
 .box-preview-annotation-layer {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
     bottom: 0;
     cursor: text;
+    left: 0;
     pointer-events: none;
-
-    .box-preview-highlight {
-        position: absolute;
-        border-radius: 3px;
-        background-color: rgba(255, 255, 0, 0.25);
-    }
+    position: absolute;
+    right: 0;
+    top: 0;
 
     .box-preview-doc-mousedown & {
         pointer-events: none;
@@ -190,74 +191,75 @@
 }
 
 .box-preview-remove-highlight-btn {
-    position: absolute;
-    padding: 5px 6px;
-    border: 1px solid #dfdfdf;
+    background-color: $annotation-base-color;
+    border: 1px solid $annotation-border-color;
     border-radius: 2px;
-    background-color: #fafafa;
-    -webkit-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
-    -moz-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
+    box-shadow: 0 2px 4px 0 $shadow-color;
+    padding: 5px 6px;
+    position: absolute;
 
-    /* CSS arrow for caret under remove highlight button */
-    &:after, &:before {
-        top: 100%;
-        left: 50%;
-        border: solid transparent;
-        content: " ";
-        height: 0;
-        width: 0;
-        position: absolute;
-        pointer-events: none;
-        transform-origin: 0 0;
-        transform: rotate(-45deg);
+    &.hidden {
+        display: none;
     }
 
-    &:after {
-        border-color: transparent transparent #fafafa #fafafa;
+    // CSS arrow for caret under remove highlight button
+    &::after,
+    &::before {
+        border: solid transparent;
+        content: ' ';
+        height: 0;
+        left: 50%;
+        pointer-events: none;
+        position: absolute;
+        top: 100%;
+        transform: rotate(-45deg);
+        transform-origin: 0 0;
+        width: 0;
+    }
+
+    &::after {
+        border-color: transparent transparent $annotation-base-color $annotation-base-color;
         border-width: 6px;
         margin: -1px 0 0 -8px;
     }
 
-    &:before {
-        border-color: transparent transparent #dfdfdf #dfdfdf;
+    &::before {
+        border-color: transparent transparent $annotation-border-color $annotation-border-color;
         border-width: 6px;
+        box-shadow: -3px 3px 3px -1px $shadow-color;
         margin-left: -8px;
-        -webkit-box-shadow: -3px 3px 3px -1px rgba(0, 0, 0, 0.25);
-        -moz-box-shadow: -3px 3px 3px -1px rgba(0, 0, 0, 0.25);
-        box-shadow: -3px 3px 3px -1px rgba(0, 0, 0, 0.25);
     }
 }
 
-/* Quad point positioning - the helper divs are positioned relative to the
-Rangy-created element */
+// Quad point positioning - the helper divs are positioned relative to the
+// Rangy-created element
 .box-preview-doc .highlight {
     position: relative;
 }
 
-/* These helper divs allow us to calculate the quad points of an element */
+// These helper divs allow us to calculate the quad points of an element
 .box-preview-quad-corner-container {
-    position: absolute;
-    top: 0;
-    right: 0;
     bottom: 0;
     left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 .box-preview-quad-corner {
-    position: absolute;
     background: none;
-    height: 0px;
-    width: 0px;
+    height: 0;
+    position: absolute;
+    width: 0;
 
     &.corner1 {
-        left: 0;
         bottom: 0;
+        left: 0;
     }
 
     &.corner2 {
-        right: 0;
         bottom: 0;
+        right: 0;
     }
 
     &.corner3 {

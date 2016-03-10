@@ -83,18 +83,18 @@ class AnnotationService {
      * @returns {Promise} Promise to update annotation
      */
     update(annotation) {
+        const annot = annotation;
+
         return new Promise((resolve, reject) => {
-            const annotationID = annotation.annotationID;
+            const annotationID = annot.annotationID;
             const annotations = this.localAnnotations;
             const index = annotations.findIndex((storedAnnotation) => storedAnnotation.annotationID === annotationID);
 
             if (index !== -1) {
-                /*eslint-disable*/
-                annotation.updated = new Date(); // @TODO(tjin): not sure if updated belongs here or higher up
-                /*eslint-enable*/
-                annotations[index] = annotation;
+                annot.updated = new Date(); // @TODO(tjin): not sure if updated belongs here or higher up
+                annotations[index] = annot;
                 this.localAnnotations = annotations;
-                resolve(annotation);
+                resolve(annot);
             } else {
                 reject(`Could not update annotation with ID ${annotationID}`);
             }
