@@ -9,7 +9,7 @@ const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_IMAGE = 'box-preview-image';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 @autobind
 class Image extends Base {
@@ -57,7 +57,6 @@ class Image extends Base {
      * @returns {void}
      */
     load(imageUrl) {
-
         this.imageEl.addEventListener('load', () => {
             if (this.destroyed) {
                 return;
@@ -155,8 +154,8 @@ class Image extends Base {
      * @returns {void}
      */
     updatePannability() {
-        let imageDimensions = this.imageEl.getBoundingClientRect();
-        let containerDimensions = this.wrapperEl.getBoundingClientRect();
+        const imageDimensions = this.imageEl.getBoundingClientRect();
+        const containerDimensions = this.wrapperEl.getBoundingClientRect();
         this.isPannable = imageDimensions.width > containerDimensions.width || imageDimensions.height > containerDimensions.height;
         this.didPan = false;
         this.updateCursor();
@@ -172,8 +171,8 @@ class Image extends Base {
         if (!this.isPanning) {
             return;
         }
-        let offsetX = event.clientX - this.panStartX;
-        let offsetY = event.clientY - this.panStartY;
+        const offsetX = event.clientX - this.panStartX;
+        const offsetY = event.clientY - this.panStartY;
         this.wrapperEl.scrollLeft = this.panStartScrollLeft - offsetX;
         this.wrapperEl.scrollTop = this.panStartScrollTop - offsetY;
         this.didPan = true;
@@ -220,9 +219,9 @@ class Image extends Base {
      * @returns {void}
      */
     rotateLeft() {
-        let angle = this.currentRotationAngle - 90;
+        const angle = this.currentRotationAngle - 90;
         this.currentRotationAngle = (angle === -3600) ? 0 : angle;
-        this.imageEl.style.transform = 'rotate(' + this.currentRotationAngle + 'deg)';
+        this.imageEl.style.transform = `rotate(${this.currentRotationAngle}deg)`;
         this.emit('rotate');
     }
 
@@ -243,22 +242,19 @@ class Image extends Base {
      * @returns {void}
      */
     zoom(type) {
-
-        let temp,
-            ratio = 1, // default scaling ratio is 1:1
-            newWidth,
-            newHeight,
-            modifyWidthInsteadOfHeight,
-            isRotated = Math.abs(this.currentRotationAngle) % 180 === 90,
-            imageCurrentDimensions = this.imageEl.getBoundingClientRect(), // Getting bounding rect does not ignore transforms / rotates
-            viewport = this.wrapperEl.getBoundingClientRect(),
-            width = imageCurrentDimensions.width,
-            height = imageCurrentDimensions.height,
-            aspect = width / height;
+        let ratio = 1; // default scaling ratio is 1:1
+        let newWidth;
+        let newHeight;
+        const isRotated = Math.abs(this.currentRotationAngle) % 180 === 90;
+        const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
+        const viewport = this.wrapperEl.getBoundingClientRect();
+        const width = imageCurrentDimensions.width;
+        const height = imageCurrentDimensions.height;
+        const aspect = width / height;
 
         // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
         // For images that are wider than taller we use width. For images that are taller than wider, we use height.
-        modifyWidthInsteadOfHeight = aspect >= 1;
+        const modifyWidthInsteadOfHeight = aspect >= 1;
 
         // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
@@ -313,10 +309,10 @@ class Image extends Base {
                 // max of the original file size
                 } else {
                     if (modifyWidthInsteadOfHeight) {
-                        let originalWidth = isRotated ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
+                        const originalWidth = isRotated ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
                         newWidth = Math.min(viewport.width, originalWidth);
                     } else {
-                        let originalHeight = isRotated ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
+                        const originalHeight = isRotated ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
                         newHeight = Math.min(viewport.height, originalHeight);
                     }
                 }
@@ -326,7 +322,7 @@ class Image extends Base {
         // getBoundingClientRect always gives values based on how its rendered on the screen
         // But when setting width or height, transforms / rotates are ignored.
         if (isRotated) {
-            temp = newWidth;
+            const temp = newWidth;
             newWidth = newHeight;
             newHeight = temp;
         }
@@ -334,8 +330,8 @@ class Image extends Base {
         // Set the new dimensions. This ignores rotates, hence we need to swap the dimensions above.
         // Only one of the below will be set, while the other will get cleared out to let the browser
         // adjust it automatically based on the images aspect ratio.
-        this.imageEl.style.width = newWidth ? newWidth + 'px' : '';
-        this.imageEl.style.height = newHeight ? newHeight + 'px' : '';
+        this.imageEl.style.width = newWidth ? `${newWidth}px` : '';
+        this.imageEl.style.height = newHeight ? `${newHeight}px` : '';
 
         // Fix the scroll position of the image to be centered
         this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;

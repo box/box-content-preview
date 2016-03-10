@@ -4,7 +4,7 @@ import VideoBase from './video-base';
 
 const CSS_CLASS_MP4 = 'box-preview-media-mp4';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 @autobind
 class MP4 extends VideoBase {

@@ -1,4 +1,3 @@
-'use strict';
 // All 3D previews come with base functionality for enabling VR, enabling fullscreen
 // mode, and resetting the camera orientation
 // EVENTS

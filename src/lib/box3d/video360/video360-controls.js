@@ -1,5 +1,3 @@
-'use strict';
-
 import EventEmitter from 'events';
 import {
     EVENT_ENABLE_VR,

@@ -1,5 +1,3 @@
-'use strict';
-
 import './image360.scss';
 import Box3D from '../box3d';
 import autobind from 'autobind-decorator';
@@ -10,7 +8,7 @@ import {
     EVENT_SWITCH_2D
 } from './image360-constants';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 /**
  * Image360
@@ -18,16 +16,6 @@ let Box = global.Box || {};
  * @class
  */
 class Image360 extends Box3D {
-    /**
-     * Ties together all 360 image rendering and controls
-     * @constructor
-     * @param {string|HTMLElement} container node
-     * @param {object} [options] some options
-     * @returns {Image360} the Image360 object instance
-     */
-    constructor(container, options) {
-        super(container, options);
-    }
 
     /**
      * @inheritdoc

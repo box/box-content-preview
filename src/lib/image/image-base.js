@@ -70,7 +70,6 @@ class ImageBase extends Base {
      * @returns {Boolean} consumed or not
      */
     onKeydown(key) {
-
         // Return false when media controls are not ready or are focused
         if (!this.controls) {
             return false;
