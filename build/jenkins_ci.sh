@@ -2,20 +2,6 @@
 
 export NODE_PATH=$NODE_PATH:./node_modules
 
-# Run eslint over changed files, if any
-eslint_changed_files() {
-    if npm run eslint; then
-        echo "----------------------------------------------------"
-        echo "Eslint passes with no errors"
-        echo "----------------------------------------------------"
-    else
-        echo "----------------------------------------------------"
-        echo "Error: failure in build_pull_request - eslint errors"
-        echo "----------------------------------------------------"
-        exit 1;
-    fi
-}
-
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
 
@@ -67,13 +53,6 @@ build_assets() {
         exit 1;
     fi
 }
-
-if ! eslint_changed_files; then
-    echo "----------------------------------------------------"
-    echo "Error: failure in build_pull_request - eslint errors"
-    echo "----------------------------------------------------"
-    exit 1
-fi
 
 if ! build_assets; then
     echo "----------------------------------------------------"
