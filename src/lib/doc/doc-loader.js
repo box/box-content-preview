@@ -9,25 +9,25 @@ const STATIC_URI = 'third-party/doc/';
 const VIEWERS = [
     {
         REPRESENTATION: 'original',
-        EXTENSIONS: [ 'pdf' ],
-        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', 'document.js' ],
-        STYLESHEETS: [ STATIC_URI + 'pdf_viewer.css', 'document.css' ],
+        EXTENSIONS: ['pdf'],
+        SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'document.js'],
+        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         CONSTRUCTOR: 'Document',
         PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'pdf',
-        EXTENSIONS: [ 'ppt', 'pptx' ],
-        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', 'presentation.js' ],
-        STYLESHEETS: [ STATIC_URI + 'pdf_viewer.css', 'presentation.css' ],
+        EXTENSIONS: ['ppt', 'pptx'],
+        SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'presentation.js'],
+        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
         CONSTRUCTOR: 'Presentation',
         PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'pdf',
-        EXTENSIONS: [ 'doc', 'docx', 'gdoc', 'gsheet', 'msg', 'odp', 'odt', 'ods', 'pdf', 'ppt', 'pptx', 'rtf', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl' ],
-        SCRIPTS: [ STATIC_URI + 'compatibility.js', STATIC_URI + 'pdf.js', STATIC_URI + 'pdf_viewer.js', 'document.js' ],
-        STYLESHEETS: [ STATIC_URI + 'pdf_viewer.css', 'document.css' ],
+        EXTENSIONS: ['doc', 'docx', 'gdoc', 'gsheet', 'msg', 'odp', 'odt', 'ods', 'pdf', 'ppt', 'pptx', 'rtf', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl'],
+        SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'document.js'],
+        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         CONSTRUCTOR: 'Document',
         PREFETCH: 'xhr'
     }
@@ -53,9 +53,9 @@ class DocLoader extends AssetLoader {
      */
     preload(options) {
         // Since the pdf worker is pretty big, lets prefetch it
-        let assetUrlCreator = createAssetUrlCreator(options.location);
-        let pdfWorkerUrl = assetUrlCreator(STATIC_URI + 'pdf.worker.js');
-        prefetchAssets([ pdfWorkerUrl ]);
+        const assetUrlCreator = createAssetUrlCreator(options.location);
+        const pdfWorkerUrl = assetUrlCreator(`${STATIC_URI}pdf.worker.js`);
+        prefetchAssets([pdfWorkerUrl]);
     }
 }
 

@@ -6,32 +6,32 @@ import AssetLoader from '../asset-loader';
 const VIEWERS = [
     {
         REPRESENTATION: 'original',
-        EXTENSIONS: [ 'svg', 'gif' ],
-        SCRIPTS: [ 'image.js' ],
-        STYLESHEETS: [ 'image.css' ],
+        EXTENSIONS: ['svg', 'gif'],
+        SCRIPTS: ['image.js'],
+        STYLESHEETS: ['image.css'],
         CONSTRUCTOR: 'Image',
         PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'multi-image',
-        EXTENSIONS: [ 'tif', 'tiff' ],
-        SCRIPTS: [ 'multi-image.js' ],
-        STYLESHEETS: [ 'multi-image.css' ],
+        EXTENSIONS: ['tif', 'tiff'],
+        SCRIPTS: ['multi-image.js'],
+        STYLESHEETS: ['multi-image.css'],
         CONSTRUCTOR: 'MultiImage'
     },
     {
         REPRESENTATION: 'jpg',
-        EXTENSIONS: [ 'jpeg', 'jpg' ],
-        SCRIPTS: [ 'image.js' ],
-        STYLESHEETS: [ 'image.css' ],
+        EXTENSIONS: ['jpeg', 'jpg'],
+        SCRIPTS: ['image.js'],
+        STYLESHEETS: ['image.css'],
         CONSTRUCTOR: 'Image',
         PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'png',
-        EXTENSIONS: [ 'ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff' ],
-        SCRIPTS: [ 'image.js' ],
-        STYLESHEETS: [ 'image.css' ],
+        EXTENSIONS: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
+        SCRIPTS: ['image.js'],
+        STYLESHEETS: ['image.css'],
         CONSTRUCTOR: 'Image',
         PREFETCH: 'xhr'
     }

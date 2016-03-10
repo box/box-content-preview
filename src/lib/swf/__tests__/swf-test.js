@@ -1,30 +1,30 @@
+/* global swfobject */
+
 import SWF from '../swf';
 
-let sandbox = sinon.sandbox.create();
-let swfUrl = 'foo';
+const sandbox = sinon.sandbox.create();
+const swfUrl = 'foo';
 let swf;
 
-describe('swf.js', function() {
-
-    before(function() {
+describe('swf.js', () => {
+    before(() => {
         fixture.setBase('src/lib');
     });
 
-    beforeEach(function() {
+    beforeEach(() => {
         fixture.load('swf/__tests__/swf-test.html');
         swf = new SWF('.container');
     });
 
-    afterEach(function() {
+    afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
     });
 
-    it('should load an swf and fire load event', function(done) {
+    it('should load an swf and fire load event', (done) => {
+        const spy = sandbox.spy(swfobject, 'embedSWF');
 
-        let spy = sandbox.spy(swfobject, 'embedSWF');
-
-        swf.on('load', function() {
+        swf.on('load', () => {
             spy.should.have.been.calledWith(swfUrl, 'flash-player', '100%', '100%', '9', null, null, {
                 allowfullscreen: 'true',
                 allowFullScreen: 'true',
