@@ -262,7 +262,9 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     onUnsupportedRepresentation(error) {
+        /* eslint-disable no-console */
         console.error(error);
+        /* eslint-enable no-console */
         this.destroy();
     }
 

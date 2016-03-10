@@ -227,9 +227,11 @@ class Model3d extends Box3D {
                 // Update controls ui
                 this.controls.handleSetRenderMode(defaults.defaultRenderMode);
             })
-            .catch((err) => {
+            .catch((error) => {
                 super.handleSceneLoaded();
-                console.error(err);
+                /* eslint-disable no-console */
+                console.error(error);
+                /* eslint-enable no-console */
             });
     }
 

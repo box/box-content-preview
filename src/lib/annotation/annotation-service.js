@@ -89,7 +89,9 @@ class AnnotationService {
             const index = annotations.findIndex((storedAnnotation) => storedAnnotation.annotationID === annotationID);
 
             if (index !== -1) {
+                /*eslint-disable*/
                 annotation.updated = new Date(); // @TODO(tjin): not sure if updated belongs here or higher up
+                /*eslint-enable*/
                 annotations[index] = annotation;
                 this.localAnnotations = annotations;
                 resolve(annotation);

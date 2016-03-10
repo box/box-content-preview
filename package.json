@@ -88,10 +88,9 @@
     "clean": "rm -rf dist && rm -rf reports && rm -rf src/i18n/json",
     "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
     "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
-    "lint": "./node_modules/.bin/eslint src",
+    "lint": "./node_modules/.bin/eslint src/lib",
     "eslint": "./build/pre-commit.sh",
-    "eslint-ci": "./build/eslint-ci.sh",
-    "build": "npm run eslint && npm run clean && npm run build-rb && npm run dev",
-    "release": "npm run eslint-ci && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"
+    "build": "npm run lint && npm run clean && npm run build-rb && npm run dev",
+    "release": "npm run lint && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"
   }
 }
