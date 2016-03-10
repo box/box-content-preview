@@ -1,5 +1,3 @@
-'use strict';
-
 import './model3d.scss';
 import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
@@ -20,7 +18,7 @@ import {
     EVENT_RESET_SCENE_DEFAULTS
 } from './model3d-constants';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 const MISSING_MAX = 4;
 
@@ -160,12 +158,12 @@ class Model3d extends Box3D {
     handleMissingAsset(data) {
         this.missingAssets = this.missingAssets || [];
 
-        //only store MISSING_MAX missing assets
+        // Only store MISSING_MAX missing assets
         if (Object.keys(this.missingAssets).length >= MISSING_MAX) {
             return;
         }
 
-        //storing in a dictionary due to progressive texture loading using the same name for different resolutions
+        // Storing in a dictionary due to progressive texture loading using the same name for different resolutions
         const key = data.fileName || data.assetName;
         this.missingAssets[key] = this.missingAssets[key] || data;
     }
@@ -202,14 +200,13 @@ class Model3d extends Box3D {
         // Get scene defaults for up/forward axes, and render mode
         this.boxSdk.getMetadataClient().get(this.options.file.id, 'global', 'box3d')
             .then((resp) => {
-
                 if (resp.status !== 200) {
-                    throw new Error('Error loading template for ' + this.options.file.id);
+                    throw new Error(`Error loading template for ${this.options.file.id}`);
                 }
 
                 super.handleSceneLoaded();
 
-                let defaults = resp.response;
+                const defaults = resp.response;
 
                 this.axes.up = defaults.upAxis;
                 this.axes.forward = defaults.forwardAxis;
@@ -244,8 +241,8 @@ class Model3d extends Box3D {
      */
     @autobind
     handleSceneSave(renderMode, projection) {
-        const metadata = this.boxSdk.getMetadataClient(),
-            operations = [];
+        const metadata = this.boxSdk.getMetadataClient();
+        const operations = [];
 
         operations.push(metadata.createOperation('replace', '/defaultRenderMode', renderMode));
         operations.push(metadata.createOperation('replace', '/cameraProjection', projection));

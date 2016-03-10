@@ -1,5 +1,3 @@
-'use strict';
-
 import Box3DRenderer from '../box3d-renderer';
 import autobind from 'autobind-decorator';
 import sceneEntities from './scene-entities';
@@ -63,8 +61,10 @@ class Image360Renderer extends Box3DRenderer {
      * @returns {Promise} a promise that resolves with the newly created runtime
      */
     load(jsonUrl, options = {}) {
+        /*eslint-disable*/
         options.sceneEntities = sceneEntities;
         options.inputSettings = INPUT_SETTINGS;
+        /*eslint-enable*/
 
         return this.initBox3d(options)
             .then(this.loadPanoramaFile.bind(this, options.file))
@@ -91,16 +91,16 @@ class Image360Renderer extends Box3DRenderer {
                 vMapping: 'Clamp',
                 fileId: fileProperties.id,
                 filename: fileProperties.name,
-                originalImage: fileProperties.extension === 'jpg' ||
-                    fileProperties.fileExtension === 'png' ? true : false
+                originalImage: fileProperties.extension === 'jpg' || fileProperties.fileExtension === 'png'
             }
         });
         return new Promise((resolve, reject) => {
-            this.textureAsset.load((texAsset) => {
+            this.textureAsset.load(() => {
                 skybox.enable();
                 skybox.setSkyboxTexture(this.textureAsset.id);
                 resolve();
-            });
+            })
+            .catch(reject);
         });
     }
 

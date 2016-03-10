@@ -40,7 +40,7 @@ import {
  * @class
  */
 @autobind
-class Model3dSettings extends Box3DControls  {
+class Model3dSettings extends Box3DControls {
     /**
      * Creates UI panel for Metadata saving and modification
      * @constructor
@@ -68,7 +68,6 @@ class Model3dSettings extends Box3DControls  {
      * @inheritdoc
      */
     addUi() {
-
         // container
         this.wrapperEl = document.createElement('div');
         this.wrapperEl.classList.add(CSS_CLASS_OVERLAY, CSS_CLASS_SETTINGS_WRAPPER);
@@ -93,7 +92,8 @@ class Model3dSettings extends Box3DControls  {
         this.registerUiItem('settings_panel', this.settingsPanelEl);
         this.settingsButtonEl.appendChild(this.settingsPanelEl);
 
-        const renderModes = [{
+        const renderModes = [
+            {
                 text: RENDER_MODE_LIT,
                 callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_LIT)
             }, {
@@ -117,13 +117,14 @@ class Model3dSettings extends Box3DControls  {
         const renderPanelRowEl = this.createSettingsDropdown('Default Render Mode',
             'Lit', renderModes);
 
-        this.renderModeEl = renderPanelRowEl.querySelector('span.' + CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL);
+        this.renderModeEl = renderPanelRowEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
         this.settingsPanelEl.appendChild(renderPanelRowEl);
 
-        const projectionModes = [{
-                text : 'Perspective',
+        const projectionModes = [
+            {
+                text: 'Perspective',
                 callback: this.handleCameraProjectionSelected.bind(this, CAMERA_PROJECTION_PERSPECTIVE)
-            },{
+            }, {
                 text: 'Orthographic',
                 callback: this.handleCameraProjectionSelected.bind(this, CAMERA_PROJECTION_ORTHOGRAPHIC)
             }
@@ -131,7 +132,7 @@ class Model3dSettings extends Box3DControls  {
 
         const projectionPanelRowEl = this.createSettingsDropdown('Default Projection',
             'Perspective', projectionModes);
-        this.projectionModeEl = projectionPanelRowEl.querySelector('span.' + CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL);
+        this.projectionModeEl = projectionPanelRowEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
         this.settingsPanelEl.appendChild(projectionPanelRowEl);
 
         // Rotation Axis buttons
@@ -188,10 +189,10 @@ class Model3dSettings extends Box3DControls  {
      * @returns {HtmlElement} The newly created button
      */
     createSettingsButton(text = '', callback) {
-        let button = document.createElement('button');
+        const button = document.createElement('button');
         button.textContent = text;
         button.classList.add(CSS_CLASS_SETTINGS_PANEL_BUTTON);
-        this.registerUiItem('settings-button-' + text, button, 'click', callback);
+        this.registerUiItem(`settings-button-${text}`, button, 'click', callback);
         return button;
     }
 
@@ -201,7 +202,7 @@ class Model3dSettings extends Box3DControls  {
      * @returns {HtmlElement} The newly create label
      */
     createSettingsLabel(text = '') {
-        let label = document.createElement('div');
+        const label = document.createElement('div');
         label.classList.add(CSS_CLASS_SETTINGS_PANEL_LABEL);
         label.textContent = text;
         return label;
@@ -214,11 +215,11 @@ class Model3dSettings extends Box3DControls  {
      * @returns {HtmlElement} The row element created
      */
     createSettingsRow(labelText) {
-        let panelRowEl = document.createElement('div');
+        const panelRowEl = document.createElement('div');
         panelRowEl.classList.add(CSS_CLASS_SETTINGS_PANEL_ROW);
 
         if (labelText) {
-            let rowLabel = this.createSettingsLabel(labelText);
+            const rowLabel = this.createSettingsLabel(labelText);
             panelRowEl.appendChild(rowLabel);
         }
 
@@ -231,7 +232,6 @@ class Model3dSettings extends Box3DControls  {
      * @returns {HtmlElement} The settings dropdown that can be added to the settings panel
      */
     createSettingsDropdown(labelText = '', listText = '', listContent = []) {
-
         const wrapperEl = this.createSettingsRow(labelText);
 
         const dropdownWrapperEl = document.createElement('div');
@@ -255,11 +255,10 @@ class Model3dSettings extends Box3DControls  {
             const listItemEl = document.createElement('li');
             listItemEl.textContent = text;
 
-            const labelId = labelText + '-ul-li-' + text;
-            this.registerUiItem(labelId, listItemEl,
-                'click', function onLiClick() {
-                    listLabelEl.textContent = text;
-                });
+            const labelId = `${labelText}-ul-li-${text}`;
+            this.registerUiItem(labelId, listItemEl, 'click', () => {
+                listLabelEl.textContent = text;
+            });
 
             if (listContent[i].callback) {
                 this.registerUiItem(labelId, listItemEl, 'click', listContent[i].callback);
@@ -275,7 +274,7 @@ class Model3dSettings extends Box3DControls  {
             dropdownEl.classList.toggle(CSS_CLASS_HIDDEN);
         }
 
-        this.registerUiItem(labelText + '_' + listText, dropdownWrapperEl, 'click', onListClick.bind(this));
+        this.registerUiItem(`${labelText}_${listText}`, dropdownWrapperEl, 'click', onListClick.bind(this));
 
         return wrapperEl;
     }
@@ -289,7 +288,7 @@ class Model3dSettings extends Box3DControls  {
     createOrientationAxis(axisLabel = '', callback) {
         const axisEl = document.createElement('li');
         axisEl.textContent = axisLabel.toUpperCase();
-        this.registerUiItem('axis-item-li-' + axisLabel, axisEl, 'click', callback);
+        this.registerUiItem(`axis-item-li-${axisLabel}`, axisEl, 'click', callback);
         return axisEl;
     }
 
@@ -303,9 +302,9 @@ class Model3dSettings extends Box3DControls  {
         const arrowWrapperEl = document.createElement('div');
         arrowWrapperEl.classList.add('box-preview-orientation-controls');
         const arrowEl = document.createElement('span');
-        arrowEl.classList.add('box-preview-icon-setting-arrow-' + direction);
+        arrowEl.classList.add(`box-preview-icon-setting-arrow-${direction}`);
         arrowWrapperEl.appendChild(arrowEl);
-        this.registerUiItem('box-preview-settings-arrow-' + direction, arrowWrapperEl, 'click', callback);
+        this.registerUiItem(`box-preview-settings-arrow-${direction}`, arrowWrapperEl, 'click', callback);
         return arrowWrapperEl;
     }
 
@@ -323,7 +322,7 @@ class Model3dSettings extends Box3DControls  {
      * @returns {void}
      */
     closeDropdowns(exceptionEl) {
-        const dropdownEls = this.settingsPanelEl.querySelectorAll('div.' + CSS_CLASS_DEFAULT_SETTING_SELECTOR + ' ul');
+        const dropdownEls = this.settingsPanelEl.querySelectorAll(`div.${CSS_CLASS_DEFAULT_SETTING_SELECTOR} ul`);
         Object.keys(dropdownEls).forEach((nodeKey) => {
             const node = dropdownEls[nodeKey];
             if (node === exceptionEl) {

@@ -1,5 +1,3 @@
-'use strict';
-
 import EventEmitter from 'events';
 import Controls from '../controls';
 import autobind from 'autobind-decorator';
@@ -8,6 +6,7 @@ import {
     EVENT_ENABLE_VR,
     EVENT_DISABLE_VR,
     EVENT_RESET,
+    EVENT_SCENE_LOADED,
     EVENT_TOGGLE_FULLSCREEN
 } from './box3d-constants';
 
@@ -84,7 +83,6 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     unregisterUiItem(item) {
-
         if (!this.eventRegistry[item.uuid]) {
             return;
         }
@@ -97,8 +95,10 @@ class Box3DControls extends EventEmitter {
             item.events[eventName].forEach((callback) => {
                 item.el.removeEventListener(eventName, callback);
             });
+            /*eslint-disable*/
             delete item.events[eventName];
             delete item.el;
+            /*eslint-enable*/
         });
 
         delete this.eventRegistry[item.uuid];
