@@ -14,5 +14,5 @@ files=$(get_git_changed_files);
 root=$(git rev-parse --show-toplevel);
 
 if [ ! -z "${files}" ]; then
-    ${root}/node_modules/eslint/bin/eslint.js $files;
+    ${root}/node_modules/.bin/eslint $files;
 fi

@@ -84,12 +84,13 @@
     "sync": "./build/push_to_dev.sh",
     "dev": "./node_modules/.bin/webpack --progress --colors",
     "prod": "BUILD_PROD=1 ./node_modules/.bin/webpack -p",
-    "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
     "watch": "npm run watch-rb & ./node_modules/.bin/webpack --watch",
     "clean": "rm -rf dist && rm -rf reports && rm -rf src/i18n/json",
+    "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
     "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
-    "build": "npm run eslint && npm run clean && npm run build-rb && npm run dev",
+    "lint": "./node_modules/.bin/eslint src",
     "eslint": "./build/pre-commit.sh",
+    "build": "npm run eslint && npm run clean && npm run build-rb && npm run dev",
     "release": "npm run eslint && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"
   }
 }
