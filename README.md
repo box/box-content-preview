@@ -116,13 +116,13 @@ preview.show(fileId, { options });
 Token
 ------
 
-In order for preview to work over the API it needs an auth token. The value passed in for the token option above can either be a string token or a token generator function. If passing a string, it is assumed that the token never expires or changes. If however the token expires or changes over time, then a generator function should be passed. The generator function should take in a file id or a list of file ids as argument and return a `Promise` which should resolve to a key/value pair of id/token. A sample implementation is below.
+In order for preview to work over the API it needs an auth token. The value passed in for the token option above can either be a string token or a token generator function. If passing in a string, it is assumed that the token never expires or changes. If however the token expires or changes over time, then a generator function should be passed in instead. The generator function should take in a file id or a list of file ids as the argument. It should return a `Promise` which should resolve to either a string token (for example when the same token is being used for all files) OR a json map of { file id: token } pairs. A sample implementation is below:
 
 ```javascript
 /**
  * Auth token fetcher
  * @param {String|Array} id File id or array of file ids
- * @returns {Promise} Promise to resolve to a map of ids and tokens
+ * @returns {Promise} Promise to resolve to a map of ids and tokens or just a string token
  */
 function token(id) {
     // id can be a single file id or an array of ids
@@ -138,11 +138,14 @@ function token(id) {
         //        id3: 'token3'
         //        ...
         //    }
+        //      -- OR --
+        //       'token'
+        //
         fetch(tokenServiceUrl, {
             method: 'post',
             body: { fileIDs: ids } // based on what the token service endpoint expects
         })
-        .then((response) => response.json())
+        .then((response) => response.json())  // OR response.text()
         .then(resolve)
         .catch(reject);
     });
