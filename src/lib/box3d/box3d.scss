@@ -66,6 +66,7 @@
 .box-preview-box3d .box-preview-pullup:after {
     content: '';
     position: absolute;
+    z-index: -1;
     top: 100%;
     width: 0;
     height: 0;

@@ -208,7 +208,7 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -273,76 +273,29 @@
 	    }
 
 	    /**
-	     * Load a "remote" (dynamically resolved) Box3DAsset. Overridden to supply getFileIds()
-	     * with a parentFolderId, instead of a file id
-	     * @method loadRemoteAsset
-	     * @param {object} asset The box3d asset to load
-	     * @param {object} params The parameters we want to pass to the BoxSDK and base loader.
-	     * Used for things like xhr key, progress id, and parentId
-	     * @param {function|null} progress The progress callback, on xhr load progress
-	     * @returns {Promise} a promise that resolves in the loaded and parsed data for Box3D
+	     * @inheritdoc
 	     */
 	  }, {
-	    key: 'loadRemoteAsset',
-	    value: function loadRemoteAsset(asset, params, progress) {
-	      var _this = this;
+	    key: 'getAssetIdPromise',
+	    value: function getAssetIdPromise(box3dAsset) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	      if (params === undefined) params = {};
+	      var fileName = box3dAsset.getProperty('filename');
+	      var fileId = box3dAsset.getProperty('fileId');
+	      var fileVersionId = box3dAsset.getProperty('fileVersionId');
+	      var idPromise = undefined;
 
-	      var idPromise = undefined,
-	          loadFunc = undefined,
-	          fileName = asset.getProperty('filename'),
-	          fileId = asset.getProperty('fileId'),
-	          fileVersionId = asset.getProperty('fileVersionId');
-
-	      switch (asset.type) {
-	        case 'texture2D':
-	          {
-	            var ext = 'png';
-
-	            if (fileId) {
-	              idPromise = _lie2['default'].resolve({
-	                fileId: fileId,
-	                fileVersionId: fileVersionId
-	              });
-	            } else {
-	              // Dynamically resolve texture filenames at load time.
-	              idPromise = this.sdkLoader.getFileIds(fileName, this.parentId);
-	            }
-	            //need to check file extension to know which representation we need to get
-	            if (fileName.match(/(\.jpg|\.jpeg|\.gif|\.bmp)$/i)) {
-	              ext = 'jpg';
-	            }
-	            params.extension = ext;
-
-	            loadFunc = this.loadRemoteImage.bind(this);
-	          }
-	          break;
-	        case 'animation':
-	        case 'meshGeometry':
-	          {
-	            // Mesh geometry and animation data are part of the 3dcg representation,
-	            // so we use the same fileVersionId to fetch them.
-	            idPromise = _lie2['default'].resolve({
-	              fileId: fileId || this.fileId,
-	              fileVersionId: fileVersionId || this.fileVersionId
-	            });
-	            loadFunc = this.loadArrayBuffer.bind(this);
-	          }
-	          break;
-	        default:
-	          return _lie2['default'].reject(new Error('Asset type not supported for loading: ' + asset.type));
+	      if (fileId) {
+	        idPromise = _lie2['default'].resolve({
+	          fileId: fileId,
+	          fileVersionId: fileVersionId
+	        });
+	      } else {
+	        // Use search API Instead
+	        idPromise = this.sdkLoader.getFileIds(fileName, this.parentId, params);
 	      }
 
-	      // First, resolve the fileVersionId, then load the representation.
-	      return new _lie2['default'](function (resolve, reject) {
-	        idPromise.then(function (fileIds) {
-	          return loadFunc(fileIds.fileId, fileIds.fileVersionId, params, progress);
-	        }).then(resolve)['catch'](function (err) {
-	          _this.onAssetNotFound(asset);
-	          reject(err);
-	        });
-	      });
+	      return idPromise;
 	    }
 
 	    /**
@@ -358,14 +311,14 @@
 	  }, {
 	    key: 'findImageRepresentation',
 	    value: function findImageRepresentation(fileId) {
-	      var _this2 = this;
+	      var _this = this;
 
 	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	      // TODO: Expand functionality for 32x32 representations, and eventually conversion
 	      // We are going to hack into here the represntation we want to get for images
 	      return new _lie2['default'](function (resolve, reject) {
-	        _this2.sdkLoader.xhr.get(_this2.apiBase + '/2.0/files/' + fileId + '?fields=representations', null, { responseType: 'json' }).then(function (resp) {
+	        _this.sdkLoader.xhr.get(_this.apiBase + '/2.0/files/' + fileId + '?fields=representations', null, { responseType: 'json' }).then(function (resp) {
 	          if (resp.status !== 200) {
 	            return reject(new Error('File Not Found: ' + fileId));
 	          }
@@ -394,6 +347,44 @@
 	    }
 
 	    /**
+	     * Find a video representation we can load
+	     * @param {[type]} fileId [description]
+	     * @param {[type]} params =             {} [description]
+	     * @returns {[type]} [description]
+	     */
+	  }, {
+	    key: 'findVideoRepresentation',
+	    value: function findVideoRepresentation(fileId) {
+	      var _this2 = this;
+
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      return new _lie2['default'](function (resolve, reject) {
+
+	        _this2.sdkLoader.xhr.get(_this2.apiBase + '/2.0/files/' + fileId + '?fields=representations', null, { responseType: 'json' }).then(function (resp) {
+	          if (resp.status !== 200) {
+	            return reject(new Error('File Not Found: ' + fileId));
+	          }
+
+	          var info = resp.response,
+	              representationPath = undefined;
+
+	          if (info.representations && info.representations.entries) {
+
+	            info.representations.entries.some(function (entry) {
+	              // for now, only check representations that are ready :D
+	              if (entry.status === 'success' && entry.representation === params.representation) {
+	                representationPath = entry.links.content.url;
+	                return true;
+	              }
+	            });
+	          }
+	          resolve(representationPath);
+	        })['catch'](reject);
+	      });
+	    }
+
+	    /**
 	     * Load an image representation.
 	     * @method loadRemoteImage
 	     * @param {string} fileId The ID of the file we are going to load
@@ -407,6 +398,8 @@
 	    value: function loadRemoteImage(fileId, fileVersionId, params, progress) {
 	      var _this3 = this;
 
+	      if (params === undefined) params = {};
+
 	      return new _lie2['default'](function (resolve, reject) {
 
 	        // if no size provided, try and use width and height, or defaults
@@ -414,6 +407,7 @@
 
 	        _this3.findImageRepresentation(fileId, params).then(function (url) {
 
+	          //#TODO @jholdstock: Generalize this loading & progress behaviour
 	          if (!url) {
 	            reject(new Error('No representation available for: ' + fileId));
 	          }
@@ -425,7 +419,7 @@
 	          if (!_this3.cache[url]) {
 
 	            _this3.cache[url] = new _lie2['default'](function (resolve, reject) {
-	              _this3.sdkLoader.getRepresentation(url, _this3.onAssetLoadProgress.bind(_this3), { responseType: 'blob', info: { progressKey: url } }).then(function (response) {
+	              _this3.sdkLoader.getRepresentation(url, _this3.onAssetLoadProgress.bind(_this3), { responseType: 'blob', info: { url: url } }).then(function (response) {
 	                return _this3.parseImage(response, {
 	                  size: 2048,
 	                  pixelFormat: params.extension === 'png' ? 'rgba' : 'rgb',
@@ -447,6 +441,34 @@
 	    }
 
 	    /**
+	     * Load a Video representation
+	     * @param {string} fileId The ID of the file we are going to load
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @returns {Promise} a promise that resolves in video data usable by the Box3DRuntime
+	     */
+	  }, {
+	    key: 'loadRemoteVideo',
+	    value: function loadRemoteVideo(fileId, fileVersionId) {
+	      var _this4 = this;
+
+	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	      params.representation = 'mp4';
+
+	      return new _lie2['default'](function (resolve, reject) {
+
+	        _this4.findVideoRepresentation(fileId, params).then(function (url) {
+	          if (!url) {
+	            return reject(new Error('No representation available for: ' + fileId));
+	          }
+
+	          _this4.parseVideo(url).then(resolve)['catch'](reject);
+	        })['catch'](reject);
+	      });
+	    }
+
+	    /**
 	     * Load a binary file and return an array buffer.
 	     * @method loadArrayBuffer
 	     * @param {string} fileId The ID of the file we are going to load
@@ -458,7 +480,7 @@
 	  }, {
 	    key: 'loadArrayBuffer',
 	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      if (params === undefined) params = {};
 
@@ -477,28 +499,28 @@
 	        url = url.replace('entities.json', 'geometry.bin');
 
 	        if (progress) {
-	          _this4.addProgressListener(url, progress);
+	          _this5.addProgressListener(url, progress);
 	        }
 
 	        // If the representation is cached, return the cached data; otherwise,
 	        // get the representation.
-	        if (!_this4.cache.hasOwnProperty(url)) {
+	        if (!_this5.cache.hasOwnProperty(url)) {
 
-	          _this4.cache[url] = new _lie2['default'](function (resolve, reject) {
-	            _this4.sdkLoader.getRepresentation(url, _this4.onAssetLoadProgress.bind(_this4), { responseType: 'arraybuffer', info: { progressKey: url } }).then(function (response) {
-	              _this4.removeProgressListeners(url);
+	          _this5.cache[url] = new _lie2['default'](function (resolve, reject) {
+	            _this5.sdkLoader.getRepresentation(url, _this5.onAssetLoadProgress.bind(_this5), { responseType: 'arraybuffer', info: { url: url } }).then(function (response) {
+	              _this5.removeProgressListeners(url);
 	              resolve({
 	                data: response.response,
 	                properties: {}
 	              });
 	            })['catch'](function (err) {
-	              _this4.removeProgressListeners(url);
+	              _this5.removeProgressListeners(url);
 	              reject(err);
 	            });
 	          });
 	        }
 
-	        return _this4.cache[url];
+	        return _this5.cache[url];
 	      });
 	    }
 
@@ -514,7 +536,7 @@
 	  }, {
 	    key: 'loadJson',
 	    value: function loadJson(fileId, fileVersionId, params, progress) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      if (params === undefined) params = {};
 
@@ -526,30 +548,30 @@
 	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
 
 	        if (progress) {
-	          _this5.addProgressListener(url, progress);
+	          _this6.addProgressListener(url, progress);
 	        }
 
 	        // If the representation is cached, return the cached data; otherwise,
 	        // get the representation.
-	        if (!_this5.cache.hasOwnProperty(url)) {
-	          _this5.cache[url] = new _lie2['default'](function (resolve, reject) {
-	            _this5.sdkLoader.getRepresentation(url, _this5.onAssetLoadProgress.bind(_this5), {
+	        if (!_this6.cache.hasOwnProperty(url)) {
+	          _this6.cache[url] = new _lie2['default'](function (resolve, reject) {
+	            _this6.sdkLoader.getRepresentation(url, _this6.onAssetLoadProgress.bind(_this6), {
 	              responseType: 'json',
-	              info: { progressKey: url }
+	              info: { url: url }
 	            }).then(function (response) {
-	              _this5.removeProgressListeners(url);
+	              _this6.removeProgressListeners(url);
 	              resolve({
 	                data: response.response,
 	                properties: {}
 	              });
 	            })['catch'](function (err) {
-	              _this5.removeProgressListeners(url);
+	              _this6.removeProgressListeners(url);
 	              reject(err);
 	            });
 	          });
 	        }
 
-	        return _this5.cache[url];
+	        return _this6.cache[url];
 	      });
 	    }
 	  }]);
@@ -1109,75 +1131,40 @@
 
 	      if (params === undefined) params = {};
 
-	      // #TODO: Move this functionality into runmode-loader
+	      var loadFunc = this.getAssetLoadingMethod(asset);
 
-	      var idPromise = undefined,
-	          loadFunc = undefined,
-	          fileId = asset.getProperty('fileId'),
-	          fileVersionId = asset.getProperty('fileVersionId');
+	      if (!loadFunc) {
+	        return _lie2['default'].reject('Asset not supported for loading: ' + asset.type);
+	      }
+
+	      loadFunc = loadFunc.bind(this);
+
+	      var idPromise = this.getAssetIdPromise(asset, params);
 
 	      switch (asset.type) {
-	        case 'document':
-	          {
-	            var fileName = asset.getProperty('filename');
-
-	            if (fileId) {
-
-	              idPromise = _lie2['default'].resolve({
-	                fileId: fileId,
-	                fileVersionId: fileVersionId
-	              });
-	            } else {
-
-	              // Dynamically resolve document filenames at load time.
-	              idPromise = this.sdkLoader.getFileIds(fileName, this.fileId, {
-	                looseMatch: params.looseMatch
-	              });
-	            }
-
-	            loadFunc = this.loadJson.bind(this);
-	          }
-	          break;
-
 	        case 'texture2D':
 	          {
 	            var fileName = asset.getProperty('filename');
-
-	            if (fileId) {
-
-	              idPromise = _lie2['default'].resolve({
-	                fileId: fileId,
-	                fileVersionId: fileVersionId
-	              });
-	            } else {
-
-	              // Dynamically resolve texture filenames at load time.
-	              idPromise = this.sdkLoader.getFileIds(fileName, this.fileId, {
-	                looseMatch: params.looseMatch
-	              });
-	            }
-
 	            // Check the file extension to know which representation we need.
 	            params.extension = fileName.match(/(\.jpg|\.jpeg|\.gif|\.bmp)$/i) ? 'jpg' : 'png';
-
-	            loadFunc = this.loadRemoteImage.bind(this);
 	          }
 	          break;
 
 	        case 'animation':
 	        case 'meshGeometry':
-	          // Mesh geometry and animation data are part of the 3dcg representation,
-	          // so we use the same fileVersionId to fetch them.
-	          idPromise = _lie2['default'].resolve({
-	            fileId: fileId || this.fileId,
-	            fileVersionId: fileVersionId || this.fileVersionId
-	          });
-
-	          loadFunc = this.loadArrayBuffer.bind(this);
+	          {
+	            var fileId = asset.getProperty('fileId');
+	            var fileVersionId = asset.getProperty('fileVersionId');
+	            // Mesh geometry and animation data are part of the 3dcg representation,
+	            // so we use the same fileVersionId to fetch them.
+	            // #TODO @jholdstock: Need to fix this for external meshes. I believe @dweis
+	            // already had a fix for this, but it was never merged.
+	            idPromise = _lie2['default'].resolve({
+	              fileId: fileId || this.fileId,
+	              fileVersionId: fileVersionId || this.fileVersionId
+	            });
+	          }
 	          break;
-
-	        default:
-	          return _lie2['default'].reject(new Error('Asset type not supported for loading: ' + asset.type));
 	      }
 
 	      // First, resolve the fileVersionId, then load the representation.
@@ -1189,6 +1176,48 @@
 	          reject(err);
 	        });
 	      });
+	    }
+
+	    /**
+	     * Get a method of loading a texture
+	     * @param {Object} box3dAsset The Box3DAsset to load
+	     * @returns {Function} The loading function needed to load the asset
+	     */
+	  }, {
+	    key: 'getAssetLoadingMethod',
+	    value: function getAssetLoadingMethod(box3dAsset) {
+	      var loadFunc = undefined;
+
+	      switch (box3dAsset.type) {
+	        case 'texture2D':
+	          loadFunc = this.loadRemoteImage;
+	          break;
+	        case 'textureVideo':
+	          loadFunc = this.loadRemoteVideo;
+	          break;
+	        case 'animation':
+	        /*fall-through*/
+	        case 'meshGeometry':
+	          loadFunc = this.loadArrayBuffer;
+	          break;
+	        case 'document':
+	          loadFunc = this.loadJson;
+	          break;
+	      }
+
+	      return loadFunc;
+	    }
+
+	    /**
+	     * Check to see if a Box3D Asset already has provided file ids
+	     * @param {Object} box3dAsset The Box3DAsset we are checking for IDs
+	     * @param {Object} params Additional params to be passed to the SDK search method
+	     * @returns {Promise} A promise that resolves in FileID and FileVersionID
+	     */
+	  }, {
+	    key: 'getAssetIdPromise',
+	    value: function getAssetIdPromise() /*box3dAsset, params = {}*/{
+	      throw new Error('getAssetIdPromise not implemented!');
 	    }
 
 	    /**
@@ -1211,7 +1240,6 @@
 	        case 'textureCube':
 	          loadFunc = this.loadLocalImage.bind(this);
 	          break;
-
 	        default:
 	          return _lie2['default'].reject(new Error('Asset type not supported for local loading: ' + asset.type));
 	      }
@@ -1312,7 +1340,7 @@
 	        return;
 	      }
 	      // get url from xhr request
-	      var url = info.progressKey;
+	      var url = info.url;
 	      var encoding = target.getResponseHeader('Content-Encoding');
 
 	      if (encoding && encoding.indexOf('gzip') > -1) {
@@ -1355,7 +1383,6 @@
 	  }, {
 	    key: 'removeProgressListeners',
 	    value: function removeProgressListeners(url) {
-
 	      if (this.progressListeners.hasOwnProperty(url)) {
 	        delete this.progressListeners[url];
 	      }
@@ -1373,7 +1400,6 @@
 	  }, {
 	    key: 'loadJson',
 	    value: function loadJson() /*fileId, fileVersionId, params = {}, progress*/{
-
 	      throw new Error('loadJson() Not Implemented');
 	    }
 
@@ -1389,8 +1415,22 @@
 	  }, {
 	    key: 'loadRemoteImage',
 	    value: function loadRemoteImage() /*fileId, fileVersionId, params, progress*/{
-
 	      throw new Error('loadRemoteImage() Not Implemented');
+	    }
+
+	    /**
+	     * Load a video representation.
+	     * @method loadRemoteVideo
+	     * @param {string} fileId The ID of the file we are going to load
+	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {object} params The criteria for determining which representation to load
+	     * @param {function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the video data
+	     */
+	  }, {
+	    key: 'loadRemoteVideo',
+	    value: function loadRemoteVideo() /*fileId, fileVersionId, params, progress*/{
+	      throw new Error('loadRemoteVideo() Not Implemented');
 	    }
 
 	    /**
@@ -1405,7 +1445,6 @@
 	  }, {
 	    key: 'loadArrayBuffer',
 	    value: function loadArrayBuffer() /*fileId, fileVersionId, params = {}, progress*/{
-
 	      throw new Error('loadArrayBuffer() not implemented');
 	    }
 
@@ -1438,7 +1477,7 @@
 
 	      return new _lie2['default'](function (resolve, reject) {
 	        _this4.sdkLoader.get(url, { responseType: 'blob', sendToken: false, withCredentials: false,
-	          info: { progressKey: url } }, _this4.onAssetLoadProgress.bind(_this4)).then(function (response) {
+	          info: { url: url } }, _this4.onAssetLoadProgress.bind(_this4)).then(function (response) {
 	          _this4.removeProgressListeners(url);
 	          return _this4.parseImage(response, resource.properties);
 	        }).then(resolve)['catch'](function (err) {
@@ -1486,7 +1525,7 @@
 	     * Parses the response and resolves with the correct image tag and image properties.
 	     * @method parseImage
 	     * @param {object} response A response with the requested image data
-	     * @param {object} representation The representation that was loaded
+	     * @param {object} representation The descriptor for the representation that was loaded
 	     * @returns {Promise} a promise that resolves the image data
 	     */
 	  }, {
@@ -1523,6 +1562,23 @@
 	    }
 
 	    /**
+	     * Create a video usable by the Box3DRuntime
+	     * @param {String} videoUrl The src url for the video asset
+	     * @param {Object} representation  The descriptor for the representation that was loaded
+	     * @returns {Promise} A promise that resolves with video data usable by Box3DRuntime
+	     */
+	  }, {
+	    key: 'parseVideo',
+	    value: function parseVideo(videoUrl /*, representation = {}*/) {
+	      var videoTag = document.createElement('video');
+	      videoTag.src = videoUrl;
+
+	      return _lie2['default'].resolve({
+	        data: videoTag
+	      });
+	    }
+
+	    /**
 	    * Interface with BoxSDK to halt a single request
 	    * @method abortRequest
 	    * @param {string} key The key of the XHR that we want to abort
@@ -1535,7 +1591,7 @@
 	      var request = this.sdkLoader.xhr.abortRequest(key);
 	      // need to also kill listeners on this request
 	      if (request && request.srcElement.info) {
-	        this.removeAllListeners(request.srcElement.info.progressKey);
+	        this.removeAllListeners(request.srcElement.info.url);
 	      }
 	    }
 
@@ -1899,7 +1955,7 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -1982,6 +2038,30 @@
 	    }
 
 	    /**
+	     * @inheritdoc
+	     */
+	  }, {
+	    key: 'getAssetIdPromise',
+	    value: function getAssetIdPromise(box3dAsset) {
+	      var fileName = box3dAsset.getProperty('filename');
+	      var fileId = box3dAsset.getProperty('fileId');
+	      var fileVersionId = box3dAsset.getProperty('fileVersionId');
+	      var idPromise = undefined;
+
+	      if (fileId) {
+	        idPromise = _lie2['default'].resolve({
+	          fileId: fileId,
+	          fileVersionId: fileVersionId
+	        });
+	      } else {
+	        // Use search API Instead
+	        idPromise = this.sdkLoader.getFileIds(fileName, this.fileId, { looseMatch: true });
+	      }
+
+	      return idPromise;
+	    }
+
+	    /**
 	     * Load an image representation.
 	     * @method loadRemoteImage
 	     * @param {string} fileId The ID of the file we are going to load
@@ -2006,36 +2086,54 @@
 	      }
 
 	      // Get the representation URL.
-	      url = this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, representation.path);
+	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, representation.path).then(function (url) {
 
-	      if (progress) {
-	        this.addProgressListener(url, progress);
-	      }
+	        if (progress) {
+	          _this.addProgressListener(url, progress);
+	        }
 
-	      // If the representation is cached, return the cached data; otherwise,
-	      // get the representation.
-	      if (!this.cache.hasOwnProperty(url)) {
-	        this.cache[url] = new _lie2['default'](function (resolve, reject) {
-	          _this.sdkLoader.getRepresentation(url, _this.onAssetLoadProgress.bind(_this), { responseType: 'blob', info: { progressKey: url } }).then(function (response) {
-	            return _this.parseImage(response, representation);
-	          }).then(function (imgData) {
-	            if (params.width && imgData.properties.width > params.width || params.height && imgData.properties.height > params.height) {
-	              // 2048 representation dimensions are larger than that of the width/height
-	              // that has been requested. Fallback to the 32 representation
-	              params.size = 32;
-	              resolve(_this.loadRemoteImage(fileId, fileVersionId, params));
-	            } else {
+	        // If the representation is cached, return the cached data; otherwise,
+	        // get the representation.
+	        if (!_this.cache.hasOwnProperty(url)) {
+	          _this.cache[url] = new _lie2['default'](function (resolve, reject) {
+	            _this.sdkLoader.getRepresentation(url, _this.onAssetLoadProgress.bind(_this), { responseType: 'blob', info: { url: url } }).then(function (response) {
+	              return _this.parseImage(response, representation);
+	            }).then(function (imgData) {
+	              if (params.width && imgData.properties.width > params.width || params.height && imgData.properties.height > params.height) {
+	                // 2048 representation dimensions are larger than that of the width/height
+	                // that has been requested. Fallback to the 32 representation
+	                params.size = 32;
+	                resolve(_this.loadRemoteImage(fileId, fileVersionId, params));
+	              } else {
+	                _this.removeProgressListeners(url);
+	                resolve(imgData);
+	              }
+	            })['catch'](function (err) {
 	              _this.removeProgressListeners(url);
-	              resolve(imgData);
-	            }
-	          })['catch'](function (err) {
-	            _this.removeProgressListeners(url);
-	            reject(err);
+	              reject(err);
+	            });
 	          });
-	        });
-	      }
+	        }
 
-	      return this.cache[url];
+	        return _this.cache[url];
+	      });
+	    }
+	  }, {
+	    key: 'loadRemoteVideo',
+	    value: function loadRemoteVideo(fileId, fileVersionId) /*, progress*/{
+	      var _this2 = this;
+
+	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	      params.repParams = 'video_480.mp4';
+
+	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
+	        if (!_this2.cache.hasOwnProperty(url)) {
+	          _this2.cache[url] = _this2.parseVideo(url);
+	        }
+
+	        return _this2.cache[url];
+	      });
 	    }
 
 	    /**
@@ -2050,37 +2148,37 @@
 	  }, {
 	    key: 'loadArrayBuffer',
 	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      if (params === undefined) params = {};
 
 	      params.repParams = '3dcg_bin.bin';
 
 	      // Get the representation URL.
-	      var url = this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams);
+	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
 
-	      if (progress) {
-	        this.addProgressListener(url, progress);
-	      }
-
-	      // If the representation is cached, return the cached data; otherwise,
-	      // get the representation.
-	      if (!this.cache.hasOwnProperty(url)) {
-	        this.cache[url] = new _lie2['default'](function (resolve, reject) {
-	          _this2.sdkLoader.getRepresentation(url, _this2.onAssetLoadProgress.bind(_this2), { responseType: 'arraybuffer', info: { progressKey: url } }).then(function (response) {
-	            _this2.removeProgressListeners(url);
-	            resolve({
-	              data: response.response,
-	              properties: {}
+	        if (progress) {
+	          _this3.addProgressListener(url, progress);
+	        }
+	        // If the representation is cached, return the cached data; otherwise,
+	        // get the representation.
+	        if (!_this3.cache.hasOwnProperty(url)) {
+	          _this3.cache[url] = new _lie2['default'](function (resolve, reject) {
+	            _this3.sdkLoader.getRepresentation(url, _this3.onAssetLoadProgress.bind(_this3), { responseType: 'arraybuffer', info: { url: url } }).then(function (response) {
+	              _this3.removeProgressListeners(url);
+	              resolve({
+	                data: response.response,
+	                properties: {}
+	              });
+	            })['catch'](function (err) {
+	              _this3.removeProgressListeners(url);
+	              reject(err);
 	            });
-	          })['catch'](function (err) {
-	            _this2.removeProgressListeners(url);
-	            reject(err);
 	          });
-	        });
-	      }
+	        }
 
-	      return this.cache[url];
+	        return _this3.cache[url];
+	      });
 	    }
 
 	    /**
@@ -2108,7 +2206,7 @@
 	  }, {
 	    key: 'loadJson',
 	    value: function loadJson(fileId, fileVersionId, params, progress) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      if (params === undefined) params = {};
 
@@ -2125,17 +2223,17 @@
 	      // get the representation.
 	      if (!this.cache.hasOwnProperty(url)) {
 	        this.cache[url] = new _lie2['default'](function (resolve, reject) {
-	          _this3.sdkLoader.getRepresentation(url, _this3.onAssetLoadProgress.bind(_this3), {
+	          _this4.sdkLoader.getRepresentation(url, _this4.onAssetLoadProgress.bind(_this4), {
 	            responseType: 'json',
-	            info: { progressKey: url }
+	            info: { url: url }
 	          }).then(function (response) {
-	            _this3.removeProgressListeners(url);
+	            _this4.removeProgressListeners(url);
 	            resolve({
 	              data: response.response,
 	              properties: {}
 	            });
 	          })['catch'](function (err) {
-	            _this3.removeProgressListeners(url);
+	            _this4.removeProgressListeners(url);
 	            reject(err);
 	          });
 	        });

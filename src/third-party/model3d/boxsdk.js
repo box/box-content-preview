@@ -218,7 +218,7 @@
 	      };
 	      data.fileId = baseFileId;
 	
-	      var url = this.apiBase + FILE_ASSOC_URL + this.xhr.encodeToUri(data);
+	      var url = this.apiBase + FILE_ASSOC_URL + '&' + this.xhr.encodeToUri(data);
 	
 	      return new _lie2['default'](function (resolve, reject) {
 	

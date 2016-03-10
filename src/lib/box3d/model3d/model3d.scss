@@ -30,6 +30,10 @@
     margin-left: -12px;
 }
 
+.box-preview-box3d .box-preview-render-mode-selector .box-preview-inline-icon {
+    margin-right: 10px;
+}
+
 .box-preview-settings-wrapper {
     right: 25px;
     bottom: 25px;
@@ -40,11 +44,11 @@
 .box-preview-settings-wrapper .box-preview-settings-btn {
     height: 48px;
     line-height: 48px;
-    cursor: pointer;
 }
 
 .box-preview-settings-wrapper .box-preview-settings-btn span {
     opacity: 0.9;
+    cursor: pointer;
 }
 
 .box-preview-box3d .box-preview-settings-panel {
@@ -56,17 +60,15 @@
 
 .box-preview-box3d .box-preview-settings-panel button {
     border: 0;
+    background: #929292;
     color: #fff;
     padding: 0 18px;
     outline: 0;
+    margin-right: 5px;
 }
 
 .box-preview-box3d .box-preview-settings-panel .box-preview-settings-save-btn {
-    background: #929292;
-}
-
-.box-preview-box3d .box-preview-settings-panel .box-preview-settings-reset-btn {
-    background: transparent;
+    background: #1992D4;
 }
 
 .box-preview-box3d .box-preview-settings-panel:after {
@@ -113,24 +115,23 @@
     cursor: pointer;
 }
 
-.box-preview-box3d .box-preview-default-render-mode-selector {
-    z-index: 1;
+.box-preview-box3d .box-preview-default-setting-selector {
     height: 34px;
     position: relative;
     /* -> containing block */
 }
 
-.box-preview-box3d .box-preview-default-render-mode-selector span {
+.box-preview-box3d .box-preview-default-setting-selector span {
     display: block;
     position: relative;
     height: 34px;
 }
 
-.box-preview-box3d .box-preview-default-render-mode-selector span:hover {
+.box-preview-box3d .box-preview-default-setting-selector span:hover {
     color: #fff;
 }
 
-.box-preview-box3d .box-preview-default-render-mode-selector span:after {
+.box-preview-box3d .box-preview-default-setting-selector span:after {
     content: "\2228";
     position: absolute;
     /* -> containing block */
@@ -138,8 +139,9 @@
     line-height: 32px;
 }
 
-.box-preview-box3d .box-preview-default-render-mode-selector > ul {
+.box-preview-box3d .box-preview-default-setting-selector > ul {
     position: absolute;
+    z-index: 1;
     top: 95%;
     background: #fff;
     color: #3b3b3b;
@@ -147,16 +149,16 @@
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.8);
 }
 
-.box-preview-box3d .box-preview-default-render-mode-selector > ul li {
+.box-preview-box3d .box-preview-default-setting-selector > ul li {
     padding: 0 18px;
     cursor: pointer;
 }
 
-.box-preview-box3d .box-preview-default-render-mode-selector > ul li:hover {
+.box-preview-box3d .box-preview-default-setting-selector > ul li:hover {
     background: #f0f0f0;
 }
 
-.box-preview-box3d .box-preview-render-mode-selected {
+.box-preview-box3d .box-preview-setting-selector-label {
     border: 1px solid #6c6c6c;
     padding: 0 18px;
     background: #494949;

@@ -1,10 +1,8 @@
 /* global VAPI */
-'use strict';
-
 import autobind from 'autobind-decorator';
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
-import {EVENT_SCENE_LOADED} from '../box3d-constants';
+import { EVENT_SCENE_LOADED } from '../box3d-constants';
 import {
     EVENT_CLOSE_UI,
     EVENT_SET_RENDER_MODE,
@@ -65,8 +63,10 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {Promise} a promise that resolves with the newly created runtime
      */
     load(jsonUrl, options = {}) {
-
+        // #TODO @jholdstock: set this to not reassign param
+        /*eslint-disable*/
         options.sceneEntities = sceneEntities(options.location.staticBaseURI);
+        /*eslint-enable*/
 
         return this.initBox3d(options)
             .then(this.loadBox3dFile.bind(this, jsonUrl));
@@ -143,7 +143,7 @@ class Model3dRenderer extends Box3DRenderer {
         }
 
         // Find the prefab in the newly imported entities
-        entities.forEach(function checkForPrefab(entityDesc) {
+        entities.forEach((entityDesc) => {
             if (entityDesc.type === 'prefab') {
                 prefabEntity = entityDesc;
             }
@@ -153,7 +153,7 @@ class Model3dRenderer extends Box3DRenderer {
         this.addIblToMaterials();
 
         if (prefabEntity) {
-            let prefabAsset = this.box3d.assetRegistry.getAssetById(prefabEntity.id);
+            const prefabAsset = this.box3d.assetRegistry.getAssetById(prefabEntity.id);
             this.addInstanceToScene(prefabAsset, this.getScene(), this.attachSceneLoadHandler.bind(this));
         } else {
             this.attachSceneLoadHandler(this.getScene());
@@ -162,7 +162,7 @@ class Model3dRenderer extends Box3DRenderer {
         // make sure we add ALL assets to the asset list to destroy
         entities.forEach((entity) => {
             if (entity.id === entity.parentAssetId) {
-                let asset = this.box3d.assetRegistry.getAssetById(entity.id);
+                const asset = this.box3d.assetRegistry.getAssetById(entity.id);
                 this.assets.push(asset);
             }
         });
@@ -174,11 +174,11 @@ class Model3dRenderer extends Box3DRenderer {
     * @returns {void}
     */
     addIblToMaterials() {
-        let materials = this.box3d.assetRegistry.Materials.assets;
+        const materials = this.box3d.assetRegistry.Materials.assets;
 
-        for (let i in materials) {
+        for (const i in materials) {
             if (materials.hasOwnProperty(i)) {
-                let mat = materials[i];
+                const mat = materials[i];
                 mat.setProperty('useSceneLights', false);
                 mat.setProperty('useEnvironmentMap', true);
                 mat.setProperty('environmentMapProjection', 3);
@@ -198,7 +198,7 @@ class Model3dRenderer extends Box3DRenderer {
     */
     addInstanceToScene(prefab, scene, callback) {
         // Create an instance of the prefab asset.
-        let instance = scene.createInstance(prefab);
+        const instance = scene.createInstance(prefab);
 
         if (instance) {
             // Add the instance to the global list, to be removed later
@@ -208,17 +208,17 @@ class Model3dRenderer extends Box3DRenderer {
             instance.scaleToSize(100);
 
             // Center the instance.
-            instance.alignToPosition({x: 0, y: 0, z: 0}, {x: 0, y: 0, z: 0});
+            instance.alignToPosition({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 });
 
             if (callback) {
                 callback(instance);
             }
 
-            //attach PreviewAxisRotation component to the instance
-            instance.addComponent('preview_axis_rotation', {}, 'axis_rotation_' + instance.id);
+            // Attach PreviewAxisRotation component to the instance
+            instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
 
             instance.on('axis_transition_complete', () => {
-                instance.alignToPosition({x: 0, y: 0, z: 0}, {x: 0, y: 0, z: 0});
+                instance.alignToPosition({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 });
             });
 
             // Add the instance to the scene.
@@ -241,7 +241,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @param {Box3DEntity} entity The entity to listen for the load event, on
      * @returns {void}
      */
-    attachSceneLoadHandler (entity) {
+    attachSceneLoadHandler(entity) {
         entity.once('load', this.onSceneLoad.bind(this));
     }
 
@@ -262,7 +262,9 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     onUnsupportedRepresentation(error) {
+        /* eslint-disable no-console */
         console.error(error);
+        /* eslint-enable no-console */
         this.destroy();
     }
 
@@ -271,11 +273,11 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     cleanupScene() {
-        this.instances.forEach(function removeInstance(instance) {
+        this.instances.forEach((instance) => {
             instance.destroy();
         });
 
-        this.assets.forEach(function detroyPrefabAsset(asset) {
+        this.assets.forEach((asset) => {
             asset.destroy();
         });
 
@@ -299,7 +301,7 @@ class Model3dRenderer extends Box3DRenderer {
             if (assetId instanceof VAPI.Box3DEntity) {
                 assetId.unload();
             } else {
-                let asset = this.box3d.getEntityById(assetId);
+                const asset = this.box3d.getEntityById(assetId);
                 if (asset) {
                     asset.unload();
                 }
@@ -348,6 +350,7 @@ class Model3dRenderer extends Box3DRenderer {
                         });
                         enableZoom = true;
                         break;
+                    // no default
                 }
                 const controllerComponent = camera.getComponentById('previewCameraController');
                 controllerComponent.setAttribute('enableZoom', enableZoom);
@@ -375,9 +378,8 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     setAxisRotation(upAxis, forwardAxis, useTransition) {
-
         this.box3d.trigger('set_axes', upAxis, forwardAxis, useTransition);
-        //save these values back to forward and up, for metadata save
+        // Save these values back to forward and up, for metadata save
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
     }

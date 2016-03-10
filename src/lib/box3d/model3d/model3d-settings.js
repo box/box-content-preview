@@ -1,29 +1,37 @@
-'use strict';
-
-import EventEmitter from 'events';
+import Box3DControls from '../box3d-controls';
 import autobind from 'autobind-decorator';
-import settingsTemplate from 'raw!./settings.html';
 import {
+    AXIS_X,
+    AXIS_Y,
+    AXIS_Z,
+    CAMERA_PROJECTION_PERSPECTIVE,
+    CAMERA_PROJECTION_ORTHOGRAPHIC,
+    CSS_CLASS_OVERLAY,
+    CSS_CLASS_CURRENT_AXIS,
+    CSS_CLASS_DEFAULT_SETTING_SELECTOR,
+    CSS_CLASS_SETTINGS_BUTTON,
+    CSS_CLASS_SETTINGS_PANEL,
+    CSS_CLASS_SETTINGS_PANEL_BUTTON,
+    CSS_CLASS_SETTINGS_PANEL_LABEL,
+    CSS_CLASS_SETTINGS_PANEL_ROW,
+    CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL,
+    CSS_CLASS_SETTINGS_WRAPPER,
+    CSS_CLASS_HIDDEN,
     EVENT_CLOSE_RENDER_MODE_UI,
     EVENT_CLOSE_SETTINGS_UI,
     EVENT_RESET_SCENE_DEFAULTS,
     EVENT_ROTATE_ON_AXIS,
-    EVENT_SAVE_SCENE_DEFAULTS
+    EVENT_SAVE_SCENE_DEFAULTS,
+    EVENT_SET_CAMERA_PROJECTION,
+    EVENT_SET_RENDER_MODE,
+    RENDER_MODE_LIT,
+    RENDER_MODE_UNLIT,
+    RENDER_MODE_NORMALS,
+    RENDER_MODE_WIRE,
+    RENDER_MODE_UNTEXTURED_WIRE,
+    RENDER_MODE_UV,
+    ROTATION_STEP
 } from './model3d-constants';
-import { insertTemplate } from '../../util';
-
-const AXIS_X = 'x';
-const AXIS_Y = 'y';
-const AXIS_Z = 'z';
-const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
-const CSS_CLASS_CURRENT_AXIS = 'box-preview-current-axis';
-const RENDER_MODE_LIT = 'Lit';
-const RENDER_MODE_UNLIT = 'Unlit';
-const RENDER_MODE_NORMALS = 'Normals';
-const RENDER_MODE_WIRE = 'Wireframe';
-const RENDER_MODE_UNTEXTURED_WIRE = 'Untextured Wireframe';
-const RENDER_MODE_UV = 'UV Overlay';
-const ROTATION_STEP = 90;
 
 /**
  * Model3dSettings
@@ -32,7 +40,7 @@ const ROTATION_STEP = 90;
  * @class
  */
 @autobind
-class Model3dSettings extends EventEmitter  {
+class Model3dSettings extends Box3DControls {
     /**
      * Creates UI panel for Metadata saving and modification
      * @constructor
@@ -40,39 +48,264 @@ class Model3dSettings extends EventEmitter  {
      * @returns {Model3dControls} Model3dControls instance
      */
     constructor(containerEl) {
-        super();
-
-        this.containerEl = containerEl;
-
-        insertTemplate(this.containerEl, settingsTemplate);
+        super(containerEl);
 
         this.currentAxis = AXIS_Y;
         this.currentDefaultRenderMode = RENDER_MODE_LIT;
         this.defaultRenderMode = RENDER_MODE_LIT;
 
-        this.el = this.containerEl.querySelector('.box-preview-settings-wrapper');
-        this.settingsButtonEl = this.el.querySelector('.box-preview-icon-cog');
-        this.settingsPanelEl = this.el.querySelector('.box-preview-settings-panel');
-        this.orientationXButton = this.el.querySelector('.box-preview-orientation-x');
-        this.orientationYButton = this.el.querySelector('.box-preview-orientation-y');
-        this.orientationZButton = this.el.querySelector('.box-preview-orientation-z');
-        this.currentAxisEl = this.el.querySelector('.' + CSS_CLASS_CURRENT_AXIS);
-        this.rotateNegativeButtonEl = this.el.querySelector('.box-preview-icon-setting-arrow-left');
-        this.rotatePositiveButtonEl = this.el.querySelector('.box-preview-icon-setting-arrow-right');
-        // Default render modes
-        this.renderModeDefaultEl = this.el.querySelector('.box-preview-render-mode-selected');
-        this.renderModeDefaultListEl = this.el.querySelector('.box-preview-render-mode-list');
-        this.renderModeDefaultLit = this.el.querySelector('.box-preview-render-mode-lit');
-        this.renderModeDefaultUnlit = this.el.querySelector('.box-preview-render-mode-unlit');
-        this.renderModeDefaultNormals = this.el.querySelector('.box-preview-render-mode-normals');
-        this.renderModeDefaultWireframe = this.el.querySelector('.box-preview-render-mode-wire');
-        this.renderModeDefaultUntexturedWireframe = this.el.querySelector('.box-preview-render-mode-wire-untextured');
-        this.renderModeDefaultUVOverlay = this.el.querySelector('.box-preview-render-mode-uv');
-        // Save and Reset buttons
-        this.saveSettingsEl = this.el.querySelector('.box-preview-settings-save-btn');
-        this.resetSettingsEl = this.el.querySelector('.box-preview-settings-reset-btn');
+        this.currentProjection = CAMERA_PROJECTION_PERSPECTIVE;
+        this.defaultProjection = CAMERA_PROJECTION_PERSPECTIVE;
 
-        this.attachEventHandlers();
+        this.orientationXButton = null;
+        this.orientationYButton = null;
+        this.orientationZButton = null;
+        this.renderModeEl = null;
+        this.projectionModeEl = null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    addUi() {
+        // container
+        this.wrapperEl = document.createElement('div');
+        this.wrapperEl.classList.add(CSS_CLASS_OVERLAY, CSS_CLASS_SETTINGS_WRAPPER);
+        this.registerUiItem('settings_container_wrapper', this.wrapperEl);
+        this.el.appendChild(this.wrapperEl);
+
+        // The cog and clickable container
+        this.settingsButtonEl = document.createElement('div');
+        this.settingsButtonEl.classList.add(CSS_CLASS_SETTINGS_BUTTON);
+        this.wrapperEl.appendChild(this.settingsButtonEl);
+
+        const cog = document.createElement('span');
+        cog.classList.add('box-preview-icon-cog');
+        this.registerUiItem('settings_cog', cog, 'click', this.handleToggleSettingsPanel);
+        this.registerUiItem('settings_cog', cog, 'click', this.handleSettingsClick);
+        this.settingsButtonEl.appendChild(cog);
+
+        // Settings panel
+        this.settingsPanelEl = document.createElement('div');
+        this.settingsPanelEl.classList.add(CSS_CLASS_OVERLAY, 'box-preview-pullup',
+            CSS_CLASS_SETTINGS_PANEL, CSS_CLASS_HIDDEN);
+        this.registerUiItem('settings_panel', this.settingsPanelEl);
+        this.settingsButtonEl.appendChild(this.settingsPanelEl);
+
+        const renderModes = [
+            {
+                text: RENDER_MODE_LIT,
+                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_LIT)
+            }, {
+                text: RENDER_MODE_UNLIT,
+                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_UNLIT)
+            }, {
+                text: RENDER_MODE_NORMALS,
+                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_NORMALS)
+            }, {
+                text: RENDER_MODE_WIRE,
+                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_WIRE)
+            }, {
+                text: RENDER_MODE_UNTEXTURED_WIRE,
+                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_UNTEXTURED_WIRE)
+            }, {
+                text: RENDER_MODE_UV,
+                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_UV)
+            }
+        ];
+
+        const renderPanelRowEl = this.createSettingsDropdown('Default Render Mode',
+            'Lit', renderModes);
+
+        this.renderModeEl = renderPanelRowEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
+        this.settingsPanelEl.appendChild(renderPanelRowEl);
+
+        const projectionModes = [
+            {
+                text: 'Perspective',
+                callback: this.handleCameraProjectionSelected.bind(this, CAMERA_PROJECTION_PERSPECTIVE)
+            }, {
+                text: 'Orthographic',
+                callback: this.handleCameraProjectionSelected.bind(this, CAMERA_PROJECTION_ORTHOGRAPHIC)
+            }
+        ];
+
+        const projectionPanelRowEl = this.createSettingsDropdown('Default Projection',
+            'Perspective', projectionModes);
+        this.projectionModeEl = projectionPanelRowEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
+        this.settingsPanelEl.appendChild(projectionPanelRowEl);
+
+        // Rotation Axis buttons
+        const rotationAxisRowEl = this.createSettingsRow('Rotation Axis');
+
+        const leftArrowEl = this.createOrientationArrow('left', this.handleRotateNegative);
+        leftArrowEl.classList.add('box-preview-orientation-prev');
+        rotationAxisRowEl.appendChild(leftArrowEl);
+
+        const axisButtonsEl = document.createElement('ul');
+        axisButtonsEl.classList.add('box-preview-orientation-selector', CSS_CLASS_SETTINGS_PANEL_BUTTON);
+
+        const xAxisEl = this.createOrientationAxis('x', this.handleSelectOrientationX);
+        this.orientationXButton = xAxisEl;
+        const yAxisEl = this.createOrientationAxis('y', this.handleSelectOrientationY);
+        yAxisEl.classList.add(CSS_CLASS_CURRENT_AXIS);
+        this.orientationYButton = yAxisEl;
+        this.currentAxisEl = yAxisEl;
+        const zAxisEl = this.createOrientationAxis('z', this.handleSelectOrientationZ);
+        this.orientationZButton = zAxisEl;
+
+        axisButtonsEl.appendChild(xAxisEl);
+        axisButtonsEl.appendChild(yAxisEl);
+        axisButtonsEl.appendChild(zAxisEl);
+
+        rotationAxisRowEl.appendChild(axisButtonsEl);
+
+        const rightArrowEl = this.createOrientationArrow('right', this.handleRotatePositive);
+        rightArrowEl.classList.add('box-preview-orientation-next');
+        rotationAxisRowEl.appendChild(rightArrowEl);
+
+        this.settingsPanelEl.appendChild(rotationAxisRowEl);
+
+        // Save and reset buttons
+        const saveButtonsPanelRowEl = this.createSettingsRow();
+
+        const saveButtonEl = this.createSettingsButton('Save', this.saveSceneDefaults);
+        saveButtonEl.classList.add('box-preview-settings-save-btn');
+        saveButtonsPanelRowEl.appendChild(saveButtonEl);
+
+        const resetButtonEl = this.createSettingsButton('Reset', this.resetSceneDefaults);
+        saveButtonsPanelRowEl.appendChild(resetButtonEl);
+
+        this.settingsPanelEl.appendChild(saveButtonsPanelRowEl);
+
+        // Add event for hiding UI if anything but the panel is selected
+        this.addListener(EVENT_CLOSE_SETTINGS_UI, this.handleHideUi);
+    }
+
+    /**
+     * Create a button for the settings panel
+     * @param {string} text The text for the button
+     * @param {function} callback The function to call on click
+     * @returns {HtmlElement} The newly created button
+     */
+    createSettingsButton(text = '', callback) {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.classList.add(CSS_CLASS_SETTINGS_PANEL_BUTTON);
+        this.registerUiItem(`settings-button-${text}`, button, 'click', callback);
+        return button;
+    }
+
+    /**
+     * Create a settings panel row label
+     * @param {string} text The text to put in the label
+     * @returns {HtmlElement} The newly create label
+     */
+    createSettingsLabel(text = '') {
+        const label = document.createElement('div');
+        label.classList.add(CSS_CLASS_SETTINGS_PANEL_LABEL);
+        label.textContent = text;
+        return label;
+    }
+
+    /**
+     * Create an element with a label, as a settings-panel-row
+     * @param {string} [labelText] The text to display as the row label
+     * @param {HtmlElement} [content] An HtmlElement to append to the row
+     * @returns {HtmlElement} The row element created
+     */
+    createSettingsRow(labelText) {
+        const panelRowEl = document.createElement('div');
+        panelRowEl.classList.add(CSS_CLASS_SETTINGS_PANEL_ROW);
+
+        if (labelText) {
+            const rowLabel = this.createSettingsLabel(labelText);
+            panelRowEl.appendChild(rowLabel);
+        }
+
+        return panelRowEl;
+    }
+
+    /**
+     * Create a dropdown for the settings panel,
+     * @param {[type]} defaultText [description]
+     * @returns {HtmlElement} The settings dropdown that can be added to the settings panel
+     */
+    createSettingsDropdown(labelText = '', listText = '', listContent = []) {
+        const wrapperEl = this.createSettingsRow(labelText);
+
+        const dropdownWrapperEl = document.createElement('div');
+        dropdownWrapperEl.classList.add(CSS_CLASS_DEFAULT_SETTING_SELECTOR);
+        wrapperEl.appendChild(dropdownWrapperEl);
+
+        const listLabelEl = document.createElement('span');
+        listLabelEl.textContent = listText;
+        listLabelEl.classList.add(CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL, CSS_CLASS_SETTINGS_PANEL_BUTTON);
+        dropdownWrapperEl.appendChild(listLabelEl);
+
+        const dropdownEl = document.createElement('ul');
+        dropdownEl.classList.add(CSS_CLASS_HIDDEN);
+        dropdownWrapperEl.appendChild(dropdownEl);
+
+        let i = 0;
+        const length = listContent.length;
+
+        for (i; i < length; ++i) {
+            const text = listContent[i].text || '';
+            const listItemEl = document.createElement('li');
+            listItemEl.textContent = text;
+
+            const labelId = `${labelText}-ul-li-${text}`;
+            this.registerUiItem(labelId, listItemEl, 'click', () => {
+                listLabelEl.textContent = text;
+            });
+
+            if (listContent[i].callback) {
+                this.registerUiItem(labelId, listItemEl, 'click', listContent[i].callback);
+            }
+
+            dropdownEl.appendChild(listItemEl);
+        }
+
+        function onListClick() {
+            // close all currently open lists, but not ours
+            this.closeDropdowns(dropdownEl);
+            // and open ours
+            dropdownEl.classList.toggle(CSS_CLASS_HIDDEN);
+        }
+
+        this.registerUiItem(`${labelText}_${listText}`, dropdownWrapperEl, 'click', onListClick.bind(this));
+
+        return wrapperEl;
+    }
+
+    /**
+     * Create an axis orientation button
+     * @param {string}  [axisLabel] = '' The text to put in the button
+     * @param {function} [callback] The function to call on click
+     * @returns {HtmlElement} The newly created axis button
+     */
+    createOrientationAxis(axisLabel = '', callback) {
+        const axisEl = document.createElement('li');
+        axisEl.textContent = axisLabel.toUpperCase();
+        this.registerUiItem(`axis-item-li-${axisLabel}`, axisEl, 'click', callback);
+        return axisEl;
+    }
+
+    /**
+     * Create an arrow button for orientation controls
+     * @param {string} direction The class specific arrow direction. IE: left, right, down
+     * @param {function} [callback] The callback to call on clicking the arrow
+     * @returns {HtmlElement} Teh newly created arrow button
+     */
+    createOrientationArrow(direction, callback) {
+        const arrowWrapperEl = document.createElement('div');
+        arrowWrapperEl.classList.add('box-preview-orientation-controls');
+        const arrowEl = document.createElement('span');
+        arrowEl.classList.add(`box-preview-icon-setting-arrow-${direction}`);
+        arrowWrapperEl.appendChild(arrowEl);
+        this.registerUiItem(`box-preview-settings-arrow-${direction}`, arrowWrapperEl, 'click', callback);
+        return arrowWrapperEl;
     }
 
     /**
@@ -80,63 +313,23 @@ class Model3dSettings extends EventEmitter  {
      * @returns {void}
      */
     destroy() {
-        this.detachEventHandlers();
+        super.destroy();
     }
 
     /**
-     * Attaches event handlers
+     * Closes all lists in the settings panel
+     * @param {HtmlElement} [exceptionEl] If provided, don't close this element
      * @returns {void}
      */
-    attachEventHandlers() {
-        this.orientationXButton.addEventListener('click', this.handleSelectOrientationX);
-        this.orientationYButton.addEventListener('click', this.handleSelectOrientationY);
-        this.orientationZButton.addEventListener('click', this.handleSelectOrientationZ);
-        this.rotateNegativeButtonEl.addEventListener('click', this.handleRotateNegative);
-        this.rotatePositiveButtonEl.addEventListener('click', this.handleRotatePositive);
-        this.settingsButtonEl.addEventListener('click', this.handleToggleSettingsPanel);
-        //Default render modes
-        this.renderModeDefaultEl.addEventListener('click', this.handleToggleDefaultRenderMode);
-        this.renderModeDefaultListEl.addEventListener('click', this.handleHideDefaultRenderMode);
-        this.renderModeDefaultLit.addEventListener('click', this.handleSelectDefaultModeLit);
-        this.renderModeDefaultUnlit.addEventListener('click', this.handleSelectDefaultModeUnlit);
-        this.renderModeDefaultNormals.addEventListener('click', this.handleSelectDefaultModeNormals);
-        this.renderModeDefaultWireframe.addEventListener('click', this.handleSelectDefaultModeWire);
-        this.renderModeDefaultUntexturedWireframe.addEventListener('click', this.handleSelectDefaultModeUntexturedWire);
-        this.renderModeDefaultUVOverlay.addEventListener('click', this.handleSelectDefaultModeUV);
-        // Save and Reset buttons
-        this.saveSettingsEl.addEventListener('click', this.handleSettingSelectSave);
-        this.resetSettingsEl.addEventListener('click', this.handleSettingSelectReset);
-
-        this.addListener(EVENT_CLOSE_SETTINGS_UI, this.handleHideUi);
-        this.el.addEventListener('click', this.handleSettingsClick);
-    }
-
-    /**
-     * Detaches event handlers
-     * @returns {void}
-     */
-    detachEventHandlers() {
-        this.orientationXButton.removeEventListener('click', this.handleSelectOrientationX);
-        this.orientationYButton.removeEventListener('click', this.handleSelectOrientationY);
-        this.orientationZButton.removeEventListener('click', this.handleSelectOrientationZ);
-        this.rotateNegativeButtonEl.removeEventListener('click', this.handleRotateNegative);
-        this.rotatePositiveButtonEl.removeEventListener('click', this.handleRotatePositive);
-        this.settingsButtonEl.removeEventListener('click', this.handleToggleSettingsPanel);
-        //Default render modes
-        this.renderModeDefaultEl.removeEventListener('click', this.handleToggleDefaultRenderMode);
-        this.renderModeDefaultListEl.removeEventListener('click', this.handleHideDefaultRenderMode);
-        this.renderModeDefaultLit.removeEventListener('click', this.handleSelectDefaultModeLit);
-        this.renderModeDefaultUnlit.removeEventListener('click', this.handleSelectDefaultModeUnlit);
-        this.renderModeDefaultNormals.removeEventListener('click', this.handleSelectDefaultModeNormals);
-        this.renderModeDefaultWireframe.removeEventListener('click', this.handleSelectDefaultModeWire);
-        this.renderModeDefaultUntexturedWireframe.removeEventListener('click', this.handleSelectDefaultModeUntexturedWire);
-        this.renderModeDefaultUVOverlay.removeEventListener('click', this.handleSelectDefaultModeUV);
-        // Save and Reset Buttons
-        this.saveSettingsEl.addEventListener('click', this.handleSettingSelectSave);
-        this.resetSettingsEl.addEventListener('click', this.handleSettingSelectReset);
-
-        this.removeListener(EVENT_CLOSE_SETTINGS_UI, this.handleHideUi);
-        this.el.removeEventListener('click', this.handleSettingsClick);
+    closeDropdowns(exceptionEl) {
+        const dropdownEls = this.settingsPanelEl.querySelectorAll(`div.${CSS_CLASS_DEFAULT_SETTING_SELECTOR} ul`);
+        Object.keys(dropdownEls).forEach((nodeKey) => {
+            const node = dropdownEls[nodeKey];
+            if (node === exceptionEl) {
+                return;
+            }
+            node.classList.add(CSS_CLASS_HIDDEN);
+        });
     }
 
     /**
@@ -192,6 +385,7 @@ class Model3dSettings extends EventEmitter  {
      * @returns {void}
      */
     handleHideUi() {
+        this.closeDropdowns();
         this.settingsPanelEl.classList.add(CSS_CLASS_HIDDEN);
     }
 
@@ -223,8 +417,10 @@ class Model3dSettings extends EventEmitter  {
     saveSceneDefaults() {
         // Only send render scene, as axes will be retrieved from B3D component
         this.setDefaultRenderMode(this.currentDefaultRenderMode);
-
-        this.emit(EVENT_SAVE_SCENE_DEFAULTS, this.defaultRenderMode);
+        this.handleDefaultRenderModeSelected(this.currentDefaultRenderMode);
+        this.setDefaultProjection(this.currentProjection);
+        this.handleCameraProjectionSelected(this.currentProjection);
+        this.emit(EVENT_SAVE_SCENE_DEFAULTS, this.defaultRenderMode, this.defaultProjection);
     }
 
     /**
@@ -232,7 +428,11 @@ class Model3dSettings extends EventEmitter  {
      * @returns {void}
      */
     resetSceneDefaults() {
+        this.setDefaultRenderMode(this.defaultRenderMode);
         this.handleDefaultRenderModeSelected(this.defaultRenderMode);
+        this.setDefaultProjection(this.defaultProjection);
+        this.handleCameraProjectionSelected(this.defaultProjection);
+        // projection reset
         this.emit(EVENT_RESET_SCENE_DEFAULTS);
     }
 
@@ -242,13 +442,23 @@ class Model3dSettings extends EventEmitter  {
      * @returns {void}
      */
     setDefaultRenderMode(mode) {
-        this.defaultRenderMode = mode;
-        this.handleDefaultRenderModeSelected(mode);
+        this.defaultRenderMode = this.currentDefaultRenderMode = mode;
+        this.setRenderText(mode);
+    }
+
+    /**
+     * Set the default projection mode
+     * @param {String} projection Type of projection to use
+     * @returns {void}
+     */
+    setDefaultProjection(projection) {
+        this.defaultProjection = this.currentProjection = projection;
+        this.setProjectionText(projection);
     }
 
     /**
      * Given a direction, rotate around the setting set axis
-     * @param {int} direction The direction to spin around and axis
+     * @param {Int} direction The direction to spin around and axis
      * @returns {void}
      */
     rotateOnCurrentAxis(direction) {
@@ -259,55 +469,43 @@ class Model3dSettings extends EventEmitter  {
     }
 
     /**
-     * Handle toggle default render mode list event
+     * Set the render mode element text
+     * @param {String} text The text to fill the render label with
      * @returns {void}
      */
-    handleToggleDefaultRenderMode() {
-        this.renderModeDefaultListEl.classList.toggle(CSS_CLASS_HIDDEN);
+    setRenderText(text) {
+        this.renderModeEl.textContent = text;
     }
 
     /**
-     * Handle hide default render mode list event
+     * Set the projection element text
+     * @param {String} text The text to fill the projection label with
      * @returns {void}
      */
-    handleHideDefaultRenderMode() {
-        this.renderModeDefaultListEl.classList.add(CSS_CLASS_HIDDEN);
+    setProjectionText(text) {
+        this.projectionModeEl.textContent = text;
     }
 
     /**
      * Handle choosing a default render mode
-     * @param {string} mode The mode to select
+     * @param {String} mode The mode to select
      * @returns {void}
      */
     handleDefaultRenderModeSelected(mode) {
-        // close the menu, first
-        this.handleHideDefaultRenderMode();
-        this.renderModeDefaultEl.textContent = mode;
         this.currentDefaultRenderMode = mode;
+        this.setRenderText(mode);
+        this.emit(EVENT_SET_RENDER_MODE, mode);
     }
 
-    handleSelectDefaultModeLit() {
-        this.handleDefaultRenderModeSelected(RENDER_MODE_LIT);
-    }
-
-    handleSelectDefaultModeUnlit() {
-        this.handleDefaultRenderModeSelected(RENDER_MODE_UNLIT);
-    }
-
-    handleSelectDefaultModeNormals() {
-        this.handleDefaultRenderModeSelected(RENDER_MODE_NORMALS);
-    }
-
-    handleSelectDefaultModeWire() {
-        this.handleDefaultRenderModeSelected(RENDER_MODE_WIRE);
-    }
-
-    handleSelectDefaultModeUntexturedWire() {
-        this.handleDefaultRenderModeSelected(RENDER_MODE_UNTEXTURED_WIRE);
-    }
-
-    handleSelectDefaultModeUV() {
-        this.handleDefaultRenderModeSelected(RENDER_MODE_UV);
+    /**
+     * Handle setting camera projection
+     * @param {string} projection Projection type to switch to
+     * @returns {void}
+     */
+    handleCameraProjectionSelected(projection) {
+        this.currentProjection = projection;
+        this.setProjectionText(projection);
+        this.emit(EVENT_SET_CAMERA_PROJECTION, projection);
     }
 
     handleSettingSelectSave() {

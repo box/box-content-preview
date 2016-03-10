@@ -1,5 +1,3 @@
-'use strict';
-
 import Box3DControls from '../box3d-controls';
 import autobind from 'autobind-decorator';
 import {
@@ -57,7 +55,7 @@ const RENDER_MODES = {
  * @class
  */
 @autobind
-class Model3dControls extends Box3DControls  {
+class Model3dControls extends Box3DControls {
     /**
      * Creates UI and Handles events for 3D Model Preview
      * @constructor
@@ -87,7 +85,6 @@ class Model3dControls extends Box3DControls  {
         const renderModesEl = this.controls.add(__('render_mode'), this.handleToggleRenderModes, 'box-preview-rendermodes-icon');
         renderModesEl.parentElement.appendChild(this.renderModesSelectorEl);
 
-
         // Set default to lit!
         this.handleSetRenderMode(RENDER_MODES.lit);
 
@@ -101,19 +98,19 @@ class Model3dControls extends Box3DControls  {
      * @returns {HTMLElement} The built render mode item to add to render modes list UI
      */
     createRenderModeItem(renderModeDescriptor) {
-
         const className = renderModeDescriptor.baseClass;
 
         const renderModeItem = document.createElement('li');
-        renderModeItem.classList.add('box-preview-rm-' + className, 'box-preview-rendermode-item');
+        renderModeItem.classList.add(`box-preview-rm-${className}`, 'box-preview-rendermode-item');
+        /*eslint-disable*/
         renderModeDescriptor.el = renderModeItem;
-
+        /*eslint-enable*/
         const onRenderModeChange = this.handleSetRenderMode.bind(this, renderModeDescriptor);
 
         this.registerUiItem(className, renderModeItem, 'click', onRenderModeChange);
 
         const renderModeIcon = document.createElement('span');
-        renderModeIcon.classList.add('box-preview-icon-rm-' + className, 'box-preview-inline-icon');
+        renderModeIcon.classList.add(`box-preview-icon-rm-${className}`, 'box-preview-inline-icon');
 
         renderModeItem.appendChild(renderModeIcon);
         renderModeItem.innerHTML += renderModeDescriptor.name;
@@ -136,22 +133,21 @@ class Model3dControls extends Box3DControls  {
      * @returns {void}
      */
     handleSetRenderMode(renderMode) {
-        const current = this.renderModesSelectorEl.querySelector('.' + CSS_CLASS_CURRENT_RENDER_MODE);
+        const current = this.renderModesSelectorEl.querySelector(`.${CSS_CLASS_CURRENT_RENDER_MODE}`);
         if (current) {
             current.classList.remove(CSS_CLASS_CURRENT_RENDER_MODE);
         }
+
+        let mode = renderMode;
+        // In the case the render mode name is passed, we'll use it to get the
+        // corresponding render mode info
+        if (typeof mode === 'string') {
+            mode = this.getModeByName(renderMode);
+        }
+
         renderMode.el.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
         this.renderModeCurrent = renderMode.key;
         this.emit(EVENT_SET_RENDER_MODE, renderMode.name);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    handleReset() {
-        super.handleReset();
-        // Reset the render mode to the default render mode of this preview.
-        this.handleSetRenderMode(RENDER_MODES.lit);
     }
 
     /**
@@ -176,16 +172,40 @@ class Model3dControls extends Box3DControls  {
      * get the icon class that we'll change the render mode button to
      * @returns {void}
      */
-    setRenderModeUI(modeIcon) {
-        let icon = this.renderModeControl.querySelector('span');
+    setRenderModeIcon(modeIcon) {
+        const icon = this.renderModeControl.querySelector('span');
         icon.className = modeIcon;
+    }
+
+
+    /**
+     * Given a render mode name, get the corresponding render mode info
+     * @param {String} renderModeName The name of the render mode
+     * @returns {Object} Render mode descriptor
+     */
+    getModeByName(renderModeName) {
+        let renderMode;
+
+        for (const renderModeKey in RENDER_MODES) {
+            if (RENDER_MODES.hasOwnProperty(renderModeKey)) {
+                const renderModeDesc = RENDER_MODES[renderModeKey];
+                if (renderModeDesc.name === renderModeName) {
+                    renderMode = renderModeDesc;
+                    break;
+                }
+            }
+        }
+
+        return renderMode;
     }
 
     /**
      * @inheritdoc
      */
     destroy() {
-        this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
+        if (this.controls) {
+            this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
+        }
         this.removeListener(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseUi);
         super.destroy();
     }
