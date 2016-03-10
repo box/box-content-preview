@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 import fetch from 'isomorphic-fetch';
 import TextBase from './text-base';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 @autobind
 class PlainText extends TextBase {
@@ -52,6 +52,8 @@ class PlainText extends TextBase {
      * @returns {void}
      */
     finishLoading(txt) {
+        /* global hljs */
+
         this.codeEl.textContent = txt;
 
         // Only try to parse files smaller than 50KB otherwise the browser can hang

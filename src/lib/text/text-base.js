@@ -25,13 +25,15 @@ class TextBase extends Base {
      * @returns {void}
      */
     zoom(inOrOut) {
-        let el = this.containerEl.firstElementChild;
-        let size = parseInt(el.style.fontSize, 10) || 100;
+        const el = this.containerEl.firstElementChild;
+        const size = parseInt(el.style.fontSize, 10) || 100;
+
         if (inOrOut === 'in') {
-            el.style.fontSize = (size + 10) + '%';
+            el.style.fontSize = `${size + 10}%`;
         } else if (inOrOut === 'out') {
-            el.style.fontSize = (size - 10) + '%';
+            el.style.fontSize = `${size - 10}%`;
         }
+
         this.emit('resize');
     }
 
@@ -73,7 +75,6 @@ class TextBase extends Base {
      * @returns {Boolean} consumed or not
      */
     onKeydown(key) {
-
         // Return false when media controls are not ready or are focused
         if (!this.controls) {
             return false;
