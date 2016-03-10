@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import Base from '../base';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 const SWF_PARAMS = {
     allowfullscreen: 'true',
@@ -37,6 +37,7 @@ class SWF extends Base {
      * @returns {Promise} Promise to load a swf
      */
     load(swfUrl) {
+        /* global swfobject */
         swfobject.embedSWF(this.appendAuthParam(swfUrl), this.playerEl.id, '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
             if (this.destroyed) {
                 return;

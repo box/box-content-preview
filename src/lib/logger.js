@@ -95,9 +95,11 @@ class Logger {
     /**
      * Finishes logging.
      * @public
+     * @param {Object} count preview count
      * @returns {Object} metrics
      */
-    done() {
+    done(count) {
+        this.log.count = count;
         this.log.time.total = Date.now() - this.start;
         this.log.time.rendering = this.log.time.total - this.log.time.conversion;
         return this.log;

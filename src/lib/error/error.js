@@ -2,10 +2,10 @@ import './error.scss';
 import autobind from 'autobind-decorator';
 import Base from '../base';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 @autobind
-class Error extends Base {
+class PreviewError extends Base {
 
     /**
      * [constructor]
@@ -47,11 +47,13 @@ class Error extends Base {
                 case 'boxdicom':
                     extension = 'boxdicom';
                     break;
+                default:
+                    // no-op
             }
         }
 
-        this.iconEl.src = this.options.location.staticBaseURI + 'img/files/160-' + extension + '.png';
-        this.messageEl.innerHTML = reason ? reason : 'Not supported';
+        this.iconEl.src = `${this.options.location.staticBaseURI}img/files/160-${extension}.png`;
+        this.messageEl.innerHTML = reason || 'Not supported';
 
         this.loaded = true;
         this.emit('load');
@@ -59,6 +61,6 @@ class Error extends Base {
 }
 
 Box.Preview = Box.Preview || {};
-Box.Preview.Error = Error;
+Box.Preview.PreviewError = PreviewError;
 global.Box = Box;
-export default Error;
+export default PreviewError;
