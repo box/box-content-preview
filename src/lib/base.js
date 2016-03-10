@@ -115,7 +115,6 @@ class Base extends EventEmitter {
      * @returns {Object} fetch headers
      */
     appendAuthParam(url) {
-        const id = this.options.file.id;
         return createContentUrl(url, this.options.token);
     }
 

@@ -36,7 +36,6 @@ class CSV extends TextBase {
     load(csvUrl) {
         /* global Papa */
 
-        const token = this.options.token;
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.js');
 
@@ -47,7 +46,7 @@ class CSV extends TextBase {
             Papa.parse(csvUrl, {
                 worker: Browser.getName() !== 'Edge' && Browser.getName() !== 'Explorer', // IE and Edge don't work with worker
                 download: true,
-                authorization: `Bearer ${token}`,
+                authorization: this.options.authorization,
                 error: (err, file, inputElem, reason) => {
                     this.emit('error', reason);
                 },
@@ -110,7 +109,7 @@ class CSV extends TextBase {
      * @returns {Array} columns
      */
     renderColumn() {
-        return this.data[0].map((val, cellIndex) => <Column width={150} allowCellsRecycling={true} cell={ this.renderCell(cellIndex) } />);
+        return this.data[0].map((val, cellIndex) => <Column width={150} allowCellsRecycling cell={ this.renderCell(cellIndex) } />);
     }
 
     /**
