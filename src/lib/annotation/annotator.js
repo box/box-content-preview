@@ -21,15 +21,13 @@ class Annotator {
      * annotations service for annotations persistence
      * @returns {void}
      */
-    constructor(fileID, options) {
-        const opts = options || {};
-
+    constructor(fileID, options = {}) {
         this.fileID = fileID;
         // Default to anonymous user
-        this.user = opts.user || ANONYMOUS_USER;
+        this.user = options.user || ANONYMOUS_USER;
         // @TODO(tjin): new LocalStorageAnnotationService
         // Default to local storage annotations service
-        this.annotationService = opts.annotationService || new AnnotationService();
+        this.annotationService = options.annotationService || new AnnotationService();
     }
 
 }
