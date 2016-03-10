@@ -88,7 +88,8 @@
     "watch": "npm run watch-rb & ./node_modules/.bin/webpack --watch",
     "clean": "rm -rf dist && rm -rf reports && rm -rf src/i18n/json",
     "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
-    "build": "npm run clean && npm run build-rb && npm run dev",
-    "release": "npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"
+    "build": "npm run eslint && npm run clean && npm run build-rb && npm run dev",
+    "eslint": "./build/pre-commit.sh",
+    "release": "npm run eslint && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"
   }
 }
