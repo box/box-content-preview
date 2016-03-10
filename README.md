@@ -182,9 +182,10 @@ EVENTNAME can be one of the following
 * `load` event will be fired on every preview load if inter-preview navigation is happening. The value will be an object contaianing
 ```javascript
   {
-      viewer: {...},    // Instance of the current viewer
+      viewer: {...},    // Instance of the current viewer if no error message
       metrics: {...},   // Performance metrics
       file: {...}       // Box file object as returned by the API
+      error: 'message'  // Error message if any
   }
 ```
 * `navigation` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event.
