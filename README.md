@@ -60,6 +60,8 @@ Clone and compile
 
 While developing
 -----------------
+Install git pre-commit hook `cp build/pre-commit.sh .git/hooks/pre-commit`.
+
 Install SCSS linter `gem install scss_lint` for linting SCSS files.
 
 * `npm run build` to generate resource bundles and JS webpack bundles.
@@ -94,16 +96,16 @@ preview.show(fileId, { options });
 
 ```javascript
 {
-    token: 'api auth token',
-    container: '.preview-container', // optional dom node or selector where preview should be placed
-    api: 'https://api.box.com',      // optional api host like https://ldap.dev.box.net/api
-    files: [ '123', '234', ... ],    // optional list of file ids for back and forth navigation
-    header: true,                    // optional boolean to turn the header on or off
-    viewers: {                       // optional arguments to pass on to viewers
-        VIEWERNAME: {                   // name of the viewer
-            disabled: false,            // disables the viewer
-            annotations: false          // other args
-            controls: true              // disables the viewer controls
+    token: 'api auth token',          // either a string auth token or a token generator function, see below for more details
+    container: '.preview-container',  // optional dom node or selector where preview should be placed
+    api: 'https://api.box.com',       // optional api host like https://ldap.dev.box.net/api
+    collection: ['123', '234', ...],  // optional list of file ids for back and forth navigation
+    header: 'light',                  // optional string value of 'none' or 'dark' or 'light' that controls header visibility and theme
+    viewers: {                        // optional arguments to pass on to viewers
+        VIEWERNAME: {                     // name of the viewer, see below for more details
+            disabled: false,              // disables the viewer
+            annotations: false            // other args
+            controls: true                // disables the viewer controls
             ...
         },
         ...
@@ -111,11 +113,52 @@ preview.show(fileId, { options });
 }
 ```
 
-VIEWERNAME can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be gotten by calling `Box.Preview.getViewers()`.
+Token
+------
+
+In order for preview to work over the API it needs an auth token. The value passed in for the token option above can either be a string token or a token generator function. If passing a string, it is assumed that the token never expires or changes. If however the token expires or changes over time, then a generator function should be passed. The generator function should take in a file id or a list of file ids as argument and return a `Promise` which should resolve to a key/value pair of id/token. A sample implementation is below.
+
+```javascript
+/**
+ * Auth token fetcher
+ * @param {String|Array} id File id or array of file ids
+ * @returns {Promise} Promise to resolve to a map of ids and tokens
+ */
+function token(id) {
+    // id can be a single file id or an array of ids
+    const ids = Array.isArray(id) ? id : [id];
+
+    return new Promise((resolve, reject) => {
+        // Get tokens for all files with ids
+        // via some mechanism or network request
+        //    response should look like
+        //    {
+        //        id1: 'token1',
+        //        id2: 'token2',
+        //        id3: 'token3'
+        //        ...
+        //    }
+        fetch(tokenServiceUrl, {
+            method: 'post',
+            body: { fileIDs: ids } // based on what the token service endpoint expects
+        })
+        .then((response) => response.json())
+        .then(resolve)
+        .catch(reject);
+    });
+}
+```
+
+VIEWERNAME
+-----------
+
+The name of the vewier. Can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be gotten by calling `Box.Preview.getViewers()`.
+
+
+Other Methods
+--------------
 
 `Box.Preview.hide(/* optional Boolean */ destroy)` hides the previewer. If destroy is true, then container's contents are also removed.
-
-`Box.Preview.updateAuthToken(/* String */ token);` updates the API auth token. Useful for when the token expires.
 
 `Box.Preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
 
@@ -130,21 +173,29 @@ Events
 The preview object exposes `addListener` and `removeListener` for binding to events. Events should be bound before calling `show()` otherwise they can be missed.
 
 ```javascript
-Box.Preview.addListener(EVENTNAME, (value) => {
+const listener = (value) => {
     // do something with value
-});
+};
 
+// Attach listeners before calling show otherwise events can be missed
+Box.Preview.addListener(EVENTNAME, listener);
+
+// Show a preview
 Box.Preview.show(...);
+
+// Remove listeners when needed or before hiding the preview
+Box.Preview.removeListener(EVENTNAME, listener);
 ```
 
 EVENTNAME can be one of the following
 
-* `load` event will be fired on every preview load if inter-preview navigation is happening. The value will be an object contaianing
+* `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation is happening. The value argument will be an object contaianing
 ```javascript
   {
-      viewer: {...},    // Instance of the current viewer
+      error: 'message', // Error message if any that happened while loading the preview
+      viewer: {...},    // Instance of the current viewer object, only if no error message
       metrics: {...},   // Performance metrics
       file: {...}       // Box file object as returned by the API
   }
 ```
-* `navigation` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event.
+* `navigate` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event happens.

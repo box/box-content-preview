@@ -1,172 +1,172 @@
-.annotation-dialog {
+.box-preview-annotation-dialog {
     position: absolute;
     z-index: 9999; /* Annotation dialog should be above other content */
-}
 
-.annotation-dialog .hidden {
-    display: none;
-}
+    .hidden {
+        display: none;
+    }
 
-.annotation-dialog .caret-up {
-    width: 0;
-    height: 0;
-    margin: 0 auto;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid #333;
-}
+    .caret-up {
+        width: 0;
+        height: 0;
+        margin: 0 auto;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid #333;
+    }
 
-.annotation-dialog .annotation-container {
-    padding: 5px;
-    border-radius: 5px;
-    background-color: #333;
-}
+    .annotation-container {
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #333;
+    }
 
-.annotation-dialog .annotation-textarea {
-    min-width: 250px;
-    min-height: 50px;
-    padding: 7px;
-    font-size: 12px;
-    border-radius: 3px;
-}
+    .annotation-textarea {
+        min-width: 250px;
+        min-height: 50px;
+        padding: 7px;
+        font-size: 12px;
+        border-radius: 3px;
+    }
 
-.annotation-dialog .annotation-textarea.reply {
-    min-width: 304px;
-}
+    .annotation-textarea.reply {
+        min-width: 304px;
+    }
 
-.annotation-dialog .annotation-comment {
-    position: relative;
-    padding: 10px;
-    border-bottom: 1px solid #444;
-}
+    .annotation-comment {
+        position: relative;
+        padding: 10px;
+        border-bottom: 1px solid #444;
+    }
 
-.annotation-dialog .profile-image-container {
-    display: inline-block;
-    padding-top: 5px;
-    vertical-align: top;
-}
+    .profile-image-container {
+        display: inline-block;
+        padding-top: 5px;
+        vertical-align: top;
+    }
 
-.annotation-dialog .profile-image-container img {
-    width: 30px;
-    height: 30px;
-}
+    .profile-image-container img {
+        width: 30px;
+        height: 30px;
+    }
 
-.annotation-dialog .comment-container {
-    display: inline-block;
-    width: 250px;
-    padding-left: 10px;
-}
+    .comment-container {
+        display: inline-block;
+        width: 250px;
+        padding-left: 10px;
+    }
 
-.annotation-dialog .comment-container .user-name {
-    color: #eee;
-    font-size: 13px;
-}
+    .comment-container .user-name {
+        color: #eee;
+        font-size: 13px;
+    }
 
-.annotation-dialog .comment-container .comment-date {
-    padding-top: 2px;
-    color: #888;
-    font-size: 11px;
-}
+    .comment-container .comment-date {
+        padding-top: 2px;
+        color: #888;
+        font-size: 11px;
+    }
 
-.annotation-dialog .comment-container .comment-text {
-    padding-top: 5px;
-    color: #afafaf;
-    font-size: 12px;
-}
+    .comment-container .comment-text {
+        padding-top: 5px;
+        color: #afafaf;
+        font-size: 12px;
+    }
 
-.annotation-dialog .delete-confirmation {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #222;
-    border-radius: 3px;
-    z-index: 2; /* Above the delete button */
-}
+    .delete-confirmation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #222;
+        border-radius: 3px;
+        z-index: 2; /* Above the delete button */
+    }
 
-.annotation-dialog .delete-confirmation-message {
-    padding: 5px 0 3px 0;
-    text-align: center;
-    font-size: 12px;
-    color: #eee;
-}
+    .delete-confirmation-message {
+        padding: 5px 0 3px 0;
+        text-align: center;
+        font-size: 12px;
+        color: #eee;
+    }
 
-.annotation-dialog .button-container {
-    position: relative;
-    width: 100%;
-    height: 35px;
-    margin-top: 3px;
-}
+    .button-container {
+        position: relative;
+        width: 100%;
+        height: 35px;
+        margin-top: 3px;
+    }
 
-.annotation-dialog .btn {
-    padding: 10px 20px;
-    border: 0;
-    border-radius: 2px;
-    cursor: pointer;
-}
+    .btn {
+        padding: 10px 20px;
+        border: 0;
+        border-radius: 2px;
+        cursor: pointer;
+    }
 
-.annotation-dialog .btn span {
-    opacity: 0.7;
-}
+    .btn span {
+        opacity: 0.7;
+    }
 
-.annotation-dialog .btn:hover span {
-    opacity: 1;
-}
+    .btn:hover span {
+        opacity: 1;
+    }
 
-.annotation-dialog .btn-plain {
-    color: #bbb;
-    border-style: none;
-    background-color: transparent;
-    cursor: pointer;
-}
+    .btn-plain {
+        color: #bbb;
+        border-style: none;
+        background-color: transparent;
+        cursor: pointer;
+    }
 
-.annotation-dialog .delete-comment-btn {
-    position: absolute;
-    top: 8px;
-    right: 0;
-}
+    .delete-comment-btn {
+        position: absolute;
+        top: 8px;
+        right: 0;
+    }
 
-.annotation-dialog .cancel-annotation-btn {
-    position: absolute;
-    left: 0;
-    color: #dbdbdb;
-    background-color: transparent;
-}
+    .cancel-annotation-btn {
+        position: absolute;
+        left: 0;
+        color: #dbdbdb;
+        background-color: transparent;
+    }
 
-.annotation-dialog .post-annotation-btn {
-    position: absolute;
-    right: 0;
-    color: #fff;
-    background-color: #555;
-}
+    .post-annotation-btn {
+        position: absolute;
+        right: 0;
+        color: #fff;
+        background-color: #555;
+    }
 
-.annotation-dialog .add-reply-btn {
-    padding: 10px;
-    font-size: 13px;
-}
+    .add-reply-btn {
+        padding: 10px;
+        font-size: 13px;
+    }
 
-.annotation-dialog .cancel-delete-btn {
-    position: absolute;
-    width: 80px;
-    left: 60px;
-    color: #fff;
-    background-color: #555;
-}
+    .cancel-delete-btn {
+        position: absolute;
+        width: 80px;
+        left: 60px;
+        color: #fff;
+        background-color: #555;
+    }
 
-.annotation-dialog .confirm-delete-btn {
-    position: absolute;
-    width: 80px;
-    right: 60px;
-    color: #fff;
-    background-color: #555;
-}
+    .confirm-delete-btn {
+        position: absolute;
+        width: 80px;
+        right: 60px;
+        color: #fff;
+        background-color: #555;
+    }
 
-.annotation-dialog .show-point-annotation-btn {
-    padding: 10px 15px;
-    color: #eee;
-    background-color: #333;
-    font-size: 14px;
+    .show-point-annotation-btn {
+        padding: 10px 15px;
+        color: #eee;
+        background-color: #333;
+        font-size: 14px;
+    }
 }
 
 .box-preview-annotation-layer {
@@ -176,6 +176,7 @@
     right: 0;
     bottom: 0;
     cursor: text;
+    pointer-events: none;
 
     .box-preview-highlight {
         position: absolute;
@@ -188,28 +189,50 @@
     }
 }
 
-/* Quad point positioning - this highlight refers to the Rangy highlight */
-.box-preview-doc .highlight {
-    position: relative;
-}
-
-.box-preview-highlight-active .box-preview-highlight {
-    background-color: rgba(255, 255, 0, 0.35);
-}
-
 .box-preview-remove-highlight-btn {
     position: absolute;
-    padding: 0 5px 3px 5px;
-    width: 16px;
-    height: 16px;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    background-color: rgba(255, 0, 0, 0.3);
+    padding: 5px 6px;
+    border: 1px solid #dfdfdf;
+    border-radius: 2px;
+    background-color: #fafafa;
+    -webkit-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
+    -moz-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
+
+    /* CSS arrow for caret under remove highlight button */
+    &:after, &:before {
+        top: 100%;
+        left: 50%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+        transform-origin: 0 0;
+        transform: rotate(-45deg);
+    }
+
+    &:after {
+        border-color: transparent transparent #fafafa #fafafa;
+        border-width: 6px;
+        margin: -1px 0 0 -8px;
+    }
+
+    &:before {
+        border-color: transparent transparent #dfdfdf #dfdfdf;
+        border-width: 6px;
+        margin-left: -8px;
+        -webkit-box-shadow: -3px 3px 3px -1px rgba(0, 0, 0, 0.25);
+        -moz-box-shadow: -3px 3px 3px -1px rgba(0, 0, 0, 0.25);
+        box-shadow: -3px 3px 3px -1px rgba(0, 0, 0, 0.25);
+    }
 }
 
-.box-preview-remove-highlight-btn:hover {
-    background-color: rgba(255, 0, 0, 0.8);
+/* Quad point positioning - the helper divs are positioned relative to the
+Rangy-created element */
+.box-preview-doc .highlight {
+    position: relative;
 }
 
 /* These helper divs allow us to calculate the quad points of an element */
@@ -226,24 +249,24 @@
     background: none;
     height: 0px;
     width: 0px;
-}
 
-.box-preview-quad-corner.corner1 {
-    left: 0;
-    bottom: 0;
-}
+    &.corner1 {
+        left: 0;
+        bottom: 0;
+    }
 
-.box-preview-quad-corner.corner2 {
-    right: 0;
-    bottom: 0;
-}
+    &.corner2 {
+        right: 0;
+        bottom: 0;
+    }
 
-.box-preview-quad-corner.corner3 {
-    right: 0;
-    top: 0;
-}
+    &.corner3 {
+        right: 0;
+        top: 0;
+    }
 
-.box-preview-quad-corner.corner4 {
-    left: 0;
-    top: 0;
+    &.corner4 {
+        left: 0;
+        top: 0;
+    }
 }

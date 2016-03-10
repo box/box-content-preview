@@ -17,10 +17,8 @@ const VOLUME_LEVEL_CLASS_NAMES = [
 ];
 const CRAWLER = '<div class="box-preview-media-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
 
-let document = global.document;
-
 @autobind
-class MediaControls extends EventEmitter  {
+class MediaControls extends EventEmitter {
 
     /**
      * [constructor]
@@ -29,7 +27,6 @@ class MediaControls extends EventEmitter  {
      * @returns {Controls} Controls instance
      */
     constructor(containerEl, mediaEl) {
-
         super();
 
         this.containerEl = containerEl;
@@ -128,10 +125,9 @@ class MediaControls extends EventEmitter  {
      * Playback rate handler
      *
      * @private
-     * @param {String} speed playback rate
      * @returns {void}
      */
-    handleSpeed(speed) {
+    handleSpeed() {
         this.emit('speedchange');
     }
 
@@ -139,10 +135,9 @@ class MediaControls extends EventEmitter  {
      * Quality handler
      *
      * @private
-     * @param {String} quality hd or sd or auto
      * @returns {void}
      */
-    handleQuality(quality) {
+    handleQuality() {
         this.emit('qualitychange');
     }
 
@@ -168,7 +163,7 @@ class MediaControls extends EventEmitter  {
             this.emit('timeupdate', value);
         });
 
-        this.volScrubber = new Scrubber(this.volScrubberEl, 'Volume', 0 , 1, 1);
+        this.volScrubber = new Scrubber(this.volScrubberEl, 'Volume', 0, 1, 1);
         this.volScrubber.on('valuechange', (value) => {
             this.emit('volumeupdate', value);
         });
@@ -182,10 +177,13 @@ class MediaControls extends EventEmitter  {
      * @returns {String} A string formatted like 03:57:35
      */
     formatTime(seconds) {
-        let h = Math.floor(seconds / 3600);
-        let m = Math.floor((seconds % 3600) / 60);
-        let s = Math.floor((seconds % 3600) % 60);
-        return (h > 0 ? h.toString() + ':' : '') + (m < 10 ? '0' + m.toString() : m.toString()) + ':' + (s < 10 ? '0' + s.toString() : s.toString());
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor((seconds % 3600) % 60);
+        const hour = h > 0 ? `${h.toString()}:` : '';
+        const min = m < 10 ? `0${m.toString()}` : m.toString();
+        const sec = s < 10 ? `0${s.toString()}` : s.toString();
+        return `${hour}${min}:${sec}`;
     }
 
     /**
@@ -203,7 +201,7 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     setTimeCode(time) {
-        let duration = this.mediaEl.duration;
+        const duration = this.mediaEl.duration;
         this.timeScrubber.setValue(duration ? time / duration : 0);
         this.timecodeEl.textContent = this.formatTime(time || 0);
     }
@@ -335,7 +333,6 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     show() {
-
         if (!this.wrapperEl) {
             return;
         }
@@ -353,7 +350,6 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     hide() {
-
         // Do not hide the controls if the settings menu was open
         // Also do not hide, till the mouse has left the controls
         if (this.preventHiding || (this.settings && this.settings.isVisible())) {
@@ -398,8 +394,7 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     initFilmstrip(representation, aspect, token) {
-
-        this.filmstripUrl = representation.links.content.url + '?access_token=' + token;
+        this.filmstripUrl = `${representation.links.content.url}?access_token=${token}`;
 
         this.filmstripContainerEl = this.containerEl.appendChild(document.createElement('div'));
         this.filmstripContainerEl.className = 'box-preview-media-filmstrip-container';
@@ -412,7 +407,7 @@ class MediaControls extends EventEmitter  {
         this.filmstripTimeEl.className = 'box-preview-media-filmstrip-timecode';
 
 
-        let frameWidth = 90 * aspect;
+        const frameWidth = 90 * aspect;
 
         // Unfortunately the filmstrip is jpg. jpg files have a width limit.
         // So ffmpeg ends up creating filmstrip elements in seperate rows.
@@ -425,14 +420,14 @@ class MediaControls extends EventEmitter  {
 
         this.filmstripEl.onload = () => {
             if (this.filmstripContainerEl) {
-                this.filmstripContainerEl.style.width = frameWidth + 2 + 'px'; // 2px for the borders on each side
+                this.filmstripContainerEl.style.width = `${frameWidth + 2}px`; // 2px for the borders on each side
                 this.filmstripContainerEl.querySelector('.box-preview-media-crawler-wrapper').style.display = 'none'; // Hide the crawler
             }
         };
 
-        let repStatus = new RepStatus();
+        const repStatus = new RepStatus();
         repStatus.status(representation, {
-            authorization: 'Bearer ' + token
+            authorization: `Bearer ${token}`
         }).then(this.setFilmstrip);
     }
 
@@ -487,16 +482,15 @@ class MediaControls extends EventEmitter  {
      * @returns {void}
      */
     filmstripShowHandler(event) {
-
         // Don't show the filstrip when settings menu is open
         if (this.settings.isVisible()) {
             return;
         }
 
-        let rect = this.containerEl.getBoundingClientRect();
-        let pageX = event.pageX; // get the mouse X position
-        let time = (pageX - rect.left) * this.mediaEl.duration / rect.width; // given the mouse X position, get the relative time
-        let frame = Math.floor(time); // filmstrip has frames every 1sec, get the frame number to show
+        const rect = this.containerEl.getBoundingClientRect();
+        const pageX = event.pageX; // get the mouse X position
+        const time = (pageX - rect.left) * this.mediaEl.duration / rect.width; // given the mouse X position, get the relative time
+        const frame = Math.floor(time); // filmstrip has frames every 1sec, get the frame number to show
         let frameWidth = this.filmstripEl.naturalWidth / 100; // calculate the frame width based on the filmstrip width with each row having 100 frames
         let left = -1 * (frame % 100) * frameWidth; // there are 100 frames per row, get the frame position in a given row
         let top = -90 * Math.floor((frame / 100)); // get the row number if there are more than 1 row. Each row is 90px high.
@@ -511,13 +505,13 @@ class MediaControls extends EventEmitter  {
 
         // The filstrip container positioning should fall within the viewport of the video itself. Relative to the video it
         // should be left positioned 0 <= filmstrip frame <= (video.width - filmstrip frame.width)
-        let minLeft = Math.max(0, pageX - rect.left - (frameWidth / 2)); // don't allow the image to bleed out of the video viewport left edge
-        let maxLeft = Math.min(minLeft, rect.width - frameWidth); // don't allow the image to bleed out of the video viewport right edge
+        const minLeft = Math.max(0, pageX - rect.left - (frameWidth / 2)); // don't allow the image to bleed out of the video viewport left edge
+        const maxLeft = Math.min(minLeft, rect.width - frameWidth); // don't allow the image to bleed out of the video viewport right edge
 
-        this.filmstripEl.style.left = left + 'px';
-        this.filmstripEl.style.top = top + 'px';
+        this.filmstripEl.style.left = `${left}px`;
+        this.filmstripEl.style.top = `${top}px`;
         this.filmstripContainerEl.style.display = 'block';
-        this.filmstripContainerEl.style.left = maxLeft + 'px';
+        this.filmstripContainerEl.style.left = `${maxLeft}px`;
         this.filmstripTimeEl.textContent = this.formatTime(time);
     }
 

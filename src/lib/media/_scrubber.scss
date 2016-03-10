@@ -57,7 +57,6 @@
     border-radius: 8px;
     background-color: #1992D4;
     cursor: pointer;
-    pointer-events: none;
     transform: scale(0);
     transition: transform 0.05s ease-in-out; /* timing is half of bar timing since handle scales to 1 instead of 2 */
 }

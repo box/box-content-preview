@@ -45,7 +45,7 @@ module.exports = function(language) {
                 },
 
                 {
-                    test: /\.(jpe?g|png|gif|svg|woff2|woff)$/,
+                    test: /\.(jpe?g|png|gif|woff2|woff)$/,
                     loader: 'url-loader?limit=10000',
                     exclude: [
                         /third\-party/,

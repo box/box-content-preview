@@ -4,7 +4,7 @@ import TextBase from './text-base';
 import fetch from 'isomorphic-fetch';
 import marked from 'marked';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 @autobind
 class MarkDown extends TextBase {
@@ -33,9 +33,10 @@ class MarkDown extends TextBase {
     load(textUrl) {
         fetch(textUrl, {
             headers: this.appendAuthHeader()
-        }).then((response) => {
-            return response.text();
-        }).then((txt) => {
+        })
+        .then((response) => response.text())
+        .then((txt) => {
+            /* global hljs */
 
             if (this.destroyed) {
                 return;

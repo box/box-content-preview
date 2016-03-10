@@ -1,5 +1,3 @@
-'use strict';
-
 import Box3DControls from '../box3d-controls';
 
 /**
@@ -8,16 +6,7 @@ import Box3DControls from '../box3d-controls';
  * Render Mode selection, VR and fullscreen buttons.
  * @class
  */
-class Image360Controls extends Box3DControls  {
-    /**
-     * Create additional controls for the control bar, that pertain to Image360 viewing
-     * @inheritdoc
-     * @constructor
-     */
-    constructor(containerEl) {
-        super(containerEl);
-    }
-
+class Image360Controls extends Box3DControls {
     /**
      * @inheritdoc
      */

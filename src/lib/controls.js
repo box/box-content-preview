@@ -1,10 +1,8 @@
 import autobind from 'autobind-decorator';
-import throttle  from 'lodash.throttle';
+import throttle from 'lodash.throttle';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
-
-let document = global.document;
 
 @autobind
 class Controls {
@@ -74,7 +72,6 @@ class Controls {
     resetTimeout() {
         clearTimeout(this.controlDisplayTimeoutId);
         this.controlDisplayTimeoutId = setTimeout(() => {
-
             clearTimeout(this.controlDisplayTimeoutId);
 
             if (this.blockHiding) {
@@ -86,7 +83,6 @@ class Controls {
                     document.activeElement.blur(); // blur out any potential button focuses within preview controls
                 }
             }
-
         }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS);
     }
 
@@ -141,12 +137,12 @@ class Controls {
      * @returns {void}
      */
     add(text, handler, classList = '', buttonContent = '') {
-        let cell = document.createElement('div');
+        const cell = document.createElement('div');
         cell.className = 'box-preview-controls-cell';
 
-        let button = document.createElement('button');
+        const button = document.createElement('button');
         button.setAttribute('aria-label', text);
-        button.className = 'box-preview-controls-btn ' + classList;
+        button.className = `box-preview-controls-btn ${classList}`;
         button.addEventListener('click', handler);
 
         if (buttonContent) {
@@ -158,8 +154,8 @@ class Controls {
 
         // Maintain a reference for cleanup
         this.buttonRefs.push({
-            button: button,
-            handler: handler
+            button,
+            handler
         });
 
         return button;

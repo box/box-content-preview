@@ -1,5 +1,3 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import {
     createContentUrl,
@@ -20,7 +18,7 @@ class AssetLoader {
      * @returns {String} content type
      */
     getType() {
-        let name = this.constructor.name || 'none';
+        const name = this.constructor.name || 'none';
         return name.replace('Loader', '').toLowerCase();
     }
 
@@ -86,9 +84,8 @@ class AssetLoader {
      * @returns {Promise} Promise to load scripts
      */
     load(viewer, location) {
-
         // Create an asset path creator function
-        let assetUrlCreator = createAssetUrlCreator(location);
+        const assetUrlCreator = createAssetUrlCreator(location);
 
         // 1st load the stylesheets needed for this preview
         loadStylesheets(viewer.STYLESHEETS.map(assetUrlCreator));
@@ -107,13 +104,13 @@ class AssetLoader {
      */
     prefetch(file, options) {
         // Create an asset path creator function
-        let assetUrlCreator = createAssetUrlCreator(options.location);
+        const assetUrlCreator = createAssetUrlCreator(options.location);
 
         // Determine the viewer to use
-        let viewer = this.determineViewer(file);
+        const viewer = this.determineViewer(file);
 
         // Determine the representation to use
-        let representation = this.determineRepresentation(file, viewer);
+        const representation = this.determineRepresentation(file, viewer);
 
         // Prefetch the stylesheets needed for this preview
         prefetchAssets(viewer.STYLESHEETS.map(assetUrlCreator));
@@ -124,13 +121,13 @@ class AssetLoader {
         if (viewer.PREFETCH === 'xhr') {
             fetch(representation.links.content.url, {
                 headers: {
-                    'Authorization': 'Bearer ' + this.options.token
+                    Authorization: `Bearer ${options.token(file.id)[file.id]}`
                 }
             });
         } else {
-            let img = document.createElement('img');
+            const img = document.createElement('img');
             img.crossOrigin = 'anonymous';
-            img.src = createContentUrl(representation.links.content.url, options.token);
+            img.src = createContentUrl(representation.links.content.url, options.token(file.id)[file.id]);
         }
     }
 
@@ -139,10 +136,9 @@ class AssetLoader {
      * some loader wants to do some initialization stuff
      *
      * @public
-     * @param {Object} options options
      * @returns {void}
      */
-    preload(options) {
+    preload() {
         // empty
     }
 }

@@ -77,7 +77,7 @@ class Base extends EventEmitter {
      * Sets a timeout for loading.
      *
      * @protected
-     * @returns {Promise} Promise to load image
+     * @returns {void}
      */
     load() {
         setTimeout(() => {
@@ -126,7 +126,9 @@ class Base extends EventEmitter {
      * @returns {Object} fetch headers
      */
     appendAuthHeader(headers = {}) {
-        headers.Authorization = 'Bearer ' + this.options.token;
+        /* eslint-disable no-param-reassign */
+        headers.Authorization = this.options.authorization;
+        /* eslint-enable no-param-reassign */
         return headers;
     }
 

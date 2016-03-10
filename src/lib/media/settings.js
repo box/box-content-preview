@@ -37,8 +37,8 @@ class Settings extends EventEmitter {
      * @returns {void}
      */
     init() {
-        let quality = cache.get('media-quality') || 'auto';
-        let speed = cache.get('media-speed') || '1.0';
+        const quality = cache.get('media-quality') || 'auto';
+        const speed = cache.get('media-speed') || '1.0';
 
         this.chooseOption('quality', quality);
         this.chooseOption('speed', speed);
@@ -74,7 +74,9 @@ class Settings extends EventEmitter {
         while (currentNode && currentNode !== this.settings) {
             if (typeof currentNode.getAttribute('data-type') === 'string') {
                 return currentNode;
+                /* eslint-disable no-else-return */
             } else {
+                /* eslint-enable no-else-return */
                 currentNode = currentNode.parentNode;
             }
         }
@@ -88,15 +90,14 @@ class Settings extends EventEmitter {
      * @returns {void}
      */
     menuClickHandler(event) {
-
         // Extract the parent target dataset element
-        let target = this.findParentDataType(event.target);
+        const target = this.findParentDataType(event.target);
         if (!target) {
             return;
         }
 
-        let type = target.getAttribute('data-type');
-        let value = target.getAttribute('data-value');
+        const type = target.getAttribute('data-type');
+        const value = target.getAttribute('data-value');
 
         if (type === 'menu') {
             // We are in the sub menu and going back to the main menu
@@ -106,7 +107,7 @@ class Settings extends EventEmitter {
             this.chooseOption(type, value);
         } else if (type) {
             // We are in the main menu and clicked a valid option
-            this.settings.classList.add('box-preview-media-settings-show-' + type);
+            this.settings.classList.add(`box-preview-media-settings-show-${type}`);
         }
     }
 
@@ -118,27 +119,26 @@ class Settings extends EventEmitter {
      * @returns {void}
      */
     chooseOption(type, value) {
-
         // Hide the menu
         this.hide();
 
         // Save the value
-        cache.set('media-' + type, value);
+        cache.set(`media-${type}`, value);
 
         // Emit to the listener what was chosen
         this.emit(type);
 
         // Figure out the target option
-        let option = this.settings.querySelector('[data-type="' + type + '"][data-value="' + value + '"]');
+        const option = this.settings.querySelector(`[data-type="${type}"][data-value="${value}"]`);
 
         // Fetch the menu label to use
-        let label = option.querySelector(SELECTOR_SETTINGS_VALUE).textContent;
+        const label = option.querySelector(SELECTOR_SETTINGS_VALUE).textContent;
 
         // Copy the value of the selected option to the main top level menu
-        this.settings.querySelector('[data-type="' + type + '"] ' + SELECTOR_SETTINGS_VALUE).textContent = label;
+        this.settings.querySelector(`[data-type="${type}"] ${SELECTOR_SETTINGS_VALUE}`).textContent = label;
 
         // Remove the checkmark from the prior selected option in the sub menu
-        this.settings.querySelector('[data-type="' + type + '"] ' + SELECTOR_SETTINGS_ICON + '.' + CLASS_SETTINGS_SELECTED).classList.remove(CLASS_SETTINGS_SELECTED);
+        this.settings.querySelector(`[data-type="${type}"] ${SELECTOR_SETTINGS_ICON}.${CLASS_SETTINGS_SELECTED}`).classList.remove(CLASS_SETTINGS_SELECTED);
 
         // Add a checkmark to the new selected option in the sub menu
         option.querySelector(SELECTOR_SETTINGS_ICON).classList.add(CLASS_SETTINGS_SELECTED);

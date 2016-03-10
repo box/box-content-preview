@@ -21,11 +21,17 @@ import {
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_NAVIGATION_LEFT,
-    SELECTOR_NAVIGATION_RIGHT
+    SELECTOR_NAVIGATION_RIGHT,
+    COLOR_HEADER_LIGHT,
+    COLOR_HEADER_DARK,
+    COLOR_HEADER_BTN_LIGHT,
+    COLOR_HEADER_BTN_DARK
 } from './constants';
 
 const PREFETCH_COUNT = 3;
 const MOUSEMOVE_THROTTLE = 1500;
+const RETRY_TIMEOUT = 500;
+const RETRY_COUNT = 5;
 const PERMISSIONS_ERROR = 'Missing permissions to preview';
 const API = 'https://api.box.com';
 const Box = global.Box || {};
@@ -43,6 +49,16 @@ class Preview extends EventEmitter {
      */
     constructor() {
         super();
+
+        // State of preview
+        this.open = false;
+
+        // Some analytics that span across preview sessions
+        this.count = {
+            success: 0,     // Counts how many previews have happened overall
+            error: 0,       // Counts how many errors have happened overall
+            navigation: 0   // Counts how many previews have happened by prev next navigation
+        };
 
         // Current file being previewed
         this.file = {};
@@ -121,8 +137,8 @@ class Preview extends EventEmitter {
     /**
      * Returns the box file content api url
      *
-     * @param {String} id box file id
      * @private
+     * @param {String} id box file id
      * @returns {String} API url
      */
     createUrl(id) {
@@ -133,19 +149,24 @@ class Preview extends EventEmitter {
      * Parses the preview options
      *
      * @private
+     * @param {Object} token auth token map
      * @returns {void}
      */
-    parseOptions() {
+    parseOptions(token) {
         // Grab the options from saved preview options
-        const options = this.previewOptions;
-
-        // Auth token should be available
-        if (!options.token) {
-            throw new Error('Missing Auth Token!');
-        }
+        const options = Object.assign({}, this.previewOptions);
 
         // Reset all options
         this.options = {};
+
+        // Authorization header with tokens
+        this.options.token = token[this.file.id];
+
+        // Save handle to the token fetcher as viewers might need it
+        this.options.tokenFetcher = this.fetchTokens;
+
+        // Authorization header with tokens
+        this.options.authorization = `Bearer ${this.options.token}`;
 
         // Save the location of preview for viewers
         this.options.location = Object.assign({}, this.location);
@@ -153,11 +174,8 @@ class Preview extends EventEmitter {
         // Save the reference to the api endpoint
         this.options.api = options.api ? options.api.replace(/\/$/, '') : API;
 
-        // Save the reference to the auth token
-        this.options.token = this.token || options.token;
-
         // Show or hide the header
-        this.options.header = typeof options.header === 'boolean' ? options.header : true;
+        this.options.header = options.header || 'light';
 
         // Save the files to iterate through
         this.files = options.files || [];
@@ -168,6 +186,87 @@ class Preview extends EventEmitter {
         // Iterate over all the viewer options and disable any viewer
         // that has an option disabled set to true
         this.disableViewers(Object.keys(this.options.viewers).filter((viewer) => !!this.options.viewers[viewer].disabled));
+    }
+
+    /**
+     * Grab the token from the saved preview options to parse it.
+     * The token can either be a simple string or a function that returns
+     * a promise which resolves to a key value map where key is the file
+     * id and value is the token. The function accepts either a simple id
+     * or an array of file ids
+     *
+     * @private
+     * @param {String|Array} [id] box file ids
+     * @returns {void}
+     */
+    fetchTokens(id) {
+        // By defaut we fetch the current file id token
+        let ids = [this.file.id];
+
+        // If instead ids were passed in, we fetch those
+        // This will be the use case for prefetch and viewers
+        // Normalize to an array
+        if (id && Array.isArray(id)) {
+            ids = id;
+        } else if (id) {
+            ids = [id];
+        }
+
+        // Grab the auth token or token generator
+        const token = this.previewOptions.token;
+
+        // Create an error to throw if needed
+        const error = new Error('Missing Auth Token!');
+
+        // Auth token should be available
+        if (!token) {
+            throw error;
+        }
+
+        return new Promise((resolve) => {
+            if (typeof token === 'function') {
+                // Token may be a function that returns a promise
+                token(ids).then((tokenMap) => {
+                    // Iterate over all the requested file ids
+                    // and make sure we got them back otherwise
+                    // throw and error about missing tokens
+                    ids.forEach((fileId) => {
+                        if (!tokenMap[fileId]) {
+                            throw error;
+                        }
+                    });
+                    resolve(tokenMap);
+                });
+            } else {
+                // Token may just be a string, create a map
+                // from id to token to normalize. In this case
+                // the value is going to be the same for all files
+                const tokenMap = {};
+                ids.forEach((fileId) => {
+                    tokenMap[fileId] = token;
+                });
+                resolve(tokenMap);
+            }
+        });
+    }
+
+    /**
+     * Caches the preview header template with theme
+     *
+     * @private
+     * @returns {void}
+     */
+    setupTheme() {
+        if (this.shellTemplate) {
+            return;
+        }
+
+        // Theme the header
+        if (this.options.header === 'dark') {
+            this.shellTemplate = shellTemplate.replace(/\{COLOR_HEADER\}/g, COLOR_HEADER_DARK).replace(/\{COLOR_HEADER_BTN\}/g, COLOR_HEADER_BTN_LIGHT);
+        } else {
+            this.shellTemplate = shellTemplate.replace(/\{COLOR_HEADER\}/g, COLOR_HEADER_LIGHT).replace(/\{COLOR_HEADER_BTN\}/g, COLOR_HEADER_BTN_DARK);
+        }
     }
 
     /**
@@ -191,13 +290,16 @@ class Preview extends EventEmitter {
         // Clear the content
         container.innerHTML = '';
 
+        // Theme the shell
+        this.setupTheme();
+
         // Create the preview with absolute positioning inside a relative positioned container
         // <box-preview-container>
         //      <box-preview-header>
         //      <box-preview>
         //      <navigation>
         // </box-preview-container>
-        insertTemplate(container, shellTemplate);
+        insertTemplate(container, this.shellTemplate);
 
         // Save a handle to the container for future references.
         this.container = container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
@@ -206,7 +308,7 @@ class Preview extends EventEmitter {
         this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
 
         // Add the header if needed
-        if (this.options.header) {
+        if (this.options.header !== 'none') {
             this.container.firstElementChild.className = CLASS_BOX_PREVIEW_HEADER;
         }
 
@@ -228,8 +330,17 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     load(file) {
-        // Parse the preview options
-        this.parseOptions();
+        // Indicate preview is open
+        this.open = true;
+
+        // Init performance logging
+        this.logger = new Logger(this.location.locale);
+
+        // Clear any existing retry timeouts
+        clearTimeout(this.retryTimeout);
+
+        // Save reference to the currently shown file, if any
+        const current = this.file ? this.file.id : undefined;
 
         // Check if a file id was passed in or a well formed file object
         // Cache the file in the files array so that we don't prefetch it.
@@ -243,6 +354,34 @@ class Preview extends EventEmitter {
             this.file = file;
         }
 
+        // If we are trying to load the same file again, only try 5 times
+        // Don't want to try to load the file multiple times in
+        if (this.file.id === current) {
+            this.retryCount++;
+        } else {
+            this.retryCount = 0;
+        }
+
+        // Fetch tokens before doing anything
+        this.fetchTokens()
+        .then(this.fetchTokensResponse)
+        .catch(this.triggerFetchError);
+    }
+
+    /**
+     * Loads the preview for a file.
+     *
+     * @param {String|Object} file File to preview
+     * @private
+     * @returns {void}
+     */
+    fetchTokensResponse(tokens) {
+        // Parse the preview options
+        this.parseOptions(tokens);
+
+        // Setup the UI before anything else.
+        this.setup();
+
         // Cache the file
         cache.set(this.file.id, this.file);
 
@@ -253,10 +392,7 @@ class Preview extends EventEmitter {
             this.files = [this.file];
         }
 
-        // Setup the UI before anything else.
-        this.setup();
-
-        if (this.file.representations) { // @TODO we need a better check to validate file object
+        if (this.file.representations && Array.isArray(this.file.representations.entries)) { // @TODO we need a better check to validate file object
             // Cache hit, use that.
             this.loadFromCache();
         } else {
@@ -269,38 +405,24 @@ class Preview extends EventEmitter {
      * Loads a preview from cache.
      *
      * @private
-     * @param {Boolean} [checkStaleness] Check for cache staleness
      * @returns {void}
      */
-    loadFromCache(checkStaleness = true) {
+    loadFromCache() {
         // Add details to the logger
-        this.logger.setFile(this.file);
         this.logger.setCached();
-
-        // Even though we are showing a file from cache, still make
-        // a server request to check if something changed aka check
-        // for cache being stale.
-        if (checkStaleness) {
-            fetch(this.createUrl(this.file.id), {
-                headers: this.getRequestHeaders()
-            })
-            .then((response) => response.json())
-            .then((file) => {
-                this.file = file;
-                cache.set(file.id, file);
-                // @TODO Reload the preview
-            }).catch(this.triggerError);
-        }
 
         // Finally load the viewer
         this.loadViewer();
+
+        // Refresh from server too
+        this.loadFromServer();
     }
 
     /**
      * Loads a preview from the server.
      *
-     * @param {String} id File id to preview
      * @private
+     * @param {String} id File id to preview
      * @returns {void}
      */
     loadFromServer() {
@@ -308,21 +430,49 @@ class Preview extends EventEmitter {
             headers: this.getRequestHeaders()
         })
         .then((response) => response.json())
-        .then((file) => {
-            if (file.type === 'file') {
-                // Save reference to the file and update logger
-                this.file = file;
-                this.logger.setFile(file);
+        .then(this.handleLoadResponse)
+        .catch(this.triggerFetchError);
+    }
 
-                // Cache the new file object
-                cache.set(file.id, file);
+    /**
+     * Loads the file from server response
+     *
+     * @private
+     * @param {Object} file File object
+     * @returns {void}
+     */
+    handleLoadResponse(file) {
+        // If preview is closed don't do anything
+        if (!this.open) {
+            return;
+        }
 
-                // Finally load the viewer
-                this.loadViewer();
-            } else {
-                throw new Error(file.message);
+        // Try catch here to catch any viewer errors
+        // The caller function tries to catch all network specific errors
+        try {
+            if (file.type !== 'file') {
+                throw new Error('Not a Box File');
             }
-        }).catch(this.triggerError);
+
+            // Save reference to the file and update logger
+            this.file = file;
+            this.logger.setFile(file);
+
+            // Get exiting cache before updating it to latest version
+            const cached = cache.get(file.id);
+
+            // Cache the new file object
+            cache.set(file.id, file);
+
+            // Finally load the viewer if file sha mismatches
+            // @TODO add watermark check also here
+            if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
+                this.logger.setCacheStale();
+                this.loadViewer();
+            }
+        } catch (err) {
+            this.triggerError(err);
+        }
     }
 
     /**
@@ -332,6 +482,11 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     loadViewer() {
+        // If preview is closed don't do anything
+        if (!this.open) {
+            return;
+        }
+
         // Before loading a new preview check if a prior preview was showing.
         // If it was showing make sure to destroy it to do any cleanup.
         this.destroy();
@@ -368,11 +523,10 @@ class Preview extends EventEmitter {
 
         // Proceed only when both static and representation assets have been loaded
         Promise.all([promiseToLoadAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
-            // Save reference to file to give to the viewer
-            this.options.file = this.file;
-
             // Instantiate the viewer
-            this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
+            this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
+                file: this.file
+            }));
 
             // Add listeners for viewer load / error event
             this.attachViewerListeners();
@@ -391,23 +545,60 @@ class Preview extends EventEmitter {
     attachViewerListeners() {
         // Add listeners for viewer load / error event
         this.viewer.addListener('error', this.triggerError);
-        this.viewer.addListener('reload', this.loadViewer);
+
+        // Reload event is fired when entire preview needs to be reloaded
+        this.viewer.addListener('reload', () => {
+            this.show(this.file.id, this.previewOptions);
+        });
+
+        // Load event is fired when preview loads
         this.viewer.addListener('load', () => {
             // Once the viewer loads, hide the loading indicator
             if (this.contentContainer) {
                 this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
             }
 
+            // Bump up preview count
+            this.count.success++;
+
             // Finally emit the viewer instance back with a load event
             this.emit('load', {
                 viewer: this.viewer,
-                metrics: this.logger.done(),
+                metrics: this.logger.done(this.count),
                 file: this.file
             });
 
             // Prefetch other files
             this.prefetch();
         });
+    }
+
+    /**
+     * Triggers an error due to fetch.
+     *
+     * @private
+     * @param {String|null|undefined|Error} reason error
+     * @returns {void}
+     */
+    triggerFetchError() {
+        // If preview is closed don't do anything
+        if (!this.open) {
+            return;
+        }
+
+        // Nuke the cache
+        cache.unset(this.file.id);
+
+        // Check if hit the retry limit
+        if (this.retryCount > RETRY_COUNT) {
+            this.triggerError('Failed to fetch file data due to network error');
+            return;
+        }
+
+        clearTimeout(this.retryTimeout);
+        this.retryTimeout = setTimeout(() => {
+            this.load(this.file.id);
+        }, RETRY_TIMEOUT * RETRY_COUNT);
     }
 
     /**
@@ -418,28 +609,36 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     triggerError(err) {
+        // If preview is closed don't do anything
+        if (!this.open) {
+            return;
+        }
+
+        // Mark as error being processed which should prevent viewer loading
+        this.open = false;
+
         // Nuke the cache
         cache.unset(this.file.id);
 
-        let reason;
+        // Destroy anything still showing
+        this.destroy();
 
-        // Use a default reason if none was passed in
-        if (err instanceof Error) {
-            reason = err.message;
-        }
-        reason = reason || 'An error has occurred while loading the preview';
-
+        const reason = (err ? err.message : err) || 'An error has occurred while loading the preview';
         const viewer = ErrorLoader.determineViewer();
+
         ErrorLoader.load(viewer, this.options.location).then(() => {
-            // Destroy anything still showing
-            this.destroy();
-
-            // Emit error
-            this.emit('preview-error', reason);
-
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
             this.viewer.load('', reason);
             this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+
+            // Bump up preview count
+            this.count.error++;
+
+            this.emit('load', {
+                error: reason,
+                metrics: this.logger.done(this.count),
+                file: this.file
+            });
         });
     }
 
@@ -447,12 +646,14 @@ class Preview extends EventEmitter {
      * Builds a list of required XHR headers.
      *
      * @private
+     * @param {String} [token] auth token
      * @returns {Object} Headers
      */
-    getRequestHeaders() {
+    getRequestHeaders(token) {
+        const authToken = token || this.options.token;
         const hints = Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4';
         const headers = {
-            Authorization: `Bearer ${this.options.token}`,
+            Authorization: `Bearer ${authToken}`,
             'X-Rep-Hints': `3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
         };
 
@@ -476,57 +677,61 @@ class Preview extends EventEmitter {
         }
 
         const currentIndex = this.files.indexOf(this.file.id);
-        let count = 0;
+        const filesToPrefetch = this.files.slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1);
 
-        // Starting with the next file, prefetch specific numbers of files.
-        for (let i = currentIndex + 1; count < PREFETCH_COUNT && i < this.files.length; i++) {
-            count++;
+        // Don't bother prefetching when there aren't more files
+        if (filesToPrefetch.length === 0) {
+            return;
+        }
 
-            let nextId = this.files[i];
-
-            // Check if the list was an id or file object
-            if (typeof nextId === 'object') {
-                nextId = nextId.id;
-            }
-
-            // If no file id then exit
-            if (!nextId) {
-                return;
-            }
-
-            // If the file was already prefetched then try the next file
-            const cached = cache.get(nextId);
-            if (cached && cached.representations) { // @TODO need better check
-                continue;
-            }
-
-            // Create an empty object to prevent further prefetches
-            cache.set(nextId, {
-                id: nextId,
-                representations: {}
+        // Get auth tokens for all files we should be prefetching
+        this.fetchTokens(filesToPrefetch)
+        .then((tokens) => {
+            // Some files may already be prefetched, filter them out
+            const filesNeedingPrefetch = filesToPrefetch.filter((id) => {
+                const cached = cache.get(id);
+                return !cached || !cached.representations; // @TODO need better check
             });
 
-            // Pre-fetch the file information
-            fetch(this.createUrl(nextId), {
-                headers: this.getRequestHeaders()
-            })
-            .then((response) => response.json())
-            .then((file) => {
-                // Don't bother with non-files
-                if (file.type === 'file') {
-                    // Save the returned file
-                    cache.set(nextId, file);
+            // Iterate over all the files needed prefetch
+            filesNeedingPrefetch.forEach((id) => {
+                // Cache an empty file object to prevent further prefetches
+                cache.set(id, {
+                    id,
+                    representations: {}
+                });
 
-                    // Pre-fetch content if applicable so that the
-                    // Browser caches the content
-                    const loader = this.getLoader(file);
-                    if (loader && typeof loader.prefetch === 'function') {
-                        loader.prefetch(file, this.options);
-                    }
-                }
-            }).catch(() => {
-                // no-op
+                // Pre-fetch the file information
+                fetch(this.createUrl(id), {
+                    headers: this.getRequestHeaders(tokens[id])
+                })
+                .then((response) => response.json())
+                .then(this.handlePrefetchResponse)
+                .catch(() => {});
             });
+        })
+        .catch(() => {});
+    }
+
+    /**
+     * Prefetches a file and preview assets
+     *
+     * @private
+     * @param {Object} file box file
+     * @returns {void}
+     */
+    handlePrefetchResponse(file) {
+        // Don't bother with non-files
+        if (file.type === 'file') {
+            // Save the returned file
+            cache.set(file.id, file);
+
+            // Pre-fetch content if applicable so that the
+            // Browser caches the content
+            const loader = this.getLoader(file);
+            if (loader && typeof loader.prefetch === 'function') {
+                loader.prefetch(file, this.options);
+            }
         }
     }
 
@@ -563,7 +768,8 @@ class Preview extends EventEmitter {
      */
     navigateToIndex(index) {
         const file = this.files[index];
-        this.emit('navigation', file);
+        this.emit('navigate', file);
+        this.count.navigation++;
         this.load(file);
     }
 
@@ -684,17 +890,6 @@ class Preview extends EventEmitter {
     //--------------------------------------------------------------------------
 
     /**
-     * Sets the authorization token that may have expired.
-     *
-     * @public
-     * @param {String} token auth token
-     * @returns {void}
-     */
-    updateAuthToken(token) {
-        this.token = token;
-    }
-
-    /**
      * Primary function to show a preview.
      *
      * @public
@@ -703,11 +898,8 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     show(file, options) {
-        // Init performance logging
-        this.logger = new Logger(this.location.locale);
-
         // Save a reference to the options to be used later
-        this.previewOptions = options;
+        this.previewOptions = Object.assign({}, options);
 
         // load the preview
         this.load(file);
@@ -720,6 +912,9 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     hide() {
+        // Indicate preview is closed
+        this.open = false;
+
         // Destroy the viewer
         this.destroy();
 
@@ -730,6 +925,9 @@ class Preview extends EventEmitter {
         if (this.container) {
             this.container.innerHTML = '';
         }
+
+        // Nuke the file
+        this.file = undefined;
 
         // Remove keyboard events
         document.removeEventListener('keydown', this.keydownHandler);

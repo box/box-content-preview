@@ -90,7 +90,7 @@ export function createContentUrl(url, token) {
         delim = '&';
     }
 
-    return url + delim + 'access_token=' + token;
+    return `${url}${delim}access_token=${token}`;
 }
 
 /**
@@ -169,7 +169,7 @@ export function loadScripts(urls) {
     urls.forEach((url) => {
         if (loadedJSAssets.indexOf(url) === -1) {
             loadedJSAssets.push(url);
-            let script = createScript(url);
+            const script = createScript(url);
             promises.push(new Promise((resolve, reject) => {
                 script.addEventListener('load', resolve);
                 script.addEventListener('error', reject);

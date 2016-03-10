@@ -54,10 +54,9 @@ build_assets() {
     fi
 }
 
-
 if ! build_assets; then
-  echo "----------------------------------------------------"
-  echo "Error: failure in build_pull_request"
-  echo "----------------------------------------------------"
-  exit 1
+    echo "----------------------------------------------------"
+    echo "Error: failure in build_pull_request - build errors"
+    echo "----------------------------------------------------"
+    exit 1
 fi

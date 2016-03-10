@@ -1,5 +1,3 @@
-'use strict';
-
 import ImageLoader from './image/image-loader';
 import Image360Loader from './box3d/image360/image360-loader';
 import SwfLoader from './swf/swf-loader';

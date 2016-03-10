@@ -3,11 +3,7 @@ import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 
-let Box = global.Box || {};
-
-const DEFAULT_SCALE_DELTA = 1.1;
-const MAX_SCALE = 10.0;
-const MIN_SCALE = 0.1;
+const Box = global.Box || {};
 
 /**
  * Presentation viewer for PowerPoint presentations
@@ -44,7 +40,7 @@ class Presentation extends DocBase {
         super.destroy();
     }
 
-    /*----- Private Helpers -----*/
+    /* ----- Private Helpers ----- */
 
     /**
      * Adds event listeners for presentation controls
@@ -57,7 +53,7 @@ class Presentation extends DocBase {
 
         this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon box-preview-previous-page');
 
-        let buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
+        const buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
 
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page');
@@ -86,8 +82,8 @@ class Presentation extends DocBase {
     mousewheelHandler(event) {
         // The mod 120 filters out track pad events. Mac inertia scrolling
         // fires lots of scroll events so we've chosen to just disable it
-        let currentWheelDelta = event.wheelDelta || event.detail,
-            isFromMouseWheel = (currentWheelDelta % 120 === 0);
+        const currentWheelDelta = event.wheelDelta || event.detail;
+        const isFromMouseWheel = (currentWheelDelta % 120 === 0);
 
         if (isFromMouseWheel) {
             // Wheeldata is used for IE8 support

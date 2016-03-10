@@ -9,8 +9,7 @@ const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 
-let Box = global.Box || {};
-let shaka = global.shaka;
+const Box = global.Box || {};
 
 @autobind
 class Dash extends VideoBase {
@@ -53,6 +52,7 @@ class Dash extends VideoBase {
      * @returns {Promise} Promise to load the media
      */
     load(mediaUrl) {
+        /* global shaka */
 
         // Polyfill
         shaka.polyfill.installAll();
@@ -91,10 +91,8 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     createEstimator() {
-        let estimator = new shaka.util.EWMABandwidthEstimator();
-        estimator.supportsCaching = function() {
-            return true;
-        };
+        const estimator = new shaka.util.EWMABandwidthEstimator();
+        estimator.supportsCaching = () => true;
         return estimator;
     }
 
@@ -105,7 +103,7 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     createDashSource() {
-        let source = new shaka.player.DashVideoSource(this.mediaUrl, null, this.createEstimator());
+        const source = new shaka.player.DashVideoSource(this.mediaUrl, null, this.createEstimator());
         source.setNetworkCallback(this.requestInterceptor());
         return source;
     }
@@ -117,11 +115,13 @@ class Dash extends VideoBase {
      * @returns {Function} function to add shared name
      */
     requestInterceptor() {
-        let token = this.options.token;
+        const token = this.options.token;
 
         return (url, headers) => {
             if (url && url.indexOf(token) === -1) {
-                headers.authorization = 'Bearer ' + token;
+                /* eslint-disable no-param-reassign */
+                headers.authorization = this.options.authorization;
+                /* eslint-enable no-param-reassign */
             }
         };
     }
@@ -178,8 +178,7 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     handleQuality(showLoadingIndicator = true) {
-
-        let quality = cache.get('media-quality');
+        const quality = cache.get('media-quality');
 
         if (showLoadingIndicator && !this.mediaEl.paused && !this.mediaEl.ended) {
             this.containerEl.classList.remove('box-preview-loaded');
@@ -193,6 +192,7 @@ class Dash extends VideoBase {
                 this.enableSD();
                 break;
             case 'auto':
+            default:
                 this.enableAdaptation();
                 break;
         }
@@ -261,7 +261,7 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     loadFilmStrip() {
-        let filmstrip = this.options.file.representations.entries.find((entry) => 'filmstrip' === entry.representation);
+        const filmstrip = this.options.file.representations.entries.find((entry) => entry.representation === 'filmstrip');
         if (filmstrip) {
             this.mediaControls.initFilmstrip(filmstrip, this.aspect, this.options.token);
         }
@@ -274,15 +274,12 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     calculateVideoDimensions() {
-
-        let videoTracks = this.player.getVideoTracks();
+        const videoTracks = this.player.getVideoTracks();
 
         if (videoTracks.length) {
             // Iterate over all available video representations and find the one that
             // seems the biggest so that the video player is set to the max size
-            let largestRepresentation = videoTracks.reduce(function(a, b) {
-                return a.width > b.width ? a : b;
-            });
+            const largestRepresentation = videoTracks.reduce((a, b) => a.width > b.width ? a : b);
 
             this.videoWidth = largestRepresentation.width;
             this.videoHeight = largestRepresentation.height;
@@ -300,10 +297,9 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     resize() {
-
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
-        let viewport = this.wrapperEl.getBoundingClientRect();
+        const viewport = this.wrapperEl.getBoundingClientRect();
 
         // We need the width to be atleast wide enough for the controls
         // to not overflow and fit properly
@@ -319,47 +315,42 @@ class Dash extends VideoBase {
         // Add a new width or height. Don't need to add both
         // since the video will auto adjust the other dimension accordingly.
         if (fullscreen.isFullscreen()) {
-
             // Case 1: Full screen mode, stretch the video
             // to fit the whole screen irrespective of its width and height.
 
             if (this.aspect >= 1) {
-                this.mediaEl.style.width = viewport.width + 'px';
+                this.mediaEl.style.width = `${viewport.width}px`;
             } else {
-                this.mediaEl.style.height = viewport.height + 'px';
+                this.mediaEl.style.height = `${viewport.height}px`;
             }
-
         } else if (width <= viewport.width && height <= viewport.height) {
-
             // Case 2: The video ends up fitting within the viewport of preview
             // For this case, just set the video player dimensions to match the
             // actual video's dimenstions.
 
             if (this.aspect >= 1) {
-                this.mediaEl.style.width = width + 'px';
+                this.mediaEl.style.width = `${width}px`;
             } else {
-                this.mediaEl.style.height = height + 'px';
+                this.mediaEl.style.height = `${height}px`;
             }
-
         } else {
-
             // Case 3: The video overflows the viewport of preview
             // For this case, try fitting in the video by reducing
             // either its width or its height.
 
             // If video were to be stretched vertically, then figure out by how much and if that causes the width to overflow
-            let percentIncreaseInHeightToFitViewport = (viewport.height - height) / height;
-            let newWidthIfHeightUsed = width + (width * percentIncreaseInHeightToFitViewport);
+            const percentIncreaseInHeightToFitViewport = (viewport.height - height) / height;
+            const newWidthIfHeightUsed = width + (width * percentIncreaseInHeightToFitViewport);
 
             // If video were to be stretched horizontally, then figure out how much and if that causes the height to overflow
-            let percentIncreaseInWidthToFitViewport = (viewport.width - width) / width;
-            let newHeightIfWidthUsed = height + (height * percentIncreaseInWidthToFitViewport);
+            const percentIncreaseInWidthToFitViewport = (viewport.width - width) / width;
+            const newHeightIfWidthUsed = height + (height * percentIncreaseInWidthToFitViewport);
 
             // One of the two cases will end up fitting
             if (newHeightIfWidthUsed <= viewport.height) {
-                this.mediaEl.style.width = viewport.width + 'px';
+                this.mediaEl.style.width = `${viewport.width}px`;
             } else if (newWidthIfHeightUsed <= viewport.width) {
-                this.mediaEl.style.height = viewport.height + 'px';
+                this.mediaEl.style.height = `${viewport.height}px`;
             }
         }
 

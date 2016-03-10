@@ -1,13 +1,11 @@
-'use strict';
-
 import AssetLoader from '../asset-loader';
 
 const VIEWER = {
     REPRESENTATION: 'original',
-    EXTENSIONS: [ ],
-    SCRIPTS: [ 'error.js' ],
-    STYLESHEETS: [ 'error.css' ],
-    CONSTRUCTOR: 'Error'
+    EXTENSIONS: [],
+    SCRIPTS: ['error.js'],
+    STYLESHEETS: ['error.css'],
+    CONSTRUCTOR: 'PreviewError'
 };
 
 class ErrorLoader extends AssetLoader {

@@ -5,7 +5,7 @@ import ImageBase from './image-base';
 const CSS_CLASS_IMAGE = 'box-preview-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 @autobind
 class MultiImage extends ImageBase {
@@ -97,10 +97,9 @@ class MultiImage extends ImageBase {
      * @returns {void}
      */
     zoom(type) {
-
-        let newWidth,
-            viewportWidth = this.wrapperEl.parentNode.clientWidth,
-            imageContainerWidth = this.wrapperEl.clientWidth;
+        let newWidth;
+        const viewportWidth = this.wrapperEl.parentNode.clientWidth;
+        const imageContainerWidth = this.wrapperEl.clientWidth;
 
         switch (type) {
             case 'in':
@@ -116,7 +115,7 @@ class MultiImage extends ImageBase {
                 break;
         }
 
-        this.wrapperEl.style.width = newWidth + 'px';
+        this.wrapperEl.style.width = `${newWidth}px`;
 
         // Fix the scroll position of the image to be centered
         this.wrapperEl.parentNode.scrollLeft = (this.wrapperEl.parentNode.scrollWidth - viewportWidth) / 2;
