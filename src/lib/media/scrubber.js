@@ -21,7 +21,6 @@ class Scrubber extends EventEmitter {
      * @returns {Scrubber} Scrubber instance
      */
     constructor(containerEl, accessibilityText, value = MIN_VALUE, bufferedValue = MAX_VALUE, convertedValue = MAX_VALUE) {
-
         super();
 
         this.containerEl = containerEl;
@@ -80,7 +79,7 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     resize(offset) {
-        this.scrubberWrapperEl.style.width = this.containerEl.clientWidth - offset + 'px';
+        this.scrubberWrapperEl.style.width = `${this.containerEl.clientWidth - offset}px`;
         this.adjustScrubberHandle();
     }
 
@@ -92,7 +91,6 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     adjustScrubberHandle() {
-
         // When setting widths and lefts, take into account that the handle is round
         // and has its own width that needs to be accounted for.
         //
@@ -102,11 +100,11 @@ class Scrubber extends EventEmitter {
         // to
         // all the way on the right minus its own width / 2.
 
-        let handleWidth = 16; // 16px from the CSS
-        let scrubberWidth = this.scrubberEl.clientWidth;
-        let handlePosition = (this.value * scrubberWidth - (handleWidth / 2)) * 100 / scrubberWidth;
+        const handleWidth = 16; // 16px from the CSS
+        const scrubberWidth = this.scrubberEl.clientWidth;
+        const handlePosition = (this.value * scrubberWidth - (handleWidth / 2)) * 100 / scrubberWidth;
 
-        this.handleEl.style.left = handlePosition + '%';
+        this.handleEl.style.left = `${handlePosition}%`;
     }
 
     /**
@@ -117,7 +115,6 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     setValue(value = MIN_VALUE) {
-
         if (value === this.value) {
             return;
         }
@@ -128,7 +125,7 @@ class Scrubber extends EventEmitter {
         this.value = Math.max(Math.min(value, this.convertedValue), MIN_VALUE);
 
         // The played values should ignore the handle width since we don't care about it.
-        this.playedEl.style.width = this.value * 100 + '%';
+        this.playedEl.style.width = `${this.value * 100}%`;
         this.adjustScrubberHandle();
     }
 
@@ -140,7 +137,6 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     setBufferedValue(value = MAX_VALUE) {
-
         if (value === this.bufferedValue) {
             return;
         }
@@ -150,7 +146,7 @@ class Scrubber extends EventEmitter {
         //  no less than actual value
         //  no more than converted value
         this.bufferedValue = Math.max(Math.min(value, this.convertedValue), this.value || MIN_VALUE);
-        this.bufferedEl.style.width = this.bufferedValue * 100 + '%';
+        this.bufferedEl.style.width = `${this.bufferedValue * 100}%`;
     }
 
     /**
@@ -161,7 +157,6 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     setConvertedValue(value = MAX_VALUE) {
-
         if (value === this.convertedValue) {
             return;
         }
@@ -171,7 +166,7 @@ class Scrubber extends EventEmitter {
         //  no less than 0
         //  no less than the last converted value
         this.convertedValue = Math.max(Math.min(Math.max(value, this.convertedValue || MIN_VALUE), MAX_VALUE), MIN_VALUE);
-        this.convertedEl.style.width = this.convertedValue * 100 + '%';
+        this.convertedEl.style.width = `${this.convertedValue * 100}%`;
     }
 
     /**
@@ -182,8 +177,8 @@ class Scrubber extends EventEmitter {
      * @returns {void}
      */
     scrubbingHandler(event) {
-        let rect = this.scrubberEl.getBoundingClientRect();
-        let pageX = event.pageX;
+        const rect = this.scrubberEl.getBoundingClientRect();
+        const pageX = event.pageX;
         let newValue = (pageX - rect.left) / rect.width;
 
         newValue = Math.max(Math.min(newValue, MAX_VALUE), MIN_VALUE);

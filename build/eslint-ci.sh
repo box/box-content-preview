@@ -1,6 +1,6 @@
 #!/bin/sh
 
-files=$(git status -s | grep -E '[AM?]+\s.+?\.js$' | cut -c3-);
+files=$(git diff --name-only origin/master | grep '\.js$');
 root=$(git rev-parse --show-toplevel);
 
 if [ ! -z "${files}" ]; then
