@@ -215,15 +215,6 @@ class DocBase extends Base {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
 
-    /**
-     * Returns current zoom scale of PDF.js
-     *
-     * @returns {number} Zoom scale, defaults to 1
-     */
-    getScale() {
-        return this.pdfViewer.currentScale || 1;
-    }
-
     /* ----- Private Helpers ----- */
 
     /**
@@ -294,9 +285,8 @@ class DocBase extends Base {
      */
     initAnnotations() {
         const fileID = this.options.file.id;
-        this.annotator = new DocAnnotator(fileID, {
-            getScale: this.getScale
-        });
+        this.annotator = new DocAnnotator(fileID);
+        this.annotator.setScale(this.pdfViewer.currentScale);
         this.annotator.init();
     }
 
