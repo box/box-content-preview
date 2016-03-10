@@ -1,6 +1,4 @@
 /* global BoxSDK */
-'use strict';
-
 import './box3d.scss';
 import Base from '../base';
 import autobind from 'autobind-decorator';
@@ -15,8 +13,7 @@ import {
     EVENT_RESET,
     EVENT_SCENE_LOADED,
     EVENT_SHOW_VR_BUTTON,
-    EVENT_TOGGLE_FULLSCREEN,
-    EVENT_TRIGGER_RENDER
+    EVENT_TOGGLE_FULLSCREEN
 } from './box3d-constants';
 
 /**

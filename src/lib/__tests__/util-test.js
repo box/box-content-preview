@@ -1,16 +1,15 @@
 import { createContentUrl, createScript, createAssetUrlCreator } from '../util';
 
-describe('util', function() {
-
-    describe('createContentUrl()', function() {
-        it('should return url when no token is provided', function() {
+describe('util', () => {
+    describe('createContentUrl()', () => {
+        it('should return url when no token is provided', () => {
             const url = 'foo';
             assert.equal(url, createContentUrl(url));
         });
     });
 
-    describe('createScript()', function() {
-        it('should return a script element when a url is provided', function() {
+    describe('createScript()', () => {
+        it('should return a script element when a url is provided', () => {
             const url = 'foo';
             const scriptEl = createScript(url);
             assert.ok(scriptEl instanceof HTMLElement);
@@ -19,8 +18,8 @@ describe('util', function() {
         });
     });
 
-    describe('createAssetUrlCreator()', function() {
-        it('should return a function to create asset urls', function() {
+    describe('createAssetUrlCreator()', () => {
+        it('should return a function to create asset urls', () => {
             const location = {
                 baseURI: 'base/',
                 staticBaseURI: 'static/'

@@ -1,13 +1,20 @@
-'use strict';
-
 export default [{
     id: 'CAMERA_ID',
     type: 'camera',
     parentId: 'SCENE_ID',
     parentAssetId: 'SCENE_ID',
     properties: {
-        position: {x: 49.0, y: 35.3, z: 70.3}, // Default position of camera
-        quaternion: {x: -0.185, y: 0.294, z: 0.058, w: 0.936}, // Default position of camera
+        position: {
+            x: 49.0,
+            y: 35.3,
+            z: 70.3
+        }, // Default position of camera
+        quaternion: {
+            x: -0.185,
+            y: 0.294,
+            z: 0.058,
+            w: 0.936
+        }, // Default position of camera
         near: 10, // Camera near-plane distance
         far: 1200,
         fov: 70

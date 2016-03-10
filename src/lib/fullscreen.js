@@ -1,9 +1,5 @@
-'use strict';
-
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-
-let document = global.document;
 
 @autobind
 class Fullscreen extends EventEmitter {
@@ -59,13 +55,13 @@ class Fullscreen extends EventEmitter {
      * Toggles fullscreen mode
      *
      * @private
-     * @param {HTMLElement} element fullscreen element
+     * @param {HTMLElement} el fullscreen element
      * @param {Object} vrDevice The HMD device used by WebVR
      * @returns {void}
      */
-    toggle(element, vrDevice) {
-        const options = vrDevice ? {vrDisplay: vrDevice} : Element.ALLOW_KEYBOARD_INPUT;
-        element = element || document.documentElement;
+    toggle(el, vrDevice) {
+        const options = vrDevice ? { vrDisplay: vrDevice } : Element.ALLOW_KEYBOARD_INPUT;
+        const element = el || document.documentElement;
 
         if (!this.isFullscreen()) {
             if (element.requestFullscreen) {

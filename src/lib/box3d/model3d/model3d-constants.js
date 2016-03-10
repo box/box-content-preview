@@ -1,4 +1,3 @@
-'use strict';
 export const EVENT_CLOSE_RENDER_MODE_UI = 'closeRenderModeUi';
 export const EVENT_CLOSE_SETTINGS_UI = 'closeSettingsUi';
 export const EVENT_CLOSE_UI = 'closeModel3dUi';

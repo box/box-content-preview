@@ -31,13 +31,15 @@ class RepStatus {
      */
     updateStatus(representation, headers) {
         fetch(representation.links.info.url, {
-            headers: headers
+            headers
         })
         .then((response) => response.json())
         .then((info) => {
             clearTimeout(this.statusTimeout);
+            /* eslint-disable no-param-reassign */
             representation.status = info.status;
             representation.links.files = info.files || [];
+            /* eslint-enable no-param-reassign */
             this.handleResponse(representation, headers);
         });
     }
@@ -83,12 +85,13 @@ class RepStatus {
                     this.reject();
                 }
                 break;
+
             case 'success':
                 this.resolve();
                 break;
+
             case 'none':
             case 'pending':
-
                 // If we are doing some loggin, log that the file needed conversion
                 if (this.logger) {
                     this.logger.setUnConverted();
@@ -104,8 +107,10 @@ class RepStatus {
                         this.updateStatus(representation, headers);
                     }, STATUS_UPDATE_INTERVAL_IN_MILLIS);
                 }
-
                 break;
+
+            default:
+                // no-op
         }
     }
 
