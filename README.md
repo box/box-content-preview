@@ -96,16 +96,16 @@ preview.show(fileId, { options });
 
 ```javascript
 {
-    token: 'api auth token',         // either a string auth token or a token generator function, see below for more details
-    container: '.preview-container', // optional dom node or selector where preview should be placed
-    api: 'https://api.box.com',      // optional api host like https://ldap.dev.box.net/api
-    files: [ '123', '234', ... ],    // optional list of file ids for back and forth navigation
-    header: 'light',                 // optional string value of 'none' or 'dark' or 'light' that controls header visibility and theme
-    viewers: {                       // optional arguments to pass on to viewers
-        VIEWERNAME: {                   // name of the viewer, see below for more details
-            disabled: false,            // disables the viewer
-            annotations: false          // other args
-            controls: true              // disables the viewer controls
+    token: 'api auth token',          // either a string auth token or a token generator function, see below for more details
+    container: '.preview-container',  // optional dom node or selector where preview should be placed
+    api: 'https://api.box.com',       // optional api host like https://ldap.dev.box.net/api
+    collection: ['123', '234', ...],  // optional list of file ids for back and forth navigation
+    header: 'light',                  // optional string value of 'none' or 'dark' or 'light' that controls header visibility and theme
+    viewers: {                        // optional arguments to pass on to viewers
+        VIEWERNAME: {                     // name of the viewer, see below for more details
+            disabled: false,              // disables the viewer
+            annotations: false            // other args
+            controls: true                // disables the viewer controls
             ...
         },
         ...
@@ -138,7 +138,10 @@ function token(id) {
         //        id3: 'token3'
         //        ...
         //    }
-        fetch(tokenService)
+        fetch(tokenServiceUrl, {
+            method: 'post',
+            body: { fileIDs: ids } // based on what the token service endpoint expects
+        })
         .then((response) => response.json())
         .then(resolve)
         .catch(reject);
@@ -170,22 +173,29 @@ Events
 The preview object exposes `addListener` and `removeListener` for binding to events. Events should be bound before calling `show()` otherwise they can be missed.
 
 ```javascript
-Box.Preview.addListener(EVENTNAME, (value) => {
+const listener = (value) => {
     // do something with value
-});
+};
 
+// Attach listeners before calling show otherwise events can be missed
+Box.Preview.addListener(EVENTNAME, listener);
+
+// Show a preview
 Box.Preview.show(...);
+
+// Remove listeners when needed or before hiding the preview
+Box.Preview.removeListener(EVENTNAME, listener);
 ```
 
 EVENTNAME can be one of the following
 
-* `load` event will be fired on every preview load if inter-preview navigation is happening. The value will be an object contaianing
+* `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation is happening. The value argument will be an object contaianing
 ```javascript
   {
-      viewer: {...},    // Instance of the current viewer if no error message
+      error: 'message', // Error message if any that happened while loading the preview
+      viewer: {...},    // Instance of the current viewer object, only if no error message
       metrics: {...},   // Performance metrics
       file: {...}       // Box file object as returned by the API
-      error: 'message'  // Error message if any
   }
 ```
-* `navigation` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event.
+* `navigate` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event happens.
