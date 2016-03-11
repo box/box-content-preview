@@ -63,7 +63,7 @@ class Document extends DocBase {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(this.pdfViewer.currentScale);
-            this.annotator.showAnnotations();
+            this.annotator.renderAnnotations();
         }
     }
 
@@ -86,7 +86,7 @@ class Document extends DocBase {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(this.pdfViewer.currentScale);
-            this.annotator.showAnnotations();
+            this.annotator.renderAnnotations();
         }
     }
 
