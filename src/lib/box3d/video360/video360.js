@@ -125,7 +125,7 @@ class Video360 extends Dash {
             id: 'VIDEO_TEX_ID',
             type: 'textureVideo',
             properties: {
-                // layout: window.VAPI.BaseTextureAsset.LAYOUT.STEREO_2D_OVER_UNDER,
+                // layout: window.Box3D.BaseTextureAsset.LAYOUT.STEREO_2D_OVER_UNDER,
                 ignoreStream: true,
                 generateMipmaps: false,
                 filtering: 'Linear',

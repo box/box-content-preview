@@ -1,4 +1,4 @@
-/* global VAPI, Box3DResourceLoader */
+/* global Box3D, Box3DResourceLoader */
 'use strict';
 
 import Box3DRenderer from '../box3d-renderer';
