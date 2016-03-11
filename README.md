@@ -14,11 +14,11 @@ The browser needs to have the Promise API implimented. If not, it can be polyfil
 
 Latest version hosted on CDN
 -----------------------------
-* Version: 0.45.0
+* Version: 0.47.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.45.0/en-US/preview.js
-https://cdn01.boxcdn.net/content-experience/0.45.0/en-US/preview.css
+https://cdn01.boxcdn.net/content-experience/0.47.0/en-US/preview.js
+https://cdn01.boxcdn.net/content-experience/0.47.0/en-US/preview.css
 
 Usage
 ------
