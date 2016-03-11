@@ -1,4 +1,4 @@
-/* global VAPI */
+/* global Box3D */
 import autobind from 'autobind-decorator';
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
@@ -116,7 +116,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     loadBox3dFile(fileUrl) {
-        const loader = new VAPI.JSONLoader(this.box3d);
+        const loader = new Box3D.JSONLoader(this.box3d);
 
         this.registerMissingEvents(this.box3d.resourceLoader);
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
@@ -298,7 +298,7 @@ class Model3dRenderer extends Box3DRenderer {
             if (!assetId) {
                 return;
             }
-            if (assetId instanceof VAPI.Box3DEntity) {
+            if (assetId instanceof Box3D.Box3DEntity) {
                 assetId.unload();
             } else {
                 const asset = this.box3d.getEntityById(assetId);
@@ -316,7 +316,7 @@ class Model3dRenderer extends Box3DRenderer {
      */
     setRenderMode(mode) {
         if (this.box3d) {
-            VAPI.globalEvents.trigger(EVENT_SET_RENDER_MODE, mode);
+            Box3D.globalEvents.trigger(EVENT_SET_RENDER_MODE, mode);
         }
     }
 

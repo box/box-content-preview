@@ -80,147 +80,147 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _EffectComposer = __webpack_require__(75);
+	var _EffectComposer = __webpack_require__(62);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(76);
+	var _BloomPass = __webpack_require__(63);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(77);
+	var _BokehPass = __webpack_require__(64);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(78);
+	var _DotScreenPass = __webpack_require__(65);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(79);
+	var _FilmPass = __webpack_require__(66);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(80);
+	var _MaskPass = __webpack_require__(67);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(81);
+	var _RenderPass = __webpack_require__(68);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(82);
+	var _SavePass = __webpack_require__(69);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(83);
+	var _ShaderPass = __webpack_require__(70);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(122);
+	var _TexturePass = __webpack_require__(109);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(123);
+	var _AdaptiveToneMappingPass = __webpack_require__(110);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(124);
+	var _AnimationAsset = __webpack_require__(111);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(125);
+	var _ApplicationAsset = __webpack_require__(112);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(126);
+	var _AudioAsset = __webpack_require__(113);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _MaterialAsset = __webpack_require__(22);
+	var _MaterialAsset = __webpack_require__(17);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(127);
+	var _MeshGeometryAsset = __webpack_require__(114);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(129);
+	var _PrimitiveGeometryAsset = __webpack_require__(116);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(130);
+	var _PrefabAsset = __webpack_require__(117);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(131);
+	var _RenderTexture2DAsset = __webpack_require__(118);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(132);
+	var _RenderTextureCubeAsset = __webpack_require__(119);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _SceneAsset = __webpack_require__(133);
+	var _SceneAsset = __webpack_require__(120);
 
 	var _SceneAsset2 = _interopRequireDefault(_SceneAsset);
 
-	var _ShaderAsset = __webpack_require__(134);
+	var _ShaderAsset = __webpack_require__(121);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _ScriptAsset = __webpack_require__(135);
+	var _ScriptAsset = __webpack_require__(127);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _Texture2DAsset = __webpack_require__(137);
+	var _Texture2DAsset = __webpack_require__(129);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(138);
+	var _TextureCubeAsset = __webpack_require__(130);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _TextureVideoAsset = __webpack_require__(139);
+	var _TextureVideoAsset = __webpack_require__(131);
 
 	var _TextureVideoAsset2 = _interopRequireDefault(_TextureVideoAsset);
 
-	var _Box3DObject = __webpack_require__(140);
+	var _Box3DObject = __webpack_require__(132);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(141);
+	var _CameraObject = __webpack_require__(133);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(142);
+	var _LightObject = __webpack_require__(134);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _SkinnedMeshObject = __webpack_require__(143);
+	var _SkinnedMeshObject = __webpack_require__(135);
 
 	var _SkinnedMeshObject2 = _interopRequireDefault(_SkinnedMeshObject);
 
-	var _StaticMeshObject = __webpack_require__(145);
+	var _StaticMeshObject = __webpack_require__(137);
 
 	var _StaticMeshObject2 = _interopRequireDefault(_StaticMeshObject);
 
-	var _ModelObject = __webpack_require__(146);
+	var _ModelObject = __webpack_require__(138);
 
 	var _ModelObject2 = _interopRequireDefault(_ModelObject);
 
-	var _APIUtilities = __webpack_require__(136);
+	var _APIUtilities = __webpack_require__(128);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(147);
+	var _DOMUtilities = __webpack_require__(139);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(148);
+	var _JSONLoader = __webpack_require__(140);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(152);
+	var _DevResourceLoader = __webpack_require__(144);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
 
@@ -375,12 +375,9 @@
 
 	// Assets
 
-
 	// Objects
 
-
 	// Utilities
-
 
 	Box3D.Engine = _Engine2.default;
 
@@ -12806,13 +12803,13 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -12835,7 +12832,6 @@
 	   * @param  {Function} callback The function to call when the event occurs.
 	   * @param  {Object}   context  The context in which the callback will be called.
 	   */
-
 
 	  _createClass(RuntimeEvents, [{
 	    key: 'on',
@@ -12940,25 +12936,6 @@
 	    }
 
 	    /**
-	     * Trigger one or many events, firing all bound callbacks but only on the
-	     * next tick. Callbacks are passed the same arguments as `trigger` is, apart
-	     * from the event name (unless you're listening on `"all"`, which will cause
-	     * your callback to receive the true name of the event as the first argument).
-	     * @method triggerDeferred
-	     * @public
-	     * @param  {String} name The name of the event
-	     */
-
-	  }, {
-	    key: 'triggerDeferred',
-	    value: function triggerDeferred() /*name*/{
-	      var triggerArgs = arguments;
-	      setTimeout(function () {
-	        this.trigger.apply(this, triggerArgs);
-	      }.bind(this), 0);
-	    }
-
-	    /**
 	     * Tell this object to stop listening to either specific events ... or
 	     * to every object it's currently listening to.
 	     * @method stopListening
@@ -13058,11 +13035,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -13092,7 +13069,7 @@
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(72);
+	var _raf = __webpack_require__(59);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -13105,7 +13082,6 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	// requstAnimationFrame polyfill only used in cases where native version is not
 	// available.
-
 
 	function getElement(obj) {
 	  var els = undefined;
@@ -13197,7 +13173,6 @@
 	   * listen to global events.
 	   * @param {Function} [callback] Called when initialization is complete.
 	   */
-
 
 	  _createClass(Engine, [{
 	    key: 'initialize',
@@ -13383,7 +13358,7 @@
 	        });
 	      }, this);
 
-	      promise.then(function () {
+	      return promise.then(function () {
 	        callback();
 	      }, callback).catch(callback);
 	    }
@@ -53897,6 +53872,8 @@
 	* @module Box3D
 	*/
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -53911,6 +53888,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 	var Box3D = window.Box3D = window.Box3D || {};
 
 	Box3D.EntityUpdatePackage = function () {
@@ -53919,395 +53898,8 @@
 	  this.entityData = {};
 	};
 
-	/**
-	 * EntityDispatcher handles dispatching entity changes between running engine instances
-	 * and external applications. EntityDispatcher can be created and passed to a multiple engine
-	 * instances, allowing multiple engines to share the same entity list.
-	 */
-	var EntityDispatcher = function EntityDispatcher() {
-	  this.engines = [];
-	  this.entities = {};
-	  Box3D.globalEvents.on('remoteEntityUpdate', this.onRemoteEntityUpdate, this);
-	  Box3D.globalEvents.on('remoteEntityDelete', this.onRemoteEntityDelete, this);
-	};
-
-	/**
-	 * Registers a new engine instance with the EntityDispatcher. This allows the engine
-	 * to receive entity updates, including property changes, added entities, etc.
-	 * @param {Object} newEngine A reference to the engine to register.
-	 */
-	EntityDispatcher.prototype.addEngine = function (newEngine) {
-	  if (!newEngine) {
-	    return;
-	  }
-	  if (!this.engines.indexOf(newEngine) !== -1) {
-	    this.engines.push(newEngine);
-	  } else {
-	    _log2.default.warn('The engine, ' + newEngine.getName() + ', has already been registered.');
-	  }
-	};
-
-	/**
-	 * Unregisters an engine instance from the EntityDispatcher. This will cut off the engine
-	 * from receiving entity updates, including property changes, added entities, etc.
-	 * @param {Object} engine A reference to the engine to unregister.
-	 */
-	EntityDispatcher.prototype.removeEngine = function (engine) {
-	  var index;
-	  if (!engine) {
-	    return;
-	  }
-	  index = this.engines.indexOf(engine);
-	  if (index !== -1) {
-	    this.engines.splice(index, 1);
-	  } else {
-	    _log2.default.warn('The engine, ' + engine.getName() + ' isn\'t currently registered.');
-	  }
-	};
-
-	/**
-	 * Adds the given entities to all registered engines.
-	 * @param {Array} entities Array of new entity descriptors
-	 * @return {Promise} A promise that resolves with an array of entities that were
-	 * added to all registered engines.
-	 */
-	EntityDispatcher.prototype.addEntities = function (entityArray) {
-	  var initializeAssets = function (assets) {
-	    assets.forEach(function (json) {
-	      this.dispatchCreatedAsset(json);
-	    }, this);
-
-	    this.engines.forEach(function (engine) {
-	      assets.forEach(function (json) {
-	        var asset = engine.assetRegistry.getAssetById(json.id);
-	        var registry = engine.assetRegistry.getRegistryByType(json.type);
-	        if (asset) {
-	          asset.initialize({
-	            box3DRuntime: engine,
-	            registry: registry
-	          });
-	        }
-	      });
-	    });
-	  }.bind(this);
-
-	  var initializeObjects = function (objects) {
-	    // Register all objects with the newly registered assets.
-	    objects.forEach(function (objectJson) {
-	      this.dispatchCreatedObject(objectJson);
-	    }, this);
-
-	    // Initialize entities in each engine.
-	    this.engines.forEach(function (engine) {
-	      objects.forEach(function (json) {
-	        var object = engine.getEntityById(json.id);
-	        if (object) {
-	          object.initialize({
-	            box3DRuntime: engine
-	          });
-	        }
-	      });
-	    });
-	  }.bind(this);
-
-	  var loadAssets = function (assets) {
-	    var _this = this;
-
-	    var allEngineAssets = [];
-
-	    assets.forEach(function (asset) {
-	      if (asset) {
-	        _this.engines.forEach(function (engine) {
-	          var engineAsset = engine.assetRegistry.getAssetById(asset.id);
-	          if (engineAsset && !engineAsset.isLoaded()) {
-	            allEngineAssets.push(engineAsset);
-	          }
-	        });
-	      }
-	    });
-
-	    // Don't do a Promise.all if the array is empty.
-	    if (!assets.length) {
-	      return Promise.resolve();
-	    }
-
-	    return Promise.all(allEngineAssets.map(function (asset) {
-	      return new Promise(function (resolveAsset) {
-	        asset.load(resolveAsset);
-	      });
-	    }));
-	  }.bind(this);
-
-	  var nonDocumentAssets = [],
-	      documentAssets = [],
-	      objects = [];
-
-	  // Partition the entity array into "assets" and "objects".
-	  entityArray.forEach(function (entityJson) {
-	    if (!entityJson.parentAssetId || entityJson.parentAssetId === entityJson.id) {
-	      if (entityJson.type === 'document') {
-	        documentAssets.push(entityJson);
-	      } else {
-	        nonDocumentAssets.push(entityJson);
-	      }
-	    } else {
-	      objects.push(entityJson);
-	    }
-	  });
-
-	  initializeAssets(documentAssets);
-
-	  return loadAssets(documentAssets).then(function () {
-	    initializeAssets(nonDocumentAssets);
-	    initializeObjects(objects);
-	    return entityArray;
-	  });
-	};
-
-	/**
-	 * Serializes the entities into a format that can be saved.
-	 * @method serializeEntities
-	 * @public
-	 * @return {Array} Array of json descriptors for all entities.
-	 */
-	EntityDispatcher.prototype.serializeEntities = function () {
-	  var serialize = function serialize(entity) {
-	    var returnJson = {};
-	    var descriptor = entity.sharedData;
-	    returnJson.id = descriptor.id;
-	    returnJson.type = descriptor.type;
-	    returnJson.parentAssetId = descriptor.parentAssetId;
-	    returnJson.parentId = descriptor.parentId;
-	    returnJson.prefabAssetId = descriptor.prefabAssetId;
-	    returnJson.prefabObjectId = descriptor.prefabObjectId;
-	    returnJson.prefabInstanceId = descriptor.prefabInstanceId;
-	    returnJson.properties = entity.getOwnProperties();
-	    returnJson.children = entity.getChildren();
-	    returnJson.components = entity.getComponents();
-	  };
-	  var entities;
-	  var serializedEntities = [];
-	  if (this.engines.length) {
-	    entities = this.engines[0].entities;
-	    _lodash2.default.each(entities, function (entity) {
-	      serializedEntities.push(serialize(entity));
-	    }, this);
-	  }
-	  return serializedEntities;
-	};
-
-	/**
-	 * Return direct references to all entity descriptors. These are shared
-	 * for each entity across engine instances.
-	 * @method getEntityDescriptors
-	 * @public
-	 * @return {Array} Array of json descriptors for all entities.
-	 */
-	EntityDispatcher.prototype.getEntityDescriptors = function () {
-	  var entityDescriptors = [];
-	  _lodash2.default.each(this.entities, function (entity) {
-	    entityDescriptors.push(entity);
-	  }, this);
-	  return entityDescriptors;
-	};
-
-	/**
-	 * Update an existing entity with the values provided in the given json descriptor
-	 * @method updateEntity
-	 * @private
-	 * @param  {Object} jsonDescriptor Description of the entity.
-	 */
-	EntityDispatcher.prototype.updateEntity = function (jsonDescriptor) {
-	  var entities = this.engines[0].entities;
-	  var entity = entities[jsonDescriptor.id];
-	  // Only need to update the values for one engine since all structures are shared.
-	  _lodash2.default.each(jsonDescriptor, function (value, attrib) {
-	    entity.set(attrib, value, { silent: true });
-	  }, this);
-	  entity.setProperties(jsonDescriptor.properties);
-	  entity.setChildren(jsonDescriptor.children);
-	  entity.setComponents(jsonDescriptor.components);
-	};
-
-	/**
-	 * Create a new asset using the given entity description
-	 * @method dispatchCreatedAsset
-	 * @public
-	 * @param  {Object} jsonDescriptor Description of the asset.
-	 */
-	EntityDispatcher.prototype.dispatchCreatedAsset = function (jsonDescriptor) {
-	  var i;
-	  var json;
-
-	  if (this.entities[jsonDescriptor.id]) {
-	    json = this.entities[jsonDescriptor.id];
-	  } else {
-	    json = {
-	      id: jsonDescriptor.id,
-	      name: jsonDescriptor.name,
-	      type: jsonDescriptor.type,
-	      parentAssetId: jsonDescriptor.id, // parentAssetId === id for assets
-	      dependencies: {
-	        textures: {},
-	        materials: {},
-	        geometries: {},
-	        animations: {}
-	      },
-	      children: jsonDescriptor.children || [],
-	      previousChildren: [],
-	      properties: jsonDescriptor.properties || jsonDescriptor.payload || {},
-	      previousProperties: {},
-	      components: jsonDescriptor.components || {}
-	    };
-	    if (jsonDescriptor.originalType) {
-	      json.originalType = jsonDescriptor.originalType;
-	    }
-	    if (jsonDescriptor.builtIn) {
-	      json.builtIn = jsonDescriptor.builtIn;
-	    }
-	    if (jsonDescriptor.resources) {
-	      json.resources = jsonDescriptor.resources;
-	    }
-	    this.entities[json.id] = json;
-	  }
-
-	  this.fireExternalUpdate(jsonDescriptor.id, json, 'createEntity');
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    if (!this.engines[i].assetRegistry.getAssetById(json.id)) {
-	      this.engines[i].assetRegistry.trigger('addAssetEntity', json);
-	    }
-	  }
-	};
-
-	/**
-	 * Create a new object using the given entity description
-	 * @method dispatchCreatedObject
-	 * @public
-	 * @param  {Object} jsonDescriptor Description of the object.
-	 */
-	EntityDispatcher.prototype.dispatchCreatedObject = function (jsonDescriptor) {
-	  var i;
-	  var asset;
-	  var json;
-
-	  if (this.entities[jsonDescriptor.id]) {
-	    json = this.entities[jsonDescriptor.id];
-	  } else {
-	    json = {
-	      id: jsonDescriptor.id,
-	      name: jsonDescriptor.name,
-	      type: jsonDescriptor.type,
-	      parentId: jsonDescriptor.parentId,
-	      parentAssetId: jsonDescriptor.parentAssetId,
-	      prefabAssetId: jsonDescriptor.prefabAssetId,
-	      prefabObjectId: jsonDescriptor.prefabObjectId,
-	      prefabInstanceId: jsonDescriptor.prefabInstanceId,
-	      children: jsonDescriptor.children || [],
-	      previousChildren: [],
-	      properties: jsonDescriptor.properties || jsonDescriptor.payload || {},
-	      previousProperties: {},
-	      components: jsonDescriptor.components || {}
-	    };
-	    this.entities[json.id] = json;
-	  }
-
-	  this.fireExternalUpdate(jsonDescriptor.id, json, 'createEntity');
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    asset = this.engines[i].assetRegistry.getAssetById(json.parentAssetId);
-	    if (asset && !asset.getObjectById(json.id)) {
-	      asset.trigger('addObjectEntity', json);
-	    }
-	  }
-	};
-
-	/**
-	 * Delete an asset from all engine instances.
-	 * @method dispatchDestroyedAsset
-	 * @public
-	 * @param  {String} assetId Id of the asset to delete.
-	 */
-	EntityDispatcher.prototype.dispatchDestroyedAsset = function (assetId) {
-	  var i;
-	  if (!this.entities[assetId]) {
-	    _log2.default.error('Can\'t destroy an asset with ID, ' + assetId + ', that doesn\'t exist.');
-	    return;
-	  }
-	  this.fireExternalUpdate(assetId, {}, 'destroyEntity');
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    this.engines[i].assetRegistry.trigger('removeAssetEntity', assetId);
-	  }
-	  delete this.entities[assetId];
-	};
-
-	/**
-	 * Delete an object from all engine instances.
-	 * @method dispatchDestroyedObject
-	 * @public
-	 * @param  {String} assetId Id of the object to delete.
-	 */
-	EntityDispatcher.prototype.dispatchDestroyedObject = function (objectId) {
-	  var i;
-	  var object;
-	  var asset;
-	  if (!this.entities[objectId]) {
-	    _log2.default.error('Can\'t destroy an object with ID, ' + objectId + ', that doesn\'t exist.');
-	    return;
-	  }
-	  this.fireExternalUpdate(objectId, {}, 'destroyEntity');
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    object = this.engines[i].getEntityById(objectId);
-	    asset = object.getParentAsset();
-	    asset.trigger('removeObjectEntity', objectId);
-	  }
-	  delete this.entities[objectId];
-	};
-
-	EntityDispatcher.prototype.dispacthAttributeChanged = function (entity, attrib, value) {
-	  var entityToChange;
-	  var i;
-	  var json = {};
-	  json[attrib] = value;
-	  this.fireExternalUpdate(entity.id, json);
-
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    entityToChange = this.engines[i].getEntityById(entity.id);
-	    entityToChange.trigger('change:' + attrib, value);
-	  }
-	};
-
-	EntityDispatcher.prototype.dispatchPropertyChanged = function (entity, property, value) {
-	  var propertyDescriptor = {};
-	  propertyDescriptor[property] = value;
-	  this.dispatchPropertiesChanged(entity, propertyDescriptor);
-	};
-
-	EntityDispatcher.prototype.dispatchPropertiesChanged = function (entity, json) {
-	  var entityToChange;
-	  var i;
-	  this.fireExternalUpdate(entity.id, { payload: json });
-
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    entityToChange = this.engines[i].getEntityById(entity.id);
-	    if (entityToChange) {
-	      _lodash2.default.each(json, function (value, id) {
-	        // TODO - if this property is an object id, translate to an entity
-	        entityToChange.trigger('change:properties.' + id, value);
-	      }, this);
-
-	      entityToChange.trigger('change:properties', json);
-	    }
-	  }
-	};
-
 	function translateIdsToObjects(entity, idArray) {
-	  var i;
-	  for (i = 0; i < idArray.length; i++) {
+	  for (var i = 0; i < idArray.length; i++) {
 	    idArray[i] = entity.getObjectById(idArray[i]);
 	    if (!idArray[i]) {
 	      idArray[i] = idArray.getObjectById(idArray[i].id);
@@ -54315,189 +53907,613 @@
 	  }
 	}
 
-	EntityDispatcher.prototype.dispatchChildAdded = function (entity, newChild) {
-	  var entityToChange;
-	  var i;
-	  var childArray;
-
-	  this.fireExternalUpdate(entity.id, { children: entity.getChildIds() });
-
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    entityToChange = this.engines[i].getEntityById(entity.id);
-	    childArray = [newChild];
-	    translateIdsToObjects(entityToChange, childArray);
-	    entityToChange.trigger('change:children', childArray, []);
-	  }
-	};
-
-	EntityDispatcher.prototype.dispatchChildRemoved = function (entity, childToRemove) {
-	  var entityToChange;
-	  var i;
-	  var childArray;
-
-	  this.fireExternalUpdate(entity.id, { children: entity.getChildIds() });
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    entityToChange = this.engines[i].getEntityById(entity.id);
-	    childArray = [childToRemove];
-	    translateIdsToObjects(entityToChange, childArray);
-	    entityToChange.trigger('change:children', [], childArray);
-	  }
-	};
-
-	EntityDispatcher.prototype.dispatchChildChanged = function (entity, addedChildren, removedChildren) {
-	  var entityToChange;
-	  var i;
-
-	  this.fireExternalUpdate(entity.id, { children: entity.getChildIds() });
-
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    entityToChange = this.engines[i].getEntityById(entity.id);
-	    translateIdsToObjects(entityToChange, addedChildren);
-	    translateIdsToObjects(entityToChange, removedChildren);
-	    entityToChange.trigger('change:children', addedChildren, removedChildren);
-	  }
-	};
-
 	/**
-	 * Called by an engine instance when the given component has been added.
-	 * @method dispatchComponentAdded
-	 * @private
-	 * @param  {Box3DEntity} entity       The entity that the change was made on.
-	 * @param  {Object} component   Json descriptors for component that has been added
+	 * EntityDispatcher handles dispatching entity changes between running engine instances
+	 * and external applications. EntityDispatcher can be created and passed to a multiple engine
+	 * instances, allowing multiple engines to share the same entity list.
 	 */
-	EntityDispatcher.prototype.dispatchComponentAdded = function (entity, newComponent) {
-	  var entityToChange;
-	  var i;
-	  this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
 
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    entityToChange = this.engines[i].getEntityById(entity.id);
+	var EntityDispatcher = function () {
+	  function EntityDispatcher() {
+	    _classCallCheck(this, EntityDispatcher);
 
-	    entityToChange.trigger('change:components', [newComponent], []);
+	    this.engines = [];
+	    this.entities = {};
+	    Box3D.globalEvents.on('remoteEntityUpdate', this.onRemoteEntityUpdate, this);
+	    Box3D.globalEvents.on('remoteEntityDelete', this.onRemoteEntityDelete, this);
 	  }
-	};
 
-	/**
-	 * Remove the given component attached to the given entity.
-	 * @method dispatchComponentRemoved
-	 * @private
-	 * @param  {Box3DEntity} entity       The entity that the change was made on.
-	 * @param  {Object} component   Json descriptors for component that has been removed
-	 */
-	EntityDispatcher.prototype.dispatchComponentRemoved = function (entity, component) {
-	  var entityToChange;
-	  var i;
+	  /**
+	   * Registers a new engine instance with the EntityDispatcher. This allows the engine
+	   * to receive entity updates, including property changes, added entities, etc.
+	   * @param {Object} newEngine A reference to the engine to register.
+	   */
 
-	  this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
-
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    entityToChange = this.engines[i].getEntityById(entity.id);
-	    entityToChange.trigger('change:components', [], [component]);
-	  }
-	};
-
-	/**
-	 * Called by an engine when the list of components attached to the given entity has changed.
-	 * @method  dispatchComponentChanged
-	 * @private
-	 * @param  {Box3DEntity} entity       The entity that the change was made on.
-	 * @param  {Array} addedComponents   Array of json descriptors for components that are added.
-	 * @param  {Array} removedComponents Array of json descriptors for components that are removed.
-	 */
-	EntityDispatcher.prototype.dispatchComponentChanged = function (entity, addedComponents, removedComponents) {
-	  var entityToChange;
-	  var i;
-
-	  this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
-
-	  // Apply changes in each engine
-	  for (i = 0; i < this.engines.length; i++) {
-	    entityToChange = this.engines[i].getEntityById(entity.id);
-	    entityToChange.trigger('change:components', addedComponents, removedComponents);
-	  }
-	};
-
-	/**
-	 * Fire events for entity updates intended for external apps to listen to.
-	 * @method fireExternalUpdate
-	 * @private
-	 * @param {String} entityId       Id of the entity that changed.
-	 * @param {Object} jsonDescriptor Description of what changed.
-	 * @param {String} type The type of entity change ('destroyEntity', 'createEntity', 'updateEntity')
-	 */
-	EntityDispatcher.prototype.fireExternalUpdate = function (entityId, jsonDescriptor, type) {
-	  var updatePkg;
-	  // TODO - create a pool of these objects to avoid allocating a new one each time?
-	  updatePkg = new Box3D.EntityUpdatePackage();
-	  updatePkg.type = type ? type : 'updateEntity';
-	  updatePkg.entityId = entityId;
-	  updatePkg.entityData = jsonDescriptor;
-	  Box3D.globalEvents.trigger('EntityUpdates', updatePkg);
-	};
-
-	/**
-	 * When an entity change is received from an external source, this function is
-	 * called to update the entity is each engine.
-	 * @method onRemoteEntityUpdate
-	 * @private
-	 * @param  {Object} entityDesc Json descriptor of entity
-	 */
-	EntityDispatcher.prototype.onRemoteEntityUpdate = function (entityDesc) {
-	  var box3dEntity;
-	  var parentAsset;
-	  var assets = this.engines[0].assetRegistry.assets;
-	  //If the entity is an asset.
-	  if (entityDesc.id === entityDesc.parentAssetId || !entityDesc.parentAssetId) {
-	    box3dEntity = assets[entityDesc.id];
-	    if (!box3dEntity) {
-	      this.dispatchCreatedAsset(entityDesc);
+	  _createClass(EntityDispatcher, [{
+	    key: 'addEngine',
+	    value: function addEngine(newEngine) {
+	      if (!newEngine) {
+	        return;
+	      }
+	      if (!this.engines.indexOf(newEngine) !== -1) {
+	        this.engines.push(newEngine);
+	      } else {
+	        _log2.default.warn('The engine, ' + newEngine.getName() + ', has already been registered.');
+	      }
 	    }
-	    //Otherwise, it's an object within an asset.
-	  } else {
-	      parentAsset = assets[entityDesc.parentAssetId];
-	      //If the parent asset exists, get the object and update it.
-	      if (parentAsset) {
-	        box3dEntity = parentAsset.getObjectById(entityDesc.id);
-	        if (!box3dEntity) {
-	          this.dispatchCreatedObject(entityDesc);
+
+	    /**
+	     * Unregisters an engine instance from the EntityDispatcher. This will cut off the engine
+	     * from receiving entity updates, including property changes, added entities, etc.
+	     * @param {Object} engine A reference to the engine to unregister.
+	     */
+
+	  }, {
+	    key: 'removeEngine',
+	    value: function removeEngine(engine) {
+	      var index = undefined;
+	      if (!engine) {
+	        return;
+	      }
+	      index = this.engines.indexOf(engine);
+	      if (index !== -1) {
+	        this.engines.splice(index, 1);
+	      } else {
+	        _log2.default.warn('The engine, ' + engine.getName() + ' isn\'t currently registered.');
+	      }
+	    }
+
+	    /**
+	     * Adds the given entities to all registered engines.
+	     * @param {Array} entities Array of new entity descriptors
+	     * @return {Promise} A promise that resolves with an array of entities that were
+	     * added to all registered engines.
+	     */
+
+	  }, {
+	    key: 'addEntities',
+	    value: function addEntities(entityArray) {
+	      var _this = this;
+
+	      var initializeAssets = function initializeAssets(assets) {
+	        assets.forEach(function (json) {
+	          this.dispatchCreatedAsset(json);
+	        }, _this);
+
+	        _this.engines.forEach(function (engine) {
+	          assets.forEach(function (json) {
+	            var asset = engine.assetRegistry.getAssetById(json.id);
+	            var registry = engine.assetRegistry.getRegistryByType(json.type);
+	            if (asset) {
+	              asset.initialize({
+	                box3DRuntime: engine,
+	                registry: registry
+	              });
+	            }
+	          });
+	        });
+	      };
+
+	      var initializeObjects = function initializeObjects(objects) {
+	        // Register all objects with the newly registered assets.
+	        objects.forEach(function (objectJson) {
+	          _this.dispatchCreatedObject(objectJson);
+	        });
+
+	        // Initialize entities in each engine.
+	        _this.engines.forEach(function (engine) {
+	          objects.forEach(function (json) {
+	            var object = engine.getEntityById(json.id);
+	            if (object) {
+	              object.initialize({
+	                box3DRuntime: engine
+	              });
+	            }
+	          });
+	        });
+	      };
+
+	      var loadAssets = function loadAssets(assets) {
+	        var allEngineAssets = [];
+
+	        assets.forEach(function (asset) {
+	          if (asset) {
+	            _this.engines.forEach(function (engine) {
+	              var engineAsset = engine.assetRegistry.getAssetById(asset.id);
+	              if (engineAsset && !engineAsset.isLoaded()) {
+	                allEngineAssets.push(engineAsset);
+	              }
+	            });
+	          }
+	        });
+
+	        // Don't do a Promise.all if the array is empty.
+	        if (!assets.length) {
+	          return Promise.resolve();
+	        }
+
+	        return Promise.all(allEngineAssets.map(function (asset) {
+	          return new Promise(function (resolveAsset) {
+	            asset.load(resolveAsset);
+	          });
+	        }));
+	      };
+
+	      var nonDocumentAssets = [],
+	          documentAssets = [],
+	          objects = [];
+
+	      // Partition the entity array into "assets" and "objects".
+	      entityArray.forEach(function (entityJson) {
+	        if (!entityJson.parentAssetId || entityJson.parentAssetId === entityJson.id) {
+	          if (entityJson.type === 'document') {
+	            documentAssets.push(entityJson);
+	          } else {
+	            nonDocumentAssets.push(entityJson);
+	          }
+	        } else {
+	          objects.push(entityJson);
+	        }
+	      });
+
+	      initializeAssets(documentAssets);
+
+	      return loadAssets(documentAssets).then(function () {
+	        initializeAssets(nonDocumentAssets);
+	        initializeObjects(objects);
+	        return entityArray;
+	      });
+	    }
+
+	    /**
+	     * Serializes the entities into a format that can be saved.
+	     * @method serializeEntities
+	     * @public
+	     * @return {Array} Array of json descriptors for all entities.
+	     */
+
+	  }, {
+	    key: 'serializeEntities',
+	    value: function serializeEntities() {
+	      var serialize = function serialize(entity) {
+	        var descriptor = entity.sharedData;
+	        var returnJson = {
+	          id: descriptor.id,
+	          type: descriptor.type,
+	          parentAssetId: descriptor.parentAssetId,
+	          parentId: descriptor.parentId,
+	          prefabAssetId: descriptor.prefabAssetId,
+	          prefabObjectId: descriptor.prefabObjectId,
+	          prefabInstanceId: descriptor.prefabInstanceId,
+	          properties: entity.getOwnProperties(),
+	          children: entity.getChildren(),
+	          components: entity.getComponents()
+	        };
+	        return returnJson;
+	      };
+	      var serializedEntities = [];
+	      if (this.engines.length) {
+	        var entities = this.engines[0].entities;
+	        _lodash2.default.each(entities, function (entity) {
+	          serializedEntities.push(serialize(entity));
+	        }, this);
+	      }
+	      return serializedEntities;
+	    }
+
+	    /**
+	     * Return direct references to all entity descriptors. These are shared
+	     * for each entity across engine instances.
+	     * @method getEntityDescriptors
+	     * @public
+	     * @return {Array} Array of json descriptors for all entities.
+	     */
+
+	  }, {
+	    key: 'getEntityDescriptors',
+	    value: function getEntityDescriptors() {
+	      var entityDescriptors = [];
+	      _lodash2.default.each(this.entities, function (entity) {
+	        entityDescriptors.push(entity);
+	      }, this);
+	      return entityDescriptors;
+	    }
+
+	    /**
+	     * Update an existing entity with the values provided in the given json descriptor
+	     * @method updateEntity
+	     * @private
+	     * @param  {Object} jsonDescriptor Description of the entity.
+	     */
+
+	  }, {
+	    key: 'updateEntity',
+	    value: function updateEntity(jsonDescriptor) {
+	      var entities = this.engines[0].entities;
+	      var entity = entities[jsonDescriptor.id];
+	      // Only need to update the values for one engine since all structures are shared.
+	      _lodash2.default.each(jsonDescriptor, function (value, attrib) {
+	        entity.set(attrib, value, { silent: true });
+	      }, this);
+	      entity.setProperties(jsonDescriptor.properties);
+	      entity.setChildren(jsonDescriptor.children);
+	      entity.setComponents(jsonDescriptor.components);
+	    }
+
+	    /**
+	     * Create a new asset using the given entity description
+	     * @method dispatchCreatedAsset
+	     * @public
+	     * @param  {Object} jsonDescriptor Description of the asset.
+	     */
+
+	  }, {
+	    key: 'dispatchCreatedAsset',
+	    value: function dispatchCreatedAsset(jsonDescriptor) {
+	      var json = undefined;
+
+	      if (this.entities[jsonDescriptor.id]) {
+	        json = this.entities[jsonDescriptor.id];
+	      } else {
+	        json = {
+	          id: jsonDescriptor.id,
+	          name: jsonDescriptor.name,
+	          type: jsonDescriptor.type,
+	          parentAssetId: jsonDescriptor.id, // parentAssetId === id for assets
+	          dependencies: {
+	            textures: {},
+	            materials: {},
+	            geometries: {},
+	            animations: {}
+	          },
+	          children: jsonDescriptor.children || [],
+	          previousChildren: [],
+	          properties: jsonDescriptor.properties || jsonDescriptor.payload || {},
+	          previousProperties: {},
+	          components: jsonDescriptor.components || {}
+	        };
+	        if (jsonDescriptor.originalType) {
+	          json.originalType = jsonDescriptor.originalType;
+	        }
+	        if (jsonDescriptor.builtIn) {
+	          json.builtIn = jsonDescriptor.builtIn;
+	        }
+	        if (jsonDescriptor.resources) {
+	          json.resources = jsonDescriptor.resources;
+	        }
+	        this.entities[json.id] = json;
+	      }
+
+	      this.fireExternalUpdate(jsonDescriptor.id, json, 'createEntity');
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        if (!this.engines[i].assetRegistry.getAssetById(json.id)) {
+	          this.engines[i].assetRegistry.trigger('addAssetEntity', json);
 	        }
 	      }
 	    }
-	  if (box3dEntity) {
-	    // TODO: Add undefined values for removed attributes (since json standard
-	    // doesn't support undefined and, hence, we need to explicitly mark incoming
-	    // values as undefined if they're missing.)
-	    this.updateEntity(entityDesc);
-	  }
-	};
 
-	/**
-	 * When an entity deletion is received from an external source, this function is
-	 * called to remove the entity is each engine.
-	 * @method onRemoteEntityDelete
-	 * @private
-	 * @param  {Object} entityDesc Json descriptor of entity
-	 */
-	EntityDispatcher.prototype.onRemoteEntityDelete = function (entityDesc) {
-	  var assets = this.engines[0].assetRegistry.assets;
-	  var asset = assets[entityDesc.parentAssetId];
-	  if (asset && entityDesc.id !== entityDesc.parentAssetId) {
-	    var object = asset.getObjectById(entityDesc.id);
-	    if (object) {
-	      object.destroy();
+	    /**
+	     * Create a new object using the given entity description
+	     * @method dispatchCreatedObject
+	     * @public
+	     * @param  {Object} jsonDescriptor Description of the object.
+	     */
+
+	  }, {
+	    key: 'dispatchCreatedObject',
+	    value: function dispatchCreatedObject(jsonDescriptor) {
+	      var json = undefined;
+
+	      if (this.entities[jsonDescriptor.id]) {
+	        json = this.entities[jsonDescriptor.id];
+	      } else {
+	        json = {
+	          id: jsonDescriptor.id,
+	          name: jsonDescriptor.name,
+	          type: jsonDescriptor.type,
+	          parentId: jsonDescriptor.parentId,
+	          parentAssetId: jsonDescriptor.parentAssetId,
+	          prefabAssetId: jsonDescriptor.prefabAssetId,
+	          prefabObjectId: jsonDescriptor.prefabObjectId,
+	          prefabInstanceId: jsonDescriptor.prefabInstanceId,
+	          children: jsonDescriptor.children || [],
+	          previousChildren: [],
+	          properties: jsonDescriptor.properties || jsonDescriptor.payload || {},
+	          previousProperties: {},
+	          components: jsonDescriptor.components || {}
+	        };
+	        this.entities[json.id] = json;
+	      }
+
+	      this.fireExternalUpdate(jsonDescriptor.id, json, 'createEntity');
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var asset = this.engines[i].assetRegistry.getAssetById(json.parentAssetId);
+	        if (asset && !asset.getObjectById(json.id)) {
+	          asset.trigger('addObjectEntity', json);
+	        }
+	      }
 	    }
-	  } else {
-	    asset = this.assets[entityDesc.id];
-	    if (asset) {
-	      asset.destroy();
+
+	    /**
+	     * Delete an asset from all engine instances.
+	     * @method dispatchDestroyedAsset
+	     * @public
+	     * @param  {String} assetId Id of the asset to delete.
+	     */
+
+	  }, {
+	    key: 'dispatchDestroyedAsset',
+	    value: function dispatchDestroyedAsset(assetId) {
+	      if (!this.entities[assetId]) {
+	        _log2.default.error('Can\'t destroy an asset with ID, ' + assetId + ', that doesn\'t exist.');
+	        return;
+	      }
+	      this.fireExternalUpdate(assetId, {}, 'destroyEntity');
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        this.engines[i].assetRegistry.trigger('removeAssetEntity', assetId);
+	      }
+	      delete this.entities[assetId];
 	    }
-	  }
-	};
+
+	    /**
+	     * Delete an object from all engine instances.
+	     * @method dispatchDestroyedObject
+	     * @public
+	     * @param  {String} assetId Id of the object to delete.
+	     */
+
+	  }, {
+	    key: 'dispatchDestroyedObject',
+	    value: function dispatchDestroyedObject(objectId) {
+	      if (!this.entities[objectId]) {
+	        _log2.default.error('Can\'t destroy an object with ID, ' + objectId + ', that doesn\'t exist.');
+	        return;
+	      }
+	      this.fireExternalUpdate(objectId, {}, 'destroyEntity');
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var object = this.engines[i].getEntityById(objectId);
+	        var asset = object.getParentAsset();
+	        asset.trigger('removeObjectEntity', objectId);
+	      }
+	      delete this.entities[objectId];
+	    }
+	  }, {
+	    key: 'dispacthAttributeChanged',
+	    value: function dispacthAttributeChanged(entity, attrib, value) {
+	      var json = {};
+	      json[attrib] = value;
+	      this.fireExternalUpdate(entity.id, json);
+
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var entityToChange = this.engines[i].getEntityById(entity.id);
+	        entityToChange.trigger('change:' + attrib, value);
+	      }
+	    }
+	  }, {
+	    key: 'dispatchPropertyChanged',
+	    value: function dispatchPropertyChanged(entity, property, value) {
+	      var propertyDescriptor = {};
+	      propertyDescriptor[property] = value;
+	      this.dispatchPropertiesChanged(entity, propertyDescriptor);
+	    }
+	  }, {
+	    key: 'dispatchPropertiesChanged',
+	    value: function dispatchPropertiesChanged(entity, json) {
+	      var _this2 = this;
+
+	      this.fireExternalUpdate(entity.id, { payload: json });
+
+	      // Apply changes in each engine
+
+	      var _loop = function _loop(i) {
+	        var entityToChange = _this2.engines[i].getEntityById(entity.id);
+	        if (entityToChange) {
+	          _lodash2.default.each(json, function (value, id) {
+	            // TODO - if this property is an object id, translate to an entity
+	            entityToChange.trigger('change:properties.' + id, value);
+	          }, _this2);
+
+	          entityToChange.trigger('change:properties', json);
+	        }
+	      };
+
+	      for (var i = 0; i < this.engines.length; i++) {
+	        _loop(i);
+	      }
+	    }
+	  }, {
+	    key: 'dispatchChildAdded',
+	    value: function dispatchChildAdded(entity, newChild) {
+	      this.fireExternalUpdate(entity.id, { children: entity.getChildIds() });
+
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var _entityToChange = this.engines[i].getEntityById(entity.id);
+	        var childArray = [newChild];
+	        translateIdsToObjects(_entityToChange, childArray);
+	        _entityToChange.trigger('change:children', childArray, []);
+	      }
+	    }
+	  }, {
+	    key: 'dispatchChildRemoved',
+	    value: function dispatchChildRemoved(entity, childToRemove) {
+	      this.fireExternalUpdate(entity.id, { children: entity.getChildIds() });
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var _entityToChange2 = this.engines[i].getEntityById(entity.id);
+	        var childArray = [childToRemove];
+	        translateIdsToObjects(_entityToChange2, childArray);
+	        _entityToChange2.trigger('change:children', [], childArray);
+	      }
+	    }
+	  }, {
+	    key: 'dispatchChildChanged',
+	    value: function dispatchChildChanged(entity, addedChildren, removedChildren) {
+	      this.fireExternalUpdate(entity.id, { children: entity.getChildIds() });
+
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var _entityToChange3 = this.engines[i].getEntityById(entity.id);
+	        translateIdsToObjects(_entityToChange3, addedChildren);
+	        translateIdsToObjects(_entityToChange3, removedChildren);
+	        _entityToChange3.trigger('change:children', addedChildren, removedChildren);
+	      }
+	    }
+
+	    /**
+	     * Called by an engine instance when the given component has been added.
+	     * @method dispatchComponentAdded
+	     * @private
+	     * @param  {Box3DEntity} entity       The entity that the change was made on.
+	     * @param  {Object} component   Json descriptors for component that has been added
+	     */
+
+	  }, {
+	    key: 'dispatchComponentAdded',
+	    value: function dispatchComponentAdded(entity, newComponent) {
+	      this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
+
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var _entityToChange4 = this.engines[i].getEntityById(entity.id);
+
+	        _entityToChange4.trigger('change:components', [newComponent], []);
+	      }
+	    }
+
+	    /**
+	     * Remove the given component attached to the given entity.
+	     * @method dispatchComponentRemoved
+	     * @private
+	     * @param  {Box3DEntity} entity       The entity that the change was made on.
+	     * @param  {Object} component   Json descriptors for component that has been removed
+	     */
+
+	  }, {
+	    key: 'dispatchComponentRemoved',
+	    value: function dispatchComponentRemoved(entity, component) {
+	      this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
+
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var _entityToChange5 = this.engines[i].getEntityById(entity.id);
+	        _entityToChange5.trigger('change:components', [], [component]);
+	      }
+	    }
+
+	    /**
+	     * Called by an engine when the list of components attached to the given entity has changed.
+	     * @method  dispatchComponentChanged
+	     * @private
+	     * @param  {Box3DEntity} entity       The entity that the change was made on.
+	     * @param  {Array} addedComponents   Array of json descriptors for components that are added.
+	     * @param  {Array} removedComponents Array of json descriptors for components that are removed.
+	     */
+
+	  }, {
+	    key: 'dispatchComponentChanged',
+	    value: function dispatchComponentChanged(entity, addedComponents, removedComponents) {
+	      this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
+
+	      // Apply changes in each engine
+	      for (var i = 0; i < this.engines.length; i++) {
+	        var _entityToChange6 = this.engines[i].getEntityById(entity.id);
+	        _entityToChange6.trigger('change:components', addedComponents, removedComponents);
+	      }
+	    }
+
+	    /**
+	     * Fire events for entity updates intended for external apps to listen to.
+	     * @method fireExternalUpdate
+	     * @private
+	     * @param {String} entityId       Id of the entity that changed.
+	     * @param {Object} jsonDescriptor Description of what changed.
+	     * @param {String} type The type of change ('destroyEntity', 'createEntity', 'updateEntity')
+	     */
+
+	  }, {
+	    key: 'fireExternalUpdate',
+	    value: function fireExternalUpdate(entityId, jsonDescriptor, type) {
+	      // TODO - create a pool of these objects to avoid allocating a new one each time?
+	      var updatePkg = new Box3D.EntityUpdatePackage();
+	      updatePkg.type = type ? type : 'updateEntity';
+	      updatePkg.entityId = entityId;
+	      updatePkg.entityData = jsonDescriptor;
+	      Box3D.globalEvents.trigger('EntityUpdates', updatePkg);
+	    }
+
+	    /**
+	     * When an entity change is received from an external source, this function is
+	     * called to update the entity is each engine.
+	     * @method onRemoteEntityUpdate
+	     * @private
+	     * @param  {Object} entityDesc Json descriptor of entity
+	     */
+
+	  }, {
+	    key: 'onRemoteEntityUpdate',
+	    value: function onRemoteEntityUpdate(entityDesc) {
+	      var box3dEntity = undefined;
+	      var assets = this.engines[0].assetRegistry.assets;
+	      //If the entity is an asset.
+	      if (entityDesc.id === entityDesc.parentAssetId || !entityDesc.parentAssetId) {
+	        box3dEntity = assets[entityDesc.id];
+	        if (!box3dEntity) {
+	          this.dispatchCreatedAsset(entityDesc);
+	        }
+	        //Otherwise, it's an object within an asset.
+	      } else {
+	          var parentAsset = assets[entityDesc.parentAssetId];
+	          //If the parent asset exists, get the object and update it.
+	          if (parentAsset) {
+	            box3dEntity = parentAsset.getObjectById(entityDesc.id);
+	            if (!box3dEntity) {
+	              this.dispatchCreatedObject(entityDesc);
+	            }
+	          }
+	        }
+	      if (box3dEntity) {
+	        // TODO: Add undefined values for removed attributes (since json standard
+	        // doesn't support undefined and, hence, we need to explicitly mark incoming
+	        // values as undefined if they're missing.)
+	        this.updateEntity(entityDesc);
+	      }
+	    }
+
+	    /**
+	     * When an entity deletion is received from an external source, this function is
+	     * called to remove the entity is each engine.
+	     * @method onRemoteEntityDelete
+	     * @private
+	     * @param  {Object} entityDesc Json descriptor of entity
+	     */
+
+	  }, {
+	    key: 'onRemoteEntityDelete',
+	    value: function onRemoteEntityDelete(entityDesc) {
+	      var assets = this.engines[0].assetRegistry.assets;
+	      var asset = assets[entityDesc.parentAssetId];
+	      if (asset && entityDesc.id !== entityDesc.parentAssetId) {
+	        var object = asset.getObjectById(entityDesc.id);
+	        if (object) {
+	          object.destroy();
+	        }
+	      } else {
+	        asset = this.assets[entityDesc.id];
+	        if (asset) {
+	          asset.destroy();
+	        }
+	      }
+	    }
+	  }]);
+
+	  return EntityDispatcher;
+	}();
 
 	window.Box3D = window.Box3D || {};
 	window.Box3D.EntityDispatcher = EntityDispatcher;
@@ -54510,11 +54526,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -54536,49 +54552,21 @@
 
 	var _Box3DAsset2 = _interopRequireDefault(_Box3DAsset);
 
-	var _ApplicationRegistry = __webpack_require__(15);
+	var _BaseRegistry = __webpack_require__(15);
 
-	var _ApplicationRegistry2 = _interopRequireDefault(_ApplicationRegistry);
+	var _BaseRegistry2 = _interopRequireDefault(_BaseRegistry);
 
-	var _DocumentRegistry = __webpack_require__(17);
-
-	var _DocumentRegistry2 = _interopRequireDefault(_DocumentRegistry);
-
-	var _SceneRegistry = __webpack_require__(18);
-
-	var _SceneRegistry2 = _interopRequireDefault(_SceneRegistry);
-
-	var _PrefabRegistry = __webpack_require__(19);
-
-	var _PrefabRegistry2 = _interopRequireDefault(_PrefabRegistry);
-
-	var _GeometryRegistry = __webpack_require__(20);
-
-	var _GeometryRegistry2 = _interopRequireDefault(_GeometryRegistry);
-
-	var _MaterialRegistry = __webpack_require__(21);
+	var _MaterialRegistry = __webpack_require__(16);
 
 	var _MaterialRegistry2 = _interopRequireDefault(_MaterialRegistry);
 
-	var _TextureRegistry = __webpack_require__(23);
+	var _TextureRegistry = __webpack_require__(18);
 
 	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
 
-	var _AnimationRegistry = __webpack_require__(24);
-
-	var _AnimationRegistry2 = _interopRequireDefault(_AnimationRegistry);
-
-	var _ScriptRegistry = __webpack_require__(25);
+	var _ScriptRegistry = __webpack_require__(20);
 
 	var _ScriptRegistry2 = _interopRequireDefault(_ScriptRegistry);
-
-	var _ShaderRegistry = __webpack_require__(65);
-
-	var _ShaderRegistry2 = _interopRequireDefault(_ShaderRegistry);
-
-	var _AudioRegistry = __webpack_require__(71);
-
-	var _AudioRegistry2 = _interopRequireDefault(_AudioRegistry);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -54606,16 +54594,16 @@
 	    _this.box3DRuntime = undefined;
 	    _this.entityCollection = undefined;
 	    _this.Scripts = new _ScriptRegistry2.default();
-	    _this.Applications = new _ApplicationRegistry2.default();
-	    _this.Documents = new _DocumentRegistry2.default();
-	    _this.Scenes = new _SceneRegistry2.default();
-	    _this.Prefabs = new _PrefabRegistry2.default();
-	    _this.Geometries = new _GeometryRegistry2.default();
-	    _this.Shaders = new _ShaderRegistry2.default();
+	    _this.Applications = new _BaseRegistry2.default(Box3D.ApplicationAsset);
+	    _this.Documents = new _BaseRegistry2.default(Box3D.DocumentAsset);
+	    _this.Scenes = new _BaseRegistry2.default(Box3D.SceneAsset);
+	    _this.Prefabs = new _BaseRegistry2.default(Box3D.PrefabAsset);
+	    _this.Geometries = new _BaseRegistry2.default(Box3D.BaseGeometryAsset);
+	    _this.Shaders = new _BaseRegistry2.default(Box3D.ShaderAsset);
 	    _this.Materials = new _MaterialRegistry2.default();
 	    _this.Textures = new _TextureRegistry2.default();
-	    _this.Animations = new _AnimationRegistry2.default();
-	    _this.Audio = new _AudioRegistry2.default();
+	    _this.Animations = new _BaseRegistry2.default(Box3D.AnimationAsset);
+	    _this.Audio = new _BaseRegistry2.default(Box3D.AudioAsset);
 	    _this.initTimeoutId = undefined;
 	    return _this;
 	  }
@@ -54645,7 +54633,6 @@
 	      this.Scripts.initSystemAssets();
 	      this.Shaders.initSystemAssets();
 	      this.Materials.initSystemAssets();
-	      this.Prefabs.initSystemAssets();
 	    }
 	  }, {
 	    key: 'uninitialize',
@@ -54908,6 +54895,8 @@
 	      switch (type) {
 	        case 'application':
 	          return Box3D.ApplicationAsset;
+	        case 'animation':
+	          return Box3D.AnimationAsset;
 	        case 'document':
 	          return Box3D.DocumentAsset;
 	        case 'object':
@@ -55003,7 +54992,6 @@
 	    key: 'update',
 	    value: function update(delta) {
 	      this.Materials.update(delta);
-	      this.Animations.update(delta);
 	    }
 	  }, {
 	    key: 'set',
@@ -55058,11 +55046,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -55717,7 +55705,6 @@
 	  }
 	};
 
-
 	window.Box3D.Box3DAsset = Box3DAsset;
 	exports.default = Box3DAsset;
 
@@ -55727,13 +55714,13 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -57778,7 +57765,6 @@
 	  }, {
 	    key: 'isUnloaded',
 
-
 	    /**
 	     * Returns true iff the entity is completely unloaded.
 	     * @method isUnloaded
@@ -58913,7 +58899,6 @@
 	};
 	Box3DEntity.defaultProperties = {};
 
-
 	window.Box3D.Box3DEntity = Box3DEntity;
 
 	exports.default = Box3DEntity;
@@ -59561,52 +59546,11 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _BaseRegistry2 = __webpack_require__(16);
-
-	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class ApplicationRegistry
-	 * @constructor
-	 */
-
-	var ApplicationRegistry = function (_BaseRegistry) {
-	  _inherits(ApplicationRegistry, _BaseRegistry);
-
-	  function ApplicationRegistry(json) {
-	    _classCallCheck(this, ApplicationRegistry);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ApplicationRegistry).call(this, json));
-	  }
-
-	  return ApplicationRegistry;
-	}(_BaseRegistry3.default);
-
-	exports.default = ApplicationRegistry;
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -59617,8 +59561,10 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var BaseRegistry = function () {
-	  function BaseRegistry() {
+	  function BaseRegistry(type) {
 	    _classCallCheck(this, BaseRegistry);
+
+	    this.assetType = type;
 	  }
 
 	  _createClass(BaseRegistry, [{
@@ -59686,7 +59632,7 @@
 	  }, {
 	    key: 'initSystemAssets',
 	    value: function initSystemAssets() {
-	      _lodash2.default.each(this.constructor.builtInAssetDescriptors, function (jsonDesc) {
+	      _lodash2.default.each(this.assetType.builtInAssetDescriptors, function (jsonDesc) {
 	        jsonDesc.builtIn = true;
 	        this.createAsset(jsonDesc);
 	      }, this);
@@ -59779,225 +59725,18 @@
 	exports.default = BaseRegistry;
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _BaseRegistry2 = __webpack_require__(16);
-
-	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * All DocumentAssets are manged by this registry.
-	 * @class DocumentRegistry
-	 * @constructor
-	 */
-
-	var DocumentRegistry = function (_BaseRegistry) {
-	  _inherits(DocumentRegistry, _BaseRegistry);
-
-	  function DocumentRegistry(json) {
-	    _classCallCheck(this, DocumentRegistry);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DocumentRegistry).call(this, json));
-	  }
-
-	  return DocumentRegistry;
-	}(_BaseRegistry3.default);
-
-	exports.default = DocumentRegistry;
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _BaseRegistry2 = __webpack_require__(16);
-
-	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * All SceneAssets are manged by this registry.
-	 * @class SceneRegistry
-	 * @constructor
-	 */
-
-	var SceneRegistry = function (_BaseRegistry) {
-	  _inherits(SceneRegistry, _BaseRegistry);
-
-	  function SceneRegistry(json) {
-	    _classCallCheck(this, SceneRegistry);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SceneRegistry).call(this, json));
-	  }
-
-	  return SceneRegistry;
-	}(_BaseRegistry3.default);
-
-	exports.default = SceneRegistry;
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _BaseRegistry2 = __webpack_require__(16);
-
-	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * Registry which manages all prefab assets
-	 * @class PrefabRegistry
-	 * @param {Object} [properties] Prefab registry properties
-	 * @constructor
-	 */
-
-	var PrefabRegistry = function (_BaseRegistry) {
-	  _inherits(PrefabRegistry, _BaseRegistry);
-
-	  function PrefabRegistry(json) {
-	    _classCallCheck(this, PrefabRegistry);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabRegistry).call(this, json));
-	  }
-
-	  return PrefabRegistry;
-	}(_BaseRegistry3.default);
-
-	PrefabRegistry.builtInAssetDescriptors = {
-	  ReflectionCapturePlane: {
-	    id: 'reflection_capture_plane_prefab',
-	    type: 'prefab',
-	    name: 'reflection_capture_plane_prefab',
-	    components: {
-	      reflection_capture: {
-	        scriptId: 'reflection_capture_planar',
-	        componentData: {},
-	        enabled: true
-	      }
-	    }
-	  },
-	  CubeMapCapture: {
-	    id: 'cubemap_capture_prefab',
-	    type: 'prefab',
-	    name: 'cubemap_capture_prefab',
-	    components: {
-	      cubemap_capture: {
-	        scriptId: 'cubemap_capture',
-	        componentData: {},
-	        enabled: true
-	      }
-	    }
-	  },
-	  Curve: {
-	    id: 'curve_prefab',
-	    type: 'prefab',
-	    name: 'curve_prefab',
-	    components: {
-	      curve: {
-	        scriptId: 'curve_component',
-	        componentData: {},
-	        enabled: true
-	      }
-	    }
-	  }
-	};
-	exports.default = PrefabRegistry;
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _BaseRegistry2 = __webpack_require__(16);
-
-	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * All GeometryAssets are manged by this registry.
-	 * @class GeometryRegistry
-	 * @constructor
-	 */
-
-	var GeometryRegistry = function (_BaseRegistry) {
-	  _inherits(GeometryRegistry, _BaseRegistry);
-
-	  function GeometryRegistry(json) {
-	    _classCallCheck(this, GeometryRegistry);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(GeometryRegistry).call(this, json));
-	  }
-
-	  return GeometryRegistry;
-	}(_BaseRegistry3.default);
-
-	exports.default = GeometryRegistry;
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -60007,11 +59746,11 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseRegistry2 = __webpack_require__(16);
+	var _BaseRegistry2 = __webpack_require__(15);
 
 	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
 
-	var _MaterialAsset = __webpack_require__(22);
+	var _MaterialAsset = __webpack_require__(17);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
@@ -60036,10 +59775,10 @@
 	var MaterialRegistry = function (_BaseRegistry) {
 	  _inherits(MaterialRegistry, _BaseRegistry);
 
-	  function MaterialRegistry(json) {
+	  function MaterialRegistry() {
 	    _classCallCheck(this, MaterialRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialRegistry).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialRegistry).call(this, Box3D.MaterialAsset));
 
 	    _this.sharedUniforms = {
 	      time: {
@@ -60253,23 +59992,12 @@
 	    }
 	  }
 	};
-	MaterialRegistry.builtInAssetDescriptors = {
-	  missingMaterial: {
-	    id: 'missingMaterial',
-	    type: 'material',
-	    name: 'Missing Material',
-	    properties: {
-	      baseAlbedo: 13882323
-	    }
-	  }
-	};
-
 
 	Box3D.MaterialRegistry = MaterialRegistry;
 	exports.default = MaterialRegistry;
 
 /***/ },
-/* 22 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60323,7 +60051,6 @@
 	   * the material can properly render in the meantime.
 	   * @type {String}
 	   */
-
 
 	  _createClass(MaterialAsset, [{
 	    key: 'initialize',
@@ -61401,6 +61128,16 @@
 	  return MaterialAsset;
 	}(_Box3DAsset3.default);
 
+	MaterialAsset.builtInAssetDescriptors = {
+	  missingMaterial: {
+	    id: 'missingMaterial',
+	    type: 'material',
+	    name: 'Missing Material',
+	    properties: {
+	      baseAlbedo: 13882323
+	    }
+	  }
+	};
 	MaterialAsset.STANDIN_TEXTURE_WHITE = 'STANDIN_TEXTURE_WHITE';
 	MaterialAsset.STANDIN_TEXTURE_WHITE_CUBE = 'STANDIN_TEXTURE_WHITE_CUBE';
 	MaterialAsset.STANDIN_TEXTURE_BLACK = 'STANDIN_TEXTURE_BLACK';
@@ -61518,30 +61255,33 @@
 	  }
 	};
 
-
 	window.Box3D.MaterialAsset = MaterialAsset;
 	// export default MaterialAsset;
 	module.exports = MaterialAsset;
 
 /***/ },
-/* 23 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseRegistry2 = __webpack_require__(16);
+	var _BaseRegistry2 = __webpack_require__(15);
 
 	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
+
+	var _BaseTextureAsset = __webpack_require__(19);
+
+	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61560,10 +61300,10 @@
 	var TextureRegistry = function (_BaseRegistry) {
 	  _inherits(TextureRegistry, _BaseRegistry);
 
-	  function TextureRegistry(json) {
+	  function TextureRegistry() {
 	    _classCallCheck(this, TextureRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TextureRegistry).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TextureRegistry).call(this, _BaseTextureAsset2.default));
 
 	    _this.missingTexture2d = undefined;
 	    _this.missingTextureCube = undefined;
@@ -61702,20 +61442,38 @@
 	exports.default = TextureRegistry;
 
 /***/ },
-/* 24 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _log = __webpack_require__(6);
 
-	var _BaseRegistry2 = __webpack_require__(16);
+	var _log2 = _interopRequireDefault(_log);
 
-	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	var _TextureRegistry = __webpack_require__(18);
+
+	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61725,39 +61483,699 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	/**
-	 * All Model Animation data is managed by this
-	 * @class AnimationRegistry
-	 * @constructor
-	 */
+	var Box3D = window.Box3D = window.Box3D || {};
 
-	var AnimationRegistry = function (_BaseRegistry) {
-	  _inherits(AnimationRegistry, _BaseRegistry);
+	var BaseTextureAsset = function (_Box3DAsset) {
+	  _inherits(BaseTextureAsset, _Box3DAsset);
 
-	  function AnimationRegistry(json) {
-	    _classCallCheck(this, AnimationRegistry);
+	  function BaseTextureAsset(json) {
+	    _classCallCheck(this, BaseTextureAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationRegistry).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTextureAsset).call(this, json));
+
+	    _this.loadedBytes = 0;
+	    return _this;
 	  }
 
-	  _createClass(AnimationRegistry, [{
-	    key: 'update',
-	    value: function update() {
-	      //TODO: Fix for new Three.js animation system
-	      // if (this.box3DRuntime.isPrimaryEngine() && THREE.AnimationHandler.animations.length) {
-	      //   THREE.AnimationHandler.update(delta);
-	      //   this.box3DRuntime.needsRender = true;
-	      // }
+	  _createClass(BaseTextureAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
+
+	      this.loadComponents = true;
+	    }
+	  }, {
+	    key: 'unload',
+	    value: function unload(options) {
+	      // abort any xhr request associated with this
+	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
+
+	      if (this.runtimeData) {
+	        this.box3DRuntime.trigger('textureUnloaded', this.id);
+
+	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading texture, ' + this.getName());
+
+	        this.runtimeData.dispose();
+	      }
+
+	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
+	      this.loadedBytes = 0;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+
+	      var texture = this.runtimeData instanceof _three2.default.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
+
+	      if (changes.hasOwnProperty('uMapping')) {
+	        texture.wrapS = _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')];
+	      }
+
+	      if (changes.hasOwnProperty('vMapping')) {
+	        texture.wrapT = _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')];
+	      }
+
+	      if (changes.hasOwnProperty('anisotropy')) {
+	        texture.anisotropy = this.getProperty('anisotropy');
+	      }
+
+	      if (changes.hasOwnProperty('premultiplyAlpha')) {
+	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
+	      }
+
+	      texture.flipY = false; // TODO: is this necessary here?
+
+	      if (changes.hasOwnProperty('generateMipmaps')) {
+	        var generateMipmaps = this.getProperty('generateMipmaps');
+	        texture.generateMipmaps = generateMipmaps && this.isPowerOfTwo() && !this.isCompressed();
+	      }
+
+	      if (changes.hasOwnProperty('premultiplyAlpha')) {
+	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
+	      }
+
+	      if (changes.hasOwnProperty('filtering')) {
+	        var filtering = this.getProperty('filtering');
+	        if (!_TextureRegistry2.default.textureFiltersMap[filtering]) {
+	          filtering = 'Linear';
+	        }
+
+	        if (this.isHdr()) {
+	          var extensions = this.box3DRuntime.getThreeRenderer().extensions;
+	          if (!extensions.get('OES_texture_float_linear') && !extensions.get('OES_texture_half_float_linear')) {
+	            filtering = 'Nearest';
+	          }
+	        }
+
+	        texture.minFilter = _TextureRegistry2.default.textureFiltersMap[filtering].minFilter;
+	        texture.magFilter = _TextureRegistry2.default.textureFiltersMap[filtering].magFilter;
+	      }
+
+	      if (this.isHdr() && this.packingFormat) {
+	        this._unpackToHdr();
+	      }
+
+	      this.box3DRuntime.needsRender = true;
+	    }
+	  }, {
+	    key: '_applyPropertiesUnloaded',
+	    value: function _applyPropertiesUnloaded(changes) {
+	      if (changes.useHardwareCompression !== undefined) {
+	        this.defaultResource = undefined;
+	        this.defaultResources = undefined;
+	      }
+	      this.box3DRuntime.trigger('textureChanged', this.id, changes);
+	    }
+	  }, {
+	    key: '_unpackToHdr',
+	    value: function _unpackToHdr() {
+	      _log2.default.warn('Must implement _unpackToHdr for this texture type.');
+	      return;
+	    }
+
+	    /**
+	     * Returns the byte size of the data that has already been loaded by this asset and its
+	     * hierarchy.
+	     * @public
+	     * @method getDataSizeLoaded
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeLoaded',
+	    value: function getDataSizeLoaded(dependencyType) {
+	      if (!dependencyType || dependencyType === 'textures') {
+	        return this.loadedBytes;
+	      } else {
+	        return 0;
+	      }
+	    }
+
+	    /**
+	     * Returns the download size of this texture. Specify filters to query the
+	     * desired texture. If no filters are specified, the default texture for the
+	     * current device will be queried.
+	     * @method getDataSizeDownload
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @param {Object} params Specify parameters to narrow down the type of asset to
+	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeDownload',
+	    value: function getDataSizeDownload(dependencyType) {
+	      if (!dependencyType || dependencyType === 'textures') {
+	        return this.get('bufferSize') || 1024;
+	      } else {
+	        return 0;
+	      }
+	    }
+
+	    /**
+	     * Returns the total amount of GPU memory occupied by this texture. Specify
+	     * filters to query the desired texture. If no filters are specified, the
+	     * default texture for the current device will be queried.
+	     * @method getDataSizeTextureInMemory
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @param {Object} overrideParams Specify parameters to narrow down the type of asset to
+	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeInMemory',
+	    value: function getDataSizeInMemory(dependencyType, overrideParams) {
+	      var width;
+	      var height;
+	      var compression;
+	      var numChannels;
+	      var channelSize;
+	      var dataType;
+
+	      if (dependencyType && dependencyType !== 'textures') {
+	        return 0;
+	      }
+
+	      width = this.getWidth();
+	      height = this.getHeight();
+	      overrideParams = overrideParams || {};
+	      compression = overrideParams.compression || this.getCompressionFormat();
+
+	      if (compression !== 'none') {
+	        return this.getDataSizeDownload();
+	      }
+
+	      numChannels = this.getNumChannels(overrideParams.format);
+	      dataType = overrideParams.type || this.getDataType();
+
+	      switch (dataType) {
+	        case _three2.default.FloatType:
+	        case _three2.default.UnsignedIntType:
+	        case _three2.default.IntType:
+	          channelSize = 4;
+	          break;
+
+	        case _three2.default.ShortType:
+	        case _three2.default.UnsignedShortType:
+	          channelSize = 2;
+	          break;
+
+	        case _three2.default.UnsignedByteType:
+	        case _three2.default.ByteType:
+	          channelSize = 1;
+	          break;
+
+	        // The following types dictate the bpp directly.
+	        case _three2.default.UnsignedShort4444Type:
+	        case _three2.default.UnsignedShort5551Type:
+	        case _three2.default.UnsignedShort565Type:
+	          return width * height * 2;
+	      }
+	      return width * height * channelSize * numChannels;
+	    }
+
+	    /** Returns the maximum texture size supported by the device.
+	     * @return {Integer} The maximum texture size.
+	     */
+
+	  }, {
+	    key: 'getMaxTextureSize',
+	    value: function getMaxTextureSize() {
+	      return Box3D.isMobile() ? 1024 : this.box3DRuntime.getGPUCapability('MAX_TEXTURE_SIZE');
+	    }
+
+	    /**
+	     * Returns the pixel format of the texture. e.g. THREE.RGBAFormat, THREE.LuminanceFormat, etc.
+	     * @return {String} The texture pixel format.
+	     */
+
+	  }, {
+	    key: 'getFormat',
+	    value: function getFormat() {
+	      var format = this.getProperty('format');
+	      return format;
+	    }
+
+	    /**
+	     * Returns the data type of the texture. e.g. THREE.UnsignedByteType, THREE.FloatType, etc.
+	     * @return {Number} The texture pixel type.
+	     */
+
+	  }, {
+	    key: 'getDataType',
+	    value: function getDataType() {
+	      var dataType = this.getProperty('type');
+	      return dataType;
+	    }
+
+	    /**
+	     * Return the number of color or luminance channels in the texture. An optional override lets
+	     * you query the value for a different pixel format.
+	     * @method getNumChannels
+	     * @public
+	     * @param {Number} overrideFormat Query the number of channels for a different pixel format
+	     * by specifying a format here.
+	     * @return {Number} Returns the number of color or luminance channels in the texture.
+	     */
+
+	  }, {
+	    key: 'getNumChannels',
+	    value: function getNumChannels(overrideFormat) {
+	      var format = overrideFormat || this.getFormat();
+	      switch (format) {
+	        case _three2.default.AlphaFormat:
+	        case _three2.default.LuminanceFormat:
+	          return 1;
+	        case _three2.default.LuminanceAlphaFormat:
+	          return 2;
+	        case _three2.default.RGBFormat:
+	          return 3;
+	        case _three2.default.RGBAFormat:
+	          return 4;
+	        default:
+	          return 0;
+	      }
+	    }
+
+	    /**
+	     * @public
+	     * @return {Number} Returns the total number of mip levels used by this texture.
+	     */
+
+	  }, {
+	    key: 'getNumMips',
+	    value: function getNumMips() {
+	      var width = this.getWidth();
+	      var height = this.getHeight();
+	      var max = Math.max(width, height);
+	      max = Math.max(max, 1);
+	      return Math.floor(Math.log2(max));
+	    }
+
+	    /**
+	     * @public
+	     * @return {Boolean} True iff the texture contains high dynamic range, floating point data
+	     */
+
+	  }, {
+	    key: 'isHdr',
+	    value: function isHdr() {
+	      return !!this.getProperty('isHdr');
+	    }
+
+	    /**
+	     * @public
+	     * @return {Boolean} True iff the texture is using a hardware compression format.
+	     */
+
+	  }, {
+	    key: 'isCompressed',
+	    value: function isCompressed() {
+	      if (this.runtimeData) {
+	        return this.runtimeData instanceof _three2.default.CompressedTexture;
+	      } else {
+	        return this.getProperty('useHardwareCompression');
+	      }
+	    }
+
+	    /**
+	     * @public
+	     * @return {Boolean} True iff both dimensions of the texture are a power of two.
+	     */
+
+	  }, {
+	    key: 'isPowerOfTwo',
+	    value: function isPowerOfTwo() {
+	      var width = this.getWidth();
+	      var height = this.getHeight();
+	      return _three2.default.Math.isPowerOfTwo(width) && _three2.default.Math.isPowerOfTwo(height);
+	    }
+
+	    /**
+	    * Returns the preferred texture compression format for the device.
+	    * @return {String} 'atc', 'dxt', 'pvrtc' or 'none'
+	    */
+
+	  }, {
+	    key: 'getCompressionFormat',
+	    value: function getCompressionFormat() {
+	      var compression = 'none';
+
+	      // If a compressed format is preferred, get one based on the device caps.
+	      if (this.getProperty('useHardwareCompression')) {
+	        if (this.box3DRuntime.supportsCompressedTextureS3TC()) {
+	          compression = 'dxt';
+	        } else if (this.box3DRuntime.supportsCompressedTexturePVRTC()) {
+	          compression = 'pvrtc';
+	        } else if (this.box3DRuntime.supportsCompressedTextureATC()) {
+	          compression = 'atc';
+	        }
+	      }
+	      return compression;
+	    }
+
+	    /**
+	     * Returns the width of the texture.
+	     * @return {Integer} The texture width.
+	     */
+
+	  }, {
+	    key: 'getWidth',
+	    value: function getWidth() {
+	      var width = this.getProperty('width');
+	      if (_lodash2.default.isUndefined(width)) {
+	        width = this.getProperty('originalWidth');
+	        if (_lodash2.default.isUndefined(width) && this.runtimeData) {
+	          width = this.runtimeData.width;
+	        }
+	        if (width > this.getMaxTextureSize()) {
+	          width = this.getMaxTextureSize();
+	        }
+	      }
+	      return width || 1;
+	    }
+
+	    /**
+	     * Returns the height of the texture.
+	     * @return {Integer} The texture height.
+	     */
+
+	  }, {
+	    key: 'getHeight',
+	    value: function getHeight() {
+	      var height = this.getProperty('height');
+	      if (_lodash2.default.isUndefined(height)) {
+	        height = this.getProperty('originalHeight');
+	        if (_lodash2.default.isUndefined(height) && this.runtimeData) {
+	          height = this.runtimeData.height;
+	        }
+	        if (height > this.getMaxTextureSize()) {
+	          height = this.getMaxTextureSize();
+	        }
+	      }
+	      return height || 1;
+	    }
+	  }, {
+	    key: 'createCompressedTextureData',
+	    value: function createCompressedTextureData(buffer) {
+	      var texture = new _three2.default.CompressedTexture(),
+	          dds = this._parseDDS(buffer, true),
+	          iFace,
+	          iMip,
+	          nFaces;
+
+	      texture.format = dds.format;
+	      texture.generateMipmaps = false;
+	      texture.needsUpdate = true;
+
+	      if (dds.isCubemap) {
+	        texture.flipY = false;
+	        texture.image = [];
+
+	        nFaces = dds.mipmaps.length / dds.mipmapCount;
+
+	        for (iFace = 0; iFace < nFaces; iFace += 1) {
+	          texture.image[iFace] = {
+	            mipmaps: []
+	          };
+
+	          for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
+	            texture.image[iFace].mipmaps.push(dds.mipmaps[iFace * dds.mipmapCount + iMip]);
+
+	            texture.image[iFace].format = dds.format;
+	            texture.image[iFace].width = dds.width;
+	            texture.image[iFace].height = dds.height;
+	          }
+	        }
+	      } else {
+	        texture.mipmaps = dds.mipmaps;
+	        texture.image.width = dds.width;
+	        texture.image.height = dds.height;
+	      }
+	      return texture;
+	    }
+	  }, {
+	    key: '_parseDDS',
+	    value: function _parseDDS(buffer, loadMipmaps) {
+	      // Adapted from @toji's DDS utils
+	      //  https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
+
+	      // All values and structures referenced from:
+	      // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
+
+	      function fourCCToInt32(value) {
+	        return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
+	      }
+
+	      function int32ToFourCC(value) {
+	        return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
+	      }
+
+	      function loadARGBMip(buffer, dataOffset, width, height) {
+	        var dataLength = width * height * 4,
+	            srcBuffer = new Uint8Array(buffer, dataOffset, dataLength),
+	            byteArray = new Uint8Array(dataLength),
+	            dst = 0,
+	            src = 0,
+	            x,
+	            y,
+	            r,
+	            g,
+	            b,
+	            a;
+
+	        for (y = 0; y < height; y += 1) {
+	          for (x = 0; x < width; x += 1) {
+	            b = srcBuffer[src];
+	            g = srcBuffer[src + 1];
+	            r = srcBuffer[src + 2];
+	            a = srcBuffer[src + 3];
+	            byteArray[dst] = r; // r
+	            byteArray[dst + 1] = g; // g
+	            byteArray[dst + 2] = b; // b
+	            byteArray[dst + 3] = a; // a
+	            src += 4;
+	            dst += 4;
+	          }
+	        }
+
+	        return byteArray;
+	      }
+
+	      var DDS_MAGIC = 0x20534444,
+
+	      //DDSD_CAPS = 0x1,
+	      //DDSD_HEIGHT = 0x2,
+	      //DDSD_WIDTH = 0x4,
+	      //DDSD_PITCH = 0x8,
+	      //DDSD_PIXELFORMAT = 0x1000,
+	      DDSD_MIPMAPCOUNT = 0x20000,
+
+	      //DDSD_LINEARSIZE = 0x80000,
+	      //DDSD_DEPTH = 0x800000,
+
+	      //DDSCAPS_COMPLEX = 0x8,
+	      //DDSCAPS_MIPMAP = 0x400000,
+	      //DDSCAPS_TEXTURE = 0x1000,
+
+	      DDSCAPS2_CUBEMAP = 0x200,
+
+	      //DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
+	      //DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
+	      //DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
+	      //DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
+	      //DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
+	      //DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
+	      //DDSCAPS2_VOLUME = 0x200000,
+
+	      //DDPF_ALPHAPIXELS = 0x1,
+	      //DDPF_ALPHA = 0x2,
+	      DDPF_FOURCC = 0x4,
+
+	      //DDPF_RGB = 0x40,
+	      //DDPF_YUV = 0x200,
+	      //DDPF_LUMINANCE = 0x20000,
+
+	      FOURCC_DXT1 = fourCCToInt32('DXT1'),
+	          FOURCC_DXT3 = fourCCToInt32('DXT3'),
+	          FOURCC_DXT5 = fourCCToInt32('DXT5'),
+	          headerLengthInt = 31,
+	          // The header length in 32 bit ints
+
+	      // Offsets into the header array
+	      off_magic = 0,
+	          off_size = 1,
+	          off_flags = 2,
+	          off_height = 3,
+	          off_width = 4,
+	          off_mipmapCount = 7,
+	          off_pfFlags = 20,
+	          off_pfFourCC = 21,
+	          off_RGBBitCount = 22,
+	          off_RBitMask = 23,
+	          off_GBitMask = 24,
+	          off_BBitMask = 25,
+	          off_ABitMask = 26,
+
+	      //off_caps = 27,
+	      off_caps2 = 28,
+
+	      //off_caps3 = 29,
+	      //off_caps4 = 30,
+
+	      header,
+	          blockBytes,
+	          fourCC,
+	          isRGBAUncompressed,
+	          dataOffset,
+	          width,
+	          height,
+	          iFace,
+	          nFaces,
+	          iMip,
+	          byteArray,
+	          dataLength,
+	          dds = {
+	        mipmaps: [],
+	        width: 0,
+	        height: 0,
+	        format: null,
+	        mipmapCount: 1
+	      };
+
+	      header = new Int32Array(buffer, 0, headerLengthInt);
+
+	      // Parse header
+
+	      if (header[off_magic] !== DDS_MAGIC) {
+	        _log2.default.error('THREE.DDSLoader.parse: Invalid magic number in DDS ' + 'header.');
+	        return dds;
+	      }
+
+	      if (!header[off_pfFlags] & DDPF_FOURCC) {
+	        _log2.default.error('THREE.DDSLoader.parse: Unsupported format, must ' + 'contain a FourCC code.');
+	        return dds;
+	      }
+
+	      fourCC = header[off_pfFourCC];
+	      isRGBAUncompressed = false;
+
+	      switch (fourCC) {
+	        case FOURCC_DXT1:
+	          blockBytes = 8;
+	          dds.format = _three2.default.RGB_S3TC_DXT1_Format;
+	          break;
+
+	        case FOURCC_DXT3:
+	          blockBytes = 16;
+	          dds.format = _three2.default.RGBA_S3TC_DXT3_Format;
+	          break;
+
+	        case FOURCC_DXT5:
+	          blockBytes = 16;
+	          dds.format = _three2.default.RGBA_S3TC_DXT5_Format;
+	          break;
+
+	        default:
+	          if (header[off_RGBBitCount] === 32 && header[off_RBitMask] & 0xff0000 && header[off_GBitMask] & 0xff00 && header[off_BBitMask] & 0xff && header[off_ABitMask] & 0xff000000) {
+	            isRGBAUncompressed = true;
+	            blockBytes = 64;
+	            dds.format = _three2.default.RGBAFormat;
+	          } else {
+	            _log2.default.error('THREE.DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
+	            return dds;
+	          }
+	      }
+
+	      dds.mipmapCount = 1;
+
+	      if (header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
+	        dds.mipmapCount = Math.max(1, header[off_mipmapCount]);
+	      }
+
+	      // TODO: Verify that all faces of the cubemap are present with
+	      // DDSCAPS2_CUBEMAP_POSITIVEX, etc.
+
+	      dds.isCubemap = header[off_caps2] & DDSCAPS2_CUBEMAP ? true : false;
+
+	      dds.width = header[off_width];
+	      dds.height = header[off_height];
+
+	      dataOffset = header[off_size] + 4;
+
+	      // Extract mipmaps buffers
+
+	      width = dds.width;
+	      height = dds.height;
+
+	      nFaces = dds.isCubemap ? 6 : 1;
+
+	      for (iFace = 0; iFace < nFaces; iFace += 1) {
+	        for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
+	          if (isRGBAUncompressed) {
+	            byteArray = loadARGBMip(buffer, dataOffset, width, height);
+	            dataLength = byteArray.length;
+	          } else {
+	            dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
+	            byteArray = new Uint8Array(buffer, dataOffset, dataLength);
+	          }
+
+	          dds.mipmaps.push({
+	            data: byteArray,
+	            width: width,
+	            height: height
+	          });
+
+	          dataOffset += dataLength;
+
+	          width = Math.max(width * 0.5, 1);
+	          height = Math.max(height * 0.5, 1);
+	        }
+
+	        width = dds.width;
+	        height = dds.height;
+	      }
+
+	      return dds;
 	    }
 	  }]);
 
-	  return AnimationRegistry;
-	}(_BaseRegistry3.default);
+	  return BaseTextureAsset;
+	}(_Box3DAsset3.default);
 
-	exports.default = AnimationRegistry;
+	BaseTextureAsset.LAYOUT = {
+	  NORMAL: 101,
+	  STEREO_2D_OVER_UNDER: 102,
+	  STEREO_2D_LEFT_RIGHT: 103,
+	  STEREO_2D_RIGHT_LEFT: 104,
+	  STEREO_CUBE_HORIZONTAL: 105
+	};
+	BaseTextureAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
+	  uMapping: 'Wrap',
+	  vMapping: 'Wrap',
+	  filtering: 'Trilinear',
+	  anisotropy: 8,
+	  flipY: false,
+	  isHdr: false,
+	  useHardwareCompression: false,
+	  generateMipmaps: true,
+	  type: _three2.default.UnsignedByteType,
+	  format: _three2.default.RGBFormat,
+	  ignoreStream: true,
+	  layout: BaseTextureAsset.LAYOUT.NORMAL
+	});
+
+	window.Box3D.BaseTextureAsset = BaseTextureAsset;
+	exports.default = BaseTextureAsset;
 
 /***/ },
-/* 25 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -61791,23 +62209,23 @@
 	*/
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _BaseRegistry2 = __webpack_require__(16);
+	var _BaseRegistry2 = __webpack_require__(15);
 
 	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
 
-	var _componentsBuiltin = __webpack_require__(26);
+	var _componentsBuiltin = __webpack_require__(21);
 
 	var _componentsBuiltin2 = _interopRequireDefault(_componentsBuiltin);
 
@@ -61822,6 +62240,7 @@
 	var componentsAdded = false;
 	var scripts = {};
 
+	/* global Box3D */
 	/**
 	 * All SceneAssets are manged by this registry.
 	 * @class ScriptRegistry
@@ -61831,10 +62250,10 @@
 	var ScriptRegistry = function (_BaseRegistry) {
 	  _inherits(ScriptRegistry, _BaseRegistry);
 
-	  function ScriptRegistry(json) {
+	  function ScriptRegistry() {
 	    _classCallCheck(this, ScriptRegistry);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptRegistry).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptRegistry).call(this, Box3D.ScriptAsset));
 	  }
 
 	  /**
@@ -61845,7 +62264,6 @@
 	   * @param  {Object} componentDef    The component definition
 	   * @param  {Function} constructor   The constructor function
 	   */
-
 
 	  _createClass(ScriptRegistry, [{
 	    key: 'initialize',
@@ -61919,15 +62337,15 @@
 	exports.default = ScriptRegistry;
 
 /***/ },
-/* 26 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(29),__webpack_require__(46),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(27),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(63),__webpack_require__(64) 
+	  __webpack_require__(24),__webpack_require__(41),__webpack_require__(25),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(22),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
 	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
-	) { return function(VAPI) {
-	   VAPI.ScriptRegistry.registerScript({
+	) { return function(Box3D) {
+	   Box3D.ScriptRegistry.registerScript({
 	  "id": "audio_listener",
 	  "name": "Audio Listener",
 	  "properties": {
@@ -61947,7 +62365,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/AudioListener"
 	  }
-	}, ComponentAudioListener);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentAudioListener);  Box3D.ScriptRegistry.registerScript({
 	  "id": "audio_source",
 	  "name": "Audio Source",
 	  "properties": {
@@ -62060,7 +62478,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/AudioSource"
 	  }
-	}, ComponentAudioSource);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentAudioSource);  Box3D.ScriptRegistry.registerScript({
 	  "id": "cubemap_capture",
 	  "name": "Cube-Map Capture",
 	  "properties": {
@@ -62157,7 +62575,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/CubeMapCapture"
 	  }
-	}, ComponentCubeMapCapture);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentCubeMapCapture);  Box3D.ScriptRegistry.registerScript({
 	  "id": "curve_component",
 	  "name": "Curve",
 	  "properties": {
@@ -62198,7 +62616,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Curve"
 	  }
-	}, ComponentCurve);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentCurve);  Box3D.ScriptRegistry.registerScript({
 	  "id": "debug_console_display",
 	  "name": "Debug Console Display",
 	  "properties": {
@@ -62220,7 +62638,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/DebugConsoleDisplay"
 	  }
-	}, ComponentDebugConsoleDisplay);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentDebugConsoleDisplay);  Box3D.ScriptRegistry.registerScript({
 	  "id": "debug_texture_viewer",
 	  "name": "Debug Texture Viewer",
 	  "properties": {
@@ -62279,7 +62697,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/DebugTextureViewer"
 	  }
-	}, ComponentDebugTextureViewer);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentDebugTextureViewer);  Box3D.ScriptRegistry.registerScript({
 	  "id": "render_filters_component",
 	  "name": "Default Filters",
 	  "properties": {
@@ -62561,7 +62979,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/DefaultFilters"
 	  }
-	}, ComponentDefaultFilters);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentDefaultFilters);  Box3D.ScriptRegistry.registerScript({
 	  "id": "environment",
 	  "name": "Environment",
 	  "properties": {
@@ -62618,7 +63036,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Environment"
 	  }
-	}, ComponentEnvironment);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentEnvironment);  Box3D.ScriptRegistry.registerScript({
 	  "id": "event_handler_component",
 	  "name": "Event Handler",
 	  "properties": {
@@ -62654,7 +63072,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/EventHandler"
 	  }
-	}, ComponentEventHandler);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentEventHandler);  Box3D.ScriptRegistry.registerScript({
 	  "id": "exploder_component",
 	  "name": "Exploder",
 	  "properties": {
@@ -62820,7 +63238,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Exploder"
 	  }
-	}, ComponentExploder);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentExploder);  Box3D.ScriptRegistry.registerScript({
 	  "id": "free_camera_controller",
 	  "name": "Free Camera Controller",
 	  "properties": {
@@ -62938,7 +63356,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/FreeCamera"
 	  }
-	}, ComponentFreeCamera);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentFreeCamera);  Box3D.ScriptRegistry.registerScript({
 	  "id": "fullscreen_script",
 	  "name": "Fullscreen",
 	  "properties": {
@@ -62969,7 +63387,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Fullscreen"
 	  }
-	}, ComponentFullscreen);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentFullscreen);  Box3D.ScriptRegistry.registerScript({
 	  "id": "hmd_renderer_script",
 	  "name": "HMD Effect",
 	  "properties": {
@@ -62992,7 +63410,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/HMDEffect"
 	  }
-	}, ComponentHMDEffect);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentHMDEffect);  Box3D.ScriptRegistry.registerScript({
 	  "id": "input_controller_component",
 	  "name": "Input Controller",
 	  "properties": {
@@ -63483,7 +63901,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/InputController"
 	  }
-	}, ComponentInputController);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentInputController);  Box3D.ScriptRegistry.registerScript({
 	  "id": "animation",
 	  "name": "Keyframe Animation",
 	  "properties": {
@@ -63638,7 +64056,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/KeyframeAnimation"
 	  }
-	}, ComponentKeyframeAnimation);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentKeyframeAnimation);  Box3D.ScriptRegistry.registerScript({
 	  "id": "lookat_component",
 	  "name": "Look At Target",
 	  "properties": {
@@ -63683,7 +64101,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/LookAtTarget"
 	  }
-	}, ComponentLookAtTarget);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentLookAtTarget);  Box3D.ScriptRegistry.registerScript({
 	  "id": "normal_map_generator_component",
 	  "name": "Normal Map Generator",
 	  "properties": {
@@ -63748,7 +64166,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/NormalMapGenerator"
 	  }
-	}, ComponentNormalMapGenerator);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentNormalMapGenerator);  Box3D.ScriptRegistry.registerScript({
 	  "id": "object_animator_component",
 	  "name": "Object Animator",
 	  "properties": {
@@ -64080,7 +64498,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/ObjectAnimator"
 	  }
-	}, ComponentObjectAnimator);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentObjectAnimator);  Box3D.ScriptRegistry.registerScript({
 	  "id": "object_picker",
 	  "name": "Object Picker",
 	  "properties": {
@@ -64161,7 +64579,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/ObjectPicker"
 	  }
-	}, ComponentObjectPicker);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentObjectPicker);  Box3D.ScriptRegistry.registerScript({
 	  "id": "orbit_camera_controller",
 	  "name": "Orbit Camera Controller",
 	  "properties": {
@@ -64422,7 +64840,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/OrbitCameraController"
 	  }
-	}, ComponentOrbitCameraController);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentOrbitCameraController);  Box3D.ScriptRegistry.registerScript({
 	  "id": "panorama_to_cubemap_script",
 	  "name": "Panorama To Cube Map",
 	  "properties": {
@@ -64458,7 +64876,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/PanoramaToCubeMap"
 	  }
-	}, ComponentPanoramaToCubeMap);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentPanoramaToCubeMap);  Box3D.ScriptRegistry.registerScript({
 	  "id": "preview_axis_rotation",
 	  "name": "Preview Axis Rotation",
 	  "properties": {
@@ -64492,7 +64910,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/PreviewAxisRotation"
 	  }
-	}, ComponentPreviewAxisRotation);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentPreviewAxisRotation);  Box3D.ScriptRegistry.registerScript({
 	  "id": "preview_camera_controller",
 	  "name": "Preview Camera Controller",
 	  "properties": {
@@ -64760,7 +65178,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/PreviewCameraController"
 	  }
-	}, ComponentPreviewCameraController);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentPreviewCameraController);  Box3D.ScriptRegistry.registerScript({
 	  "id": "preview_camera_focus",
 	  "name": "Preview Camera Focus",
 	  "properties": {
@@ -64794,7 +65212,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/PreviewCameraFocus"
 	  }
-	}, ComponentPreviewCameraFocus);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentPreviewCameraFocus);  Box3D.ScriptRegistry.registerScript({
 	  "id": "preview_vr_controls",
 	  "name": "Preview VR Controls",
 	  "properties": {
@@ -64826,7 +65244,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/PreviewVRControls"
 	  }
-	}, ComponentPreviewVRControls);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentPreviewVRControls);  Box3D.ScriptRegistry.registerScript({
 	  "id": "reflection_capture_planar",
 	  "name": "Reflection Capture Plane",
 	  "properties": {
@@ -64873,7 +65291,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/ReflectionCapturePlane"
 	  }
-	}, ComponentReflectionCapturePlane);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentReflectionCapturePlane);  Box3D.ScriptRegistry.registerScript({
 	  "id": "camera_filters_script",
 	  "name": "Render Filters",
 	  "properties": {
@@ -65190,7 +65608,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/RenderFilters"
 	  }
-	}, ComponentRenderFilters);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentRenderFilters);  Box3D.ScriptRegistry.registerScript({
 	  "id": "render_modes",
 	  "name": "Render Modes",
 	  "properties": {
@@ -65212,7 +65630,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/RenderModes"
 	  }
-	}, ComponentRenderModes);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentRenderModes);  Box3D.ScriptRegistry.registerScript({
 	  "id": "render_view_component",
 	  "name": "Render View",
 	  "properties": {
@@ -65391,7 +65809,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/RenderView"
 	  }
-	}, ComponentRenderView);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentRenderView);  Box3D.ScriptRegistry.registerScript({
 	  "id": "box3d_renderer",
 	  "name": "Renderer",
 	  "properties": {
@@ -65535,7 +65953,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Renderer"
 	  }
-	}, ComponentRenderer);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentRenderer);  Box3D.ScriptRegistry.registerScript({
 	  "id": "rotate_component",
 	  "name": "Rotate",
 	  "properties": {
@@ -65614,7 +66032,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Rotate"
 	  }
-	}, ComponentRotate);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentRotate);  Box3D.ScriptRegistry.registerScript({
 	  "id": "loader_component",
 	  "name": "Scene Loader",
 	  "properties": {
@@ -65648,7 +66066,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/SceneLoader"
 	  }
-	}, ComponentSceneLoader);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentSceneLoader);  Box3D.ScriptRegistry.registerScript({
 	  "id": "simplex_noise_component",
 	  "name": "Simplex Noise Generator",
 	  "properties": {
@@ -65774,7 +66192,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/SimplexNoiseGenerator"
 	  }
-	}, ComponentSimplexNoiseGenerator);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentSimplexNoiseGenerator);  Box3D.ScriptRegistry.registerScript({
 	  "id": "skybox_renderer",
 	  "name": "Skybox",
 	  "properties": {
@@ -65863,7 +66281,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Skybox"
 	  }
-	}, ComponentSkybox);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentSkybox);  Box3D.ScriptRegistry.registerScript({
 	  "id": "text_renderer_component",
 	  "name": "Text Renderer",
 	  "properties": {
@@ -65918,7 +66336,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/TextRenderer"
 	  }
-	}, ComponentTextRenderer);  VAPI.ScriptRegistry.registerScript({
+	}, ComponentTextRenderer);  Box3D.ScriptRegistry.registerScript({
 	  "id": "texture2d_to_cubemap_script",
 	  "name": "Texture To Cube Map",
 	  "properties": {
@@ -65959,7 +66377,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 27 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -66002,11 +66420,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -66016,7 +66434,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -66545,16 +66963,16 @@
 	exports.default = ObjectPicker;
 
 /***/ },
-/* 28 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -66600,7 +67018,6 @@
 	   * @method getId
 	   * @return {String} the key for this component
 	   */
-
 
 	  _createClass(Box3DComponent, [{
 	    key: 'getId',
@@ -67084,7 +67501,7 @@
 	exports.default = Box3DComponent;
 
 /***/ },
-/* 29 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -67096,11 +67513,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -67110,7 +67527,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -67165,7 +67582,7 @@
 	exports.default = AudioListener;
 
 /***/ },
-/* 30 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -67220,17 +67637,17 @@
 	 */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -67626,7 +68043,7 @@
 	exports.default = CubeMapCapture;
 
 /***/ },
-/* 31 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -67648,11 +68065,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -67666,7 +68083,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68018,7 +68435,7 @@
 	exports.default = Curve;
 
 /***/ },
-/* 32 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -68031,13 +68448,13 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68097,7 +68514,7 @@
 	exports.default = DebugConsoleDisplay;
 
 /***/ },
-/* 33 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -68131,11 +68548,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -68149,7 +68566,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68548,7 +68965,7 @@
 	exports.default = DebugTextureViewer;
 
 /***/ },
-/* 34 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -68638,17 +69055,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68746,7 +69163,7 @@
 	exports.default = DefaultFilters;
 
 /***/ },
-/* 35 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -68783,17 +69200,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68862,7 +69279,7 @@
 	exports.default = Environment;
 
 /***/ },
-/* 36 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -68880,17 +69297,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68940,7 +69357,6 @@
 	  /**
 	   * Called immediately after after component creation
 	   */
-
 
 	  _createClass(EventHandler, [{
 	    key: 'init',
@@ -69023,7 +69439,7 @@
 	exports.default = EventHandler;
 
 /***/ },
-/* 37 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69056,17 +69472,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69283,7 +69699,7 @@
 	exports.default = Exploder;
 
 /***/ },
-/* 38 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69317,11 +69733,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -69331,7 +69747,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69394,7 +69810,6 @@
 	  /**
 	   * Called immediately after after component creation
 	   */
-
 
 	  _createClass(FreeCamera, [{
 	    key: 'init',
@@ -69856,7 +70271,7 @@
 	exports.default = FreeCamera;
 
 /***/ },
-/* 39 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69873,13 +70288,13 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69981,7 +70396,7 @@
 	exports.default = Fullscreen;
 
 /***/ },
-/* 40 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69995,17 +70410,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70248,7 +70663,7 @@
 	exports.default = HMDRenderEffect;
 
 /***/ },
-/* 41 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70358,11 +70773,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -70372,7 +70787,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71272,7 +71687,7 @@
 	exports.default = InputController;
 
 /***/ },
-/* 42 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71379,13 +71794,13 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71969,7 +72384,7 @@
 	exports.default = Animation;
 
 /***/ },
-/* 43 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71994,17 +72409,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72141,7 +72556,7 @@
 	exports.default = LookAt;
 
 /***/ },
-/* 44 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72159,11 +72574,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -72173,7 +72588,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72338,7 +72753,7 @@
 	exports.default = NormalMapGenerator;
 
 /***/ },
-/* 45 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72421,11 +72836,11 @@
 	/* eslint-enable*/
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -72439,7 +72854,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72467,7 +72882,6 @@
 	  /**
 	   * Called immediately after after component creation
 	   */
-
 
 	  _createClass(ObjectAnimator, [{
 	    key: 'init',
@@ -73016,7 +73430,7 @@
 	exports.default = ObjectAnimator;
 
 /***/ },
-/* 46 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -73051,11 +73465,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -73065,7 +73479,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -73413,7 +73827,7 @@
 	exports.default = AudioSource;
 
 /***/ },
-/* 47 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73537,11 +73951,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -73551,7 +73965,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74519,7 +74933,7 @@
 	exports.default = OrbitCamera;
 
 /***/ },
-/* 48 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -74536,17 +74950,17 @@
 	*/
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74714,7 +75128,7 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 49 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74733,11 +75147,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -74747,7 +75161,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -75060,7 +75474,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 50 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75185,11 +75599,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -75199,7 +75613,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76172,7 +76586,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 51 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -76192,17 +76606,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76442,7 +76856,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 52 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -76460,13 +76874,13 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76545,7 +76959,7 @@
 	exports.default = PreviewVRControls;
 
 /***/ },
-/* 53 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -76571,11 +76985,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -76585,7 +76999,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76949,7 +77363,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 54 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77047,17 +77461,17 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77511,7 +77925,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 55 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77526,11 +77940,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -77540,7 +77954,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -78120,7 +78534,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 56 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78157,17 +78571,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -78467,7 +78881,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 57 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78556,11 +78970,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -78574,7 +78988,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79127,7 +79541,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 58 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79188,11 +79602,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -79202,7 +79616,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79349,7 +79763,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 59 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79365,17 +79779,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79457,7 +79871,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 60 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79486,17 +79900,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79695,7 +80109,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 61 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79739,11 +80153,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -79753,11 +80167,11 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _BaseTextureAsset = __webpack_require__(62);
+	var _BaseTextureAsset = __webpack_require__(19);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
@@ -80067,742 +80481,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 62 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	var _TextureRegistry = __webpack_require__(23);
-
-	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Box3D = window.Box3D = window.Box3D || {};
-
-	var BaseTextureAsset = function (_Box3DAsset) {
-	  _inherits(BaseTextureAsset, _Box3DAsset);
-
-	  function BaseTextureAsset(json) {
-	    _classCallCheck(this, BaseTextureAsset);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTextureAsset).call(this, json));
-
-	    _this.loadedBytes = 0;
-	    return _this;
-	  }
-
-	  _createClass(BaseTextureAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
-
-	      this.loadComponents = true;
-	    }
-	  }, {
-	    key: 'unload',
-	    value: function unload(options) {
-	      // abort any xhr request associated with this
-	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
-
-	      if (this.runtimeData) {
-	        this.box3DRuntime.trigger('textureUnloaded', this.id);
-
-	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading texture, ' + this.getName());
-
-	        this.runtimeData.dispose();
-	      }
-
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
-	      this.loadedBytes = 0;
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      var texture = this.runtimeData instanceof _three2.default.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
-
-	      if (changes.hasOwnProperty('uMapping')) {
-	        texture.wrapS = _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')];
-	      }
-
-	      if (changes.hasOwnProperty('vMapping')) {
-	        texture.wrapT = _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')];
-	      }
-
-	      if (changes.hasOwnProperty('anisotropy')) {
-	        texture.anisotropy = this.getProperty('anisotropy');
-	      }
-
-	      if (changes.hasOwnProperty('premultiplyAlpha')) {
-	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
-	      }
-
-	      texture.flipY = false; // TODO: is this necessary here?
-
-	      if (changes.hasOwnProperty('generateMipmaps')) {
-	        var generateMipmaps = this.getProperty('generateMipmaps');
-	        texture.generateMipmaps = generateMipmaps && this.isPowerOfTwo() && !this.isCompressed();
-	      }
-
-	      if (changes.hasOwnProperty('premultiplyAlpha')) {
-	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
-	      }
-
-	      if (changes.hasOwnProperty('filtering')) {
-	        var filtering = this.getProperty('filtering');
-	        if (!_TextureRegistry2.default.textureFiltersMap[filtering]) {
-	          filtering = 'Linear';
-	        }
-
-	        if (this.isHdr()) {
-	          var extensions = this.box3DRuntime.getThreeRenderer().extensions;
-	          if (!extensions.get('OES_texture_float_linear') && !extensions.get('OES_texture_half_float_linear')) {
-	            filtering = 'Nearest';
-	          }
-	        }
-
-	        texture.minFilter = _TextureRegistry2.default.textureFiltersMap[filtering].minFilter;
-	        texture.magFilter = _TextureRegistry2.default.textureFiltersMap[filtering].magFilter;
-	      }
-
-	      if (this.isHdr() && this.packingFormat) {
-	        this._unpackToHdr();
-	      }
-
-	      this.box3DRuntime.needsRender = true;
-	    }
-	  }, {
-	    key: '_applyPropertiesUnloaded',
-	    value: function _applyPropertiesUnloaded(changes) {
-	      if (changes.useHardwareCompression !== undefined) {
-	        this.defaultResource = undefined;
-	        this.defaultResources = undefined;
-	      }
-	      this.box3DRuntime.trigger('textureChanged', this.id, changes);
-	    }
-	  }, {
-	    key: '_unpackToHdr',
-	    value: function _unpackToHdr() {
-	      _log2.default.warn('Must implement _unpackToHdr for this texture type.');
-	      return;
-	    }
-
-	    /**
-	     * Returns the byte size of the data that has already been loaded by this asset and its
-	     * hierarchy.
-	     * @public
-	     * @method getDataSizeLoaded
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeLoaded',
-	    value: function getDataSizeLoaded(dependencyType) {
-	      if (!dependencyType || dependencyType === 'textures') {
-	        return this.loadedBytes;
-	      } else {
-	        return 0;
-	      }
-	    }
-
-	    /**
-	     * Returns the download size of this texture. Specify filters to query the
-	     * desired texture. If no filters are specified, the default texture for the
-	     * current device will be queried.
-	     * @method getDataSizeDownload
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} params Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeDownload',
-	    value: function getDataSizeDownload(dependencyType) {
-	      if (!dependencyType || dependencyType === 'textures') {
-	        return this.get('bufferSize') || 1024;
-	      } else {
-	        return 0;
-	      }
-	    }
-
-	    /**
-	     * Returns the total amount of GPU memory occupied by this texture. Specify
-	     * filters to query the desired texture. If no filters are specified, the
-	     * default texture for the current device will be queried.
-	     * @method getDataSizeTextureInMemory
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} overrideParams Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeInMemory',
-	    value: function getDataSizeInMemory(dependencyType, overrideParams) {
-	      var width;
-	      var height;
-	      var compression;
-	      var numChannels;
-	      var channelSize;
-	      var dataType;
-
-	      if (dependencyType && dependencyType !== 'textures') {
-	        return 0;
-	      }
-
-	      width = this.getWidth();
-	      height = this.getHeight();
-	      overrideParams = overrideParams || {};
-	      compression = overrideParams.compression || this.getCompressionFormat();
-
-	      if (compression !== 'none') {
-	        return this.getDataSizeDownload();
-	      }
-
-	      numChannels = this.getNumChannels(overrideParams.format);
-	      dataType = overrideParams.type || this.getDataType();
-
-	      switch (dataType) {
-	        case _three2.default.FloatType:
-	        case _three2.default.UnsignedIntType:
-	        case _three2.default.IntType:
-	          channelSize = 4;
-	          break;
-
-	        case _three2.default.ShortType:
-	        case _three2.default.UnsignedShortType:
-	          channelSize = 2;
-	          break;
-
-	        case _three2.default.UnsignedByteType:
-	        case _three2.default.ByteType:
-	          channelSize = 1;
-	          break;
-
-	        // The following types dictate the bpp directly.
-	        case _three2.default.UnsignedShort4444Type:
-	        case _three2.default.UnsignedShort5551Type:
-	        case _three2.default.UnsignedShort565Type:
-	          return width * height * 2;
-	      }
-	      return width * height * channelSize * numChannels;
-	    }
-
-	    /** Returns the maximum texture size supported by the device.
-	     * @return {Integer} The maximum texture size.
-	     */
-
-	  }, {
-	    key: 'getMaxTextureSize',
-	    value: function getMaxTextureSize() {
-	      return Box3D.isMobile() ? 1024 : this.box3DRuntime.getGPUCapability('MAX_TEXTURE_SIZE');
-	    }
-
-	    /**
-	     * Returns the pixel format of the texture. e.g. THREE.RGBAFormat, THREE.LuminanceFormat, etc.
-	     * @return {String} The texture pixel format.
-	     */
-
-	  }, {
-	    key: 'getFormat',
-	    value: function getFormat() {
-	      var format = this.getProperty('format');
-	      return format;
-	    }
-
-	    /**
-	     * Returns the data type of the texture. e.g. THREE.UnsignedByteType, THREE.FloatType, etc.
-	     * @return {Number} The texture pixel type.
-	     */
-
-	  }, {
-	    key: 'getDataType',
-	    value: function getDataType() {
-	      var dataType = this.getProperty('type');
-	      return dataType;
-	    }
-
-	    /**
-	     * Return the number of color or luminance channels in the texture. An optional override lets
-	     * you query the value for a different pixel format.
-	     * @method getNumChannels
-	     * @public
-	     * @param {Number} overrideFormat Query the number of channels for a different pixel format
-	     * by specifying a format here.
-	     * @return {Number} Returns the number of color or luminance channels in the texture.
-	     */
-
-	  }, {
-	    key: 'getNumChannels',
-	    value: function getNumChannels(overrideFormat) {
-	      var format = overrideFormat || this.getFormat();
-	      switch (format) {
-	        case _three2.default.AlphaFormat:
-	        case _three2.default.LuminanceFormat:
-	          return 1;
-	        case _three2.default.LuminanceAlphaFormat:
-	          return 2;
-	        case _three2.default.RGBFormat:
-	          return 3;
-	        case _three2.default.RGBAFormat:
-	          return 4;
-	        default:
-	          return 0;
-	      }
-	    }
-
-	    /**
-	     * @public
-	     * @return {Number} Returns the total number of mip levels used by this texture.
-	     */
-
-	  }, {
-	    key: 'getNumMips',
-	    value: function getNumMips() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-	      var max = Math.max(width, height);
-	      max = Math.max(max, 1);
-	      return Math.floor(Math.log2(max));
-	    }
-
-	    /**
-	     * @public
-	     * @return {Boolean} True iff the texture contains high dynamic range, floating point data
-	     */
-
-	  }, {
-	    key: 'isHdr',
-	    value: function isHdr() {
-	      return !!this.getProperty('isHdr');
-	    }
-
-	    /**
-	     * @public
-	     * @return {Boolean} True iff the texture is using a hardware compression format.
-	     */
-
-	  }, {
-	    key: 'isCompressed',
-	    value: function isCompressed() {
-	      if (this.runtimeData) {
-	        return this.runtimeData instanceof _three2.default.CompressedTexture;
-	      } else {
-	        return this.getProperty('useHardwareCompression');
-	      }
-	    }
-
-	    /**
-	     * @public
-	     * @return {Boolean} True iff both dimensions of the texture are a power of two.
-	     */
-
-	  }, {
-	    key: 'isPowerOfTwo',
-	    value: function isPowerOfTwo() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-	      return _three2.default.Math.isPowerOfTwo(width) && _three2.default.Math.isPowerOfTwo(height);
-	    }
-
-	    /**
-	    * Returns the preferred texture compression format for the device.
-	    * @return {String} 'atc', 'dxt', 'pvrtc' or 'none'
-	    */
-
-	  }, {
-	    key: 'getCompressionFormat',
-	    value: function getCompressionFormat() {
-	      var compression = 'none';
-
-	      // If a compressed format is preferred, get one based on the device caps.
-	      if (this.getProperty('useHardwareCompression')) {
-	        if (this.box3DRuntime.supportsCompressedTextureS3TC()) {
-	          compression = 'dxt';
-	        } else if (this.box3DRuntime.supportsCompressedTexturePVRTC()) {
-	          compression = 'pvrtc';
-	        } else if (this.box3DRuntime.supportsCompressedTextureATC()) {
-	          compression = 'atc';
-	        }
-	      }
-	      return compression;
-	    }
-
-	    /**
-	     * Returns the width of the texture.
-	     * @return {Integer} The texture width.
-	     */
-
-	  }, {
-	    key: 'getWidth',
-	    value: function getWidth() {
-	      var width = this.getProperty('width');
-	      if (_lodash2.default.isUndefined(width)) {
-	        width = this.getProperty('originalWidth');
-	        if (_lodash2.default.isUndefined(width) && this.runtimeData) {
-	          width = this.runtimeData.width;
-	        }
-	        if (width > this.getMaxTextureSize()) {
-	          width = this.getMaxTextureSize();
-	        }
-	      }
-	      return width || 1;
-	    }
-
-	    /**
-	     * Returns the height of the texture.
-	     * @return {Integer} The texture height.
-	     */
-
-	  }, {
-	    key: 'getHeight',
-	    value: function getHeight() {
-	      var height = this.getProperty('height');
-	      if (_lodash2.default.isUndefined(height)) {
-	        height = this.getProperty('originalHeight');
-	        if (_lodash2.default.isUndefined(height) && this.runtimeData) {
-	          height = this.runtimeData.height;
-	        }
-	        if (height > this.getMaxTextureSize()) {
-	          height = this.getMaxTextureSize();
-	        }
-	      }
-	      return height || 1;
-	    }
-	  }, {
-	    key: 'createCompressedTextureData',
-	    value: function createCompressedTextureData(buffer) {
-	      var texture = new _three2.default.CompressedTexture(),
-	          dds = this._parseDDS(buffer, true),
-	          iFace,
-	          iMip,
-	          nFaces;
-
-	      texture.format = dds.format;
-	      texture.generateMipmaps = false;
-	      texture.needsUpdate = true;
-
-	      if (dds.isCubemap) {
-	        texture.flipY = false;
-	        texture.image = [];
-
-	        nFaces = dds.mipmaps.length / dds.mipmapCount;
-
-	        for (iFace = 0; iFace < nFaces; iFace += 1) {
-	          texture.image[iFace] = {
-	            mipmaps: []
-	          };
-
-	          for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
-	            texture.image[iFace].mipmaps.push(dds.mipmaps[iFace * dds.mipmapCount + iMip]);
-
-	            texture.image[iFace].format = dds.format;
-	            texture.image[iFace].width = dds.width;
-	            texture.image[iFace].height = dds.height;
-	          }
-	        }
-	      } else {
-	        texture.mipmaps = dds.mipmaps;
-	        texture.image.width = dds.width;
-	        texture.image.height = dds.height;
-	      }
-	      return texture;
-	    }
-	  }, {
-	    key: '_parseDDS',
-	    value: function _parseDDS(buffer, loadMipmaps) {
-	      // Adapted from @toji's DDS utils
-	      //  https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
-
-	      // All values and structures referenced from:
-	      // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
-
-	      function fourCCToInt32(value) {
-	        return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
-	      }
-
-	      function int32ToFourCC(value) {
-	        return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
-	      }
-
-	      function loadARGBMip(buffer, dataOffset, width, height) {
-	        var dataLength = width * height * 4,
-	            srcBuffer = new Uint8Array(buffer, dataOffset, dataLength),
-	            byteArray = new Uint8Array(dataLength),
-	            dst = 0,
-	            src = 0,
-	            x,
-	            y,
-	            r,
-	            g,
-	            b,
-	            a;
-
-	        for (y = 0; y < height; y += 1) {
-	          for (x = 0; x < width; x += 1) {
-	            b = srcBuffer[src];
-	            g = srcBuffer[src + 1];
-	            r = srcBuffer[src + 2];
-	            a = srcBuffer[src + 3];
-	            byteArray[dst] = r; // r
-	            byteArray[dst + 1] = g; // g
-	            byteArray[dst + 2] = b; // b
-	            byteArray[dst + 3] = a; // a
-	            src += 4;
-	            dst += 4;
-	          }
-	        }
-
-	        return byteArray;
-	      }
-
-	      var DDS_MAGIC = 0x20534444,
-
-
-	      //DDSD_CAPS = 0x1,
-	      //DDSD_HEIGHT = 0x2,
-	      //DDSD_WIDTH = 0x4,
-	      //DDSD_PITCH = 0x8,
-	      //DDSD_PIXELFORMAT = 0x1000,
-	      DDSD_MIPMAPCOUNT = 0x20000,
-
-	      //DDSD_LINEARSIZE = 0x80000,
-	      //DDSD_DEPTH = 0x800000,
-
-	      //DDSCAPS_COMPLEX = 0x8,
-	      //DDSCAPS_MIPMAP = 0x400000,
-	      //DDSCAPS_TEXTURE = 0x1000,
-
-	      DDSCAPS2_CUBEMAP = 0x200,
-
-	      //DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
-	      //DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
-	      //DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
-	      //DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
-	      //DDSCAPS2_VOLUME = 0x200000,
-
-	      //DDPF_ALPHAPIXELS = 0x1,
-	      //DDPF_ALPHA = 0x2,
-	      DDPF_FOURCC = 0x4,
-
-	      //DDPF_RGB = 0x40,
-	      //DDPF_YUV = 0x200,
-	      //DDPF_LUMINANCE = 0x20000,
-
-	      FOURCC_DXT1 = fourCCToInt32('DXT1'),
-	          FOURCC_DXT3 = fourCCToInt32('DXT3'),
-	          FOURCC_DXT5 = fourCCToInt32('DXT5'),
-	          headerLengthInt = 31,
-	          // The header length in 32 bit ints
-
-	      // Offsets into the header array
-	      off_magic = 0,
-	          off_size = 1,
-	          off_flags = 2,
-	          off_height = 3,
-	          off_width = 4,
-	          off_mipmapCount = 7,
-	          off_pfFlags = 20,
-	          off_pfFourCC = 21,
-	          off_RGBBitCount = 22,
-	          off_RBitMask = 23,
-	          off_GBitMask = 24,
-	          off_BBitMask = 25,
-	          off_ABitMask = 26,
-
-	      //off_caps = 27,
-	      off_caps2 = 28,
-
-	      //off_caps3 = 29,
-	      //off_caps4 = 30,
-
-	      header,
-	          blockBytes,
-	          fourCC,
-	          isRGBAUncompressed,
-	          dataOffset,
-	          width,
-	          height,
-	          iFace,
-	          nFaces,
-	          iMip,
-	          byteArray,
-	          dataLength,
-	          dds = {
-	        mipmaps: [],
-	        width: 0,
-	        height: 0,
-	        format: null,
-	        mipmapCount: 1
-	      };
-
-	      header = new Int32Array(buffer, 0, headerLengthInt);
-
-	      // Parse header
-
-	      if (header[off_magic] !== DDS_MAGIC) {
-	        _log2.default.error('THREE.DDSLoader.parse: Invalid magic number in DDS ' + 'header.');
-	        return dds;
-	      }
-
-	      if (!header[off_pfFlags] & DDPF_FOURCC) {
-	        _log2.default.error('THREE.DDSLoader.parse: Unsupported format, must ' + 'contain a FourCC code.');
-	        return dds;
-	      }
-
-	      fourCC = header[off_pfFourCC];
-	      isRGBAUncompressed = false;
-
-	      switch (fourCC) {
-	        case FOURCC_DXT1:
-	          blockBytes = 8;
-	          dds.format = _three2.default.RGB_S3TC_DXT1_Format;
-	          break;
-
-	        case FOURCC_DXT3:
-	          blockBytes = 16;
-	          dds.format = _three2.default.RGBA_S3TC_DXT3_Format;
-	          break;
-
-	        case FOURCC_DXT5:
-	          blockBytes = 16;
-	          dds.format = _three2.default.RGBA_S3TC_DXT5_Format;
-	          break;
-
-	        default:
-	          if (header[off_RGBBitCount] === 32 && header[off_RBitMask] & 0xff0000 && header[off_GBitMask] & 0xff00 && header[off_BBitMask] & 0xff && header[off_ABitMask] & 0xff000000) {
-	            isRGBAUncompressed = true;
-	            blockBytes = 64;
-	            dds.format = _three2.default.RGBAFormat;
-	          } else {
-	            _log2.default.error('THREE.DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
-	            return dds;
-	          }
-	      }
-
-	      dds.mipmapCount = 1;
-
-	      if (header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
-	        dds.mipmapCount = Math.max(1, header[off_mipmapCount]);
-	      }
-
-	      // TODO: Verify that all faces of the cubemap are present with
-	      // DDSCAPS2_CUBEMAP_POSITIVEX, etc.
-
-	      dds.isCubemap = header[off_caps2] & DDSCAPS2_CUBEMAP ? true : false;
-
-	      dds.width = header[off_width];
-	      dds.height = header[off_height];
-
-	      dataOffset = header[off_size] + 4;
-
-	      // Extract mipmaps buffers
-
-	      width = dds.width;
-	      height = dds.height;
-
-	      nFaces = dds.isCubemap ? 6 : 1;
-
-	      for (iFace = 0; iFace < nFaces; iFace += 1) {
-	        for (iMip = 0; iMip < dds.mipmapCount; iMip += 1) {
-	          if (isRGBAUncompressed) {
-	            byteArray = loadARGBMip(buffer, dataOffset, width, height);
-	            dataLength = byteArray.length;
-	          } else {
-	            dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
-	            byteArray = new Uint8Array(buffer, dataOffset, dataLength);
-	          }
-
-	          dds.mipmaps.push({
-	            data: byteArray,
-	            width: width,
-	            height: height
-	          });
-
-	          dataOffset += dataLength;
-
-	          width = Math.max(width * 0.5, 1);
-	          height = Math.max(height * 0.5, 1);
-	        }
-
-	        width = dds.width;
-	        height = dds.height;
-	      }
-
-	      return dds;
-	    }
-	  }]);
-
-	  return BaseTextureAsset;
-	}(_Box3DAsset3.default);
-
-	BaseTextureAsset.LAYOUT = {
-	  NORMAL: 101,
-	  STEREO_2D_OVER_UNDER: 102,
-	  STEREO_2D_LEFT_RIGHT: 103,
-	  STEREO_2D_RIGHT_LEFT: 104,
-	  STEREO_CUBE_HORIZONTAL: 105
-	};
-	BaseTextureAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
-	  uMapping: 'Wrap',
-	  vMapping: 'Wrap',
-	  filtering: 'Trilinear',
-	  anisotropy: 8,
-	  flipY: false,
-	  isHdr: false,
-	  useHardwareCompression: false,
-	  generateMipmaps: true,
-	  type: _three2.default.UnsignedByteType,
-	  format: _three2.default.RGBFormat,
-	  ignoreStream: true,
-	  layout: BaseTextureAsset.LAYOUT.NORMAL
-	});
-
-
-	window.Box3D.BaseTextureAsset = BaseTextureAsset;
-	exports.default = BaseTextureAsset;
-
-/***/ },
-/* 63 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80820,17 +80499,17 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -81005,7 +80684,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 64 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -81022,21 +80701,21 @@
 	*/
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(28);
+	var _Box3DComponent2 = __webpack_require__(23);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _BaseTextureAsset = __webpack_require__(62);
+	var _BaseTextureAsset = __webpack_require__(19);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
@@ -81252,24 +80931,7720 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
+/* 59 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var now = __webpack_require__(60)
+	  , global = typeof window === 'undefined' ? {} : window
+	  , vendors = ['moz', 'webkit']
+	  , suffix = 'AnimationFrame'
+	  , raf = global['request' + suffix]
+	  , caf = global['cancel' + suffix] || global['cancelRequest' + suffix]
+
+	for(var i = 0; i < vendors.length && !raf; i++) {
+	  raf = global[vendors[i] + 'Request' + suffix]
+	  caf = global[vendors[i] + 'Cancel' + suffix]
+	      || global[vendors[i] + 'CancelRequest' + suffix]
+	}
+
+	// Some versions of FF have rAF but not cAF
+	if(!raf || !caf) {
+	  var last = 0
+	    , id = 0
+	    , queue = []
+	    , frameDuration = 1000 / 60
+
+	  raf = function(callback) {
+	    if(queue.length === 0) {
+	      var _now = now()
+	        , next = Math.max(0, frameDuration - (_now - last))
+	      last = next + _now
+	      setTimeout(function() {
+	        var cp = queue.slice(0)
+	        // Clear queue here to prevent
+	        // callbacks from appending listeners
+	        // to the current frame's queue
+	        queue.length = 0
+	        for(var i = 0; i < cp.length; i++) {
+	          if(!cp[i].cancelled) {
+	            try{
+	              cp[i].callback(last)
+	            } catch(e) {
+	              setTimeout(function() { throw e }, 0)
+	            }
+	          }
+	        }
+	      }, Math.round(next))
+	    }
+	    queue.push({
+	      handle: ++id,
+	      callback: callback,
+	      cancelled: false
+	    })
+	    return id
+	  }
+
+	  caf = function(handle) {
+	    for(var i = 0; i < queue.length; i++) {
+	      if(queue[i].handle === handle) {
+	        queue[i].cancelled = true
+	      }
+	    }
+	  }
+	}
+
+	module.exports = function(fn) {
+	  // Wrap in a new function to prevent
+	  // `cancel` potentially being assigned
+	  // to the native rAF function
+	  return raf.call(global, fn)
+	}
+	module.exports.cancel = function() {
+	  caf.apply(global, arguments)
+	}
+
+
+/***/ },
+/* 60 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
+	(function() {
+	  var getNanoSeconds, hrtime, loadTime;
+
+	  if ((typeof performance !== "undefined" && performance !== null) && performance.now) {
+	    module.exports = function() {
+	      return performance.now();
+	    };
+	  } else if ((typeof process !== "undefined" && process !== null) && process.hrtime) {
+	    module.exports = function() {
+	      return (getNanoSeconds() - loadTime) / 1e6;
+	    };
+	    hrtime = process.hrtime;
+	    getNanoSeconds = function() {
+	      var hr;
+	      hr = hrtime();
+	      return hr[0] * 1e9 + hr[1];
+	    };
+	    loadTime = getNanoSeconds();
+	  } else if (Date.now) {
+	    module.exports = function() {
+	      return Date.now() - loadTime;
+	    };
+	    loadTime = Date.now();
+	  } else {
+	    module.exports = function() {
+	      return new Date().getTime() - loadTime;
+	    };
+	    loadTime = new Date().getTime();
+	  }
+
+	}).call(this);
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(61)))
+
+/***/ },
+/* 61 */
+/***/ function(module, exports) {
+
+	// shim for using process in browser
+
+	var process = module.exports = {};
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = setTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    clearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        setTimeout(drainQueue, 0);
+	    }
+	};
+
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
+
+/***/ },
+/* 62 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 */
+
+	THREE.EffectComposer = function ( renderer, renderTarget ) {
+
+		this.renderer = renderer;
+
+		if ( renderTarget === undefined ) {
+
+			var pixelRatio = renderer.getPixelRatio();
+
+			var width  = Math.floor( renderer.context.canvas.width  / pixelRatio ) || 1;
+			var height = Math.floor( renderer.context.canvas.height / pixelRatio ) || 1;
+			var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
+
+			renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
+			renderTarget.name = "EffectComposer Render Target";
+		}
+
+		this.renderTarget1 = renderTarget;
+		this.renderTarget2 = renderTarget.clone();
+
+		this.writeBuffer = this.renderTarget1;
+		this.readBuffer = this.renderTarget2;
+
+		this.passes = [];
+		this.enabled = true;
+
+		if ( THREE.CopyShader === undefined )
+			console.error( "THREE.EffectComposer relies on THREE.CopyShader" );
+
+		this.copyPass = new THREE.ShaderPass( THREE.CopyShader );
+
+	};
+
+	THREE.EffectComposer.prototype = {
+
+		swapBuffers: function() {
+
+			var tmp = this.readBuffer;
+			this.readBuffer = this.writeBuffer;
+			this.writeBuffer = tmp;
+
+		},
+
+		addPass: function ( pass ) {
+
+			this.passes.push( pass );
+
+		},
+
+		insertPass: function ( pass, index ) {
+
+			this.passes.splice( index, 0, pass );
+
+		},
+
+		render: function ( delta ) {
+
+			this.writeBuffer = this.renderTarget1;
+			this.readBuffer = this.renderTarget2;
+
+			var maskActive = false;
+
+			var pass, i, il = this.passes.length;
+
+			for ( i = 0; i < il; i ++ ) {
+
+				pass = this.passes[ i ];
+
+				if ( !pass.enabled ) continue;
+
+				pass.render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
+
+				if ( pass.needsSwap ) {
+
+					if ( maskActive ) {
+
+						var context = this.renderer.context;
+
+						context.stencilFunc( context.NOTEQUAL, 1, 0xffffffff );
+
+						this.copyPass.render( this.renderer, this.writeBuffer, this.readBuffer, delta );
+
+						context.stencilFunc( context.EQUAL, 1, 0xffffffff );
+
+					}
+
+					this.swapBuffers();
+
+				}
+
+				if ( pass instanceof THREE.MaskPass ) {
+
+					maskActive = true;
+
+				} else if ( pass instanceof THREE.ClearMaskPass ) {
+
+					maskActive = false;
+
+				}
+
+			}
+
+		},
+
+		reset: function ( renderTarget ) {
+
+			if ( renderTarget === undefined ) {
+
+				renderTarget = this.renderTarget1.clone();
+
+				var pixelRatio = this.renderer.getPixelRatio();
+
+				renderTarget.width  = Math.floor( this.renderer.context.canvas.width  / pixelRatio );
+				renderTarget.height = Math.floor( this.renderer.context.canvas.height / pixelRatio );
+			}
+			var oldRenderTarget1 = this.renderTarget1;
+			var oldRenderTarget2 = this.renderTarget2;
+			if ( oldRenderTarget1 ) {
+				oldRenderTarget1.dispose();
+			}
+			if ( oldRenderTarget2 ) {
+				oldRenderTarget2.dispose();
+			}
+
+			this.renderTarget1 = renderTarget;
+			this.renderTarget2 = renderTarget.clone();
+
+			this.writeBuffer = this.renderTarget1;
+			this.readBuffer = this.renderTarget2;
+
+		},
+
+		setSize: function ( width, height ) {
+
+			var renderTarget = this.renderTarget1.clone();
+
+			renderTarget.width = width;
+			renderTarget.height = height;
+
+			this.reset( renderTarget );
+
+		},
+
+		dispose: function() {
+			this.renderTarget1.dispose();
+			this.renderTarget2.dispose();
+			this.copyPass.dispose();
+			// for ( var p in this.passes ) {
+			// 	this.passes[p].dispose();
+			// }
+			this.passes = undefined;
+			this.renderer = undefined;
+		}
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 63 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		/**
+		 * @author alteredq / http://alteredqualia.com/
+		 */
+
+		THREE.BloomPass = function ( strength, kernelSize, sigma, resolutionX, resolutionY ) {
+
+			strength = ( strength !== undefined ) ? strength : 1;
+			kernelSize = ( kernelSize !== undefined ) ? kernelSize : 25;
+			sigma = ( sigma !== undefined ) ? sigma : 4.0;
+
+			// render targets
+			this.setSize( resolutionX, resolutionY );
+
+			// copy material
+
+			if ( THREE.CopyShader === undefined )
+				console.error( "THREE.BloomPass relies on THREE.CopyShader" );
+
+			var copyShader = THREE.CopyShader;
+
+			this.copyUniforms = THREE.UniformsUtils.clone( copyShader.uniforms );
+
+			this.copyUniforms[ "opacity" ].value = strength;
+
+			this.materialCopy = new THREE.ShaderMaterial( {
+
+				uniforms: this.copyUniforms,
+				vertexShader: copyShader.vertexShader,
+				fragmentShader: copyShader.fragmentShader,
+				blending: THREE.AdditiveBlending,
+				transparent: true
+
+			} );
+
+			// convolution material
+
+			if ( THREE.ConvolutionShader === undefined )
+				console.error( "THREE.BloomPass relies on THREE.ConvolutionShader" );
+
+			var convolutionShader = THREE.ConvolutionShader;
+
+			this.convolutionUniforms = THREE.UniformsUtils.clone( convolutionShader.uniforms );
+
+			this.convolutionUniforms[ "uImageIncrement" ].value = THREE.BloomPass.blurx;
+			this.convolutionUniforms[ "cKernel" ].value = THREE.ConvolutionShader.buildKernel( sigma );
+
+			this.materialConvolution = new THREE.ShaderMaterial( {
+
+				uniforms: this.convolutionUniforms,
+				vertexShader:  convolutionShader.vertexShader,
+				fragmentShader: convolutionShader.fragmentShader,
+				defines: {
+					"KERNEL_SIZE_FLOAT": kernelSize.toFixed( 1 ),
+					"KERNEL_SIZE_INT": kernelSize.toFixed( 0 )
+				}
+
+			} );
+
+			if ( THREE.ClampShader === undefined )
+				console.error( "THREE.BloomPass relies on THREE.ClampShader" );
+			var clampShader = THREE.ClampShader;
+
+			this.clampUniforms = THREE.UniformsUtils.clone( clampShader.uniforms );
+
+			// this.convolutionUniforms[ "uImageIncrement" ].value = THREE.BloomPass.blurx;
+			// this.convolutionUniforms[ "cKernel" ].value = THREE.ConvolutionShader.buildKernel( sigma );
+
+			this.materialClamp = new THREE.ShaderMaterial( {
+
+				uniforms: this.clampUniforms,
+				vertexShader:  clampShader.vertexShader,
+				fragmentShader: clampShader.fragmentShader,
+			} );
+
+			this.enabled = true;
+			this.needsSwap = false;
+			this.clear = false;
+
+
+			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+			this.scene  = new THREE.Scene();
+
+			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+			this.scene.add( this.quad );
+
+		};
+
+		THREE.BloomPass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
+
+				if ( maskActive ) renderer.context.disable( renderer.context.STENCIL_TEST );
+
+				//Clamp to threshold
+				this.quad.material = this.materialClamp;
+
+				this.clampUniforms[ "tDiffuse" ].value = readBuffer;
+				renderer.render( this.scene, this.camera, writeBuffer, true );
+
+				// Render quad with blured scene into texture (convolution pass 1)
+
+				this.quad.material = this.materialConvolution;
+
+				this.convolutionUniforms[ "tDiffuse" ].value = writeBuffer;
+				this.convolutionUniforms[ "uImageIncrement" ].value = THREE.BloomPass.blurX;
+
+				renderer.render( this.scene, this.camera, this.renderTargetX, true );
+
+
+				// Render quad with blured scene into texture (convolution pass 2)
+
+				this.convolutionUniforms[ "tDiffuse" ].value = this.renderTargetX;
+				this.convolutionUniforms[ "uImageIncrement" ].value = THREE.BloomPass.blurY;
+
+				renderer.render( this.scene, this.camera, this.renderTargetY, true );
+
+				// Render original scene with superimposed blur to texture
+
+				this.quad.material = this.materialCopy;
+
+				this.copyUniforms[ "tDiffuse" ].value = this.renderTargetY;
+
+				if ( maskActive ) renderer.context.enable( renderer.context.STENCIL_TEST );
+
+				renderer.render( this.scene, this.camera, readBuffer, this.clear );
+
+			},
+
+			setSigma: function( sigma ) {
+				if ( sigma ) {
+					var kernelSize = 2 * Math.ceil( sigma * 3.0 ) + 1;
+		      // var kernelSize = this.bloom.kernelSize !== undefined ? this.bloom.kernelSize : 25;
+		      this.materialConvolution.defines = {
+		        "KERNEL_SIZE_FLOAT": kernelSize.toFixed( 1 ),
+		        "KERNEL_SIZE_INT": kernelSize.toFixed( 0 )
+		      }
+		      this.materialConvolution.needsUpdate = true;
+		      this.convolutionUniforms[ "cKernel" ].value = THREE.ConvolutionShader.buildKernel( sigma );
+		    }
+			},
+
+			setSize: function( resolutionX, resolutionY ) {
+				this.resolutionX = ( resolutionX !== undefined ) ? resolutionX : 256;
+				this.resolutionY = ( resolutionY !== undefined ) ? resolutionY : 256;
+				var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
+				if ( this.renderTargetX ) {
+					this.renderTargetX.dispose();
+				}
+				if ( this.renderTargetY ) {
+					this.renderTargetY.dispose();
+				}
+				this.renderTargetX = new THREE.WebGLRenderTarget( this.resolutionX, this.resolutionY, pars );
+				this.renderTargetX.name = "Bloom Convolution X";
+				this.renderTargetY = new THREE.WebGLRenderTarget( this.resolutionX, this.resolutionY, pars );
+				this.renderTargetY.name = "Bloom Convolution Y";
+			},
+
+			dispose: function() {
+				this.renderTargetX.dispose();
+				this.renderTargetY.dispose();
+				this.copyUniforms = undefined;
+				this.convolutionUniforms = undefined;
+				this.materialCopy.dispose();
+				this.materialConvolution.dispose();
+				this.quad.geometry.dispose();
+				this.quad = undefined;
+				this.scene = undefined;
+				this.camera = undefined;
+			}
+
+		};
+
+		THREE.BloomPass.blurX = new THREE.Vector2( 0.001953125, 0.0 );
+		THREE.BloomPass.blurY = new THREE.Vector2( 0.0, 0.001953125 );
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * Depth-of-field post-process with bokeh shader
+	 */
+
+
+	THREE.BokehPass = function ( scene, camera, params ) {
+
+		this.scene = scene;
+		this.camera = camera;
+
+		var focus = ( params.focus !== undefined ) ? params.focus : 1.0;
+		var aspect = ( params.aspect !== undefined ) ? params.aspect : camera.aspect;
+		var aperture = ( params.aperture !== undefined ) ? params.aperture : 0.025;
+		var maxblur = ( params.maxblur !== undefined ) ? params.maxblur : 1.0;
+
+		// render targets
+
+		var width = params.width || window.innerWidth || 1;
+		var height = params.height || window.innerHeight || 1;
+
+		this.renderTargetColor = new THREE.WebGLRenderTarget( width, height, {
+			minFilter: THREE.LinearFilter,
+			magFilter: THREE.LinearFilter,
+			format: THREE.RGBFormat
+		} );
+
+		this.renderTargetDepth = this.renderTargetColor.clone();
+
+		// depth material
+
+		this.materialDepth = new THREE.MeshDepthMaterial();
+
+		// bokeh material
+
+		if ( THREE.BokehShader === undefined ) {
+			console.error( "THREE.BokehPass relies on THREE.BokehShader" );
+		}
+		
+		var bokehShader = THREE.BokehShader;
+		var bokehUniforms = THREE.UniformsUtils.clone( bokehShader.uniforms );
+
+		bokehUniforms[ "tDepth" ].value = this.renderTargetDepth;
+
+		bokehUniforms[ "focus" ].value = focus;
+		bokehUniforms[ "aspect" ].value = aspect;
+		bokehUniforms[ "aperture" ].value = aperture;
+		bokehUniforms[ "maxblur" ].value = maxblur;
+
+		this.materialBokeh = new THREE.ShaderMaterial({
+			uniforms: bokehUniforms,
+			vertexShader: bokehShader.vertexShader,
+			fragmentShader: bokehShader.fragmentShader
+		});
+
+		this.uniforms = bokehUniforms;
+		this.enabled = true;
+		this.needsSwap = false;
+		this.renderToScreen = false;
+		this.clear = false;
+
+		this.camera2 = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+		this.scene2  = new THREE.Scene();
+
+		this.quad2 = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+		this.scene2.add( this.quad2 );
+
+	};
+
+	THREE.BokehPass.prototype = {
+
+		render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
+
+			this.quad2.material = this.materialBokeh;
+
+			// Render depth into texture
+
+			this.scene.overrideMaterial = this.materialDepth;
+
+			renderer.render( this.scene, this.camera, this.renderTargetDepth, true );
+
+			// Render bokeh composite
+
+			this.uniforms[ "tColor" ].value = readBuffer;
+
+			if ( this.renderToScreen ) {
+
+				renderer.render( this.scene2, this.camera2 );
+
+			} else {
+
+				renderer.render( this.scene2, this.camera2, writeBuffer, this.clear );
+
+			}
+
+			this.scene.overrideMaterial = null;
+
+		}
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
 /* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		/**
+		 * @author alteredq / http://alteredqualia.com/
+		 */
+
+		THREE.DotScreenPass = function ( center, angle, scale ) {
+
+			if ( THREE.DotScreenShader === undefined )
+				console.error( "THREE.DotScreenPass relies on THREE.DotScreenShader" );
+
+			var shader = THREE.DotScreenShader;
+
+			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+			if ( center !== undefined ) this.uniforms[ "center" ].value.copy( center );
+			if ( angle !== undefined ) this.uniforms[ "angle"].value = angle;
+			if ( scale !== undefined ) this.uniforms[ "scale"].value = scale;
+
+			this.material = new THREE.ShaderMaterial( {
+
+				uniforms: this.uniforms,
+				vertexShader: shader.vertexShader,
+				fragmentShader: shader.fragmentShader
+
+			} );
+
+			this.enabled = true;
+			this.renderToScreen = false;
+			this.needsSwap = true;
+
+
+			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+			this.scene  = new THREE.Scene();
+
+			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+			this.scene.add( this.quad );
+
+		};
+
+		THREE.DotScreenPass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+				this.uniforms[ "tDiffuse" ].value = readBuffer;
+				this.uniforms[ "tSize" ].value.set( readBuffer.width, readBuffer.height );
+
+				this.quad.material = this.material;
+
+				if ( this.renderToScreen ) {
+
+					renderer.render( this.scene, this.camera );
+
+				} else {
+
+					renderer.render( this.scene, this.camera, writeBuffer, false );
+
+				}
+
+			}
+
+		};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 66 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		/**
+		 * @author alteredq / http://alteredqualia.com/
+		 */
+
+		THREE.FilmPass = function ( noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale ) {
+
+			if ( THREE.FilmShader === undefined )
+				console.error( "THREE.FilmPass relies on THREE.FilmShader" );
+
+			var shader = THREE.FilmShader;
+
+			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+			this.material = new THREE.ShaderMaterial( {
+
+				uniforms: this.uniforms,
+				vertexShader: shader.vertexShader,
+				fragmentShader: shader.fragmentShader
+
+			} );
+
+			if ( grayscale !== undefined )	this.uniforms.grayscale.value = grayscale;
+			if ( noiseIntensity !== undefined ) this.uniforms.nIntensity.value = noiseIntensity;
+			if ( scanlinesIntensity !== undefined ) this.uniforms.sIntensity.value = scanlinesIntensity;
+			if ( scanlinesCount !== undefined ) this.uniforms.sCount.value = scanlinesCount;
+
+			this.enabled = true;
+			this.renderToScreen = false;
+			this.needsSwap = true;
+
+
+			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+			this.scene  = new THREE.Scene();
+
+			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+			this.scene.add( this.quad );
+
+		};
+
+		THREE.FilmPass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+				this.uniforms[ "tDiffuse" ].value = readBuffer;
+				this.uniforms[ "time" ].value = (this.uniforms[ "time" ].value + delta) % 10.0 + 0.1;
+
+				this.quad.material = this.material;
+
+				if ( this.renderToScreen ) {
+
+					renderer.render( this.scene, this.camera );
+
+				} else {
+
+					renderer.render( this.scene, this.camera, writeBuffer, false );
+
+				}
+
+			},
+
+			dispose: function() {
+				this.quad.geometry.dispose();
+				this.quad = undefined;
+				this.material.dispose();
+				this.material = undefined;
+				this.uniforms = undefined;
+				this.scene = undefined;
+				this.camera = undefined;
+			}
+
+		};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 67 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		/**
+		 * @author alteredq / http://alteredqualia.com/
+		 */
+
+		THREE.MaskPass = function ( scene, camera ) {
+
+			this.scene = scene;
+			this.camera = camera;
+
+			this.enabled = true;
+			this.clear = true;
+			this.needsSwap = false;
+
+			this.inverse = false;
+
+		};
+
+		THREE.MaskPass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+				var context = renderer.context;
+
+				// don't update color or depth
+
+				context.colorMask( false, false, false, false );
+				context.depthMask( false );
+
+				// set up stencil
+
+				var writeValue, clearValue;
+
+				if ( this.inverse ) {
+
+					writeValue = 0;
+					clearValue = 1;
+
+				} else {
+
+					writeValue = 1;
+					clearValue = 0;
+
+				}
+
+				context.enable( context.STENCIL_TEST );
+				context.stencilOp( context.REPLACE, context.REPLACE, context.REPLACE );
+				context.stencilFunc( context.ALWAYS, writeValue, 0xffffffff );
+				context.clearStencil( clearValue );
+
+				// draw into the stencil buffer
+
+				renderer.render( this.scene, this.camera, readBuffer, this.clear );
+				renderer.render( this.scene, this.camera, writeBuffer, this.clear );
+
+				// re-enable update of color and depth
+
+				context.colorMask( true, true, true, true );
+				context.depthMask( true );
+
+				// only render where stencil is set to 1
+
+				context.stencilFunc( context.EQUAL, 1, 0xffffffff );  // draw if == 1
+				context.stencilOp( context.KEEP, context.KEEP, context.KEEP );
+
+			}
+
+		};
+
+
+		THREE.ClearMaskPass = function () {
+
+			this.enabled = true;
+
+		};
+
+		THREE.ClearMaskPass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+				var context = renderer.context;
+
+				context.disable( context.STENCIL_TEST );
+
+			}
+
+		};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 68 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		/**
+		 * @author alteredq / http://alteredqualia.com/
+		 */
+
+		THREE.RenderPass = function ( scene, camera, overrideMaterial, clearColor, clearAlpha ) {
+
+			this.scene = scene;
+			this.camera = camera;
+
+			this.overrideMaterial = overrideMaterial;
+
+			this.clearColor = clearColor;
+			this.clearAlpha = ( clearAlpha !== undefined ) ? clearAlpha : 0;
+
+			this.oldClearColor = new THREE.Color();
+			this.oldClearAlpha = 1;
+
+			this.enabled = true;
+			this.clear = true;
+			this.needsSwap = false;
+
+		};
+
+		THREE.RenderPass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+				// renderer.setViewport( 0, 0, renderer.domElement.width, renderer.domElement.height );
+
+				this.scene.overrideMaterial = this.overrideMaterial !== undefined ? this.overrideMaterial : this.scene.overrideMaterial;
+
+				if ( this.clearColor ) {
+
+					this.oldClearColor.copy( renderer.getClearColor() );
+					this.oldClearAlpha = renderer.getClearAlpha();
+
+					renderer.setClearColor( this.clearColor, this.clearAlpha );
+
+				}
+
+				renderer.render( this.scene, this.camera, readBuffer, this.clear );
+
+				if ( this.clearColor ) {
+
+					renderer.setClearColor( this.oldClearColor, this.oldClearAlpha );
+
+				}
+
+				this.scene.overrideMaterial = null;
+
+			},
+
+			dispose: function() {
+				this.scene = undefined;
+				this.camera = undefined;
+			}
+
+		};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 69 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		/**
+		 * @author alteredq / http://alteredqualia.com/
+		 */
+
+		THREE.SavePass = function ( renderTarget ) {
+
+			if ( THREE.CopyShader === undefined )
+				console.error( "THREE.SavePass relies on THREE.CopyShader" );
+
+			var shader = THREE.CopyShader;
+
+			this.textureID = "tDiffuse";
+
+			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+			this.material = new THREE.ShaderMaterial( {
+
+				uniforms: this.uniforms,
+				vertexShader: shader.vertexShader,
+				fragmentShader: shader.fragmentShader
+
+			} );
+
+			this.renderTarget = renderTarget;
+
+			if ( this.renderTarget === undefined ) {
+
+				this.renderTargetParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
+				this.renderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, this.renderTargetParameters );
+
+			}
+
+			this.enabled = true;
+			this.needsSwap = false;
+			this.clear = false;
+
+
+			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+			this.scene  = new THREE.Scene();
+
+			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+			this.scene.add( this.quad );
+
+		};
+
+		THREE.SavePass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+				if ( this.uniforms[ this.textureID ] ) {
+
+					this.uniforms[ this.textureID ].value = readBuffer;
+
+				}
+
+				this.quad.material = this.material;
+
+				renderer.render( this.scene, this.camera, this.renderTarget, this.clear );
+
+			}
+
+		};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 70 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)
+		, __webpack_require__(90)
+		, __webpack_require__(72)
+		, __webpack_require__(73)
+		, __webpack_require__(74)
+		, __webpack_require__(75)
+		, __webpack_require__(76)
+		, __webpack_require__(77)
+		, __webpack_require__(78)
+		, __webpack_require__(79)
+		, __webpack_require__(80)
+		, __webpack_require__(81)
+		, __webpack_require__(82)
+		, __webpack_require__(83)
+		, __webpack_require__(84)
+		, __webpack_require__(85)
+		, __webpack_require__(86)
+		, __webpack_require__(87)
+		, __webpack_require__(88)
+		, __webpack_require__(89)
+		, __webpack_require__(71)
+		, __webpack_require__(91)
+		, __webpack_require__(92)
+		, __webpack_require__(93)
+		, __webpack_require__(94)
+		, __webpack_require__(95)
+		, __webpack_require__(96)
+		, __webpack_require__(97)
+		, __webpack_require__(98)
+		, __webpack_require__(99)
+		, __webpack_require__(100)
+		, __webpack_require__(101)
+		, __webpack_require__(102)
+		, __webpack_require__(103)
+		, __webpack_require__(104)
+		, __webpack_require__(105)
+		, __webpack_require__(106)
+		, __webpack_require__(107)
+		, __webpack_require__(108)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		/**
+		 * @author alteredq / http://alteredqualia.com/
+		 */
+
+		THREE.ShaderPass = function ( shader, textureID ) {
+
+			this.textureID = ( textureID !== undefined ) ? textureID : "tDiffuse";
+
+			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+			this.material = new THREE.ShaderMaterial( {
+				blending: THREE.NormalBlending,
+		transparent: true,
+				uniforms: this.uniforms,
+				vertexShader: shader.vertexShader,
+				fragmentShader: shader.fragmentShader
+
+			} );
+
+			this.renderToScreen = false;
+
+			this.enabled = true;
+			this.needsSwap = true;
+			this.clear = false;
+
+
+			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+			this.scene  = new THREE.Scene();
+
+			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+			this.scene.add( this.quad );
+			this.prevViewPort = new THREE.Vector4();
+		};
+
+		THREE.ShaderPass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+				if ( this.uniforms[ this.textureID ] ) {
+
+					this.uniforms[ this.textureID ].value = readBuffer;
+
+				}
+
+				this.quad.material = this.material;
+
+				if ( this.renderToScreen ) {
+					renderer.getViewport(this.prevViewPort);
+					if ( this.viewPort ) {
+						renderer.setViewport( this.viewPort.x, this.viewPort.y, this.viewPort.width, this.viewPort.height );
+					}
+					if ( this.clearColor || this.clearDepth ) {
+						renderer.clear( !!this.clearColor, !!this.clearDepth, false );
+					}
+					renderer.render( this.scene, this.camera );
+					if ( this.viewPort ) {
+						renderer.setViewport( this.prevViewPort.x, this.prevViewPort.y, this.prevViewPort.width, this.prevViewPort.height );
+					}
+
+				} else if ( this.renderToTexture ) {
+					// var prevViewPort = renderer.getViewport();
+					// if ( this.viewPort ) {
+					// 	renderer.setViewport( this.viewPort.x, this.viewPort.y, this.viewPort.width, this.viewPort.height );
+					// }
+					if ( this.clearColor || this.clearDepth ) {
+						renderer.clear( this.clearColor, this.clearDepth, false );
+					}
+					renderer.render( this.scene, this.camera, this.renderToTexture );
+					// if ( this.viewPort ) {
+					// 	renderer.setViewport( prevViewPort.x, prevViewPort.y, prevViewPort.width, prevViewPort.height );
+					// }
+
+				} else {
+
+					renderer.render( this.scene, this.camera, writeBuffer, this.clear );
+
+				}
+
+			},
+
+			dispose: function() {
+				this.quad.geometry.dispose();
+				this.quad = undefined;
+				this.camera = undefined;
+				this.scene = undefined;
+				this.material.dispose();
+				this.material = undefined;
+				this.uniforms = undefined;
+			}
+
+		};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 71 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 * @author davidedc / http://www.sketchpatch.net/
+	 *
+	 * NVIDIA FXAA by Timothy Lottes
+	 * http://timothylottes.blogspot.com/2011/06/fxaa3-source-released.html
+	 * - WebGL port by @supereggbert
+	 * http://www.glge.org/demos/fxaa/
+	 */
+
+	THREE.FXAAShader = {
+
+		uniforms: {
+
+			"tDiffuse":   { type: "t", value: null },
+			"resolution": { type: "v2", value: new THREE.Vector2( 1 / 1024, 1 / 512 )  }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform vec2 resolution;",
+
+			"varying vec2 vUv;",
+
+			"#define FXAA_REDUCE_MIN   (1.0/128.0)",
+			"#define FXAA_REDUCE_MUL   (1.0/8.0)",
+			"#define FXAA_SPAN_MAX     8.0",
+
+			"void main() {",
+
+				"vec3 rgbNW = clamp( texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, -1.0 ) ) * resolution ).xyz, 0.0, 1.0);",
+				"vec3 rgbNE = clamp( texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, -1.0 ) ) * resolution ).xyz, 0.0, 1.0);",
+				"vec3 rgbSW = clamp( texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, 1.0 ) ) * resolution ).xyz, 0.0, 1.0);",
+				"vec3 rgbSE = clamp( texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, 1.0 ) ) * resolution ).xyz, 0.0, 1.0);",
+				"vec4 rgbaM  = clamp( texture2D( tDiffuse,  gl_FragCoord.xy  * resolution ), 0.0, 1.0);",
+				"vec3 rgbM  = rgbaM.xyz;",
+				"float opacity  = rgbaM.w;",
+
+				"vec3 luma = vec3( 0.299, 0.587, 0.114 );",
+
+				"float lumaNW = dot( rgbNW, luma );",
+				"float lumaNE = dot( rgbNE, luma );",
+				"float lumaSW = dot( rgbSW, luma );",
+				"float lumaSE = dot( rgbSE, luma );",
+				"float lumaM  = dot( rgbM,  luma );",
+				"float lumaMin = min( lumaM, min( min( lumaNW, lumaNE ), min( lumaSW, lumaSE ) ) );",
+				"float lumaMax = max( lumaM, max( max( lumaNW, lumaNE) , max( lumaSW, lumaSE ) ) );",
+
+				"vec2 dir;",
+				"dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));",
+				"dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));",
+
+				"float dirReduce = max( ( lumaNW + lumaNE + lumaSW + lumaSE ) * ( 0.25 * FXAA_REDUCE_MUL ), FXAA_REDUCE_MIN );",
+
+				"float rcpDirMin = 1.0 / ( min( abs( dir.x ), abs( dir.y ) ) + dirReduce );",
+				"dir = min( vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX),",
+					  "max( vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),",
+							"dir * rcpDirMin)) * resolution;",
+
+				"vec3 rgbA = 0.5 * (",
+					"clamp( texture2D( tDiffuse, gl_FragCoord.xy  * resolution + dir * ( 1.0 / 3.0 - 0.5 ) ).xyz, 0.0, 1.0) +",
+					"clamp( texture2D( tDiffuse, gl_FragCoord.xy  * resolution + dir * ( 2.0 / 3.0 - 0.5 ) ).xyz, 0.0, 1.0) );",
+
+				"vec3 rgbB = rgbA * 0.5 + 0.25 * (",
+					"clamp( texture2D( tDiffuse, gl_FragCoord.xy  * resolution + dir * -0.5 ).xyz, 0.0, 1.0) +",
+					"clamp( texture2D( tDiffuse, gl_FragCoord.xy  * resolution + dir * 0.5 ).xyz, 0.0, 1.0) );",
+
+				"float lumaB = dot( rgbB, luma );",
+
+				"if ( ( lumaB < lumaMin ) || ( lumaB > lumaMax ) ) {",
+
+					"gl_FragColor = vec4( rgbA, opacity );",
+
+				"} else {",
+
+					"gl_FragColor = vec4( rgbB, opacity );",
+
+				"}",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 72 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author miibond
+	 *
+	 * Down-sample a given texture to a target exactly half the size. Useful for texture packings where automatic
+	 * bilinear filtering is inappropriate (e.g. depthRGBA, RGBE, etc.)
+	 */
+
+	THREE.BilinearDownSampleShader = {
+
+		uniforms: {
+			"tDiffuse": { type: "t", value: null },
+			"resolution": { type: "v2", value: new THREE.Vector2() },
+		},
+		vertexShader: [
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+		].join('\n'),
+		fragmentShader: [
+			"varying vec2 vUv;",
+			"uniform sampler2D tDiffuse;",
+			"uniform vec2 resolution;",
+			THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
+			THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
+			
+			"void main() {",
+				"vec2 offset = 0.5 / resolution;",
+				"vec4 colour;",
+				"vec4 samples[ 4 ];",
+
+	      "samples[0] = texture2D( tDiffuse, vUv + vec2( -offset.x, -offset.x ) );",
+	      "samples[1] = texture2D( tDiffuse, vUv + vec2( offset.x, -offset.x ) );",
+	      "samples[2] = texture2D( tDiffuse, vUv + vec2( offset.x, offset.y ) );",
+	      "samples[3] = texture2D( tDiffuse, vUv + vec2( -offset.x, offset.y ) );",
+
+				"for ( int i = 0; i < 4; i++ ) {",
+					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
+						"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
+							"colour += vec4( HDRDecodeLOGLUV( samples[i] ), 1.0 );",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
+							"colour += vec4( HDRDecodeRGBM( samples[i] ), 1.0 );",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
+							"colour += vec4( HDRDecodeRGBD( samples[i] ), 1.0 );",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
+							"colour += vec4( HDRDecodeRGBE( samples[i] ), 1.0 );",
+						"#else",
+							"colour += samples[i];",
+						"#endif",
+					"#else",
+							"colour += samples[i];",
+					"#endif",
+				"}",
+
+				"gl_FragColor = colour * 0.25;",
+				
+				THREE.ShaderChunk[ "hdr_encode_fragment" ],
+				
+			"}",
+		].join('\n')
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 73 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Bleach bypass shader [http://en.wikipedia.org/wiki/Bleach_bypass]
+	 * - based on Nvidia example
+	 * http://developer.download.nvidia.com/shaderlibrary/webpages/shader_library.html#post_bleach_bypass
+	 */
+
+	THREE.BleachBypassShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"opacity":  { type: "f", value: 1.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float opacity;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 base = texture2D( tDiffuse, vUv );",
+
+				"vec3 lumCoeff = vec3( 0.25, 0.65, 0.1 );",
+				"float lum = dot( lumCoeff, base.rgb );",
+				"vec3 blend = vec3( lum );",
+
+				"float L = min( 1.0, max( 0.0, 10.0 * ( lum - 0.45 ) ) );",
+
+				"vec3 result1 = 2.0 * base.rgb * blend;",
+				"vec3 result2 = 1.0 - 2.0 * ( 1.0 - blend ) * ( 1.0 - base.rgb );",
+
+				"vec3 newColor = mix( result1, result2, L );",
+
+				"float A2 = opacity * base.a;",
+				"vec3 mixRGB = A2 * newColor.rgb;",
+				"mixRGB += ( ( 1.0 - A2 ) * base.rgb );",
+
+				"gl_FragColor = vec4( mixRGB, base.a );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 74 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Blend two textures
+	 */
+
+	THREE.BlendShader = {
+
+		uniforms: {
+
+			"tDiffuse1": { type: "t", value: null },
+			"tDiffuse2": { type: "t", value: null },
+			"mixRatio":  { type: "f", value: 0.5 },
+			"opacity":   { type: "f", value: 1.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float opacity;",
+			"uniform float mixRatio;",
+
+			"uniform sampler2D tDiffuse1;",
+			"uniform sampler2D tDiffuse2;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 texel1 = texture2D( tDiffuse1, vUv );",
+				"vec4 texel2 = texture2D( tDiffuse2, vUv );",
+				"gl_FragColor = opacity * mix( texel1, texel2, mixRatio );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 75 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Depth-of-field shader with bokeh
+	 * ported from GLSL shader by Martins Upitis
+	 * http://artmartinsh.blogspot.com/2010/02/glsl-lens-blur-filter-with-bokeh.html
+	 */
+
+	THREE.BokehShader = {
+
+		uniforms: {
+
+			"tDiffuse":   { type: "t", value: null },
+			"tDepth":   { type: "t", value: null },
+			"focus":    { type: "f", value: 1.0 },
+			"aspect":   { type: "f", value: 1.0 },
+			"aperture": { type: "f", value: 0.025 },
+			"maxblur":  { type: "f", value: 1.0 },
+			"opacity": { type: "f", value: 1.0 }
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"varying vec2 vUv;",
+
+			"uniform sampler2D tDiffuse;",
+			"uniform sampler2D tDepth;",
+
+			"uniform float maxblur;",  // max blur amount
+			"uniform float aperture;", // aperture - bigger values for shallower depth of field
+
+			"uniform float focus;",
+			"uniform float aspect;",
+			"uniform float opacity;",
+
+			"float unpackDepth( const in vec4 rgba_depth ) {",
+
+				"const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
+				"float depth = dot( rgba_depth, bit_shift );",
+				"return depth;",
+
+			"}",
+
+			"void main() {",
+
+				"vec2 aspectcorrect = vec2( 1.0, aspect );",
+
+				"float depth1 = unpackDepth( texture2D( tDepth, vUv ) );",
+
+				"float factor = max( depth1 - focus, 0.0);",
+
+				"vec2 dofblur = vec2 ( clamp( factor * aperture, -maxblur, maxblur ) );",
+
+				"vec2 dofblur9 = dofblur * 0.9;",
+				"vec2 dofblur7 = dofblur * 0.7;",
+				"vec2 dofblur4 = dofblur * 0.4;",
+
+				"vec4 col = vec4( 0.0 );",
+
+				"col += texture2D( tDiffuse, vUv.xy );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.15,  0.37 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.37,  0.15 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.40,  0.0  ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.37, -0.15 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.15, -0.37 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.15,  0.37 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.37,  0.15 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.37, -0.15 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.15, -0.37 ) * aspectcorrect ) * dofblur );",
+
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.15,  0.37 ) * aspectcorrect ) * dofblur9 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.37,  0.15 ) * aspectcorrect ) * dofblur9 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.37, -0.15 ) * aspectcorrect ) * dofblur9 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.15, -0.37 ) * aspectcorrect ) * dofblur9 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.15,  0.37 ) * aspectcorrect ) * dofblur9 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.37,  0.15 ) * aspectcorrect ) * dofblur9 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.37, -0.15 ) * aspectcorrect ) * dofblur9 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.15, -0.37 ) * aspectcorrect ) * dofblur9 );",
+
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur7 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.40,  0.0  ) * aspectcorrect ) * dofblur7 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur7 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur7 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur7 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur7 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur7 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur7 );",
+
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur4 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.4,   0.0  ) * aspectcorrect ) * dofblur4 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur4 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur4 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur4 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur4 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur4 );",
+				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur4 );",
+
+				"gl_FragColor = col / 41.0;",
+				"gl_FragColor.a = opacity;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 76 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author zz85 / https://github.com/zz85 | twitter.com/blurspline
+	 *
+	 * Depth-of-field shader with bokeh
+	 * ported from GLSL shader by Martins Upitis
+	 * http://blenderartists.org/forum/showthread.php?237488-GLSL-depth-of-field-with-bokeh-v2-4-(update)
+	 *
+	 * Requires #define RINGS and SAMPLES integers
+	 */
+
+
+
+	THREE.BokehShader2 = {
+
+		uniforms: {
+
+			"textureWidth":  { type: "f", value: 1.0 },
+			"textureHeight":  { type: "f", value: 1.0 },
+
+			"focalDepth":   { type: "f", value: 1.0 },
+			"focalLength":   { type: "f", value: 24.0 },
+			"fstop": { type: "f", value: 0.9 },
+
+			"tColor":   { type: "t", value: null },
+			"tDepth":   { type: "t", value: null },
+
+			"maxblur":  { type: "f", value: 1.0 },
+
+			"showFocus":   { type: "i", value: 0 },
+			"manualdof":   { type: "i", value: 0 },
+			"vignetting":   { type: "i", value: 0 },
+			"depthblur":   { type: "i", value: 0 },
+
+			"threshold":  { type: "f", value: 0.5 },
+			"gain":  { type: "f", value: 2.0 },
+			"bias":  { type: "f", value: 0.5 },
+			"fringe":  { type: "f", value: 0.7 },
+
+			"znear":  { type: "f", value: 0.1 },
+			"zfar":  { type: "f", value: 100 },
+
+			"noise":  { type: "i", value: 1 },
+			"dithering":  { type: "f", value: 0.0001 },
+			"pentagon": { type: "i", value: 0 },
+
+			"shaderFocus":  { type: "i", value: 1 },
+			"focusCoords":  { type: "v2", value: new THREE.Vector2()},
+
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"varying vec2 vUv;",
+
+			"uniform sampler2D tColor;",
+			"uniform sampler2D tDepth;",
+			"uniform float textureWidth;",
+			"uniform float textureHeight;",
+
+			"const float PI = 3.14159265;",
+
+			"float width = textureWidth; //texture width",
+			"float height = textureHeight; //texture height",
+
+			"vec2 texel = vec2(1.0/width,1.0/height);",
+
+			"uniform float focalDepth;  //focal distance value in meters, but you may use autofocus option below",
+			"uniform float focalLength; //focal length in mm",
+			"uniform float fstop; //f-stop value",
+			"uniform bool showFocus; //show debug focus point and focal range (red = focal point, green = focal range)",
+
+			"/*",
+			"make sure that these two values are the same for your camera, otherwise distances will be wrong.",
+			"*/",
+
+			"uniform float znear; // camera clipping start",
+			"uniform float zfar; // camera clipping end",
+
+			"//------------------------------------------",
+			"//user variables",
+
+			"const int samples = SAMPLES; //samples on the first ring",
+			"const int rings = RINGS; //ring count",
+
+			"const int maxringsamples = rings * samples;",
+
+			"uniform bool manualdof; // manual dof calculation",
+			"float ndofstart = 1.0; // near dof blur start",
+			"float ndofdist = 2.0; // near dof blur falloff distance",
+			"float fdofstart = 1.0; // far dof blur start",
+			"float fdofdist = 3.0; // far dof blur falloff distance",
+
+			"float CoC = 0.03; //circle of confusion size in mm (35mm film = 0.03mm)",
+
+			"uniform bool vignetting; // use optical lens vignetting",
+
+			"float vignout = 1.3; // vignetting outer border",
+			"float vignin = 0.0; // vignetting inner border",
+			"float vignfade = 22.0; // f-stops till vignete fades",
+
+			"uniform bool shaderFocus;",
+
+			"bool autofocus = shaderFocus;",
+			"//use autofocus in shader - use with focusCoords",
+			"// disable if you use external focalDepth value",
+
+			"uniform vec2 focusCoords;",
+			"// autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right)",
+			"// if center of screen use vec2(0.5, 0.5);",
+
+			"uniform float maxblur;",
+			"//clamp value of max blur (0.0 = no blur, 1.0 default)",
+
+			"uniform float threshold; // highlight threshold;",
+			"uniform float gain; // highlight gain;",
+
+			"uniform float bias; // bokeh edge bias",
+			"uniform float fringe; // bokeh chromatic aberration / fringing",
+
+			"uniform bool noise; //use noise instead of pattern for sample dithering",
+
+			"uniform float dithering;",
+			"float namount = dithering; //dither amount",
+
+			"uniform bool depthblur; // blur the depth buffer",
+			"float dbsize = 1.25; // depth blur size",
+
+			"/*",
+			"next part is experimental",
+			"not looking good with small sample and ring count",
+			"looks okay starting from samples = 4, rings = 4",
+			"*/",
+
+			"uniform bool pentagon; //use pentagon as bokeh shape?",
+			"float feather = 0.4; //pentagon shape feather",
+
+			"//------------------------------------------",
+
+			"float penta(vec2 coords) {",
+				"//pentagonal shape",
+				"float scale = float(rings) - 1.3;",
+				"vec4  HS0 = vec4( 1.0,         0.0,         0.0,  1.0);",
+				"vec4  HS1 = vec4( 0.309016994, 0.951056516, 0.0,  1.0);",
+				"vec4  HS2 = vec4(-0.809016994, 0.587785252, 0.0,  1.0);",
+				"vec4  HS3 = vec4(-0.809016994,-0.587785252, 0.0,  1.0);",
+				"vec4  HS4 = vec4( 0.309016994,-0.951056516, 0.0,  1.0);",
+				"vec4  HS5 = vec4( 0.0        ,0.0         , 1.0,  1.0);",
+
+				"vec4  one = vec4( 1.0 );",
+
+				"vec4 P = vec4((coords),vec2(scale, scale));",
+
+				"vec4 dist = vec4(0.0);",
+				"float inorout = -4.0;",
+
+				"dist.x = dot( P, HS0 );",
+				"dist.y = dot( P, HS1 );",
+				"dist.z = dot( P, HS2 );",
+				"dist.w = dot( P, HS3 );",
+
+				"dist = smoothstep( -feather, feather, dist );",
+
+				"inorout += dot( dist, one );",
+
+				"dist.x = dot( P, HS4 );",
+				"dist.y = HS5.w - abs( P.z );",
+
+				"dist = smoothstep( -feather, feather, dist );",
+				"inorout += dist.x;",
+
+				"return clamp( inorout, 0.0, 1.0 );",
+			"}",
+
+			"float bdepth(vec2 coords) {",
+				"// Depth buffer blur",
+				"float d = 0.0;",
+				"float kernel[9];",
+				"vec2 offset[9];",
+
+				"vec2 wh = vec2(texel.x, texel.y) * dbsize;",
+
+				"offset[0] = vec2(-wh.x,-wh.y);",
+				"offset[1] = vec2( 0.0, -wh.y);",
+				"offset[2] = vec2( wh.x -wh.y);",
+
+				"offset[3] = vec2(-wh.x,  0.0);",
+				"offset[4] = vec2( 0.0,   0.0);",
+				"offset[5] = vec2( wh.x,  0.0);",
+
+				"offset[6] = vec2(-wh.x, wh.y);",
+				"offset[7] = vec2( 0.0,  wh.y);",
+				"offset[8] = vec2( wh.x, wh.y);",
+
+				"kernel[0] = 1.0/16.0;   kernel[1] = 2.0/16.0;   kernel[2] = 1.0/16.0;",
+				"kernel[3] = 2.0/16.0;   kernel[4] = 4.0/16.0;   kernel[5] = 2.0/16.0;",
+				"kernel[6] = 1.0/16.0;   kernel[7] = 2.0/16.0;   kernel[8] = 1.0/16.0;",
+
+
+				"for( int i=0; i<9; i++ ) {",
+					"float tmp = texture2D(tDepth, coords + offset[i]).r;",
+					"d += tmp * kernel[i];",
+				"}",
+
+				"return d;",
+			"}",
+
+
+			"vec3 color(vec2 coords,float blur) {",
+				"//processing the sample",
+
+				"vec3 col = vec3(0.0);",
+
+				"col.r = texture2D(tColor,coords + vec2(0.0,1.0)*texel*fringe*blur).r;",
+				"col.g = texture2D(tColor,coords + vec2(-0.866,-0.5)*texel*fringe*blur).g;",
+				"col.b = texture2D(tColor,coords + vec2(0.866,-0.5)*texel*fringe*blur).b;",
+
+				"vec3 lumcoeff = vec3(0.299,0.587,0.114);",
+				"float lum = dot(col.rgb, lumcoeff);",
+				"float thresh = max((lum-threshold)*gain, 0.0);",
+				"return col+mix(vec3(0.0),col,thresh*blur);",
+			"}",
+
+			"vec2 rand(vec2 coord) {",
+				"// generating noise / pattern texture for dithering",
+
+				"float noiseX = ((fract(1.0-coord.s*(width/2.0))*0.25)+(fract(coord.t*(height/2.0))*0.75))*2.0-1.0;",
+				"float noiseY = ((fract(1.0-coord.s*(width/2.0))*0.75)+(fract(coord.t*(height/2.0))*0.25))*2.0-1.0;",
+
+				"if (noise) {",
+					"noiseX = clamp(fract(sin(dot(coord ,vec2(12.9898,78.233))) * 43758.5453),0.0,1.0)*2.0-1.0;",
+					"noiseY = clamp(fract(sin(dot(coord ,vec2(12.9898,78.233)*2.0)) * 43758.5453),0.0,1.0)*2.0-1.0;",
+				"}",
+
+				"return vec2(noiseX,noiseY);",
+			"}",
+
+			"vec3 debugFocus(vec3 col, float blur, float depth) {",
+				"float edge = 0.002*depth; //distance based edge smoothing",
+				"float m = clamp(smoothstep(0.0,edge,blur),0.0,1.0);",
+				"float e = clamp(smoothstep(1.0-edge,1.0,blur),0.0,1.0);",
+
+				"col = mix(col,vec3(1.0,0.5,0.0),(1.0-m)*0.6);",
+				"col = mix(col,vec3(0.0,0.5,1.0),((1.0-e)-(1.0-m))*0.2);",
+
+				"return col;",
+			"}",
+
+			"float linearize(float depth) {",
+				"return -zfar * znear / (depth * (zfar - znear) - zfar);",
+			"}",
+
+
+			"float vignette() {",
+				"float dist = distance(vUv.xy, vec2(0.5,0.5));",
+				"dist = smoothstep(vignout+(fstop/vignfade), vignin+(fstop/vignfade), dist);",
+				"return clamp(dist,0.0,1.0);",
+			"}",
+
+			"float gather(float i, float j, int ringsamples, inout vec3 col, float w, float h, float blur) {",
+				"float rings2 = float(rings);",
+				"float step = PI*2.0 / float(ringsamples);",
+				"float pw = cos(j*step)*i;",
+				"float ph = sin(j*step)*i;",
+				"float p = 1.0;",
+				"if (pentagon) {",
+					"p = penta(vec2(pw,ph));",
+				"}",
+				"col += color(vUv.xy + vec2(pw*w,ph*h), blur) * mix(1.0, i/rings2, bias) * p;",
+				"return 1.0 * mix(1.0, i /rings2, bias) * p;",
+			"}",
+
+			"void main() {",
+				"//scene depth calculation",
+
+				"float depth = linearize(texture2D(tDepth,vUv.xy).x);",
+
+				"// Blur depth?",
+				"if (depthblur) {",
+					"depth = linearize(bdepth(vUv.xy));",
+				"}",
+
+				"//focal plane calculation",
+
+				"float fDepth = focalDepth;",
+
+				"if (autofocus) {",
+
+					"fDepth = linearize(texture2D(tDepth,focusCoords).x);",
+
+				"}",
+
+				"// dof blur factor calculation",
+
+				"float blur = 0.0;",
+
+				"if (manualdof) {",
+					"float a = depth-fDepth; // Focal plane",
+					"float b = (a-fdofstart)/fdofdist; // Far DoF",
+					"float c = (-a-ndofstart)/ndofdist; // Near Dof",
+					"blur = (a>0.0) ? b : c;",
+				"} else {",
+					"float f = focalLength; // focal length in mm",
+					"float d = fDepth*1000.0; // focal plane in mm",
+					"float o = depth*1000.0; // depth in mm",
+
+					"float a = (o*f)/(o-f);",
+					"float b = (d*f)/(d-f);",
+					"float c = (d-f)/(d*fstop*CoC);",
+
+					"blur = abs(a-b)*c;",
+				"}",
+
+				"blur = clamp(blur,0.0,1.0);",
+
+				"// calculation of pattern for dithering",
+
+				"vec2 noise = rand(vUv.xy)*namount*blur;",
+
+				"// getting blur x and y step factor",
+
+				"float w = (1.0/width)*blur*maxblur+noise.x;",
+				"float h = (1.0/height)*blur*maxblur+noise.y;",
+
+				"// calculation of final color",
+
+				"vec3 col = vec3(0.0);",
+
+				"if(blur < 0.05) {",
+					"//some optimization thingy",
+					"col = texture2D(tColor, vUv.xy).rgb;",
+				"} else {",
+					"col = texture2D(tColor, vUv.xy).rgb;",
+					"float s = 1.0;",
+					"int ringsamples;",
+
+					"for (int i = 1; i <= rings; i++) {",
+						"/*unboxstart*/",
+						"ringsamples = i * samples;",
+
+						"for (int j = 0 ; j < maxringsamples ; j++) {",
+							"if (j >= ringsamples) break;",
+							"s += gather(float(i), float(j), ringsamples, col, w, h, blur);",
+						"}",
+						"/*unboxend*/",
+					"}",
+
+					"col /= s; //divide by sample count",
+				"}",
+
+				"if (showFocus) {",
+					"col = debugFocus(col, blur, depth);",
+				"}",
+
+				"if (vignetting) {",
+					"col *= vignette();",
+				"}",
+
+				"gl_FragColor.rgb = col;",
+				"gl_FragColor.a = 1.0;",
+			"} "
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 77 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author tapio / http://tapio.github.com/
+	 *
+	 * Brightness and contrast adjustment
+	 * https://github.com/evanw/glfx.js
+	 * brightness: -1 to 1 (-1 is solid black, 0 is no change, and 1 is solid white)
+	 * contrast: -1 to 1 (-1 is solid gray, 0 is no change, and 1 is maximum contrast)
+	 */
+
+	THREE.BrightnessContrastShader = {
+
+		uniforms: {
+
+			"tDiffuse":   { type: "t", value: null },
+			"brightness": { type: "f", value: 0 },
+			"contrast":   { type: "f", value: 0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform float brightness;",
+			"uniform float contrast;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"gl_FragColor = texture2D( tDiffuse, vUv );",
+
+				"gl_FragColor.rgb += brightness;",
+
+				"if (contrast > 0.0) {",
+					"gl_FragColor.rgb = (gl_FragColor.rgb - 0.5) / (1.0 - contrast) + 0.5;",
+				"} else {",
+					"gl_FragColor.rgb = (gl_FragColor.rgb - 0.5) * (1.0 + contrast) + 0.5;",
+				"}",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 78 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Color correction
+	 */
+
+	THREE.ColorCorrectionShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"powRGB":   { type: "v3", value: new THREE.Vector3( 2, 2, 2 ) },
+			"mulRGB":   { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform vec3 powRGB;",
+			"uniform vec3 mulRGB;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"gl_FragColor = texture2D( tDiffuse, vUv );",
+				"gl_FragColor.rgb = mulRGB * pow( gl_FragColor.rgb, powRGB );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 79 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Colorify shader
+	 */
+
+	THREE.ColorifyShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"color":    { type: "c", value: new THREE.Color( 0xffffff ) }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform vec3 color;",
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 texel = texture2D( tDiffuse, vUv );",
+
+				"vec3 luma = vec3( 0.299, 0.587, 0.114 );",
+				"float v = dot( texel.xyz, luma );",
+
+				"gl_FragColor = vec4( v * color, texel.w );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 80 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Convolution shader
+	 * ported from o3d sample to WebGL / GLSL
+	 * http://o3d.googlecode.com/svn/trunk/samples/convolution.html
+	 */
+
+	THREE.ConvolutionShader = {
+
+		defines: {
+
+			"KERNEL_SIZE_FLOAT": "25.0",
+			"KERNEL_SIZE_INT": "25",
+
+		},
+
+		uniforms: {
+
+			"tDiffuse":        { type: "t", value: null },
+			"uImageIncrement": { type: "v2", value: new THREE.Vector2( 0.001953125, 0.0 ) },
+			"cKernel":         { type: "fv1", value: [] }
+
+		},
+
+		vertexShader: [
+
+			"uniform vec2 uImageIncrement;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv - ( ( KERNEL_SIZE_FLOAT - 1.0 ) / 2.0 ) * uImageIncrement;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float cKernel[ KERNEL_SIZE_INT ];",
+
+			"uniform sampler2D tDiffuse;",
+			"uniform vec2 uImageIncrement;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec2 imageCoord = vUv;",
+				"vec4 sum = vec4( 0.0, 0.0, 0.0, 0.0 );",
+
+				"for( int i = 0; i < KERNEL_SIZE_INT; i ++ ) {",
+
+					"sum += texture2D( tDiffuse, imageCoord ) * cKernel[ i ];",
+					"imageCoord += uImageIncrement;",
+
+				"}",
+
+				"gl_FragColor = sum;",
+
+			"}"
+
+
+		].join("\n"),
+
+		buildKernel: function ( sigma ) {
+
+			// We lop off the sqrt(2 * pi) * sigma term, since we're going to normalize anyway.
+
+			function gauss( x, sigma ) {
+
+				return Math.exp( - ( x * x ) / ( 2.0 * sigma * sigma ) );
+
+			}
+
+			var i, values, sum, halfWidth, kMaxKernelSize = 49, kernelSize = 2 * Math.ceil( sigma * 3.0 ) + 1;
+
+			if ( kernelSize > kMaxKernelSize ) kernelSize = kMaxKernelSize;
+			halfWidth = ( kernelSize - 1 ) * 0.5;
+
+			values = new Array( kernelSize );
+			sum = 0.0;
+			for ( i = 0; i < kernelSize; ++i ) {
+
+				values[ i ] = gauss( i - halfWidth, sigma );
+				sum += values[ i ];
+
+			}
+
+			// normalize the kernel
+
+			for ( i = 0; i < kernelSize; ++i ) values[ i ] /= sum;
+
+			return values;
+
+		}
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 81 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Full-screen textured quad shader
+	 */
+
+	THREE.CopyShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"opacity":  { type: "f", value: 1.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float opacity;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 texel = texture2D( tDiffuse, vUv );",
+				"gl_FragColor = opacity * texel;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 82 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+
+	THREE.ClampShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"threshold":   { type: "f", value: 0.8 },
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float threshold;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 texel = texture2D( tDiffuse, vUv );",
+
+				// "vec3 luma = vec3( 0.299, 0.587, 0.114 );",
+
+				// "float v = dot( texel.xyz, luma );",
+				// "vec3 normTex = normalize(texel.xyz);",
+
+				"gl_FragColor.xyz = max( texel.xyz - threshold, 0.0 ) * 5.0;",
+				"gl_FragColor.w = 1.0;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 83 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Depth-of-field shader using mipmaps
+	 * - from Matt Handley @applmak
+	 * - requires power-of-2 sized render target with enabled mipmaps
+	 */
+
+	THREE.DOFMipMapShader = {
+
+		uniforms: {
+
+			"tColor":   { type: "t", value: null },
+			"tDepth":   { type: "t", value: null },
+			"focus":    { type: "f", value: 1.0 },
+			"maxblur":  { type: "f", value: 1.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float focus;",
+			"uniform float maxblur;",
+
+			"uniform sampler2D tColor;",
+			"uniform sampler2D tDepth;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 depth = texture2D( tDepth, vUv );",
+
+				"float factor = depth.x - focus;",
+
+				"vec4 col = texture2D( tColor, vUv, 2.0 * maxblur * abs( focus - depth.x ) );",
+
+				"gl_FragColor = col;",
+				"gl_FragColor.a = 1.0;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 84 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Dot screen shader
+	 * based on glfx.js sepia shader
+	 * https://github.com/evanw/glfx.js
+	 */
+
+	THREE.DotScreenShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"tSize":    { type: "v2", value: new THREE.Vector2( 256, 256 ) },
+			"center":   { type: "v2", value: new THREE.Vector2( 0.5, 0.5 ) },
+			"angle":    { type: "f", value: 1.57 },
+			"scale":    { type: "f", value: 1.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform vec2 center;",
+			"uniform float angle;",
+			"uniform float scale;",
+			"uniform vec2 tSize;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"float pattern() {",
+
+				"float s = sin( angle ), c = cos( angle );",
+
+				"vec2 tex = vUv * tSize - center;",
+				"vec2 point = vec2( c * tex.x - s * tex.y, s * tex.x + c * tex.y ) * scale;",
+
+				"return ( sin( point.x ) * sin( point.y ) ) * 4.0;",
+
+			"}",
+
+			"void main() {",
+
+				"vec4 color = texture2D( tDiffuse, vUv );",
+
+				"float average = ( color.r + color.g + color.b ) / 3.0;",
+
+				"gl_FragColor = vec4( vec3( average * 10.0 - 5.0 + pattern() ), color.a );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 85 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author zz85 / https://github.com/zz85 | https://www.lab4games.net/zz85/blog
+	 *
+	 * Edge Detection Shader using Frei-Chen filter
+	 * Based on http://rastergrid.com/blog/2011/01/frei-chen-edge-detector
+	 *
+	 * aspect: vec2 of (1/width, 1/height)
+	 */
+
+	THREE.EdgeShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"aspect":    { type: "v2", value: new THREE.Vector2( 512, 512 ) },
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"varying vec2 vUv;",
+
+			"uniform vec2 aspect;",
+
+			"vec2 texel = vec2(1.0 / aspect.x, 1.0 / aspect.y);",
+
+
+			"mat3 G[9];",
+
+			// hard coded matrix values!!!! as suggested in https://github.com/neilmendoza/ofxPostProcessing/blob/master/src/EdgePass.cpp#L45
+
+			"const mat3 g0 = mat3( 0.3535533845424652, 0, -0.3535533845424652, 0.5, 0, -0.5, 0.3535533845424652, 0, -0.3535533845424652 );",
+			"const mat3 g1 = mat3( 0.3535533845424652, 0.5, 0.3535533845424652, 0, 0, 0, -0.3535533845424652, -0.5, -0.3535533845424652 );",
+			"const mat3 g2 = mat3( 0, 0.3535533845424652, -0.5, -0.3535533845424652, 0, 0.3535533845424652, 0.5, -0.3535533845424652, 0 );",
+			"const mat3 g3 = mat3( 0.5, -0.3535533845424652, 0, -0.3535533845424652, 0, 0.3535533845424652, 0, 0.3535533845424652, -0.5 );",
+			"const mat3 g4 = mat3( 0, -0.5, 0, 0.5, 0, 0.5, 0, -0.5, 0 );",
+			"const mat3 g5 = mat3( -0.5, 0, 0.5, 0, 0, 0, 0.5, 0, -0.5 );",
+			"const mat3 g6 = mat3( 0.1666666716337204, -0.3333333432674408, 0.1666666716337204, -0.3333333432674408, 0.6666666865348816, -0.3333333432674408, 0.1666666716337204, -0.3333333432674408, 0.1666666716337204 );",
+			"const mat3 g7 = mat3( -0.3333333432674408, 0.1666666716337204, -0.3333333432674408, 0.1666666716337204, 0.6666666865348816, 0.1666666716337204, -0.3333333432674408, 0.1666666716337204, -0.3333333432674408 );",
+			"const mat3 g8 = mat3( 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408 );",
+
+			"void main(void)",
+			"{",
+
+				"G[0] = g0,",
+				"G[1] = g1,",
+				"G[2] = g2,",
+				"G[3] = g3,",
+				"G[4] = g4,",
+				"G[5] = g5,",
+				"G[6] = g6,",
+				"G[7] = g7,",
+				"G[8] = g8;",
+
+				"mat3 I;",
+				"float cnv[9];",
+				"vec3 sample;",
+
+				/* fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value */
+				"for (float i=0.0; i<3.0; i++) {",
+					"for (float j=0.0; j<3.0; j++) {",
+						"sample = texture2D(tDiffuse, vUv + texel * vec2(i-1.0,j-1.0) ).rgb;",
+						"I[int(i)][int(j)] = length(sample);",
+					"}",
+				"}",
+
+				/* calculate the convolution values for all the masks */
+				"for (int i=0; i<9; i++) {",
+					"float dp3 = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]);",
+					"cnv[i] = dp3 * dp3;",
+				"}",
+
+				"float M = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]);",
+				"float S = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + (cnv[8] + M);",
+
+				"gl_FragColor = vec4(vec3(sqrt(M/S)), 1.0);",
+			"}",
+
+		].join("\n")
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 86 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author zz85 / https://github.com/zz85 | https://www.lab4games.net/zz85/blog
+	 *
+	 * Edge Detection Shader using Sobel filter
+	 * Based on http://rastergrid.com/blog/2011/01/frei-chen-edge-detector
+	 *
+	 * aspect: vec2 of (1/width, 1/height)
+	 */
+
+	THREE.EdgeShader2 = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"aspect":    { type: "v2", value: new THREE.Vector2( 512, 512 ) },
+			"colour":    { type: "c", value: new THREE.Color( 0xffffff ) },
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"varying vec2 vUv;",
+			"uniform vec2 aspect;",
+			"uniform vec3 colour;",
+
+			"void main(void)",
+			"{",
+				"vec2 texel = vec2(1.0 / aspect.x, 1.0 / aspect.y);",
+
+				"mat3 G[2];",
+
+				"const mat3 g0 = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );",
+				"const mat3 g1 = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );",
+				"mat3 I;",
+				"float cnv[2];",
+				"vec3 sample;",
+
+				"G[0] = g0;",
+				"G[1] = g1;",
+
+				/* fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value */
+				// "for (float i=0.0; i<3.0; i++) {",
+				// 	"for (float j=0.0; j<3.0; j++) {",
+				// 		"sample = texture2D( tDiffuse, vUv + texel * vec2(i-1.0,j-1.0) ).rgb;",
+				// 		"I[int(i)][int(j)] = length(sample);",
+				// 	"}",
+				// "}",
+
+				//OSX Yosemite with AMD cards seems to have trouble with the above loop. Unrolling...
+				"I[0][0] = length(texture2D( tDiffuse, vUv + texel * vec2(-1.0,-1.0) ).rgb);",
+				"I[0][1] = length(texture2D( tDiffuse, vUv + texel * vec2(-1.0,0.0) ).rgb);",
+				"I[0][2] = length(texture2D( tDiffuse, vUv + texel * vec2(-1.0,1.0) ).rgb);",
+				"I[1][0] = length(texture2D( tDiffuse, vUv + texel * vec2(0.0,-1.0) ).rgb);",
+				"I[1][1] = length(texture2D( tDiffuse, vUv + texel * vec2(0.0,0.0) ).rgb);",
+				"I[1][2] = length(texture2D( tDiffuse, vUv + texel * vec2(0.0,1.0) ).rgb);",
+				"I[2][0] = length(texture2D( tDiffuse, vUv + texel * vec2(1.0,-1.0) ).rgb);",
+				"I[2][1] = length(texture2D( tDiffuse, vUv + texel * vec2(1.0,0.0) ).rgb);",
+				"I[2][2] = length(texture2D( tDiffuse, vUv + texel * vec2(1.0,1.0) ).rgb);",
+
+
+				/* calculate the convolution values for all the masks */
+				"for (int i=0; i<2; i++) {",
+					"float dp3 = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]);",
+					"cnv[i] = dp3 * dp3; ",
+				"}",
+
+				"gl_FragColor = vec4(colour, sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]));",
+			"} ",
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 87 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Film grain & scanlines shader
+	 *
+	 * - ported from HLSL to WebGL / GLSL
+	 * http://www.truevision3d.com/forums/showcase/staticnoise_colorblackwhite_scanline_shaders-t18698.0.html
+	 *
+	 * Screen Space Static Postprocessor
+	 *
+	 * Produces an analogue noise overlay similar to a film grain / TV static
+	 *
+	 * Original implementation and noise algorithm
+	 * Pat 'Hawthorne' Shearon
+	 *
+	 * Optimized scanlines + noise version with intensity scaling
+	 * Georg 'Leviathan' Steinrohder
+	 *
+	 * This version is provided under a Creative Commons Attribution 3.0 License
+	 * http://creativecommons.org/licenses/by/3.0/
+	 */
+
+	THREE.FilmShader = {
+
+		uniforms: {
+
+			"tDiffuse":   { type: "t", value: null },
+			"time":       { type: "f", value: 0.0 },
+			"nIntensity": { type: "f", value: 0.5 },
+			"sIntensity": { type: "f", value: 0.05 },
+			"sCount":     { type: "f", value: 4096 },
+			"grayscale":  { type: "i", value: 1 },
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			// control parameter
+			"uniform float time;",
+
+			"uniform bool grayscale;",
+
+			// noise effect intensity value (0 = no effect, 1 = full effect)
+			"uniform float nIntensity;",
+
+			// scanlines effect intensity value (0 = no effect, 1 = full effect)
+			"uniform float sIntensity;",
+
+			// scanlines effect count value (0 = no effect, 4096 = full effect)
+			"uniform float sCount;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				// sample the source
+				"vec4 cTextureScreen = texture2D( tDiffuse, vUv );",
+
+				// make some noise
+				"float x = vUv.x * vUv.y * time *  1000.0;",
+				"x = mod( x, 13.0 ) * mod( x, 123.0 );",
+				"float dx = mod( x, 0.01 );",
+
+				// add noise
+				"vec3 cResult = cTextureScreen.rgb + cTextureScreen.rgb * clamp( 0.1 + dx * 100.0, 0.0, 1.0 );",
+
+				// get us a sine and cosine
+				"vec2 sc = vec2( sin( vUv.y * sCount ), cos( vUv.y * sCount ) );",
+
+				// add scanlines
+				"cResult += cTextureScreen.rgb * vec3( sc.x, sc.y, sc.x ) * sIntensity;",
+
+				// interpolate between source and result by intensity
+				"cResult = cTextureScreen.rgb + clamp( nIntensity, 0.0,1.0 ) * ( cResult - cTextureScreen.rgb );",
+
+				// convert to grayscale if desired
+				"if( grayscale ) {",
+
+					"cResult = vec3( cResult.r * 0.3 + cResult.g * 0.59 + cResult.b * 0.11 );",
+
+				"}",
+
+				"gl_FragColor =  vec4( cResult, cTextureScreen.a );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 88 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Focus shader
+	 * based on PaintEffect postprocess from ro.me
+	 * http://code.google.com/p/3-dreams-of-black/source/browse/deploy/js/effects/PaintEffect.js
+	 */
+
+	THREE.FocusShader = {
+
+		uniforms : {
+
+			"tDiffuse":       { type: "t", value: null },
+			"screenWidth":    { type: "f", value: 1024 },
+			"screenHeight":   { type: "f", value: 1024 },
+			"sampleDistance": { type: "f", value: 0.94 },
+			"waveFactor":     { type: "f", value: 0.00125 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float screenWidth;",
+			"uniform float screenHeight;",
+			"uniform float sampleDistance;",
+			"uniform float waveFactor;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 color, org, tmp, add;",
+				"float sample_dist, f;",
+				"vec2 vin;",
+				"vec2 uv = vUv;",
+
+				"add = color = org = texture2D( tDiffuse, uv );",
+
+				"vin = ( uv - vec2( 0.5 ) ) * vec2( 1.4 );",
+				"sample_dist = dot( vin, vin ) * 2.0;",
+
+				"f = ( waveFactor * 100.0 + sample_dist ) * sampleDistance * 4.0;",
+
+				"vec2 sampleSize = vec2(  1.0 / screenWidth, 1.0 / screenHeight ) * vec2( f );",
+
+				"add += tmp = texture2D( tDiffuse, uv + vec2( 0.111964, 0.993712 ) * sampleSize );",
+				"if( tmp.b < color.b ) color = tmp;",
+
+				"add += tmp = texture2D( tDiffuse, uv + vec2( 0.846724, 0.532032 ) * sampleSize );",
+				"if( tmp.b < color.b ) color = tmp;",
+
+				"add += tmp = texture2D( tDiffuse, uv + vec2( 0.943883, -0.330279 ) * sampleSize );",
+				"if( tmp.b < color.b ) color = tmp;",
+
+				"add += tmp = texture2D( tDiffuse, uv + vec2( 0.330279, -0.943883 ) * sampleSize );",
+				"if( tmp.b < color.b ) color = tmp;",
+
+				"add += tmp = texture2D( tDiffuse, uv + vec2( -0.532032, -0.846724 ) * sampleSize );",
+				"if( tmp.b < color.b ) color = tmp;",
+
+				"add += tmp = texture2D( tDiffuse, uv + vec2( -0.993712, -0.111964 ) * sampleSize );",
+				"if( tmp.b < color.b ) color = tmp;",
+
+				"add += tmp = texture2D( tDiffuse, uv + vec2( -0.707107, 0.707107 ) * sampleSize );",
+				"if( tmp.b < color.b ) color = tmp;",
+
+				"color = color * vec4( 2.0 ) - ( add / vec4( 8.0 ) );",
+				"color = color + ( add / vec4( 8.0 ) - color ) * ( vec4( 1.0 ) - vec4( sample_dist * 0.5 ) );",
+
+				"gl_FragColor = vec4( color.rgb * color.rgb * vec3( 0.95 ) + color.rgb, 1.0 );",
+
+			"}"
+
+
+		].join("\n")
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 89 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Based on Nvidia Cg tutorial
+	 */
+
+	THREE.FresnelShader = {
+
+		uniforms: {
+
+			"mRefractionRatio": { type: "f", value: 1.02 },
+			"mFresnelBias": { type: "f", value: 0.1 },
+			"mFresnelPower": { type: "f", value: 2.0 },
+			"mFresnelScale": { type: "f", value: 1.0 },
+			"tCube": { type: "t", value: null }
+
+		},
+
+		vertexShader: [
+
+			"uniform float mRefractionRatio;",
+			"uniform float mFresnelBias;",
+			"uniform float mFresnelScale;",
+			"uniform float mFresnelPower;",
+
+			"varying vec3 vReflect;",
+			"varying vec3 vRefract[3];",
+			"varying float vReflectionFactor;",
+
+			"void main() {",
+
+				"vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+				"vec4 worldPosition = modelMatrix * vec4( position, 1.0 );",
+
+				"vec3 worldNormal = normalize( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal );",
+
+				"vec3 I = worldPosition.xyz - cameraPosition;",
+
+				"vReflect = reflect( I, worldNormal );",
+				"vRefract[0] = refract( normalize( I ), worldNormal, mRefractionRatio );",
+				"vRefract[1] = refract( normalize( I ), worldNormal, mRefractionRatio * 0.99 );",
+				"vRefract[2] = refract( normalize( I ), worldNormal, mRefractionRatio * 0.98 );",
+				"vReflectionFactor = mFresnelBias + mFresnelScale * pow( 1.0 + dot( normalize( I ), worldNormal ), mFresnelPower );",
+
+				"gl_Position = projectionMatrix * mvPosition;",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform samplerCube tCube;",
+
+			"varying vec3 vReflect;",
+			"varying vec3 vRefract[3];",
+			"varying float vReflectionFactor;",
+
+			"void main() {",
+
+				"vec4 reflectedColor = textureCube( tCube, vec3( -vReflect.x, vReflect.yz ) );",
+				"vec4 refractedColor = vec4( 1.0 );",
+
+				"refractedColor.r = textureCube( tCube, vec3( -vRefract[0].x, vRefract[0].yz ) ).r;",
+				"refractedColor.g = textureCube( tCube, vec3( -vRefract[1].x, vRefract[1].yz ) ).g;",
+				"refractedColor.b = textureCube( tCube, vec3( -vRefract[2].x, vRefract[2].yz ) ).b;",
+
+				"gl_FragColor = mix( refractedColor, reflectedColor, clamp( vReflectionFactor, 0.0, 1.0 ) );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 90 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author mrdoob / http://www.mrdoob.com
+	 *
+	 * Simple test shader
+	 */
+
+	THREE.BasicShader = {
+
+		uniforms: {},
+
+		vertexShader: [
+
+			"void main() {",
+
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"void main() {",
+
+				"gl_FragColor = vec4( 1.0, 0.0, 0.0, 0.5 );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 91 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author miibond
+	 *
+	 * Full-screen gamma-correction
+	 */
+
+	THREE.GammaShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+		},
+
+		defines: {
+			"GAMMA_VALUE" : 2.0,
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"#if !defined(GAMMA_VALUE)",
+				"#define GAMMA_VALUE 0.5",
+			"#endif",
+
+			"uniform sampler2D tDiffuse;",
+			
+			"varying vec2 vUv;",
+
+			THREE.ShaderChunk['hdr_decode_pars_fragment'],
+			THREE.ShaderChunk['hdr_encode_pars_fragment'],
+
+			"void main() {",
+
+				"vec4 texel = texture2D( tDiffuse, vUv );",
+				
+				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
+					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
+						"gl_FragColor = vec4( HDRDecodeLOGLUV( texel ), 1.0 );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
+						"gl_FragColor = vec4( HDRDecodeRGBM( texel ), 1.0 );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
+						"gl_FragColor = vec4( HDRDecodeRGBD( texel ), 1.0 );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
+						"gl_FragColor = vec4( HDRDecodeRGBE( texel ), 1.0 );",
+					"#else",
+						"gl_FragColor = texel;",
+					"#endif",
+				"#else",
+					"gl_FragColor = texel;",
+				"#endif",
+
+				//Gamma 2.0
+				// "#if ( GAMMA_VALUE == 2 )",
+				// 	"gl_FragColor.xyz = sqrt( gl_FragColor.xyz );",
+				// "#elif ( GAMMA_VALUE == 0.5 )",
+					"gl_FragColor.xyz = gl_FragColor.xyz * gl_FragColor.xyz;",
+				// "#else",
+				// 	"gl_FragColor.xyz = pow( gl_FragColor.xyz, 1.0 / GAMMA_VALUE );",
+				// "#endif",
+
+			"}"
+
+		].join("\n")
+
+	};
+
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 92 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author zz85 / http://www.lab4games.net/zz85/blog
+	 *
+	 * Two pass Gaussian blur filter (horizontal and vertical blur shaders)
+	 * - described in http://www.gamerendering.com/2008/10/11/gaussian-blur-filter-shader/
+	 *   and used in http://www.cake23.de/traveling-wavefronts-lit-up.html
+	 *
+	 * - 9 samples per pass
+	 * - standard deviation 2.7
+	 * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
+	 */
+
+	THREE.HorizontalBlurShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"h":        { type: "f", value: 1.0 / 512.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform float h;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 sum = vec4( 0.0 );",
+
+				"sum += texture2D( tDiffuse, vec2( vUv.x - 4.0 * h, vUv.y ) ) * 0.051;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x - 3.0 * h, vUv.y ) ) * 0.0918;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x - 2.0 * h, vUv.y ) ) * 0.12245;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x - 1.0 * h, vUv.y ) ) * 0.1531;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x + 1.0 * h, vUv.y ) ) * 0.1531;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x + 2.0 * h, vUv.y ) ) * 0.12245;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x + 3.0 * h, vUv.y ) ) * 0.0918;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x + 4.0 * h, vUv.y ) ) * 0.051;",
+
+				"gl_FragColor = sum;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 93 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Simple fake tilt-shift effect, modulating two pass Gaussian blur (see above) by vertical position
+	 *
+	 * - 9 samples per pass
+	 * - standard deviation 2.7
+	 * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
+	 * - "r" parameter control where "focused" horizontal line lies
+	 */
+
+	THREE.HorizontalTiltShiftShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"h":        { type: "f", value: 1.0 / 512.0 },
+			"r":        { type: "f", value: 0.35 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform float h;",
+			"uniform float r;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 sum = vec4( 0.0 );",
+
+				"float hh = h * abs( r - vUv.y );",
+
+				"sum += texture2D( tDiffuse, vec2( vUv.x - 4.0 * hh, vUv.y ) ) * 0.051;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x - 3.0 * hh, vUv.y ) ) * 0.0918;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x - 2.0 * hh, vUv.y ) ) * 0.12245;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x - 1.0 * hh, vUv.y ) ) * 0.1531;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x + 1.0 * hh, vUv.y ) ) * 0.1531;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x + 2.0 * hh, vUv.y ) ) * 0.12245;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x + 3.0 * hh, vUv.y ) ) * 0.0918;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x + 4.0 * hh, vUv.y ) ) * 0.051;",
+
+				"gl_FragColor = sum;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 94 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author tapio / http://tapio.github.com/
+	 *
+	 * Hue and saturation adjustment
+	 * https://github.com/evanw/glfx.js
+	 * hue: -1 to 1 (-1 is 180 degrees in the negative direction, 0 is no change, etc.
+	 * saturation: -1 to 1 (-1 is solid gray, 0 is no change, and 1 is maximum contrast)
+	 */
+
+	THREE.HueSaturationShader = {
+
+		uniforms: {
+
+			"tDiffuse":   { type: "t", value: null },
+			"hue":        { type: "f", value: 0 },
+			"saturation": { type: "f", value: 0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform float hue;",
+			"uniform float saturation;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"gl_FragColor = texture2D( tDiffuse, vUv );",
+
+				// hue
+				"float angle = hue * 3.14159265;",
+				"float s = sin(angle), c = cos(angle);",
+				"vec3 weights = (vec3(2.0 * c, -sqrt(3.0) * s - c, sqrt(3.0) * s - c) + 1.0) / 3.0;",
+				"float len = length(gl_FragColor.rgb);",
+				"gl_FragColor.rgb = vec3(",
+					"dot(gl_FragColor.rgb, weights.xyz),",
+					"dot(gl_FragColor.rgb, weights.zxy),",
+					"dot(gl_FragColor.rgb, weights.yzx)",
+				");",
+
+				// saturation
+				"float average = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.0;",
+				"if (saturation > 0.0) {",
+					"gl_FragColor.rgb += (average - gl_FragColor.rgb) * (1.0 - 1.0 / (1.001 - saturation));",
+				"} else {",
+					"gl_FragColor.rgb += (average - gl_FragColor.rgb) * (-saturation);",
+				"}",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 95 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author felixturner / http://airtight.cc/
+	 *
+	 * Kaleidoscope Shader
+	 * Radial reflection around center point
+	 * Ported from: http://pixelshaders.com/editor/
+	 * by Toby Schachman / http://tobyschachman.com/
+	 *
+	 * sides: number of reflections
+	 * angle: initial angle in radians
+	 */
+
+	THREE.KaleidoShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"sides":    { type: "f", value: 6.0 },
+			"angle":    { type: "f", value: 0.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform float sides;",
+			"uniform float angle;",
+			
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec2 p = vUv - 0.5;",
+				"float r = length(p);",
+				"float a = atan(p.y, p.x) + angle;",
+				"float tau = 2. * 3.1416 ;",
+				"a = mod(a, tau/sides);",
+				"a = abs(a - tau/sides/2.) ;",
+				"p = r * vec2(cos(a), sin(a));",
+				"vec4 color = texture2D(tDiffuse, p + 0.5);",
+				"gl_FragColor = color;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 96 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Luminosity
+	 * http://en.wikipedia.org/wiki/Luminosity
+	 */
+
+	THREE.LuminosityShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"maxLuminance": { type: "f", value: 100.0 }
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"#ifdef MAX_LUMINANCE",
+				"uniform float maxLuminance;",
+			"#endif",
+
+			"varying vec2 vUv;",
+
+			THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
+			THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
+
+			"void main() {",
+
+				"vec4 texel = texture2D( tDiffuse, vUv );",
+				
+				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
+					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
+						"texel.xyz = HDRDecodeLOGLUV( texel );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
+						"texel.xyz = HDRDecodeRGBM( texel );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
+						"texel.xyz = HDRDecodeRGBD( texel );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
+						"texel.xyz = HDRDecodeRGBE( texel );",
+					"#endif",
+				"#endif",
+
+				"vec3 luma = vec3( 0.299, 0.587, 0.114 );",
+
+				"float v = dot( texel.xyz, luma );",
+
+				"#ifdef MAX_LUMINANCE",
+					"v = clamp( v, 0.0, maxLuminance );",
+				"#endif",
+				"gl_FragColor = vec4( v, v, v, texel.w );",
+
+				THREE.ShaderChunk[ "hdr_encode_fragment" ],
+
+			"}"
+
+		].join("\n")
+
+	};
+
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 97 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author felixturner / http://airtight.cc/
+	 *
+	 * Mirror Shader
+	 * Copies half the input to the other half
+	 *
+	 * side: side of input to mirror (0 = left, 1 = right, 2 = top, 3 = bottom)
+	 */
+
+	THREE.MirrorShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"side":     { type: "i", value: 1 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform int side;",
+			
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec2 p = vUv;",
+				"if (side == 0){",
+					"if (p.x > 0.5) p.x = 1.0 - p.x;",
+				"}else if (side == 1){",
+					"if (p.x < 0.5) p.x = 1.0 - p.x;",
+				"}else if (side == 2){",
+					"if (p.y < 0.5) p.y = 1.0 - p.y;",
+				"}else if (side == 3){",
+					"if (p.y > 0.5) p.y = 1.0 - p.y;",
+				"} ",
+				"vec4 color = texture2D(tDiffuse, p);",
+				"gl_FragColor = color;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 98 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Normal map shader
+	 * - compute normals from heightmap
+	 */
+
+	THREE.NormalMapShader = {
+
+		uniforms: {
+
+			"heightMap":  { type: "t", value: null },
+			"resolution": { type: "v2", value: new THREE.Vector2( 512, 512 ) },
+			"scale":      { type: "v2", value: new THREE.Vector2( 1, 1 ) },
+			"height":     { type: "f", value: 0.05 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float height;",
+			"uniform vec2 resolution;",
+			"uniform sampler2D heightMap;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"float val = texture2D( heightMap, vUv ).x;",
+
+				"float valU = texture2D( heightMap, vUv + vec2( 1.0 / resolution.x, 0.0 ) ).x;",
+				"float valV = texture2D( heightMap, vUv + vec2( 0.0, 1.0 / resolution.y ) ).x;",
+
+				"gl_FragColor = vec4( ( 0.5 * normalize( vec3( val - valU, val - valV, height  ) ) + 0.5 ), 1.0 );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 99 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author felixturner / http://airtight.cc/
+	 *
+	 * RGB Shift Shader
+	 * Shifts red and blue channels from center in opposite directions
+	 * Ported from http://kriss.cx/tom/2009/05/rgb-shift/
+	 * by Tom Butterworth / http://kriss.cx/tom/
+	 *
+	 * amount: shift distance (1 is width of input)
+	 * angle: shift angle in radians
+	 */
+
+	THREE.RGBShiftShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"amount":   { type: "f", value: 0.005 },
+			"angle":    { type: "f", value: 0.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform float amount;",
+			"uniform float angle;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec2 offset = amount * vec2( cos(angle), sin(angle));",
+				"vec4 cr = texture2D(tDiffuse, vUv + offset);",
+				"vec4 cga = texture2D(tDiffuse, vUv);",
+				"vec4 cb = texture2D(tDiffuse, vUv - offset);",
+				"gl_FragColor = vec4(cr.r, cga.g, cb.b, cga.a);",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 100 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Sepia tone shader
+	 * based on glfx.js sepia shader
+	 * https://github.com/evanw/glfx.js
+	 */
+
+	THREE.SepiaShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"amount":   { type: "f", value: 1.0 },
+			"opacity": { type: "f", value: 1.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float amount;",
+			"uniform float opacity;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 color = texture2D( tDiffuse, vUv );",
+				"vec3 c = color.rgb;",
+
+				"color.r = dot( c, vec3( 1.0 - 0.607 * amount, 0.769 * amount, 0.189 * amount ) );",
+				"color.g = dot( c, vec3( 0.349 * amount, 1.0 - 0.314 * amount, 0.168 * amount ) );",
+				"color.b = dot( c, vec3( 0.272 * amount, 0.534 * amount, 1.0 - 0.869 * amount ) );",
+
+				"gl_FragColor = vec4( min( vec3( 1.0 ), color.rgb ), opacity * color.a );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 101 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Screen-space ambient occlusion shader
+	 * - ported from
+	 *   SSAO GLSL shader v1.2
+	 *   assembled by Martins Upitis (martinsh) (http://devlog-martinsh.blogspot.com)
+	 *   original technique is made by ArKano22 (http://www.gamedev.net/topic/550699-ssao-no-halo-artifacts/)
+	 * - modifications
+	 * - modified to use RGBA packed depth texture (use clear color 1,1,1,1 for depth pass)
+	 * - refactoring and optimizations
+	 */
+
+	THREE.SSAOShader = {
+
+		uniforms: //THREE.UniformsUtils.merge( [
+			// THREE.UniformsLib[ "fog" ],
+			{
+
+			"tDiffuse":     { type: "t", value: null },
+			"tDepth":       { type: "t", value: null },
+			"size":         { type: "v2", value: new THREE.Vector2( 512, 512 ) },
+			"cameraNear":   { type: "f", value: 1 },
+			"cameraFar":    { type: "f", value: 100 },
+			"onlyAO":       { type: "i", value: 0 },
+			"aoClamp":      { type: "f", value: 0.5 },
+			"lumInfluence": { type: "f", value: 0.5 },
+			"noiseAmount": { type: "f", value: 0.0003 },
+			"radius": { type: "f", value: 5.0 },
+			"diffArea": { type: "f", value: 0.4 },
+			"gDisplace": { type: "f", value: 0.4 },
+			"fogEnabled": { type: "i", value: 1 },
+			"fogDensity": { type: "f", value: 0.0025 },
+			"depthScale": { type: "f", value: 1000.0 },
+			"opacity": { type: "f", value: 1.0 }
+		},
+			// ] ),
+		
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			//THREE.ShaderChunk['fog_pars_fragment'],
+			"uniform int fogEnabled;",
+			"uniform float fogDensity;",
+			"uniform float depthScale;",
+			// "uniform float fogFar;",
+			"uniform float cameraNear;",
+			"uniform float cameraFar;",
+
+			"uniform bool onlyAO;",      // use only ambient occlusion pass?
+
+			"uniform vec2 size;",        // texture width, height
+			"uniform float aoClamp;",    // depth clamp - reduces haloing at screen edges
+
+			"uniform float lumInfluence;",  // how much luminance affects occlusion
+
+			"uniform sampler2D tDiffuse;",
+			"uniform sampler2D tDepth;",
+
+			"varying vec2 vUv;",
+
+			// "#define PI 3.14159265",
+			"#define DL 2.399963229728653",  // PI * ( 3.0 - sqrt( 5.0 ) )
+			"#define EULER 2.718281828459045",
+
+			// helpers
+
+			"float width = size.x;",   // texture width
+			"float height = size.y;",  // texture height
+
+			"float cameraFarPlusNear = cameraFar + cameraNear;",
+			"float cameraFarMinusNear = cameraFar - cameraNear;",
+			"float cameraCoef = 2.0 * cameraNear;",
+
+			// user variables
+
+			"const int samples = 16;",     // ao sample count
+			"uniform float radius;",  // ao radius
+
+			"const bool useNoise = true;",      // use noise instead of pattern for sample dithering
+			"uniform float noiseAmount;", // dithering amount
+
+			"uniform float diffArea;",   // self-shadowing reduction
+			"uniform float gDisplace;",  // gauss bell center
+			"uniform float opacity;",
+
+
+			// RGBA depth
+
+			"float unpackDepth( const in vec4 rgba_depth ) {",
+
+				"const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
+				"float depth = dot( rgba_depth, bit_shift );",
+				"return depth;",
+
+			"}",
+
+			// generating noise / pattern texture for dithering
+
+			"vec2 rand( const vec2 coord ) {",
+
+				"vec2 noise;",
+
+				"if ( useNoise ) {",
+
+					"float nx = dot ( coord, vec2( 12.9898, 78.233 ) );",
+					"float ny = dot ( coord, vec2( 12.9898, 78.233 ) * 2.0 );",
+
+					"noise = clamp( fract ( 43758.5453 * sin( vec2( nx, ny ) ) ), 0.0, 1.0 );",
+
+				"} else {",
+
+					"float ff = fract( 1.0 - coord.s * ( width / 2.0 ) );",
+					"float gg = fract( coord.t * ( height / 2.0 ) );",
+
+					"noise = vec2( 0.25, 0.75 ) * vec2( ff ) + vec2( 0.75, 0.25 ) * gg;",
+
+				"}",
+
+				"return ( noise * 2.0  - 1.0 ) * noiseAmount;",
+
+			"}",
+
+			// "#ifdef USE_FOG",
+			"float doFog() {",
+				"float zdepth = unpackDepth( texture2D( tDepth, vUv ) );",
+				"float depth = -cameraFar * cameraNear / ( zdepth * cameraFarMinusNear - cameraFar );",
+				// "return smoothstep( fogNear, fogFar, depth );",
+
+
+			// "	#ifdef USE_LOGDEPTHBUF_EXT",
+
+			// "		float depth = gl_FragDepthEXT / gl_FragCoord.w;",
+
+			// "	#else",
+
+			// "		float depth = gl_FragCoord.z / gl_FragCoord.w;",
+
+			// "	#endif",
+
+			// "	#ifdef FOG_EXP2",
+			"float depthShift = depth * 0.001;",
+				  "float densityShift = fogDensity * 1000.0;",
+						//const float LOG2 = 1.442695;
+						"float fogFactor = 1.0 - clamp( 1.0 / exp( densityShift * densityShift * depthShift * depthShift ), 0.0, 1.0);",
+
+			// "		const float LOG2 = 1.442695;",
+			// "		float fogFactor = exp2( - fogDensity * fogDensity * zdepth * zdepth * LOG2 );",
+			// "		fogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );",
+
+			// "	#else",
+
+			// "		float fogFactor = smoothstep( fogNear, fogFar, depth );",
+
+			// "	#endif",
+
+			//"	gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );",
+			"	return fogFactor;",
+
+			"}",
+			// "#endif",
+
+			"float readDepth( const in vec2 coord ) {",
+
+				// "return ( 2.0 * cameraNear ) / ( cameraFar + cameraNear - unpackDepth( texture2D( tDepth, coord ) ) * ( cameraFar - cameraNear ) );",
+				"return cameraCoef / ( cameraFarPlusNear - unpackDepth( texture2D( tDepth, coord ) ) * cameraFarMinusNear );",
+
+
+			"}",
+
+			"float compareDepths( const in float depth1, const in float depth2, inout int far ) {",
+
+				"float garea = 2.0;",                         // gauss bell width
+				"float diff = ( depth1 - depth2 ) * depthScale;",  // depth difference (0-100)
+
+				// reduce left bell width to avoid self-shadowing
+
+				"if ( diff < gDisplace ) {",
+
+					"garea = diffArea;",
+
+				"} else {",
+
+					"far = 1;",
+
+				"}",
+
+				"float dd = diff - gDisplace;",
+				"float gauss = pow( EULER, -2.0 * dd * dd / ( garea * garea ) );",
+				"return gauss;",
+
+			"}",
+
+			"float calcAO( float depth, float dw, float dh ) {",
+
+				"float dd = radius - depth * radius;",
+				"vec2 vv = vec2( dw, dh );",
+
+				"vec2 coord1 = vUv + dd * vv;",
+				"vec2 coord2 = vUv - dd * vv;",
+
+				"float temp1 = 0.0;",
+				"float temp2 = 0.0;",
+
+				"int far = 0;",
+				"temp1 = compareDepths( depth, readDepth( coord1 ), far );",
+
+				// DEPTH EXTRAPOLATION
+
+				"if ( far > 0 ) {",
+
+					"temp2 = compareDepths( readDepth( coord2 ), depth, far );",
+					"temp1 += ( 1.0 - temp1 ) * temp2;",
+
+				"}",
+
+				"return temp1;",
+
+			"}",
+
+			"void main() {",
+
+				"vec2 noise = rand( vUv );",
+				"float depth = readDepth( vUv );",
+
+				"float tt = clamp( depth, aoClamp, 1.0 );",
+
+				"float w = ( 1.0 / width )  / tt + ( noise.x * ( 1.0 - noise.x ) );",
+				"float h = ( 1.0 / height ) / tt + ( noise.y * ( 1.0 - noise.y ) );",
+
+				"float ao = 0.0;",
+
+				"float dz = 1.0 / float( samples );",
+				"float z = 1.0 - dz / 2.0;",
+				"float l = 0.0;",
+
+				"for ( int i = 0; i <= samples; i ++ ) {",
+
+					"float r = sqrt( 1.0 - z );",
+
+					"float pw = cos( l ) * r;",
+					"float ph = sin( l ) * r;",
+					"ao += calcAO( depth, pw * w, ph * h );",
+					"z = z - dz;",
+					"l = l + DL;",
+
+				"}",
+
+				"ao /= float( samples );",
+				"ao = 1.0 - ao;",
+				"if ( fogEnabled == 1 ) {",
+					"ao = mix( ao, 1.0, doFog() );",
+				"}",
+
+				"vec3 color = texture2D( tDiffuse, vUv ).rgb;",
+
+				"vec3 lumcoeff = vec3( 0.299, 0.587, 0.114 );",
+				"float lum = dot( color.rgb, lumcoeff );",
+				"vec3 luminance = vec3( lum );",
+
+				"vec3 final = vec3( color * mix( vec3( ao ), vec3( 1.0 ), luminance * lumInfluence ) );",  // mix( color * ao, white, luminance )
+
+				"if ( onlyAO ) {",
+
+					"final = vec3( mix( vec3( ao ), vec3( 1.0 ), luminance * lumInfluence ) );",  // ambient occlusion only
+
+				"}",
+
+				"gl_FragColor = vec4( final, opacity );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 102 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author zz85 / http://www.lab4games.net/zz85/blog
+	 *
+	 * Triangle blur shader
+	 * based on glfx.js triangle blur shader
+	 * https://github.com/evanw/glfx.js
+	 *
+	 * A basic blur filter, which convolves the image with a
+	 * pyramid filter. The pyramid filter is separable and is applied as two
+	 * perpendicular triangle filters.
+	 */
+
+	THREE.TriangleBlurShader = {
+
+		uniforms : {
+
+			"texture": { type: "t", value: null },
+			"delta":   { type: "v2", value:new THREE.Vector2( 1, 1 )  }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"#define ITERATIONS 10.0",
+
+			"uniform sampler2D texture;",
+			"uniform vec2 delta;",
+
+			"varying vec2 vUv;",
+
+			"float random( vec3 scale, float seed ) {",
+
+				// use the fragment position for a different seed per-pixel
+
+				"return fract( sin( dot( gl_FragCoord.xyz + seed, scale ) ) * 43758.5453 + seed );",
+
+			"}",
+
+			"void main() {",
+
+				"vec4 color = vec4( 0.0 );",
+
+				"float total = 0.0;",
+
+				// randomize the lookup values to hide the fixed number of samples
+
+				"float offset = random( vec3( 12.9898, 78.233, 151.7182 ), 0.0 );",
+
+				"for ( float t = -ITERATIONS; t <= ITERATIONS; t ++ ) {",
+
+					"float percent = ( t + offset - 0.5 ) / ITERATIONS;",
+					"float weight = 1.0 - abs( percent );",
+
+					"color += texture2D( texture, vUv + delta * percent ) * weight;",
+					"total += weight;",
+
+				"}",
+
+				"gl_FragColor = color / total;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 103 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author miibond
+	 *
+	 * Full-screen tone-mapping shader based on http://www.graphics.cornell.edu/~jaf/publications/sig02_paper.pdf
+	 */
+
+	THREE.ToneMapShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"averageLuminance":  { type: "f", value: 1.0 },
+			"luminanceMap":  { type: "t", value: null },
+			"maxLuminance":  { type: "f", value: 16.0 },
+			"exposureBias":  { type: "f", value: 0.6 },
+			"maxLuminanceRT":  { type: "t", value: null },
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"#ifdef ADAPT_WHITE_BALANCE",
+				"uniform sampler2D maxLuminanceRT;",
+			"#else",
+				"uniform float maxLuminance;",
+			"#endif",
+
+			"varying vec2 vUv;",
+
+			"uniform float exposureBias;",
+			
+			"#ifdef SAMPLE_LUMINANCE",
+				"uniform sampler2D luminanceMap;",
+			"#else",
+				"uniform float averageLuminance;",
+			"#endif",
+
+			THREE.ShaderChunk['hdr_decode_pars_fragment'],
+			THREE.ShaderChunk['hdr_encode_pars_fragment'],
+
+			// #ifdef FILMIC_UC2
+			// From Uncharted 2 - http://www.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting
+				"uniform float whiteScale;",
+				"const float A = 0.15;",// A = Shoulder Strength
+		    "const float B = 0.50;",// B = Linear Strength
+		    "const float C = 0.10;",// C = Linear Angle
+		    "const float D = 0.20;",// D = Toe Strength
+		    "const float E = 0.02;",// E = Toe Numerator
+		    "const float F = 0.30;",// F = Toe Denominator
+
+		    "vec3 UC2Tonemap( vec3 x ) {",
+		      "return ( ( x * ( A * x + C * B ) + D * E ) / ( x * ( A * x + B ) + D * F ) ) - E / F;",
+		    "}",
+		  // #endif
+			
+			"const vec3 LUM_CONVERT = vec3(0.299, 0.587, 0.114);",
+
+			"vec3 ToneMap( vec3 vColor ) {",
+				"#ifdef SAMPLE_LUMINANCE",
+					// Get the calculated average luminance 
+					"vec4 lumAvg = texture2D(luminanceMap, vUv);",
+					"float fLumAvg = lumAvg.r;",
+					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
+						"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
+							"fLumAvg = HDRDecodeLOGLUV( lumAvg ).r;",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
+							"fLumAvg = HDRDecodeRGBM( lumAvg ).r;",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
+							"fLumAvg = HDRDecodeRGBD( lumAvg ).r;",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
+							"fLumAvg = HDRDecodeRGBE( lumAvg ).r;",
+						"#endif",
+					"#endif",
+				"#else",
+					"float fLumAvg = averageLuminance;",
+				"#endif",
+				
+				// "#if defined( FILMIC_UC2 )",
+				"#ifdef ADAPT_WHITE_BALANCE",
+					"vec3 maxLum = texture2D( maxLuminanceRT, vUv ).rgb;",
+					"vec3 white = 1.0 / UC2Tonemap( maxLum );",
+				"#else",
+					"vec3 white = vec3(maxLuminance);",
+				"#endif",
+	      // "maxLum = log2( maxLum * 1.5 + 3.5 );",
+	      // "vColor *= vec3( 16.0 );",
+				"vec3 curr = UC2Tonemap( (exposureBias / (fLumAvg + 0.025)) * vColor );",
+				// "vec3 curr = UC2Tonemap( exposureBias * vColor );",
+				// "vec3 whiteScale = 1.0 / UC2Tonemap(white);",
+				
+				"return curr * white;",
+	            
+				// "#else",//Reinhard Tonemapping
+				// 	// Calculate the luminance of the current pixel
+				// 	"float fLumPixel = dot(vColor, LUM_CONVERT);",
+
+				// 	// Apply the modified operator (Eq. 4)
+				// 	"float fLumScaled = (fLumPixel * exposureBias) / fLumAvg;",
+
+				// 	"float fLumCompressed = (fLumScaled * (1.0 + (fLumScaled / (maxLuminance * maxLuminance)))) / (1.0 + fLumScaled);",
+				// 	"return fLumCompressed * vColor;",
+				// "#endif",
+			"}",
+
+			"void main() {",
+
+				"vec4 texel = texture2D( tDiffuse, vUv );",
+				
+				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
+					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
+						"gl_FragColor = vec4( ToneMap( HDRDecodeLOGLUV( texel ) ), 1.0 );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
+						"gl_FragColor = vec4( ToneMap( HDRDecodeRGBM( texel ) ), 1.0 );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
+						"gl_FragColor = vec4( ToneMap( HDRDecodeRGBD( texel ) ), 1.0 );",
+					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
+						"gl_FragColor = vec4( ToneMap( HDRDecodeRGBE( texel ) ), 1.0 );",
+					"#else",
+						"gl_FragColor = vec4( ToneMap( texel.xyz ), texel.w );",
+					"#endif",
+				"#else",
+					"gl_FragColor = vec4( ToneMap( texel.xyz ), texel.w );",
+				"#endif",
+
+				//Gamma 2.0
+				"gl_FragColor.xyz = sqrt( gl_FragColor.xyz );",
+
+			"}"
+
+		].join("\n")
+
+	};
+
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 104 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Unpack RGBA depth shader
+	 * - show RGBA encoded depth as monochrome color
+	 */
+
+	THREE.UnpackDepthRGBAShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"opacity":  { type: "f", value: 1.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float opacity;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			// RGBA depth
+
+			"float unpackDepth( const in vec4 rgba_depth ) {",
+
+				"const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
+				"float depth = dot( rgba_depth, bit_shift );",
+				"return depth;",
+
+			"}",
+
+			"void main() {",
+
+				"float depth = 1.0 - unpackDepth( texture2D( tDiffuse, vUv ) );",
+				"gl_FragColor = opacity * vec4( vec3( depth ), 1.0 );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 105 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author miibond
+	 *
+	 * Unpack HDR texture in a variety of packing formats to full, 16-bit colour
+	 */
+
+	THREE.UnpackHDRShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"rgbmMultiplier":  { type: "f", value: 9.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"#ifdef FLIP_Y",
+					"vUv.y = 1.0 - vUv.y;",
+				"#endif",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+			"uniform sampler2D tDiffuse;",
+			"uniform float rgbmMultiplier;",
+
+			// Inverse logLuvMatrix matrix, for decoding
+			"const mat3 InverseLogLuvMatrix = mat3(",
+			  "6.0014, -2.7008, -1.7996,",
+				"-1.3320,  3.1029, -5.7721,",
+				"0.3008, -1.0882,  5.6268);",
+
+			"vec3 HDRDecodeLOGLUV(in vec4 vLogLuv)",
+			"{",
+			  // Based on http://www.xnainfo.com/content.php?content=28
+			  "float Le = vLogLuv.z * 255.0 + vLogLuv.w;",
+			  "vec3 Xp_Y_XYZp;",
+			  "Xp_Y_XYZp.y = exp2((Le - 127.0) / 2.0);",
+			  "Xp_Y_XYZp.z = Xp_Y_XYZp.y / vLogLuv.y;",
+			  "Xp_Y_XYZp.x = vLogLuv.x * Xp_Y_XYZp.z;",
+			  "vec3 vRGB = InverseLogLuvMatrix * Xp_Y_XYZp;",
+			  "return vRGB;",
+			"}",
+
+			"vec3 HDRDecodeRGBM( vec4 rgbm ) {",
+			  //Based on http://vemberaudio.se/graphics/RGBdiv8.pdf
+			  "return rgbmMultiplier * rgbm.rgb * rgbm.a;",
+			"}",
+
+			"vec3 HDRDecodeRGBD( vec4 rgbd ) {",
+			  //Based on http://vemberaudio.se/graphics/RGBdiv8.pdf
+			  "return rgbd.rgb / max(rgbd.a, 0.003);",
+			"}",
+
+			"vec3 HDRDecodeRGBE( vec4 rgbe ) {",
+			  //Based on http://www.graphics.cornell.edu/~bjw/rgbe/rgbe.c
+			  "float f = exp2( rgbe.w * 255.0 - (128.0 + 0.0) );",
+			  "return rgbe.rgb * f;",
+			"}",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec3 hdrColour;",
+				"#ifdef HDR_RGBM",
+					"hdrColour = HDRDecodeRGBM( texture2D( tDiffuse, vUv ) );",
+				"#elif defined(HDR_RGBD)",
+					"hdrColour = HDRDecodeRGBD( texture2D( tDiffuse, vUv ) );",
+				"#elif defined(HDR_RGBE)",
+					"hdrColour = HDRDecodeRGBE( texture2D( tDiffuse, vUv ) );",
+				"#elif defined(HDR_LOGLUV)",
+					"hdrColour = HDRDecodeLOGLUV( texture2D( tDiffuse, vUv ) );",
+				"#else",
+					"hdrColour = texture2D( tDiffuse, vUv ).xyz;",
+				"#endif",
+
+				"gl_FragColor = vec4( hdrColour, 1.0 );",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 106 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author zz85 / http://www.lab4games.net/zz85/blog
+	 *
+	 * Two pass Gaussian blur filter (horizontal and vertical blur shaders)
+	 * - described in http://www.gamerendering.com/2008/10/11/gaussian-blur-filter-shader/
+	 *   and used in http://www.cake23.de/traveling-wavefronts-lit-up.html
+	 *
+	 * - 9 samples per pass
+	 * - standard deviation 2.7
+	 * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
+	 */
+
+	THREE.VerticalBlurShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"v":        { type: "f", value: 1.0 / 512.0 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform float v;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 sum = vec4( 0.0 );",
+
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 4.0 * v ) ) * 0.051;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 3.0 * v ) ) * 0.0918;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 2.0 * v ) ) * 0.12245;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 1.0 * v ) ) * 0.1531;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 1.0 * v ) ) * 0.1531;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 2.0 * v ) ) * 0.12245;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 3.0 * v ) ) * 0.0918;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 4.0 * v ) ) * 0.051;",
+
+				"gl_FragColor = sum;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 107 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Simple fake tilt-shift effect, modulating two pass Gaussian blur (see above) by vertical position
+	 *
+	 * - 9 samples per pass
+	 * - standard deviation 2.7
+	 * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
+	 * - "r" parameter control where "focused" horizontal line lies
+	 */
+
+	THREE.VerticalTiltShiftShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"v":        { type: "f", value: 1.0 / 512.0 },
+			"r":        { type: "f", value: 0.35 }
+
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform sampler2D tDiffuse;",
+			"uniform float v;",
+			"uniform float r;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec4 sum = vec4( 0.0 );",
+
+				"float vv = v * abs( r - vUv.y );",
+
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 4.0 * vv ) ) * 0.051;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 3.0 * vv ) ) * 0.0918;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 2.0 * vv ) ) * 0.12245;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 1.0 * vv ) ) * 0.1531;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 1.0 * vv ) ) * 0.1531;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 2.0 * vv ) ) * 0.12245;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 3.0 * vv ) ) * 0.0918;",
+				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 4.0 * vv ) ) * 0.051;",
+
+				"gl_FragColor = sum;",
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author alteredq / http://alteredqualia.com/
+	 *
+	 * Vignette shader
+	 * based on PaintEffect postprocess from ro.me
+	 * http://code.google.com/p/3-dreams-of-black/source/browse/deploy/js/effects/PaintEffect.js
+	 */
+
+	THREE.VignetteShader = {
+
+		uniforms: {
+
+			"tDiffuse": { type: "t", value: null },
+			"offset":   { type: "f", value: 1.0 },
+			"darkness": { type: "f", value: 1.0 },
+			"opacity": { type: "f", value: 1.0 }
+		},
+
+		vertexShader: [
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n"),
+
+		fragmentShader: [
+
+			"uniform float offset;",
+			"uniform float darkness;",
+			"uniform float opacity;",
+
+			"uniform sampler2D tDiffuse;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				// Eskil's vignette
+
+				"vec4 texel = texture2D( tDiffuse, vUv );",
+				"vec2 uv = ( vUv - vec2( 0.5 ) ) * vec2( offset );",
+				"gl_FragColor = vec4( mix( texel.rgb, vec3( 1.0 - darkness ), dot( uv, uv ) ), texel.a * opacity );",
+
+				/*
+				// alternative version from glfx.js
+				// this one makes more "dusty" look (as opposed to "burned")
+
+				"vec4 color = texture2D( tDiffuse, vUv );",
+				"float dist = distance( vUv, vec2( 0.5 ) );",
+				"color.rgb *= smoothstep( 0.8, offset * 0.799, dist *( darkness + offset ) );",
+				"gl_FragColor = color;",
+				*/
+
+			"}"
+
+		].join("\n")
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		/**
+		 * @author alteredq / http://alteredqualia.com/
+		 */
+
+		THREE.TexturePass = function ( texture, opacity ) {
+
+			if ( THREE.CopyShader === undefined )
+				console.error( "THREE.TexturePass relies on THREE.CopyShader" );
+
+			var shader = THREE.CopyShader;
+
+			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+			this.uniforms[ "opacity" ].value = ( opacity !== undefined ) ? opacity : 1.0;
+			this.uniforms[ "tDiffuse" ].value = texture;
+
+			this.material = new THREE.ShaderMaterial( {
+
+				uniforms: this.uniforms,
+				vertexShader: shader.vertexShader,
+				fragmentShader: shader.fragmentShader
+
+			} );
+
+			this.enabled = true;
+			this.needsSwap = false;
+
+
+			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+			this.scene  = new THREE.Scene();
+
+			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+			this.scene.add( this.quad );
+
+		};
+
+		THREE.TexturePass.prototype = {
+
+			render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+				this.quad.material = this.material;
+
+				renderer.render( this.scene, this.camera, readBuffer );
+
+			}
+
+		};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 110 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+	/**
+	 * @author miibond
+	 * Generate a texture that represents the luminosity of the current scene, adapted over time
+	 * to simulate the optic nerve responding to the amount of light it is receiving.
+	 * Based on a GDC2007 presentation by Wolfgang Engel titled "Post-Processing Pipeline"
+	 *
+	 * Full-screen tone-mapping shader based on http://www.graphics.cornell.edu/~jaf/publications/sig02_paper.pdf
+	 */
+
+	THREE.AdaptiveToneMappingPass = function ( adaptive, resolution ) {
+
+		this.resolution = ( resolution !== undefined ) ? resolution : 256;
+		this.needsUpdate = true;
+		this.adaptive = adaptive !== undefined? !!adaptive : true;
+		this.needsManualDownSample = false;
+
+		this.luminanceRT = null;
+		this.previousLuminanceRT = null;
+		this.currentLuminanceRT = null;
+		this.currentLuminanceRTDownSampled = [];
+
+		this.maxLuminanceRT = null;
+		this.previousMaxLuminanceRT = null;
+		this.currentMaxLuminanceRT = [];
+
+		if ( THREE.CopyShader === undefined )
+			console.error( "THREE.AdaptiveToneMappingPass relies on THREE.CopyShader" );
+
+		var copyShader = THREE.CopyShader;
+
+		this.copyUniforms = THREE.UniformsUtils.clone( copyShader.uniforms );
+
+		this.materialCopy = new THREE.ShaderMaterial( {
+
+			uniforms: this.copyUniforms,
+			vertexShader: copyShader.vertexShader,
+			fragmentShader: copyShader.fragmentShader,
+			blending: THREE.NoBlending,
+			depthTest: false,
+			depthWrite: false,
+		} );
+
+		if ( THREE.LuminosityShader === undefined )
+			console.error( "THREE.AdaptiveToneMappingPass relies on THREE.LuminosityShader" );
+
+		this.materialLuminance = new THREE.ShaderMaterial( {
+
+			uniforms: THREE.UniformsUtils.clone( THREE.LuminosityShader.uniforms ),
+			vertexShader: THREE.LuminosityShader.vertexShader,
+			fragmentShader: THREE.LuminosityShader.fragmentShader,
+			blending: THREE.NoBlending,
+			depthTest: false,
+			depthWrite: false,
+			name: "Luminance",
+			defines: {"MAX_LUMINANCE": ""}
+		} );
+
+		this.adaptLuminanceShader = {
+			defines: {
+				"MIP_LEVEL_1X1" : Math.log2( this.resolution ).toFixed(1),
+			},
+			uniforms: {
+				"lastLum": { type: "t", value: null },
+				"currentLum": { type: "t", value: null },
+				"delta": { type: 'f', value: 0.016 },
+				"tau": { type: 'f', value: 1.0 }
+			},
+			vertexShader: [
+				"varying vec2 vUv;",
+
+				"void main() {",
+
+					"vUv = uv;",
+					"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+				"}"
+			].join('\n'),
+			fragmentShader: [
+				"varying vec2 vUv;",
+
+				"uniform sampler2D lastLum;",
+				"uniform sampler2D currentLum;",
+				"uniform float delta;",
+				"uniform float tau;",
+				THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
+				THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
+
+				"void main() {",
+
+					"vec4 lastLum = texture2D( lastLum, vUv, MIP_LEVEL_1X1 );",
+					"vec4 currentLum = texture2D( currentLum, vUv, MIP_LEVEL_1X1 );",
+
+					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
+						"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
+							"float fLastLum = HDRDecodeLOGLUV( lastLum ).r;",
+							"float fCurrentLum = HDRDecodeLOGLUV( currentLum ).r;",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
+							"float fLastLum = HDRDecodeRGBM( lastLum ).r;",
+							"float fCurrentLum = HDRDecodeRGBM( currentLum ).r;",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
+							"float fLastLum = HDRDecodeRGBD( lastLum ).r;",
+							"float fCurrentLum = HDRDecodeRGBD( currentLum ).r;",
+						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
+							"float fLastLum = HDRDecodeRGBE( lastLum ).r;",
+							"float fCurrentLum = HDRDecodeRGBE( currentLum ).r;",
+						"#else",
+							"float fLastLum = lastLum.r;",
+							"float fCurrentLum = currentLum.r;",
+						"#endif",
+					"#else",
+							"float fLastLum = lastLum.r;",
+							"float fCurrentLum = currentLum.r;",
+					"#endif",
+
+					//The adaption seems to work better in extreme lighting differences
+					//if the input luminance is squared.
+					// "fCurrentLum = pow( fCurrentLum, 2.0 );",
+
+					// Adapt the luminance using Pattanaik's technique
+					"float fAdaptedLum = fLastLum + (fCurrentLum - fLastLum) * (1.0 - exp(-delta * tau));",
+					// "fAdaptedLum = sqrt(fAdaptedLum);",
+					"gl_FragColor = vec4( vec3( fAdaptedLum ), 1.0 );",
+					THREE.ShaderChunk[ "hdr_encode_fragment" ],
+				"}",
+			].join('\n')
+		};
+
+		this.materialAdaptiveLum = new THREE.ShaderMaterial( {
+
+			uniforms: this.adaptLuminanceShader.uniforms,
+			vertexShader: this.adaptLuminanceShader.vertexShader,
+			fragmentShader: this.adaptLuminanceShader.fragmentShader,
+			defines: this.adaptLuminanceShader.defines,
+			blending: THREE.NoBlending,
+			depthTest: false,
+			depthWrite: false,
+			name: "Adaptive Luminance"
+		} );
+
+		if ( THREE.ToneMapShader === undefined )
+			console.error( "THREE.AdaptiveToneMappingPass relies on THREE.ToneMapShader" );
+
+		this.materialToneMap = new THREE.ShaderMaterial( {
+
+			uniforms: THREE.UniformsUtils.clone( THREE.ToneMapShader.uniforms ),
+			vertexShader: THREE.ToneMapShader.vertexShader,
+			fragmentShader: THREE.ToneMapShader.fragmentShader,
+			blending: THREE.NoBlending,
+			depthTest: false,
+			depthWrite: false,
+			name: "Tone Map"
+		} );
+
+		this.downSampleShader = {
+			// defines: {
+			// 	"RESOLUTION" : this.resolution.toFixed(1),
+			// },
+			uniforms: {
+				"tDiffuse": { type: "t", value: null },
+				"resolution": { type: "v2", value: new THREE.Vector2() },
+				"encode": { type: 'i', value: 1 },
+				// "tau": { type: 'f', value: 1.0 }
+			},
+			vertexShader: [
+				"varying vec2 vUv;",
+
+				"void main() {",
+
+					"vUv = uv;",
+					"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+				"}"
+			].join('\n'),
+			fragmentShader: [
+				"varying vec2 vUv;",
+				"uniform sampler2D tDiffuse;",
+				"uniform vec2 resolution;",
+				THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
+				THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
+
+				"void main() {",
+					"vec2 offset = 0.5 / resolution;",
+					"vec4 luminosity;",
+					"vec4 samples[ 4 ];",
+
+	        "samples[0] = texture2D( tDiffuse, vUv + vec2( -offset.x, -offset.x ) );",
+	        "samples[1] = texture2D( tDiffuse, vUv + vec2( offset.x, -offset.x ) );",
+	        "samples[2] = texture2D( tDiffuse, vUv + vec2( offset.x, offset.y ) );",
+	        "samples[3] = texture2D( tDiffuse, vUv + vec2( -offset.x, offset.y ) );",
+
+					"for ( int i = 0; i < 4; i++ ) {",
+						"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
+							"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
+								"luminosity[ i ] = HDRDecodeLOGLUV( samples[i] ).r;",
+							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
+								"luminosity[ i ] = HDRDecodeRGBM( samples[i] ).r;",
+							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
+								"luminosity[ i ] = HDRDecodeRGBD( samples[i] ).r;",
+							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
+								"luminosity[ i ] = HDRDecodeRGBE( samples[i] ).r;",
+							"#else",
+								"luminosity[ i ] = samples[i].r;",
+							"#endif",
+						"#else",
+								"luminosity[ i ] = samples[i].r;",
+						"#endif",
+					"}",
+
+					"float newLum = dot(luminosity, vec4(0.25));",
+
+					"gl_FragColor = vec4( vec3( newLum ), 1.0 );",
+					THREE.ShaderChunk[ "hdr_encode_fragment" ],
+
+				"}",
+			].join('\n')
+		};
+		this.materialDownSample = new THREE.ShaderMaterial( {
+			uniforms: this.downSampleShader.uniforms,
+			vertexShader: this.downSampleShader.vertexShader,
+			fragmentShader: this.downSampleShader.fragmentShader,
+			blending: THREE.NoBlending,
+			depthTest: false,
+			depthWrite: false,
+			name: "down-sample"
+		});
+
+		this.maxLuminanceShader = {
+			// defines: {
+			// 	"RESOLUTION" : this.resolution.toFixed(1),
+			// },
+			uniforms: {
+				"tDiffuse": { type: "t", value: null },
+				"resolution": { type: "v2", value: new THREE.Vector2() },
+			},
+			vertexShader: [
+				"varying vec2 vUv;",
+
+				"void main() {",
+
+					"vUv = uv;",
+					"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+				"}"
+			].join('\n'),
+			fragmentShader: [
+				"varying vec2 vUv;",
+				"uniform sampler2D tDiffuse;",
+				"uniform vec2 resolution;",
+				THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
+				THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
+
+				"void main() {",
+					"vec2 offset = 0.5 / resolution;",
+					"vec4 luminosity;",
+					"vec4 samples[ 4 ];",
+
+	        "samples[0] = texture2D( tDiffuse, vUv + vec2( -offset.x, -offset.x ) );",
+	        "samples[1] = texture2D( tDiffuse, vUv + vec2( offset.x, -offset.x ) );",
+	        "samples[2] = texture2D( tDiffuse, vUv + vec2( offset.x, offset.y ) );",
+	        "samples[3] = texture2D( tDiffuse, vUv + vec2( -offset.x, offset.y ) );",
+
+					"for ( int i = 0; i < 4; i++ ) {",
+						"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
+							"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
+								"luminosity[ i ] = HDRDecodeLOGLUV( samples[i] ).r;",
+							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
+								"luminosity[ i ] = HDRDecodeRGBM( samples[i] ).r;",
+							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
+								"luminosity[ i ] = HDRDecodeRGBD( samples[i] ).r;",
+							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
+								"luminosity[ i ] = HDRDecodeRGBE( samples[i] ).r;",
+							"#else",
+								"luminosity[ i ] = samples[i].r;",
+							"#endif",
+						"#else",
+								"luminosity[ i ] = samples[i].r;",
+						"#endif",
+					"}",
+
+					"float maxLum = max( max(luminosity.r, luminosity.g), max( luminosity.b, luminosity.a ));",
+
+					"gl_FragColor = vec4( vec3( maxLum ), 1.0 );",
+					THREE.ShaderChunk[ "hdr_encode_fragment" ],
+
+				"}",
+			].join('\n')
+		};
+		this.materialMaxLuminance = new THREE.ShaderMaterial( {
+			uniforms: this.maxLuminanceShader.uniforms,
+			vertexShader: this.maxLuminanceShader.vertexShader,
+			fragmentShader: this.maxLuminanceShader.fragmentShader,
+			blending: THREE.NoBlending,
+			depthTest: false,
+			depthWrite: false,
+			name: "max-luminance"
+		});
+
+		this.enabled = true;
+		this.needsSwap = true;
+		this.clear = false;
+
+		this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+		this.scene  = new THREE.Scene();
+
+		this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+		this.scene.add( this.quad );
+
+	};
+
+	THREE.AdaptiveToneMappingPass.prototype = {
+
+		render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
+
+			if ( this.needsUpdate ) {
+				this.resetRenderTargets( renderer, readBuffer );
+
+				this.needsUpdate = false;
+			}
+
+			if ( this.adaptive ) {
+				//Render the luminance of the current scene into a render target with mipmapping enabled
+				this.quad.material = this.materialLuminance;
+				this.materialLuminance.uniforms.tDiffuse.value = readBuffer;
+				renderer.render( this.scene, this.camera, this.currentLuminanceRT );
+				this.materialAdaptiveLum.uniforms.delta.value = delta;
+
+				if ( this.adaptiveWhiteLevel ) {
+					this.determineMaxLuminance( renderer );
+					//Adapt the max luminance value over time
+					this.quad.material = this.materialAdaptiveLum;
+					this.materialAdaptiveLum.uniforms.lastLum.value = this.previousMaxLuminanceRT;
+					this.materialAdaptiveLum.uniforms.currentLum.value = this.currentMaxLuminanceRT[ this.currentMaxLuminanceRT.length - 1 ];
+					renderer.render( this.scene, this.camera, this.maxLuminanceRT );
+					this.materialToneMap.uniforms.maxLuminanceRT.value = this.maxLuminanceRT;
+				}
+
+				//If we need to generate a 1x1 texture for sampling luminosity (because filtering isn't supported)
+				if ( this.needsManualDownSample ) {
+					this.downSampleLuminance( renderer );
+					this.materialAdaptiveLum.uniforms.currentLum.value = this.currentLuminanceRTDownSampled[ this.currentLuminanceRTDownSampled.length - 1 ];
+				}
+				else {
+					this.materialAdaptiveLum.uniforms.currentLum.value = this.currentLuminanceRT;
+				}
+
+				//Use the new luminance values, the previous luminance and the frame delta to
+				//adapt the luminance over time.
+				this.quad.material = this.materialAdaptiveLum;
+				// this.materialAdaptiveLum.uniforms.delta.value = delta;
+				this.materialAdaptiveLum.uniforms.lastLum.value = this.previousLuminanceRT;
+
+				renderer.render( this.scene, this.camera, this.luminanceRT );
+
+				//Copy the new adapted luminance value so that it can be used by the next frame.
+				this.quad.material = this.materialCopy;
+				this.copyUniforms.tDiffuse.value = this.luminanceRT;
+				renderer.render( this.scene, this.camera, this.previousLuminanceRT );
+
+				this.copyUniforms.tDiffuse.value = this.maxLuminanceRT;
+				renderer.render( this.scene, this.camera, this.previousMaxLuminanceRT );
+			}
+
+			//Now tonemap the scene, using the luminance
+			this.quad.material = this.materialToneMap;
+			this.materialToneMap.uniforms.tDiffuse.value = readBuffer;
+			renderer.render( this.scene, this.camera, writeBuffer, this.clear );
+
+		},
+
+		downSampleLuminance: function( renderer ) {
+			this.quad.material = this.materialDownSample;
+			this.materialDownSample.uniforms.tDiffuse.value = this.currentLuminanceRT;
+			for ( var i = 0; i < this.currentLuminanceRTDownSampled.length; i++ ) {
+				this.materialDownSample.uniforms.resolution.value.x = Math.pow( 2.0, this.currentLuminanceRTDownSampled.length - i );
+				this.materialDownSample.uniforms.resolution.value.y = Math.pow( 2.0, this.currentLuminanceRTDownSampled.length - i );
+				renderer.render( this.scene, this.camera, this.currentLuminanceRTDownSampled[ i ], true );
+				this.materialDownSample.uniforms.tDiffuse.value = this.currentLuminanceRTDownSampled[ i ];
+			}
+
+		},
+
+		determineMaxLuminance: function( renderer ) {
+			this.quad.material = this.materialMaxLuminance;
+			this.materialMaxLuminance.uniforms.tDiffuse.value = this.currentLuminanceRT;
+			for ( var i = 0; i < this.currentMaxLuminanceRT.length; i++ ) {
+				this.materialMaxLuminance.uniforms.resolution.value.x = Math.pow( 2.0, this.currentMaxLuminanceRT.length - i );
+				this.materialMaxLuminance.uniforms.resolution.value.y = Math.pow( 2.0, this.currentMaxLuminanceRT.length - i );
+				renderer.render( this.scene, this.camera, this.currentMaxLuminanceRT[ i ], true );
+				this.materialMaxLuminance.uniforms.tDiffuse.value = this.currentMaxLuminanceRT[ i ];
+			}
+
+		},
+
+		resetRenderTargets: function( renderer, renderTarget ) {
+			var i, res, pars, extensions;
+			// render targets
+			if ( this.luminanceRT ) {
+				this.luminanceRT.dispose();
+			}
+			if ( this.currentLuminanceRT ) {
+				this.currentLuminanceRT.dispose();
+			}
+			if ( this.previousLuminanceRT ) {
+				this.previousLuminanceRT.dispose();
+			}
+			if ( this.currentLuminanceRTDownSampled ) {
+				for ( i = 0; i < this.currentLuminanceRTDownSampled.length; i++ ) {
+					this.currentLuminanceRTDownSampled[ i ].dispose();
+				}
+				this.currentLuminanceRTDownSampled = [];
+			}
+			if ( this.maxLuminanceRT ) {
+				this.maxLuminanceRT.dispose();
+			}
+			if ( this.previousMaxLuminanceRT ) {
+				this.previousMaxLuminanceRT.dispose();
+			}
+			if ( this.currentMaxLuminanceRT ) {
+				for ( i = 0; i < this.currentMaxLuminanceRT.length; i++ ) {
+					this.currentMaxLuminanceRT[ i ].dispose();
+				}
+				this.currentMaxLuminanceRT = [];
+			}
+			pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: renderTarget.format, type: renderTarget.type };
+
+			//Determine if we will let the mipmaps for currentLuminanceRT to be auto-generated or not.
+			//For any compressed HDR formats, we'll have to manually down-sample the RT.
+			if ( renderTarget.type === THREE.FloatType ) {
+				//If we're using a floating point render target, check if the
+				extensions = new THREE.WebGLExtensions( renderer.getContext() );
+				if ( extensions.get('OES_texture_half_float_linear') || extensions.get('OES_texture_float_linear') ) {
+					//We only need mipmapping for the current luminosity because we want a down-sampled version to sample in our adaptive shader
+					this.needsManualDownSample = false;
+				}
+				else {
+					this.needsManualDownSample = true;
+				}
+			}
+			else if ( renderer.hdrOutputEnabled && renderer.hdrOutputType ) {
+				this.needsManualDownSample = true;
+			}
+			else {
+				this.needsManualDownSample = false;
+
+			}
+			if ( this.needsManualDownSample ) {
+				pars.minFilter = THREE.NearestFilter;
+				pars.magFilter = THREE.NearestFilter;
+			}
+			else {
+				pars.minFilter = THREE.LinearFilter;
+				pars.magFilter = THREE.LinearFilter;
+			}
+			this.luminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
+			this.luminanceRT.texture.generateMipmaps = false;
+			this.luminanceRT.name = "Average Luminance";
+			this.previousLuminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
+			this.previousLuminanceRT.texture.generateMipmaps = false;
+			this.previousLuminanceRT.name = "Previous Luminance";
+
+			if ( !this.needsManualDownSample ) {
+				pars.minFilter = THREE.LinearMipMapLinearFilter;
+			}
+			this.currentLuminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
+			this.currentLuminanceRT.name = "Current Luminance";
+
+			if ( this.adaptive ) {
+				this.materialToneMap.defines["SAMPLE_LUMINANCE"] = "";
+				this.materialToneMap.uniforms.luminanceMap.value = this.luminanceRT;
+			}
+
+			this.materialLuminance.needsUpdate = true;
+			this.materialAdaptiveLum.needsUpdate = true;
+			this.materialToneMap.needsUpdate = true;
+			this.materialDownSample.needsUpdate = true;
+
+			if ( renderer.hdrOutputEnabled ) {
+				this.materialLuminance.hdrOutputType = renderer.hdrOutputType;
+				this.materialAdaptiveLum.hdrOutputType = renderer.hdrOutputType;
+				this.materialDownSample.hdrOutputType = renderer.hdrOutputType;
+				this.materialToneMap.hdrOutputEnabled = false;
+
+				this.materialLuminance.hdrInputEnabled = true;
+				this.materialLuminance.defines['HDR_INPUT_TYPE'] = renderer.hdrOutputType;
+				this.materialAdaptiveLum.hdrInputEnabled = true;
+				this.materialAdaptiveLum.defines['HDR_INPUT_TYPE'] = renderer.hdrOutputType;
+				this.materialToneMap.hdrInputEnabled = true;
+				this.materialToneMap.defines['HDR_INPUT_TYPE'] = renderer.hdrOutputType;
+				this.materialDownSample.hdrInputEnabled = true;
+				this.materialDownSample.defines['HDR_INPUT_TYPE'] = renderer.hdrOutputType;
+			}
+
+			pars.minFilter = THREE.NearestFilter;
+			pars.magFilter = THREE.NearestFilter;
+			if ( this.needsManualDownSample ) {
+				this.currentLuminanceRT.texture.generateMipmaps = false;
+				this.currentLuminanceRTDownSampled = new Array( parseInt( Math.log2( this.resolution ) ) );
+				for ( i = 1; i <= this.currentLuminanceRTDownSampled.length; i++ ) {
+					res = parseInt( this.resolution / Math.pow( 2, i ) );
+					this.currentLuminanceRTDownSampled[ i - 1 ] = new THREE.WebGLRenderTarget( res, res, pars );
+					this.currentLuminanceRTDownSampled[ i - 1 ].name = "Current Luminance RT" + (i - 1);
+				}
+				this.materialAdaptiveLum.defines['MIP_LEVEL_1X1'] = "0.0";
+			}
+			else {
+				this.materialAdaptiveLum.defines['MIP_LEVEL_1X1'] = Math.log2( this.resolution ).toFixed(1);
+			}
+
+			this.currentMaxLuminanceRT = new Array( parseInt( Math.log2( this.resolution ) ) );
+			for ( i = 1; i <= this.currentMaxLuminanceRT.length; i++ ) {
+				res = parseInt( this.resolution / Math.pow( 2, i ) );
+				this.currentMaxLuminanceRT[ i - 1 ] = new THREE.WebGLRenderTarget( res, res, pars );
+				this.currentMaxLuminanceRT[ i - 1 ].name = "Current Max Luminance RT" + (i - 1);
+			}
+			this.previousMaxLuminanceRT = new THREE.WebGLRenderTarget( 1, 1, pars );
+			this.previousMaxLuminanceRT.name = "Previous Max Luminance";
+			this.maxLuminanceRT = new THREE.WebGLRenderTarget( 1, 1, pars );
+			this.maxLuminanceRT.name = "Current Max Luminance";
+
+			this.seedTargets( renderer );
+
+		},
+
+		seedTargets: function( renderer ) {
+			//Put something in the adaptive luminance texture so that the scene can render initially
+			this.quad.material = new THREE.MeshBasicMaterial( {color: 0x777777, opacity: 0.5 });
+			renderer.render( this.scene, this.camera, this.luminanceRT );
+			renderer.render( this.scene, this.camera, this.previousLuminanceRT );
+			renderer.render( this.scene, this.camera, this.currentLuminanceRT );
+
+			renderer.render( this.scene, this.camera, this.previousMaxLuminanceRT );
+		},
+
+		setAdaptive: function( adaptive ) {
+			if ( adaptive ) {
+				this.adaptive = true;
+				this.materialToneMap.defines["SAMPLE_LUMINANCE"] = "";
+				this.materialToneMap.uniforms.luminanceMap.value = this.luminanceRT;
+			}
+			else {
+				this.adaptive = false;
+				delete this.materialToneMap.defines["SAMPLE_LUMINANCE"];
+				this.materialToneMap.uniforms.luminanceMap.value = undefined;
+			}
+			this.materialToneMap.needsUpdate = true;
+		},
+
+		setAdaptiveWhiteLevel: function( autoWhite ) {
+			if ( autoWhite && this.adaptive ) {
+				this.adaptiveWhiteLevel = true;
+				this.materialToneMap.defines["ADAPT_WHITE_BALANCE"] = "";
+				this.materialToneMap.uniforms.maxLuminanceRT.value = this.maxLuminanceRT;
+			}
+			else {
+				this.adaptiveWhiteLevel = false;
+				delete this.materialToneMap.defines["ADAPT_WHITE_BALANCE"];
+				this.materialToneMap.uniforms.maxLuminanceRT.value = undefined;
+			}
+			this.materialToneMap.needsUpdate = true;
+		},
+
+		setAdaptionRate: function( rate ) {
+			if ( rate ) {
+				this.materialAdaptiveLum.uniforms.tau.value = Math.abs( rate );
+			}
+		},
+
+		setMaxLuminance: function( maxLum ) {
+			if ( maxLum ) {
+				var A = 0.15;
+				var B = 0.50;
+				var C = 0.10;
+				var D = 0.20;
+				var E = 0.02;
+				var F = 0.30;
+				this.materialToneMap.uniforms.maxLuminance.value = 1.0 / ( ( maxLum * ( A * maxLum + C * B ) + D * E ) / ( maxLum * ( A * maxLum + B ) + D * F ) ) - E / F;
+				this.materialLuminance.uniforms.maxLuminance.value = maxLum;
+				if ( !this.materialLuminance.defines || !this.materialLuminance.defines["MAX_LUMINANCE"] ) {
+					this.materialLuminance.defines["MAX_LUMINANCE"] = "";
+					this.materialLuminance.needsUpdate = true;
+				}
+			}
+		},
+
+		setAverageLuminance: function( avgLum ) {
+			if ( avgLum ) {
+				this.materialToneMap.uniforms.averageLuminance.value = avgLum;
+			}
+		},
+
+		setExposure: function( exposure ) {
+			if ( exposure ) {
+				this.materialToneMap.uniforms.exposureBias.value = exposure;
+			}
+		},
+
+		dispose: function() {
+			if ( this.luminanceRT ) {
+				this.luminanceRT.dispose();
+			}
+			if ( this.previousLuminanceRT ) {
+				this.previousLuminanceRT.dispose();
+			}
+			if ( this.currentLuminanceRT ) {
+				this.currentLuminanceRT.dispose();
+			}
+			if ( this.materialLuminance ) {
+				this.materialLuminance.dispose();
+			}
+			if ( this.materialAdaptiveLum ) {
+				this.materialAdaptiveLum.dispose();
+			}
+			if ( this.materialCopy ) {
+				this.materialCopy.dispose();
+			}
+			if ( this.materialToneMap ) {
+				this.materialToneMap.dispose();
+			}
+		}
+
+	};
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 111 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _BaseRegistry2 = __webpack_require__(16);
+	var _log = __webpack_require__(6);
 
-	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
+	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(66);
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * An object that holds animation data for animating models
+	 * @class AnimationAsset
+	 * @constructor
+	 */
+
+	var AnimationAsset = function (_Box3DAsset) {
+	  _inherits(AnimationAsset, _Box3DAsset);
+
+	  function AnimationAsset(json) {
+	    _classCallCheck(this, AnimationAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationAsset).call(this, json));
+	  }
+
+	  _createClass(AnimationAsset, [{
+	    key: 'getDataSizeAnimationDownload',
+	    value: function getDataSizeAnimationDownload() {
+	      return 1;
+	    }
+	  }, {
+	    key: 'getDataSizeAnimationInMemory',
+	    value: function getDataSizeAnimationInMemory() {
+	      return 1;
+	    }
+	  }, {
+	    key: '_getCurvesForObjectsInLayer',
+	    value: function _getCurvesForObjectsInLayer(objects, layer, curves) {
+	      var curvesByName,
+	          filtered = {};
+
+	      _lodash2.default.each(objects, function (object) {
+	        filtered[object.name] = [];
+	      });
+
+	      curvesByName = _lodash2.default.indexBy(curves, 'name');
+
+	      _lodash2.default.each(layer.curves, function (curveName) {
+	        if (curvesByName.hasOwnProperty(curveName)) {
+	          var curve = curvesByName[curveName],
+	              objectName = curve.object;
+
+	          if (filtered.hasOwnProperty(objectName)) {
+	            filtered[objectName].push(curve);
+	          }
+	        }
+	      });
+
+	      return filtered;
+	    }
+	  }, {
+	    key: '_getKeyframes',
+	    value: function _getKeyframes(objects, curves, startTime, stopTime) {
+	      var curveTypes = {},
+	          keyframes = {};
+
+	      // Supported channels and their corresponding THREE.js name.
+	      curveTypes.position = 'pos';
+	      curveTypes.rotation = 'rot';
+	      curveTypes.scale = 'scl';
+
+	      _lodash2.default.each(objects, function (object) {
+	        var mergedKeys,
+	            objectCurves = curves[object.name],
+	            objectKeys = [];
+
+	        // Create a single array of keys for the object, merging all channels.
+	        _lodash2.default.each(objectCurves, function (curve) {
+	          var keys = this.runtimeData.keyframes[curve.name],
+	              step = curve.channelCount + 1;
+
+	          _lodash2.default.each(curveTypes, function (property, type) {
+	            var idx = 0,
+	                key,
+	                pt0,
+	                pt1,
+	                time;
+
+	            if (curve.property === type) {
+	              // Find the first frame of the animation (time >= startTime).
+	              while (idx * step < keys.length && keys[idx * step] < startTime) {
+	                idx++;
+	              }
+
+	              // If the first frame is beyond startTime, create a new frame at
+	              // startTime.
+	              if (idx * step < keys.length) {
+	                time = keys[idx * step];
+
+	                if (time > startTime) {
+	                  key = {
+	                    time: 0
+	                  };
+
+	                  if (idx > 0) {
+	                    pt0 = keys.subarray((idx - 1) * step, idx * step), pt1 = keys.subarray(idx * step, (idx + 1) * step);
+	                    key[property] = this._interpolateKeys(pt0, pt1, startTime);
+	                  } else {
+	                    // Copy the first keyframe (const interpolation).
+	                    key[property] = keys.subarray(1, step);
+	                  }
+
+	                  objectKeys.push(key);
+	                }
+	              } else if (keys.length > 0) {
+	                // We did not find a keyframe with time >= startTime, so copy
+	                // the last keyframe (const interpolation).
+	                key = {
+	                  time: 0
+	                };
+	                key[property] = keys.subarray(-step + 1);
+	                objectKeys.push(key);
+	              }
+
+	              // Add the middle frames (startTime <= time <= stopTime).
+	              while (idx * step < keys.length && keys[idx * step] <= stopTime) {
+	                key = {
+	                  time: keys[idx * step] - startTime
+	                };
+	                key[property] = keys.subarray(idx * step + 1, (idx + 1) * step);
+	                objectKeys.push(key);
+	                idx++;
+	              }
+
+	              // If the final frame is beyond stopTime, create a new frame at
+	              // stopTime.
+	              if (idx * step < keys.length) {
+	                time = keys[idx * step];
+
+	                if (time > stopTime) {
+	                  key = {
+	                    time: stopTime - startTime
+	                  };
+
+	                  if (idx > 0) {
+	                    pt0 = keys.subarray((idx - 1) * step, idx * step), pt1 = keys.subarray(idx * step, (idx + 1) * step);
+	                    key[property] = this._interpolateKeys(pt0, pt1, stopTime);
+	                  } else {
+	                    // Copy the first keyframe (const interpolation).
+	                    key[property] = keys.subarray(1, step);
+	                  }
+
+	                  objectKeys.push(key);
+	                }
+	              } else if (keys.length > 0) {
+	                // Copy the final keyframe (const interpolation).
+	                key = {
+	                  time: stopTime - startTime
+	                };
+	                key[property] = keys.subarray(keys.length - step + 1, keys.length);
+	                objectKeys.push(key);
+	              }
+	            }
+	          }, this);
+	        }, this);
+
+	        // If there aren't any keys, skip the object.
+	        if (objectKeys.length > 0) {
+	          // Sort the keys by time.
+	          objectKeys.sort(function (a, b) {
+	            return a.time - b.time;
+	          });
+
+	          // Merge keys with identical time values.
+	          mergedKeys = [objectKeys[0]];
+
+	          for (var iKey = 1; iKey < objectKeys.length; iKey += 1) {
+	            var key = objectKeys[iKey],
+	                lastKey = mergedKeys[mergedKeys.length - 1];
+
+	            if (key.time === lastKey.time) {
+	              for (var type in curveTypes) {
+	                var property = curveTypes[type];
+	                if (key.hasOwnProperty(property)) {
+	                  lastKey[property] = key[property];
+	                }
+	              }
+	            } else {
+	              mergedKeys.push(key);
+	            }
+	          }
+
+	          keyframes[object.name] = mergedKeys;
+	        }
+	      }, this);
+
+	      return keyframes;
+	    }
+	  }, {
+	    key: '_interpolateKeys',
+	    value: function _interpolateKeys(key1, key2, time) {
+	      var t0 = key1[0],
+	          t1 = key2[0],
+	          result = [],
+	          alpha;
+
+	      if (t1 - t0 === 0) {
+	        alpha = 0.5;
+	      } else {
+	        alpha = (time - t0) / (t1 - t0);
+	      }
+
+	      for (var idx = 1; idx < key1.length; idx += 1) {
+	        result.push(key1[idx] + (key2[idx] - key1[idx]) * alpha);
+	      }
+
+	      return result;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      var _this2 = this;
+
+	      var onProgress = function onProgress(progressObj) {
+	        _this2.loadedBytes = progressObj.loaded;
+	        _this2.trigger('loadProgress', _this2);
+	      };
+
+	      this.box3DRuntime.resourceLoader.load(this, { xhrKey: this.id }, onProgress).then(function (result) {
+	        _this2.runtimeData = {
+	          keyframes: {}
+	        };
+
+	        var curves = _this2.getProperty('curves');
+	        curves.forEach(function (curve) {
+	          _this2.runtimeData.keyframes[curve.name] = new Float32Array(result.data, curve.keyframeFileOffset, curve.keyframeCount * curve.channelCount);
+	        });
+
+	        _this2.loadedBytes = _this2.getDataSizeDownload();
+	        callback();
+	      }).catch(function (err) {
+	        _log2.default.debug('Error loading animation', err);
+	        callback();
+	      });
+	    }
+
+	    /**
+	     * Add a new take to the asset.
+	     * @method addTake
+	     * @param  {Object} take The take data
+	     * @return {Boolean} true on success; otherwise, false
+	     */
+
+	  }, {
+	    key: 'addTake',
+	    value: function addTake(take) {
+	      var takes = _lodash2.default.clone(this.getProperty('takes'));
+
+	      if (this.getTakeNames().indexOf(take.name) !== -1) {
+	        _log2.default.warn('Failed to add new take because its name is not unique.');
+	        return false;
+	      }
+
+	      takes.push(take);
+	      this.setProperty('takes', takes);
+
+	      return true;
+	    }
+
+	    /**
+	     * Create a THREE.Animation for the object and take.
+	     * @method createAnimation
+	     * @param  {Object} root The object hierarchy
+	     * @param  {String} takeName The take name
+	     * @return {Object} The THREE.Animation object on success; otherwise false.
+	     */
+
+	  }, {
+	    key: 'createAnimation',
+	    value: function createAnimation(root, takeName) {
+	      var animation = {},
+	          curves = this.getProperty('curves'),
+	          hierarchy = [],
+	          keyframes,
+	          layer,
+	          objects,
+	          take,
+	          uniqueName = takeName + root.id + this.id;
+
+	      if (!root || !root.runtimeData || !takeName) {
+	        _log2.default.warn('AnimationAsset: Invalid parameter passed to createAnimation.');
+	        return null;
+	      }
+
+	      if (!this.runtimeData) {
+	        _log2.default.warn('AnimationAsset: Asset not loaded before call to createAnimation.');
+	        return null;
+	      }
+
+	      take = this.getTakeByName(takeName);
+
+	      if (!take) {
+	        _log2.default.warn('AnimationAsset: Take does not exist: ' + takeName);
+	        return null;
+	      }
+
+	      if (!take.layers || take.layers.length <= 0) {
+	        return null;
+	      }
+
+	      if (take.layers.length > 1) {
+	        _log2.default.warn('Take contains multiple layers, but we only support a single layer.');
+	      }
+
+	      // Parse the object hierarchy.
+	      objects = _three2.default.AnimationHandler.parse(root.runtimeData);
+
+	      // Get curves for objects in the hierarchy.
+	      layer = this.getLayerByName(take.layers[0]);
+	      curves = this._getCurvesForObjectsInLayer(objects, layer, curves);
+
+	      // Get keyframes for each object.
+	      keyframes = this._getKeyframes(objects, curves, take.start, take.stop);
+
+	      // Create the THREE.js animation.
+	      _lodash2.default.each(objects, function (object) {
+	        hierarchy.push({
+	          keys: keyframes[object.name] || []
+	        });
+	      });
+
+	      animation.name = uniqueName;
+	      animation.length = take.stop - take.start;
+	      animation.fps = 25;
+	      animation.hierarchy = hierarchy;
+
+	      return new _three2.default.Animation(root.runtimeData, animation);
+	    }
+
+	    /**
+	     * Get the curve with the specified name.
+	     * @method getCurveByName
+	     * @param  {String} curveName The curve name
+	     * @return {Object} The curve or null if the curve does not exist.
+	     */
+
+	  }, {
+	    key: 'getCurveByName',
+	    value: function getCurveByName(curveName) {
+	      return _lodash2.default.find(this.getCurves(), function (curve) {
+	        return curve.name === curveName;
+	      });
+	    }
+
+	    /**
+	     * Get names of all the curves.
+	     * @method getCurveNames
+	     * @return {Array} An array of curve names.
+	     */
+
+	  }, {
+	    key: 'getCurveNames',
+	    value: function getCurveNames() {
+	      return _lodash2.default.map(this.getCurves(), function (curve) {
+	        return curve.name;
+	      });
+	    }
+
+	    /**
+	     * Get all curves.
+	     * @method getCurves
+	     * @return {Array} An array of curves.
+	     */
+
+	  }, {
+	    key: 'getCurves',
+	    value: function getCurves() {
+	      return this.getProperty('curves');
+	    }
+
+	    /**
+	     * Get the layer with the specified name.
+	     * @method getLayerByName
+	     * @param  {String} layerName The layer name
+	     * @return {Object} The layer or null if the layer does not exist.
+	     */
+
+	  }, {
+	    key: 'getLayerByName',
+	    value: function getLayerByName(layerName) {
+	      return _lodash2.default.find(this.getLayers(), function (layer) {
+	        return layer.name === layerName;
+	      });
+	    }
+
+	    /**
+	     * Get names of all the layers.
+	     * @method getLayerNames
+	     * @return {Array} An array of layer names.
+	     */
+
+	  }, {
+	    key: 'getLayerNames',
+	    value: function getLayerNames() {
+	      return _lodash2.default.map(this.getLayers(), function (layer) {
+	        return layer.name;
+	      });
+	    }
+
+	    /**
+	     * Get all layers.
+	     * @method getLayers
+	     * @return {Array} An array of layers.
+	     */
+
+	  }, {
+	    key: 'getLayers',
+	    value: function getLayers() {
+	      return this.getProperty('layers');
+	    }
+
+	    /**
+	     * Get the take with the specified name.
+	     * @method getTakeByName
+	     * @param  {String} takeName The take name
+	     * @return {Object} The take or null if the take does not exist.
+	     */
+
+	  }, {
+	    key: 'getTakeByName',
+	    value: function getTakeByName(takeName) {
+	      return _lodash2.default.find(this.getTakes(), function (take) {
+	        return take.name === takeName;
+	      });
+	    }
+
+	    /**
+	     * Get names of all the takes.
+	     * @method getTakeNames
+	     * @return {Array} An array of take names.
+	     */
+
+	  }, {
+	    key: 'getTakeNames',
+	    value: function getTakeNames() {
+	      return _lodash2.default.map(this.getTakes(), function (take) {
+	        return take.name;
+	      });
+	    }
+
+	    /**
+	     * Get all takes.
+	     * @method getTakes
+	     * @return {Array} An array of takes.
+	     */
+
+	  }, {
+	    key: 'getTakes',
+	    value: function getTakes() {
+	      return this.getProperty('takes');
+	    }
+
+	    /**
+	     * Remove the specified take.
+	     * @method removeTake
+	     * @param {Integer} idx The index of the take
+	     */
+
+	  }, {
+	    key: 'removeTake',
+	    value: function removeTake(idx) {
+	      var takes = _lodash2.default.clone(this.getTakes());
+
+	      takes.splice(idx, 1);
+	      this.setProperty('takes', takes);
+	    }
+
+	    /**
+	     * Set the name of the specified take.
+	     * @method setTakeName
+	     * @param {Integer} takeIdx The index of the take
+	     * @param {String} name The new take name
+	     * @return {Boolean} true on success; otherwise, false.
+	     */
+
+	  }, {
+	    key: 'setTakeName',
+	    value: function setTakeName(takeIdx, name) {
+	      var idx = this.getTakeNames().indexOf(name);
+
+	      if (idx !== -1 && idx !== takeIdx) {
+	        _log2.default.warn('Failed to set take name because it is not unique.');
+	        return false;
+	      }
+
+	      var takes = _lodash2.default.cloneDeep(this.getTakes());
+	      takes[takeIdx].name = name;
+	      this.setProperty('takes', takes);
+
+	      return true;
+	    }
+
+	    /**
+	     * Set the start time of the specified take.
+	     * @method setTakeStart
+	     * @param {Integer} takeIdx The index of the take
+	     * @param {Number} start The new take start time
+	     */
+
+	  }, {
+	    key: 'setTakeStart',
+	    value: function setTakeStart(takeIdx, start) {
+	      var takes = _lodash2.default.cloneDeep(this.getTakes());
+	      takes[takeIdx].start = Number(start);
+	      this.setProperty('takes', takes);
+	    }
+
+	    /**
+	     * Set the stop time of the specified take.
+	     * @method setTakeStop
+	     * @param {Integer} takeIdx The index of the take
+	     * @param {Number} stop The new take stop time
+	     */
+
+	  }, {
+	    key: 'setTakeStop',
+	    value: function setTakeStop(takeIdx, stop) {
+	      var takes = _lodash2.default.cloneDeep(this.getTakes());
+	      takes[takeIdx].stop = Number(stop);
+	      this.setProperty('takes', takes);
+	    }
+	  }, {
+	    key: 'unload',
+	    value: function unload() {
+	      _get(Object.getPrototypeOf(AnimationAsset.prototype), 'unload', this).call(this);
+	      this.box3DRuntime.trigger('animationUnloaded', this.id);
+	    }
+	  }]);
+
+	  return AnimationAsset;
+	}(_Box3DAsset3.default);
+
+	window.Box3D.AnimationAsset = AnimationAsset;
+	exports.default = AnimationAsset;
+
+/***/ },
+/* 112 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	window.Box3D = window.Box3D || {};
+
+	var ApplicationAsset = function (_Box3DAsset) {
+	  _inherits(ApplicationAsset, _Box3DAsset);
+
+	  function ApplicationAsset(json) {
+	    _classCallCheck(this, ApplicationAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ApplicationAsset).call(this, json));
+	  }
+
+	  _createClass(ApplicationAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      this.loadComponents = true;
+	      _get(Object.getPrototypeOf(ApplicationAsset.prototype), 'initialize', this).call(this, properties);
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      this.box3DRuntime.setCurrentApp(this.id);
+	      var assetRegistry = this.box3DRuntime.assetRegistry;
+	      var scene = assetRegistry.getAssetById(this.getProperty('loadStartupScene'));
+	      if (scene) {
+	        scene.load();
+	      }
+
+	      callback();
+	    }
+	  }]);
+
+	  return ApplicationAsset;
+	}(_Box3DAsset3.default);
+
+	ApplicationAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
+	  loadStartupScene: null,
+	  useBox3DLoader: true,
+	  engineName: 'Default',
+	  container: '#verold3d'
+	});
+
+	window.Box3D.ApplicationAsset = ApplicationAsset;
+	exports.default = ApplicationAsset;
+
+/***/ },
+/* 113 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class AudioAsset
+	 * @constructor
+	 */
+
+	var AudioAsset = function (_Box3DAsset) {
+	  _inherits(AudioAsset, _Box3DAsset);
+
+	  function AudioAsset(json) {
+	    _classCallCheck(this, AudioAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AudioAsset).call(this, json));
+	  }
+
+	  _createClass(AudioAsset, [{
+	    key: 'uninitialize',
+	    value: function uninitialize() {
+	      if (this.runtimeData) {
+	        // TODO: should we be doing more here?
+	        this.runtimeData.pause();
+	      }
+
+	      _get(Object.getPrototypeOf(AudioAsset.prototype), 'uninitialize', this).call(this);
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(Object.getPrototypeOf(AudioAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+
+	      if (this.runtimeData) {
+	        if (changes.hasOwnProperty('loop')) {
+	          this.runtimeData.loop = this.getProperty('loop');
+	        }
+
+	        if (changes.hasOwnProperty('state')) {
+	          switch (this.getProperty('state')) {
+	            case 'pause':
+	              this.runtimeData.pause();
+	              break;
+
+	            case 'play':
+	              this.runtimeData.play();
+	              break;
+	          }
+	        }
+	      }
+	    }
+	  }]);
+
+	  return AudioAsset;
+	}(_Box3DAsset3.default);
+
+	window.Box3D.AudioAsset = AudioAsset;
+	exports.default = AudioAsset;
+
+/***/ },
+/* 114 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _BaseGeometryAsset2 = __webpack_require__(115);
+
+	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * An asset that holds mesh geometry.
+	 * @class MeshGeometryAsset
+	 * @constructor
+	 */
+
+	var MeshGeometryAsset = function (_BaseGeometryAsset) {
+	  _inherits(MeshGeometryAsset, _BaseGeometryAsset);
+
+	  function MeshGeometryAsset(json) {
+	    _classCallCheck(this, MeshGeometryAsset);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MeshGeometryAsset).call(this, json));
+
+	    _this.buffer = null;
+	    return _this;
+	  }
+
+	  _createClass(MeshGeometryAsset, [{
+	    key: 'createRuntimeData',
+
+	    /** @inheritdoc */
+	    value: function createRuntimeData(callback) {
+	      var _this2 = this;
+
+	      var onBufferProgress = function onBufferProgress(progressObj) {
+	        _this2.loadedBytes = _this2.getDataSizeDownload() * progressObj.loaded / progressObj.total;
+	        _this2.trigger('loadProgress', _this2);
+	      };
+
+	      var onGeometryLoadError = function onGeometryLoadError(err) {
+	        _log2.default.error(_this2.box3DRuntime.engineName + ' - MeshGeometryAsset: Error loading the geometry, ' + _this2.getName(), err);
+	        callback();
+	      };
+
+	      var onGeometryLoaded = function onGeometryLoaded(data) {
+	        _this2.buffer = data.data;
+	        _this2.createBufferGeometry();
+	        _this2.loadedBytes = _this2.getDataSizeDownload();
+	        callback();
+	      };
+
+	      this.box3DRuntime.resourceLoader.load(this, { size: 1, xhrKey: this.id }, onBufferProgress).then(onGeometryLoaded).catch(onGeometryLoadError);
+	    }
+
+	    /**
+	     * Adds required attributes to the specified geometry.
+	     * @method addMissingAttributes
+	     * @private
+	     * @param {Object} geometry the THREE.BufferGeometry
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'addMissingAttributes',
+	    value: function addMissingAttributes(geometry) {
+	      // Create an empty position array if it doesn't exist.
+	      if (geometry.attributes.position === undefined) {
+	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Mesh is missing "position" attribute.');
+	        geometry.addAttribute('position', new _three2.default.BufferAttribute(new Float32Array(0), 3));
+	      }
+
+	      // Compute vertex normals if they don't exist.
+	      if (geometry.attributes.normal === undefined) {
+	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Mesh is missing "normal" attribute.');
+	        geometry.computeVertexNormals();
+	      }
+	    }
+
+	    /**
+	     * Returns the typed-array constructor for the specified component type.
+	     * @method getArrayType
+	     * @private
+	     * @param {String} componentType one of: 'int8', 'uint8', 'int16', 'uint16', 'int32',
+	     * 'uint32', 'float32', 'float64'
+	     * @returns {Function} the typed-array constructor
+	     */
+
+	  }, {
+	    key: 'getArrayType',
+	    value: function getArrayType(componentType) {
+	      if (!MeshGeometryAsset.arrayTypes.hasOwnProperty(componentType)) {
+	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Unknown attribute component type, ' + componentType);
+	        return Float32Array;
+	      }
+
+	      return MeshGeometryAsset.arrayTypes[componentType];
+	    }
+
+	    /**
+	     * Returns the size (in components) of the specified type.
+	     * @method getTypeSize
+	     * @private
+	     * @param {String} type one of: 'scalar', 'vec2', 'vec3', 'vec4', 'mat2', 'mat3', 'mat4'
+	     * @returns {Integer} the size of the specified type
+	     */
+
+	  }, {
+	    key: 'getTypeSize',
+	    value: function getTypeSize(type) {
+	      if (!MeshGeometryAsset.typeSizes.hasOwnProperty(type)) {
+	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Unknown attribute value type, ' + type);
+	        return 1;
+	      }
+
+	      return MeshGeometryAsset.typeSizes[type];
+	    }
+
+	    /**
+	     * Returns the size (in components) of the specified type.
+	     * @method getTypeByteSize
+	     * @private
+	     * @param {String} type one of: 'int8', 'int16', 'int32', 'float16', 'float32', 'float64'
+	     * @returns {Integer} the byte size of the specified type
+	     */
+
+	  }, {
+	    key: 'getTypeByteSize',
+	    value: function getTypeByteSize(type) {
+	      if (!MeshGeometryAsset.typeByteSizes.hasOwnProperty(type)) {
+	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Unknown number type, ' + type);
+	        return 1;
+	      }
+
+	      return MeshGeometryAsset.typeByteSizes[type];
+	    }
+
+	    /**
+	     * Create a typed-array for the specified attribute, resizing it if necessary.
+	     * @method createArray
+	     * @private
+	     * @param {Object} attribute the attribute descriptor
+	     * @param {Integer} newSize the desired number of components in each value
+	     * @returns {Object} a typed-array
+	     */
+
+	  }, {
+	    key: 'createArray',
+	    value: function createArray(attribute, newSize) {
+	      var Type = this.getArrayType(attribute.componentType),
+	          size = this.getTypeSize(attribute.type),
+	          minSize = Math.min(size, newSize),
+	          iValue,
+	          iComponent,
+	          srcArray,
+	          dstArray;
+
+	      if (size === newSize) {
+	        return new Type(this.buffer, attribute.byteOffset, attribute.count * size);
+	      }
+
+	      // The attribute size needs to be adjusted.
+	      srcArray = new Type(this.buffer, attribute.byteOffset, attribute.count * size);
+
+	      dstArray = new Type(attribute.count * newSize);
+
+	      for (iValue = 0; iValue < attribute.count; iValue += 1) {
+	        for (iComponent = 0; iComponent < minSize; iComponent += 1) {
+	          dstArray[iValue * newSize + iComponent] = srcArray[iValue * size + iComponent];
+	        }
+
+	        while (iComponent < newSize) {
+	          dstArray[iValue * newSize + iComponent] = 0;
+	          iComponent += 1;
+	        }
+	      }
+
+	      return dstArray;
+	    }
+
+	    /**
+	     * Create a collection of THREE.BufferAttributes for this mesh.
+	     * @method createAttributes
+	     * @private
+	     * @param {Object} sizes the desired value size of each attribute
+	     * @returns {Object} a collection of THREE.BufferAttributes
+	     */
+
+	  }, {
+	    key: 'createAttributes',
+	    value: function createAttributes(sizes) {
+	      var attributes = this.getProperty('attributes'),
+	          bufferAttributes = {},
+	          nameMap;
+
+	      nameMap = {
+	        indices: 'index',
+	        positions: 'position',
+	        normals: 'normal',
+	        tangents: 'tangent',
+	        colors: 'color',
+	        uvs1: 'uv',
+	        uvs2: 'uv2',
+	        skinIndices: 'skinIndex',
+	        skinWeights: 'skinWeight'
+	      };
+
+	      // Add indices to the list of attributes.
+	      attributes = _lodash2.default.extend({
+	        indices: this.getProperty('indices')
+	      }, attributes);
+
+	      _lodash2.default.each(nameMap, function (newName, oldName) {
+	        var array, attribute, newSize;
+
+	        if (attributes.hasOwnProperty(oldName)) {
+	          attribute = attributes[oldName];
+	          newSize = sizes[newName] || this.getTypeSize(attribute.type);
+	          array = this.createArray(attribute, newSize);
+	          bufferAttributes[newName] = new _three2.default.BufferAttribute(array, newSize);
+	        }
+	      }, this);
+
+	      return bufferAttributes;
+	    }
+
+	    /**
+	     * Create THREE.BufferGeometry objects for this mesh.
+	     * @method createBufferGeometry
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'createBufferGeometry',
+	    value: function createBufferGeometry() {
+	      var attributes,
+	          bounds = this.getProperty('bounds'),
+	          boundsMin = new _three2.default.Vector3(bounds.min.x, bounds.min.y, bounds.min.z),
+	          boundsMax = new _three2.default.Vector3(bounds.max.x, bounds.max.y, bounds.max.z),
+	          primitivesByType;
+
+	      // Create vertex attributes.
+	      attributes = this.createAttributes({
+	        index: 1,
+	        position: 3,
+	        normal: 3,
+	        tangent: 4,
+	        color: 4,
+	        uv: 2,
+	        uv2: 2,
+	        skinIndex: 4,
+	        skinWeight: 4
+	      });
+
+	      primitivesByType = _lodash2.default.groupBy(this.getProperty('primitives'), 'primitive');
+
+	      _lodash2.default.each(primitivesByType, function (primitives, type) {
+	        var geometry = new _three2.default.BufferGeometry();
+
+	        // Add groups to the BufferGeometry.
+	        primitives.forEach(function (primitive) {
+	          geometry.addGroup(primitive.start, primitive.count, primitive.materialIndex);
+	        });
+
+	        // Add attributes to the BufferGeometry.
+	        _lodash2.default.each(attributes, function (attribute, name) {
+	          if (name === 'index') {
+	            geometry.setIndex(attribute);
+	          } else {
+	            geometry.addAttribute(name, attribute);
+	          }
+	        });
+
+	        // Add missing attributes.
+	        this.addMissingAttributes(geometry);
+
+	        // Calculate the geometry bounds.
+	        geometry.boundingBox = new _three2.default.Box3(boundsMin, boundsMax);
+	        geometry.computeBoundingSphere();
+
+	        // Register the geometry.
+	        this.setGeometry(type, geometry);
+	      }, this);
+	    }
+
+	    /**
+	     * Get the bounds (min/max coordinates) of this geometry.
+	     * @method getBounds
+	     * @public
+	     * @returns {THREE.Box3} The bounds of this geometry.
+	     */
+
+	  }, {
+	    key: 'getBounds',
+	    value: function getBounds() {
+	      var box = new _three2.default.Box3(),
+	          bounds = this.getProperty('bounds');
+
+	      box.set(new _three2.default.Vector3(bounds.min.x, bounds.min.y, bounds.min.z), new _three2.default.Vector3(bounds.max.x, bounds.max.y, bounds.max.z));
+
+	      return box;
+	    }
+
+	    /**
+	     * Returns the download size of this geometry.
+	     * @public
+	     * @method getDataSizeDownload
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @param {Object} params Specify parameters to narrow down the type of asset to
+	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeDownload',
+	    value: function getDataSizeDownload(dependencyType) {
+	      if (!dependencyType || dependencyType === 'geometries') {
+	        return this.getDataSizeInMemory();
+	      } else {
+	        return 0;
+	      }
+	    }
+
+	    /**
+	     * Returns the total amount of memory occupied by this geometry.
+	     * @public
+	     * @method getDataSizeInMemory
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @param {Object} params Specify parameters to narrow down the type of asset to
+	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeInMemory',
+	    value: function getDataSizeInMemory(dependencyType) {
+	      var total = 0;
+	      var attribs = this.getProperty('attributes');
+	      var indices = this.getProperty('indices');
+	      if (!dependencyType || dependencyType === 'geometries') {
+	        _lodash2.default.each(attribs, function (attrib) {
+	          total += this.calculateBufferSize(attrib.type, attrib.componentType, attrib.count);
+	        }, this);
+	        if (indices) {
+	          total += this.calculateBufferSize(indices.type, indices.componentType, indices.count);
+	        }
+	        return total;
+	      } else {
+	        return 0;
+	      }
+	    }
+
+	    /**
+	     * Calculate the size of the buffer based on the input params.
+	     * @private
+	     * @param  {String} type          The type of the attribute (e.g. 'vec3', 'mat3', etc.)
+	     * @param  {String} componentType The type of each component (e.g. 'float32', 'int16', etc.)
+	     * @param  {Number} count         The number of instances of the attribute in the buffer
+	     * @return {Number}               The length of the buffer, in bytes.
+	     */
+
+	  }, {
+	    key: 'calculateBufferSize',
+	    value: function calculateBufferSize(type, componentType, count) {
+	      var typeSize = this.getTypeSize(type);
+	      var byteSize = this.getTypeByteSize(componentType);
+	      return count * typeSize * byteSize;
+	    }
+	  }]);
+
+	  return MeshGeometryAsset;
+	}(_BaseGeometryAsset3.default);
+
+	MeshGeometryAsset.arrayTypes = {
+	  int8: Int8Array,
+	  uint8: Uint8Array,
+	  int16: Int16Array,
+	  uint16: Uint16Array,
+	  int32: Int32Array,
+	  uint32: Uint32Array,
+	  float32: Float32Array,
+	  float64: Float64Array
+	};
+	MeshGeometryAsset.typeSizes = {
+	  scalar: 1,
+	  vec2: 2,
+	  vec3: 3,
+	  vec4: 4,
+	  mat2: 4,
+	  mat3: 9,
+	  mat4: 16
+	};
+	MeshGeometryAsset.typeByteSizes = {
+	  int8: 1,
+	  uint8: 1,
+	  int16: 2,
+	  uint16: 2,
+	  int32: 4,
+	  uint32: 4,
+	  float16: 2,
+	  float32: 4,
+	  float64: 8
+	};
+
+	window.Box3D.MeshGeometryAsset = MeshGeometryAsset;
+	exports.default = MeshGeometryAsset;
+
+/***/ },
+/* 115 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * An asset that holds geometry.
+	 * @class BaseGeometryAsset
+	 * @constructor
+	 */
+
+	var BaseGeometryAsset = function (_Box3DAsset) {
+	  _inherits(BaseGeometryAsset, _Box3DAsset);
+
+	  function BaseGeometryAsset(json) {
+	    _classCallCheck(this, BaseGeometryAsset);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseGeometryAsset).call(this, json));
+
+	    _this.loadedBytes = 0;
+	    _this.geometries = {};
+	    _this.maxMaterialIndices = {};
+
+	    _lodash2.default.each(BaseGeometryAsset.PrimitiveType, function (type) {
+	      this.maxMaterialIndices[type] = -1;
+	    }, _this);
+	    return _this;
+	  }
+
+	  _createClass(BaseGeometryAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'initialize', this).call(this, properties);
+	    }
+	  }, {
+	    key: 'unload',
+	    value: function unload() {
+	      _log2.default.info(this.box3DRuntime.engineName + ' - BaseGeometryAsset: Unloading geometry, ' + this.getName() + ' - "' + this.id + '"');
+
+	      //abort xhr request associated with this
+	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
+
+	      _lodash2.default.each(this.geometries, function (geometry) {
+	        if (geometry) {
+	          geometry.dispose();
+	        }
+	      });
+
+	      this.geometries = {};
+	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'unload', this).call(this);
+	    }
+
+	    /**
+	     * Get the bounds of this geometry.
+	     * @method getBounds
+	     * @public
+	     * @returns {THREE.Box3} The bounds of this geometry.
+	     */
+
+	  }, {
+	    key: 'getBounds',
+	    value: function getBounds() {
+	      var bounds = new _three2.default.Box3();
+
+	      _lodash2.default.each(this.geometries, function (geometry) {
+	        var geometryBounds = geometry.boundingBox;
+	        bounds.union(geometryBounds);
+	      });
+
+	      return bounds;
+	    }
+
+	    /**
+	     * Returns an array of this asset's geometries.
+	     * @method getGeometries
+	     * @public
+	     * @returns {Array} an array of THREE.Geometry and THREE.BufferGeometry objects
+	     */
+
+	  }, {
+	    key: 'getGeometries',
+	    value: function getGeometries() {
+	      return _lodash2.default.values(this.geometries);
+	    }
+
+	    /**
+	     * Returns this asset's geometry of the specified type.
+	     * @method getGeometry
+	     * @public
+	     * @param {String} type one of BaseGeometryAsset.PrimitiveType
+	     * @returns {Object} a THREE.Geometry or THREE.BufferGeometry object
+	     */
+
+	  }, {
+	    key: 'getGeometry',
+	    value: function getGeometry(type) {
+	      type = type !== undefined ? type : BaseGeometryAsset.PrimitiveType.TRIANGLES;
+	      return this.geometries[type];
+	    }
+
+	    /**
+	     * Returns this asset's maximum material index for the specified type.
+	     * @method getMaxMaterialIndex
+	     * @public
+	     * @param {String} type one of BaseGeometryAsset.PrimitiveType
+	     * @returns {Integer} the maximum material index
+	     */
+
+	  }, {
+	    key: 'getMaxMaterialIndex',
+	    value: function getMaxMaterialIndex(type) {
+	      type = type !== undefined ? type : BaseGeometryAsset.PrimitiveType.TRIANGLES;
+	      return this.maxMaterialIndices[type];
+	    }
+
+	    /**
+	     * Called by subclasses to register a THREE.Geometry or THREE.BufferGeometry with this asset.
+	     * The geometry can then be fetched with getGeometry().
+	     * @protected
+	     * @param {String} type one of the BaseGeometryAsset.PrimitiveType
+	     * @param {Object} a THREE.Geometry or THREE.BufferGeometry object
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'setGeometry',
+	    value: function setGeometry(type, geometry) {
+	      if (geometry) {
+	        // Flag the geometry as dynamic or static.
+	        geometry.dynamic = this.getProperty('dynamic') || false;
+	      }
+
+	      this.geometries[type] = geometry;
+	      this.maxMaterialIndices[type] = this.computeMaxMaterialIndex(geometry);
+	    }
+
+	    /**
+	     * Figures out the highest material index referenced by a piece of three.js geometry.
+	     * @param {Object} a THREE.Geometry or THREE.BufferGeometry object
+	     * @return {Number}    The maximum material index
+	     */
+
+	  }, {
+	    key: 'computeMaxMaterialIndex',
+	    value: function computeMaxMaterialIndex(geometry) {
+	      var maxMaterialIndex = -1;
+	      var missingMaterial = false;
+	      var geoGroups = undefined;
+	      if (!geometry) {
+	        return maxMaterialIndex;
+	      }
+	      // Correct negative material indices and compute the maximum material
+	      // index for this geometry.
+	      if (geometry instanceof _three2.default.BufferGeometry && geometry.groups) {
+	        geoGroups = geometry.groups;
+	      } else if (geometry instanceof _three2.default.Geometry) {
+	        geoGroups = geometry.faces;
+	      }
+	      geoGroups.forEach(function (group) {
+	        maxMaterialIndex = Math.max(maxMaterialIndex, group.materialIndex);
+	      });
+
+	      geoGroups.forEach(function (group) {
+	        if (group.materialIndex >= 0) {
+	          return;
+	        }
+	        group.materialIndex = maxMaterialIndex + 1;
+	        missingMaterial = true;
+	      });
+
+	      if (missingMaterial) {
+	        maxMaterialIndex++;
+	      }
+	      return maxMaterialIndex;
+	    }
+
+	    /**
+	     * Returns the byte size of the data that has already been loaded by this asset and its
+	     * hierarchy.
+	     * @public
+	     * @method getDataSizeLoaded
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeLoaded',
+	    value: function getDataSizeLoaded(dependencyType) {
+	      if (!dependencyType || dependencyType === 'geometries') {
+	        return this.loadedBytes;
+	      } else {
+	        return 0;
+	      }
+	    }
+	  }]);
+
+	  return BaseGeometryAsset;
+	}(_Box3DAsset3.default);
+
+	BaseGeometryAsset.PrimitiveType = {
+	  POINTS: 'points',
+	  LINES: 'lines',
+	  TRIANGLES: 'triangles'
+	};
+
+	window.Box3D.BaseGeometryAsset = BaseGeometryAsset;
+	exports.default = BaseGeometryAsset;
+
+/***/ },
+/* 116 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _BaseGeometryAsset2 = __webpack_require__(115);
+
+	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * An object that holds primitive geometry.
+	 * @class PrimitiveGeometryAsset
+	 * @constructor
+	 */
+
+	var PrimitiveGeometryAsset = function (_BaseGeometryAsset) {
+	  _inherits(PrimitiveGeometryAsset, _BaseGeometryAsset);
+
+	  function PrimitiveGeometryAsset(json) {
+	    _classCallCheck(this, PrimitiveGeometryAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrimitiveGeometryAsset).call(this, json));
+	  }
+
+	  _createClass(PrimitiveGeometryAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), 'initialize', this).call(this, properties);
+	    }
+	  }, {
+	    key: 'createRuntimeData',
+
+	    /** @inheritdoc */
+	    value: function createRuntimeData(callback) {
+	      this.createPrimitiveGeometry();
+	      this.trigger('geometryChanged', this); // TODO: do we need this?
+	      callback();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+
+	      if (reason !== 'init') {
+	        // Currently, any property changes cause the runtimeData to be re-created.
+	        this.reloadBase();
+
+	        // Keeping the return here in case we add additional property handling below.
+	        return;
+	      }
+	    }
+
+	    /**
+	     * Create and register a THREE.Geometry with the base class.
+	     * @method createPrimitiveGeometry
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'createPrimitiveGeometry',
+	    value: function createPrimitiveGeometry() {
+	      var type = this.getProperty('type'),
+	          geometry;
+
+	      switch (type) {
+	        case 'box':
+	          geometry = new _three2.default.BoxGeometry(this.getProperty('sizeX'), this.getProperty('sizeY'), this.getProperty('sizeZ'), this.getProperty('segmentsX'), this.getProperty('segmentsY'), this.getProperty('segmentsZ'), this.getProperty('flipSided'));
+	          break;
+
+	        case 'cylinder':
+	          geometry = new _three2.default.CylinderGeometry(this.getProperty('radiusTop'), this.getProperty('radiusBottom'), this.getProperty('height'), this.getProperty('segmentsV'), this.getProperty('segmentsU'), this.getProperty('open'));
+	          break;
+
+	        case 'plane':
+	          geometry = new _three2.default.PlaneGeometry(this.getProperty('sizeX'), this.getProperty('sizeY'), this.getProperty('segmentsX'), this.getProperty('segmentsY'));
+	          geometry.applyMatrix(new _three2.default.Matrix4().makeRotationX(-Math.PI / 2));
+	          break;
+
+	        case 'sphere':
+	          geometry = new _three2.default.SphereGeometry(this.getProperty('radius'), this.getProperty('segmentsU'), this.getProperty('segmentsV'));
+	          break;
+
+	        case 'torus':
+	          geometry = new _three2.default.TorusGeometry(this.getProperty('radius'), 2 * this.getProperty('tubeRadius'), this.getProperty('segmentsV'), this.getProperty('segmentsU'), this.getProperty('arcAngle'));
+	          break;
+
+	        default:
+	          _log2.default.error(this.box3DRuntime.engineName + ' - PrimitiveGeometryAsset: Unrecognized geometry type, "' + type + '"');
+	          break;
+	      }
+
+	      if (geometry) {
+	        geometry.groupsNeedUpdate = true;
+	        geometry.computeBoundingBox();
+	        geometry.computeBoundingSphere();
+	        this.setGeometry(_BaseGeometryAsset3.default.PrimitiveType.TRIANGLES, geometry);
+	      }
+	    }
+	  }]);
+
+	  return PrimitiveGeometryAsset;
+	}(_BaseGeometryAsset3.default);
+
+	PrimitiveGeometryAsset.defaultProperties = _lodash2.default.extend({}, _BaseGeometryAsset3.default.defaultProperties);
+	PrimitiveGeometryAsset.defaultProperties = _lodash2.default.extend({}, _BaseGeometryAsset3.default.defaultProperties, {
+	  type: 'sphere',
+	  radius: 100,
+	  segmentsU: 12,
+	  segmentsV: 12,
+	  sizeX: 100,
+	  sizeY: 100,
+	  sizeZ: 100,
+	  segmentsX: 1,
+	  segmentsY: 1,
+	  segmentsZ: 1,
+	  radiusTop: 50,
+	  radiusBottom: 50,
+	  height: 100,
+	  open: false,
+	  tubeRadius: 20,
+	  arcAngle: Math.PI * 2.0
+	});
+
+	window.Box3D.PrimitiveGeometryAsset = PrimitiveGeometryAsset;
+	exports.default = PrimitiveGeometryAsset;
+
+/***/ },
+/* 117 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class PrefabAsset
+	 * @constructor
+	 */
+
+	var PrefabAsset = function (_Box3DAsset) {
+	  _inherits(PrefabAsset, _Box3DAsset);
+
+	  function PrefabAsset(json) {
+	    _classCallCheck(this, PrefabAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
+	  }
+
+	  _createClass(PrefabAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(PrefabAsset.prototype), 'initialize', this).call(this, properties);
+	      this.addOriginalTypeToDefaults(properties.originalType);
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      this.runtimeData = new _three2.default.Object3D();
+	      callback();
+	    }
+
+	    /**
+	     * Add the default properties from the class defined by this prefab's 'originalType' to the
+	     * default properties for this type.
+	     * @method  addOriginalTypeToDefaults
+	     * @private
+	     */
+
+	  }, {
+	    key: 'addOriginalTypeToDefaults',
+	    value: function addOriginalTypeToDefaults() {
+	      var originalType = this.get('originalType') || 'node';
+	      var objectClass = this.getObjectClass(originalType);
+	      _lodash2.default.extend(PrefabAsset.defaultProperties, objectClass.defaultProperties);
+	    }
+	  }]);
+
+	  return PrefabAsset;
+	}(_Box3DAsset3.default);
+
+	PrefabAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties);
+
+	window.Box3D.PrefabAsset = PrefabAsset;
+	exports.default = PrefabAsset;
+
+/***/ },
+/* 118 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DEntity = __webpack_require__(13);
+
+	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
+
+	var _BaseTextureAsset2 = __webpack_require__(19);
+
+	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
+
+	var _TextureRegistry = __webpack_require__(18);
+
+	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * An asset that holds geometry.
+	 * @class BaseGeometryAsset
+	 * @constructor
+	 */
+
+	var RenderTexture2DAsset = function (_BaseTextureAsset) {
+	  _inherits(RenderTexture2DAsset, _BaseTextureAsset);
+
+	  function RenderTexture2DAsset(json) {
+	    _classCallCheck(this, RenderTexture2DAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTexture2DAsset).call(this, json));
+	  }
+
+	  _createClass(RenderTexture2DAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      this.loadComponents = true;
+	      _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), 'initialize', this).call(this, properties);
+	    }
+	  }, {
+	    key: 'createRTTextureData',
+	    value: function createRTTextureData() {
+	      var width = this.getWidth();
+	      var height = this.getHeight();
+
+	      this.runtimeData = new _three2.default.WebGLRenderTarget(width, height, {
+	        wrapS: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')],
+	        wrapT: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')],
+	        minFilter: _three2.default.LinearFilter,
+	        magFilter: _three2.default.LinearFilter,
+	        format: this.getProperty('format'),
+	        type: this.getProperty('type'),
+	        stencilBuffer: this.getProperty('stencilBuffer')
+	      });
+
+	      this.runtimeData.name = this.getName();
+	      this.runtimeData.flipY = false;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      this.createRTTextureData();
+	      this.trigger('loadProgress', this); // TODO: do we need this?
+	      callback();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+
+	      // If something changed that necessitates the texture being recreated, do so.
+	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
+	        if (this.runtimeData.__webglFramebuffer) {
+	          this.runtimeData.dispose();
+	          delete this.runtimeData.__webglFramebuffer;
+	        }
+
+	        this.runtimeData.texture.format = this.getProperty('format');
+	        this.runtimeData.texture.type = this.getProperty('type');
+	        this.runtimeData.texture.height = this.getHeight();
+	        this.runtimeData.texture.width = this.getWidth();
+	      }
+	    }
+	  }, {
+	    key: 'setUserData',
+	    value: function setUserData(width, height, color) {
+	      var size = width * height,
+	          textureData = new Uint8Array(3 * size),
+	          r = Math.floor(color.r * 255),
+	          g = Math.floor(color.g * 255),
+	          b = Math.floor(color.b * 255),
+	          idx;
+
+	      for (idx = 0; idx < size; idx += 1) {
+	        textureData[idx * 3] = r;
+	        textureData[idx * 3 + 1] = g;
+	        textureData[idx * 3 + 2] = b;
+	      }
+
+	      if (this.runtimeData) {
+	        this.runtimeData.image = {
+	          data: textureData,
+	          width: width,
+	          height: height
+	        };
+
+	        this.runtimeData.needsUpdate = true;
+	      }
+	    }
+
+	    /**
+	     * Temp function to set data from three.js texture. This should be replaced with a way to
+	     * create an asset from a url, blob data, etc. as this method doesn't set the asset up for
+	     * unload, reload, property changes, etc.
+	     */
+
+	  }, {
+	    key: 'setFromThreeData',
+	    value: function setFromThreeData(threeTexture) {
+	      var _this2 = this;
+
+	      if (!threeTexture instanceof _three2.default.Texture) {
+	        return;
+	      }
+	      this.loadBase(function () {
+	        _this2.runtimeData = threeTexture;
+	        _this2.setProperty('width', threeTexture.image.width, { silent: true });
+	        _this2.setProperty('height', threeTexture.image.height, { silent: true });
+	        _this2.setProperty('format', threeTexture.format, { silent: true });
+	        _this2.setProperty('type', threeTexture.type, { silent: true });
+
+	        // TODO: _applyPropertiesLoaded() should only be called by Box3DEntity and
+	        // 'loadBase' should only be triggered there as well. We should investigate
+	        // using Box3DEntity.reloadBase() here instead.
+	        _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), '_applyPropertiesLoaded', _this2).call(_this2, _this2.getPropertiesObject());
+	        _this2.runtimeData.needsUpdate = true;
+	        _this2.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
+	      });
+	    }
+	  }]);
+
+	  return RenderTexture2DAsset;
+	}(_BaseTextureAsset3.default);
+
+	RenderTexture2DAsset.defaultProperties = _lodash2.default.extend({}, _BaseTextureAsset3.default.defaultProperties, {
+	  format: _three2.default.RGBAFormat,
+	  type: _three2.default.UnsignedByteType,
+	  width: 256,
+	  height: 256,
+	  filtering: 'Linear',
+	  useHardwareCompression: false,
+	  stencilBuffer: false,
+	  depthBuffer: false,
+	  generateMipmaps: false
+	});
+
+	window.Box3D.RenderTexture2DAsset = RenderTexture2DAsset;
+	exports.default = RenderTexture2DAsset;
+
+/***/ },
+/* 119 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// TODO: this class and RenderTexture2D contain duplicate code that should be
+	// refactored.
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _BaseTextureAsset2 = __webpack_require__(19);
+
+	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
+
+	var _TextureRegistry = __webpack_require__(18);
+
+	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class RenderTextureCubeAsset
+	 * @constructor
+	 */
+
+	var RenderTextureCubeAsset = function (_BaseTextureAsset) {
+	  _inherits(RenderTextureCubeAsset, _BaseTextureAsset);
+
+	  function RenderTextureCubeAsset(json) {
+	    _classCallCheck(this, RenderTextureCubeAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTextureCubeAsset).call(this, json));
+	  }
+
+	  _createClass(RenderTextureCubeAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      this.loadComponents = true;
+	      _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'initialize', this).call(this, properties);
+	    }
+	  }, {
+	    key: '_createRTTexture',
+	    value: function _createRTTexture() {
+	      var width = this.getWidth();
+	      var height = this.getHeight();
+
+	      this.runtimeData = new _three2.default.WebGLRenderTargetCube(width, height, {
+	        wrapS: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')],
+	        wrapT: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')],
+	        minFilter: _three2.default.LinearFilter,
+	        magFilter: _three2.default.LinearFilter,
+	        format: this.getProperty('format'),
+	        type: this.getProperty('type'),
+	        stencilBuffer: this.getProperty('stencilBuffer')
+	      });
+
+	      this.runtimeData.name = this.getName();
+	      this.runtimeData.flipY = false;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      this._createRTTexture();
+	      callback();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+
+	      // If something changed that necessitates the texture being recreated, do so.
+	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
+	        if (this.runtimeData.__webglFramebuffer) {
+	          this.runtimeData.dispose();
+	          delete this.runtimeData.__webglFramebuffer;
+	        }
+
+	        this.runtimeData.texture.format = this.getProperty('format');
+	        this.runtimeData.texture.type = this.getProperty('type');
+	        this.runtimeData.texture.width = this.getWidth();
+	        this.runtimeData.texture.height = this.runtimeData.width;
+	      }
+	    }
+
+	    /**
+	     * Returns the total amount of GPU memory occupied by this texture.
+	     * @method getDataSizeTextureInMemory
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeInMemory',
+	    value: function getDataSizeInMemory() {
+	      var oneFaceSize = _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
+	      return oneFaceSize * 6;
+	    }
+
+	    /**
+	     * Returns the width of the texture. Specify filters to query the desired
+	     * texture. If no filters are specified, the default texture for the current
+	     * device will be queried.
+	     * @param {Object} filters Filters for selecting a texture
+	     * @return {Integer} The texture width.
+	     */
+
+	  }, {
+	    key: 'getWidth',
+	    value: function getWidth() {
+	      var maxTextureSize = this.box3DRuntime.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'),
+	          width = this.getProperty('width');
+
+	      if (width > maxTextureSize) {
+	        width = maxTextureSize;
+	      }
+
+	      return width;
+	    }
+
+	    /**
+	     * Returns the height of the texture. Specify filters to query the desired
+	     * texture. If no filters are specified, the default texture for the current
+	     * device will be queried.
+	     * @param {Object} filters Filters for selecting a texture
+	     * @return {Integer} The texture height.
+	     */
+
+	  }, {
+	    key: 'getHeight',
+	    value: function getHeight() {
+	      var maxTextureSize = this.box3DRuntime.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'),
+	          height = this.getProperty('height');
+
+	      if (height > maxTextureSize) {
+	        height = maxTextureSize;
+	      }
+
+	      return height;
+	    }
+	  }]);
+
+	  return RenderTextureCubeAsset;
+	}(_BaseTextureAsset3.default);
+
+	RenderTextureCubeAsset.defaultProperties = _lodash2.default.extend({}, _BaseTextureAsset3.default.defaultProperties, {
+	  format: _three2.default.RGBAFormat,
+	  type: _three2.default.UnsignedByteType,
+	  width: 256,
+	  height: 256,
+	  filtering: 'Linear',
+	  useHardwareCompression: false,
+	  stencilBuffer: false,
+	  depthBuffer: false,
+	  generateMipmaps: false
+	});
+
+	window.Box3D.RenderTextureCubeAsset = RenderTextureCubeAsset;
+	exports.default = RenderTextureCubeAsset;
+
+/***/ },
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _uuid = __webpack_require__(9);
+
+	var _uuid2 = _interopRequireDefault(_uuid);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class SceneAsset
+	 * @constructor
+	 */
+
+	var SceneAsset = function (_Box3DAsset) {
+	  _inherits(SceneAsset, _Box3DAsset);
+
+	  function SceneAsset(json) {
+	    _classCallCheck(this, SceneAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SceneAsset).call(this, json));
+	  }
+
+	  _createClass(SceneAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      this.loadComponents = true;
+	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'initialize', this).call(this, properties);
+	      this.box3DRuntime.on('prefabDeleted', this.onPrefabDeleted, this);
+	      this.on('load', this._sceneLoaded, this);
+	    }
+	  }, {
+	    key: 'uninitialize',
+	    value: function uninitialize(properties) {
+	      this.box3DRuntime.off('prefabDeleted', this.onPrefabDeleted, this);
+	      this.off('load', this._sceneLoaded, this);
+	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'uninitialize', this).call(this, properties);
+	    }
+	  }, {
+	    key: '_sceneLoaded',
+	    value: function _sceneLoaded() {
+	      this.box3DRuntime.needsRender = true;
+	    }
+
+	    /**
+	     * Create an instance of a prefab/model asset and register it inside the scene asset.
+	     * Note that this function does not add the new instance as a child of anything. This must be
+	     * done after successful creation of the instance. i.e. Include a 'success' callback
+	     * in the options structure and then call scene.addChild( instance ).
+	     * @public
+	     * @method createInstanceById
+	     * @param  {Object} prefabObject
+	     * @param {String} id An ID for the new instance. If the one specified is not unique or
+	     * not given, a new one will be generated.
+	     * @return {Object} The new instance object
+	     */
+
+	  }, {
+	    key: 'createInstanceById',
+	    value: function createInstanceById(prefabId, id) {
+	      return this.createInstance(this.getAssetById(prefabId), id);
+	    }
+
+	    /**
+	     * Create an instance of a prefab asset and register it inside the scene asset.
+	     * Note that this function does not add the new instance as a child of anything. This must be
+	     * done after creation of the instance. i.e. Call scene.addChild( instance ).
+	     * @public
+	     * @method createInstance
+	     * @param  {Object} prefabAsset
+	     * @param {String} id An ID for the new instance. If the one specified is not unique or
+	     * not given, a new one will be generated.
+	     * @return {Object} The new instance object
+	     */
+
+	  }, {
+	    key: 'createInstance',
+	    value: function createInstance(prefab, id) {
+	      if (!prefab) {
+	        _log2.default.error('Please specify a prefab to create an instance of.');
+	        return;
+	      }
+	      if (prefab.type !== 'prefab') {
+	        _log2.default.error('You can only create an instance of a prefab asset.');
+	        return;
+	      }
+
+	      var instanceMap = {};
+	      var newTopObjectId = id || (0, _uuid2.default)();
+	      var topInstanceJson = {
+	        id: newTopObjectId,
+	        name: prefab.getName(),
+	        parentAssetId: this.id,
+	        prefabObjectId: prefab.id,
+	        prefabAssetId: prefab.id,
+	        prefabInstanceId: newTopObjectId,
+	        type: prefab.get('originalType') || 'model',
+	        properties: {},
+	        components: _lodash2.default.extend({}, prefab.getComponentDescriptors())
+	      };
+	      var that = this;
+
+	      // Create the top-level instance object
+	      var topInst = this.createObject(topInstanceJson);
+	      instanceMap[prefab.id] = topInst;
+
+	      // Create child instance objects
+	      _lodash2.default.each(prefab.objects, function (prefabObject) {
+	        var instanceJSON = {
+	          id: (0, _uuid2.default)(),
+	          name: prefabObject.getName(),
+	          parentAssetId: that.id,
+	          prefabObjectId: prefabObject.id,
+	          prefabAssetId: prefab.id,
+	          prefabInstanceId: topInst.id,
+	          type: prefabObject.type,
+	          properties: {},
+	          components: _lodash2.default.extend({}, prefabObject.getComponentDescriptors())
+	        };
+	        var inst = that.createObject(instanceJSON);
+	        instanceMap[prefabObject.id] = inst;
+	      }, this);
+
+	      // For each object, set 'parentId' and 'children' on the instance using
+	      // the mapping created above.
+	      _lodash2.default.each(prefab.objects, function (prefabObject) {
+	        var instChildren = [];
+	        var childIds = prefabObject.getChildIds();
+	        var instance = instanceMap[prefabObject.id];
+	        if (childIds.length) {
+	          for (var i = 0; i < childIds.length; i++) {
+	            if (instanceMap[childIds[i]]) {
+	              instChildren.push(instanceMap[childIds[i]].id);
+	              instanceMap[childIds[i]].set('parentId', instance.id);
+	            }
+	          }
+	          instance.setChildIds(instChildren);
+	        }
+	      }, this);
+
+	      // Add top-level instance children
+	      var instChildren = [];
+	      var childIds = prefab.getChildIds();
+	      for (var i = 0; i < childIds.length; i++) {
+	        if (instanceMap[childIds[i]]) {
+	          instChildren.push(instanceMap[childIds[i]].id);
+	          instanceMap[childIds[i]].set('parentId', topInst.id);
+	        }
+	      }
+	      topInst.setChildIds(instChildren);
+	      return topInst;
+	    }
+	  }, {
+	    key: 'getDataSizeGeometryDownload',
+	    value: function getDataSizeGeometryDownload() {
+	      var totalSize = 0;
+	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
+
+	      return totalSize;
+	    }
+	  }, {
+	    key: 'getDataSizeGeometryInMemory',
+	    value: function getDataSizeGeometryInMemory() {
+	      var totalSize = 0;
+	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
+	      return totalSize;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      this.runtimeData = new _three2.default.Scene();
+	      this.runtimeData.childIDs = {};
+	      this.runtimeData.matrixAutoUpdate = false;
+	      this.runtimeData.name = this.getName();
+
+	      // TODO: Separate this logic into another function so that we can
+	      // enable/disable rendering of the scene.
+	      var renderer = this.box3DRuntime.getRenderer();
+	      if (renderer) {
+	        var scenePass = new _three2.default.RenderPass();
+	        scenePass.clear = false;
+	        renderer.addRenderPass(scenePass);
+	      }
+
+	      callback();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+
+	      if (!this.getProperty('fogEnabled')) {
+	        this.runtimeData.fog = null;
+	      } else {
+	        if (!this.runtimeData.fog || changes.hasOwnProperty('fogType')) {
+
+	          if (this.getProperty('fogType') === 'FogExp2') {
+	            this.runtimeData.fog = new _three2.default.FogExp2(this.getProperty('fogColor'), this.getProperty('fogDensity'));
+	          } else {
+	            _log2.default.info('SceneAsset: Invalid fog type, ' + this.getProperty('fogType') + ', in scene!');
+	          }
+	        }
+
+	        if (changes.hasOwnProperty('fogColor')) {
+	          this.runtimeData.fog.color.setHex(this.getProperty('fogColor'));
+	        }
+
+	        if (changes.hasOwnProperty('fogDensity')) {
+	          this.runtimeData.fog.density = this.getProperty('fogDensity');
+	        }
+	      }
+
+	      if (changes.hasOwnProperty('fogEnabled')) {
+	        this.box3DRuntime.trigger('rebuildMaterials');
+	        this.box3DRuntime.needsRender = true;
+	      }
+	    }
+	  }, {
+	    key: 'unload',
+	    value: function unload(options) {
+	      if (this.runtimeData) {
+	        _log2.default.info('Unloading scene, ' + this.getName());
+
+	        _get(Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
+	      }
+	    }
+	  }, {
+	    key: 'onPrefabDeleted',
+	    value: function onPrefabDeleted(modelID) {
+	      if (this.runtimeData) {
+
+	        _lodash2.default.each(this.objects, function (obj) {
+	          if (obj) {
+	            var prefabObjectId = obj.get('prefabObjectId');
+	            if (prefabObjectId === modelID) {
+	              obj.breakPrefabLink();
+	            }
+	          }
+	        }, this);
+	      }
+	    }
+	  }]);
+
+	  return SceneAsset;
+	}(_Box3DAsset3.default);
+
+	SceneAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
+	  fogEnabled: false,
+	  fogType: 'FogExp2',
+	  fogColor: 0xbbbbbb,
+	  fogDensity: 0.0004
+	});
+
+	window.Box3D.SceneAsset = SceneAsset;
+	exports.default = SceneAsset;
+
+/***/ },
+/* 121 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(122);
 
 	var _Box3DShaderPBR_MetalRoughness2 = _interopRequireDefault(_Box3DShaderPBR_MetalRoughness);
 
-	var _Box3DShaderPBR_SpecGloss = __webpack_require__(70);
+	var _Box3DShaderPBR_SpecGloss = __webpack_require__(126);
 
 	var _Box3DShaderPBR_SpecGloss2 = _interopRequireDefault(_Box3DShaderPBR_SpecGloss);
 
@@ -81281,37 +88656,209 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	/**
-	 * All ShaderAssets are manged by this registry.
-	 * @class ShaderRegistry
-	 * @constructor
-	 */
+	var ShaderAsset = function (_Box3DAsset) {
+	  _inherits(ShaderAsset, _Box3DAsset);
 
-	var ShaderRegistry = function (_BaseRegistry) {
-	  _inherits(ShaderRegistry, _BaseRegistry);
+	  function ShaderAsset(json) {
+	    _classCallCheck(this, ShaderAsset);
 
-	  function ShaderRegistry(json) {
-	    _classCallCheck(this, ShaderRegistry);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ShaderRegistry).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ShaderAsset).call(this, json));
 	  }
 
-	  return ShaderRegistry;
-	}(_BaseRegistry3.default);
+	  _createClass(ShaderAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this, properties);
+	      this._buildParamDependencies();
+	    }
 
-	ShaderRegistry.builtInAssetDescriptors = {
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      this.runtimeData = {};
+	      this.runtimeData.vertexShader = this.getProperty('vertexShader');
+	      this.runtimeData.fragmentShader = this.getProperty('fragmentShader');
+	      this._buildUniformList();
+	      this._buildRenderParamList();
+	      callback();
+	    }
+	  }, {
+	    key: '_buildUniformList',
+	    value: function _buildUniformList() {
+	      var parameters = this.getProperty('parameters');
+	      var uniforms = this.getProperty('uniforms');
+	      var uniform;
+	      this.runtimeData.uniforms = _three2.default.UniformsUtils.clone(uniforms);
+	      _lodash2.default.each(parameters, function (param, paramName) {
+	        uniform = {};
+
+	        if (!param || param.isRenderParam || !param.isUniform) {
+	          return;
+	        }
+	        switch (param.type) {
+	          case 'dd':
+	            uniform.type = 'i';
+	            uniform.value = param.default;
+	            break;
+	          case 'b':
+	            uniform.type = 'i';
+	            uniform.value = param.default ? 1 : 0;
+	            break;
+	          case 't':
+	            uniform.type = 't';
+	            uniform.value = param.default;
+	            break;
+	          case 'c':
+	            uniform.type = param.type;
+	            uniform.value = new _three2.default.Color(param.default);
+	            // uniform.value.copy(param.default);
+	            uniform.value.copyGammaToLinear(uniform.value);
+	            break;
+	          case 'v2':
+	            uniform.type = param.type;
+	            uniform.value = new _three2.default.Vector2();
+	            uniform.value.set(param.default.x, param.default.y);
+	            break;
+	          case 'v3':
+	            uniform.type = param.type;
+	            uniform.value = new _three2.default.Vector3();
+	            uniform.value.set(param.default.x, param.default.y, param.default.z);
+	            break;
+	          case 'v4':
+	            uniform.type = param.type;
+	            uniform.value = new _three2.default.Vector4();
+	            uniform.value.set(param.default.x, param.default.y, param.default.z, param.default.w);
+	            break;
+	          default:
+	            uniform.type = param.type;
+	            uniform.value = param.default;
+	        }
+	        this.runtimeData.uniforms[paramName] = uniform;
+	      }, this);
+	    }
+	  }, {
+	    key: '_buildRenderParamList',
+	    value: function _buildRenderParamList() {
+	      var parameters = this.getProperty('parameters');
+	      var renderParams = this.getProperty('renderParams');
+	      this.runtimeData.renderParams = renderParams || {};
+	      _lodash2.default.each(parameters, function (param, paramName) {
+
+	        if (!param || param.isUniform || !param.isRenderParam) {
+	          return;
+	        }
+	        switch (param.type) {
+	          case 'b':
+	            this.runtimeData.renderParams[paramName] = !!param.default;
+	            break;
+	          default:
+	            this.runtimeData.renderParams[paramName] = param.default;
+	        }
+	      }, this);
+	    }
+
+	    /**
+	     * Build a mapping from a parameter name to a list of all parameters
+	     * that are dependent on it.
+	     */
+
+	  }, {
+	    key: '_buildParamDependencies',
+	    value: function _buildParamDependencies() {
+	      var parameters = this.getProperty('parameters');
+	      this.paramDependencyMap = {};
+	      _lodash2.default.each(parameters, function (param, name) {
+	        // Add this param to the list for each dependency that it has.
+	        var deps = this.getParameterDependencies(name);
+	        _lodash2.default.each(deps, function (paramName) {
+	          if (!this.paramDependencyMap[paramName]) {
+	            this.paramDependencyMap[paramName] = [];
+	          }
+	          if (this.paramDependencyMap[paramName].indexOf(name) === -1) {
+	            this.paramDependencyMap[paramName].push(name);
+	          }
+	        }, this);
+	        // Make sure that there is at least an empty array for each param.
+	        if (!this.paramDependencyMap[name]) {
+	          this.paramDependencyMap[name] = [];
+	        }
+	      }, this);
+	    }
+
+	    /**
+	     * Return a list of all parameters that are dependent on the specified one.
+	     * @param  {String} paramName The name of the dependency to check for.
+	     * @return {Array}           An array of parameters that are dependent on the
+	     *  given one.
+	     */
+
+	  }, {
+	    key: 'getDependentParameters',
+	    value: function getDependentParameters(paramName) {
+	      if (this.paramDependencyMap[paramName]) {
+	        return this.paramDependencyMap[paramName];
+	      }
+	    }
+
+	    /**
+	     * Get a list of all parameters that the given parameter is dependent on.
+	     * @param  {String} paramName The name of the parameter to get dependencies for.
+	     * @return {Array}           An array of parameter names.
+	     */
+
+	  }, {
+	    key: 'getParameterDependencies',
+	    value: function getParameterDependencies(paramName) {
+
+	      function _getLogicalAndDependencies(conditions, deps) {
+	        deps = deps || [];
+	        _lodash2.default.each(conditions, function (cond, key) {
+	          if (key === 'or') {
+	            deps = _getLogicalOrDependencies(cond, deps);
+	          } else if (deps.indexOf(key) === -1) {
+	            deps = deps.concat([key]);
+	          }
+	        }, this);
+	        return deps;
+	      }
+
+	      function _getLogicalOrDependencies(conditions, deps) {
+	        deps = deps || [];
+	        _lodash2.default.each(conditions, function (cond) {
+	          deps = _getLogicalAndDependencies(cond, deps);
+	        }, this);
+	        return deps;
+	      }
+
+	      var parameters = this.getProperty('parameters');
+	      if (parameters[paramName] && parameters[paramName].enabledWhen) {
+	        return _getLogicalAndDependencies(parameters[paramName].enabledWhen, []);
+	      } else {
+	        return [];
+	      }
+	    }
+	  }]);
+
+	  return ShaderAsset;
+	}(_Box3DAsset3.default);
+
+	ShaderAsset.builtInAssetDescriptors = {
 	  PBR_Metalness: _Box3DShaderPBR_MetalRoughness2.default,
 	  PBR_Specular: _Box3DShaderPBR_SpecGloss2.default
 	};
-	exports.default = ShaderRegistry;
+
+	window.Box3D.ShaderAsset = ShaderAsset;
+	exports.default = ShaderAsset;
 
 /***/ },
-/* 66 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(67), __webpack_require__(68), __webpack_require__(69)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(123), __webpack_require__(124), __webpack_require__(125)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -81371,7 +88918,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 67 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -82502,24 +90049,24 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 68 */
+/* 124 */
 /***/ function(module, exports) {
 
 	module.exports = "\r\n/**\r\n * Shader used as a Box3D material type\r\n *\r\n * Written by Mike Bond\r\n */\r\n#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\tattribute vec4 tangent;\r\n#endif\r\n\r\nattribute vec2 uv2;\r\n\r\nuniform float time;\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n\tuniform float logDepthBufFC;\r\n#endif\r\n\r\n#ifdef DISPLACEMENT_MAP_RGBA\r\n\tuniform float displacementMag;\r\n\tuniform float displacementBias;\r\n\tuniform sampler2D displacementTexture;\r\n\tuniform int displacementUVChannel;\r\n\tuniform vec2 displacementTextureOffset;\r\n\tuniform vec2 displacementTextureScale;\r\n\tuniform vec2 displacementTexturePan;\r\n#endif\r\n\r\nvarying vec4 vNormal_VS;\r\n\r\n#if ( defined(NORMAL_MAP) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\nvarying vec4 vTangent_VS;\r\nvarying vec4 vBinormal_VS;\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR ) && defined( ALBEDO )\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#if defined( USE_SHADOWMAP ) && defined( USE_SCENE_LIGHTS )\r\n\t\t#if NUM_SHADOWS > 0\r\n\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\tuniform mat4 shadowMatrix[ NUM_SHADOWS ];\r\n\t\t#endif\r\n\t#endif\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tuniform mat4 bindMatrix;\r\n\tuniform mat4 bindMatrixInverse;\r\n\r\n\t#ifdef BONE_TEXTURE\r\n\r\n\t\tuniform sampler2D boneTexture;\r\n\t\tuniform int boneTextureWidth;\r\n\t\tuniform int boneTextureHeight;\r\n\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tfloat j = i * 4.0;\r\n\t\t\tfloat x = mod( j, float( boneTextureWidth ) );\r\n\t\t\tfloat y = floor( j / float( boneTextureHeight ) );\r\n\r\n\t\t\tfloat dx = 1.0 / float( boneTextureWidth );\r\n\t\t\tfloat dy = 1.0 / float( boneTextureHeight );\r\n\r\n\t\t\ty = dy * ( y + 0.5 );\r\n\r\n\t\t\tvec4 v1 = texture2D( boneTexture, vec2( dx * ( x + 0.5 ), y ) );\r\n\t\t\tvec4 v2 = texture2D( boneTexture, vec2( dx * ( x + 1.5 ), y ) );\r\n\t\t\tvec4 v3 = texture2D( boneTexture, vec2( dx * ( x + 2.5 ), y ) );\r\n\t\t\tvec4 v4 = texture2D( boneTexture, vec2( dx * ( x + 3.5 ), y ) );\r\n\r\n\t\t\tmat4 bone = mat4( v1, v2, v3, v4 );\r\n\r\n\t\t\treturn bone;\r\n\t\t}\r\n\t#else\r\n\r\n\t\tuniform mat4 boneGlobalMatrices[ NUM_BONES ];\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tmat4 bone = boneGlobalMatrices[ int(i) ];\r\n\t\t\treturn bone;\r\n\t\t}\r\n\r\n\t#endif\r\n#endif\r\n\r\n//Only for m * v (not v * m!)\r\nvec3 mulVectorByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn (v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] ) )).xyz;\r\n}\r\n\r\n//Only for m * p (not p * m!)\r\nvec4 mulPointByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] + m[3] ) );\r\n}\r\n\r\n\r\n\r\nvoid main() {\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvUv.xy = uv;\r\n\tvUv.y = 1.0 - vUv.y;\r\n\tvUv.zw = uv2;\r\n\tvUv.w = 1.0 - vUv.w;\r\n#endif\r\n\r\n#if defined( DISPLACEMENT_MAP_RGBA )\r\n\tfloat texDisplacement = 0.0;\r\n\t#if ( DISPLACEMENT_MAP_RGBA == 0 )\r\n\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\t\ttexDisplacement = displacementMag * displacementMap.x + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\r\n\t#elif ( DISPLACEMENT_MAP_RGBA == 1 )\r\n\t\t#define DISPLACEMENT_WITH_NORMAL\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\r\n\t\ttexDisplacement = displacementMag * displacementMap.a + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\t#endif\r\n\tvec4 displacedPosition = vec4( (normal * texDisplacement ) + position.xyz, 1.0 );\r\n#else\r\n\tvec4 displacedPosition = vec4( position, 1.0 );\r\n\r\n#endif\r\n\r\n\r\nhighp vec3 vNormal = normal;\r\n#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\thighp vec3 vTangent = tangent.xyz;\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tmat4 boneMatX = getBoneMatrix( skinIndex.x );\r\n\tmat4 boneMatY = getBoneMatrix( skinIndex.y );\r\n\tmat4 boneMatZ = getBoneMatrix( skinIndex.z );\r\n\tmat4 boneMatW = getBoneMatrix( skinIndex.w );\r\n\r\n\tmat4 skinMatrix = mat4( 0.0 );\r\n        skinMatrix += skinWeight.x * boneMatX;\r\n\tskinMatrix += skinWeight.y * boneMatY;\r\n\tskinMatrix += skinWeight.z * boneMatZ;\r\n\tskinMatrix += skinWeight.w * boneMatW;\r\n        skinMatrix  = bindMatrixInverse * skinMatrix * bindMatrix;\r\n\r\n\tvNormal = (skinMatrix * vec4( vNormal, 0.0 )).xyz;\r\n\t#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\t\tvTangent = (skinMatrix * vec4( vTangent, 0.0 )).xyz;\r\n\t#endif\r\n\r\n\tvec4 skinVertex    = bindMatrix * displacedPosition;\r\n\tdisplacedPosition  = boneMatX * skinVertex * skinWeight.x;\r\n\tdisplacedPosition += boneMatY * skinVertex * skinWeight.y;\r\n\tdisplacedPosition += boneMatZ * skinVertex * skinWeight.z;\r\n\tdisplacedPosition += boneMatW * skinVertex * skinWeight.w;\r\n\tdisplacedPosition  = bindMatrixInverse * displacedPosition;\r\n#endif\r\n\r\nvPosition_VS = modelViewMatrix * displacedPosition;\r\n\r\n#ifdef USE_BILLBOARDING\r\n\tgl_Position = projectionMatrix * (viewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + modelViewMatrix * displacedPosition );\r\n#else\r\n\tgl_Position = projectionMatrix * modelViewMatrix * displacedPosition;\r\n#endif\r\n\r\n#if defined( USE_LOGDEPTHBUF ) && !defined(DEPTH_PASS)\r\n\tgl_Position.z = log2(max(1e-6, gl_Position.w + 1.0)) * logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvFragDepth = 1.0 + gl_Position.w;\r\n\t#else\r\n\t\tgl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;\r\n\t#endif\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR )\r\n\t\t#if defined( ALBEDO )\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t\tvColor = color * color;\r\n\t\t\t#else\r\n\t\t\t\tvColor = color;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#endif\r\n\r\n\tvNormal_VS.xyz = normalMatrix * vNormal;\r\n\r\n\t#ifdef FLIP_SIDED\r\n\t\tvNormal_VS = -vNormal_VS;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\r\n\t\t#if defined( NORMAL_MAP ) && defined(USE_TANGENTS)\r\n\t\t\tvTangent_VS.xyz = normalMatrix * vTangent.xyz;\r\n\t\t\tvBinormal_VS.xyz = cross( vNormal_VS.xyz, vTangent_VS.xyz ) * tangent.w;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t \t#if NUM_SHADOWS > 0\r\n\r\n\t\t\t\tfor( int i = 0; i < NUM_SHADOWS; i ++ ) {\r\n\r\n\t\t\t\t\t#ifdef USE_MORPHTARGETS\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * vec4( morphed, 1.0 );\r\n\r\n\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * displacedPosition;\r\n\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z = log2(max(1e-6, 1.0 + vShadowCoord[ i ].w)) * logDepthBufFC - 1.0;\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z *= vShadowCoord[ i ].w;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t}\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t#endif\r\n#endif\r\n}"
 
 /***/ },
-/* 69 */
+/* 125 */
 /***/ function(module, exports) {
 
 	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t#extension GL_EXT_frag_depth : enable\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\tuniform float reflectionFresnel;\r\n\t\t#ifdef ENVIRONMENT_MAP_CUBE_0\r\n\t\t\tuniform samplerCube environmentMapCube_0;\r\n\t\t\tuniform samplerCube environmentMapCube_1;\r\n\t\t\tuniform samplerCube environmentMapCube_2;\r\n\t\t#elif defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\tuniform sampler2D environmentMap2D_0;\r\n\t\t\tuniform sampler2D environmentMap2D_1;\r\n\t\t\tuniform sampler2D environmentMap2D_2;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t#if NUM_SHADOWS > 0\r\n\t\t\t\tuniform sampler2D shadowMap[ NUM_SHADOWS ];\r\n\t\t\t\tuniform vec2 shadowMapSize[ NUM_SHADOWS ];\r\n\t\t\t\tuniform float shadowBias[ NUM_SHADOWS ];\r\n\t\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\t#endif\r\n\r\n\t\t\tfloat unpackDepth( const in vec4 rgba_depth ) {\r\n\t\t\t\tconst vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\r\n\t\t\t\tfloat depth = dot( rgba_depth, bit_shift );\r\n\t\t\t\treturn depth;\r\n\t\t\t}\r\n\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\n#ifdef USE_ENVIRONMENT_MAP\r\nvec3 getReflectionFromRoughness(in vec3 ref0, in vec3 ref1, in vec3 ref2, in float roughness) {\r\n\tvec3 colour1, colour2;\r\n\tfloat interp = roughness * 2.0;\r\n\tif (roughness <= 0.5) {\r\n\t\tcolour1 = ref0;\r\n\t\tcolour2 = ref1;\r\n\t} else {\r\n\t\tinterp -= 1.0;\r\n\t\tcolour1 = ref1;\r\n\t\tcolour2 = ref2;\r\n\t}\r\n\treturn mix(colour1, colour2, interp);\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t#ifdef GAMMA_INPUT\r\n\t\t  albedoTex.xyz *= albedoTex.xyz;\r\n\t\t#endif\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  emissiveTex *= emissiveTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  sssTex *= sssTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 envMapReflectedColor;\r\n\t\t\tvec3 envMapDiffuseColor;\r\n\r\n\t\t\t#if defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\t\tvec3 reflectedColor0 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor1 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor2 = vec3(0.0);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 sampleUV;\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tmipBias = roughnessValue * 6.0;\r\n\t\t\t\t\treflectedColor0 = textureCube( environmentMapCube_0, sampleUV, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 3.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = textureCube( environmentMapCube_1, sampleUV, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 sampleUV;\r\n\t\t\t\t\t//Sphere map reflection\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t\t\t\t\t//Planar reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tmipBias = roughnessValue * 10.0;\r\n\t\t\t\t\treflectedColor0 = texture2D( environmentMap2D_0, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 5.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = texture2D( environmentMap2D_1, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\tenvMapReflectedColor = getReflectionFromRoughness(reflectedColor0, reflectedColor1, reflectedColor2, roughnessValue);\r\n\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\tenvMapDiffuseColor = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tenvMapDiffuseColor = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t\t#if NUM_SHADOWS > 0 && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\t\t\t\t\tfloat shadowValues[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\tfloat shadowValuesScatter[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\t\t\t\t\t\tvec3 shadowColour = vec3(1.0);\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_DIR_LIGHTS; s ++ ) {\r\n\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\tvec3 frustumColors[3];\r\n\t\t\t\t\t\tfrustumColors[0] = vec3( 1.0, 0.5, 0.0 );\r\n\t\t\t\t\t\tfrustumColors[1] = vec3( 0.0, 1.0, 0.8 );\r\n\t\t\t\t\t\tfrustumColors[2] = vec3( 0.0, 0.5, 1.0 );\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\tint inFrustumCount = 0;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat fDepth;\r\n\t\t\t\t\t//int lightIndex = 0;\r\n\t\t\t\t\tint frustumIndex = 0;\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_SHADOWS; s ++ ) {\r\n\r\n\t\t\t\t\t\tvec3 shadowCoord = vShadowCoord[ s ].xyz / vShadowCoord[ s ].w;\r\n\t\t\t\t\t\t// \"if ( something && something )\" \t\t breaks ATI OpenGL shader compiler\r\n\t\t\t\t\t\t// \"if ( all( something, something ) )\"  using this instead\r\n\r\n\t\t\t\t\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\r\n\t\t\t\t\t\tbool inFrustum = all( inFrustumVec );\r\n\r\n\t\t\t\t\t\t// don't shadow pixels outside of light frustum\r\n\t\t\t\t\t\t// use just first frustum (for cascades)\r\n\t\t\t\t\t\t// don't shadow pixels behind far plane of light frustum\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\tinFrustumCount += int( inFrustum );\r\n\t\t\t\t\t\t\tbvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\tbool frustumTest = all( frustumTestVec );\r\n\r\n\t\t\t\t\t\tif ( frustumTest ) {\r\n\r\n\t\t\t\t\t\t\tshadowCoord.z += shadowBias[ s ];\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_TYPE_PCF_SOFT\r\n\r\n\t\t\t\t\t\t\t\t// Percentage-close filtering\r\n\t\t\t\t\t\t\t\t// (9 pixel kernel)\r\n\t\t\t\t\t\t\t\t// http://fabiensanglard.net/shadowmappingPCF/\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\r\n\r\n\t\t\t\t\t\t\t\t//const float shadowDelta = 1.0 / 9.0;\r\n\t\t\t\t\t\t\t\t//const float kernelCornerWeight = 1.0 / 16.0;\r\n\t\t\t\t\t\t\t\t//const float kernelEdgeWeight = 1.0 / 8.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.0 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.0 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tmat3 shadowKernel;\r\n\t\t\t\t\t\t\t\tmat3 depthKernel;\r\n\r\n\t\t\t\t\t\t\t\tdepthKernel[0][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\r\n\t\t\t\t\t\t\t\tvec3 shadowZ = vec3( shadowCoord.z );\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[0] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[1] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[2] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tvec2 fractionalCoord = 1.0 - fract(shadowCoord.xy * shadowMapSize[s].xy );\r\n\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\tvec4 shadowValueVector;\r\n\t\t\t\t\t\t\t\tshadowValueVector.x = mix(shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.y = mix(shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.z = mix(shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.w = mix(shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\r\n\r\n\t\t\t\t\t\t\t\tshadow = dot(shadowValueVector, vec4(1.0));\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\t\tdepthKernel[0] = mix( depthKernel[1], depthKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\t\tdepthKernel[1] = mix( depthKernel[2], depthKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\t\tvec4 depthValues;\r\n\t\t\t\t\t\t\t\t\tdepthValues.x = mix(depthKernel[0][1], depthKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.y = mix(depthKernel[0][2], depthKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.z = mix(depthKernel[1][1], depthKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.w = mix(depthKernel[1][2], depthKernel[1][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tfloat totalDepth = dot(depthValues, vec4(1.0));// + dot(depthKernel[1], vec3(1.0)) + dot(depthKernel[2], vec3(1.0));\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 4.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 100.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 1000.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#elif defined( SHADOWMAP_TYPE_PCF )\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\t\t\t\t\t\t\t\tconst float shadowDelta = 1.0 / 9.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.25 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.25 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tfloat totalDepth = 0.0;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy, 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 9.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 10000.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 100.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tvec4 rgbaDepth = texture2DProj( shadowMap[ s ], vec4( vShadowCoord[ s ].w * ( shadowCoord.xy ), 0.05, vShadowCoord[ s ].w ) );\r\n\t\t\t\t\t\t\t\t// vec4 rgbaDepth = texture2D( shadowMap[ s ], shadowCoord.xy );\r\n\t\t\t\t\t\t\t\tfloat fDepth = unpackDepth( rgbaDepth );\r\n\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) {\r\n\r\n\t\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= 0.0;\r\n\t\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 0.0;\r\n\t\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - fDepth );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum && inFrustumCount == 1 ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t//frustumIndex ++;\r\n\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\t\t\t\t\tfloat shadowValue = 1.0;\r\n\t\t\t\t\tfloat shadowValueScatter = 1.0;\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0) && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\r\n\t\t\t\t\t\tshadowValue = shadowValues[ i ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0)\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValueScatter = shadowValuesScatter[ i ];\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * (specWeight * shadowValue) + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * shadowValue * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && defined( SHADOWMAP_DEBUG )\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\ttotalDiffuse *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t#ifdef SPECULAR_COLOR\r\n\t\t\t\t\t\t\ttotalSpecular *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && (defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0))\r\n\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\t\tvec3 reflectance_term = envMapReflectedColor.xyz * fresnel;\r\n\t\t\t\t#if !defined(METALNESS)\r\n\t\t\t\t\treflectance_term *= (1.0 - roughnessValue);\r\n\t\t\t\t#endif\r\n\t\t\t\ttotalSpecular += reflectance_term * specularColorValue;\r\n\r\n\t\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\ttotalDiffuse += envMapDiffuseColor;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t#ifdef GAMMA_OUTPUT\r\n\t\t\tfinalColor = sqrt( finalColor );\r\n\t\t#endif\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
 
 /***/ },
-/* 70 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(67), __webpack_require__(68), __webpack_require__(69)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(123), __webpack_require__(124), __webpack_require__(125)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -82579,7979 +90126,19 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 71 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _BaseRegistry2 = __webpack_require__(16);
-
-	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class AudioRegistry
-	 * @constructor
-	 */
-
-	var AudioRegistry = function (_BaseRegistry) {
-	  _inherits(AudioRegistry, _BaseRegistry);
-
-	  function AudioRegistry(json) {
-	    _classCallCheck(this, AudioRegistry);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AudioRegistry).call(this, json));
-	  }
-
-	  return AudioRegistry;
-	}(_BaseRegistry3.default);
-
-	exports.default = AudioRegistry;
-
-/***/ },
-/* 72 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var now = __webpack_require__(73)
-	  , global = typeof window === 'undefined' ? {} : window
-	  , vendors = ['moz', 'webkit']
-	  , suffix = 'AnimationFrame'
-	  , raf = global['request' + suffix]
-	  , caf = global['cancel' + suffix] || global['cancelRequest' + suffix]
-
-	for(var i = 0; i < vendors.length && !raf; i++) {
-	  raf = global[vendors[i] + 'Request' + suffix]
-	  caf = global[vendors[i] + 'Cancel' + suffix]
-	      || global[vendors[i] + 'CancelRequest' + suffix]
-	}
-
-	// Some versions of FF have rAF but not cAF
-	if(!raf || !caf) {
-	  var last = 0
-	    , id = 0
-	    , queue = []
-	    , frameDuration = 1000 / 60
-
-	  raf = function(callback) {
-	    if(queue.length === 0) {
-	      var _now = now()
-	        , next = Math.max(0, frameDuration - (_now - last))
-	      last = next + _now
-	      setTimeout(function() {
-	        var cp = queue.slice(0)
-	        // Clear queue here to prevent
-	        // callbacks from appending listeners
-	        // to the current frame's queue
-	        queue.length = 0
-	        for(var i = 0; i < cp.length; i++) {
-	          if(!cp[i].cancelled) {
-	            try{
-	              cp[i].callback(last)
-	            } catch(e) {
-	              setTimeout(function() { throw e }, 0)
-	            }
-	          }
-	        }
-	      }, Math.round(next))
-	    }
-	    queue.push({
-	      handle: ++id,
-	      callback: callback,
-	      cancelled: false
-	    })
-	    return id
-	  }
-
-	  caf = function(handle) {
-	    for(var i = 0; i < queue.length; i++) {
-	      if(queue[i].handle === handle) {
-	        queue[i].cancelled = true
-	      }
-	    }
-	  }
-	}
-
-	module.exports = function(fn) {
-	  // Wrap in a new function to prevent
-	  // `cancel` potentially being assigned
-	  // to the native rAF function
-	  return raf.call(global, fn)
-	}
-	module.exports.cancel = function() {
-	  caf.apply(global, arguments)
-	}
-
-
-/***/ },
-/* 73 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
-	(function() {
-	  var getNanoSeconds, hrtime, loadTime;
-
-	  if ((typeof performance !== "undefined" && performance !== null) && performance.now) {
-	    module.exports = function() {
-	      return performance.now();
-	    };
-	  } else if ((typeof process !== "undefined" && process !== null) && process.hrtime) {
-	    module.exports = function() {
-	      return (getNanoSeconds() - loadTime) / 1e6;
-	    };
-	    hrtime = process.hrtime;
-	    getNanoSeconds = function() {
-	      var hr;
-	      hr = hrtime();
-	      return hr[0] * 1e9 + hr[1];
-	    };
-	    loadTime = getNanoSeconds();
-	  } else if (Date.now) {
-	    module.exports = function() {
-	      return Date.now() - loadTime;
-	    };
-	    loadTime = Date.now();
-	  } else {
-	    module.exports = function() {
-	      return new Date().getTime() - loadTime;
-	    };
-	    loadTime = new Date().getTime();
-	  }
-
-	}).call(this);
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(74)))
-
-/***/ },
-/* 74 */
-/***/ function(module, exports) {
-
-	// shim for using process in browser
-
-	var process = module.exports = {};
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-
-	function cleanUpNextTick() {
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = setTimeout(cleanUpNextTick);
-	    draining = true;
-
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    clearTimeout(timeout);
-	}
-
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
-	    }
-	};
-
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-
-	function noop() {}
-
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ },
-/* 75 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 */
-
-	THREE.EffectComposer = function ( renderer, renderTarget ) {
-
-		this.renderer = renderer;
-
-		if ( renderTarget === undefined ) {
-
-			var pixelRatio = renderer.getPixelRatio();
-
-			var width  = Math.floor( renderer.context.canvas.width  / pixelRatio ) || 1;
-			var height = Math.floor( renderer.context.canvas.height / pixelRatio ) || 1;
-			var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
-
-			renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
-			renderTarget.name = "EffectComposer Render Target";
-		}
-
-		this.renderTarget1 = renderTarget;
-		this.renderTarget2 = renderTarget.clone();
-
-		this.writeBuffer = this.renderTarget1;
-		this.readBuffer = this.renderTarget2;
-
-		this.passes = [];
-		this.enabled = true;
-
-		if ( THREE.CopyShader === undefined )
-			console.error( "THREE.EffectComposer relies on THREE.CopyShader" );
-
-		this.copyPass = new THREE.ShaderPass( THREE.CopyShader );
-
-	};
-
-	THREE.EffectComposer.prototype = {
-
-		swapBuffers: function() {
-
-			var tmp = this.readBuffer;
-			this.readBuffer = this.writeBuffer;
-			this.writeBuffer = tmp;
-
-		},
-
-		addPass: function ( pass ) {
-
-			this.passes.push( pass );
-
-		},
-
-		insertPass: function ( pass, index ) {
-
-			this.passes.splice( index, 0, pass );
-
-		},
-
-		render: function ( delta ) {
-
-			this.writeBuffer = this.renderTarget1;
-			this.readBuffer = this.renderTarget2;
-
-			var maskActive = false;
-
-			var pass, i, il = this.passes.length;
-
-			for ( i = 0; i < il; i ++ ) {
-
-				pass = this.passes[ i ];
-
-				if ( !pass.enabled ) continue;
-
-				pass.render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
-
-				if ( pass.needsSwap ) {
-
-					if ( maskActive ) {
-
-						var context = this.renderer.context;
-
-						context.stencilFunc( context.NOTEQUAL, 1, 0xffffffff );
-
-						this.copyPass.render( this.renderer, this.writeBuffer, this.readBuffer, delta );
-
-						context.stencilFunc( context.EQUAL, 1, 0xffffffff );
-
-					}
-
-					this.swapBuffers();
-
-				}
-
-				if ( pass instanceof THREE.MaskPass ) {
-
-					maskActive = true;
-
-				} else if ( pass instanceof THREE.ClearMaskPass ) {
-
-					maskActive = false;
-
-				}
-
-			}
-
-		},
-
-		reset: function ( renderTarget ) {
-
-			if ( renderTarget === undefined ) {
-
-				renderTarget = this.renderTarget1.clone();
-
-				var pixelRatio = this.renderer.getPixelRatio();
-
-				renderTarget.width  = Math.floor( this.renderer.context.canvas.width  / pixelRatio );
-				renderTarget.height = Math.floor( this.renderer.context.canvas.height / pixelRatio );
-			}
-			var oldRenderTarget1 = this.renderTarget1;
-			var oldRenderTarget2 = this.renderTarget2;
-			if ( oldRenderTarget1 ) {
-				oldRenderTarget1.dispose();
-			}
-			if ( oldRenderTarget2 ) {
-				oldRenderTarget2.dispose();
-			}
-
-			this.renderTarget1 = renderTarget;
-			this.renderTarget2 = renderTarget.clone();
-
-			this.writeBuffer = this.renderTarget1;
-			this.readBuffer = this.renderTarget2;
-
-		},
-
-		setSize: function ( width, height ) {
-
-			var renderTarget = this.renderTarget1.clone();
-
-			renderTarget.width = width;
-			renderTarget.height = height;
-
-			this.reset( renderTarget );
-
-		},
-
-		dispose: function() {
-			this.renderTarget1.dispose();
-			this.renderTarget2.dispose();
-			this.copyPass.dispose();
-			// for ( var p in this.passes ) {
-			// 	this.passes[p].dispose();
-			// }
-			this.passes = undefined;
-			this.renderer = undefined;
-		}
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 76 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-		/**
-		 * @author alteredq / http://alteredqualia.com/
-		 */
-
-		THREE.BloomPass = function ( strength, kernelSize, sigma, resolutionX, resolutionY ) {
-
-			strength = ( strength !== undefined ) ? strength : 1;
-			kernelSize = ( kernelSize !== undefined ) ? kernelSize : 25;
-			sigma = ( sigma !== undefined ) ? sigma : 4.0;
-
-			// render targets
-			this.setSize( resolutionX, resolutionY );
-
-			// copy material
-
-			if ( THREE.CopyShader === undefined )
-				console.error( "THREE.BloomPass relies on THREE.CopyShader" );
-
-			var copyShader = THREE.CopyShader;
-
-			this.copyUniforms = THREE.UniformsUtils.clone( copyShader.uniforms );
-
-			this.copyUniforms[ "opacity" ].value = strength;
-
-			this.materialCopy = new THREE.ShaderMaterial( {
-
-				uniforms: this.copyUniforms,
-				vertexShader: copyShader.vertexShader,
-				fragmentShader: copyShader.fragmentShader,
-				blending: THREE.AdditiveBlending,
-				transparent: true
-
-			} );
-
-			// convolution material
-
-			if ( THREE.ConvolutionShader === undefined )
-				console.error( "THREE.BloomPass relies on THREE.ConvolutionShader" );
-
-			var convolutionShader = THREE.ConvolutionShader;
-
-			this.convolutionUniforms = THREE.UniformsUtils.clone( convolutionShader.uniforms );
-
-			this.convolutionUniforms[ "uImageIncrement" ].value = THREE.BloomPass.blurx;
-			this.convolutionUniforms[ "cKernel" ].value = THREE.ConvolutionShader.buildKernel( sigma );
-
-			this.materialConvolution = new THREE.ShaderMaterial( {
-
-				uniforms: this.convolutionUniforms,
-				vertexShader:  convolutionShader.vertexShader,
-				fragmentShader: convolutionShader.fragmentShader,
-				defines: {
-					"KERNEL_SIZE_FLOAT": kernelSize.toFixed( 1 ),
-					"KERNEL_SIZE_INT": kernelSize.toFixed( 0 )
-				}
-
-			} );
-
-			if ( THREE.ClampShader === undefined )
-				console.error( "THREE.BloomPass relies on THREE.ClampShader" );
-			var clampShader = THREE.ClampShader;
-
-			this.clampUniforms = THREE.UniformsUtils.clone( clampShader.uniforms );
-
-			// this.convolutionUniforms[ "uImageIncrement" ].value = THREE.BloomPass.blurx;
-			// this.convolutionUniforms[ "cKernel" ].value = THREE.ConvolutionShader.buildKernel( sigma );
-
-			this.materialClamp = new THREE.ShaderMaterial( {
-
-				uniforms: this.clampUniforms,
-				vertexShader:  clampShader.vertexShader,
-				fragmentShader: clampShader.fragmentShader,
-			} );
-
-			this.enabled = true;
-			this.needsSwap = false;
-			this.clear = false;
-
-
-			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-			this.scene  = new THREE.Scene();
-
-			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-			this.scene.add( this.quad );
-
-		};
-
-		THREE.BloomPass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
-
-				if ( maskActive ) renderer.context.disable( renderer.context.STENCIL_TEST );
-
-				//Clamp to threshold
-				this.quad.material = this.materialClamp;
-
-				this.clampUniforms[ "tDiffuse" ].value = readBuffer;
-				renderer.render( this.scene, this.camera, writeBuffer, true );
-
-				// Render quad with blured scene into texture (convolution pass 1)
-
-				this.quad.material = this.materialConvolution;
-
-				this.convolutionUniforms[ "tDiffuse" ].value = writeBuffer;
-				this.convolutionUniforms[ "uImageIncrement" ].value = THREE.BloomPass.blurX;
-
-				renderer.render( this.scene, this.camera, this.renderTargetX, true );
-
-
-				// Render quad with blured scene into texture (convolution pass 2)
-
-				this.convolutionUniforms[ "tDiffuse" ].value = this.renderTargetX;
-				this.convolutionUniforms[ "uImageIncrement" ].value = THREE.BloomPass.blurY;
-
-				renderer.render( this.scene, this.camera, this.renderTargetY, true );
-
-				// Render original scene with superimposed blur to texture
-
-				this.quad.material = this.materialCopy;
-
-				this.copyUniforms[ "tDiffuse" ].value = this.renderTargetY;
-
-				if ( maskActive ) renderer.context.enable( renderer.context.STENCIL_TEST );
-
-				renderer.render( this.scene, this.camera, readBuffer, this.clear );
-
-			},
-
-			setSigma: function( sigma ) {
-				if ( sigma ) {
-					var kernelSize = 2 * Math.ceil( sigma * 3.0 ) + 1;
-		      // var kernelSize = this.bloom.kernelSize !== undefined ? this.bloom.kernelSize : 25;
-		      this.materialConvolution.defines = {
-		        "KERNEL_SIZE_FLOAT": kernelSize.toFixed( 1 ),
-		        "KERNEL_SIZE_INT": kernelSize.toFixed( 0 )
-		      }
-		      this.materialConvolution.needsUpdate = true;
-		      this.convolutionUniforms[ "cKernel" ].value = THREE.ConvolutionShader.buildKernel( sigma );
-		    }
-			},
-
-			setSize: function( resolutionX, resolutionY ) {
-				this.resolutionX = ( resolutionX !== undefined ) ? resolutionX : 256;
-				this.resolutionY = ( resolutionY !== undefined ) ? resolutionY : 256;
-				var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
-				if ( this.renderTargetX ) {
-					this.renderTargetX.dispose();
-				}
-				if ( this.renderTargetY ) {
-					this.renderTargetY.dispose();
-				}
-				this.renderTargetX = new THREE.WebGLRenderTarget( this.resolutionX, this.resolutionY, pars );
-				this.renderTargetX.name = "Bloom Convolution X";
-				this.renderTargetY = new THREE.WebGLRenderTarget( this.resolutionX, this.resolutionY, pars );
-				this.renderTargetY.name = "Bloom Convolution Y";
-			},
-
-			dispose: function() {
-				this.renderTargetX.dispose();
-				this.renderTargetY.dispose();
-				this.copyUniforms = undefined;
-				this.convolutionUniforms = undefined;
-				this.materialCopy.dispose();
-				this.materialConvolution.dispose();
-				this.quad.geometry.dispose();
-				this.quad = undefined;
-				this.scene = undefined;
-				this.camera = undefined;
-			}
-
-		};
-
-		THREE.BloomPass.blurX = new THREE.Vector2( 0.001953125, 0.0 );
-		THREE.BloomPass.blurY = new THREE.Vector2( 0.0, 0.001953125 );
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 77 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * Depth-of-field post-process with bokeh shader
-	 */
-
-
-	THREE.BokehPass = function ( scene, camera, params ) {
-
-		this.scene = scene;
-		this.camera = camera;
-
-		var focus = ( params.focus !== undefined ) ? params.focus : 1.0;
-		var aspect = ( params.aspect !== undefined ) ? params.aspect : camera.aspect;
-		var aperture = ( params.aperture !== undefined ) ? params.aperture : 0.025;
-		var maxblur = ( params.maxblur !== undefined ) ? params.maxblur : 1.0;
-
-		// render targets
-
-		var width = params.width || window.innerWidth || 1;
-		var height = params.height || window.innerHeight || 1;
-
-		this.renderTargetColor = new THREE.WebGLRenderTarget( width, height, {
-			minFilter: THREE.LinearFilter,
-			magFilter: THREE.LinearFilter,
-			format: THREE.RGBFormat
-		} );
-
-		this.renderTargetDepth = this.renderTargetColor.clone();
-
-		// depth material
-
-		this.materialDepth = new THREE.MeshDepthMaterial();
-
-		// bokeh material
-
-		if ( THREE.BokehShader === undefined ) {
-			console.error( "THREE.BokehPass relies on THREE.BokehShader" );
-		}
-		
-		var bokehShader = THREE.BokehShader;
-		var bokehUniforms = THREE.UniformsUtils.clone( bokehShader.uniforms );
-
-		bokehUniforms[ "tDepth" ].value = this.renderTargetDepth;
-
-		bokehUniforms[ "focus" ].value = focus;
-		bokehUniforms[ "aspect" ].value = aspect;
-		bokehUniforms[ "aperture" ].value = aperture;
-		bokehUniforms[ "maxblur" ].value = maxblur;
-
-		this.materialBokeh = new THREE.ShaderMaterial({
-			uniforms: bokehUniforms,
-			vertexShader: bokehShader.vertexShader,
-			fragmentShader: bokehShader.fragmentShader
-		});
-
-		this.uniforms = bokehUniforms;
-		this.enabled = true;
-		this.needsSwap = false;
-		this.renderToScreen = false;
-		this.clear = false;
-
-		this.camera2 = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-		this.scene2  = new THREE.Scene();
-
-		this.quad2 = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-		this.scene2.add( this.quad2 );
-
-	};
-
-	THREE.BokehPass.prototype = {
-
-		render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
-
-			this.quad2.material = this.materialBokeh;
-
-			// Render depth into texture
-
-			this.scene.overrideMaterial = this.materialDepth;
-
-			renderer.render( this.scene, this.camera, this.renderTargetDepth, true );
-
-			// Render bokeh composite
-
-			this.uniforms[ "tColor" ].value = readBuffer;
-
-			if ( this.renderToScreen ) {
-
-				renderer.render( this.scene2, this.camera2 );
-
-			} else {
-
-				renderer.render( this.scene2, this.camera2, writeBuffer, this.clear );
-
-			}
-
-			this.scene.overrideMaterial = null;
-
-		}
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 78 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-		/**
-		 * @author alteredq / http://alteredqualia.com/
-		 */
-
-		THREE.DotScreenPass = function ( center, angle, scale ) {
-
-			if ( THREE.DotScreenShader === undefined )
-				console.error( "THREE.DotScreenPass relies on THREE.DotScreenShader" );
-
-			var shader = THREE.DotScreenShader;
-
-			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-			if ( center !== undefined ) this.uniforms[ "center" ].value.copy( center );
-			if ( angle !== undefined ) this.uniforms[ "angle"].value = angle;
-			if ( scale !== undefined ) this.uniforms[ "scale"].value = scale;
-
-			this.material = new THREE.ShaderMaterial( {
-
-				uniforms: this.uniforms,
-				vertexShader: shader.vertexShader,
-				fragmentShader: shader.fragmentShader
-
-			} );
-
-			this.enabled = true;
-			this.renderToScreen = false;
-			this.needsSwap = true;
-
-
-			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-			this.scene  = new THREE.Scene();
-
-			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-			this.scene.add( this.quad );
-
-		};
-
-		THREE.DotScreenPass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta ) {
-
-				this.uniforms[ "tDiffuse" ].value = readBuffer;
-				this.uniforms[ "tSize" ].value.set( readBuffer.width, readBuffer.height );
-
-				this.quad.material = this.material;
-
-				if ( this.renderToScreen ) {
-
-					renderer.render( this.scene, this.camera );
-
-				} else {
-
-					renderer.render( this.scene, this.camera, writeBuffer, false );
-
-				}
-
-			}
-
-		};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 79 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-		/**
-		 * @author alteredq / http://alteredqualia.com/
-		 */
-
-		THREE.FilmPass = function ( noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale ) {
-
-			if ( THREE.FilmShader === undefined )
-				console.error( "THREE.FilmPass relies on THREE.FilmShader" );
-
-			var shader = THREE.FilmShader;
-
-			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-			this.material = new THREE.ShaderMaterial( {
-
-				uniforms: this.uniforms,
-				vertexShader: shader.vertexShader,
-				fragmentShader: shader.fragmentShader
-
-			} );
-
-			if ( grayscale !== undefined )	this.uniforms.grayscale.value = grayscale;
-			if ( noiseIntensity !== undefined ) this.uniforms.nIntensity.value = noiseIntensity;
-			if ( scanlinesIntensity !== undefined ) this.uniforms.sIntensity.value = scanlinesIntensity;
-			if ( scanlinesCount !== undefined ) this.uniforms.sCount.value = scanlinesCount;
-
-			this.enabled = true;
-			this.renderToScreen = false;
-			this.needsSwap = true;
-
-
-			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-			this.scene  = new THREE.Scene();
-
-			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-			this.scene.add( this.quad );
-
-		};
-
-		THREE.FilmPass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta ) {
-
-				this.uniforms[ "tDiffuse" ].value = readBuffer;
-				this.uniforms[ "time" ].value = (this.uniforms[ "time" ].value + delta) % 10.0 + 0.1;
-
-				this.quad.material = this.material;
-
-				if ( this.renderToScreen ) {
-
-					renderer.render( this.scene, this.camera );
-
-				} else {
-
-					renderer.render( this.scene, this.camera, writeBuffer, false );
-
-				}
-
-			},
-
-			dispose: function() {
-				this.quad.geometry.dispose();
-				this.quad = undefined;
-				this.material.dispose();
-				this.material = undefined;
-				this.uniforms = undefined;
-				this.scene = undefined;
-				this.camera = undefined;
-			}
-
-		};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 80 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-		/**
-		 * @author alteredq / http://alteredqualia.com/
-		 */
-
-		THREE.MaskPass = function ( scene, camera ) {
-
-			this.scene = scene;
-			this.camera = camera;
-
-			this.enabled = true;
-			this.clear = true;
-			this.needsSwap = false;
-
-			this.inverse = false;
-
-		};
-
-		THREE.MaskPass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta ) {
-
-				var context = renderer.context;
-
-				// don't update color or depth
-
-				context.colorMask( false, false, false, false );
-				context.depthMask( false );
-
-				// set up stencil
-
-				var writeValue, clearValue;
-
-				if ( this.inverse ) {
-
-					writeValue = 0;
-					clearValue = 1;
-
-				} else {
-
-					writeValue = 1;
-					clearValue = 0;
-
-				}
-
-				context.enable( context.STENCIL_TEST );
-				context.stencilOp( context.REPLACE, context.REPLACE, context.REPLACE );
-				context.stencilFunc( context.ALWAYS, writeValue, 0xffffffff );
-				context.clearStencil( clearValue );
-
-				// draw into the stencil buffer
-
-				renderer.render( this.scene, this.camera, readBuffer, this.clear );
-				renderer.render( this.scene, this.camera, writeBuffer, this.clear );
-
-				// re-enable update of color and depth
-
-				context.colorMask( true, true, true, true );
-				context.depthMask( true );
-
-				// only render where stencil is set to 1
-
-				context.stencilFunc( context.EQUAL, 1, 0xffffffff );  // draw if == 1
-				context.stencilOp( context.KEEP, context.KEEP, context.KEEP );
-
-			}
-
-		};
-
-
-		THREE.ClearMaskPass = function () {
-
-			this.enabled = true;
-
-		};
-
-		THREE.ClearMaskPass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta ) {
-
-				var context = renderer.context;
-
-				context.disable( context.STENCIL_TEST );
-
-			}
-
-		};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 81 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-		/**
-		 * @author alteredq / http://alteredqualia.com/
-		 */
-
-		THREE.RenderPass = function ( scene, camera, overrideMaterial, clearColor, clearAlpha ) {
-
-			this.scene = scene;
-			this.camera = camera;
-
-			this.overrideMaterial = overrideMaterial;
-
-			this.clearColor = clearColor;
-			this.clearAlpha = ( clearAlpha !== undefined ) ? clearAlpha : 0;
-
-			this.oldClearColor = new THREE.Color();
-			this.oldClearAlpha = 1;
-
-			this.enabled = true;
-			this.clear = true;
-			this.needsSwap = false;
-
-		};
-
-		THREE.RenderPass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta ) {
-
-				// renderer.setViewport( 0, 0, renderer.domElement.width, renderer.domElement.height );
-
-				this.scene.overrideMaterial = this.overrideMaterial !== undefined ? this.overrideMaterial : this.scene.overrideMaterial;
-
-				if ( this.clearColor ) {
-
-					this.oldClearColor.copy( renderer.getClearColor() );
-					this.oldClearAlpha = renderer.getClearAlpha();
-
-					renderer.setClearColor( this.clearColor, this.clearAlpha );
-
-				}
-
-				renderer.render( this.scene, this.camera, readBuffer, this.clear );
-
-				if ( this.clearColor ) {
-
-					renderer.setClearColor( this.oldClearColor, this.oldClearAlpha );
-
-				}
-
-				this.scene.overrideMaterial = null;
-
-			},
-
-			dispose: function() {
-				this.scene = undefined;
-				this.camera = undefined;
-			}
-
-		};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 82 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-		/**
-		 * @author alteredq / http://alteredqualia.com/
-		 */
-
-		THREE.SavePass = function ( renderTarget ) {
-
-			if ( THREE.CopyShader === undefined )
-				console.error( "THREE.SavePass relies on THREE.CopyShader" );
-
-			var shader = THREE.CopyShader;
-
-			this.textureID = "tDiffuse";
-
-			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-			this.material = new THREE.ShaderMaterial( {
-
-				uniforms: this.uniforms,
-				vertexShader: shader.vertexShader,
-				fragmentShader: shader.fragmentShader
-
-			} );
-
-			this.renderTarget = renderTarget;
-
-			if ( this.renderTarget === undefined ) {
-
-				this.renderTargetParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
-				this.renderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, this.renderTargetParameters );
-
-			}
-
-			this.enabled = true;
-			this.needsSwap = false;
-			this.clear = false;
-
-
-			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-			this.scene  = new THREE.Scene();
-
-			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-			this.scene.add( this.quad );
-
-		};
-
-		THREE.SavePass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta ) {
-
-				if ( this.uniforms[ this.textureID ] ) {
-
-					this.uniforms[ this.textureID ].value = readBuffer;
-
-				}
-
-				this.quad.material = this.material;
-
-				renderer.render( this.scene, this.camera, this.renderTarget, this.clear );
-
-			}
-
-		};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 83 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)
-		, __webpack_require__(103)
-		, __webpack_require__(85)
-		, __webpack_require__(86)
-		, __webpack_require__(87)
-		, __webpack_require__(88)
-		, __webpack_require__(89)
-		, __webpack_require__(90)
-		, __webpack_require__(91)
-		, __webpack_require__(92)
-		, __webpack_require__(93)
-		, __webpack_require__(94)
-		, __webpack_require__(95)
-		, __webpack_require__(96)
-		, __webpack_require__(97)
-		, __webpack_require__(98)
-		, __webpack_require__(99)
-		, __webpack_require__(100)
-		, __webpack_require__(101)
-		, __webpack_require__(102)
-		, __webpack_require__(84)
-		, __webpack_require__(104)
-		, __webpack_require__(105)
-		, __webpack_require__(106)
-		, __webpack_require__(107)
-		, __webpack_require__(108)
-		, __webpack_require__(109)
-		, __webpack_require__(110)
-		, __webpack_require__(111)
-		, __webpack_require__(112)
-		, __webpack_require__(113)
-		, __webpack_require__(114)
-		, __webpack_require__(115)
-		, __webpack_require__(116)
-		, __webpack_require__(117)
-		, __webpack_require__(118)
-		, __webpack_require__(119)
-		, __webpack_require__(120)
-		, __webpack_require__(121)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-		/**
-		 * @author alteredq / http://alteredqualia.com/
-		 */
-
-		THREE.ShaderPass = function ( shader, textureID ) {
-
-			this.textureID = ( textureID !== undefined ) ? textureID : "tDiffuse";
-
-			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-			this.material = new THREE.ShaderMaterial( {
-				blending: THREE.NormalBlending,
-		transparent: true,
-				uniforms: this.uniforms,
-				vertexShader: shader.vertexShader,
-				fragmentShader: shader.fragmentShader
-
-			} );
-
-			this.renderToScreen = false;
-
-			this.enabled = true;
-			this.needsSwap = true;
-			this.clear = false;
-
-
-			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-			this.scene  = new THREE.Scene();
-
-			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-			this.scene.add( this.quad );
-			this.prevViewPort = new THREE.Vector4();
-		};
-
-		THREE.ShaderPass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta ) {
-
-				if ( this.uniforms[ this.textureID ] ) {
-
-					this.uniforms[ this.textureID ].value = readBuffer;
-
-				}
-
-				this.quad.material = this.material;
-
-				if ( this.renderToScreen ) {
-					renderer.getViewport(this.prevViewPort);
-					if ( this.viewPort ) {
-						renderer.setViewport( this.viewPort.x, this.viewPort.y, this.viewPort.width, this.viewPort.height );
-					}
-					if ( this.clearColor || this.clearDepth ) {
-						renderer.clear( !!this.clearColor, !!this.clearDepth, false );
-					}
-					renderer.render( this.scene, this.camera );
-					if ( this.viewPort ) {
-						renderer.setViewport( this.prevViewPort.x, this.prevViewPort.y, this.prevViewPort.width, this.prevViewPort.height );
-					}
-
-				} else if ( this.renderToTexture ) {
-					// var prevViewPort = renderer.getViewport();
-					// if ( this.viewPort ) {
-					// 	renderer.setViewport( this.viewPort.x, this.viewPort.y, this.viewPort.width, this.viewPort.height );
-					// }
-					if ( this.clearColor || this.clearDepth ) {
-						renderer.clear( this.clearColor, this.clearDepth, false );
-					}
-					renderer.render( this.scene, this.camera, this.renderToTexture );
-					// if ( this.viewPort ) {
-					// 	renderer.setViewport( prevViewPort.x, prevViewPort.y, prevViewPort.width, prevViewPort.height );
-					// }
-
-				} else {
-
-					renderer.render( this.scene, this.camera, writeBuffer, this.clear );
-
-				}
-
-			},
-
-			dispose: function() {
-				this.quad.geometry.dispose();
-				this.quad = undefined;
-				this.camera = undefined;
-				this.scene = undefined;
-				this.material.dispose();
-				this.material = undefined;
-				this.uniforms = undefined;
-			}
-
-		};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 84 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 * @author davidedc / http://www.sketchpatch.net/
-	 *
-	 * NVIDIA FXAA by Timothy Lottes
-	 * http://timothylottes.blogspot.com/2011/06/fxaa3-source-released.html
-	 * - WebGL port by @supereggbert
-	 * http://www.glge.org/demos/fxaa/
-	 */
-
-	THREE.FXAAShader = {
-
-		uniforms: {
-
-			"tDiffuse":   { type: "t", value: null },
-			"resolution": { type: "v2", value: new THREE.Vector2( 1 / 1024, 1 / 512 )  }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform vec2 resolution;",
-
-			"varying vec2 vUv;",
-
-			"#define FXAA_REDUCE_MIN   (1.0/128.0)",
-			"#define FXAA_REDUCE_MUL   (1.0/8.0)",
-			"#define FXAA_SPAN_MAX     8.0",
-
-			"void main() {",
-
-				"vec3 rgbNW = clamp( texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, -1.0 ) ) * resolution ).xyz, 0.0, 1.0);",
-				"vec3 rgbNE = clamp( texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, -1.0 ) ) * resolution ).xyz, 0.0, 1.0);",
-				"vec3 rgbSW = clamp( texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, 1.0 ) ) * resolution ).xyz, 0.0, 1.0);",
-				"vec3 rgbSE = clamp( texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, 1.0 ) ) * resolution ).xyz, 0.0, 1.0);",
-				"vec4 rgbaM  = clamp( texture2D( tDiffuse,  gl_FragCoord.xy  * resolution ), 0.0, 1.0);",
-				"vec3 rgbM  = rgbaM.xyz;",
-				"float opacity  = rgbaM.w;",
-
-				"vec3 luma = vec3( 0.299, 0.587, 0.114 );",
-
-				"float lumaNW = dot( rgbNW, luma );",
-				"float lumaNE = dot( rgbNE, luma );",
-				"float lumaSW = dot( rgbSW, luma );",
-				"float lumaSE = dot( rgbSE, luma );",
-				"float lumaM  = dot( rgbM,  luma );",
-				"float lumaMin = min( lumaM, min( min( lumaNW, lumaNE ), min( lumaSW, lumaSE ) ) );",
-				"float lumaMax = max( lumaM, max( max( lumaNW, lumaNE) , max( lumaSW, lumaSE ) ) );",
-
-				"vec2 dir;",
-				"dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));",
-				"dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));",
-
-				"float dirReduce = max( ( lumaNW + lumaNE + lumaSW + lumaSE ) * ( 0.25 * FXAA_REDUCE_MUL ), FXAA_REDUCE_MIN );",
-
-				"float rcpDirMin = 1.0 / ( min( abs( dir.x ), abs( dir.y ) ) + dirReduce );",
-				"dir = min( vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX),",
-					  "max( vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),",
-							"dir * rcpDirMin)) * resolution;",
-
-				"vec3 rgbA = 0.5 * (",
-					"clamp( texture2D( tDiffuse, gl_FragCoord.xy  * resolution + dir * ( 1.0 / 3.0 - 0.5 ) ).xyz, 0.0, 1.0) +",
-					"clamp( texture2D( tDiffuse, gl_FragCoord.xy  * resolution + dir * ( 2.0 / 3.0 - 0.5 ) ).xyz, 0.0, 1.0) );",
-
-				"vec3 rgbB = rgbA * 0.5 + 0.25 * (",
-					"clamp( texture2D( tDiffuse, gl_FragCoord.xy  * resolution + dir * -0.5 ).xyz, 0.0, 1.0) +",
-					"clamp( texture2D( tDiffuse, gl_FragCoord.xy  * resolution + dir * 0.5 ).xyz, 0.0, 1.0) );",
-
-				"float lumaB = dot( rgbB, luma );",
-
-				"if ( ( lumaB < lumaMin ) || ( lumaB > lumaMax ) ) {",
-
-					"gl_FragColor = vec4( rgbA, opacity );",
-
-				"} else {",
-
-					"gl_FragColor = vec4( rgbB, opacity );",
-
-				"}",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 85 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author miibond
-	 *
-	 * Down-sample a given texture to a target exactly half the size. Useful for texture packings where automatic
-	 * bilinear filtering is inappropriate (e.g. depthRGBA, RGBE, etc.)
-	 */
-
-	THREE.BilinearDownSampleShader = {
-
-		uniforms: {
-			"tDiffuse": { type: "t", value: null },
-			"resolution": { type: "v2", value: new THREE.Vector2() },
-		},
-		vertexShader: [
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-		].join('\n'),
-		fragmentShader: [
-			"varying vec2 vUv;",
-			"uniform sampler2D tDiffuse;",
-			"uniform vec2 resolution;",
-			THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
-			THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
-			
-			"void main() {",
-				"vec2 offset = 0.5 / resolution;",
-				"vec4 colour;",
-				"vec4 samples[ 4 ];",
-
-	      "samples[0] = texture2D( tDiffuse, vUv + vec2( -offset.x, -offset.x ) );",
-	      "samples[1] = texture2D( tDiffuse, vUv + vec2( offset.x, -offset.x ) );",
-	      "samples[2] = texture2D( tDiffuse, vUv + vec2( offset.x, offset.y ) );",
-	      "samples[3] = texture2D( tDiffuse, vUv + vec2( -offset.x, offset.y ) );",
-
-				"for ( int i = 0; i < 4; i++ ) {",
-					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
-						"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
-							"colour += vec4( HDRDecodeLOGLUV( samples[i] ), 1.0 );",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
-							"colour += vec4( HDRDecodeRGBM( samples[i] ), 1.0 );",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
-							"colour += vec4( HDRDecodeRGBD( samples[i] ), 1.0 );",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
-							"colour += vec4( HDRDecodeRGBE( samples[i] ), 1.0 );",
-						"#else",
-							"colour += samples[i];",
-						"#endif",
-					"#else",
-							"colour += samples[i];",
-					"#endif",
-				"}",
-
-				"gl_FragColor = colour * 0.25;",
-				
-				THREE.ShaderChunk[ "hdr_encode_fragment" ],
-				
-			"}",
-		].join('\n')
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 86 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Bleach bypass shader [http://en.wikipedia.org/wiki/Bleach_bypass]
-	 * - based on Nvidia example
-	 * http://developer.download.nvidia.com/shaderlibrary/webpages/shader_library.html#post_bleach_bypass
-	 */
-
-	THREE.BleachBypassShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"opacity":  { type: "f", value: 1.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float opacity;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 base = texture2D( tDiffuse, vUv );",
-
-				"vec3 lumCoeff = vec3( 0.25, 0.65, 0.1 );",
-				"float lum = dot( lumCoeff, base.rgb );",
-				"vec3 blend = vec3( lum );",
-
-				"float L = min( 1.0, max( 0.0, 10.0 * ( lum - 0.45 ) ) );",
-
-				"vec3 result1 = 2.0 * base.rgb * blend;",
-				"vec3 result2 = 1.0 - 2.0 * ( 1.0 - blend ) * ( 1.0 - base.rgb );",
-
-				"vec3 newColor = mix( result1, result2, L );",
-
-				"float A2 = opacity * base.a;",
-				"vec3 mixRGB = A2 * newColor.rgb;",
-				"mixRGB += ( ( 1.0 - A2 ) * base.rgb );",
-
-				"gl_FragColor = vec4( mixRGB, base.a );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 87 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Blend two textures
-	 */
-
-	THREE.BlendShader = {
-
-		uniforms: {
-
-			"tDiffuse1": { type: "t", value: null },
-			"tDiffuse2": { type: "t", value: null },
-			"mixRatio":  { type: "f", value: 0.5 },
-			"opacity":   { type: "f", value: 1.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float opacity;",
-			"uniform float mixRatio;",
-
-			"uniform sampler2D tDiffuse1;",
-			"uniform sampler2D tDiffuse2;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 texel1 = texture2D( tDiffuse1, vUv );",
-				"vec4 texel2 = texture2D( tDiffuse2, vUv );",
-				"gl_FragColor = opacity * mix( texel1, texel2, mixRatio );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 88 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Depth-of-field shader with bokeh
-	 * ported from GLSL shader by Martins Upitis
-	 * http://artmartinsh.blogspot.com/2010/02/glsl-lens-blur-filter-with-bokeh.html
-	 */
-
-	THREE.BokehShader = {
-
-		uniforms: {
-
-			"tDiffuse":   { type: "t", value: null },
-			"tDepth":   { type: "t", value: null },
-			"focus":    { type: "f", value: 1.0 },
-			"aspect":   { type: "f", value: 1.0 },
-			"aperture": { type: "f", value: 0.025 },
-			"maxblur":  { type: "f", value: 1.0 },
-			"opacity": { type: "f", value: 1.0 }
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"varying vec2 vUv;",
-
-			"uniform sampler2D tDiffuse;",
-			"uniform sampler2D tDepth;",
-
-			"uniform float maxblur;",  // max blur amount
-			"uniform float aperture;", // aperture - bigger values for shallower depth of field
-
-			"uniform float focus;",
-			"uniform float aspect;",
-			"uniform float opacity;",
-
-			"float unpackDepth( const in vec4 rgba_depth ) {",
-
-				"const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
-				"float depth = dot( rgba_depth, bit_shift );",
-				"return depth;",
-
-			"}",
-
-			"void main() {",
-
-				"vec2 aspectcorrect = vec2( 1.0, aspect );",
-
-				"float depth1 = unpackDepth( texture2D( tDepth, vUv ) );",
-
-				"float factor = max( depth1 - focus, 0.0);",
-
-				"vec2 dofblur = vec2 ( clamp( factor * aperture, -maxblur, maxblur ) );",
-
-				"vec2 dofblur9 = dofblur * 0.9;",
-				"vec2 dofblur7 = dofblur * 0.7;",
-				"vec2 dofblur4 = dofblur * 0.4;",
-
-				"vec4 col = vec4( 0.0 );",
-
-				"col += texture2D( tDiffuse, vUv.xy );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.15,  0.37 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.37,  0.15 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.40,  0.0  ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.37, -0.15 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.15, -0.37 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.15,  0.37 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.37,  0.15 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.37, -0.15 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.15, -0.37 ) * aspectcorrect ) * dofblur );",
-
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.15,  0.37 ) * aspectcorrect ) * dofblur9 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.37,  0.15 ) * aspectcorrect ) * dofblur9 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.37, -0.15 ) * aspectcorrect ) * dofblur9 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.15, -0.37 ) * aspectcorrect ) * dofblur9 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.15,  0.37 ) * aspectcorrect ) * dofblur9 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.37,  0.15 ) * aspectcorrect ) * dofblur9 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.37, -0.15 ) * aspectcorrect ) * dofblur9 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.15, -0.37 ) * aspectcorrect ) * dofblur9 );",
-
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur7 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.40,  0.0  ) * aspectcorrect ) * dofblur7 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur7 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur7 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur7 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur7 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur7 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur7 );",
-
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur4 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.4,   0.0  ) * aspectcorrect ) * dofblur4 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur4 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur4 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur4 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur4 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur4 );",
-				"col += texture2D( tDiffuse, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur4 );",
-
-				"gl_FragColor = col / 41.0;",
-				"gl_FragColor.a = opacity;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 89 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author zz85 / https://github.com/zz85 | twitter.com/blurspline
-	 *
-	 * Depth-of-field shader with bokeh
-	 * ported from GLSL shader by Martins Upitis
-	 * http://blenderartists.org/forum/showthread.php?237488-GLSL-depth-of-field-with-bokeh-v2-4-(update)
-	 *
-	 * Requires #define RINGS and SAMPLES integers
-	 */
-
-
-
-	THREE.BokehShader2 = {
-
-		uniforms: {
-
-			"textureWidth":  { type: "f", value: 1.0 },
-			"textureHeight":  { type: "f", value: 1.0 },
-
-			"focalDepth":   { type: "f", value: 1.0 },
-			"focalLength":   { type: "f", value: 24.0 },
-			"fstop": { type: "f", value: 0.9 },
-
-			"tColor":   { type: "t", value: null },
-			"tDepth":   { type: "t", value: null },
-
-			"maxblur":  { type: "f", value: 1.0 },
-
-			"showFocus":   { type: "i", value: 0 },
-			"manualdof":   { type: "i", value: 0 },
-			"vignetting":   { type: "i", value: 0 },
-			"depthblur":   { type: "i", value: 0 },
-
-			"threshold":  { type: "f", value: 0.5 },
-			"gain":  { type: "f", value: 2.0 },
-			"bias":  { type: "f", value: 0.5 },
-			"fringe":  { type: "f", value: 0.7 },
-
-			"znear":  { type: "f", value: 0.1 },
-			"zfar":  { type: "f", value: 100 },
-
-			"noise":  { type: "i", value: 1 },
-			"dithering":  { type: "f", value: 0.0001 },
-			"pentagon": { type: "i", value: 0 },
-
-			"shaderFocus":  { type: "i", value: 1 },
-			"focusCoords":  { type: "v2", value: new THREE.Vector2()},
-
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"varying vec2 vUv;",
-
-			"uniform sampler2D tColor;",
-			"uniform sampler2D tDepth;",
-			"uniform float textureWidth;",
-			"uniform float textureHeight;",
-
-			"const float PI = 3.14159265;",
-
-			"float width = textureWidth; //texture width",
-			"float height = textureHeight; //texture height",
-
-			"vec2 texel = vec2(1.0/width,1.0/height);",
-
-			"uniform float focalDepth;  //focal distance value in meters, but you may use autofocus option below",
-			"uniform float focalLength; //focal length in mm",
-			"uniform float fstop; //f-stop value",
-			"uniform bool showFocus; //show debug focus point and focal range (red = focal point, green = focal range)",
-
-			"/*",
-			"make sure that these two values are the same for your camera, otherwise distances will be wrong.",
-			"*/",
-
-			"uniform float znear; // camera clipping start",
-			"uniform float zfar; // camera clipping end",
-
-			"//------------------------------------------",
-			"//user variables",
-
-			"const int samples = SAMPLES; //samples on the first ring",
-			"const int rings = RINGS; //ring count",
-
-			"const int maxringsamples = rings * samples;",
-
-			"uniform bool manualdof; // manual dof calculation",
-			"float ndofstart = 1.0; // near dof blur start",
-			"float ndofdist = 2.0; // near dof blur falloff distance",
-			"float fdofstart = 1.0; // far dof blur start",
-			"float fdofdist = 3.0; // far dof blur falloff distance",
-
-			"float CoC = 0.03; //circle of confusion size in mm (35mm film = 0.03mm)",
-
-			"uniform bool vignetting; // use optical lens vignetting",
-
-			"float vignout = 1.3; // vignetting outer border",
-			"float vignin = 0.0; // vignetting inner border",
-			"float vignfade = 22.0; // f-stops till vignete fades",
-
-			"uniform bool shaderFocus;",
-
-			"bool autofocus = shaderFocus;",
-			"//use autofocus in shader - use with focusCoords",
-			"// disable if you use external focalDepth value",
-
-			"uniform vec2 focusCoords;",
-			"// autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right)",
-			"// if center of screen use vec2(0.5, 0.5);",
-
-			"uniform float maxblur;",
-			"//clamp value of max blur (0.0 = no blur, 1.0 default)",
-
-			"uniform float threshold; // highlight threshold;",
-			"uniform float gain; // highlight gain;",
-
-			"uniform float bias; // bokeh edge bias",
-			"uniform float fringe; // bokeh chromatic aberration / fringing",
-
-			"uniform bool noise; //use noise instead of pattern for sample dithering",
-
-			"uniform float dithering;",
-			"float namount = dithering; //dither amount",
-
-			"uniform bool depthblur; // blur the depth buffer",
-			"float dbsize = 1.25; // depth blur size",
-
-			"/*",
-			"next part is experimental",
-			"not looking good with small sample and ring count",
-			"looks okay starting from samples = 4, rings = 4",
-			"*/",
-
-			"uniform bool pentagon; //use pentagon as bokeh shape?",
-			"float feather = 0.4; //pentagon shape feather",
-
-			"//------------------------------------------",
-
-			"float penta(vec2 coords) {",
-				"//pentagonal shape",
-				"float scale = float(rings) - 1.3;",
-				"vec4  HS0 = vec4( 1.0,         0.0,         0.0,  1.0);",
-				"vec4  HS1 = vec4( 0.309016994, 0.951056516, 0.0,  1.0);",
-				"vec4  HS2 = vec4(-0.809016994, 0.587785252, 0.0,  1.0);",
-				"vec4  HS3 = vec4(-0.809016994,-0.587785252, 0.0,  1.0);",
-				"vec4  HS4 = vec4( 0.309016994,-0.951056516, 0.0,  1.0);",
-				"vec4  HS5 = vec4( 0.0        ,0.0         , 1.0,  1.0);",
-
-				"vec4  one = vec4( 1.0 );",
-
-				"vec4 P = vec4((coords),vec2(scale, scale));",
-
-				"vec4 dist = vec4(0.0);",
-				"float inorout = -4.0;",
-
-				"dist.x = dot( P, HS0 );",
-				"dist.y = dot( P, HS1 );",
-				"dist.z = dot( P, HS2 );",
-				"dist.w = dot( P, HS3 );",
-
-				"dist = smoothstep( -feather, feather, dist );",
-
-				"inorout += dot( dist, one );",
-
-				"dist.x = dot( P, HS4 );",
-				"dist.y = HS5.w - abs( P.z );",
-
-				"dist = smoothstep( -feather, feather, dist );",
-				"inorout += dist.x;",
-
-				"return clamp( inorout, 0.0, 1.0 );",
-			"}",
-
-			"float bdepth(vec2 coords) {",
-				"// Depth buffer blur",
-				"float d = 0.0;",
-				"float kernel[9];",
-				"vec2 offset[9];",
-
-				"vec2 wh = vec2(texel.x, texel.y) * dbsize;",
-
-				"offset[0] = vec2(-wh.x,-wh.y);",
-				"offset[1] = vec2( 0.0, -wh.y);",
-				"offset[2] = vec2( wh.x -wh.y);",
-
-				"offset[3] = vec2(-wh.x,  0.0);",
-				"offset[4] = vec2( 0.0,   0.0);",
-				"offset[5] = vec2( wh.x,  0.0);",
-
-				"offset[6] = vec2(-wh.x, wh.y);",
-				"offset[7] = vec2( 0.0,  wh.y);",
-				"offset[8] = vec2( wh.x, wh.y);",
-
-				"kernel[0] = 1.0/16.0;   kernel[1] = 2.0/16.0;   kernel[2] = 1.0/16.0;",
-				"kernel[3] = 2.0/16.0;   kernel[4] = 4.0/16.0;   kernel[5] = 2.0/16.0;",
-				"kernel[6] = 1.0/16.0;   kernel[7] = 2.0/16.0;   kernel[8] = 1.0/16.0;",
-
-
-				"for( int i=0; i<9; i++ ) {",
-					"float tmp = texture2D(tDepth, coords + offset[i]).r;",
-					"d += tmp * kernel[i];",
-				"}",
-
-				"return d;",
-			"}",
-
-
-			"vec3 color(vec2 coords,float blur) {",
-				"//processing the sample",
-
-				"vec3 col = vec3(0.0);",
-
-				"col.r = texture2D(tColor,coords + vec2(0.0,1.0)*texel*fringe*blur).r;",
-				"col.g = texture2D(tColor,coords + vec2(-0.866,-0.5)*texel*fringe*blur).g;",
-				"col.b = texture2D(tColor,coords + vec2(0.866,-0.5)*texel*fringe*blur).b;",
-
-				"vec3 lumcoeff = vec3(0.299,0.587,0.114);",
-				"float lum = dot(col.rgb, lumcoeff);",
-				"float thresh = max((lum-threshold)*gain, 0.0);",
-				"return col+mix(vec3(0.0),col,thresh*blur);",
-			"}",
-
-			"vec2 rand(vec2 coord) {",
-				"// generating noise / pattern texture for dithering",
-
-				"float noiseX = ((fract(1.0-coord.s*(width/2.0))*0.25)+(fract(coord.t*(height/2.0))*0.75))*2.0-1.0;",
-				"float noiseY = ((fract(1.0-coord.s*(width/2.0))*0.75)+(fract(coord.t*(height/2.0))*0.25))*2.0-1.0;",
-
-				"if (noise) {",
-					"noiseX = clamp(fract(sin(dot(coord ,vec2(12.9898,78.233))) * 43758.5453),0.0,1.0)*2.0-1.0;",
-					"noiseY = clamp(fract(sin(dot(coord ,vec2(12.9898,78.233)*2.0)) * 43758.5453),0.0,1.0)*2.0-1.0;",
-				"}",
-
-				"return vec2(noiseX,noiseY);",
-			"}",
-
-			"vec3 debugFocus(vec3 col, float blur, float depth) {",
-				"float edge = 0.002*depth; //distance based edge smoothing",
-				"float m = clamp(smoothstep(0.0,edge,blur),0.0,1.0);",
-				"float e = clamp(smoothstep(1.0-edge,1.0,blur),0.0,1.0);",
-
-				"col = mix(col,vec3(1.0,0.5,0.0),(1.0-m)*0.6);",
-				"col = mix(col,vec3(0.0,0.5,1.0),((1.0-e)-(1.0-m))*0.2);",
-
-				"return col;",
-			"}",
-
-			"float linearize(float depth) {",
-				"return -zfar * znear / (depth * (zfar - znear) - zfar);",
-			"}",
-
-
-			"float vignette() {",
-				"float dist = distance(vUv.xy, vec2(0.5,0.5));",
-				"dist = smoothstep(vignout+(fstop/vignfade), vignin+(fstop/vignfade), dist);",
-				"return clamp(dist,0.0,1.0);",
-			"}",
-
-			"float gather(float i, float j, int ringsamples, inout vec3 col, float w, float h, float blur) {",
-				"float rings2 = float(rings);",
-				"float step = PI*2.0 / float(ringsamples);",
-				"float pw = cos(j*step)*i;",
-				"float ph = sin(j*step)*i;",
-				"float p = 1.0;",
-				"if (pentagon) {",
-					"p = penta(vec2(pw,ph));",
-				"}",
-				"col += color(vUv.xy + vec2(pw*w,ph*h), blur) * mix(1.0, i/rings2, bias) * p;",
-				"return 1.0 * mix(1.0, i /rings2, bias) * p;",
-			"}",
-
-			"void main() {",
-				"//scene depth calculation",
-
-				"float depth = linearize(texture2D(tDepth,vUv.xy).x);",
-
-				"// Blur depth?",
-				"if (depthblur) {",
-					"depth = linearize(bdepth(vUv.xy));",
-				"}",
-
-				"//focal plane calculation",
-
-				"float fDepth = focalDepth;",
-
-				"if (autofocus) {",
-
-					"fDepth = linearize(texture2D(tDepth,focusCoords).x);",
-
-				"}",
-
-				"// dof blur factor calculation",
-
-				"float blur = 0.0;",
-
-				"if (manualdof) {",
-					"float a = depth-fDepth; // Focal plane",
-					"float b = (a-fdofstart)/fdofdist; // Far DoF",
-					"float c = (-a-ndofstart)/ndofdist; // Near Dof",
-					"blur = (a>0.0) ? b : c;",
-				"} else {",
-					"float f = focalLength; // focal length in mm",
-					"float d = fDepth*1000.0; // focal plane in mm",
-					"float o = depth*1000.0; // depth in mm",
-
-					"float a = (o*f)/(o-f);",
-					"float b = (d*f)/(d-f);",
-					"float c = (d-f)/(d*fstop*CoC);",
-
-					"blur = abs(a-b)*c;",
-				"}",
-
-				"blur = clamp(blur,0.0,1.0);",
-
-				"// calculation of pattern for dithering",
-
-				"vec2 noise = rand(vUv.xy)*namount*blur;",
-
-				"// getting blur x and y step factor",
-
-				"float w = (1.0/width)*blur*maxblur+noise.x;",
-				"float h = (1.0/height)*blur*maxblur+noise.y;",
-
-				"// calculation of final color",
-
-				"vec3 col = vec3(0.0);",
-
-				"if(blur < 0.05) {",
-					"//some optimization thingy",
-					"col = texture2D(tColor, vUv.xy).rgb;",
-				"} else {",
-					"col = texture2D(tColor, vUv.xy).rgb;",
-					"float s = 1.0;",
-					"int ringsamples;",
-
-					"for (int i = 1; i <= rings; i++) {",
-						"/*unboxstart*/",
-						"ringsamples = i * samples;",
-
-						"for (int j = 0 ; j < maxringsamples ; j++) {",
-							"if (j >= ringsamples) break;",
-							"s += gather(float(i), float(j), ringsamples, col, w, h, blur);",
-						"}",
-						"/*unboxend*/",
-					"}",
-
-					"col /= s; //divide by sample count",
-				"}",
-
-				"if (showFocus) {",
-					"col = debugFocus(col, blur, depth);",
-				"}",
-
-				"if (vignetting) {",
-					"col *= vignette();",
-				"}",
-
-				"gl_FragColor.rgb = col;",
-				"gl_FragColor.a = 1.0;",
-			"} "
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 90 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author tapio / http://tapio.github.com/
-	 *
-	 * Brightness and contrast adjustment
-	 * https://github.com/evanw/glfx.js
-	 * brightness: -1 to 1 (-1 is solid black, 0 is no change, and 1 is solid white)
-	 * contrast: -1 to 1 (-1 is solid gray, 0 is no change, and 1 is maximum contrast)
-	 */
-
-	THREE.BrightnessContrastShader = {
-
-		uniforms: {
-
-			"tDiffuse":   { type: "t", value: null },
-			"brightness": { type: "f", value: 0 },
-			"contrast":   { type: "f", value: 0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform float brightness;",
-			"uniform float contrast;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"gl_FragColor = texture2D( tDiffuse, vUv );",
-
-				"gl_FragColor.rgb += brightness;",
-
-				"if (contrast > 0.0) {",
-					"gl_FragColor.rgb = (gl_FragColor.rgb - 0.5) / (1.0 - contrast) + 0.5;",
-				"} else {",
-					"gl_FragColor.rgb = (gl_FragColor.rgb - 0.5) * (1.0 + contrast) + 0.5;",
-				"}",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 91 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Color correction
-	 */
-
-	THREE.ColorCorrectionShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"powRGB":   { type: "v3", value: new THREE.Vector3( 2, 2, 2 ) },
-			"mulRGB":   { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform vec3 powRGB;",
-			"uniform vec3 mulRGB;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"gl_FragColor = texture2D( tDiffuse, vUv );",
-				"gl_FragColor.rgb = mulRGB * pow( gl_FragColor.rgb, powRGB );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 92 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Colorify shader
-	 */
-
-	THREE.ColorifyShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"color":    { type: "c", value: new THREE.Color( 0xffffff ) }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform vec3 color;",
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 texel = texture2D( tDiffuse, vUv );",
-
-				"vec3 luma = vec3( 0.299, 0.587, 0.114 );",
-				"float v = dot( texel.xyz, luma );",
-
-				"gl_FragColor = vec4( v * color, texel.w );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 93 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Convolution shader
-	 * ported from o3d sample to WebGL / GLSL
-	 * http://o3d.googlecode.com/svn/trunk/samples/convolution.html
-	 */
-
-	THREE.ConvolutionShader = {
-
-		defines: {
-
-			"KERNEL_SIZE_FLOAT": "25.0",
-			"KERNEL_SIZE_INT": "25",
-
-		},
-
-		uniforms: {
-
-			"tDiffuse":        { type: "t", value: null },
-			"uImageIncrement": { type: "v2", value: new THREE.Vector2( 0.001953125, 0.0 ) },
-			"cKernel":         { type: "fv1", value: [] }
-
-		},
-
-		vertexShader: [
-
-			"uniform vec2 uImageIncrement;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv - ( ( KERNEL_SIZE_FLOAT - 1.0 ) / 2.0 ) * uImageIncrement;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float cKernel[ KERNEL_SIZE_INT ];",
-
-			"uniform sampler2D tDiffuse;",
-			"uniform vec2 uImageIncrement;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec2 imageCoord = vUv;",
-				"vec4 sum = vec4( 0.0, 0.0, 0.0, 0.0 );",
-
-				"for( int i = 0; i < KERNEL_SIZE_INT; i ++ ) {",
-
-					"sum += texture2D( tDiffuse, imageCoord ) * cKernel[ i ];",
-					"imageCoord += uImageIncrement;",
-
-				"}",
-
-				"gl_FragColor = sum;",
-
-			"}"
-
-
-		].join("\n"),
-
-		buildKernel: function ( sigma ) {
-
-			// We lop off the sqrt(2 * pi) * sigma term, since we're going to normalize anyway.
-
-			function gauss( x, sigma ) {
-
-				return Math.exp( - ( x * x ) / ( 2.0 * sigma * sigma ) );
-
-			}
-
-			var i, values, sum, halfWidth, kMaxKernelSize = 49, kernelSize = 2 * Math.ceil( sigma * 3.0 ) + 1;
-
-			if ( kernelSize > kMaxKernelSize ) kernelSize = kMaxKernelSize;
-			halfWidth = ( kernelSize - 1 ) * 0.5;
-
-			values = new Array( kernelSize );
-			sum = 0.0;
-			for ( i = 0; i < kernelSize; ++i ) {
-
-				values[ i ] = gauss( i - halfWidth, sigma );
-				sum += values[ i ];
-
-			}
-
-			// normalize the kernel
-
-			for ( i = 0; i < kernelSize; ++i ) values[ i ] /= sum;
-
-			return values;
-
-		}
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 94 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Full-screen textured quad shader
-	 */
-
-	THREE.CopyShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"opacity":  { type: "f", value: 1.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float opacity;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 texel = texture2D( tDiffuse, vUv );",
-				"gl_FragColor = opacity * texel;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 95 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-
-	THREE.ClampShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"threshold":   { type: "f", value: 0.8 },
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float threshold;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 texel = texture2D( tDiffuse, vUv );",
-
-				// "vec3 luma = vec3( 0.299, 0.587, 0.114 );",
-
-				// "float v = dot( texel.xyz, luma );",
-				// "vec3 normTex = normalize(texel.xyz);",
-
-				"gl_FragColor.xyz = max( texel.xyz - threshold, 0.0 ) * 5.0;",
-				"gl_FragColor.w = 1.0;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 96 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Depth-of-field shader using mipmaps
-	 * - from Matt Handley @applmak
-	 * - requires power-of-2 sized render target with enabled mipmaps
-	 */
-
-	THREE.DOFMipMapShader = {
-
-		uniforms: {
-
-			"tColor":   { type: "t", value: null },
-			"tDepth":   { type: "t", value: null },
-			"focus":    { type: "f", value: 1.0 },
-			"maxblur":  { type: "f", value: 1.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float focus;",
-			"uniform float maxblur;",
-
-			"uniform sampler2D tColor;",
-			"uniform sampler2D tDepth;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 depth = texture2D( tDepth, vUv );",
-
-				"float factor = depth.x - focus;",
-
-				"vec4 col = texture2D( tColor, vUv, 2.0 * maxblur * abs( focus - depth.x ) );",
-
-				"gl_FragColor = col;",
-				"gl_FragColor.a = 1.0;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 97 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Dot screen shader
-	 * based on glfx.js sepia shader
-	 * https://github.com/evanw/glfx.js
-	 */
-
-	THREE.DotScreenShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"tSize":    { type: "v2", value: new THREE.Vector2( 256, 256 ) },
-			"center":   { type: "v2", value: new THREE.Vector2( 0.5, 0.5 ) },
-			"angle":    { type: "f", value: 1.57 },
-			"scale":    { type: "f", value: 1.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform vec2 center;",
-			"uniform float angle;",
-			"uniform float scale;",
-			"uniform vec2 tSize;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"float pattern() {",
-
-				"float s = sin( angle ), c = cos( angle );",
-
-				"vec2 tex = vUv * tSize - center;",
-				"vec2 point = vec2( c * tex.x - s * tex.y, s * tex.x + c * tex.y ) * scale;",
-
-				"return ( sin( point.x ) * sin( point.y ) ) * 4.0;",
-
-			"}",
-
-			"void main() {",
-
-				"vec4 color = texture2D( tDiffuse, vUv );",
-
-				"float average = ( color.r + color.g + color.b ) / 3.0;",
-
-				"gl_FragColor = vec4( vec3( average * 10.0 - 5.0 + pattern() ), color.a );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 98 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author zz85 / https://github.com/zz85 | https://www.lab4games.net/zz85/blog
-	 *
-	 * Edge Detection Shader using Frei-Chen filter
-	 * Based on http://rastergrid.com/blog/2011/01/frei-chen-edge-detector
-	 *
-	 * aspect: vec2 of (1/width, 1/height)
-	 */
-
-	THREE.EdgeShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"aspect":    { type: "v2", value: new THREE.Vector2( 512, 512 ) },
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"varying vec2 vUv;",
-
-			"uniform vec2 aspect;",
-
-			"vec2 texel = vec2(1.0 / aspect.x, 1.0 / aspect.y);",
-
-
-			"mat3 G[9];",
-
-			// hard coded matrix values!!!! as suggested in https://github.com/neilmendoza/ofxPostProcessing/blob/master/src/EdgePass.cpp#L45
-
-			"const mat3 g0 = mat3( 0.3535533845424652, 0, -0.3535533845424652, 0.5, 0, -0.5, 0.3535533845424652, 0, -0.3535533845424652 );",
-			"const mat3 g1 = mat3( 0.3535533845424652, 0.5, 0.3535533845424652, 0, 0, 0, -0.3535533845424652, -0.5, -0.3535533845424652 );",
-			"const mat3 g2 = mat3( 0, 0.3535533845424652, -0.5, -0.3535533845424652, 0, 0.3535533845424652, 0.5, -0.3535533845424652, 0 );",
-			"const mat3 g3 = mat3( 0.5, -0.3535533845424652, 0, -0.3535533845424652, 0, 0.3535533845424652, 0, 0.3535533845424652, -0.5 );",
-			"const mat3 g4 = mat3( 0, -0.5, 0, 0.5, 0, 0.5, 0, -0.5, 0 );",
-			"const mat3 g5 = mat3( -0.5, 0, 0.5, 0, 0, 0, 0.5, 0, -0.5 );",
-			"const mat3 g6 = mat3( 0.1666666716337204, -0.3333333432674408, 0.1666666716337204, -0.3333333432674408, 0.6666666865348816, -0.3333333432674408, 0.1666666716337204, -0.3333333432674408, 0.1666666716337204 );",
-			"const mat3 g7 = mat3( -0.3333333432674408, 0.1666666716337204, -0.3333333432674408, 0.1666666716337204, 0.6666666865348816, 0.1666666716337204, -0.3333333432674408, 0.1666666716337204, -0.3333333432674408 );",
-			"const mat3 g8 = mat3( 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408, 0.3333333432674408 );",
-
-			"void main(void)",
-			"{",
-
-				"G[0] = g0,",
-				"G[1] = g1,",
-				"G[2] = g2,",
-				"G[3] = g3,",
-				"G[4] = g4,",
-				"G[5] = g5,",
-				"G[6] = g6,",
-				"G[7] = g7,",
-				"G[8] = g8;",
-
-				"mat3 I;",
-				"float cnv[9];",
-				"vec3 sample;",
-
-				/* fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value */
-				"for (float i=0.0; i<3.0; i++) {",
-					"for (float j=0.0; j<3.0; j++) {",
-						"sample = texture2D(tDiffuse, vUv + texel * vec2(i-1.0,j-1.0) ).rgb;",
-						"I[int(i)][int(j)] = length(sample);",
-					"}",
-				"}",
-
-				/* calculate the convolution values for all the masks */
-				"for (int i=0; i<9; i++) {",
-					"float dp3 = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]);",
-					"cnv[i] = dp3 * dp3;",
-				"}",
-
-				"float M = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]);",
-				"float S = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + (cnv[8] + M);",
-
-				"gl_FragColor = vec4(vec3(sqrt(M/S)), 1.0);",
-			"}",
-
-		].join("\n")
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 99 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author zz85 / https://github.com/zz85 | https://www.lab4games.net/zz85/blog
-	 *
-	 * Edge Detection Shader using Sobel filter
-	 * Based on http://rastergrid.com/blog/2011/01/frei-chen-edge-detector
-	 *
-	 * aspect: vec2 of (1/width, 1/height)
-	 */
-
-	THREE.EdgeShader2 = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"aspect":    { type: "v2", value: new THREE.Vector2( 512, 512 ) },
-			"colour":    { type: "c", value: new THREE.Color( 0xffffff ) },
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"varying vec2 vUv;",
-			"uniform vec2 aspect;",
-			"uniform vec3 colour;",
-
-			"void main(void)",
-			"{",
-				"vec2 texel = vec2(1.0 / aspect.x, 1.0 / aspect.y);",
-
-				"mat3 G[2];",
-
-				"const mat3 g0 = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );",
-				"const mat3 g1 = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );",
-				"mat3 I;",
-				"float cnv[2];",
-				"vec3 sample;",
-
-				"G[0] = g0;",
-				"G[1] = g1;",
-
-				/* fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value */
-				// "for (float i=0.0; i<3.0; i++) {",
-				// 	"for (float j=0.0; j<3.0; j++) {",
-				// 		"sample = texture2D( tDiffuse, vUv + texel * vec2(i-1.0,j-1.0) ).rgb;",
-				// 		"I[int(i)][int(j)] = length(sample);",
-				// 	"}",
-				// "}",
-
-				//OSX Yosemite with AMD cards seems to have trouble with the above loop. Unrolling...
-				"I[0][0] = length(texture2D( tDiffuse, vUv + texel * vec2(-1.0,-1.0) ).rgb);",
-				"I[0][1] = length(texture2D( tDiffuse, vUv + texel * vec2(-1.0,0.0) ).rgb);",
-				"I[0][2] = length(texture2D( tDiffuse, vUv + texel * vec2(-1.0,1.0) ).rgb);",
-				"I[1][0] = length(texture2D( tDiffuse, vUv + texel * vec2(0.0,-1.0) ).rgb);",
-				"I[1][1] = length(texture2D( tDiffuse, vUv + texel * vec2(0.0,0.0) ).rgb);",
-				"I[1][2] = length(texture2D( tDiffuse, vUv + texel * vec2(0.0,1.0) ).rgb);",
-				"I[2][0] = length(texture2D( tDiffuse, vUv + texel * vec2(1.0,-1.0) ).rgb);",
-				"I[2][1] = length(texture2D( tDiffuse, vUv + texel * vec2(1.0,0.0) ).rgb);",
-				"I[2][2] = length(texture2D( tDiffuse, vUv + texel * vec2(1.0,1.0) ).rgb);",
-
-
-				/* calculate the convolution values for all the masks */
-				"for (int i=0; i<2; i++) {",
-					"float dp3 = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]);",
-					"cnv[i] = dp3 * dp3; ",
-				"}",
-
-				"gl_FragColor = vec4(colour, sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]));",
-			"} ",
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 100 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Film grain & scanlines shader
-	 *
-	 * - ported from HLSL to WebGL / GLSL
-	 * http://www.truevision3d.com/forums/showcase/staticnoise_colorblackwhite_scanline_shaders-t18698.0.html
-	 *
-	 * Screen Space Static Postprocessor
-	 *
-	 * Produces an analogue noise overlay similar to a film grain / TV static
-	 *
-	 * Original implementation and noise algorithm
-	 * Pat 'Hawthorne' Shearon
-	 *
-	 * Optimized scanlines + noise version with intensity scaling
-	 * Georg 'Leviathan' Steinrohder
-	 *
-	 * This version is provided under a Creative Commons Attribution 3.0 License
-	 * http://creativecommons.org/licenses/by/3.0/
-	 */
-
-	THREE.FilmShader = {
-
-		uniforms: {
-
-			"tDiffuse":   { type: "t", value: null },
-			"time":       { type: "f", value: 0.0 },
-			"nIntensity": { type: "f", value: 0.5 },
-			"sIntensity": { type: "f", value: 0.05 },
-			"sCount":     { type: "f", value: 4096 },
-			"grayscale":  { type: "i", value: 1 },
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			// control parameter
-			"uniform float time;",
-
-			"uniform bool grayscale;",
-
-			// noise effect intensity value (0 = no effect, 1 = full effect)
-			"uniform float nIntensity;",
-
-			// scanlines effect intensity value (0 = no effect, 1 = full effect)
-			"uniform float sIntensity;",
-
-			// scanlines effect count value (0 = no effect, 4096 = full effect)
-			"uniform float sCount;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				// sample the source
-				"vec4 cTextureScreen = texture2D( tDiffuse, vUv );",
-
-				// make some noise
-				"float x = vUv.x * vUv.y * time *  1000.0;",
-				"x = mod( x, 13.0 ) * mod( x, 123.0 );",
-				"float dx = mod( x, 0.01 );",
-
-				// add noise
-				"vec3 cResult = cTextureScreen.rgb + cTextureScreen.rgb * clamp( 0.1 + dx * 100.0, 0.0, 1.0 );",
-
-				// get us a sine and cosine
-				"vec2 sc = vec2( sin( vUv.y * sCount ), cos( vUv.y * sCount ) );",
-
-				// add scanlines
-				"cResult += cTextureScreen.rgb * vec3( sc.x, sc.y, sc.x ) * sIntensity;",
-
-				// interpolate between source and result by intensity
-				"cResult = cTextureScreen.rgb + clamp( nIntensity, 0.0,1.0 ) * ( cResult - cTextureScreen.rgb );",
-
-				// convert to grayscale if desired
-				"if( grayscale ) {",
-
-					"cResult = vec3( cResult.r * 0.3 + cResult.g * 0.59 + cResult.b * 0.11 );",
-
-				"}",
-
-				"gl_FragColor =  vec4( cResult, cTextureScreen.a );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 101 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Focus shader
-	 * based on PaintEffect postprocess from ro.me
-	 * http://code.google.com/p/3-dreams-of-black/source/browse/deploy/js/effects/PaintEffect.js
-	 */
-
-	THREE.FocusShader = {
-
-		uniforms : {
-
-			"tDiffuse":       { type: "t", value: null },
-			"screenWidth":    { type: "f", value: 1024 },
-			"screenHeight":   { type: "f", value: 1024 },
-			"sampleDistance": { type: "f", value: 0.94 },
-			"waveFactor":     { type: "f", value: 0.00125 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float screenWidth;",
-			"uniform float screenHeight;",
-			"uniform float sampleDistance;",
-			"uniform float waveFactor;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 color, org, tmp, add;",
-				"float sample_dist, f;",
-				"vec2 vin;",
-				"vec2 uv = vUv;",
-
-				"add = color = org = texture2D( tDiffuse, uv );",
-
-				"vin = ( uv - vec2( 0.5 ) ) * vec2( 1.4 );",
-				"sample_dist = dot( vin, vin ) * 2.0;",
-
-				"f = ( waveFactor * 100.0 + sample_dist ) * sampleDistance * 4.0;",
-
-				"vec2 sampleSize = vec2(  1.0 / screenWidth, 1.0 / screenHeight ) * vec2( f );",
-
-				"add += tmp = texture2D( tDiffuse, uv + vec2( 0.111964, 0.993712 ) * sampleSize );",
-				"if( tmp.b < color.b ) color = tmp;",
-
-				"add += tmp = texture2D( tDiffuse, uv + vec2( 0.846724, 0.532032 ) * sampleSize );",
-				"if( tmp.b < color.b ) color = tmp;",
-
-				"add += tmp = texture2D( tDiffuse, uv + vec2( 0.943883, -0.330279 ) * sampleSize );",
-				"if( tmp.b < color.b ) color = tmp;",
-
-				"add += tmp = texture2D( tDiffuse, uv + vec2( 0.330279, -0.943883 ) * sampleSize );",
-				"if( tmp.b < color.b ) color = tmp;",
-
-				"add += tmp = texture2D( tDiffuse, uv + vec2( -0.532032, -0.846724 ) * sampleSize );",
-				"if( tmp.b < color.b ) color = tmp;",
-
-				"add += tmp = texture2D( tDiffuse, uv + vec2( -0.993712, -0.111964 ) * sampleSize );",
-				"if( tmp.b < color.b ) color = tmp;",
-
-				"add += tmp = texture2D( tDiffuse, uv + vec2( -0.707107, 0.707107 ) * sampleSize );",
-				"if( tmp.b < color.b ) color = tmp;",
-
-				"color = color * vec4( 2.0 ) - ( add / vec4( 8.0 ) );",
-				"color = color + ( add / vec4( 8.0 ) - color ) * ( vec4( 1.0 ) - vec4( sample_dist * 0.5 ) );",
-
-				"gl_FragColor = vec4( color.rgb * color.rgb * vec3( 0.95 ) + color.rgb, 1.0 );",
-
-			"}"
-
-
-		].join("\n")
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 102 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Based on Nvidia Cg tutorial
-	 */
-
-	THREE.FresnelShader = {
-
-		uniforms: {
-
-			"mRefractionRatio": { type: "f", value: 1.02 },
-			"mFresnelBias": { type: "f", value: 0.1 },
-			"mFresnelPower": { type: "f", value: 2.0 },
-			"mFresnelScale": { type: "f", value: 1.0 },
-			"tCube": { type: "t", value: null }
-
-		},
-
-		vertexShader: [
-
-			"uniform float mRefractionRatio;",
-			"uniform float mFresnelBias;",
-			"uniform float mFresnelScale;",
-			"uniform float mFresnelPower;",
-
-			"varying vec3 vReflect;",
-			"varying vec3 vRefract[3];",
-			"varying float vReflectionFactor;",
-
-			"void main() {",
-
-				"vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
-				"vec4 worldPosition = modelMatrix * vec4( position, 1.0 );",
-
-				"vec3 worldNormal = normalize( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal );",
-
-				"vec3 I = worldPosition.xyz - cameraPosition;",
-
-				"vReflect = reflect( I, worldNormal );",
-				"vRefract[0] = refract( normalize( I ), worldNormal, mRefractionRatio );",
-				"vRefract[1] = refract( normalize( I ), worldNormal, mRefractionRatio * 0.99 );",
-				"vRefract[2] = refract( normalize( I ), worldNormal, mRefractionRatio * 0.98 );",
-				"vReflectionFactor = mFresnelBias + mFresnelScale * pow( 1.0 + dot( normalize( I ), worldNormal ), mFresnelPower );",
-
-				"gl_Position = projectionMatrix * mvPosition;",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform samplerCube tCube;",
-
-			"varying vec3 vReflect;",
-			"varying vec3 vRefract[3];",
-			"varying float vReflectionFactor;",
-
-			"void main() {",
-
-				"vec4 reflectedColor = textureCube( tCube, vec3( -vReflect.x, vReflect.yz ) );",
-				"vec4 refractedColor = vec4( 1.0 );",
-
-				"refractedColor.r = textureCube( tCube, vec3( -vRefract[0].x, vRefract[0].yz ) ).r;",
-				"refractedColor.g = textureCube( tCube, vec3( -vRefract[1].x, vRefract[1].yz ) ).g;",
-				"refractedColor.b = textureCube( tCube, vec3( -vRefract[2].x, vRefract[2].yz ) ).b;",
-
-				"gl_FragColor = mix( refractedColor, reflectedColor, clamp( vReflectionFactor, 0.0, 1.0 ) );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 103 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author mrdoob / http://www.mrdoob.com
-	 *
-	 * Simple test shader
-	 */
-
-	THREE.BasicShader = {
-
-		uniforms: {},
-
-		vertexShader: [
-
-			"void main() {",
-
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"void main() {",
-
-				"gl_FragColor = vec4( 1.0, 0.0, 0.0, 0.5 );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 104 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author miibond
-	 *
-	 * Full-screen gamma-correction
-	 */
-
-	THREE.GammaShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-		},
-
-		defines: {
-			"GAMMA_VALUE" : 2.0,
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"#if !defined(GAMMA_VALUE)",
-				"#define GAMMA_VALUE 0.5",
-			"#endif",
-
-			"uniform sampler2D tDiffuse;",
-			
-			"varying vec2 vUv;",
-
-			THREE.ShaderChunk['hdr_decode_pars_fragment'],
-			THREE.ShaderChunk['hdr_encode_pars_fragment'],
-
-			"void main() {",
-
-				"vec4 texel = texture2D( tDiffuse, vUv );",
-				
-				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
-					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
-						"gl_FragColor = vec4( HDRDecodeLOGLUV( texel ), 1.0 );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
-						"gl_FragColor = vec4( HDRDecodeRGBM( texel ), 1.0 );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
-						"gl_FragColor = vec4( HDRDecodeRGBD( texel ), 1.0 );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
-						"gl_FragColor = vec4( HDRDecodeRGBE( texel ), 1.0 );",
-					"#else",
-						"gl_FragColor = texel;",
-					"#endif",
-				"#else",
-					"gl_FragColor = texel;",
-				"#endif",
-
-				//Gamma 2.0
-				// "#if ( GAMMA_VALUE == 2 )",
-				// 	"gl_FragColor.xyz = sqrt( gl_FragColor.xyz );",
-				// "#elif ( GAMMA_VALUE == 0.5 )",
-					"gl_FragColor.xyz = gl_FragColor.xyz * gl_FragColor.xyz;",
-				// "#else",
-				// 	"gl_FragColor.xyz = pow( gl_FragColor.xyz, 1.0 / GAMMA_VALUE );",
-				// "#endif",
-
-			"}"
-
-		].join("\n")
-
-	};
-
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 105 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author zz85 / http://www.lab4games.net/zz85/blog
-	 *
-	 * Two pass Gaussian blur filter (horizontal and vertical blur shaders)
-	 * - described in http://www.gamerendering.com/2008/10/11/gaussian-blur-filter-shader/
-	 *   and used in http://www.cake23.de/traveling-wavefronts-lit-up.html
-	 *
-	 * - 9 samples per pass
-	 * - standard deviation 2.7
-	 * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
-	 */
-
-	THREE.HorizontalBlurShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"h":        { type: "f", value: 1.0 / 512.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform float h;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 sum = vec4( 0.0 );",
-
-				"sum += texture2D( tDiffuse, vec2( vUv.x - 4.0 * h, vUv.y ) ) * 0.051;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x - 3.0 * h, vUv.y ) ) * 0.0918;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x - 2.0 * h, vUv.y ) ) * 0.12245;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x - 1.0 * h, vUv.y ) ) * 0.1531;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x + 1.0 * h, vUv.y ) ) * 0.1531;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x + 2.0 * h, vUv.y ) ) * 0.12245;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x + 3.0 * h, vUv.y ) ) * 0.0918;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x + 4.0 * h, vUv.y ) ) * 0.051;",
-
-				"gl_FragColor = sum;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 106 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Simple fake tilt-shift effect, modulating two pass Gaussian blur (see above) by vertical position
-	 *
-	 * - 9 samples per pass
-	 * - standard deviation 2.7
-	 * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
-	 * - "r" parameter control where "focused" horizontal line lies
-	 */
-
-	THREE.HorizontalTiltShiftShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"h":        { type: "f", value: 1.0 / 512.0 },
-			"r":        { type: "f", value: 0.35 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform float h;",
-			"uniform float r;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 sum = vec4( 0.0 );",
-
-				"float hh = h * abs( r - vUv.y );",
-
-				"sum += texture2D( tDiffuse, vec2( vUv.x - 4.0 * hh, vUv.y ) ) * 0.051;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x - 3.0 * hh, vUv.y ) ) * 0.0918;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x - 2.0 * hh, vUv.y ) ) * 0.12245;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x - 1.0 * hh, vUv.y ) ) * 0.1531;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x + 1.0 * hh, vUv.y ) ) * 0.1531;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x + 2.0 * hh, vUv.y ) ) * 0.12245;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x + 3.0 * hh, vUv.y ) ) * 0.0918;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x + 4.0 * hh, vUv.y ) ) * 0.051;",
-
-				"gl_FragColor = sum;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 107 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author tapio / http://tapio.github.com/
-	 *
-	 * Hue and saturation adjustment
-	 * https://github.com/evanw/glfx.js
-	 * hue: -1 to 1 (-1 is 180 degrees in the negative direction, 0 is no change, etc.
-	 * saturation: -1 to 1 (-1 is solid gray, 0 is no change, and 1 is maximum contrast)
-	 */
-
-	THREE.HueSaturationShader = {
-
-		uniforms: {
-
-			"tDiffuse":   { type: "t", value: null },
-			"hue":        { type: "f", value: 0 },
-			"saturation": { type: "f", value: 0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform float hue;",
-			"uniform float saturation;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"gl_FragColor = texture2D( tDiffuse, vUv );",
-
-				// hue
-				"float angle = hue * 3.14159265;",
-				"float s = sin(angle), c = cos(angle);",
-				"vec3 weights = (vec3(2.0 * c, -sqrt(3.0) * s - c, sqrt(3.0) * s - c) + 1.0) / 3.0;",
-				"float len = length(gl_FragColor.rgb);",
-				"gl_FragColor.rgb = vec3(",
-					"dot(gl_FragColor.rgb, weights.xyz),",
-					"dot(gl_FragColor.rgb, weights.zxy),",
-					"dot(gl_FragColor.rgb, weights.yzx)",
-				");",
-
-				// saturation
-				"float average = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.0;",
-				"if (saturation > 0.0) {",
-					"gl_FragColor.rgb += (average - gl_FragColor.rgb) * (1.0 - 1.0 / (1.001 - saturation));",
-				"} else {",
-					"gl_FragColor.rgb += (average - gl_FragColor.rgb) * (-saturation);",
-				"}",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 108 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author felixturner / http://airtight.cc/
-	 *
-	 * Kaleidoscope Shader
-	 * Radial reflection around center point
-	 * Ported from: http://pixelshaders.com/editor/
-	 * by Toby Schachman / http://tobyschachman.com/
-	 *
-	 * sides: number of reflections
-	 * angle: initial angle in radians
-	 */
-
-	THREE.KaleidoShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"sides":    { type: "f", value: 6.0 },
-			"angle":    { type: "f", value: 0.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform float sides;",
-			"uniform float angle;",
-			
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec2 p = vUv - 0.5;",
-				"float r = length(p);",
-				"float a = atan(p.y, p.x) + angle;",
-				"float tau = 2. * 3.1416 ;",
-				"a = mod(a, tau/sides);",
-				"a = abs(a - tau/sides/2.) ;",
-				"p = r * vec2(cos(a), sin(a));",
-				"vec4 color = texture2D(tDiffuse, p + 0.5);",
-				"gl_FragColor = color;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 109 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Luminosity
-	 * http://en.wikipedia.org/wiki/Luminosity
-	 */
-
-	THREE.LuminosityShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"maxLuminance": { type: "f", value: 100.0 }
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"#ifdef MAX_LUMINANCE",
-				"uniform float maxLuminance;",
-			"#endif",
-
-			"varying vec2 vUv;",
-
-			THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
-			THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
-
-			"void main() {",
-
-				"vec4 texel = texture2D( tDiffuse, vUv );",
-				
-				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
-					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
-						"texel.xyz = HDRDecodeLOGLUV( texel );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
-						"texel.xyz = HDRDecodeRGBM( texel );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
-						"texel.xyz = HDRDecodeRGBD( texel );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
-						"texel.xyz = HDRDecodeRGBE( texel );",
-					"#endif",
-				"#endif",
-
-				"vec3 luma = vec3( 0.299, 0.587, 0.114 );",
-
-				"float v = dot( texel.xyz, luma );",
-
-				"#ifdef MAX_LUMINANCE",
-					"v = clamp( v, 0.0, maxLuminance );",
-				"#endif",
-				"gl_FragColor = vec4( v, v, v, texel.w );",
-
-				THREE.ShaderChunk[ "hdr_encode_fragment" ],
-
-			"}"
-
-		].join("\n")
-
-	};
-
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 110 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author felixturner / http://airtight.cc/
-	 *
-	 * Mirror Shader
-	 * Copies half the input to the other half
-	 *
-	 * side: side of input to mirror (0 = left, 1 = right, 2 = top, 3 = bottom)
-	 */
-
-	THREE.MirrorShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"side":     { type: "i", value: 1 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform int side;",
-			
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec2 p = vUv;",
-				"if (side == 0){",
-					"if (p.x > 0.5) p.x = 1.0 - p.x;",
-				"}else if (side == 1){",
-					"if (p.x < 0.5) p.x = 1.0 - p.x;",
-				"}else if (side == 2){",
-					"if (p.y < 0.5) p.y = 1.0 - p.y;",
-				"}else if (side == 3){",
-					"if (p.y > 0.5) p.y = 1.0 - p.y;",
-				"} ",
-				"vec4 color = texture2D(tDiffuse, p);",
-				"gl_FragColor = color;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 111 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Normal map shader
-	 * - compute normals from heightmap
-	 */
-
-	THREE.NormalMapShader = {
-
-		uniforms: {
-
-			"heightMap":  { type: "t", value: null },
-			"resolution": { type: "v2", value: new THREE.Vector2( 512, 512 ) },
-			"scale":      { type: "v2", value: new THREE.Vector2( 1, 1 ) },
-			"height":     { type: "f", value: 0.05 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float height;",
-			"uniform vec2 resolution;",
-			"uniform sampler2D heightMap;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"float val = texture2D( heightMap, vUv ).x;",
-
-				"float valU = texture2D( heightMap, vUv + vec2( 1.0 / resolution.x, 0.0 ) ).x;",
-				"float valV = texture2D( heightMap, vUv + vec2( 0.0, 1.0 / resolution.y ) ).x;",
-
-				"gl_FragColor = vec4( ( 0.5 * normalize( vec3( val - valU, val - valV, height  ) ) + 0.5 ), 1.0 );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 112 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author felixturner / http://airtight.cc/
-	 *
-	 * RGB Shift Shader
-	 * Shifts red and blue channels from center in opposite directions
-	 * Ported from http://kriss.cx/tom/2009/05/rgb-shift/
-	 * by Tom Butterworth / http://kriss.cx/tom/
-	 *
-	 * amount: shift distance (1 is width of input)
-	 * angle: shift angle in radians
-	 */
-
-	THREE.RGBShiftShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"amount":   { type: "f", value: 0.005 },
-			"angle":    { type: "f", value: 0.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform float amount;",
-			"uniform float angle;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec2 offset = amount * vec2( cos(angle), sin(angle));",
-				"vec4 cr = texture2D(tDiffuse, vUv + offset);",
-				"vec4 cga = texture2D(tDiffuse, vUv);",
-				"vec4 cb = texture2D(tDiffuse, vUv - offset);",
-				"gl_FragColor = vec4(cr.r, cga.g, cb.b, cga.a);",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 113 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Sepia tone shader
-	 * based on glfx.js sepia shader
-	 * https://github.com/evanw/glfx.js
-	 */
-
-	THREE.SepiaShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"amount":   { type: "f", value: 1.0 },
-			"opacity": { type: "f", value: 1.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float amount;",
-			"uniform float opacity;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 color = texture2D( tDiffuse, vUv );",
-				"vec3 c = color.rgb;",
-
-				"color.r = dot( c, vec3( 1.0 - 0.607 * amount, 0.769 * amount, 0.189 * amount ) );",
-				"color.g = dot( c, vec3( 0.349 * amount, 1.0 - 0.314 * amount, 0.168 * amount ) );",
-				"color.b = dot( c, vec3( 0.272 * amount, 0.534 * amount, 1.0 - 0.869 * amount ) );",
-
-				"gl_FragColor = vec4( min( vec3( 1.0 ), color.rgb ), opacity * color.a );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 114 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Screen-space ambient occlusion shader
-	 * - ported from
-	 *   SSAO GLSL shader v1.2
-	 *   assembled by Martins Upitis (martinsh) (http://devlog-martinsh.blogspot.com)
-	 *   original technique is made by ArKano22 (http://www.gamedev.net/topic/550699-ssao-no-halo-artifacts/)
-	 * - modifications
-	 * - modified to use RGBA packed depth texture (use clear color 1,1,1,1 for depth pass)
-	 * - refactoring and optimizations
-	 */
-
-	THREE.SSAOShader = {
-
-		uniforms: //THREE.UniformsUtils.merge( [
-			// THREE.UniformsLib[ "fog" ],
-			{
-
-			"tDiffuse":     { type: "t", value: null },
-			"tDepth":       { type: "t", value: null },
-			"size":         { type: "v2", value: new THREE.Vector2( 512, 512 ) },
-			"cameraNear":   { type: "f", value: 1 },
-			"cameraFar":    { type: "f", value: 100 },
-			"onlyAO":       { type: "i", value: 0 },
-			"aoClamp":      { type: "f", value: 0.5 },
-			"lumInfluence": { type: "f", value: 0.5 },
-			"noiseAmount": { type: "f", value: 0.0003 },
-			"radius": { type: "f", value: 5.0 },
-			"diffArea": { type: "f", value: 0.4 },
-			"gDisplace": { type: "f", value: 0.4 },
-			"fogEnabled": { type: "i", value: 1 },
-			"fogDensity": { type: "f", value: 0.0025 },
-			"depthScale": { type: "f", value: 1000.0 },
-			"opacity": { type: "f", value: 1.0 }
-		},
-			// ] ),
-		
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			//THREE.ShaderChunk['fog_pars_fragment'],
-			"uniform int fogEnabled;",
-			"uniform float fogDensity;",
-			"uniform float depthScale;",
-			// "uniform float fogFar;",
-			"uniform float cameraNear;",
-			"uniform float cameraFar;",
-
-			"uniform bool onlyAO;",      // use only ambient occlusion pass?
-
-			"uniform vec2 size;",        // texture width, height
-			"uniform float aoClamp;",    // depth clamp - reduces haloing at screen edges
-
-			"uniform float lumInfluence;",  // how much luminance affects occlusion
-
-			"uniform sampler2D tDiffuse;",
-			"uniform sampler2D tDepth;",
-
-			"varying vec2 vUv;",
-
-			// "#define PI 3.14159265",
-			"#define DL 2.399963229728653",  // PI * ( 3.0 - sqrt( 5.0 ) )
-			"#define EULER 2.718281828459045",
-
-			// helpers
-
-			"float width = size.x;",   // texture width
-			"float height = size.y;",  // texture height
-
-			"float cameraFarPlusNear = cameraFar + cameraNear;",
-			"float cameraFarMinusNear = cameraFar - cameraNear;",
-			"float cameraCoef = 2.0 * cameraNear;",
-
-			// user variables
-
-			"const int samples = 16;",     // ao sample count
-			"uniform float radius;",  // ao radius
-
-			"const bool useNoise = true;",      // use noise instead of pattern for sample dithering
-			"uniform float noiseAmount;", // dithering amount
-
-			"uniform float diffArea;",   // self-shadowing reduction
-			"uniform float gDisplace;",  // gauss bell center
-			"uniform float opacity;",
-
-
-			// RGBA depth
-
-			"float unpackDepth( const in vec4 rgba_depth ) {",
-
-				"const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
-				"float depth = dot( rgba_depth, bit_shift );",
-				"return depth;",
-
-			"}",
-
-			// generating noise / pattern texture for dithering
-
-			"vec2 rand( const vec2 coord ) {",
-
-				"vec2 noise;",
-
-				"if ( useNoise ) {",
-
-					"float nx = dot ( coord, vec2( 12.9898, 78.233 ) );",
-					"float ny = dot ( coord, vec2( 12.9898, 78.233 ) * 2.0 );",
-
-					"noise = clamp( fract ( 43758.5453 * sin( vec2( nx, ny ) ) ), 0.0, 1.0 );",
-
-				"} else {",
-
-					"float ff = fract( 1.0 - coord.s * ( width / 2.0 ) );",
-					"float gg = fract( coord.t * ( height / 2.0 ) );",
-
-					"noise = vec2( 0.25, 0.75 ) * vec2( ff ) + vec2( 0.75, 0.25 ) * gg;",
-
-				"}",
-
-				"return ( noise * 2.0  - 1.0 ) * noiseAmount;",
-
-			"}",
-
-			// "#ifdef USE_FOG",
-			"float doFog() {",
-				"float zdepth = unpackDepth( texture2D( tDepth, vUv ) );",
-				"float depth = -cameraFar * cameraNear / ( zdepth * cameraFarMinusNear - cameraFar );",
-				// "return smoothstep( fogNear, fogFar, depth );",
-
-
-			// "	#ifdef USE_LOGDEPTHBUF_EXT",
-
-			// "		float depth = gl_FragDepthEXT / gl_FragCoord.w;",
-
-			// "	#else",
-
-			// "		float depth = gl_FragCoord.z / gl_FragCoord.w;",
-
-			// "	#endif",
-
-			// "	#ifdef FOG_EXP2",
-			"float depthShift = depth * 0.001;",
-				  "float densityShift = fogDensity * 1000.0;",
-						//const float LOG2 = 1.442695;
-						"float fogFactor = 1.0 - clamp( 1.0 / exp( densityShift * densityShift * depthShift * depthShift ), 0.0, 1.0);",
-
-			// "		const float LOG2 = 1.442695;",
-			// "		float fogFactor = exp2( - fogDensity * fogDensity * zdepth * zdepth * LOG2 );",
-			// "		fogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );",
-
-			// "	#else",
-
-			// "		float fogFactor = smoothstep( fogNear, fogFar, depth );",
-
-			// "	#endif",
-
-			//"	gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );",
-			"	return fogFactor;",
-
-			"}",
-			// "#endif",
-
-			"float readDepth( const in vec2 coord ) {",
-
-				// "return ( 2.0 * cameraNear ) / ( cameraFar + cameraNear - unpackDepth( texture2D( tDepth, coord ) ) * ( cameraFar - cameraNear ) );",
-				"return cameraCoef / ( cameraFarPlusNear - unpackDepth( texture2D( tDepth, coord ) ) * cameraFarMinusNear );",
-
-
-			"}",
-
-			"float compareDepths( const in float depth1, const in float depth2, inout int far ) {",
-
-				"float garea = 2.0;",                         // gauss bell width
-				"float diff = ( depth1 - depth2 ) * depthScale;",  // depth difference (0-100)
-
-				// reduce left bell width to avoid self-shadowing
-
-				"if ( diff < gDisplace ) {",
-
-					"garea = diffArea;",
-
-				"} else {",
-
-					"far = 1;",
-
-				"}",
-
-				"float dd = diff - gDisplace;",
-				"float gauss = pow( EULER, -2.0 * dd * dd / ( garea * garea ) );",
-				"return gauss;",
-
-			"}",
-
-			"float calcAO( float depth, float dw, float dh ) {",
-
-				"float dd = radius - depth * radius;",
-				"vec2 vv = vec2( dw, dh );",
-
-				"vec2 coord1 = vUv + dd * vv;",
-				"vec2 coord2 = vUv - dd * vv;",
-
-				"float temp1 = 0.0;",
-				"float temp2 = 0.0;",
-
-				"int far = 0;",
-				"temp1 = compareDepths( depth, readDepth( coord1 ), far );",
-
-				// DEPTH EXTRAPOLATION
-
-				"if ( far > 0 ) {",
-
-					"temp2 = compareDepths( readDepth( coord2 ), depth, far );",
-					"temp1 += ( 1.0 - temp1 ) * temp2;",
-
-				"}",
-
-				"return temp1;",
-
-			"}",
-
-			"void main() {",
-
-				"vec2 noise = rand( vUv );",
-				"float depth = readDepth( vUv );",
-
-				"float tt = clamp( depth, aoClamp, 1.0 );",
-
-				"float w = ( 1.0 / width )  / tt + ( noise.x * ( 1.0 - noise.x ) );",
-				"float h = ( 1.0 / height ) / tt + ( noise.y * ( 1.0 - noise.y ) );",
-
-				"float ao = 0.0;",
-
-				"float dz = 1.0 / float( samples );",
-				"float z = 1.0 - dz / 2.0;",
-				"float l = 0.0;",
-
-				"for ( int i = 0; i <= samples; i ++ ) {",
-
-					"float r = sqrt( 1.0 - z );",
-
-					"float pw = cos( l ) * r;",
-					"float ph = sin( l ) * r;",
-					"ao += calcAO( depth, pw * w, ph * h );",
-					"z = z - dz;",
-					"l = l + DL;",
-
-				"}",
-
-				"ao /= float( samples );",
-				"ao = 1.0 - ao;",
-				"if ( fogEnabled == 1 ) {",
-					"ao = mix( ao, 1.0, doFog() );",
-				"}",
-
-				"vec3 color = texture2D( tDiffuse, vUv ).rgb;",
-
-				"vec3 lumcoeff = vec3( 0.299, 0.587, 0.114 );",
-				"float lum = dot( color.rgb, lumcoeff );",
-				"vec3 luminance = vec3( lum );",
-
-				"vec3 final = vec3( color * mix( vec3( ao ), vec3( 1.0 ), luminance * lumInfluence ) );",  // mix( color * ao, white, luminance )
-
-				"if ( onlyAO ) {",
-
-					"final = vec3( mix( vec3( ao ), vec3( 1.0 ), luminance * lumInfluence ) );",  // ambient occlusion only
-
-				"}",
-
-				"gl_FragColor = vec4( final, opacity );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 115 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author zz85 / http://www.lab4games.net/zz85/blog
-	 *
-	 * Triangle blur shader
-	 * based on glfx.js triangle blur shader
-	 * https://github.com/evanw/glfx.js
-	 *
-	 * A basic blur filter, which convolves the image with a
-	 * pyramid filter. The pyramid filter is separable and is applied as two
-	 * perpendicular triangle filters.
-	 */
-
-	THREE.TriangleBlurShader = {
-
-		uniforms : {
-
-			"texture": { type: "t", value: null },
-			"delta":   { type: "v2", value:new THREE.Vector2( 1, 1 )  }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"#define ITERATIONS 10.0",
-
-			"uniform sampler2D texture;",
-			"uniform vec2 delta;",
-
-			"varying vec2 vUv;",
-
-			"float random( vec3 scale, float seed ) {",
-
-				// use the fragment position for a different seed per-pixel
-
-				"return fract( sin( dot( gl_FragCoord.xyz + seed, scale ) ) * 43758.5453 + seed );",
-
-			"}",
-
-			"void main() {",
-
-				"vec4 color = vec4( 0.0 );",
-
-				"float total = 0.0;",
-
-				// randomize the lookup values to hide the fixed number of samples
-
-				"float offset = random( vec3( 12.9898, 78.233, 151.7182 ), 0.0 );",
-
-				"for ( float t = -ITERATIONS; t <= ITERATIONS; t ++ ) {",
-
-					"float percent = ( t + offset - 0.5 ) / ITERATIONS;",
-					"float weight = 1.0 - abs( percent );",
-
-					"color += texture2D( texture, vUv + delta * percent ) * weight;",
-					"total += weight;",
-
-				"}",
-
-				"gl_FragColor = color / total;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 116 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author miibond
-	 *
-	 * Full-screen tone-mapping shader based on http://www.graphics.cornell.edu/~jaf/publications/sig02_paper.pdf
-	 */
-
-	THREE.ToneMapShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"averageLuminance":  { type: "f", value: 1.0 },
-			"luminanceMap":  { type: "t", value: null },
-			"maxLuminance":  { type: "f", value: 16.0 },
-			"exposureBias":  { type: "f", value: 0.6 },
-			"maxLuminanceRT":  { type: "t", value: null },
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"#ifdef ADAPT_WHITE_BALANCE",
-				"uniform sampler2D maxLuminanceRT;",
-			"#else",
-				"uniform float maxLuminance;",
-			"#endif",
-
-			"varying vec2 vUv;",
-
-			"uniform float exposureBias;",
-			
-			"#ifdef SAMPLE_LUMINANCE",
-				"uniform sampler2D luminanceMap;",
-			"#else",
-				"uniform float averageLuminance;",
-			"#endif",
-
-			THREE.ShaderChunk['hdr_decode_pars_fragment'],
-			THREE.ShaderChunk['hdr_encode_pars_fragment'],
-
-			// #ifdef FILMIC_UC2
-			// From Uncharted 2 - http://www.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting
-				"uniform float whiteScale;",
-				"const float A = 0.15;",// A = Shoulder Strength
-		    "const float B = 0.50;",// B = Linear Strength
-		    "const float C = 0.10;",// C = Linear Angle
-		    "const float D = 0.20;",// D = Toe Strength
-		    "const float E = 0.02;",// E = Toe Numerator
-		    "const float F = 0.30;",// F = Toe Denominator
-
-		    "vec3 UC2Tonemap( vec3 x ) {",
-		      "return ( ( x * ( A * x + C * B ) + D * E ) / ( x * ( A * x + B ) + D * F ) ) - E / F;",
-		    "}",
-		  // #endif
-			
-			"const vec3 LUM_CONVERT = vec3(0.299, 0.587, 0.114);",
-
-			"vec3 ToneMap( vec3 vColor ) {",
-				"#ifdef SAMPLE_LUMINANCE",
-					// Get the calculated average luminance 
-					"vec4 lumAvg = texture2D(luminanceMap, vUv);",
-					"float fLumAvg = lumAvg.r;",
-					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
-						"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
-							"fLumAvg = HDRDecodeLOGLUV( lumAvg ).r;",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
-							"fLumAvg = HDRDecodeRGBM( lumAvg ).r;",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
-							"fLumAvg = HDRDecodeRGBD( lumAvg ).r;",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
-							"fLumAvg = HDRDecodeRGBE( lumAvg ).r;",
-						"#endif",
-					"#endif",
-				"#else",
-					"float fLumAvg = averageLuminance;",
-				"#endif",
-				
-				// "#if defined( FILMIC_UC2 )",
-				"#ifdef ADAPT_WHITE_BALANCE",
-					"vec3 maxLum = texture2D( maxLuminanceRT, vUv ).rgb;",
-					"vec3 white = 1.0 / UC2Tonemap( maxLum );",
-				"#else",
-					"vec3 white = vec3(maxLuminance);",
-				"#endif",
-	      // "maxLum = log2( maxLum * 1.5 + 3.5 );",
-	      // "vColor *= vec3( 16.0 );",
-				"vec3 curr = UC2Tonemap( (exposureBias / (fLumAvg + 0.025)) * vColor );",
-				// "vec3 curr = UC2Tonemap( exposureBias * vColor );",
-				// "vec3 whiteScale = 1.0 / UC2Tonemap(white);",
-				
-				"return curr * white;",
-	            
-				// "#else",//Reinhard Tonemapping
-				// 	// Calculate the luminance of the current pixel
-				// 	"float fLumPixel = dot(vColor, LUM_CONVERT);",
-
-				// 	// Apply the modified operator (Eq. 4)
-				// 	"float fLumScaled = (fLumPixel * exposureBias) / fLumAvg;",
-
-				// 	"float fLumCompressed = (fLumScaled * (1.0 + (fLumScaled / (maxLuminance * maxLuminance)))) / (1.0 + fLumScaled);",
-				// 	"return fLumCompressed * vColor;",
-				// "#endif",
-			"}",
-
-			"void main() {",
-
-				"vec4 texel = texture2D( tDiffuse, vUv );",
-				
-				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
-					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
-						"gl_FragColor = vec4( ToneMap( HDRDecodeLOGLUV( texel ) ), 1.0 );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
-						"gl_FragColor = vec4( ToneMap( HDRDecodeRGBM( texel ) ), 1.0 );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
-						"gl_FragColor = vec4( ToneMap( HDRDecodeRGBD( texel ) ), 1.0 );",
-					"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
-						"gl_FragColor = vec4( ToneMap( HDRDecodeRGBE( texel ) ), 1.0 );",
-					"#else",
-						"gl_FragColor = vec4( ToneMap( texel.xyz ), texel.w );",
-					"#endif",
-				"#else",
-					"gl_FragColor = vec4( ToneMap( texel.xyz ), texel.w );",
-				"#endif",
-
-				//Gamma 2.0
-				"gl_FragColor.xyz = sqrt( gl_FragColor.xyz );",
-
-			"}"
-
-		].join("\n")
-
-	};
-
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 117 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Unpack RGBA depth shader
-	 * - show RGBA encoded depth as monochrome color
-	 */
-
-	THREE.UnpackDepthRGBAShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"opacity":  { type: "f", value: 1.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float opacity;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			// RGBA depth
-
-			"float unpackDepth( const in vec4 rgba_depth ) {",
-
-				"const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
-				"float depth = dot( rgba_depth, bit_shift );",
-				"return depth;",
-
-			"}",
-
-			"void main() {",
-
-				"float depth = 1.0 - unpackDepth( texture2D( tDiffuse, vUv ) );",
-				"gl_FragColor = opacity * vec4( vec3( depth ), 1.0 );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 118 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author miibond
-	 *
-	 * Unpack HDR texture in a variety of packing formats to full, 16-bit colour
-	 */
-
-	THREE.UnpackHDRShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"rgbmMultiplier":  { type: "f", value: 9.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"#ifdef FLIP_Y",
-					"vUv.y = 1.0 - vUv.y;",
-				"#endif",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-			"uniform sampler2D tDiffuse;",
-			"uniform float rgbmMultiplier;",
-
-			// Inverse logLuvMatrix matrix, for decoding
-			"const mat3 InverseLogLuvMatrix = mat3(",
-			  "6.0014, -2.7008, -1.7996,",
-				"-1.3320,  3.1029, -5.7721,",
-				"0.3008, -1.0882,  5.6268);",
-
-			"vec3 HDRDecodeLOGLUV(in vec4 vLogLuv)",
-			"{",
-			  // Based on http://www.xnainfo.com/content.php?content=28
-			  "float Le = vLogLuv.z * 255.0 + vLogLuv.w;",
-			  "vec3 Xp_Y_XYZp;",
-			  "Xp_Y_XYZp.y = exp2((Le - 127.0) / 2.0);",
-			  "Xp_Y_XYZp.z = Xp_Y_XYZp.y / vLogLuv.y;",
-			  "Xp_Y_XYZp.x = vLogLuv.x * Xp_Y_XYZp.z;",
-			  "vec3 vRGB = InverseLogLuvMatrix * Xp_Y_XYZp;",
-			  "return vRGB;",
-			"}",
-
-			"vec3 HDRDecodeRGBM( vec4 rgbm ) {",
-			  //Based on http://vemberaudio.se/graphics/RGBdiv8.pdf
-			  "return rgbmMultiplier * rgbm.rgb * rgbm.a;",
-			"}",
-
-			"vec3 HDRDecodeRGBD( vec4 rgbd ) {",
-			  //Based on http://vemberaudio.se/graphics/RGBdiv8.pdf
-			  "return rgbd.rgb / max(rgbd.a, 0.003);",
-			"}",
-
-			"vec3 HDRDecodeRGBE( vec4 rgbe ) {",
-			  //Based on http://www.graphics.cornell.edu/~bjw/rgbe/rgbe.c
-			  "float f = exp2( rgbe.w * 255.0 - (128.0 + 0.0) );",
-			  "return rgbe.rgb * f;",
-			"}",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec3 hdrColour;",
-				"#ifdef HDR_RGBM",
-					"hdrColour = HDRDecodeRGBM( texture2D( tDiffuse, vUv ) );",
-				"#elif defined(HDR_RGBD)",
-					"hdrColour = HDRDecodeRGBD( texture2D( tDiffuse, vUv ) );",
-				"#elif defined(HDR_RGBE)",
-					"hdrColour = HDRDecodeRGBE( texture2D( tDiffuse, vUv ) );",
-				"#elif defined(HDR_LOGLUV)",
-					"hdrColour = HDRDecodeLOGLUV( texture2D( tDiffuse, vUv ) );",
-				"#else",
-					"hdrColour = texture2D( tDiffuse, vUv ).xyz;",
-				"#endif",
-
-				"gl_FragColor = vec4( hdrColour, 1.0 );",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 119 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author zz85 / http://www.lab4games.net/zz85/blog
-	 *
-	 * Two pass Gaussian blur filter (horizontal and vertical blur shaders)
-	 * - described in http://www.gamerendering.com/2008/10/11/gaussian-blur-filter-shader/
-	 *   and used in http://www.cake23.de/traveling-wavefronts-lit-up.html
-	 *
-	 * - 9 samples per pass
-	 * - standard deviation 2.7
-	 * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
-	 */
-
-	THREE.VerticalBlurShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"v":        { type: "f", value: 1.0 / 512.0 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform float v;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 sum = vec4( 0.0 );",
-
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 4.0 * v ) ) * 0.051;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 3.0 * v ) ) * 0.0918;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 2.0 * v ) ) * 0.12245;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 1.0 * v ) ) * 0.1531;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 1.0 * v ) ) * 0.1531;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 2.0 * v ) ) * 0.12245;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 3.0 * v ) ) * 0.0918;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 4.0 * v ) ) * 0.051;",
-
-				"gl_FragColor = sum;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 120 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Simple fake tilt-shift effect, modulating two pass Gaussian blur (see above) by vertical position
-	 *
-	 * - 9 samples per pass
-	 * - standard deviation 2.7
-	 * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
-	 * - "r" parameter control where "focused" horizontal line lies
-	 */
-
-	THREE.VerticalTiltShiftShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"v":        { type: "f", value: 1.0 / 512.0 },
-			"r":        { type: "f", value: 0.35 }
-
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform sampler2D tDiffuse;",
-			"uniform float v;",
-			"uniform float r;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec4 sum = vec4( 0.0 );",
-
-				"float vv = v * abs( r - vUv.y );",
-
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 4.0 * vv ) ) * 0.051;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 3.0 * vv ) ) * 0.0918;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 2.0 * vv ) ) * 0.12245;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 1.0 * vv ) ) * 0.1531;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 1.0 * vv ) ) * 0.1531;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 2.0 * vv ) ) * 0.12245;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 3.0 * vv ) ) * 0.0918;",
-				"sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 4.0 * vv ) ) * 0.051;",
-
-				"gl_FragColor = sum;",
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 121 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author alteredq / http://alteredqualia.com/
-	 *
-	 * Vignette shader
-	 * based on PaintEffect postprocess from ro.me
-	 * http://code.google.com/p/3-dreams-of-black/source/browse/deploy/js/effects/PaintEffect.js
-	 */
-
-	THREE.VignetteShader = {
-
-		uniforms: {
-
-			"tDiffuse": { type: "t", value: null },
-			"offset":   { type: "f", value: 1.0 },
-			"darkness": { type: "f", value: 1.0 },
-			"opacity": { type: "f", value: 1.0 }
-		},
-
-		vertexShader: [
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vUv = uv;",
-				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-			"}"
-
-		].join("\n"),
-
-		fragmentShader: [
-
-			"uniform float offset;",
-			"uniform float darkness;",
-			"uniform float opacity;",
-
-			"uniform sampler2D tDiffuse;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				// Eskil's vignette
-
-				"vec4 texel = texture2D( tDiffuse, vUv );",
-				"vec2 uv = ( vUv - vec2( 0.5 ) ) * vec2( offset );",
-				"gl_FragColor = vec4( mix( texel.rgb, vec3( 1.0 - darkness ), dot( uv, uv ) ), texel.a * opacity );",
-
-				/*
-				// alternative version from glfx.js
-				// this one makes more "dusty" look (as opposed to "burned")
-
-				"vec4 color = texture2D( tDiffuse, vUv );",
-				"float dist = distance( vUv, vec2( 0.5 ) );",
-				"color.rgb *= smoothstep( 0.8, offset * 0.799, dist *( darkness + offset ) );",
-				"gl_FragColor = color;",
-				*/
-
-			"}"
-
-		].join("\n")
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 122 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-		/**
-		 * @author alteredq / http://alteredqualia.com/
-		 */
-
-		THREE.TexturePass = function ( texture, opacity ) {
-
-			if ( THREE.CopyShader === undefined )
-				console.error( "THREE.TexturePass relies on THREE.CopyShader" );
-
-			var shader = THREE.CopyShader;
-
-			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-			this.uniforms[ "opacity" ].value = ( opacity !== undefined ) ? opacity : 1.0;
-			this.uniforms[ "tDiffuse" ].value = texture;
-
-			this.material = new THREE.ShaderMaterial( {
-
-				uniforms: this.uniforms,
-				vertexShader: shader.vertexShader,
-				fragmentShader: shader.fragmentShader
-
-			} );
-
-			this.enabled = true;
-			this.needsSwap = false;
-
-
-			this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-			this.scene  = new THREE.Scene();
-
-			this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-			this.scene.add( this.quad );
-
-		};
-
-		THREE.TexturePass.prototype = {
-
-			render: function ( renderer, writeBuffer, readBuffer, delta ) {
-
-				this.quad.material = this.material;
-
-				renderer.render( this.scene, this.camera, readBuffer );
-
-			}
-
-		};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 123 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
-	/**
-	 * @author miibond
-	 * Generate a texture that represents the luminosity of the current scene, adapted over time
-	 * to simulate the optic nerve responding to the amount of light it is receiving.
-	 * Based on a GDC2007 presentation by Wolfgang Engel titled "Post-Processing Pipeline"
-	 *
-	 * Full-screen tone-mapping shader based on http://www.graphics.cornell.edu/~jaf/publications/sig02_paper.pdf
-	 */
-
-	THREE.AdaptiveToneMappingPass = function ( adaptive, resolution ) {
-
-		this.resolution = ( resolution !== undefined ) ? resolution : 256;
-		this.needsUpdate = true;
-		this.adaptive = adaptive !== undefined? !!adaptive : true;
-		this.needsManualDownSample = false;
-
-		this.luminanceRT = null;
-		this.previousLuminanceRT = null;
-		this.currentLuminanceRT = null;
-		this.currentLuminanceRTDownSampled = [];
-
-		this.maxLuminanceRT = null;
-		this.previousMaxLuminanceRT = null;
-		this.currentMaxLuminanceRT = [];
-
-		if ( THREE.CopyShader === undefined )
-			console.error( "THREE.AdaptiveToneMappingPass relies on THREE.CopyShader" );
-
-		var copyShader = THREE.CopyShader;
-
-		this.copyUniforms = THREE.UniformsUtils.clone( copyShader.uniforms );
-
-		this.materialCopy = new THREE.ShaderMaterial( {
-
-			uniforms: this.copyUniforms,
-			vertexShader: copyShader.vertexShader,
-			fragmentShader: copyShader.fragmentShader,
-			blending: THREE.NoBlending,
-			depthTest: false,
-			depthWrite: false,
-		} );
-
-		if ( THREE.LuminosityShader === undefined )
-			console.error( "THREE.AdaptiveToneMappingPass relies on THREE.LuminosityShader" );
-
-		this.materialLuminance = new THREE.ShaderMaterial( {
-
-			uniforms: THREE.UniformsUtils.clone( THREE.LuminosityShader.uniforms ),
-			vertexShader: THREE.LuminosityShader.vertexShader,
-			fragmentShader: THREE.LuminosityShader.fragmentShader,
-			blending: THREE.NoBlending,
-			depthTest: false,
-			depthWrite: false,
-			name: "Luminance",
-			defines: {"MAX_LUMINANCE": ""}
-		} );
-
-		this.adaptLuminanceShader = {
-			defines: {
-				"MIP_LEVEL_1X1" : Math.log2( this.resolution ).toFixed(1),
-			},
-			uniforms: {
-				"lastLum": { type: "t", value: null },
-				"currentLum": { type: "t", value: null },
-				"delta": { type: 'f', value: 0.016 },
-				"tau": { type: 'f', value: 1.0 }
-			},
-			vertexShader: [
-				"varying vec2 vUv;",
-
-				"void main() {",
-
-					"vUv = uv;",
-					"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-				"}"
-			].join('\n'),
-			fragmentShader: [
-				"varying vec2 vUv;",
-
-				"uniform sampler2D lastLum;",
-				"uniform sampler2D currentLum;",
-				"uniform float delta;",
-				"uniform float tau;",
-				THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
-				THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
-
-				"void main() {",
-
-					"vec4 lastLum = texture2D( lastLum, vUv, MIP_LEVEL_1X1 );",
-					"vec4 currentLum = texture2D( currentLum, vUv, MIP_LEVEL_1X1 );",
-
-					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
-						"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
-							"float fLastLum = HDRDecodeLOGLUV( lastLum ).r;",
-							"float fCurrentLum = HDRDecodeLOGLUV( currentLum ).r;",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
-							"float fLastLum = HDRDecodeRGBM( lastLum ).r;",
-							"float fCurrentLum = HDRDecodeRGBM( currentLum ).r;",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
-							"float fLastLum = HDRDecodeRGBD( lastLum ).r;",
-							"float fCurrentLum = HDRDecodeRGBD( currentLum ).r;",
-						"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
-							"float fLastLum = HDRDecodeRGBE( lastLum ).r;",
-							"float fCurrentLum = HDRDecodeRGBE( currentLum ).r;",
-						"#else",
-							"float fLastLum = lastLum.r;",
-							"float fCurrentLum = currentLum.r;",
-						"#endif",
-					"#else",
-							"float fLastLum = lastLum.r;",
-							"float fCurrentLum = currentLum.r;",
-					"#endif",
-
-					//The adaption seems to work better in extreme lighting differences
-					//if the input luminance is squared.
-					// "fCurrentLum = pow( fCurrentLum, 2.0 );",
-
-					// Adapt the luminance using Pattanaik's technique
-					"float fAdaptedLum = fLastLum + (fCurrentLum - fLastLum) * (1.0 - exp(-delta * tau));",
-					// "fAdaptedLum = sqrt(fAdaptedLum);",
-					"gl_FragColor = vec4( vec3( fAdaptedLum ), 1.0 );",
-					THREE.ShaderChunk[ "hdr_encode_fragment" ],
-				"}",
-			].join('\n')
-		};
-
-		this.materialAdaptiveLum = new THREE.ShaderMaterial( {
-
-			uniforms: this.adaptLuminanceShader.uniforms,
-			vertexShader: this.adaptLuminanceShader.vertexShader,
-			fragmentShader: this.adaptLuminanceShader.fragmentShader,
-			defines: this.adaptLuminanceShader.defines,
-			blending: THREE.NoBlending,
-			depthTest: false,
-			depthWrite: false,
-			name: "Adaptive Luminance"
-		} );
-
-		if ( THREE.ToneMapShader === undefined )
-			console.error( "THREE.AdaptiveToneMappingPass relies on THREE.ToneMapShader" );
-
-		this.materialToneMap = new THREE.ShaderMaterial( {
-
-			uniforms: THREE.UniformsUtils.clone( THREE.ToneMapShader.uniforms ),
-			vertexShader: THREE.ToneMapShader.vertexShader,
-			fragmentShader: THREE.ToneMapShader.fragmentShader,
-			blending: THREE.NoBlending,
-			depthTest: false,
-			depthWrite: false,
-			name: "Tone Map"
-		} );
-
-		this.downSampleShader = {
-			// defines: {
-			// 	"RESOLUTION" : this.resolution.toFixed(1),
-			// },
-			uniforms: {
-				"tDiffuse": { type: "t", value: null },
-				"resolution": { type: "v2", value: new THREE.Vector2() },
-				"encode": { type: 'i', value: 1 },
-				// "tau": { type: 'f', value: 1.0 }
-			},
-			vertexShader: [
-				"varying vec2 vUv;",
-
-				"void main() {",
-
-					"vUv = uv;",
-					"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-				"}"
-			].join('\n'),
-			fragmentShader: [
-				"varying vec2 vUv;",
-				"uniform sampler2D tDiffuse;",
-				"uniform vec2 resolution;",
-				THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
-				THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
-
-				"void main() {",
-					"vec2 offset = 0.5 / resolution;",
-					"vec4 luminosity;",
-					"vec4 samples[ 4 ];",
-
-	        "samples[0] = texture2D( tDiffuse, vUv + vec2( -offset.x, -offset.x ) );",
-	        "samples[1] = texture2D( tDiffuse, vUv + vec2( offset.x, -offset.x ) );",
-	        "samples[2] = texture2D( tDiffuse, vUv + vec2( offset.x, offset.y ) );",
-	        "samples[3] = texture2D( tDiffuse, vUv + vec2( -offset.x, offset.y ) );",
-
-					"for ( int i = 0; i < 4; i++ ) {",
-						"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
-							"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
-								"luminosity[ i ] = HDRDecodeLOGLUV( samples[i] ).r;",
-							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
-								"luminosity[ i ] = HDRDecodeRGBM( samples[i] ).r;",
-							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
-								"luminosity[ i ] = HDRDecodeRGBD( samples[i] ).r;",
-							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
-								"luminosity[ i ] = HDRDecodeRGBE( samples[i] ).r;",
-							"#else",
-								"luminosity[ i ] = samples[i].r;",
-							"#endif",
-						"#else",
-								"luminosity[ i ] = samples[i].r;",
-						"#endif",
-					"}",
-
-					"float newLum = dot(luminosity, vec4(0.25));",
-
-					"gl_FragColor = vec4( vec3( newLum ), 1.0 );",
-					THREE.ShaderChunk[ "hdr_encode_fragment" ],
-
-				"}",
-			].join('\n')
-		};
-		this.materialDownSample = new THREE.ShaderMaterial( {
-			uniforms: this.downSampleShader.uniforms,
-			vertexShader: this.downSampleShader.vertexShader,
-			fragmentShader: this.downSampleShader.fragmentShader,
-			blending: THREE.NoBlending,
-			depthTest: false,
-			depthWrite: false,
-			name: "down-sample"
-		});
-
-		this.maxLuminanceShader = {
-			// defines: {
-			// 	"RESOLUTION" : this.resolution.toFixed(1),
-			// },
-			uniforms: {
-				"tDiffuse": { type: "t", value: null },
-				"resolution": { type: "v2", value: new THREE.Vector2() },
-			},
-			vertexShader: [
-				"varying vec2 vUv;",
-
-				"void main() {",
-
-					"vUv = uv;",
-					"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-				"}"
-			].join('\n'),
-			fragmentShader: [
-				"varying vec2 vUv;",
-				"uniform sampler2D tDiffuse;",
-				"uniform vec2 resolution;",
-				THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
-				THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
-
-				"void main() {",
-					"vec2 offset = 0.5 / resolution;",
-					"vec4 luminosity;",
-					"vec4 samples[ 4 ];",
-
-	        "samples[0] = texture2D( tDiffuse, vUv + vec2( -offset.x, -offset.x ) );",
-	        "samples[1] = texture2D( tDiffuse, vUv + vec2( offset.x, -offset.x ) );",
-	        "samples[2] = texture2D( tDiffuse, vUv + vec2( offset.x, offset.y ) );",
-	        "samples[3] = texture2D( tDiffuse, vUv + vec2( -offset.x, offset.y ) );",
-
-					"for ( int i = 0; i < 4; i++ ) {",
-						"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
-							"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
-								"luminosity[ i ] = HDRDecodeLOGLUV( samples[i] ).r;",
-							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBM )",
-								"luminosity[ i ] = HDRDecodeRGBM( samples[i] ).r;",
-							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBD )",
-								"luminosity[ i ] = HDRDecodeRGBD( samples[i] ).r;",
-							"#elif ( HDR_INPUT_TYPE == HDR_TYPE_RGBE )",
-								"luminosity[ i ] = HDRDecodeRGBE( samples[i] ).r;",
-							"#else",
-								"luminosity[ i ] = samples[i].r;",
-							"#endif",
-						"#else",
-								"luminosity[ i ] = samples[i].r;",
-						"#endif",
-					"}",
-
-					"float maxLum = max( max(luminosity.r, luminosity.g), max( luminosity.b, luminosity.a ));",
-
-					"gl_FragColor = vec4( vec3( maxLum ), 1.0 );",
-					THREE.ShaderChunk[ "hdr_encode_fragment" ],
-
-				"}",
-			].join('\n')
-		};
-		this.materialMaxLuminance = new THREE.ShaderMaterial( {
-			uniforms: this.maxLuminanceShader.uniforms,
-			vertexShader: this.maxLuminanceShader.vertexShader,
-			fragmentShader: this.maxLuminanceShader.fragmentShader,
-			blending: THREE.NoBlending,
-			depthTest: false,
-			depthWrite: false,
-			name: "max-luminance"
-		});
-
-		this.enabled = true;
-		this.needsSwap = true;
-		this.clear = false;
-
-		this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-		this.scene  = new THREE.Scene();
-
-		this.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-		this.scene.add( this.quad );
-
-	};
-
-	THREE.AdaptiveToneMappingPass.prototype = {
-
-		render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
-
-			if ( this.needsUpdate ) {
-				this.resetRenderTargets( renderer, readBuffer );
-
-				this.needsUpdate = false;
-			}
-
-			if ( this.adaptive ) {
-				//Render the luminance of the current scene into a render target with mipmapping enabled
-				this.quad.material = this.materialLuminance;
-				this.materialLuminance.uniforms.tDiffuse.value = readBuffer;
-				renderer.render( this.scene, this.camera, this.currentLuminanceRT );
-				this.materialAdaptiveLum.uniforms.delta.value = delta;
-
-				if ( this.adaptiveWhiteLevel ) {
-					this.determineMaxLuminance( renderer );
-					//Adapt the max luminance value over time
-					this.quad.material = this.materialAdaptiveLum;
-					this.materialAdaptiveLum.uniforms.lastLum.value = this.previousMaxLuminanceRT;
-					this.materialAdaptiveLum.uniforms.currentLum.value = this.currentMaxLuminanceRT[ this.currentMaxLuminanceRT.length - 1 ];
-					renderer.render( this.scene, this.camera, this.maxLuminanceRT );
-					this.materialToneMap.uniforms.maxLuminanceRT.value = this.maxLuminanceRT;
-				}
-
-				//If we need to generate a 1x1 texture for sampling luminosity (because filtering isn't supported)
-				if ( this.needsManualDownSample ) {
-					this.downSampleLuminance( renderer );
-					this.materialAdaptiveLum.uniforms.currentLum.value = this.currentLuminanceRTDownSampled[ this.currentLuminanceRTDownSampled.length - 1 ];
-				}
-				else {
-					this.materialAdaptiveLum.uniforms.currentLum.value = this.currentLuminanceRT;
-				}
-
-				//Use the new luminance values, the previous luminance and the frame delta to
-				//adapt the luminance over time.
-				this.quad.material = this.materialAdaptiveLum;
-				// this.materialAdaptiveLum.uniforms.delta.value = delta;
-				this.materialAdaptiveLum.uniforms.lastLum.value = this.previousLuminanceRT;
-
-				renderer.render( this.scene, this.camera, this.luminanceRT );
-
-				//Copy the new adapted luminance value so that it can be used by the next frame.
-				this.quad.material = this.materialCopy;
-				this.copyUniforms.tDiffuse.value = this.luminanceRT;
-				renderer.render( this.scene, this.camera, this.previousLuminanceRT );
-
-				this.copyUniforms.tDiffuse.value = this.maxLuminanceRT;
-				renderer.render( this.scene, this.camera, this.previousMaxLuminanceRT );
-			}
-
-			//Now tonemap the scene, using the luminance
-			this.quad.material = this.materialToneMap;
-			this.materialToneMap.uniforms.tDiffuse.value = readBuffer;
-			renderer.render( this.scene, this.camera, writeBuffer, this.clear );
-
-		},
-
-		downSampleLuminance: function( renderer ) {
-			this.quad.material = this.materialDownSample;
-			this.materialDownSample.uniforms.tDiffuse.value = this.currentLuminanceRT;
-			for ( var i = 0; i < this.currentLuminanceRTDownSampled.length; i++ ) {
-				this.materialDownSample.uniforms.resolution.value.x = Math.pow( 2.0, this.currentLuminanceRTDownSampled.length - i );
-				this.materialDownSample.uniforms.resolution.value.y = Math.pow( 2.0, this.currentLuminanceRTDownSampled.length - i );
-				renderer.render( this.scene, this.camera, this.currentLuminanceRTDownSampled[ i ], true );
-				this.materialDownSample.uniforms.tDiffuse.value = this.currentLuminanceRTDownSampled[ i ];
-			}
-
-		},
-
-		determineMaxLuminance: function( renderer ) {
-			this.quad.material = this.materialMaxLuminance;
-			this.materialMaxLuminance.uniforms.tDiffuse.value = this.currentLuminanceRT;
-			for ( var i = 0; i < this.currentMaxLuminanceRT.length; i++ ) {
-				this.materialMaxLuminance.uniforms.resolution.value.x = Math.pow( 2.0, this.currentMaxLuminanceRT.length - i );
-				this.materialMaxLuminance.uniforms.resolution.value.y = Math.pow( 2.0, this.currentMaxLuminanceRT.length - i );
-				renderer.render( this.scene, this.camera, this.currentMaxLuminanceRT[ i ], true );
-				this.materialMaxLuminance.uniforms.tDiffuse.value = this.currentMaxLuminanceRT[ i ];
-			}
-
-		},
-
-		resetRenderTargets: function( renderer, renderTarget ) {
-			var i, res, pars, extensions;
-			// render targets
-			if ( this.luminanceRT ) {
-				this.luminanceRT.dispose();
-			}
-			if ( this.currentLuminanceRT ) {
-				this.currentLuminanceRT.dispose();
-			}
-			if ( this.previousLuminanceRT ) {
-				this.previousLuminanceRT.dispose();
-			}
-			if ( this.currentLuminanceRTDownSampled ) {
-				for ( i = 0; i < this.currentLuminanceRTDownSampled.length; i++ ) {
-					this.currentLuminanceRTDownSampled[ i ].dispose();
-				}
-				this.currentLuminanceRTDownSampled = [];
-			}
-			if ( this.maxLuminanceRT ) {
-				this.maxLuminanceRT.dispose();
-			}
-			if ( this.previousMaxLuminanceRT ) {
-				this.previousMaxLuminanceRT.dispose();
-			}
-			if ( this.currentMaxLuminanceRT ) {
-				for ( i = 0; i < this.currentMaxLuminanceRT.length; i++ ) {
-					this.currentMaxLuminanceRT[ i ].dispose();
-				}
-				this.currentMaxLuminanceRT = [];
-			}
-			pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: renderTarget.format, type: renderTarget.type };
-
-			//Determine if we will let the mipmaps for currentLuminanceRT to be auto-generated or not.
-			//For any compressed HDR formats, we'll have to manually down-sample the RT.
-			if ( renderTarget.type === THREE.FloatType ) {
-				//If we're using a floating point render target, check if the
-				extensions = new THREE.WebGLExtensions( renderer.getContext() );
-				if ( extensions.get('OES_texture_half_float_linear') || extensions.get('OES_texture_float_linear') ) {
-					//We only need mipmapping for the current luminosity because we want a down-sampled version to sample in our adaptive shader
-					this.needsManualDownSample = false;
-				}
-				else {
-					this.needsManualDownSample = true;
-				}
-			}
-			else if ( renderer.hdrOutputEnabled && renderer.hdrOutputType ) {
-				this.needsManualDownSample = true;
-			}
-			else {
-				this.needsManualDownSample = false;
-
-			}
-			if ( this.needsManualDownSample ) {
-				pars.minFilter = THREE.NearestFilter;
-				pars.magFilter = THREE.NearestFilter;
-			}
-			else {
-				pars.minFilter = THREE.LinearFilter;
-				pars.magFilter = THREE.LinearFilter;
-			}
-			this.luminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
-			this.luminanceRT.texture.generateMipmaps = false;
-			this.luminanceRT.name = "Average Luminance";
-			this.previousLuminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
-			this.previousLuminanceRT.texture.generateMipmaps = false;
-			this.previousLuminanceRT.name = "Previous Luminance";
-
-			if ( !this.needsManualDownSample ) {
-				pars.minFilter = THREE.LinearMipMapLinearFilter;
-			}
-			this.currentLuminanceRT = new THREE.WebGLRenderTarget( this.resolution, this.resolution, pars );
-			this.currentLuminanceRT.name = "Current Luminance";
-
-			if ( this.adaptive ) {
-				this.materialToneMap.defines["SAMPLE_LUMINANCE"] = "";
-				this.materialToneMap.uniforms.luminanceMap.value = this.luminanceRT;
-			}
-
-			this.materialLuminance.needsUpdate = true;
-			this.materialAdaptiveLum.needsUpdate = true;
-			this.materialToneMap.needsUpdate = true;
-			this.materialDownSample.needsUpdate = true;
-
-			if ( renderer.hdrOutputEnabled ) {
-				this.materialLuminance.hdrOutputType = renderer.hdrOutputType;
-				this.materialAdaptiveLum.hdrOutputType = renderer.hdrOutputType;
-				this.materialDownSample.hdrOutputType = renderer.hdrOutputType;
-				this.materialToneMap.hdrOutputEnabled = false;
-
-				this.materialLuminance.hdrInputEnabled = true;
-				this.materialLuminance.defines['HDR_INPUT_TYPE'] = renderer.hdrOutputType;
-				this.materialAdaptiveLum.hdrInputEnabled = true;
-				this.materialAdaptiveLum.defines['HDR_INPUT_TYPE'] = renderer.hdrOutputType;
-				this.materialToneMap.hdrInputEnabled = true;
-				this.materialToneMap.defines['HDR_INPUT_TYPE'] = renderer.hdrOutputType;
-				this.materialDownSample.hdrInputEnabled = true;
-				this.materialDownSample.defines['HDR_INPUT_TYPE'] = renderer.hdrOutputType;
-			}
-
-			pars.minFilter = THREE.NearestFilter;
-			pars.magFilter = THREE.NearestFilter;
-			if ( this.needsManualDownSample ) {
-				this.currentLuminanceRT.texture.generateMipmaps = false;
-				this.currentLuminanceRTDownSampled = new Array( parseInt( Math.log2( this.resolution ) ) );
-				for ( i = 1; i <= this.currentLuminanceRTDownSampled.length; i++ ) {
-					res = parseInt( this.resolution / Math.pow( 2, i ) );
-					this.currentLuminanceRTDownSampled[ i - 1 ] = new THREE.WebGLRenderTarget( res, res, pars );
-					this.currentLuminanceRTDownSampled[ i - 1 ].name = "Current Luminance RT" + (i - 1);
-				}
-				this.materialAdaptiveLum.defines['MIP_LEVEL_1X1'] = "0.0";
-			}
-			else {
-				this.materialAdaptiveLum.defines['MIP_LEVEL_1X1'] = Math.log2( this.resolution ).toFixed(1);
-			}
-
-			this.currentMaxLuminanceRT = new Array( parseInt( Math.log2( this.resolution ) ) );
-			for ( i = 1; i <= this.currentMaxLuminanceRT.length; i++ ) {
-				res = parseInt( this.resolution / Math.pow( 2, i ) );
-				this.currentMaxLuminanceRT[ i - 1 ] = new THREE.WebGLRenderTarget( res, res, pars );
-				this.currentMaxLuminanceRT[ i - 1 ].name = "Current Max Luminance RT" + (i - 1);
-			}
-			this.previousMaxLuminanceRT = new THREE.WebGLRenderTarget( 1, 1, pars );
-			this.previousMaxLuminanceRT.name = "Previous Max Luminance";
-			this.maxLuminanceRT = new THREE.WebGLRenderTarget( 1, 1, pars );
-			this.maxLuminanceRT.name = "Current Max Luminance";
-
-			this.seedTargets( renderer );
-
-		},
-
-		seedTargets: function( renderer ) {
-			//Put something in the adaptive luminance texture so that the scene can render initially
-			this.quad.material = new THREE.MeshBasicMaterial( {color: 0x777777, opacity: 0.5 });
-			renderer.render( this.scene, this.camera, this.luminanceRT );
-			renderer.render( this.scene, this.camera, this.previousLuminanceRT );
-			renderer.render( this.scene, this.camera, this.currentLuminanceRT );
-
-			renderer.render( this.scene, this.camera, this.previousMaxLuminanceRT );
-		},
-
-		setAdaptive: function( adaptive ) {
-			if ( adaptive ) {
-				this.adaptive = true;
-				this.materialToneMap.defines["SAMPLE_LUMINANCE"] = "";
-				this.materialToneMap.uniforms.luminanceMap.value = this.luminanceRT;
-			}
-			else {
-				this.adaptive = false;
-				delete this.materialToneMap.defines["SAMPLE_LUMINANCE"];
-				this.materialToneMap.uniforms.luminanceMap.value = undefined;
-			}
-			this.materialToneMap.needsUpdate = true;
-		},
-
-		setAdaptiveWhiteLevel: function( autoWhite ) {
-			if ( autoWhite && this.adaptive ) {
-				this.adaptiveWhiteLevel = true;
-				this.materialToneMap.defines["ADAPT_WHITE_BALANCE"] = "";
-				this.materialToneMap.uniforms.maxLuminanceRT.value = this.maxLuminanceRT;
-			}
-			else {
-				this.adaptiveWhiteLevel = false;
-				delete this.materialToneMap.defines["ADAPT_WHITE_BALANCE"];
-				this.materialToneMap.uniforms.maxLuminanceRT.value = undefined;
-			}
-			this.materialToneMap.needsUpdate = true;
-		},
-
-		setAdaptionRate: function( rate ) {
-			if ( rate ) {
-				this.materialAdaptiveLum.uniforms.tau.value = Math.abs( rate );
-			}
-		},
-
-		setMaxLuminance: function( maxLum ) {
-			if ( maxLum ) {
-				var A = 0.15;
-				var B = 0.50;
-				var C = 0.10;
-				var D = 0.20;
-				var E = 0.02;
-				var F = 0.30;
-				this.materialToneMap.uniforms.maxLuminance.value = 1.0 / ( ( maxLum * ( A * maxLum + C * B ) + D * E ) / ( maxLum * ( A * maxLum + B ) + D * F ) ) - E / F;
-				this.materialLuminance.uniforms.maxLuminance.value = maxLum;
-				if ( !this.materialLuminance.defines || !this.materialLuminance.defines["MAX_LUMINANCE"] ) {
-					this.materialLuminance.defines["MAX_LUMINANCE"] = "";
-					this.materialLuminance.needsUpdate = true;
-				}
-			}
-		},
-
-		setAverageLuminance: function( avgLum ) {
-			if ( avgLum ) {
-				this.materialToneMap.uniforms.averageLuminance.value = avgLum;
-			}
-		},
-
-		setExposure: function( exposure ) {
-			if ( exposure ) {
-				this.materialToneMap.uniforms.exposureBias.value = exposure;
-			}
-		},
-
-		dispose: function() {
-			if ( this.luminanceRT ) {
-				this.luminanceRT.dispose();
-			}
-			if ( this.previousLuminanceRT ) {
-				this.previousLuminanceRT.dispose();
-			}
-			if ( this.currentLuminanceRT ) {
-				this.currentLuminanceRT.dispose();
-			}
-			if ( this.materialLuminance ) {
-				this.materialLuminance.dispose();
-			}
-			if ( this.materialAdaptiveLum ) {
-				this.materialAdaptiveLum.dispose();
-			}
-			if ( this.materialCopy ) {
-				this.materialCopy.dispose();
-			}
-			if ( this.materialToneMap ) {
-				this.materialToneMap.dispose();
-			}
-		}
-
-	};
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 124 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * An object that holds animation data for animating models
-	 * @class AnimationAsset
-	 * @constructor
-	 */
-
-	var AnimationAsset = function (_Box3DAsset) {
-	  _inherits(AnimationAsset, _Box3DAsset);
-
-	  function AnimationAsset(json) {
-	    _classCallCheck(this, AnimationAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationAsset).call(this, json));
-	  }
-
-	  _createClass(AnimationAsset, [{
-	    key: 'getDataSizeAnimationDownload',
-	    value: function getDataSizeAnimationDownload() {
-	      return 1;
-	    }
-	  }, {
-	    key: 'getDataSizeAnimationInMemory',
-	    value: function getDataSizeAnimationInMemory() {
-	      return 1;
-	    }
-	  }, {
-	    key: '_getCurvesForObjectsInLayer',
-	    value: function _getCurvesForObjectsInLayer(objects, layer, curves) {
-	      var curvesByName,
-	          filtered = {};
-
-	      _lodash2.default.each(objects, function (object) {
-	        filtered[object.name] = [];
-	      });
-
-	      curvesByName = _lodash2.default.indexBy(curves, 'name');
-
-	      _lodash2.default.each(layer.curves, function (curveName) {
-	        if (curvesByName.hasOwnProperty(curveName)) {
-	          var curve = curvesByName[curveName],
-	              objectName = curve.object;
-
-	          if (filtered.hasOwnProperty(objectName)) {
-	            filtered[objectName].push(curve);
-	          }
-	        }
-	      });
-
-	      return filtered;
-	    }
-	  }, {
-	    key: '_getKeyframes',
-	    value: function _getKeyframes(objects, curves, startTime, stopTime) {
-	      var curveTypes = {},
-	          keyframes = {};
-
-	      // Supported channels and their corresponding THREE.js name.
-	      curveTypes.position = 'pos';
-	      curveTypes.rotation = 'rot';
-	      curveTypes.scale = 'scl';
-
-	      _lodash2.default.each(objects, function (object) {
-	        var mergedKeys,
-	            objectCurves = curves[object.name],
-	            objectKeys = [];
-
-	        // Create a single array of keys for the object, merging all channels.
-	        _lodash2.default.each(objectCurves, function (curve) {
-	          var keys = this.runtimeData.keyframes[curve.name],
-	              step = curve.channelCount + 1;
-
-	          _lodash2.default.each(curveTypes, function (property, type) {
-	            var idx = 0,
-	                key,
-	                pt0,
-	                pt1,
-	                time;
-
-	            if (curve.property === type) {
-	              // Find the first frame of the animation (time >= startTime).
-	              while (idx * step < keys.length && keys[idx * step] < startTime) {
-	                idx++;
-	              }
-
-	              // If the first frame is beyond startTime, create a new frame at
-	              // startTime.
-	              if (idx * step < keys.length) {
-	                time = keys[idx * step];
-
-	                if (time > startTime) {
-	                  key = {
-	                    time: 0
-	                  };
-
-	                  if (idx > 0) {
-	                    pt0 = keys.subarray((idx - 1) * step, idx * step), pt1 = keys.subarray(idx * step, (idx + 1) * step);
-	                    key[property] = this._interpolateKeys(pt0, pt1, startTime);
-	                  } else {
-	                    // Copy the first keyframe (const interpolation).
-	                    key[property] = keys.subarray(1, step);
-	                  }
-
-	                  objectKeys.push(key);
-	                }
-	              } else if (keys.length > 0) {
-	                // We did not find a keyframe with time >= startTime, so copy
-	                // the last keyframe (const interpolation).
-	                key = {
-	                  time: 0
-	                };
-	                key[property] = keys.subarray(-step + 1);
-	                objectKeys.push(key);
-	              }
-
-	              // Add the middle frames (startTime <= time <= stopTime).
-	              while (idx * step < keys.length && keys[idx * step] <= stopTime) {
-	                key = {
-	                  time: keys[idx * step] - startTime
-	                };
-	                key[property] = keys.subarray(idx * step + 1, (idx + 1) * step);
-	                objectKeys.push(key);
-	                idx++;
-	              }
-
-	              // If the final frame is beyond stopTime, create a new frame at
-	              // stopTime.
-	              if (idx * step < keys.length) {
-	                time = keys[idx * step];
-
-	                if (time > stopTime) {
-	                  key = {
-	                    time: stopTime - startTime
-	                  };
-
-	                  if (idx > 0) {
-	                    pt0 = keys.subarray((idx - 1) * step, idx * step), pt1 = keys.subarray(idx * step, (idx + 1) * step);
-	                    key[property] = this._interpolateKeys(pt0, pt1, stopTime);
-	                  } else {
-	                    // Copy the first keyframe (const interpolation).
-	                    key[property] = keys.subarray(1, step);
-	                  }
-
-	                  objectKeys.push(key);
-	                }
-	              } else if (keys.length > 0) {
-	                // Copy the final keyframe (const interpolation).
-	                key = {
-	                  time: stopTime - startTime
-	                };
-	                key[property] = keys.subarray(keys.length - step + 1, keys.length);
-	                objectKeys.push(key);
-	              }
-	            }
-	          }, this);
-	        }, this);
-
-	        // If there aren't any keys, skip the object.
-	        if (objectKeys.length > 0) {
-	          // Sort the keys by time.
-	          objectKeys.sort(function (a, b) {
-	            return a.time - b.time;
-	          });
-
-	          // Merge keys with identical time values.
-	          mergedKeys = [objectKeys[0]];
-
-	          for (var iKey = 1; iKey < objectKeys.length; iKey += 1) {
-	            var key = objectKeys[iKey],
-	                lastKey = mergedKeys[mergedKeys.length - 1];
-
-	            if (key.time === lastKey.time) {
-	              for (var type in curveTypes) {
-	                var property = curveTypes[type];
-	                if (key.hasOwnProperty(property)) {
-	                  lastKey[property] = key[property];
-	                }
-	              }
-	            } else {
-	              mergedKeys.push(key);
-	            }
-	          }
-
-	          keyframes[object.name] = mergedKeys;
-	        }
-	      }, this);
-
-	      return keyframes;
-	    }
-	  }, {
-	    key: '_interpolateKeys',
-	    value: function _interpolateKeys(key1, key2, time) {
-	      var t0 = key1[0],
-	          t1 = key2[0],
-	          result = [],
-	          alpha;
-
-	      if (t1 - t0 === 0) {
-	        alpha = 0.5;
-	      } else {
-	        alpha = (time - t0) / (t1 - t0);
-	      }
-
-	      for (var idx = 1; idx < key1.length; idx += 1) {
-	        result.push(key1[idx] + (key2[idx] - key1[idx]) * alpha);
-	      }
-
-	      return result;
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      var _this2 = this;
-
-	      var onProgress = function onProgress(progressObj) {
-	        _this2.loadedBytes = progressObj.loaded;
-	        _this2.trigger('loadProgress', _this2);
-	      };
-
-	      this.box3DRuntime.resourceLoader.load(this, { xhrKey: this.id }, onProgress).then(function (result) {
-	        _this2.runtimeData = {
-	          keyframes: {}
-	        };
-
-	        var curves = _this2.getProperty('curves');
-	        curves.forEach(function (curve) {
-	          _this2.runtimeData.keyframes[curve.name] = new Float32Array(result.data, curve.keyframeFileOffset, curve.keyframeCount * curve.channelCount);
-	        });
-
-	        _this2.loadedBytes = _this2.getDataSizeDownload();
-	        callback();
-	      }).catch(function (err) {
-	        _log2.default.debug('Error loading animation', err);
-	        callback();
-	      });
-	    }
-
-	    /**
-	     * Add a new take to the asset.
-	     * @method addTake
-	     * @param  {Object} take The take data
-	     * @return {Boolean} true on success; otherwise, false
-	     */
-
-	  }, {
-	    key: 'addTake',
-	    value: function addTake(take) {
-	      var takes = _lodash2.default.clone(this.getProperty('takes'));
-
-	      if (this.getTakeNames().indexOf(take.name) !== -1) {
-	        _log2.default.warn('Failed to add new take because its name is not unique.');
-	        return false;
-	      }
-
-	      takes.push(take);
-	      this.setProperty('takes', takes);
-
-	      return true;
-	    }
-
-	    /**
-	     * Create a THREE.Animation for the object and take.
-	     * @method createAnimation
-	     * @param  {Object} root The object hierarchy
-	     * @param  {String} takeName The take name
-	     * @return {Object} The THREE.Animation object on success; otherwise false.
-	     */
-
-	  }, {
-	    key: 'createAnimation',
-	    value: function createAnimation(root, takeName) {
-	      var animation = {},
-	          curves = this.getProperty('curves'),
-	          hierarchy = [],
-	          keyframes,
-	          layer,
-	          objects,
-	          take,
-	          uniqueName = takeName + root.id + this.id;
-
-	      if (!root || !root.runtimeData || !takeName) {
-	        _log2.default.warn('AnimationAsset: Invalid parameter passed to createAnimation.');
-	        return null;
-	      }
-
-	      if (!this.runtimeData) {
-	        _log2.default.warn('AnimationAsset: Asset not loaded before call to createAnimation.');
-	        return null;
-	      }
-
-	      take = this.getTakeByName(takeName);
-
-	      if (!take) {
-	        _log2.default.warn('AnimationAsset: Take does not exist: ' + takeName);
-	        return null;
-	      }
-
-	      if (!take.layers || take.layers.length <= 0) {
-	        return null;
-	      }
-
-	      if (take.layers.length > 1) {
-	        _log2.default.warn('Take contains multiple layers, but we only support a single layer.');
-	      }
-
-	      // Parse the object hierarchy.
-	      objects = _three2.default.AnimationHandler.parse(root.runtimeData);
-
-	      // Get curves for objects in the hierarchy.
-	      layer = this.getLayerByName(take.layers[0]);
-	      curves = this._getCurvesForObjectsInLayer(objects, layer, curves);
-
-	      // Get keyframes for each object.
-	      keyframes = this._getKeyframes(objects, curves, take.start, take.stop);
-
-	      // Create the THREE.js animation.
-	      _lodash2.default.each(objects, function (object) {
-	        hierarchy.push({
-	          keys: keyframes[object.name] || []
-	        });
-	      });
-
-	      animation.name = uniqueName;
-	      animation.length = take.stop - take.start;
-	      animation.fps = 25;
-	      animation.hierarchy = hierarchy;
-
-	      return new _three2.default.Animation(root.runtimeData, animation);
-	    }
-
-	    /**
-	     * Get the curve with the specified name.
-	     * @method getCurveByName
-	     * @param  {String} curveName The curve name
-	     * @return {Object} The curve or null if the curve does not exist.
-	     */
-
-	  }, {
-	    key: 'getCurveByName',
-	    value: function getCurveByName(curveName) {
-	      return _lodash2.default.find(this.getCurves(), function (curve) {
-	        return curve.name === curveName;
-	      });
-	    }
-
-	    /**
-	     * Get names of all the curves.
-	     * @method getCurveNames
-	     * @return {Array} An array of curve names.
-	     */
-
-	  }, {
-	    key: 'getCurveNames',
-	    value: function getCurveNames() {
-	      return _lodash2.default.map(this.getCurves(), function (curve) {
-	        return curve.name;
-	      });
-	    }
-
-	    /**
-	     * Get all curves.
-	     * @method getCurves
-	     * @return {Array} An array of curves.
-	     */
-
-	  }, {
-	    key: 'getCurves',
-	    value: function getCurves() {
-	      return this.getProperty('curves');
-	    }
-
-	    /**
-	     * Get the layer with the specified name.
-	     * @method getLayerByName
-	     * @param  {String} layerName The layer name
-	     * @return {Object} The layer or null if the layer does not exist.
-	     */
-
-	  }, {
-	    key: 'getLayerByName',
-	    value: function getLayerByName(layerName) {
-	      return _lodash2.default.find(this.getLayers(), function (layer) {
-	        return layer.name === layerName;
-	      });
-	    }
-
-	    /**
-	     * Get names of all the layers.
-	     * @method getLayerNames
-	     * @return {Array} An array of layer names.
-	     */
-
-	  }, {
-	    key: 'getLayerNames',
-	    value: function getLayerNames() {
-	      return _lodash2.default.map(this.getLayers(), function (layer) {
-	        return layer.name;
-	      });
-	    }
-
-	    /**
-	     * Get all layers.
-	     * @method getLayers
-	     * @return {Array} An array of layers.
-	     */
-
-	  }, {
-	    key: 'getLayers',
-	    value: function getLayers() {
-	      return this.getProperty('layers');
-	    }
-
-	    /**
-	     * Get the take with the specified name.
-	     * @method getTakeByName
-	     * @param  {String} takeName The take name
-	     * @return {Object} The take or null if the take does not exist.
-	     */
-
-	  }, {
-	    key: 'getTakeByName',
-	    value: function getTakeByName(takeName) {
-	      return _lodash2.default.find(this.getTakes(), function (take) {
-	        return take.name === takeName;
-	      });
-	    }
-
-	    /**
-	     * Get names of all the takes.
-	     * @method getTakeNames
-	     * @return {Array} An array of take names.
-	     */
-
-	  }, {
-	    key: 'getTakeNames',
-	    value: function getTakeNames() {
-	      return _lodash2.default.map(this.getTakes(), function (take) {
-	        return take.name;
-	      });
-	    }
-
-	    /**
-	     * Get all takes.
-	     * @method getTakes
-	     * @return {Array} An array of takes.
-	     */
-
-	  }, {
-	    key: 'getTakes',
-	    value: function getTakes() {
-	      return this.getProperty('takes');
-	    }
-
-	    /**
-	     * Remove the specified take.
-	     * @method removeTake
-	     * @param {Integer} idx The index of the take
-	     */
-
-	  }, {
-	    key: 'removeTake',
-	    value: function removeTake(idx) {
-	      var takes = _lodash2.default.clone(this.getTakes());
-
-	      takes.splice(idx, 1);
-	      this.setProperty('takes', takes);
-	    }
-
-	    /**
-	     * Set the name of the specified take.
-	     * @method setTakeName
-	     * @param {Integer} takeIdx The index of the take
-	     * @param {String} name The new take name
-	     * @return {Boolean} true on success; otherwise, false.
-	     */
-
-	  }, {
-	    key: 'setTakeName',
-	    value: function setTakeName(takeIdx, name) {
-	      var idx = this.getTakeNames().indexOf(name);
-
-	      if (idx !== -1 && idx !== takeIdx) {
-	        _log2.default.warn('Failed to set take name because it is not unique.');
-	        return false;
-	      }
-
-	      var takes = _lodash2.default.cloneDeep(this.getTakes());
-	      takes[takeIdx].name = name;
-	      this.setProperty('takes', takes);
-
-	      return true;
-	    }
-
-	    /**
-	     * Set the start time of the specified take.
-	     * @method setTakeStart
-	     * @param {Integer} takeIdx The index of the take
-	     * @param {Number} start The new take start time
-	     */
-
-	  }, {
-	    key: 'setTakeStart',
-	    value: function setTakeStart(takeIdx, start) {
-	      var takes = _lodash2.default.cloneDeep(this.getTakes());
-	      takes[takeIdx].start = Number(start);
-	      this.setProperty('takes', takes);
-	    }
-
-	    /**
-	     * Set the stop time of the specified take.
-	     * @method setTakeStop
-	     * @param {Integer} takeIdx The index of the take
-	     * @param {Number} stop The new take stop time
-	     */
-
-	  }, {
-	    key: 'setTakeStop',
-	    value: function setTakeStop(takeIdx, stop) {
-	      var takes = _lodash2.default.cloneDeep(this.getTakes());
-	      takes[takeIdx].stop = Number(stop);
-	      this.setProperty('takes', takes);
-	    }
-	  }, {
-	    key: 'unload',
-	    value: function unload() {
-	      _get(Object.getPrototypeOf(AnimationAsset.prototype), 'unload', this).call(this);
-	      this.box3DRuntime.trigger('animationUnloaded', this.id);
-	    }
-	  }]);
-
-	  return AnimationAsset;
-	}(_Box3DAsset3.default);
-
-	window.Box3D.AnimationAsset = AnimationAsset;
-	exports.default = AnimationAsset;
-
-/***/ },
-/* 125 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	window.Box3D = window.Box3D || {};
-
-	var ApplicationAsset = function (_Box3DAsset) {
-	  _inherits(ApplicationAsset, _Box3DAsset);
-
-	  function ApplicationAsset(json) {
-	    _classCallCheck(this, ApplicationAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ApplicationAsset).call(this, json));
-	  }
-
-	  _createClass(ApplicationAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(ApplicationAsset.prototype), 'initialize', this).call(this, properties);
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this.box3DRuntime.setCurrentApp(this.id);
-	      var assetRegistry = this.box3DRuntime.assetRegistry;
-	      var scene = assetRegistry.getAssetById(this.getProperty('loadStartupScene'));
-	      if (scene) {
-	        scene.load();
-	      }
-
-	      callback();
-	    }
-	  }]);
-
-	  return ApplicationAsset;
-	}(_Box3DAsset3.default);
-
-	ApplicationAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
-	  loadStartupScene: null,
-	  useBox3DLoader: true,
-	  engineName: 'Default',
-	  container: '#verold3d'
-	});
-
-
-	window.Box3D.ApplicationAsset = ApplicationAsset;
-	exports.default = ApplicationAsset;
-
-/***/ },
-/* 126 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class AudioAsset
-	 * @constructor
-	 */
-
-	var AudioAsset = function (_Box3DAsset) {
-	  _inherits(AudioAsset, _Box3DAsset);
-
-	  function AudioAsset(json) {
-	    _classCallCheck(this, AudioAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AudioAsset).call(this, json));
-	  }
-
-	  _createClass(AudioAsset, [{
-	    key: 'uninitialize',
-	    value: function uninitialize() {
-	      if (this.runtimeData) {
-	        // TODO: should we be doing more here?
-	        this.runtimeData.pause();
-	      }
-
-	      _get(Object.getPrototypeOf(AudioAsset.prototype), 'uninitialize', this).call(this);
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(AudioAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      if (this.runtimeData) {
-	        if (changes.hasOwnProperty('loop')) {
-	          this.runtimeData.loop = this.getProperty('loop');
-	        }
-
-	        if (changes.hasOwnProperty('state')) {
-	          switch (this.getProperty('state')) {
-	            case 'pause':
-	              this.runtimeData.pause();
-	              break;
-
-	            case 'play':
-	              this.runtimeData.play();
-	              break;
-	          }
-	        }
-	      }
-	    }
-	  }]);
-
-	  return AudioAsset;
-	}(_Box3DAsset3.default);
-
-	window.Box3D.AudioAsset = AudioAsset;
-	exports.default = AudioAsset;
-
-/***/ },
 /* 127 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _BaseGeometryAsset2 = __webpack_require__(128);
-
-	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * An asset that holds mesh geometry.
-	 * @class MeshGeometryAsset
-	 * @constructor
-	 */
-
-	var MeshGeometryAsset = function (_BaseGeometryAsset) {
-	  _inherits(MeshGeometryAsset, _BaseGeometryAsset);
-
-	  function MeshGeometryAsset(json) {
-	    _classCallCheck(this, MeshGeometryAsset);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MeshGeometryAsset).call(this, json));
-
-	    _this.buffer = null;
-	    return _this;
-	  }
-
-	  _createClass(MeshGeometryAsset, [{
-	    key: 'createRuntimeData',
-
-
-	    /** @inheritdoc */
-	    value: function createRuntimeData(callback) {
-	      var _this2 = this;
-
-	      var onBufferProgress = function onBufferProgress(progressObj) {
-	        _this2.loadedBytes = _this2.getDataSizeDownload() * progressObj.loaded / progressObj.total;
-	        _this2.trigger('loadProgress', _this2);
-	      };
-
-	      var onGeometryLoadError = function onGeometryLoadError(err) {
-	        _log2.default.error(_this2.box3DRuntime.engineName + ' - MeshGeometryAsset: Error loading the geometry, ' + _this2.getName(), err);
-	        callback();
-	      };
-
-	      var onGeometryLoaded = function onGeometryLoaded(data) {
-	        _this2.buffer = data.data;
-	        _this2.createBufferGeometry();
-	        _this2.loadedBytes = _this2.getDataSizeDownload();
-	        callback();
-	      };
-
-	      this.box3DRuntime.resourceLoader.load(this, { size: 1, xhrKey: this.id }, onBufferProgress).then(onGeometryLoaded).catch(onGeometryLoadError);
-	    }
-
-	    /**
-	     * Adds required attributes to the specified geometry.
-	     * @method addMissingAttributes
-	     * @private
-	     * @param {Object} geometry the THREE.BufferGeometry
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'addMissingAttributes',
-	    value: function addMissingAttributes(geometry) {
-	      // Create an empty position array if it doesn't exist.
-	      if (geometry.attributes.position === undefined) {
-	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Mesh is missing "position" attribute.');
-	        geometry.addAttribute('position', new _three2.default.BufferAttribute(new Float32Array(0), 3));
-	      }
-
-	      // Compute vertex normals if they don't exist.
-	      if (geometry.attributes.normal === undefined) {
-	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Mesh is missing "normal" attribute.');
-	        geometry.computeVertexNormals();
-	      }
-	    }
-
-	    /**
-	     * Returns the typed-array constructor for the specified component type.
-	     * @method getArrayType
-	     * @private
-	     * @param {String} componentType one of: 'int8', 'uint8', 'int16', 'uint16', 'int32',
-	     * 'uint32', 'float32', 'float64'
-	     * @returns {Function} the typed-array constructor
-	     */
-
-	  }, {
-	    key: 'getArrayType',
-	    value: function getArrayType(componentType) {
-	      if (!MeshGeometryAsset.arrayTypes.hasOwnProperty(componentType)) {
-	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Unknown attribute component type, ' + componentType);
-	        return Float32Array;
-	      }
-
-	      return MeshGeometryAsset.arrayTypes[componentType];
-	    }
-
-	    /**
-	     * Returns the size (in components) of the specified type.
-	     * @method getTypeSize
-	     * @private
-	     * @param {String} type one of: 'scalar', 'vec2', 'vec3', 'vec4', 'mat2', 'mat3', 'mat4'
-	     * @returns {Integer} the size of the specified type
-	     */
-
-	  }, {
-	    key: 'getTypeSize',
-	    value: function getTypeSize(type) {
-	      if (!MeshGeometryAsset.typeSizes.hasOwnProperty(type)) {
-	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Unknown attribute value type, ' + type);
-	        return 1;
-	      }
-
-	      return MeshGeometryAsset.typeSizes[type];
-	    }
-
-	    /**
-	     * Returns the size (in components) of the specified type.
-	     * @method getTypeByteSize
-	     * @private
-	     * @param {String} type one of: 'int8', 'int16', 'int32', 'float16', 'float32', 'float64'
-	     * @returns {Integer} the byte size of the specified type
-	     */
-
-	  }, {
-	    key: 'getTypeByteSize',
-	    value: function getTypeByteSize(type) {
-	      if (!MeshGeometryAsset.typeByteSizes.hasOwnProperty(type)) {
-	        _log2.default.warn(this.box3DRuntime.engineName + ' - MeshGeometryAsset: Unknown number type, ' + type);
-	        return 1;
-	      }
-
-	      return MeshGeometryAsset.typeByteSizes[type];
-	    }
-
-	    /**
-	     * Create a typed-array for the specified attribute, resizing it if necessary.
-	     * @method createArray
-	     * @private
-	     * @param {Object} attribute the attribute descriptor
-	     * @param {Integer} newSize the desired number of components in each value
-	     * @returns {Object} a typed-array
-	     */
-
-	  }, {
-	    key: 'createArray',
-	    value: function createArray(attribute, newSize) {
-	      var Type = this.getArrayType(attribute.componentType),
-	          size = this.getTypeSize(attribute.type),
-	          minSize = Math.min(size, newSize),
-	          iValue,
-	          iComponent,
-	          srcArray,
-	          dstArray;
-
-	      if (size === newSize) {
-	        return new Type(this.buffer, attribute.byteOffset, attribute.count * size);
-	      }
-
-	      // The attribute size needs to be adjusted.
-	      srcArray = new Type(this.buffer, attribute.byteOffset, attribute.count * size);
-
-	      dstArray = new Type(attribute.count * newSize);
-
-	      for (iValue = 0; iValue < attribute.count; iValue += 1) {
-	        for (iComponent = 0; iComponent < minSize; iComponent += 1) {
-	          dstArray[iValue * newSize + iComponent] = srcArray[iValue * size + iComponent];
-	        }
-
-	        while (iComponent < newSize) {
-	          dstArray[iValue * newSize + iComponent] = 0;
-	          iComponent += 1;
-	        }
-	      }
-
-	      return dstArray;
-	    }
-
-	    /**
-	     * Create a collection of THREE.BufferAttributes for this mesh.
-	     * @method createAttributes
-	     * @private
-	     * @param {Object} sizes the desired value size of each attribute
-	     * @returns {Object} a collection of THREE.BufferAttributes
-	     */
-
-	  }, {
-	    key: 'createAttributes',
-	    value: function createAttributes(sizes) {
-	      var attributes = this.getProperty('attributes'),
-	          bufferAttributes = {},
-	          nameMap;
-
-	      nameMap = {
-	        indices: 'index',
-	        positions: 'position',
-	        normals: 'normal',
-	        tangents: 'tangent',
-	        colors: 'color',
-	        uvs1: 'uv',
-	        uvs2: 'uv2',
-	        skinIndices: 'skinIndex',
-	        skinWeights: 'skinWeight'
-	      };
-
-	      // Add indices to the list of attributes.
-	      attributes = _lodash2.default.extend({
-	        indices: this.getProperty('indices')
-	      }, attributes);
-
-	      _lodash2.default.each(nameMap, function (newName, oldName) {
-	        var array, attribute, newSize;
-
-	        if (attributes.hasOwnProperty(oldName)) {
-	          attribute = attributes[oldName];
-	          newSize = sizes[newName] || this.getTypeSize(attribute.type);
-	          array = this.createArray(attribute, newSize);
-	          bufferAttributes[newName] = new _three2.default.BufferAttribute(array, newSize);
-	        }
-	      }, this);
-
-	      return bufferAttributes;
-	    }
-
-	    /**
-	     * Create THREE.BufferGeometry objects for this mesh.
-	     * @method createBufferGeometry
-	     * @private
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'createBufferGeometry',
-	    value: function createBufferGeometry() {
-	      var attributes,
-	          bounds = this.getProperty('bounds'),
-	          boundsMin = new _three2.default.Vector3(bounds.min.x, bounds.min.y, bounds.min.z),
-	          boundsMax = new _three2.default.Vector3(bounds.max.x, bounds.max.y, bounds.max.z),
-	          primitivesByType;
-
-	      // Create vertex attributes.
-	      attributes = this.createAttributes({
-	        index: 1,
-	        position: 3,
-	        normal: 3,
-	        tangent: 4,
-	        color: 4,
-	        uv: 2,
-	        uv2: 2,
-	        skinIndex: 4,
-	        skinWeight: 4
-	      });
-
-	      primitivesByType = _lodash2.default.groupBy(this.getProperty('primitives'), 'primitive');
-
-	      _lodash2.default.each(primitivesByType, function (primitives, type) {
-	        var geometry = new _three2.default.BufferGeometry();
-
-	        // Add groups to the BufferGeometry.
-	        primitives.forEach(function (primitive) {
-	          geometry.addGroup(primitive.start, primitive.count, primitive.materialIndex);
-	        });
-
-	        // Add attributes to the BufferGeometry.
-	        _lodash2.default.each(attributes, function (attribute, name) {
-	          if (name === 'index') {
-	            geometry.setIndex(attribute);
-	          } else {
-	            geometry.addAttribute(name, attribute);
-	          }
-	        });
-
-	        // Add missing attributes.
-	        this.addMissingAttributes(geometry);
-
-	        // Calculate the geometry bounds.
-	        geometry.boundingBox = new _three2.default.Box3(boundsMin, boundsMax);
-	        geometry.computeBoundingSphere();
-
-	        // Register the geometry.
-	        this.setGeometry(type, geometry);
-	      }, this);
-	    }
-
-	    /**
-	     * Get the bounds (min/max coordinates) of this geometry.
-	     * @method getBounds
-	     * @public
-	     * @returns {THREE.Box3} The bounds of this geometry.
-	     */
-
-	  }, {
-	    key: 'getBounds',
-	    value: function getBounds() {
-	      var box = new _three2.default.Box3(),
-	          bounds = this.getProperty('bounds');
-
-	      box.set(new _three2.default.Vector3(bounds.min.x, bounds.min.y, bounds.min.z), new _three2.default.Vector3(bounds.max.x, bounds.max.y, bounds.max.z));
-
-	      return box;
-	    }
-
-	    /**
-	     * Returns the download size of this geometry.
-	     * @public
-	     * @method getDataSizeDownload
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} params Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeDownload',
-	    value: function getDataSizeDownload(dependencyType) {
-	      if (!dependencyType || dependencyType === 'geometries') {
-	        return this.getDataSizeInMemory();
-	      } else {
-	        return 0;
-	      }
-	    }
-
-	    /**
-	     * Returns the total amount of memory occupied by this geometry.
-	     * @public
-	     * @method getDataSizeInMemory
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} params Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeInMemory',
-	    value: function getDataSizeInMemory(dependencyType) {
-	      var total = 0;
-	      var attribs = this.getProperty('attributes');
-	      var indices = this.getProperty('indices');
-	      if (!dependencyType || dependencyType === 'geometries') {
-	        _lodash2.default.each(attribs, function (attrib) {
-	          total += this.calculateBufferSize(attrib.type, attrib.componentType, attrib.count);
-	        }, this);
-	        if (indices) {
-	          total += this.calculateBufferSize(indices.type, indices.componentType, indices.count);
-	        }
-	        return total;
-	      } else {
-	        return 0;
-	      }
-	    }
-
-	    /**
-	     * Calculate the size of the buffer based on the input params.
-	     * @private
-	     * @param  {String} type          The type of the attribute (e.g. 'vec3', 'mat3', etc.)
-	     * @param  {String} componentType The type of each component (e.g. 'float32', 'int16', etc.)
-	     * @param  {Number} count         The number of instances of the attribute in the buffer
-	     * @return {Number}               The length of the buffer, in bytes.
-	     */
-
-	  }, {
-	    key: 'calculateBufferSize',
-	    value: function calculateBufferSize(type, componentType, count) {
-	      var typeSize = this.getTypeSize(type);
-	      var byteSize = this.getTypeByteSize(componentType);
-	      return count * typeSize * byteSize;
-	    }
-	  }]);
-
-	  return MeshGeometryAsset;
-	}(_BaseGeometryAsset3.default);
-
-	MeshGeometryAsset.arrayTypes = {
-	  int8: Int8Array,
-	  uint8: Uint8Array,
-	  int16: Int16Array,
-	  uint16: Uint16Array,
-	  int32: Int32Array,
-	  uint32: Uint32Array,
-	  float32: Float32Array,
-	  float64: Float64Array
-	};
-	MeshGeometryAsset.typeSizes = {
-	  scalar: 1,
-	  vec2: 2,
-	  vec3: 3,
-	  vec4: 4,
-	  mat2: 4,
-	  mat3: 9,
-	  mat4: 16
-	};
-	MeshGeometryAsset.typeByteSizes = {
-	  int8: 1,
-	  uint8: 1,
-	  int16: 2,
-	  uint16: 2,
-	  int32: 4,
-	  uint32: 4,
-	  float16: 2,
-	  float32: 4,
-	  float64: 8
-	};
-
-
-	window.Box3D.MeshGeometryAsset = MeshGeometryAsset;
-	exports.default = MeshGeometryAsset;
-
-/***/ },
-/* 128 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * An asset that holds geometry.
-	 * @class BaseGeometryAsset
-	 * @constructor
-	 */
-
-	var BaseGeometryAsset = function (_Box3DAsset) {
-	  _inherits(BaseGeometryAsset, _Box3DAsset);
-
-	  function BaseGeometryAsset(json) {
-	    _classCallCheck(this, BaseGeometryAsset);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseGeometryAsset).call(this, json));
-
-	    _this.loadedBytes = 0;
-	    _this.geometries = {};
-	    _this.maxMaterialIndices = {};
-
-	    _lodash2.default.each(BaseGeometryAsset.PrimitiveType, function (type) {
-	      this.maxMaterialIndices[type] = -1;
-	    }, _this);
-	    return _this;
-	  }
-
-	  _createClass(BaseGeometryAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'initialize', this).call(this, properties);
-	    }
-	  }, {
-	    key: 'unload',
-	    value: function unload() {
-	      _log2.default.info(this.box3DRuntime.engineName + ' - BaseGeometryAsset: Unloading geometry, ' + this.getName() + ' - "' + this.id + '"');
-
-	      //abort xhr request associated with this
-	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
-
-	      _lodash2.default.each(this.geometries, function (geometry) {
-	        if (geometry) {
-	          geometry.dispose();
-	        }
-	      });
-
-	      this.geometries = {};
-	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'unload', this).call(this);
-	    }
-
-	    /**
-	     * Get the bounds of this geometry.
-	     * @method getBounds
-	     * @public
-	     * @returns {THREE.Box3} The bounds of this geometry.
-	     */
-
-	  }, {
-	    key: 'getBounds',
-	    value: function getBounds() {
-	      var bounds = new _three2.default.Box3();
-
-	      _lodash2.default.each(this.geometries, function (geometry) {
-	        var geometryBounds = geometry.boundingBox;
-	        bounds.union(geometryBounds);
-	      });
-
-	      return bounds;
-	    }
-
-	    /**
-	     * Returns an array of this asset's geometries.
-	     * @method getGeometries
-	     * @public
-	     * @returns {Array} an array of THREE.Geometry and THREE.BufferGeometry objects
-	     */
-
-	  }, {
-	    key: 'getGeometries',
-	    value: function getGeometries() {
-	      return _lodash2.default.values(this.geometries);
-	    }
-
-	    /**
-	     * Returns this asset's geometry of the specified type.
-	     * @method getGeometry
-	     * @public
-	     * @param {String} type one of BaseGeometryAsset.PrimitiveType
-	     * @returns {Object} a THREE.Geometry or THREE.BufferGeometry object
-	     */
-
-	  }, {
-	    key: 'getGeometry',
-	    value: function getGeometry(type) {
-	      type = type !== undefined ? type : BaseGeometryAsset.PrimitiveType.TRIANGLES;
-	      return this.geometries[type];
-	    }
-
-	    /**
-	     * Returns this asset's maximum material index for the specified type.
-	     * @method getMaxMaterialIndex
-	     * @public
-	     * @param {String} type one of BaseGeometryAsset.PrimitiveType
-	     * @returns {Integer} the maximum material index
-	     */
-
-	  }, {
-	    key: 'getMaxMaterialIndex',
-	    value: function getMaxMaterialIndex(type) {
-	      type = type !== undefined ? type : BaseGeometryAsset.PrimitiveType.TRIANGLES;
-	      return this.maxMaterialIndices[type];
-	    }
-
-	    /**
-	     * Called by subclasses to register a THREE.Geometry or THREE.BufferGeometry with this asset.
-	     * The geometry can then be fetched with getGeometry().
-	     * @protected
-	     * @param {String} type one of the BaseGeometryAsset.PrimitiveType
-	     * @param {Object} a THREE.Geometry or THREE.BufferGeometry object
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'setGeometry',
-	    value: function setGeometry(type, geometry) {
-	      if (geometry) {
-	        // Flag the geometry as dynamic or static.
-	        geometry.dynamic = this.getProperty('dynamic') || false;
-	      }
-
-	      this.geometries[type] = geometry;
-	      this.maxMaterialIndices[type] = this.computeMaxMaterialIndex(geometry);
-	    }
-
-	    /**
-	     * Figures out the highest material index referenced by a piece of three.js geometry.
-	     * @param {Object} a THREE.Geometry or THREE.BufferGeometry object
-	     * @return {Number}    The maximum material index
-	     */
-
-	  }, {
-	    key: 'computeMaxMaterialIndex',
-	    value: function computeMaxMaterialIndex(geometry) {
-	      var maxMaterialIndex = -1;
-	      var missingMaterial = false;
-	      var geoGroups = undefined;
-	      if (!geometry) {
-	        return maxMaterialIndex;
-	      }
-	      // Correct negative material indices and compute the maximum material
-	      // index for this geometry.
-	      if (geometry instanceof _three2.default.BufferGeometry && geometry.groups) {
-	        geoGroups = geometry.groups;
-	      } else if (geometry instanceof _three2.default.Geometry) {
-	        geoGroups = geometry.faces;
-	      }
-	      geoGroups.forEach(function (group) {
-	        maxMaterialIndex = Math.max(maxMaterialIndex, group.materialIndex);
-	      });
-
-	      geoGroups.forEach(function (group) {
-	        if (group.materialIndex >= 0) {
-	          return;
-	        }
-	        group.materialIndex = maxMaterialIndex + 1;
-	        missingMaterial = true;
-	      });
-
-	      if (missingMaterial) {
-	        maxMaterialIndex++;
-	      }
-	      return maxMaterialIndex;
-	    }
-
-	    /**
-	     * Returns the byte size of the data that has already been loaded by this asset and its
-	     * hierarchy.
-	     * @public
-	     * @method getDataSizeLoaded
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeLoaded',
-	    value: function getDataSizeLoaded(dependencyType) {
-	      if (!dependencyType || dependencyType === 'geometries') {
-	        return this.loadedBytes;
-	      } else {
-	        return 0;
-	      }
-	    }
-	  }]);
-
-	  return BaseGeometryAsset;
-	}(_Box3DAsset3.default);
-
-	BaseGeometryAsset.PrimitiveType = {
-	  POINTS: 'points',
-	  LINES: 'lines',
-	  TRIANGLES: 'triangles'
-	};
-
-
-	window.Box3D.BaseGeometryAsset = BaseGeometryAsset;
-	exports.default = BaseGeometryAsset;
-
-/***/ },
-/* 129 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _BaseGeometryAsset2 = __webpack_require__(128);
-
-	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * An object that holds primitive geometry.
-	 * @class PrimitiveGeometryAsset
-	 * @constructor
-	 */
-
-	var PrimitiveGeometryAsset = function (_BaseGeometryAsset) {
-	  _inherits(PrimitiveGeometryAsset, _BaseGeometryAsset);
-
-	  function PrimitiveGeometryAsset(json) {
-	    _classCallCheck(this, PrimitiveGeometryAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrimitiveGeometryAsset).call(this, json));
-	  }
-
-	  _createClass(PrimitiveGeometryAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), 'initialize', this).call(this, properties);
-	    }
-	  }, {
-	    key: 'createRuntimeData',
-
-
-	    /** @inheritdoc */
-	    value: function createRuntimeData(callback) {
-	      this.createPrimitiveGeometry();
-	      this.trigger('geometryChanged', this); // TODO: do we need this?
-	      callback();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      if (reason !== 'init') {
-	        // Currently, any property changes cause the runtimeData to be re-created.
-	        this.reloadBase();
-
-	        // Keeping the return here in case we add additional property handling below.
-	        return;
-	      }
-	    }
-
-	    /**
-	     * Create and register a THREE.Geometry with the base class.
-	     * @method createPrimitiveGeometry
-	     * @private
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'createPrimitiveGeometry',
-	    value: function createPrimitiveGeometry() {
-	      var type = this.getProperty('type'),
-	          geometry;
-
-	      switch (type) {
-	        case 'box':
-	          geometry = new _three2.default.BoxGeometry(this.getProperty('sizeX'), this.getProperty('sizeY'), this.getProperty('sizeZ'), this.getProperty('segmentsX'), this.getProperty('segmentsY'), this.getProperty('segmentsZ'), this.getProperty('flipSided'));
-	          break;
-
-	        case 'cylinder':
-	          geometry = new _three2.default.CylinderGeometry(this.getProperty('radiusTop'), this.getProperty('radiusBottom'), this.getProperty('height'), this.getProperty('segmentsV'), this.getProperty('segmentsU'), this.getProperty('open'));
-	          break;
-
-	        case 'plane':
-	          geometry = new _three2.default.PlaneGeometry(this.getProperty('sizeX'), this.getProperty('sizeY'), this.getProperty('segmentsX'), this.getProperty('segmentsY'));
-	          geometry.applyMatrix(new _three2.default.Matrix4().makeRotationX(-Math.PI / 2));
-	          break;
-
-	        case 'sphere':
-	          geometry = new _three2.default.SphereGeometry(this.getProperty('radius'), this.getProperty('segmentsU'), this.getProperty('segmentsV'));
-	          break;
-
-	        case 'torus':
-	          geometry = new _three2.default.TorusGeometry(this.getProperty('radius'), 2 * this.getProperty('tubeRadius'), this.getProperty('segmentsV'), this.getProperty('segmentsU'), this.getProperty('arcAngle'));
-	          break;
-
-	        default:
-	          _log2.default.error(this.box3DRuntime.engineName + ' - PrimitiveGeometryAsset: Unrecognized geometry type, "' + type + '"');
-	          break;
-	      }
-
-	      if (geometry) {
-	        geometry.groupsNeedUpdate = true;
-	        geometry.computeBoundingBox();
-	        geometry.computeBoundingSphere();
-	        this.setGeometry(_BaseGeometryAsset3.default.PrimitiveType.TRIANGLES, geometry);
-	      }
-	    }
-	  }]);
-
-	  return PrimitiveGeometryAsset;
-	}(_BaseGeometryAsset3.default);
-
-	PrimitiveGeometryAsset.defaultProperties = _lodash2.default.extend({}, _BaseGeometryAsset3.default.defaultProperties);
-	PrimitiveGeometryAsset.defaultProperties = _lodash2.default.extend({}, _BaseGeometryAsset3.default.defaultProperties, {
-	  type: 'sphere',
-	  radius: 100,
-	  segmentsU: 12,
-	  segmentsV: 12,
-	  sizeX: 100,
-	  sizeY: 100,
-	  sizeZ: 100,
-	  segmentsX: 1,
-	  segmentsY: 1,
-	  segmentsZ: 1,
-	  radiusTop: 50,
-	  radiusBottom: 50,
-	  height: 100,
-	  open: false,
-	  tubeRadius: 20,
-	  arcAngle: Math.PI * 2.0
-	});
-
-
-	window.Box3D.PrimitiveGeometryAsset = PrimitiveGeometryAsset;
-	exports.default = PrimitiveGeometryAsset;
-
-/***/ },
-/* 130 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class PrefabAsset
-	 * @constructor
-	 */
-
-	var PrefabAsset = function (_Box3DAsset) {
-	  _inherits(PrefabAsset, _Box3DAsset);
-
-	  function PrefabAsset(json) {
-	    _classCallCheck(this, PrefabAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
-	  }
-
-	  _createClass(PrefabAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(PrefabAsset.prototype), 'initialize', this).call(this, properties);
-	      this.addOriginalTypeToDefaults(properties.originalType);
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this.runtimeData = new _three2.default.Object3D();
-	      callback();
-	    }
-
-	    /**
-	     * Add the default properties from the class defined by this prefab's 'originalType' to the
-	     * default properties for this type.
-	     * @method  addOriginalTypeToDefaults
-	     * @private
-	     */
-
-	  }, {
-	    key: 'addOriginalTypeToDefaults',
-	    value: function addOriginalTypeToDefaults() {
-	      var originalType = this.get('originalType') || 'node';
-	      var objectClass = this.getObjectClass(originalType);
-	      _lodash2.default.extend(PrefabAsset.defaultProperties, objectClass.defaultProperties);
-	    }
-	  }]);
-
-	  return PrefabAsset;
-	}(_Box3DAsset3.default);
-
-	PrefabAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties);
-
-
-	window.Box3D.PrefabAsset = PrefabAsset;
-	exports.default = PrefabAsset;
-
-/***/ },
-/* 131 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DEntity = __webpack_require__(13);
-
-	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
-
-	var _BaseTextureAsset2 = __webpack_require__(62);
-
-	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
-
-	var _TextureRegistry = __webpack_require__(23);
-
-	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * An asset that holds geometry.
-	 * @class BaseGeometryAsset
-	 * @constructor
-	 */
-
-	var RenderTexture2DAsset = function (_BaseTextureAsset) {
-	  _inherits(RenderTexture2DAsset, _BaseTextureAsset);
-
-	  function RenderTexture2DAsset(json) {
-	    _classCallCheck(this, RenderTexture2DAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTexture2DAsset).call(this, json));
-	  }
-
-	  _createClass(RenderTexture2DAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), 'initialize', this).call(this, properties);
-	    }
-	  }, {
-	    key: 'createRTTextureData',
-	    value: function createRTTextureData() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-
-	      this.runtimeData = new _three2.default.WebGLRenderTarget(width, height, {
-	        wrapS: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')],
-	        wrapT: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')],
-	        minFilter: _three2.default.LinearFilter,
-	        magFilter: _three2.default.LinearFilter,
-	        format: this.getProperty('format'),
-	        type: this.getProperty('type'),
-	        stencilBuffer: this.getProperty('stencilBuffer')
-	      });
-
-	      this.runtimeData.name = this.getName();
-	      this.runtimeData.flipY = false;
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this.createRTTextureData();
-	      this.trigger('loadProgress', this); // TODO: do we need this?
-	      callback();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      // If something changed that necessitates the texture being recreated, do so.
-	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
-	        if (this.runtimeData.__webglFramebuffer) {
-	          this.runtimeData.dispose();
-	          delete this.runtimeData.__webglFramebuffer;
-	        }
-
-	        this.runtimeData.texture.format = this.getProperty('format');
-	        this.runtimeData.texture.type = this.getProperty('type');
-	        this.runtimeData.texture.height = this.getHeight();
-	        this.runtimeData.texture.width = this.getWidth();
-	      }
-	    }
-	  }, {
-	    key: 'setUserData',
-	    value: function setUserData(width, height, color) {
-	      var size = width * height,
-	          textureData = new Uint8Array(3 * size),
-	          r = Math.floor(color.r * 255),
-	          g = Math.floor(color.g * 255),
-	          b = Math.floor(color.b * 255),
-	          idx;
-
-	      for (idx = 0; idx < size; idx += 1) {
-	        textureData[idx * 3] = r;
-	        textureData[idx * 3 + 1] = g;
-	        textureData[idx * 3 + 2] = b;
-	      }
-
-	      if (this.runtimeData) {
-	        this.runtimeData.image = {
-	          data: textureData,
-	          width: width,
-	          height: height
-	        };
-
-	        this.runtimeData.needsUpdate = true;
-	      }
-	    }
-
-	    /**
-	     * Temp function to set data from three.js texture. This should be replaced with a way to
-	     * create an asset from a url, blob data, etc. as this method doesn't set the asset up for
-	     * unload, reload, property changes, etc.
-	     */
-
-	  }, {
-	    key: 'setFromThreeData',
-	    value: function setFromThreeData(threeTexture) {
-	      var _this2 = this;
-
-	      if (!threeTexture instanceof _three2.default.Texture) {
-	        return;
-	      }
-	      this.loadBase(function () {
-	        _this2.runtimeData = threeTexture;
-	        _this2.setProperty('width', threeTexture.image.width, { silent: true });
-	        _this2.setProperty('height', threeTexture.image.height, { silent: true });
-	        _this2.setProperty('format', threeTexture.format, { silent: true });
-	        _this2.setProperty('type', threeTexture.type, { silent: true });
-
-	        // TODO: _applyPropertiesLoaded() should only be called by Box3DEntity and
-	        // 'loadBase' should only be triggered there as well. We should investigate
-	        // using Box3DEntity.reloadBase() here instead.
-	        _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), '_applyPropertiesLoaded', _this2).call(_this2, _this2.getPropertiesObject());
-	        _this2.runtimeData.needsUpdate = true;
-	        _this2.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
-	      });
-	    }
-	  }]);
-
-	  return RenderTexture2DAsset;
-	}(_BaseTextureAsset3.default);
-
-	RenderTexture2DAsset.defaultProperties = _lodash2.default.extend({}, _BaseTextureAsset3.default.defaultProperties, {
-	  format: _three2.default.RGBAFormat,
-	  type: _three2.default.UnsignedByteType,
-	  width: 256,
-	  height: 256,
-	  filtering: 'Linear',
-	  useHardwareCompression: false,
-	  stencilBuffer: false,
-	  depthBuffer: false,
-	  generateMipmaps: false
-	});
-
-
-	window.Box3D.RenderTexture2DAsset = RenderTexture2DAsset;
-	exports.default = RenderTexture2DAsset;
-
-/***/ },
-/* 132 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// TODO: this class and RenderTexture2D contain duplicate code that should be
-	// refactored.
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _BaseTextureAsset2 = __webpack_require__(62);
-
-	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
-
-	var _TextureRegistry = __webpack_require__(23);
-
-	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class RenderTextureCubeAsset
-	 * @constructor
-	 */
-
-	var RenderTextureCubeAsset = function (_BaseTextureAsset) {
-	  _inherits(RenderTextureCubeAsset, _BaseTextureAsset);
-
-	  function RenderTextureCubeAsset(json) {
-	    _classCallCheck(this, RenderTextureCubeAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTextureCubeAsset).call(this, json));
-	  }
-
-	  _createClass(RenderTextureCubeAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'initialize', this).call(this, properties);
-	    }
-	  }, {
-	    key: '_createRTTexture',
-	    value: function _createRTTexture() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-
-	      this.runtimeData = new _three2.default.WebGLRenderTargetCube(width, height, {
-	        wrapS: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')],
-	        wrapT: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')],
-	        minFilter: _three2.default.LinearFilter,
-	        magFilter: _three2.default.LinearFilter,
-	        format: this.getProperty('format'),
-	        type: this.getProperty('type'),
-	        stencilBuffer: this.getProperty('stencilBuffer')
-	      });
-
-	      this.runtimeData.name = this.getName();
-	      this.runtimeData.flipY = false;
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this._createRTTexture();
-	      callback();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      // If something changed that necessitates the texture being recreated, do so.
-	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
-	        if (this.runtimeData.__webglFramebuffer) {
-	          this.runtimeData.dispose();
-	          delete this.runtimeData.__webglFramebuffer;
-	        }
-
-	        this.runtimeData.texture.format = this.getProperty('format');
-	        this.runtimeData.texture.type = this.getProperty('type');
-	        this.runtimeData.texture.width = this.getWidth();
-	        this.runtimeData.texture.height = this.runtimeData.width;
-	      }
-	    }
-
-	    /**
-	     * Returns the total amount of GPU memory occupied by this texture.
-	     * @method getDataSizeTextureInMemory
-	     * @return {Integer} The number of bytes of data.
-	     */
-
-	  }, {
-	    key: 'getDataSizeInMemory',
-	    value: function getDataSizeInMemory() {
-	      var oneFaceSize = _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
-	      return oneFaceSize * 6;
-	    }
-
-	    /**
-	     * Returns the width of the texture. Specify filters to query the desired
-	     * texture. If no filters are specified, the default texture for the current
-	     * device will be queried.
-	     * @param {Object} filters Filters for selecting a texture
-	     * @return {Integer} The texture width.
-	     */
-
-	  }, {
-	    key: 'getWidth',
-	    value: function getWidth() {
-	      var maxTextureSize = this.box3DRuntime.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'),
-	          width = this.getProperty('width');
-
-	      if (width > maxTextureSize) {
-	        width = maxTextureSize;
-	      }
-
-	      return width;
-	    }
-
-	    /**
-	     * Returns the height of the texture. Specify filters to query the desired
-	     * texture. If no filters are specified, the default texture for the current
-	     * device will be queried.
-	     * @param {Object} filters Filters for selecting a texture
-	     * @return {Integer} The texture height.
-	     */
-
-	  }, {
-	    key: 'getHeight',
-	    value: function getHeight() {
-	      var maxTextureSize = this.box3DRuntime.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'),
-	          height = this.getProperty('height');
-
-	      if (height > maxTextureSize) {
-	        height = maxTextureSize;
-	      }
-
-	      return height;
-	    }
-	  }]);
-
-	  return RenderTextureCubeAsset;
-	}(_BaseTextureAsset3.default);
-
-	RenderTextureCubeAsset.defaultProperties = _lodash2.default.extend({}, _BaseTextureAsset3.default.defaultProperties, {
-	  format: _three2.default.RGBAFormat,
-	  type: _three2.default.UnsignedByteType,
-	  width: 256,
-	  height: 256,
-	  filtering: 'Linear',
-	  useHardwareCompression: false,
-	  stencilBuffer: false,
-	  depthBuffer: false,
-	  generateMipmaps: false
-	});
-
-
-	window.Box3D.RenderTextureCubeAsset = RenderTextureCubeAsset;
-	exports.default = RenderTextureCubeAsset;
-
-/***/ },
-/* 133 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _uuid = __webpack_require__(9);
-
-	var _uuid2 = _interopRequireDefault(_uuid);
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class SceneAsset
-	 * @constructor
-	 */
-
-	var SceneAsset = function (_Box3DAsset) {
-	  _inherits(SceneAsset, _Box3DAsset);
-
-	  function SceneAsset(json) {
-	    _classCallCheck(this, SceneAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SceneAsset).call(this, json));
-	  }
-
-	  _createClass(SceneAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'initialize', this).call(this, properties);
-	      this.box3DRuntime.on('prefabDeleted', this.onPrefabDeleted, this);
-	      this.on('load', this._sceneLoaded, this);
-	    }
-	  }, {
-	    key: 'uninitialize',
-	    value: function uninitialize(properties) {
-	      this.box3DRuntime.off('prefabDeleted', this.onPrefabDeleted, this);
-	      this.off('load', this._sceneLoaded, this);
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'uninitialize', this).call(this, properties);
-	    }
-	  }, {
-	    key: '_sceneLoaded',
-	    value: function _sceneLoaded() {
-	      this.box3DRuntime.needsRender = true;
-	    }
-
-	    /**
-	     * Create an instance of a prefab/model asset and register it inside the scene asset.
-	     * Note that this function does not add the new instance as a child of anything. This must be
-	     * done after successful creation of the instance. i.e. Include a 'success' callback
-	     * in the options structure and then call scene.addChild( instance ).
-	     * @public
-	     * @method createInstanceById
-	     * @param  {Object} prefabObject
-	     * @param {String} id An ID for the new instance. If the one specified is not unique or
-	     * not given, a new one will be generated.
-	     * @return {Object} The new instance object
-	     */
-
-	  }, {
-	    key: 'createInstanceById',
-	    value: function createInstanceById(prefabId, id) {
-	      return this.createInstance(this.getAssetById(prefabId), id);
-	    }
-
-	    /**
-	     * Create an instance of a prefab asset and register it inside the scene asset.
-	     * Note that this function does not add the new instance as a child of anything. This must be
-	     * done after creation of the instance. i.e. Call scene.addChild( instance ).
-	     * @public
-	     * @method createInstance
-	     * @param  {Object} prefabAsset
-	     * @param {String} id An ID for the new instance. If the one specified is not unique or
-	     * not given, a new one will be generated.
-	     * @return {Object} The new instance object
-	     */
-
-	  }, {
-	    key: 'createInstance',
-	    value: function createInstance(prefab, id) {
-	      if (!prefab) {
-	        _log2.default.error('Please specify a prefab to create an instance of.');
-	        return;
-	      }
-	      if (prefab.type !== 'prefab') {
-	        _log2.default.error('You can only create an instance of a prefab asset.');
-	        return;
-	      }
-
-	      var instanceMap = {};
-	      var newTopObjectId = id || (0, _uuid2.default)();
-	      var topInstanceJson = {
-	        id: newTopObjectId,
-	        name: prefab.getName(),
-	        parentAssetId: this.id,
-	        prefabObjectId: prefab.id,
-	        prefabAssetId: prefab.id,
-	        prefabInstanceId: newTopObjectId,
-	        type: prefab.get('originalType') || 'model',
-	        properties: {},
-	        components: _lodash2.default.extend({}, prefab.getComponentDescriptors())
-	      };
-	      var that = this;
-
-	      // Create the top-level instance object
-	      var topInst = this.createObject(topInstanceJson);
-	      instanceMap[prefab.id] = topInst;
-
-	      // Create child instance objects
-	      _lodash2.default.each(prefab.objects, function (prefabObject) {
-	        var instanceJSON = {
-	          id: (0, _uuid2.default)(),
-	          name: prefabObject.getName(),
-	          parentAssetId: that.id,
-	          prefabObjectId: prefabObject.id,
-	          prefabAssetId: prefab.id,
-	          prefabInstanceId: topInst.id,
-	          type: prefabObject.type,
-	          properties: {},
-	          components: _lodash2.default.extend({}, prefabObject.getComponentDescriptors())
-	        };
-	        var inst = that.createObject(instanceJSON);
-	        instanceMap[prefabObject.id] = inst;
-	      }, this);
-
-	      // For each object, set 'parentId' and 'children' on the instance using
-	      // the mapping created above.
-	      _lodash2.default.each(prefab.objects, function (prefabObject) {
-	        var instChildren = [];
-	        var childIds = prefabObject.getChildIds();
-	        var instance = instanceMap[prefabObject.id];
-	        if (childIds.length) {
-	          for (var i = 0; i < childIds.length; i++) {
-	            if (instanceMap[childIds[i]]) {
-	              instChildren.push(instanceMap[childIds[i]].id);
-	              instanceMap[childIds[i]].set('parentId', instance.id);
-	            }
-	          }
-	          instance.setChildIds(instChildren);
-	        }
-	      }, this);
-
-	      // Add top-level instance children
-	      var instChildren = [];
-	      var childIds = prefab.getChildIds();
-	      for (var i = 0; i < childIds.length; i++) {
-	        if (instanceMap[childIds[i]]) {
-	          instChildren.push(instanceMap[childIds[i]].id);
-	          instanceMap[childIds[i]].set('parentId', topInst.id);
-	        }
-	      }
-	      topInst.setChildIds(instChildren);
-	      return topInst;
-	    }
-	  }, {
-	    key: 'getDataSizeGeometryDownload',
-	    value: function getDataSizeGeometryDownload() {
-	      var totalSize = 0;
-	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
-
-	      return totalSize;
-	    }
-	  }, {
-	    key: 'getDataSizeGeometryInMemory',
-	    value: function getDataSizeGeometryInMemory() {
-	      var totalSize = 0;
-	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
-	      return totalSize;
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this.runtimeData = new _three2.default.Scene();
-	      this.runtimeData.childIDs = {};
-	      this.runtimeData.matrixAutoUpdate = false;
-	      this.runtimeData.name = this.getName();
-
-	      // TODO: Separate this logic into another function so that we can
-	      // enable/disable rendering of the scene.
-	      var renderer = this.box3DRuntime.getRenderer();
-	      if (renderer) {
-	        var scenePass = new _three2.default.RenderPass();
-	        scenePass.clear = false;
-	        renderer.addRenderPass(scenePass);
-	      }
-
-	      callback();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      if (!this.getProperty('fogEnabled')) {
-	        this.runtimeData.fog = null;
-	      } else {
-	        if (!this.runtimeData.fog || changes.hasOwnProperty('fogType')) {
-
-	          if (this.getProperty('fogType') === 'FogExp2') {
-	            this.runtimeData.fog = new _three2.default.FogExp2(this.getProperty('fogColor'), this.getProperty('fogDensity'));
-	          } else {
-	            _log2.default.info('SceneAsset: Invalid fog type, ' + this.getProperty('fogType') + ', in scene!');
-	          }
-	        }
-
-	        if (changes.hasOwnProperty('fogColor')) {
-	          this.runtimeData.fog.color.setHex(this.getProperty('fogColor'));
-	        }
-
-	        if (changes.hasOwnProperty('fogDensity')) {
-	          this.runtimeData.fog.density = this.getProperty('fogDensity');
-	        }
-	      }
-
-	      if (changes.hasOwnProperty('fogEnabled')) {
-	        this.box3DRuntime.trigger('rebuildMaterials');
-	        this.box3DRuntime.needsRender = true;
-	      }
-	    }
-	  }, {
-	    key: 'unload',
-	    value: function unload(options) {
-	      if (this.runtimeData) {
-	        _log2.default.info('Unloading scene, ' + this.getName());
-
-	        _get(Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
-	      }
-	    }
-	  }, {
-	    key: 'onPrefabDeleted',
-	    value: function onPrefabDeleted(modelID) {
-	      if (this.runtimeData) {
-
-	        _lodash2.default.each(this.objects, function (obj) {
-	          if (obj) {
-	            var prefabObjectId = obj.get('prefabObjectId');
-	            if (prefabObjectId === modelID) {
-	              obj.breakPrefabLink();
-	            }
-	          }
-	        }, this);
-	      }
-	    }
-	  }]);
-
-	  return SceneAsset;
-	}(_Box3DAsset3.default);
-
-	SceneAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
-	  fogEnabled: false,
-	  fogType: 'FogExp2',
-	  fogColor: 0xbbbbbb,
-	  fogDensity: 0.0004
-	});
-
-
-	window.Box3D.SceneAsset = SceneAsset;
-	exports.default = SceneAsset;
-
-/***/ },
-/* 134 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ShaderAsset = function (_Box3DAsset) {
-	  _inherits(ShaderAsset, _Box3DAsset);
-
-	  function ShaderAsset(json) {
-	    _classCallCheck(this, ShaderAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ShaderAsset).call(this, json));
-	  }
-
-	  _createClass(ShaderAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this, properties);
-	      this._buildParamDependencies();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this.runtimeData = {};
-	      this.runtimeData.vertexShader = this.getProperty('vertexShader');
-	      this.runtimeData.fragmentShader = this.getProperty('fragmentShader');
-	      this._buildUniformList();
-	      this._buildRenderParamList();
-	      callback();
-	    }
-	  }, {
-	    key: '_buildUniformList',
-	    value: function _buildUniformList() {
-	      var parameters = this.getProperty('parameters');
-	      var uniforms = this.getProperty('uniforms');
-	      var uniform;
-	      this.runtimeData.uniforms = _three2.default.UniformsUtils.clone(uniforms);
-	      _lodash2.default.each(parameters, function (param, paramName) {
-	        uniform = {};
-
-	        if (!param || param.isRenderParam || !param.isUniform) {
-	          return;
-	        }
-	        switch (param.type) {
-	          case 'dd':
-	            uniform.type = 'i';
-	            uniform.value = param.default;
-	            break;
-	          case 'b':
-	            uniform.type = 'i';
-	            uniform.value = param.default ? 1 : 0;
-	            break;
-	          case 't':
-	            uniform.type = 't';
-	            uniform.value = param.default;
-	            break;
-	          case 'c':
-	            uniform.type = param.type;
-	            uniform.value = new _three2.default.Color(param.default);
-	            // uniform.value.copy(param.default);
-	            uniform.value.copyGammaToLinear(uniform.value);
-	            break;
-	          case 'v2':
-	            uniform.type = param.type;
-	            uniform.value = new _three2.default.Vector2();
-	            uniform.value.set(param.default.x, param.default.y);
-	            break;
-	          case 'v3':
-	            uniform.type = param.type;
-	            uniform.value = new _three2.default.Vector3();
-	            uniform.value.set(param.default.x, param.default.y, param.default.z);
-	            break;
-	          case 'v4':
-	            uniform.type = param.type;
-	            uniform.value = new _three2.default.Vector4();
-	            uniform.value.set(param.default.x, param.default.y, param.default.z, param.default.w);
-	            break;
-	          default:
-	            uniform.type = param.type;
-	            uniform.value = param.default;
-	        }
-	        this.runtimeData.uniforms[paramName] = uniform;
-	      }, this);
-	    }
-	  }, {
-	    key: '_buildRenderParamList',
-	    value: function _buildRenderParamList() {
-	      var parameters = this.getProperty('parameters');
-	      var renderParams = this.getProperty('renderParams');
-	      this.runtimeData.renderParams = renderParams || {};
-	      _lodash2.default.each(parameters, function (param, paramName) {
-
-	        if (!param || param.isUniform || !param.isRenderParam) {
-	          return;
-	        }
-	        switch (param.type) {
-	          case 'b':
-	            this.runtimeData.renderParams[paramName] = !!param.default;
-	            break;
-	          default:
-	            this.runtimeData.renderParams[paramName] = param.default;
-	        }
-	      }, this);
-	    }
-
-	    /**
-	     * Build a mapping from a parameter name to a list of all parameters
-	     * that are dependent on it.
-	     */
-
-	  }, {
-	    key: '_buildParamDependencies',
-	    value: function _buildParamDependencies() {
-	      var parameters = this.getProperty('parameters');
-	      this.paramDependencyMap = {};
-	      _lodash2.default.each(parameters, function (param, name) {
-	        // Add this param to the list for each dependency that it has.
-	        var deps = this.getParameterDependencies(name);
-	        _lodash2.default.each(deps, function (paramName) {
-	          if (!this.paramDependencyMap[paramName]) {
-	            this.paramDependencyMap[paramName] = [];
-	          }
-	          if (this.paramDependencyMap[paramName].indexOf(name) === -1) {
-	            this.paramDependencyMap[paramName].push(name);
-	          }
-	        }, this);
-	        // Make sure that there is at least an empty array for each param.
-	        if (!this.paramDependencyMap[name]) {
-	          this.paramDependencyMap[name] = [];
-	        }
-	      }, this);
-	    }
-
-	    /**
-	     * Return a list of all parameters that are dependent on the specified one.
-	     * @param  {String} paramName The name of the dependency to check for.
-	     * @return {Array}           An array of parameters that are dependent on the
-	     *  given one.
-	     */
-
-	  }, {
-	    key: 'getDependentParameters',
-	    value: function getDependentParameters(paramName) {
-	      if (this.paramDependencyMap[paramName]) {
-	        return this.paramDependencyMap[paramName];
-	      }
-	    }
-
-	    /**
-	     * Get a list of all parameters that the given parameter is dependent on.
-	     * @param  {String} paramName The name of the parameter to get dependencies for.
-	     * @return {Array}           An array of parameter names.
-	     */
-
-	  }, {
-	    key: 'getParameterDependencies',
-	    value: function getParameterDependencies(paramName) {
-
-	      function _getLogicalAndDependencies(conditions, deps) {
-	        deps = deps || [];
-	        _lodash2.default.each(conditions, function (cond, key) {
-	          if (key === 'or') {
-	            deps = _getLogicalOrDependencies(cond, deps);
-	          } else if (deps.indexOf(key) === -1) {
-	            deps = deps.concat([key]);
-	          }
-	        }, this);
-	        return deps;
-	      }
-
-	      function _getLogicalOrDependencies(conditions, deps) {
-	        deps = deps || [];
-	        _lodash2.default.each(conditions, function (cond) {
-	          deps = _getLogicalAndDependencies(cond, deps);
-	        }, this);
-	        return deps;
-	      }
-
-	      var parameters = this.getProperty('parameters');
-	      if (parameters[paramName] && parameters[paramName].enabledWhen) {
-	        return _getLogicalAndDependencies(parameters[paramName].enabledWhen, []);
-	      } else {
-	        return [];
-	      }
-	    }
-	  }]);
-
-	  return ShaderAsset;
-	}(_Box3DAsset3.default);
-
-	window.Box3D.ShaderAsset = ShaderAsset;
-	exports.default = ShaderAsset;
-
-/***/ },
-/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -90565,7 +90152,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _APIUtilities = __webpack_require__(136);
+	var _APIUtilities = __webpack_require__(128);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
@@ -90666,7 +90253,7 @@
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 136 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -90740,18 +90327,18 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 137 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -90765,7 +90352,7 @@
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _BaseTextureAsset2 = __webpack_require__(62);
+	var _BaseTextureAsset2 = __webpack_require__(19);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
@@ -90987,18 +90574,18 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 138 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -91012,7 +90599,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(62);
+	var _BaseTextureAsset2 = __webpack_require__(19);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
@@ -91040,7 +90627,6 @@
 
 	  _createClass(TextureCubeAsset, [{
 	    key: 'createRuntimeData',
-
 
 	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
@@ -91114,23 +90700,22 @@
 	  useHardwareCompression: false
 	});
 
-
 	window.Box3D.TextureCubeAsset = TextureCubeAsset;
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 139 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -91144,7 +90729,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(62);
+	var _BaseTextureAsset2 = __webpack_require__(19);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
@@ -91347,21 +90932,20 @@
 	  }
 	};
 
-
 	window.Box3D.TextureVideoAsset = TextureVideoAsset;
 	exports.default = TextureVideoAsset;
 
 /***/ },
-/* 140 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -92068,23 +91652,22 @@
 	  }
 	};
 
-
 	window.Box3D.Box3DObject = Box3DObject;
 	exports.default = Box3DObject;
 
 /***/ },
-/* 141 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -92094,7 +91677,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(140);
+	var _Box3DObject2 = __webpack_require__(132);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -92122,7 +91705,6 @@
 
 	  _createClass(CameraObject, [{
 	    key: 'createRuntimeData',
-
 
 	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
@@ -92196,23 +91778,22 @@
 	});
 	CameraObject.events = {};
 
-
 	window.Box3D.CameraObject = CameraObject;
 	exports.default = CameraObject;
 
 /***/ },
-/* 142 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -92226,7 +91807,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(140);
+	var _Box3DObject2 = __webpack_require__(132);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -92524,16 +92105,16 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 143 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -92543,7 +92124,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(144);
+	var _BaseMeshObject2 = __webpack_require__(136);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -92688,18 +92269,18 @@
 	exports.default = SkinnedMeshObject;
 
 /***/ },
-/* 144 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -92713,7 +92294,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(140);
+	var _Box3DObject2 = __webpack_require__(132);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -93623,27 +93204,26 @@
 	  }
 	};
 
-
 	window.Box3D.BaseMeshObject = BaseMeshObject;
 	exports.default = BaseMeshObject;
 
 /***/ },
-/* 145 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(144);
+	var _BaseMeshObject2 = __webpack_require__(136);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -93693,20 +93273,20 @@
 	exports.default = StaticMeshObject;
 
 /***/ },
-/* 146 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DObject2 = __webpack_require__(140);
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Box3DObject2 = __webpack_require__(132);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -93736,7 +93316,6 @@
 	  }
 
 	  /** @inheritdoc */
-
 
 	  _createClass(ModelObject, [{
 	    key: '_applyPropertiesLoaded',
@@ -93783,7 +93362,7 @@
 	exports.default = ModelObject;
 
 /***/ },
-/* 147 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -93809,12 +93388,12 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 148 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2), __webpack_require__(149)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2), __webpack_require__(141)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -93928,13 +93507,13 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 149 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(150),
-	  v1 = __webpack_require__(151);
+	var _ = __webpack_require__(142),
+	  v1 = __webpack_require__(143);
 
 
 	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
@@ -94244,7 +93823,7 @@
 
 
 /***/ },
-/* 150 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -95593,12 +95172,12 @@
 
 
 /***/ },
-/* 151 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(150);
+	var _ = __webpack_require__(142);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -95661,7 +95240,7 @@
 
 
 /***/ },
-/* 152 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';

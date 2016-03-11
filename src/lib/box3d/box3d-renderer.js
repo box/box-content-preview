@@ -1,4 +1,4 @@
-/* global VAPI, Box3DResourceLoader */
+/* global Box3D, Box3DResourceLoader */
 import EventEmitter from 'events';
 import Cache from '../cache';
 import {
@@ -125,8 +125,8 @@ class Box3DRenderer extends EventEmitter {
      */
     initBox3d(options) {
         // Initialize global modules.
-        if (!VAPI) {
-            return Promise.reject(new Error('Missing VAPI'));
+        if (!Box3D) {
+            return Promise.reject(new Error('Missing Box3D'));
         }
 
         if (!Box3DResourceLoader) {
@@ -166,7 +166,7 @@ class Box3DRenderer extends EventEmitter {
             return Promise.resolve(this.box3d);
         }
 
-        this.box3d = new VAPI.Engine();
+        this.box3d = new Box3D.Engine();
 
         return new Promise((resolve, reject) => {
             this.box3d.initialize({

@@ -194,7 +194,7 @@ function sceneEntities(prefix) {
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
                 componentData: {
-                    panoramaTexture: 'HDR_ENV_MAP_0'
+                    inputTexture: 'HDR_ENV_MAP_0'
                 }
             }
         }
@@ -218,7 +218,7 @@ function sceneEntities(prefix) {
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
                 componentData: {
-                    panoramaTexture: 'HDR_ENV_MAP_1'
+                    inputTexture: 'HDR_ENV_MAP_1'
                 }
             }
         }
@@ -242,7 +242,7 @@ function sceneEntities(prefix) {
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
                 componentData: {
-                    panoramaTexture: 'HDR_ENV_MAP_2'
+                    inputTexture: 'HDR_ENV_MAP_2'
                 }
             }
         }
