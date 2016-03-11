@@ -173,8 +173,13 @@ class DocAnnotator extends Annotator {
             tagNames: ['span', 'a']
         }));
 
+        // Init in-memory map of annotations: page -> annotations on page
+        // Note that this map only includes the first annotation in a thread
+        // since we only need to display one annotation per thread and can
+        // load the other ones on-demand
+        this.annotations = {};
+
         // Set defaults for highlight annotations
-        this.highlightAnnotations = {};
         this.hoverAnnotationID = ''; // ID of annotation user is hovered over
         this.activeAnnotationID = ''; // ID of active annotation (clicked)
 
@@ -186,44 +191,51 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Show saved annotations.
+     * Fetches saved annotations and stores in-memory.
+     *
+     * @returns {Promise} Promise for fetching saved annotations
+     */
+    fetchAnnotations() {
+        // @TODO(tjin): Load/unload annotations by page based on pages loaded
+        // from document viewer
+
+        // Fetch map of thread ID to annotations, return the promise
+        return this.annotationService.getAnnotationsForFile(this.fileID).then((annotationsMap) => {
+            // Generate maps of page to annotations
+            for (const annotations of annotationsMap.values()) {
+                // We only need to show the first annotation in a thread
+                const firstAnnotation = annotations[0];
+                const page = firstAnnotation.location.page || 1;
+
+                if (!this.annotations[page]) {
+                    this.annotations[page] = [];
+                }
+
+                this.annotations[page].push(firstAnnotation);
+            }
+        });
+    }
+
+    /**
+     * Renders annotations from memory.
+     *
+     * @returns {void}
+     */
+    renderAnnotations() {
+        this.showHighlightAnnotations();
+        this.showPointAnnotations();
+    }
+
+    /**
+     * Fetches and shows saved annotations.
      *
      * @returns {void}
      */
     showAnnotations() {
-        // Reset highlight annotations map
-        this.highlightAnnotations = {};
-
-        // @NOTE(tjin): Load/unload annotations by page based on pages loaded
-        // from document viewer
-        // Fetch map of thread ID to annotations
-        this.annotationService.getAnnotationsForFile(this.fileID).then((annotationsMap) => {
-            // @TODO(tjin): Convert to map of page to point annotations
-            // @TODO(tjin): THIS IS IMPORTANT SO WE DONT HAVE TO RELOAD ALL
-            // ANNOTATIONS EVERY TIME WE ZOOM
-            const pointAnnotations = [];
-
-            // Generate maps of page to highlight and point threads
-            for (const annotations of annotationsMap.values()) {
-                // We only need to show the first annotation in a thread
-                const firstAnnotation = annotations[0];
-                const annotationType = firstAnnotation.type;
-
-                if (annotationType === HIGHLIGHT_ANNOTATION_TYPE) {
-                    const page = firstAnnotation.location.page || 1;
-                    if (!this.highlightAnnotations[page]) {
-                        this.highlightAnnotations[page] = [];
-                    }
-
-                    this.highlightAnnotations[page].push(firstAnnotation);
-                } else if (annotationType === POINT_ANNOTATION_TYPE) {
-                    pointAnnotations.push(firstAnnotation);
-                }
-            }
-
-            // Show highlight and point annotations
-            this.showHighlightAnnotations();
-            this.showPointAnnotations(pointAnnotations);
+        this.fetchAnnotations().then(() => {
+            // Show highlight and point annotations after we've generated
+            // an in-memory map
+            this.renderAnnotations();
         });
     }
 
@@ -235,7 +247,7 @@ class DocAnnotator extends Annotator {
      * @param {Object} locationData Location data
      * @returns {Annotation} Annotation
      */
-    createAnnotation(annotationType, annotationText, locationData) {
+    createAnnotationObject(annotationType, annotationText, locationData) {
         const data = {
             fileID: this.fileID,
             type: annotationType,
@@ -245,6 +257,54 @@ class DocAnnotator extends Annotator {
         };
 
         return new Annotation(data);
+    }
+
+    /**
+     * Adds an annotation to persistant store and in-memory map
+     *
+     * @param {Annotation} annotation Annotation to add
+     * @param {Boolean} addToMap Whether or not to add to in-memory map
+     * @returns {Promise} Promise to add annotation, resolves with created
+     * annotation
+     */
+    createAnnotation(annotation, addToMap) {
+        if (addToMap) {
+            const page = annotation.location.page;
+            if (!this.annotations[page]) {
+                this.annotations[page] = [];
+            }
+
+            this.annotations[page].push(annotation);
+        }
+
+        return this.annotationService.create(annotation);
+    }
+
+    /**
+     * Removes an annotation from persistant store and in-memory map
+     *
+     * @param {Annotation} annotation Annotation to remove
+     * @param {Boolean} removeFromMap Whether or not to remove from in-memory map
+     * @returns {Promise} Promise to remove annotation
+     */
+    removeAnnotation(annotationID, removeFromMap) {
+        // Remove from in-memory map. We use Array.prototype.some to short
+        // circuit loop
+        if (removeFromMap) {
+            Object.keys(this.annotationMap).some((page) => {
+                const pageAnnotations = this.annotationMap[page];
+                return pageAnnotations.some((annot, index) => {
+                    if (annot.annotationID === annotationID) {
+                        pageAnnotations.splice(index, 1);
+                        return true;
+                    }
+                    return false;
+                });
+            });
+        }
+
+        // Remove from persistant store
+        return this.annotationService.delete(annotationID);
     }
 
 
@@ -325,9 +385,11 @@ class DocAnnotator extends Annotator {
         ctx.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);
 
         // Draw highlights
-        const highlights = this.highlightAnnotations[page] || [];
-        highlights.forEach((highlight) => {
-            this.drawHighlightAnnotation(highlight, ctx);
+        const annotations = this.annotations[page] || [];
+        annotations.forEach((annotation) => {
+            if (annotation.type === HIGHLIGHT_ANNOTATION_TYPE) {
+                this.drawHighlightAnnotation(annotation, ctx);
+            }
         });
 
         // console.log(`Drawing annotations for page ${page} took ${new Date().getTime() - time}ms`);
@@ -340,10 +402,14 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showHighlightAnnotations() {
-        const numPages = Object.keys(this.highlightAnnotations).length;
-        for (let i = 1; i <= numPages; i++) {
-            this.drawHighlightAnnotationsOnPage(i);
-        }
+        Object.keys(this.annotations).forEach((page) => {
+            const highlights = this.annotations[page].filter((annotation) => annotation.type === HIGHLIGHT_ANNOTATION_TYPE);
+
+            // Draw highlights if there are any on the page
+            if (highlights.length > 0) {
+                this.drawHighlightAnnotationsOnPage(page);
+            }
+        });
     }
 
     /**
@@ -366,10 +432,8 @@ class DocAnnotator extends Annotator {
                 event.stopPropagation();
 
                 const annotationID = removeHighlightButtonEl.getAttribute('data-annotation-id');
-                this.annotationService.delete(annotationID).then(() => {
-                    // Remove highlight from in-memory store
-                    this.removeHighlight(annotationID);
 
+                this.deleteAnnotation(annotationID, true).then(() => {
                     // Redraw highlights on page
                     const pageNum = removeHighlightButtonEl.getAttribute('data-page');
                     this.drawHighlightAnnotationsOnPage(pageNum);
@@ -422,11 +486,6 @@ class DocAnnotator extends Annotator {
                 }
 
                 const page = pageEl.getAttribute('data-page-number');
-                const annotations = this.highlightAnnotations[page];
-                if (!annotations) {
-                    return;
-                }
-
                 const canvasEl = pageEl.querySelector('.box-preview-annotation-layer');
                 if (!canvasEl) {
                     return;
@@ -434,13 +493,22 @@ class DocAnnotator extends Annotator {
 
                 const canvasDimensions = canvasEl.getBoundingClientRect();
                 const pageHeight = canvasDimensions.height;
+                const annotations = this.annotations[page];
+                if (!Array.isArray(annotations)) {
+                    return;
+                }
+
+                const highlights = annotations.filter((annotation) => annotation.type === HIGHLIGHT_ANNOTATION_TYPE);
+                if (!highlights) {
+                    return;
+                }
 
                 // We loop through all the annotations on this page and see if the
                 // mouse is over some annotation. We use Array.prototype.some so
                 // we can stop iterating over annotations when we've found one.
                 let hoverAnnotationID = '';
-                annotations.some((annotation) => {
-                    return annotation.location.quadPoints.some((quadPoint) => {
+                highlights.some((highlight) => {
+                    return highlight.location.quadPoints.some((quadPoint) => {
                         const scaledQuadPoint = quadPoint.map((x) => x * this.scale);
                         const DOMQuadPoint = pdfSpaceToDOMSpace(scaledQuadPoint, pageHeight);
                         const [x1, y1, x2, y2, x3, y3, x4, y4] = DOMQuadPoint;
@@ -457,7 +525,7 @@ class DocAnnotator extends Annotator {
                         ], mouseX, mouseY);
 
                         if (isPointInPoly) {
-                            hoverAnnotationID = annotation.annotationID;
+                            hoverAnnotationID = highlight.annotationID;
                         }
 
                         return isPointInPoly;
@@ -493,8 +561,13 @@ class DocAnnotator extends Annotator {
         }
 
         const page = pageEl.getAttribute('data-page-number');
-        const annotations = this.highlightAnnotations[page];
-        if (!annotations) {
+        const annotations = this.annotations[page];
+        if (!Array.isArray(annotations)) {
+            return;
+        }
+
+        const highlights = annotations.filter((annotation) => annotation.type === HIGHLIGHT_ANNOTATION_TYPE);
+        if (!highlights) {
             return;
         }
 
@@ -518,9 +591,9 @@ class DocAnnotator extends Annotator {
 
         // Show remove highlight button if we clicked on an annotation
         if (this.activeAnnotationID) {
-            const annotation = annotations.find((x) => x.annotationID === this.activeAnnotationID);
-            if (annotation) {
-                this.showRemoveHighlightButton(annotation);
+            const highlight = highlights.find((hl) => hl.annotationID === this.activeAnnotationID);
+            if (highlight) {
+                this.showRemoveHighlightButton(highlight);
             }
         }
     }
@@ -565,23 +638,17 @@ class DocAnnotator extends Annotator {
         this.removeRangyHighlight(highlight);
 
         // Create annotation
-        const annotation = this.createAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '', {
+        const annotation = this.createAnnotationObject(HIGHLIGHT_ANNOTATION_TYPE, '', {
             page,
             quadPoints
         });
 
         // Save and show annotation
-        this.annotationService.create(annotation).then((createdAnnotation) => {
-            if (!this.highlightAnnotations[page]) {
-                this.highlightAnnotations[page] = [];
-            }
-
-            this.highlightAnnotations[page].push(createdAnnotation);
-
+        this.createAnnotation(annotation, true).then((createdAnnotation) => {
             // Redraw annotations and show new annotation in active state
-            this.activeAnnotationID = annotation.annotationID;
+            this.activeAnnotationID = createdAnnotation.annotationID;
             this.drawHighlightAnnotationsOnPage(page);
-            this.showRemoveHighlightButton(annotation);
+            this.showRemoveHighlightButton(createdAnnotation);
         });
     }
 
@@ -630,9 +697,12 @@ class DocAnnotator extends Annotator {
      * @param {Annotation[]} pointAnnotations Array of point annotations
      * @returns {void}
      */
-    showPointAnnotations(pointAnnotations) {
-        pointAnnotations.forEach((annotation) => {
-            this.showPointAnnotation(annotation);
+    showPointAnnotations() {
+        Object.keys(this.annotations).forEach((page) => {
+            const points = this.annotations[page].filter((annotation) => annotation.type === POINT_ANNOTATION_TYPE);
+            points.forEach((annotation) => {
+                this.showPointAnnotation(annotation);
+            });
         });
     }
 
@@ -650,10 +720,10 @@ class DocAnnotator extends Annotator {
 
         // @TODO(tjin): Investigate edge cases with existing highlights in 'bindOnClickCreateComment'
 
-        this.addEventHandler(document, (clickOutEvent) => {
-            clickOutEvent.stopPropagation();
+        this.addEventHandler(document, (e) => {
+            e.stopPropagation();
 
-            const pageEl = findClosestElWithClass(clickOutEvent.target, 'page');
+            const pageEl = findClosestElWithClass(e.target, 'page');
 
             // If click isn't on a page, disregard
             if (!pageEl) {
@@ -664,8 +734,8 @@ class DocAnnotator extends Annotator {
             const pageDimensions = pageEl.getBoundingClientRect();
             const page = pageEl.getAttribute('data-page-number');
             const pageScale = this.scale;
-            const x = (clickOutEvent.clientX - pageDimensions.left) / pageScale;
-            const y = (clickOutEvent.clientY - pageDimensions.top) / pageScale;
+            const x = (e.clientX - pageDimensions.left) / pageScale;
+            const y = (e.clientY - pageDimensions.top) / pageScale;
             const locationData = { x, y, page };
 
             this.createAnnotationDialog(locationData, POINT_ANNOTATION_TYPE);
@@ -720,21 +790,21 @@ class DocAnnotator extends Annotator {
 
             // Get annotation text and create annotation
             const annotationText = annotationTextEl.value;
-            const annotation = this.createAnnotation(annotationType, annotationText, locationData);
+            const annotation = this.createAnnotationObject(annotationType, annotationText, locationData);
 
             // Save annotation
-            this.annotationService.create(annotation).then(() => {
+            this.createAnnotation(annotation, true).then((createdAnnotation) => {
                 closeCreateDialog();
 
                 // If annotation is a point annotation, show the point
                 // annotation indicator
                 if (annotation.type === POINT_ANNOTATION_TYPE) {
                     // @TODO(tjin): Only show point annotation if one doesn't exist already
-                    this.showPointAnnotation(annotation);
+                    this.showPointAnnotation(createdAnnotation);
                 }
 
                 // Show newly created annotation text on top
-                this.showAnnotationDialog(annotation.threadID);
+                this.showAnnotationDialog(createdAnnotation.threadID);
             });
         });
 
@@ -859,17 +929,18 @@ class DocAnnotator extends Annotator {
                 // Clicking 'Yes' to confirm deletion of annotation
                 this.addEventHandler(confirmDeleteButtonEl, (event) => {
                     event.stopPropagation();
+                    const annotationParentEl = annotationEl.parentNode;
+                    const isRootAnnotation = annotationParentEl.childElementCount === 1;
 
-                    this.annotationService.delete(annotation.annotationID).then(() => {
+                    // Remove from in-memory map if it is root annotation
+                    this.deleteAnnotation(annotation.annotationID, isRootAnnotation).then(() => {
                         this.removeEventHandlers(deleteButtonEl);
                         this.removeEventHandlers(cancelDeleteButtonEl);
                         this.removeEventHandlers(confirmDeleteButtonEl);
-
-                        const annotationParentEl = annotationEl.parentNode;
                         annotationParentEl.removeChild(annotationEl);
 
                         // If this was the root comment in this thread, remove the whole thread
-                        if (annotationParentEl.childElementCount === 0) {
+                        if (isRootAnnotation) {
                             const replyButtonEl = annotationDialogEl.querySelector('.add-reply-btn');
                             const cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation-btn');
                             const postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn');
@@ -948,7 +1019,9 @@ class DocAnnotator extends Annotator {
                     user: this.user
                 });
 
-                this.annotationService.create(newAnnotation).then((createdAnnotation) => {
+                // Create annotation, but don't add to in-memory map since a
+                // thread already exists
+                this.createAnnotation(newAnnotation, false).then((createdAnnotation) => {
                     const annotationEl = createAnnotationCommentEl(createdAnnotation);
                     annotationCommentsEl.appendChild(annotationEl);
                 });
@@ -1007,23 +1080,6 @@ class DocAnnotator extends Annotator {
 
     /* ---------- Helpers ---------- */
     /**
-     * Remove highlight from in-memory highlight map.
-     *
-     * @param {Number} annotationID Annotation ID of highlight to remove
-     * @returns {void}
-     */
-    removeHighlight(annotationID) {
-        Object.keys(this.highlightAnnotations).forEach((page) => {
-            const pageAnnotations = this.highlightAnnotations[page];
-            pageAnnotations.forEach((annotation, index) => {
-                if (annotation.annotationID === annotationID) {
-                    pageAnnotations.splice(index, 1);
-                }
-            });
-        });
-    }
-
-    /**
      * Helper to remove a Rangy highlight by deleting the highlight in the
      * internal highlighter list that has a matching ID. We can't directly use
      * the highlighter's removeHighlights since the highlight could possibly
@@ -1033,7 +1089,12 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     removeRangyHighlight(highlight) {
-        const matchingHighlights = this.highlighter.highlights.filter((internalHighlight) => {
+        const highlights = this.highlighter.highlights;
+        if (!Array.isArray(highlights)) {
+            return;
+        }
+
+        const matchingHighlights = highlights.filter((internalHighlight) => {
             return internalHighlight.id === highlight.id;
         });
 
