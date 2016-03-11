@@ -287,12 +287,12 @@ class DocAnnotator extends Annotator {
      * @param {Boolean} removeFromMap Whether or not to remove from in-memory map
      * @returns {Promise} Promise to remove annotation
      */
-    removeAnnotation(annotationID, removeFromMap) {
+    deleteAnnotation(annotationID, removeFromMap) {
         // Remove from in-memory map. We use Array.prototype.some to short
         // circuit loop
         if (removeFromMap) {
-            Object.keys(this.annotationMap).some((page) => {
-                const pageAnnotations = this.annotationMap[page];
+            Object.keys(this.annotations).some((page) => {
+                const pageAnnotations = this.annotations[page];
                 return pageAnnotations.some((annot, index) => {
                     if (annot.annotationID === annotationID) {
                         pageAnnotations.splice(index, 1);
@@ -443,6 +443,9 @@ class DocAnnotator extends Annotator {
                 });
             });
 
+            pageEl.appendChild(removeHighlightButtonEl);
+        } else {
+            removeHighlightButtonEl.parentNode.removeChild(removeHighlightButtonEl);
             pageEl.appendChild(removeHighlightButtonEl);
         }
 
