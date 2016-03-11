@@ -112,9 +112,8 @@ class DocAnnotator extends Annotator {
         // Event handler refs for cleanup
         this.handlerRefs = [];
 
-        // Init scale and rotation if needed
+        // Init scale if needed
         this.scale = this.scale || 1;
-        this.rotation = this.rotation || 0;
 
         this.setupAnnotations();
     }
@@ -141,19 +140,6 @@ class DocAnnotator extends Annotator {
      */
     setScale(scale) {
         this.scale = scale;
-
-        // Reset any active annotation
-        this.activeAnnotationID = '';
-    }
-
-    /**
-     * Sets the rotation.
-     *
-     * @param {Number} deg
-     * @returns {void}
-     */
-    setRotation(deg) {
-        this.rotation = deg;
 
         // Reset any active annotation
         this.activeAnnotationID = '';
@@ -206,11 +192,7 @@ class DocAnnotator extends Annotator {
                 // We only need to show the first annotation in a thread
                 const firstAnnotation = annotations[0];
                 const page = firstAnnotation.location.page || 1;
-
-                if (!this.annotations[page]) {
-                    this.annotations[page] = [];
-                }
-
+                this.annotations[page] = this.annotations[page] || [];
                 this.annotations[page].push(firstAnnotation);
             }
         });
@@ -232,11 +214,9 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showAnnotations() {
-        this.fetchAnnotations().then(() => {
-            // Show highlight and point annotations after we've generated
-            // an in-memory map
-            this.renderAnnotations();
-        });
+        // Show highlight and point annotations after we've generated
+        // an in-memory map
+        this.fetchAnnotations().then(this.renderAnnotations);
     }
 
     /**
@@ -270,10 +250,7 @@ class DocAnnotator extends Annotator {
     createAnnotation(annotation, addToMap) {
         if (addToMap) {
             const page = annotation.location.page;
-            if (!this.annotations[page]) {
-                this.annotations[page] = [];
-            }
-
+            this.annotations[page] = this.annotations[page] || [];
             this.annotations[page].push(annotation);
         }
 
