@@ -178,7 +178,7 @@ class Preview extends EventEmitter {
         this.options.header = options.header || 'light';
 
         // Save the files to iterate through
-        this.files = options.files || [];
+        this.collection = options.collection || [];
 
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
@@ -325,11 +325,8 @@ class Preview extends EventEmitter {
             this.container.firstElementChild.className = CLASS_BOX_PREVIEW_HEADER;
         }
 
-        // If we are showing navigation, create arrows and attach
-        // mouse move handler to show or hide them.
-        if (this.files.length > 1) {
-            this.showNavigation();
-        }
+        // Show navigation if needed
+        this.showNavigation();
 
         // Attach keyboard events
         document.addEventListener('keydown', this.keydownHandler);
@@ -401,8 +398,8 @@ class Preview extends EventEmitter {
         // Normalize files array by putting current file inside it
         // if it was is empty. If its not empty, then it is assumed
         // that current file is already inside files array.
-        if (this.files.length === 0) {
-            this.files = [this.file];
+        if (this.collection.length === 0) {
+            this.collection = [this.file];
         }
 
         if (this.file.representations && Array.isArray(this.file.representations.entries)) { // @TODO we need a better check to validate file object
@@ -685,12 +682,12 @@ class Preview extends EventEmitter {
      */
     prefetch() {
         // Don't bother prefetching when there aren't more files
-        if (this.files.length < 2) {
+        if (this.collection.length < 2) {
             return;
         }
 
-        const currentIndex = this.files.indexOf(this.file.id);
-        const filesToPrefetch = this.files.slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1);
+        const currentIndex = this.collection.indexOf(this.file.id);
+        const filesToPrefetch = this.collection.slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1);
 
         // Don't bother prefetching when there aren't more files
         if (filesToPrefetch.length === 0) {
@@ -749,26 +746,44 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Shows navigation arrows
+     * Shows navigation arrows if there is a need
      *
      * @private
      * @returns {void}
      */
     showNavigation() {
-        this.leftNavigation = this.container.querySelector(SELECTOR_NAVIGATION_LEFT);
-        this.rightNavigation = this.container.querySelector(SELECTOR_NAVIGATION_RIGHT);
-        this.leftNavigation.addEventListener('click', this.navigateLeft);
-        this.rightNavigation.addEventListener('click', this.navigateRight);
-        this.contentContainer.addEventListener('mousemove', this.throttledMousemoveHandler);
+        // Before showing or updating navigation do some cleanup
+        // that may be needed if the collection changes
 
-        const index = this.files.indexOf(this.file.id);
+        const leftNavigation = this.container.querySelector(SELECTOR_NAVIGATION_LEFT);
+        const rightNavigation = this.container.querySelector(SELECTOR_NAVIGATION_RIGHT);
 
-        if (index > 0) {
-            this.leftNavigation.classList.remove(CLASS_HIDDEN);
+        // Hide the arrows by default
+        leftNavigation.classList.add(CLASS_HIDDEN);
+        rightNavigation.classList.add(CLASS_HIDDEN);
+
+        leftNavigation.removeEventListener('click', this.navigateLeft);
+        rightNavigation.removeEventListener('click', this.navigateRight);
+        this.contentContainer.removeEventListener('mousemove', this.throttledMousemoveHandler);
+
+        // Don't show navigation when there is no need
+        if (this.collection.length < 2) {
+            return;
         }
 
-        if (index < this.files.length - 1) {
-            this.rightNavigation.classList.remove(CLASS_HIDDEN);
+        leftNavigation.addEventListener('click', this.navigateLeft);
+        rightNavigation.addEventListener('click', this.navigateRight);
+        this.contentContainer.addEventListener('mousemove', this.throttledMousemoveHandler);
+
+        // Selectively show or hide the navigation arrows
+        const index = this.collection.indexOf(this.file.id);
+
+        if (index > 0) {
+            leftNavigation.classList.remove(CLASS_HIDDEN);
+        }
+
+        if (index < this.collection.length - 1) {
+            rightNavigation.classList.remove(CLASS_HIDDEN);
         }
     }
 
@@ -780,7 +795,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     navigateToIndex(index) {
-        const file = this.files[index];
+        const file = this.collection[index];
         this.emit('navigate', file);
         this.count.navigation++;
         this.load(file);
@@ -793,7 +808,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     navigateLeft() {
-        const currentIndex = this.files.indexOf(this.file.id);
+        const currentIndex = this.collection.indexOf(this.file.id);
         const newIndex = currentIndex === 0 ? 0 : currentIndex - 1;
         if (newIndex !== currentIndex) {
             this.navigateToIndex(newIndex);
@@ -807,8 +822,8 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     navigateRight() {
-        const currentIndex = this.files.indexOf(this.file.id);
-        const newIndex = currentIndex === this.files.length - 1 ? this.files.length - 1 : currentIndex + 1;
+        const currentIndex = this.collection.indexOf(this.file.id);
+        const newIndex = currentIndex === this.collection.length - 1 ? this.collection.length - 1 : currentIndex + 1;
         if (newIndex !== currentIndex) {
             this.navigateToIndex(newIndex);
         }
@@ -947,6 +962,17 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Updates files to navigate between
+     *
+     * @public
+     * @returns {void}
+     */
+    updateCollection(collection = []) {
+        this.collection = Array.isArray(collection) ? collection : [];
+        this.showNavigation();
+    }
+
+    /**
      * Returns the current viewer
      *
      * @public
@@ -954,6 +980,26 @@ class Preview extends EventEmitter {
      */
     getCurrentViewer() {
         return this.viewer;
+    }
+
+    /**
+     * Returns the current file being previewed
+     *
+     * @public
+     * @returns {Object|null} current viewer
+     */
+    getCurrentFile() {
+        return this.file;
+    }
+
+    /**
+     * Returns the current file being previewed
+     *
+     * @public
+     * @returns {Object|null} current viewer
+     */
+    getCurrentCollection() {
+        return this.collection;
     }
 
     /**
