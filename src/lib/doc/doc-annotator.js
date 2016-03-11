@@ -55,17 +55,15 @@ function isPointInPolyOpt(poly, x, y) {
 }
 
 /**
- * Converts coordinates in PDF space to coordinates in canvas space.
+ * Converts coordinates in PDF space to coordinates in DOM space.
  *
  * @param {Number[]} coordinates Either a [x,y] coordinate location or
  * quad points in the format of 8xn numbers
- * @param {HTMLElement} relativeEl Element representing PDF page
- * @returns {Number[]} Either [x,y] or 8xn coordinates in canvas space.
+ * @param {Number} pageHeight DOM height of PDF page
+ * @returns {Number[]} Either [x,y] or 8xn coordinates in DOM space.
  */
-function pdfSpaceToCanvasSpace(coordinates, relativeEl) {
-    const pageHeight = relativeEl.getBoundingClientRect().height;
-
-    // Input was [x, y], not quad points
+function pdfSpaceToDOMSpace(coordinates, pageHeight) {
+    // If input is [x, y] instead of quad points
     if (coordinates.length === 2) {
         const [x, y] = coordinates;
         return [x, pageHeight - y];
@@ -262,10 +260,11 @@ class DocAnnotator extends Annotator {
         const ctx = context;
         const annotationID = annotation.annotationID;
         const quadPoints = annotation.location.quadPoints;
+        const pageHeight = context.canvas.getBoundingClientRect().height;
         quadPoints.forEach((quadPoint) => {
             const scaledQuadPoint = quadPoint.map((x) => x * this.scale);
-            const canvasQuadPoint = pdfSpaceToCanvasSpace(scaledQuadPoint, context.canvas.parentNode);
-            const [x1, y1, x2, y2, x3, y3, x4, y4] = canvasQuadPoint;
+            const DOMQuadPoint = pdfSpaceToDOMSpace(scaledQuadPoint, pageHeight);
+            const [x1, y1, x2, y2, x3, y3, x4, y4] = DOMQuadPoint;
 
             // If annotation being drawn is the annotation the mouse is over or
             // the annotation is 'active' or clicked, draw the highlight with
@@ -386,7 +385,7 @@ class DocAnnotator extends Annotator {
         // Create remove highlight button and position it above the upper right
         // corner of the highlight
         const pdfCoordinates = this.getUpperRightCorner(annotation.location.quadPoints, pageEl);
-        const [upperRightX, upperRightY] = pdfSpaceToCanvasSpace(pdfCoordinates, pageEl);
+        const [upperRightX, upperRightY] = pdfSpaceToDOMSpace(pdfCoordinates, pageEl.getBoundingClientRect().height);
 
         // Position button
         removeHighlightButtonEl.style.left = `${upperRightX - 20}px`;
@@ -434,6 +433,7 @@ class DocAnnotator extends Annotator {
                 }
 
                 const canvasDimensions = canvasEl.getBoundingClientRect();
+                const pageHeight = canvasDimensions.height;
 
                 // We loop through all the annotations on this page and see if the
                 // mouse is over some annotation. We use Array.prototype.some so
@@ -442,8 +442,8 @@ class DocAnnotator extends Annotator {
                 annotations.some((annotation) => {
                     return annotation.location.quadPoints.some((quadPoint) => {
                         const scaledQuadPoint = quadPoint.map((x) => x * this.scale);
-                        const canvasQuadPoint = pdfSpaceToCanvasSpace(scaledQuadPoint, pageEl);
-                        const [x1, y1, x2, y2, x3, y3, x4, y4] = canvasQuadPoint;
+                        const DOMQuadPoint = pdfSpaceToDOMSpace(scaledQuadPoint, pageHeight);
+                        const [x1, y1, x2, y2, x3, y3, x4, y4] = DOMQuadPoint;
                         const mouseX = event.clientX - canvasDimensions.left;
                         const mouseY = event.clientY - canvasDimensions.top;
 
