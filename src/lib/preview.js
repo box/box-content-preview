@@ -203,9 +203,9 @@ class Preview extends EventEmitter {
         // By defaut we fetch the current file id token
         let ids = [this.file.id];
 
-        // If instead ids were passed in, we fetch those
+        // If instead id(s) were passed in, we fetch those
         // This will be the use case for prefetch and viewers
-        // Normalize to an array
+        // Normalize to an array so that we always deal with ids
         if (id && Array.isArray(id)) {
             ids = id;
         } else if (id) {
@@ -223,29 +223,42 @@ class Preview extends EventEmitter {
             throw error;
         }
 
+        // Helper function to create token map used below
+        const tokenMapCreator = (authToken) => {
+            const tokenMap = {};
+            ids.forEach((fileId) => {
+                tokenMap[fileId] = authToken; // all files use the same token
+            });
+            return tokenMap;
+        };
+
         return new Promise((resolve) => {
             if (typeof token === 'function') {
                 // Token may be a function that returns a promise
-                token(ids).then((tokenMap) => {
-                    // Iterate over all the requested file ids
-                    // and make sure we got them back otherwise
-                    // throw and error about missing tokens
-                    ids.forEach((fileId) => {
-                        if (!tokenMap[fileId]) {
-                            throw error;
-                        }
-                    });
-                    resolve(tokenMap);
+                token(ids).then((tokens) => {
+                    // Resolved tokens can either be a map of { id: token }
+                    // or it can just be a single string token that applies
+                    // to all the files irrespective of the id.
+                    if (typeof tokens === 'string') {
+                        // String token which is the same for all files
+                        resolve(tokenMapCreator(tokens));
+                    } else {
+                        // Iterate over all the requested file ids
+                        // and make sure we got them back otherwise
+                        // throw and error about missing tokens
+                        ids.forEach((fileId) => {
+                            if (!tokens[fileId]) {
+                                throw error;
+                            }
+                        });
+                        resolve(tokens);
+                    }
                 });
             } else {
                 // Token may just be a string, create a map
                 // from id to token to normalize. In this case
                 // the value is going to be the same for all files
-                const tokenMap = {};
-                ids.forEach((fileId) => {
-                    tokenMap[fileId] = token;
-                });
-                resolve(tokenMap);
+                resolve(tokenMapCreator(token));
             }
         });
     }

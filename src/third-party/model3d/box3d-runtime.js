@@ -13358,7 +13358,7 @@
 	        });
 	      }, this);
 
-	      promise.then(function () {
+	      return promise.then(function () {
 	        callback();
 	      }, callback).catch(callback);
 	    }

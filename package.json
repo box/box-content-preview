@@ -1,6 +1,6 @@
 {
   "name": "preview",
-  "version": "0.46.0",
+  "version": "0.47.0",
   "description": "Preview Client Library",
   "author": "Preview",
   "repository": {
@@ -24,7 +24,7 @@
     "css-loader": "^0.23.1",
     "deepmerge": "^0.2.10",
     "es6-promise": "^3.1.2",
-    "eslint": "^2.2.0",
+    "eslint": "2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "eslint-plugin-babel": "^3.1.0",
     "eslint-plugin-react": "^4.1.0",
@@ -88,10 +88,9 @@
     "clean": "rm -rf dist && rm -rf reports && rm -rf src/i18n/json",
     "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
     "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
-    "lint": "./node_modules/.bin/eslint src",
+    "lint": "./node_modules/.bin/eslint src/lib",
     "eslint": "./build/pre-commit.sh",
-    "eslint-ci": "./build/eslint-ci.sh",
-    "build": "npm run eslint && npm run clean && npm run build-rb && npm run dev",
-    "release": "npm run eslint-ci && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"
+    "build": "npm run lint && npm run clean && npm run build-rb && npm run dev",
+    "release": "npm run lint && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"
   }
 }

@@ -162,6 +162,9 @@ class Box3D extends Base {
      */
     @autobind
     handleSceneLoaded() {
+        if (this.controls) {
+            this.controls.addUi();
+        }
         this.emit(EVENT_LOAD);
         this.loaded = true;
     }

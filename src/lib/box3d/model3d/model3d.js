@@ -1,5 +1,3 @@
-'use strict';
-
 import './model3d.scss';
 import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
@@ -20,7 +18,7 @@ import {
     EVENT_RESET_SCENE_DEFAULTS
 } from './model3d-constants';
 
-let Box = global.Box || {};
+const Box = global.Box || {};
 
 const MISSING_MAX = 4;
 
@@ -74,7 +72,8 @@ class Model3d extends Box3D {
 
         if (this.controls) {
             this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
-            this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+            this.settings.on(EVENT_SET_RENDER_MODE, this.handleSettingsSetRenderMode);
+            this.settings.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             // UI Closing events
             this.controls.on(EVENT_CLOSE_SETTINGS_UI, this.handleCloseSettingUi);
             this.settings.on(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseRenderUi);
@@ -91,7 +90,8 @@ class Model3d extends Box3D {
 
         if (this.controls) {
             this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
-            this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+            this.settings.removeListener(EVENT_SET_RENDER_MODE, this.handleSettingsSetRenderMode);
+            this.settings.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             // UI Closing events
             this.controls.removeListener(EVENT_CLOSE_SETTINGS_UI, this.handleCloseSettingUi);
             this.settings.removeListener(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseRenderUi);
@@ -158,12 +158,12 @@ class Model3d extends Box3D {
     handleMissingAsset(data) {
         this.missingAssets = this.missingAssets || [];
 
-        //only store MISSING_MAX missing assets
+        // Only store MISSING_MAX missing assets
         if (Object.keys(this.missingAssets).length >= MISSING_MAX) {
             return;
         }
 
-        //storing in a dictionary due to progressive texture loading using the same name for different resolutions
+        // Storing in a dictionary due to progressive texture loading using the same name for different resolutions
         const key = data.fileName || data.assetName;
         this.missingAssets[key] = this.missingAssets[key] || data;
     }
@@ -200,37 +200,57 @@ class Model3d extends Box3D {
         // Get scene defaults for up/forward axes, and render mode
         this.boxSdk.getMetadataClient().get(this.options.file.id, 'global', 'box3d')
             .then((resp) => {
-
                 if (resp.status !== 200) {
-                    throw new Error('Error loading template for ' + this.options.file.id);
+                    throw new Error(`Error loading template for ${this.options.file.id}`);
                 }
 
-                let defaults = resp.response;
+                super.handleSceneLoaded();
+
+                const defaults = resp.response;
 
                 this.axes.up = defaults.upAxis;
                 this.axes.forward = defaults.forwardAxis;
+                this.renderMode = defaults.defaultRenderMode;
+                this.projection = defaults.cameraProjection;
+
+                this.settings.addUi();
 
                 this.handleRotationAxisSet(defaults.upAxis, defaults.forwardAxis, false);
-                this.handleSetRenderMode(defaults.defaultRenderMode);
-                super.handleSceneLoaded();
+
+                // Update settings ui
+                this.settings.setDefaultRenderMode(defaults.defaultRenderMode);
+                this.settings.setDefaultProjection(defaults.cameraProjection);
+
+                // Update renderer
+                this.handleSetCameraProjection(defaults.cameraProjection);
+
+                // Update controls ui
+                this.controls.handleSetRenderMode(defaults.defaultRenderMode);
             })
-            .catch((err) => {
+            .catch((error) => {
                 super.handleSceneLoaded();
-                console.error(err);
+                /* eslint-disable no-console */
+                console.error(error);
+                /* eslint-enable no-console */
             });
     }
 
     /**
      * Handle a scene save. Save defaults to metadata
      * @param {string} renderMode The default render mode to save
+     * @param {string} projection The default projection to save
      * @returns {void}
      */
     @autobind
-    handleSceneSave(renderMode) {
-        const metadata = this.boxSdk.getMetadataClient(),
-            operations = [];
+    handleSceneSave(renderMode, projection) {
+        const metadata = this.boxSdk.getMetadataClient();
+        const operations = [];
 
         operations.push(metadata.createOperation('replace', '/defaultRenderMode', renderMode));
+        operations.push(metadata.createOperation('replace', '/cameraProjection', projection));
+
+        this.renderMode = renderMode;
+        this.projection = projection;
 
         this.renderer.getAxes().then((axes) => {
             operations.push(metadata.createOperation('replace', '/upAxis', axes.up));
@@ -257,13 +277,32 @@ class Model3d extends Box3D {
     }
 
     /**
+     * @inheritdoc
+     */
+    handleReset() {
+        super.handleReset();
+        this.settings.setDefaultProjection(this.projection);
+        this.controls.handleSetRenderMode(this.renderMode);
+    }
+
+    /**
      *  Handle set render mode event
-     * @param  {string} mode The selected render mode string
+     * @param  {String} mode The selected render mode string
      * @returns {void}
      */
     @autobind
     handleSetRenderMode(mode) {
         this.renderer.setRenderMode(mode);
+    }
+
+    /**
+     * Handle a render mode set coming from the settings panel
+     * @param {String} renderMode The render mode to change to
+     * @returns {void}
+     */
+    @autobind
+    handleSettingsSetRenderMode(renderMode) {
+        this.controls.handleSetRenderMode(renderMode);
     }
 
     /**

@@ -1,6 +1,4 @@
 /* global Box3D, Box3DResourceLoader */
-'use strict';
-
 import EventEmitter from 'events';
 import Cache from '../cache';
 import {
@@ -92,7 +90,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {Box3DEntity} The camera instance
      */
     getCamera() {
-        let scene = this.getScene();
+        const scene = this.getScene();
         return scene ? scene.getChildById('CAMERA_ID') : null;
     }
 
@@ -102,8 +100,8 @@ class Box3DRenderer extends EventEmitter {
      * @returns {float} Aspect ratio of the preview area
      */
     getAspect() {
-        const width = this.containerEl.clientWidth,
-            height = this.containerEl.clientHeight;
+        const width = this.containerEl.clientWidth;
+        const height = this.containerEl.clientHeight;
         return width / height;
     }
 
@@ -126,9 +124,6 @@ class Box3DRenderer extends EventEmitter {
      * @returns {Promise} A promise that resolves with the created/cached box3d
      */
     initBox3d(options) {
-        let resourceLoader,
-        opts = {};
-
         // Initialize global modules.
         if (!Box3D) {
             return Promise.reject(new Error('Missing Box3D'));
@@ -142,11 +137,15 @@ class Box3DRenderer extends EventEmitter {
             return Promise.reject(new Error('Missing file version'));
         }
 
-        opts.token = options.token;
-        opts.apiBase = options.api;
-        opts.parentId = options.file.parent ? options.file.parent.id : null;
-        opts.boxSdk = this.boxSdk;
-        resourceLoader = new Box3DResourceLoader(options.file.id, options.file.file_version.id, opts);
+        const opts = {
+            token: options.token,
+            apiBase: options.api,
+            parentId: options.file.parent ? options.file.parent.id : null,
+            boxSdk: this.boxSdk
+        };
+
+        const resourceLoader = new Box3DResourceLoader(options.file.id, options.file.file_version.id, opts);
+
 
         return this.createBox3d(resourceLoader, options);
     }
@@ -177,12 +176,13 @@ class Box3DRenderer extends EventEmitter {
                 inputSettings: options.inputSettings || INPUT_SETTINGS,
                 resourceLoader
             }, () => {
-                let app = this.box3d.assetRegistry.getAssetById('APP_ASSET_ID');
+                const app = this.box3d.assetRegistry.getAssetById('APP_ASSET_ID');
                 app.load(() => {
                     Cache.set(CACHE_KEY_BOX3D, this.box3d);
                     resolve(this.box3d);
                 });
-            });
+            })
+            .catch(reject);
         });
     }
 

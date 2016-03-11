@@ -1,20 +1,7 @@
 /* global Box3D, Box3DResourceLoader */
-'use strict';
-
 import Box3DRenderer from '../box3d-renderer';
 
 class Video360Renderer extends Box3DRenderer {
-
-    /**
-     * Base class that handles creation of and communication with Box3DRuntime
-     * @constructor
-     * @param {HTMLElement} containerEl the container element
-     * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
-     * @returns {Image360Renderer} Image360Renderer instance
-     */
-    constructor(containerEl, boxSdk) {
-        super();
-    }
 
     /**
      * Enable the VR system (HMD)
@@ -36,17 +23,17 @@ class Video360Renderer extends Box3DRenderer {
         if (!this.rightEyeScene) {
             const box3d = this.renderer.box3d;
             const scene = box3d.getEntityById('SCENE_ID');
-            this.rightEyeScene = scene.clone({id: 'SCENE_ID_RIGHT_EYE'});
+            this.rightEyeScene = scene.clone({ id: 'SCENE_ID_RIGHT_EYE' });
             this.rightEyeCamera = this.rightEyeScene.getObjectByType('camera');
         }
         const renderViewId = 'render_view_component';
-        let renderViewComponent = camera.getComponentByScriptId(renderViewComponent);
+        let renderViewComponent = camera.getComponentByScriptId(renderViewId);
         renderViewComponent.setViewport(0, 0, '50%', '100%');
         renderViewComponent = this.rightEyeCamera.getComponentByScriptId(renderViewComponent);
         renderViewComponent.setViewport('50%', 0, '50%', '100%');
         renderViewComponent.enable();
 
-        let skyboxComponent = this.rightEyeScene.getComponentByScriptId('skybox_renderer');
+        const skyboxComponent = this.rightEyeScene.getComponentByScriptId('skybox_renderer');
         skyboxComponent.leftEye = false;
         skyboxComponent.setTexture('VIDEO_TEX_ID');
     }
@@ -63,6 +50,7 @@ class Video360Renderer extends Box3DRenderer {
 
         super.disableVr();
         const renderViewId = 'render_view_component';
+        const camera = this.getCamera();
         let renderViewComponent = camera.getComponentByScriptId(renderViewId);
         renderViewComponent.setViewport(0, 0, '100%', '100%');
         renderViewComponent = this.rightEyeCamera.getComponentByScriptId(renderViewId);
@@ -75,11 +63,10 @@ class Video360Renderer extends Box3DRenderer {
     enableCameraControls() {
         const camControllerId = 'orbit_camera_controller';
         const camera = this.getCamera();
-        const cameraControls = camera.getComponentByScriptId(camControllerId);
+        let cameraControls = camera.getComponentByScriptId(camControllerId);
         cameraControls.enable();
         if (this.rightEyeCamera) {
-            const cameraControls =
-                this.rightEyeCamera.getComponentByScriptId(camControllerId);
+            cameraControls = this.rightEyeCamera.getComponentByScriptId(camControllerId);
             if (cameraControls) {
                 cameraControls.enable();
             }
@@ -92,11 +79,10 @@ class Video360Renderer extends Box3DRenderer {
     disableCameraControls() {
         const camControllerId = 'orbit_camera_controller';
         const camera = this.getCamera();
-        const cameraControls = camera.getComponentByScriptId(camControllerId);
+        let cameraControls = camera.getComponentByScriptId(camControllerId);
         cameraControls.disable();
         if (this.rightEyeCamera) {
-            const cameraControls =
-                this.rightEyeCamera.getComponentByScriptId(camControllerId);
+            cameraControls = this.rightEyeCamera.getComponentByScriptId(camControllerId);
             if (cameraControls) {
                 cameraControls.disable();
             }
@@ -104,4 +90,4 @@ class Video360Renderer extends Box3DRenderer {
     }
 }
 
-export default Box3DRenderer;
+export default Video360Renderer;

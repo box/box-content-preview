@@ -1,5 +1,4 @@
-'use strict';
-
+/* global BoxSDK */
 import './video360.scss';
 import autobind from 'autobind-decorator';
 import Dash from '../../media/dash';
@@ -77,7 +76,7 @@ class Video360 extends Dash {
                 super.loadedmetadataHandler();
                 this.renderer.enableVrIfPresent();
                 this.createControls();
-        });
+            });
     }
 
     /**
@@ -131,15 +130,16 @@ class Video360 extends Dash {
                 filtering: 'Linear',
                 uMapping: 'Clamp',
                 vMapping: 'Clamp',
-                querySelector: '.' + this.mediaContainerEl.className + ' video'
+                querySelector: `.${this.mediaContainerEl.className} video`
             }
         });
         return new Promise((resolve, reject) => {
-            this.textureAsset.load((texAsset) => {
+            this.textureAsset.load(() => {
                 skybox.setSkyboxTexture(this.textureAsset.id);
                 skybox.enable();
                 resolve();
-            });
+            })
+            .catch(reject);
         });
     }
 

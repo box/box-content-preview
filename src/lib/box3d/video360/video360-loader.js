@@ -1,22 +1,20 @@
-'use strict';
-
 import AssetLoader from '../../asset-loader';
 
 const STATIC_URI = 'third-party/';
-const VIDEO_FORMATS = [ '3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv' ];
+const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
 
 const VIEWERS = [
     {
         REPRESENTATION: 'dash',
         EXTENSIONS: VIDEO_FORMATS,
         SCRIPTS: [
-            STATIC_URI + 'media/shaka-player.js',
-            STATIC_URI + 'model3d/boxsdk.js',
-            STATIC_URI + 'model3d/box3d-resource-loader.js',
-            STATIC_URI + 'model3d/box3d-runtime.js',
+            `${STATIC_URI}media/shaka-player.js`,
+            `${STATIC_URI}model3d/boxsdk.js`,
+            `${STATIC_URI}model3d/box3d-resource-loader.js`,
+            `${STATIC_URI}model3d/box3d-runtime.js`,
             'video360.js'
         ],
-        STYLESHEETS: [ 'dash.css', 'video360.css' ],
+        STYLESHEETS: ['dash.css', 'video360.css'],
         CONSTRUCTOR: 'Video360',
         PREFETCH: 'xhr',
         REQUIRED_REPRESENTATIONS: [
