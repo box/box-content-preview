@@ -48,7 +48,7 @@ class Video360Controls extends EventEmitter {
 
         // Create the button to toggle back to 2D viewing
         this.toggle2dButton = mediaControlsEl.appendChild(document.createElement('button'));
-        this.toggle2dButton.classList.add('box-preview-media-controls-btn', 'box-preview-media-controls-2d');
+        this.toggle2dButton.classList.add('box-preview-media-controls-btn', 'box-preview-media-controls-2d', 'no-user-highlight');
         this.toggle2dButton.title = 'Switch to 2D Viewer';
         const toggle2dButtonSpan = this.toggle2dButton.appendChild(document.createElement('span'));
         toggle2dButtonSpan.classList.add('switch-2d');

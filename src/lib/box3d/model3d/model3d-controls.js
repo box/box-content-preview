@@ -105,7 +105,10 @@ class Model3dControls extends Box3DControls {
         /*eslint-disable*/
         renderModeDescriptor.el = renderModeItem;
         /*eslint-enable*/
-        const onRenderModeChange = this.handleSetRenderMode.bind(this, renderModeDescriptor);
+        const onRenderModeChange = () => {
+            this.handleCloseUi();
+            this.handleSetRenderMode(renderModeDescriptor);
+        };
 
         this.registerUiItem(className, renderModeItem, 'click', onRenderModeChange);
 
@@ -145,9 +148,9 @@ class Model3dControls extends Box3DControls {
             mode = this.getModeByName(renderMode);
         }
 
-        renderMode.el.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
-        this.renderModeCurrent = renderMode.key;
-        this.emit(EVENT_SET_RENDER_MODE, renderMode.name);
+        mode.el.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
+        this.renderModeCurrent = mode.key;
+        this.emit(EVENT_SET_RENDER_MODE, mode.name);
     }
 
     /**
