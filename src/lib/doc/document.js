@@ -124,10 +124,6 @@ class Document extends DocBase {
                 this.annotator.addPointAnnotationHandler, '', 'P');
         }
 
-        this.controls.add(__('rotate_left'), () => {
-            this.rotateLeft();
-        }, 'box-preview-doc-rotate-left-icon');
-
         this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
     }
 
