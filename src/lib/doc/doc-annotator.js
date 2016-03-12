@@ -2,7 +2,6 @@ import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
 import Annotator from '../annotation/annotator';
 import Browser from '../browser';
-import { ICON_DELETE } from '../icons/icons';
 import rangy from 'rangy';
 /* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
@@ -10,6 +9,9 @@ import rangyClassApplier from 'rangy/lib/rangy-classapplier';
 import rangyHighlight from 'rangy/lib/rangy-highlighter';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
+
+import { CLASS_HIDDEN } from '../constants';
+import { ICON_DELETE } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
@@ -416,7 +418,7 @@ class DocAnnotator extends Annotator {
                     this.drawHighlightAnnotationsOnPage(pageNum);
 
                     // Hide button
-                    removeHighlightButtonEl.classList.add('hidden');
+                    removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
                 });
             });
 
@@ -436,7 +438,7 @@ class DocAnnotator extends Annotator {
         removeHighlightButtonEl.style.top = `${upperRightY - 50}px`;
         removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
         removeHighlightButtonEl.setAttribute('data-page', page);
-        removeHighlightButtonEl.classList.remove('hidden');
+        removeHighlightButtonEl.classList.remove(CLASS_HIDDEN);
     }
 
     /**
@@ -447,7 +449,7 @@ class DocAnnotator extends Annotator {
     hideRemoveHighlightButton() {
         const removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
         if (removeHighlightButtonEl) {
-            removeHighlightButtonEl.classList.add('hidden');
+            removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
         }
     }
 
@@ -474,6 +476,10 @@ class DocAnnotator extends Annotator {
 
         const pageEl = document.querySelector(`[data-page-number="${page}"]`);
         const canvasEl = pageEl.querySelector('.box-preview-annotation-layer');
+        if (!canvasEl) {
+            return '';
+        }
+
         const canvasDimensions = canvasEl.getBoundingClientRect();
         const pageHeight = canvasDimensions.height;
 
@@ -835,7 +841,7 @@ class DocAnnotator extends Annotator {
                         <button class="btn-plain add-reply-btn">
                             <span>+ Add Reply</span>
                         </button>
-                        <div class="reply-container hidden">
+                        <div class="reply-container box-preview-is-hidden">
                             <textarea class="reply annotation-textarea"></textarea>
                             <div class="button-container">
                                 <button class="btn cancel-annotation-btn">
@@ -869,7 +875,7 @@ class DocAnnotator extends Annotator {
                         <div class="comment-date">${created}</div>
                         <div class="comment-text">${text}</div>
                     </div>
-                    <div class="delete-confirmation hidden">
+                    <div class="delete-confirmation box-preview-is-hidden">
                         <div class="delete-confirmation-message">Delete this annotation?</div>
                         <div class="button-container">
                             <button class="btn cancel-delete-btn">
@@ -896,7 +902,7 @@ class DocAnnotator extends Annotator {
                 this.addEventHandler(deleteButtonEl, (event) => {
                     event.stopPropagation();
 
-                    deleteConfirmationEl.classList.remove('hidden');
+                    deleteConfirmationEl.classList.remove(CLASS_HIDDEN);
                     cancelDeleteButtonEl.focus();
                 });
 
@@ -904,7 +910,7 @@ class DocAnnotator extends Annotator {
                 this.addEventHandler(cancelDeleteButtonEl, (event) => {
                     event.stopPropagation();
 
-                    deleteConfirmationEl.classList.add('hidden');
+                    deleteConfirmationEl.classList.add(CLASS_HIDDEN);
                     deleteButtonEl.focus();
                 });
 
@@ -970,8 +976,8 @@ class DocAnnotator extends Annotator {
             // Clicking '+ Add Reply' to initiate adding a reply annotation
             this.addEventHandler(replyButtonEl, () => {
                 event.stopPropagation();
-                replyButtonEl.classList.add('hidden');
-                replyContainerEl.classList.remove('hidden');
+                replyButtonEl.classList.add(CLASS_HIDDEN);
+                replyContainerEl.classList.remove(CLASS_HIDDEN);
 
                 replyTextEl.value = '';
                 replyTextEl.focus();
@@ -980,15 +986,15 @@ class DocAnnotator extends Annotator {
             // Clicking 'Cancel' to cancel adding a reply annotation
             this.addEventHandler(cancelButtonEl, () => {
                 event.stopPropagation();
-                replyButtonEl.classList.remove('hidden');
-                replyContainerEl.classList.add('hidden');
+                replyButtonEl.classList.remove(CLASS_HIDDEN);
+                replyContainerEl.classList.add(CLASS_HIDDEN);
             });
 
             // Clicking 'Post' to add a reply annotation
             this.addEventHandler(postButtonEl, () => {
                 event.stopPropagation();
-                replyButtonEl.classList.remove('hidden');
-                replyContainerEl.classList.add('hidden');
+                replyButtonEl.classList.remove(CLASS_HIDDEN);
+                replyContainerEl.classList.add(CLASS_HIDDEN);
 
                 const newAnnotation = Annotation.copy(firstAnnotation, {
                     text: replyTextEl.value.trim(),
