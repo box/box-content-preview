@@ -33,6 +33,47 @@ import {
     ROTATION_STEP
 } from './model3d-constants';
 
+// For registering events on elements
+const RENDER_MODES = [
+    {
+        text: RENDER_MODE_LIT,
+        callback: 'handleDefaultRenderModeSelected',
+        args: [RENDER_MODE_LIT]
+    }, {
+        text: RENDER_MODE_UNLIT,
+        callback: 'handleDefaultRenderModeSelected',
+        args: [RENDER_MODE_UNLIT]
+    }, {
+        text: RENDER_MODE_NORMALS,
+        callback: 'handleDefaultRenderModeSelected',
+        args: [RENDER_MODE_NORMALS]
+    }, {
+        text: RENDER_MODE_WIRE,
+        callback: 'handleDefaultRenderModeSelected',
+        args: [RENDER_MODE_WIRE]
+    }, {
+        text: RENDER_MODE_UNTEXTURED_WIRE,
+        callback: 'handleDefaultRenderModeSelected',
+        args: [RENDER_MODE_UNTEXTURED_WIRE]
+    }, {
+        text: RENDER_MODE_UV,
+        callback: 'handleDefaultRenderModeSelected',
+        args: [RENDER_MODE_UV]
+    }
+];
+
+const PROJECTION_MODES = [
+    {
+        text: 'Perspective',
+        callback: 'handleCameraProjectionSelected',
+        args: [CAMERA_PROJECTION_PERSPECTIVE]
+    }, {
+        text: 'Orthographic',
+        callback: 'handleCameraProjectionSelected',
+        args: [CAMERA_PROJECTION_ORTHOGRAPHIC]
+    }
+];
+
 /**
  * Model3dSettings
  * This class handles the UI for the 3D model settings. This includes editing of
@@ -75,15 +116,13 @@ class Model3dSettings extends Box3DControls {
         this.el.appendChild(this.wrapperEl);
 
         // The cog and clickable container
-        this.settingsButtonEl = document.createElement('div');
-        this.settingsButtonEl.classList.add(CSS_CLASS_SETTINGS_BUTTON);
-        this.wrapperEl.appendChild(this.settingsButtonEl);
+        this.settingsButtonEl = this.createSettingsWidgetButton('box-preview-icon-cog', 'settings_cog',
+            () => {
+                this.handleToggleSettingsPanel();
+                this.handleSettingsClick();
+            });
 
-        const cog = document.createElement('span');
-        cog.classList.add('box-preview-icon-cog');
-        this.registerUiItem('settings_cog', cog, 'click', this.handleToggleSettingsPanel);
-        this.registerUiItem('settings_cog', cog, 'click', this.handleSettingsClick);
-        this.settingsButtonEl.appendChild(cog);
+        this.wrapperEl.appendChild(this.settingsButtonEl);
 
         // Settings panel
         this.settingsPanelEl = document.createElement('div');
@@ -92,94 +131,100 @@ class Model3dSettings extends Box3DControls {
         this.registerUiItem('settings_panel', this.settingsPanelEl);
         this.settingsButtonEl.appendChild(this.settingsPanelEl);
 
-        const renderModes = [
-            {
-                text: RENDER_MODE_LIT,
-                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_LIT)
-            }, {
-                text: RENDER_MODE_UNLIT,
-                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_UNLIT)
-            }, {
-                text: RENDER_MODE_NORMALS,
-                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_NORMALS)
-            }, {
-                text: RENDER_MODE_WIRE,
-                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_WIRE)
-            }, {
-                text: RENDER_MODE_UNTEXTURED_WIRE,
-                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_UNTEXTURED_WIRE)
-            }, {
-                text: RENDER_MODE_UV,
-                callback: this.handleDefaultRenderModeSelected.bind(this, RENDER_MODE_UV)
-            }
-        ];
-
         const renderPanelRowEl = this.createSettingsDropdown('Default Render Mode',
-            'Lit', renderModes);
-
+            'Lit', RENDER_MODES);
         this.renderModeEl = renderPanelRowEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
         this.settingsPanelEl.appendChild(renderPanelRowEl);
 
-        const projectionModes = [
-            {
-                text: 'Perspective',
-                callback: this.handleCameraProjectionSelected.bind(this, CAMERA_PROJECTION_PERSPECTIVE)
-            }, {
-                text: 'Orthographic',
-                callback: this.handleCameraProjectionSelected.bind(this, CAMERA_PROJECTION_ORTHOGRAPHIC)
-            }
-        ];
-
         const projectionPanelRowEl = this.createSettingsDropdown('Default Projection',
-            'Perspective', projectionModes);
+            'Perspective', PROJECTION_MODES);
         this.projectionModeEl = projectionPanelRowEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
         this.settingsPanelEl.appendChild(projectionPanelRowEl);
 
         // Rotation Axis buttons
-        const rotationAxisRowEl = this.createSettingsRow('Rotation Axis');
+        const rotationAxisRowEl = this.createAxisWidget();
+        this.settingsPanelEl.appendChild(rotationAxisRowEl);
+
+        // Save and reset buttons
+        // #TODO @jholdstock: disable save and revert buttons if not an editor
+        const saveButtonsPanelRowEl = this.createSaveButtons();
+        this.settingsPanelEl.appendChild(saveButtonsPanelRowEl);
+
+        // Add event for hiding UI if anything but the panel is selected
+        this.addListener(EVENT_CLOSE_SETTINGS_UI, this.handleHideUi);
+
+        this.handleSelectOrientationY();
+    }
+
+    /**
+     * Create a button that goes in the settings widget, on the bottom right of the screen
+     * @param {String} iconClass The CSS class to use for the icon in the clickable element
+     * @param {String} buttonUid A unique id for the element, for registering events
+     * @param {Function} clickCallback The function to call on click of the icon
+     * @returns {HtmlElement} A button formatted for use in the settings widget
+     */
+    createSettingsWidgetButton(iconClass, buttonUid, clickCallback) {
+        const widgetButtonEl = document.createElement('div');
+        widgetButtonEl.classList.add(CSS_CLASS_SETTINGS_BUTTON);
+
+        const icon = document.createElement('span');
+        icon.classList.add(iconClass);
+        this.registerUiItem(buttonUid, icon, 'click', clickCallback);
+        widgetButtonEl.appendChild(icon);
+
+        return widgetButtonEl;
+    }
+
+    /**
+     * Create the axis widget
+     * @returns {HtmlElement} The newly created axis widget
+     */
+    createAxisWidget() {
+        const axisRowEl = this.createSettingsRow('Rotation Axis');
 
         const leftArrowEl = this.createOrientationArrow('left', this.handleRotateNegative);
         leftArrowEl.classList.add('box-preview-orientation-prev');
-        rotationAxisRowEl.appendChild(leftArrowEl);
+        axisRowEl.appendChild(leftArrowEl);
 
         const axisButtonsEl = document.createElement('ul');
         axisButtonsEl.classList.add('box-preview-orientation-selector', CSS_CLASS_SETTINGS_PANEL_BUTTON);
 
         const xAxisEl = this.createOrientationAxis('x', this.handleSelectOrientationX);
         this.orientationXButton = xAxisEl;
+        axisButtonsEl.appendChild(xAxisEl);
+
         const yAxisEl = this.createOrientationAxis('y', this.handleSelectOrientationY);
-        yAxisEl.classList.add(CSS_CLASS_CURRENT_AXIS);
         this.orientationYButton = yAxisEl;
-        this.currentAxisEl = yAxisEl;
+        axisButtonsEl.appendChild(yAxisEl);
+
         const zAxisEl = this.createOrientationAxis('z', this.handleSelectOrientationZ);
         this.orientationZButton = zAxisEl;
-
-        axisButtonsEl.appendChild(xAxisEl);
-        axisButtonsEl.appendChild(yAxisEl);
         axisButtonsEl.appendChild(zAxisEl);
 
-        rotationAxisRowEl.appendChild(axisButtonsEl);
+        axisRowEl.appendChild(axisButtonsEl);
 
         const rightArrowEl = this.createOrientationArrow('right', this.handleRotatePositive);
         rightArrowEl.classList.add('box-preview-orientation-next');
-        rotationAxisRowEl.appendChild(rightArrowEl);
+        axisRowEl.appendChild(rightArrowEl);
 
-        this.settingsPanelEl.appendChild(rotationAxisRowEl);
+        return axisRowEl;
+    }
 
-        // Save and reset buttons
-        const saveButtonsPanelRowEl = this.createSettingsRow();
+    /**
+     * Create a row of save buttons
+     * @returns {HtmlElement} A row elment with save/revert buttons
+     */
+    createSaveButtons() {
+        const saveButtonRowEl = this.createSettingsRow();
 
         const saveButtonEl = this.createSettingsButton('Save', this.saveSceneDefaults);
         saveButtonEl.classList.add('box-preview-settings-save-btn');
-        saveButtonsPanelRowEl.appendChild(saveButtonEl);
+        saveButtonRowEl.appendChild(saveButtonEl);
 
         const resetButtonEl = this.createSettingsButton('Reset', this.resetSceneDefaults);
-        saveButtonsPanelRowEl.appendChild(resetButtonEl);
+        saveButtonRowEl.appendChild(resetButtonEl);
 
-        this.settingsPanelEl.appendChild(saveButtonsPanelRowEl);
-
-        // Add event for hiding UI if anything but the panel is selected
-        this.addListener(EVENT_CLOSE_SETTINGS_UI, this.handleHideUi);
+        return saveButtonRowEl;
     }
 
     /**
@@ -260,8 +305,13 @@ class Model3dSettings extends Box3DControls {
                 listLabelEl.textContent = text;
             });
 
-            if (listContent[i].callback) {
-                this.registerUiItem(labelId, listItemEl, 'click', listContent[i].callback);
+            let callback = listContent[i].callback;
+            // Callbacks come as a string OR a function
+            if (callback) {
+                if (typeof callback === 'string' && this[callback]) {
+                    callback = this[callback].bind(this, ...listContent[i].args);
+                }
+                this.registerUiItem(labelId, listItemEl, 'click', callback);
             }
 
             dropdownEl.appendChild(listItemEl);
@@ -404,7 +454,9 @@ class Model3dSettings extends Box3DControls {
      * @returns {void}
      */
     setCurrentRotationAxis(axisKey, el) {
-        this.currentAxisEl.classList.remove(CSS_CLASS_CURRENT_AXIS);
+        if (this.currentAxisEl) {
+            this.currentAxisEl.classList.remove(CSS_CLASS_CURRENT_AXIS);
+        }
         el.classList.add(CSS_CLASS_CURRENT_AXIS);
         this.currentAxis = axisKey;
         this.currentAxisEl = el;
