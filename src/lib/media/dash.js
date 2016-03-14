@@ -3,8 +3,10 @@ import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 import cache from '../cache';
 import fullscreen from '../fullscreen';
+import Browser from '../browser';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
+const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
 const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
@@ -250,8 +252,11 @@ class Dash extends VideoBase {
         this.resize();
         this.loadFilmStrip();
 
-        this.switchTo360El = this.containerEl.querySelector('.box-preview-image-switch-360-icon');
-        this.switchTo360El.addEventListener('click', this.switchTo360);
+        if (Browser.supportsBox3D()) {
+            this.switchTo360El = this.containerEl.querySelector('.box-preview-image-switch-360-icon');
+            this.switchTo360El.classList.remove(CSS_CLASS_HIDDEN);
+            this.switchTo360El.addEventListener('click', this.switchTo360);
+        }
     }
 
     /**

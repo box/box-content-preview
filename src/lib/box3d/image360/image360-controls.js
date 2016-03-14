@@ -12,7 +12,7 @@ class Image360Controls extends Box3DControls {
      */
     addUi() {
         super.addUi();
-        this.controls.add(__('view_as_2D'), this.switchTo2dViewer.bind(this), 'controls-2d', '2D');
+        this.controls.add(__('view_as_2D'), this.switchTo2dViewer.bind(this), 'box-preview-media-controls-2d box-preview-no-user-highlight', '2D');
     }
 
     /**

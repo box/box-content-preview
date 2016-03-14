@@ -1,3 +1,5 @@
+$blue-highlight: #22A7F0;
+
 .box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item {
     line-height: 45px;
     white-space: nowrap;
@@ -68,7 +70,7 @@
 }
 
 .box-preview-box3d .box-preview-settings-panel .box-preview-settings-save-btn {
-    background: #1992D4;
+    background: $blue-highlight;
 }
 
 .box-preview-box3d .box-preview-settings-panel:after {
@@ -151,6 +153,7 @@
 
 .box-preview-box3d .box-preview-default-setting-selector > ul li {
     padding: 0 18px;
+    line-height: 34px;
     cursor: pointer;
 }
 
@@ -216,6 +219,7 @@
 .box-preview-box3d .box-preview-orientation-selector li {
     float: left;
     width: 33.33%;
+    line-height: 34px;
     text-align: center;
     border-right: 1px solid #6c6c6c;
     cursor: pointer;
@@ -226,7 +230,7 @@
 }
 
 .box-preview-box3d .box-preview-orientation-selector li.box-preview-current-axis {
-    background: #2b90ef;
+    background: $blue-highlight;
     color: #fff;
 }
 

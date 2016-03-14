@@ -94,13 +94,12 @@ class Image360Renderer extends Box3DRenderer {
                 originalImage: fileProperties.extension === 'jpg' || fileProperties.fileExtension === 'png'
             }
         });
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.textureAsset.load(() => {
                 skybox.enable();
                 skybox.setSkyboxTexture(this.textureAsset.id);
                 resolve();
-            })
-            .catch(reject);
+            });
         });
     }
 

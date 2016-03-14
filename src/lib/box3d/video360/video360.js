@@ -133,13 +133,12 @@ class Video360 extends Dash {
                 querySelector: `.${this.mediaContainerEl.className} video`
             }
         });
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.textureAsset.load(() => {
                 skybox.setSkyboxTexture(this.textureAsset.id);
                 skybox.enable();
                 resolve();
-            })
-            .catch(reject);
+            });
         });
     }
 
