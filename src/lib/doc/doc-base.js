@@ -102,6 +102,12 @@ class DocBase extends Base {
     resize() {
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
+
+        // Redraw annotations if needed
+        if (this.annotator) {
+            this.annotator.setScale(this.pdfViewer.currentScale);
+            this.annotator.renderAnnotations();
+        }
     }
 
     /**

@@ -2,7 +2,6 @@ import autobind from 'autobind-decorator';
 import Annotation from '../annotation/annotation';
 import Annotator from '../annotation/annotator';
 import Browser from '../browser';
-import { ICON_DELETE } from '../icons/icons';
 import rangy from 'rangy';
 /* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
@@ -10,6 +9,9 @@ import rangyClassApplier from 'rangy/lib/rangy-classapplier';
 import rangyHighlight from 'rangy/lib/rangy-highlighter';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
+
+import { CLASS_HIDDEN } from '../constants';
+import { ICON_DELETE } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
@@ -58,11 +60,11 @@ function isPointInPolyOpt(poly, x, y) {
  * Converts coordinates in PDF space to coordinates in DOM space.
  *
  * @param {Number[]} coordinates Either a [x,y] coordinate location or
- * quad points in the format of 8xn numbers
+ * quad points in the format of 8xn numbers in PDF space
  * @param {Number} pageHeight DOM height of PDF page
- * @returns {Number[]} Either [x,y] or 8xn coordinates in DOM space.
+ * @returns {Number[]} Either [x,y] or 8xn coordinates in DOM space
  */
-function pdfSpaceToDOMSpace(coordinates, pageHeight) {
+function convertPDFSpaceToDOMSpace(coordinates, pageHeight) {
     // If input is [x, y] instead of quad points
     if (coordinates.length === 2) {
         const [x, y] = coordinates;
@@ -300,7 +302,7 @@ class DocAnnotator extends Annotator {
         const pageHeight = context.canvas.getBoundingClientRect().height;
         quadPoints.forEach((quadPoint) => {
             const scaledQuadPoint = quadPoint.map((x) => x * this.scale);
-            const DOMQuadPoint = pdfSpaceToDOMSpace(scaledQuadPoint, pageHeight);
+            const DOMQuadPoint = convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight);
             const [x1, y1, x2, y2, x3, y3, x4, y4] = DOMQuadPoint;
 
             // If annotation being drawn is the annotation the mouse is over or
@@ -416,7 +418,7 @@ class DocAnnotator extends Annotator {
                     this.drawHighlightAnnotationsOnPage(pageNum);
 
                     // Hide button
-                    removeHighlightButtonEl.classList.add('hidden');
+                    removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
                 });
             });
 
@@ -429,14 +431,14 @@ class DocAnnotator extends Annotator {
         // Create remove highlight button and position it above the upper right
         // corner of the highlight
         const pdfCoordinates = this.getUpperRightCorner(annotation.location.quadPoints, pageEl);
-        const [upperRightX, upperRightY] = pdfSpaceToDOMSpace(pdfCoordinates, pageEl.getBoundingClientRect().height);
+        const [upperRightX, upperRightY] = convertPDFSpaceToDOMSpace(pdfCoordinates, pageEl.getBoundingClientRect().height);
 
         // Position button
         removeHighlightButtonEl.style.left = `${upperRightX - 20}px`;
         removeHighlightButtonEl.style.top = `${upperRightY - 50}px`;
         removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
         removeHighlightButtonEl.setAttribute('data-page', page);
-        removeHighlightButtonEl.classList.remove('hidden');
+        removeHighlightButtonEl.classList.remove(CLASS_HIDDEN);
     }
 
     /**
@@ -447,8 +449,72 @@ class DocAnnotator extends Annotator {
     hideRemoveHighlightButton() {
         const removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
         if (removeHighlightButtonEl) {
-            removeHighlightButtonEl.classList.add('hidden');
+            removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
         }
+    }
+
+    /**
+     * Returns the highlight annotation ID of the highlight located at the
+     * specified mouse location.
+     *
+     * @param {Number} mouseX clientX of mouse event
+     * @param {Number} mouseY clientY of mouse event
+     * @param {Number} page Page of document
+     * @returns {String} Highlight annotation ID if a highlight is at the
+     * location or an empty string
+     */
+    getHighlightIDFromMousePoint(mouseX, mouseY, page) {
+        const annotations = this.annotations[page];
+        if (!Array.isArray(annotations)) {
+            return '';
+        }
+
+        const highlights = annotations.filter((annotation) => annotation.type === HIGHLIGHT_ANNOTATION_TYPE);
+        if (!highlights) {
+            return '';
+        }
+
+        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
+        const canvasEl = pageEl.querySelector('.box-preview-annotation-layer');
+        if (!canvasEl) {
+            return '';
+        }
+
+        const canvasDimensions = canvasEl.getBoundingClientRect();
+        const pageHeight = canvasDimensions.height;
+
+        // DOM coordinates with respect to the page
+        const x = mouseX - canvasDimensions.left;
+        const y = mouseY - canvasDimensions.top;
+
+        // We loop through all the annotations on this page and see if the
+        // mouse is over some annotation. We use Array.prototype.some so
+        // we can stop iterating over annotations when we've found one.
+        let hoverAnnotationID = '';
+        highlights.some((highlight) => {
+            return highlight.location.quadPoints.some((quadPoint) => {
+                const scaledQuadPoint = quadPoint.map((coordinate) => coordinate * this.scale);
+                const DOMQuadPoint = convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight);
+                const [x1, y1, x2, y2, x3, y3, x4, y4] = DOMQuadPoint;
+
+                // Check if mouse is inside a rectangle of this
+                // annotation
+                const isPointInPoly = isPointInPolyOpt([
+                    [x1, y1],
+                    [x2, y2],
+                    [x3, y3],
+                    [x4, y4]
+                ], x, y);
+
+                if (isPointInPoly) {
+                    hoverAnnotationID = highlight.annotationID;
+                }
+
+                return isPointInPoly;
+            });
+        });
+
+        return hoverAnnotationID;
     }
 
     /**
@@ -466,54 +532,10 @@ class DocAnnotator extends Annotator {
                 }
 
                 const page = pageEl.getAttribute('data-page-number');
-                const canvasEl = pageEl.querySelector('.box-preview-annotation-layer');
-                if (!canvasEl) {
-                    return;
-                }
-
-                const canvasDimensions = canvasEl.getBoundingClientRect();
-                const pageHeight = canvasDimensions.height;
-                const annotations = this.annotations[page];
-                if (!Array.isArray(annotations)) {
-                    return;
-                }
-
-                const highlights = annotations.filter((annotation) => annotation.type === HIGHLIGHT_ANNOTATION_TYPE);
-                if (!highlights) {
-                    return;
-                }
-
-                // We loop through all the annotations on this page and see if the
-                // mouse is over some annotation. We use Array.prototype.some so
-                // we can stop iterating over annotations when we've found one.
-                let hoverAnnotationID = '';
-                highlights.some((highlight) => {
-                    return highlight.location.quadPoints.some((quadPoint) => {
-                        const scaledQuadPoint = quadPoint.map((x) => x * this.scale);
-                        const DOMQuadPoint = pdfSpaceToDOMSpace(scaledQuadPoint, pageHeight);
-                        const [x1, y1, x2, y2, x3, y3, x4, y4] = DOMQuadPoint;
-                        const mouseX = event.clientX - canvasDimensions.left;
-                        const mouseY = event.clientY - canvasDimensions.top;
-
-                        // Check if mouse is inside a rectangle of this
-                        // annotation
-                        const isPointInPoly = isPointInPolyOpt([
-                            [x1, y1],
-                            [x2, y2],
-                            [x3, y3],
-                            [x4, y4]
-                        ], mouseX, mouseY);
-
-                        if (isPointInPoly) {
-                            hoverAnnotationID = highlight.annotationID;
-                        }
-
-                        return isPointInPoly;
-                    });
-                });
 
                 // Redraw annotations only if annotation we're currently over
                 // has changed
+                const hoverAnnotationID = this.getHighlightIDFromMousePoint(event.clientX, event.clientY, page);
                 if (hoverAnnotationID !== this.hoverAnnotationID) {
                     // Cache which annotation we're currently over
                     this.hoverAnnotationID = hoverAnnotationID;
@@ -541,37 +563,20 @@ class DocAnnotator extends Annotator {
         }
 
         const page = pageEl.getAttribute('data-page-number');
-        const annotations = this.annotations[page];
-        if (!Array.isArray(annotations)) {
-            return;
+        const clickedAnnotationID = this.getHighlightIDFromMousePoint(event.clientX, event.clientY, page);
+
+        // Redraw with active annotation if needed
+        if (this.activeAnnotationID !== clickedAnnotationID) {
+            this.activeAnnotationID = clickedAnnotationID;
+            this.drawHighlightAnnotationsOnPage(page);
         }
-
-        const highlights = annotations.filter((annotation) => annotation.type === HIGHLIGHT_ANNOTATION_TYPE);
-        if (!highlights) {
-            return;
-        }
-
-        // @TODO(tjin): will need to check if click is in an annotation on
-        // mobile since the hover handler isn't active there
-        // if (Browser.isMobile()) {
-        //     // check if click is in annotation
-        // }
-
-        // If we are clicking outside an annotation, unset the active annotation
-        if (!this.hoverAnnotationID || this.hoverAnnotationID === '') {
-            this.activeAnnotationID = '';
-        }
-
-        // Redraw page to show active annotation or deactivate annotation
-        this.activeAnnotationID = this.hoverAnnotationID;
-        this.drawHighlightAnnotationsOnPage(page);
 
         // Hide any existing remove highlight button
         this.hideRemoveHighlightButton();
 
         // Show remove highlight button if we clicked on an annotation
         if (this.activeAnnotationID) {
-            const highlight = highlights.find((hl) => hl.annotationID === this.activeAnnotationID);
+            const highlight = this.annotations[page].find((annotation) => annotation.annotationID === this.activeAnnotationID);
             if (highlight) {
                 this.showRemoveHighlightButton(highlight);
             }
@@ -655,14 +660,17 @@ class DocAnnotator extends Annotator {
 
         const location = annotation.location;
         const pageScale = this.scale;
-        const x = location.x * pageScale;
-        const y = location.y * pageScale;
+        const scaledX = location.x * pageScale;
+        const scaledY = location.y * pageScale;
         const page = location.page;
         const pageEl = document.querySelector(`[data-page-number="${page}"]`);
 
         pageEl.appendChild(pointAnnotationEl);
-        pointAnnotationEl.style.left = `${x - 25}px`;
-        pointAnnotationEl.style.top = `${y}px`;
+
+        // Annotation icon is 50px wide, so position it 25px to the left of
+        // the saved coordinates to center
+        pointAnnotationEl.style.left = `${scaledX - 25}px`;
+        pointAnnotationEl.style.top = `${scaledY}px`;
 
         const showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
         this.addEventHandler(showPointAnnotationButtonEl, (event) => {
@@ -713,6 +721,8 @@ class DocAnnotator extends Annotator {
             // Generate annotation parameters and location data to store
             const pageDimensions = pageEl.getBoundingClientRect();
             const page = pageEl.getAttribute('data-page-number');
+
+            // Store coordinates at 100% scale
             const pageScale = this.scale;
             const x = (e.clientX - pageDimensions.left) / pageScale;
             const y = (e.clientY - pageDimensions.top) / pageScale;
@@ -758,9 +768,7 @@ class DocAnnotator extends Annotator {
 
         // Function to clean up event handlers and close dialog
         const closeCreateDialog = () => {
-            this.removeEventHandlers(document);
-            this.removeEventHandlers(postButtonEl);
-            this.removeEventHandlers(cancelButtonEl);
+            this.removeEventHandlers(document, postButtonEl, cancelButtonEl);
             annotationDialogEl.parentNode.removeChild(annotationDialogEl);
         };
 
@@ -833,7 +841,7 @@ class DocAnnotator extends Annotator {
                         <button class="btn-plain add-reply-btn">
                             <span>+ Add Reply</span>
                         </button>
-                        <div class="reply-container hidden">
+                        <div class="reply-container box-preview-is-hidden">
                             <textarea class="reply annotation-textarea"></textarea>
                             <div class="button-container">
                                 <button class="btn cancel-annotation-btn">
@@ -867,7 +875,7 @@ class DocAnnotator extends Annotator {
                         <div class="comment-date">${created}</div>
                         <div class="comment-text">${text}</div>
                     </div>
-                    <div class="delete-confirmation hidden">
+                    <div class="delete-confirmation box-preview-is-hidden">
                         <div class="delete-confirmation-message">Delete this annotation?</div>
                         <div class="button-container">
                             <button class="btn cancel-delete-btn">
@@ -894,7 +902,7 @@ class DocAnnotator extends Annotator {
                 this.addEventHandler(deleteButtonEl, (event) => {
                     event.stopPropagation();
 
-                    deleteConfirmationEl.classList.remove('hidden');
+                    deleteConfirmationEl.classList.remove(CLASS_HIDDEN);
                     cancelDeleteButtonEl.focus();
                 });
 
@@ -902,7 +910,7 @@ class DocAnnotator extends Annotator {
                 this.addEventHandler(cancelDeleteButtonEl, (event) => {
                     event.stopPropagation();
 
-                    deleteConfirmationEl.classList.add('hidden');
+                    deleteConfirmationEl.classList.add(CLASS_HIDDEN);
                     deleteButtonEl.focus();
                 });
 
@@ -914,9 +922,7 @@ class DocAnnotator extends Annotator {
 
                     // Remove from in-memory map if it is root annotation
                     this.deleteAnnotation(annotation.annotationID, isRootAnnotation).then(() => {
-                        this.removeEventHandlers(deleteButtonEl);
-                        this.removeEventHandlers(cancelDeleteButtonEl);
-                        this.removeEventHandlers(confirmDeleteButtonEl);
+                        this.removeEventHandlers(deleteButtonEl, cancelDeleteButtonEl, confirmDeleteButtonEl);
                         annotationParentEl.removeChild(annotationEl);
 
                         // If this was the root comment in this thread, remove the whole thread
@@ -924,11 +930,7 @@ class DocAnnotator extends Annotator {
                             const replyButtonEl = annotationDialogEl.querySelector('.add-reply-btn');
                             const cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation-btn');
                             const postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn');
-                            this.removeEventHandlers(document);
-                            this.removeEventHandlers(replyButtonEl);
-                            this.removeEventHandlers(cancelButtonEl);
-                            this.removeEventHandlers(postButtonEl);
-
+                            this.removeEventHandlers(document, replyButtonEl, cancelButtonEl, postButtonEl);
                             annotationDialogEl.parentNode.removeChild(annotationDialogEl);
 
                             // Remove highlight or point element when we delete the whole thread
@@ -974,8 +976,8 @@ class DocAnnotator extends Annotator {
             // Clicking '+ Add Reply' to initiate adding a reply annotation
             this.addEventHandler(replyButtonEl, () => {
                 event.stopPropagation();
-                replyButtonEl.classList.add('hidden');
-                replyContainerEl.classList.remove('hidden');
+                replyButtonEl.classList.add(CLASS_HIDDEN);
+                replyContainerEl.classList.remove(CLASS_HIDDEN);
 
                 replyTextEl.value = '';
                 replyTextEl.focus();
@@ -984,15 +986,15 @@ class DocAnnotator extends Annotator {
             // Clicking 'Cancel' to cancel adding a reply annotation
             this.addEventHandler(cancelButtonEl, () => {
                 event.stopPropagation();
-                replyButtonEl.classList.remove('hidden');
-                replyContainerEl.classList.add('hidden');
+                replyButtonEl.classList.remove(CLASS_HIDDEN);
+                replyContainerEl.classList.add(CLASS_HIDDEN);
             });
 
             // Clicking 'Post' to add a reply annotation
             this.addEventHandler(postButtonEl, () => {
                 event.stopPropagation();
-                replyButtonEl.classList.remove('hidden');
-                replyContainerEl.classList.add('hidden');
+                replyButtonEl.classList.remove(CLASS_HIDDEN);
+                replyContainerEl.classList.add(CLASS_HIDDEN);
 
                 const newAnnotation = Annotation.copy(firstAnnotation, {
                     text: replyTextEl.value.trim(),
@@ -1013,12 +1015,8 @@ class DocAnnotator extends Annotator {
 
                 // @TODO(tjin): what about other annotation dialogs? (may not be an issue)
                 if (!findClosestElWithClass(event.target, 'box-preview-annotation-dialog')) {
-                    this.removeEventHandlers(document);
-
-                    // Remove 'reply' event handlers
-                    this.removeEventHandlers(replyButtonEl);
-                    this.removeEventHandlers(cancelButtonEl);
-                    this.removeEventHandlers(postButtonEl);
+                    // Remove this event handler and 'reply' event handlers
+                    this.removeEventHandlers(document, replyButtonEl, cancelButtonEl, postButtonEl);
 
                     // Remove 'delete' event handlers
                     if (annotationCommentsEl && annotationCommentsEl.children) {
@@ -1050,10 +1048,13 @@ class DocAnnotator extends Annotator {
         const page = locationData.page;
         const pageEl = document.querySelector(`[data-page-number="${page}"]`);
 
+        const pageScale = this.scale;
+        const scaledX = locationData.x * pageScale;
+        const scaledY = locationData.y * pageScale;
+
+        positionedDialogEl.style.left = `${scaledX - dialogWidth / 2}px`;
+        positionedDialogEl.style.top = `${scaledY}px`;
         pageEl.appendChild(dialogEl);
-        positionedDialogEl.style.left = `${(locationData.x - dialogWidth / 2)}px`;
-        positionedDialogEl.style.top = `${locationData.y}px`;
-        positionedDialogEl.style.transform = `scale(${this.scale})`;
 
         // @TODO(tjin): reposition to avoid sides
     }
@@ -1109,31 +1110,34 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Helper to remove all saved event handlers from an element.
+     * Helper to remove all saved event handlers from an element or multiple
+     * elements.
      *
-     * @param {HTMLElement} element Element to remove handlers from
+     * @param {...HTMLElement} elements Element(s) to remove handlers from
      * @returns {void}
      */
-    removeEventHandlers(element) {
-        if (!element || typeof element.removeEventListener !== 'function') {
-            return;
-        }
+    removeEventHandlers(...elements) {
+        elements.forEach((element) => {
+            if (!element || typeof element.removeEventListener !== 'function') {
+                return;
+            }
 
-        // Find the matching element and handler ref
-        const handlerIndex = this.handlerRefs.findIndex((ref) => {
-            return ref.element === element;
+            // Find the matching element and handler ref
+            const handlerIndex = this.handlerRefs.findIndex((ref) => {
+                return ref.element === element;
+            });
+            if (handlerIndex === -1) {
+                return;
+            }
+
+            // Remove all the handlers in the handler ref from the element
+            this.handlerRefs[handlerIndex].handlers.forEach((handler) => {
+                element.removeEventListener(TOUCH_EVENT, handler);
+            });
+
+            // Remove handler ref entry
+            this.handlerRefs.splice(handlerIndex, 1);
         });
-        if (handlerIndex === -1) {
-            return;
-        }
-
-        // Remove all the handlers in the handler ref from the element
-        this.handlerRefs[handlerIndex].handlers.forEach((handler) => {
-            element.removeEventListener(TOUCH_EVENT, handler);
-        });
-
-        // Remove handler ref entry
-        this.handlerRefs.splice(handlerIndex, 1);
     }
 
     /**
