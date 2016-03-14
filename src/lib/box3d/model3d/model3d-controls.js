@@ -74,8 +74,10 @@ class Model3dControls extends Box3DControls {
         super.addUi();
 
         this.renderModesSelectorEl = document.createElement('ul');
-        this.renderModesSelectorEl.classList.add('box-preview-overlay',
-            'box-preview-pullup', 'box-preview-render-mode-selector', CSS_CLASS_HIDDEN);
+        this.renderModesSelectorEl.classList.add('box-preview-overlay');
+        this.renderModesSelectorEl.classList.add('box-preview-pullup');
+        this.renderModesSelectorEl.classList.add('box-preview-render-mode-selector');
+        this.renderModesSelectorEl.classList.add(CSS_CLASS_HIDDEN);
 
         Object.keys(RENDER_MODES).forEach((mode) => {
             const renderModeEl = this.createRenderModeItem(RENDER_MODES[mode]);
@@ -101,7 +103,8 @@ class Model3dControls extends Box3DControls {
         const className = renderModeDescriptor.baseClass;
 
         const renderModeItem = document.createElement('li');
-        renderModeItem.classList.add(`box-preview-rm-${className}`, 'box-preview-rendermode-item');
+        renderModeItem.classList.add(`box-preview-rm-${className}`);
+        renderModeItem.classList.add('box-preview-rendermode-item');
         /*eslint-disable*/
         renderModeDescriptor.el = renderModeItem;
         /*eslint-enable*/
@@ -113,7 +116,8 @@ class Model3dControls extends Box3DControls {
         this.registerUiItem(className, renderModeItem, 'click', onRenderModeChange);
 
         const renderModeIcon = document.createElement('span');
-        renderModeIcon.classList.add(`box-preview-icon-rm-${className}`, 'box-preview-inline-icon');
+        renderModeIcon.classList.add(`box-preview-icon-rm-${className}`);
+        renderModeIcon.classList.add('box-preview-inline-icon');
 
         renderModeItem.appendChild(renderModeIcon);
         renderModeItem.innerHTML += renderModeDescriptor.name;
