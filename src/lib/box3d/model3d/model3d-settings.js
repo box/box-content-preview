@@ -158,18 +158,19 @@ class Model3dSettings extends Box3DControls {
 
     /**
      * Create a button that goes in the settings widget, on the bottom right of the screen
+     * @param {String} iconClass The CSS class to use for the icon in the clickable element
+     * @param {String} buttonUid A unique id for the element, for registering events
+     * @param {Function} clickCallback The function to call on click of the icon
      * @returns {HtmlElement} A button formatted for use in the settings widget
      */
     createSettingsWidgetButton(iconClass, buttonUid, clickCallback) {
-        // The cog and clickable container
         const widgetButtonEl = document.createElement('div');
         widgetButtonEl.classList.add(CSS_CLASS_SETTINGS_BUTTON);
 
-        const cog = document.createElement('span');
-        cog.classList.add(iconClass);
-        const settingCogId = buttonUid;
-        this.registerUiItem(settingCogId, cog, 'click', clickCallback);
-        widgetButtonEl.appendChild(cog);
+        const icon = document.createElement('span');
+        icon.classList.add(iconClass);
+        this.registerUiItem(buttonUid, icon, 'click', clickCallback);
+        widgetButtonEl.appendChild(icon);
 
         return widgetButtonEl;
     }
