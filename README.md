@@ -163,6 +163,12 @@ Other Methods
 
 `Box.Preview.hide(/* optional Boolean */ destroy)` hides the previewer. If destroy is true, then container's contents are also removed.
 
+`Box.Preview.updateCollection(/* Array[file ids] */ collection)` updates the collection to navigate through. Assumes the currently visible file is part of this new collection.
+
+`Box.Preview.getCurrentCollection()` returns the current collection if any.
+
+`Box.Preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [https://box-content.readme.io/reference#files](Box content API).
+
 `Box.Preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
 
 `Box.Preview.enableViewers(/* String|Array[String] */ viewers)` enables one or more viewers based on VIEWERNAME.
@@ -198,7 +204,7 @@ EVENTNAME can be one of the following
       error: 'message', // Error message if any that happened while loading the preview
       viewer: {...},    // Instance of the current viewer object, only if no error message
       metrics: {...},   // Performance metrics
-      file: {...}       // Box file object as returned by the API
+      file: {...}       // Box file object as returned by the [https://box-content.readme.io/reference#files](Box content API)
   }
 ```
 * `navigate` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event happens.
