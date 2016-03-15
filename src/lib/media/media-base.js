@@ -42,7 +42,7 @@ class MediaBase extends Base {
             this.mediaControls.destroy();
         }
 
-        // Try catch is needed due to wierd behavior when src is removed
+        // Try catch is needed due to weird behavior when src is removed
         try {
             if (this.mediaEl) {
                 this.mediaEl.removeEventListener('timeupdate', this.setTimeCode);
@@ -267,6 +267,7 @@ class MediaBase extends Base {
      * @returns {void}
      */
     resetPlayIcon() {
+        this.containerEl.classList.add(CLASS_PREVIEW_LOADED);
         if (this.mediaControls) {
             this.mediaControls.setTimeCode(0);
         }
