@@ -425,10 +425,10 @@ class MediaControls extends EventEmitter {
             }
         };
 
-        const repStatus = new RepStatus();
-        repStatus.status(representation, {
-            authorization: `Bearer ${token}`
-        }).then(this.setFilmstrip);
+        const repStatus = new RepStatus(representation, {
+            Authorization: `Bearer ${token}`
+        });
+        repStatus.success().then(this.setFilmstrip);
     }
 
     /**

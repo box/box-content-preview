@@ -1,4 +1,5 @@
 import autobind from 'autobind-decorator';
+
 import {
     createContentUrl,
     prefetchAssets,
@@ -73,6 +74,19 @@ class AssetLoader {
      */
     determineRepresentation(file, viewer) {
         return file.representations.entries.find((entry) => viewer.REPRESENTATION === entry.representation);
+    }
+
+    /**
+     * Polls info endpoint and waits for status success
+     * from conversion when file is not ready
+     *
+     * @public
+     * @param {RepStatus} instance of rep status
+     * @returns {Promise} Promise to get success status
+     */
+    determineRepresentationStatus(repStatus) {
+        // Load the representation assets
+        return repStatus.success();
     }
 
     /**

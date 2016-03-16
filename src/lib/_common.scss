@@ -18,6 +18,10 @@
     -moz-font-smoothing: subpixel-antialiased;
     font-smoothing: subpixel-antialiased;
     transform: translateZ(0);
+
+    a {
+        color: #dedede;
+    }
 }
 
 .box-preview-header {
@@ -60,6 +64,7 @@
     display: -ms-flexbox;
     display: flex;
     background-color: rgba(90, 90, 90, 0.90);
+    -webkit-overflow-scrolling: touch;
     -webit-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;

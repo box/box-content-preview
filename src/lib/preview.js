@@ -7,8 +7,8 @@ import Browser from './browser';
 import Logger from './logger';
 import loaders from './loaders';
 import cache from './cache';
-import ErrorLoader from './error/error-loader';
 import RepStatus from './rep-status';
+import ErrorLoader from './error/error-loader';
 import { decodeKeydown, insertTemplate } from './util';
 import throttle from 'lodash.throttle';
 import shellTemplate from 'raw!./shell.html';
@@ -71,6 +71,9 @@ class Preview extends EventEmitter {
 
         // Auth token
         this.token = '';
+
+        // Default list of loaders for viewers
+        this.loaders = loaders;
 
         // Determine the location of preview.js since all
         // other files are relative to it.
@@ -182,6 +185,9 @@ class Preview extends EventEmitter {
 
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
+
+        // Prefix any user created loaders before our default ones
+        this.loaders = (options.loaders || []).concat(loaders);
 
         // Iterate over all the viewer options and disable any viewer
         // that has an option disabled set to true
@@ -522,17 +528,14 @@ class Preview extends EventEmitter {
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
 
-        // Load all the static assets
-        const promiseToLoadAssets = loader.load(viewer, this.options.location);
-
-        // Status checker
-        const repStatus = new RepStatus(this.logger, viewer.REQUIRED_REPRESENTATIONS);
-
         // Load the representation assets
-        const promiseToGetRepresentationStatusSuccess = repStatus.status(representation, this.getRequestHeaders());
+        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
+
+        // Load all the static assets
+        const promiseToLoadStaticAssets = loader.load(viewer, this.options.location);
 
         // Proceed only when both static and representation assets have been loaded
-        Promise.all([promiseToLoadAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
+        Promise.all([promiseToLoadStaticAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
             // Instantiate the viewer
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
                 file: this.file
@@ -837,7 +840,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     preloadLoaders() {
-        loaders.forEach((loader) => {
+        this.loaders.forEach((loader) => {
             if (loader.enabled && typeof loader.preload === 'function') {
                 loader.preload(this.options);
             }
@@ -852,7 +855,7 @@ class Preview extends EventEmitter {
      * @returns {Object} Loader
      */
     getLoader(file) {
-        return loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+        return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
     }
 
     /**
@@ -1010,7 +1013,7 @@ class Preview extends EventEmitter {
      */
     getViewers() {
         let viewers = [];
-        loaders.forEach((loader) => {
+        this.loaders.forEach((loader) => {
             viewers = viewers.concat(loader.getViewers());
         });
         return viewers;

@@ -8,12 +8,17 @@ class RepStatus {
 
     /**
      * [constructor]
+     *
+     * @param {Object} representation rep url
+     * @param {Object} headers request headers
      * @param {Object} [logger] optional logger instance
      * @param {Array} [files] optional files to test
      * @returns {RepStatus} RepStatus instance
      */
-    constructor(logger, files) {
+    constructor(representation, headers, logger, files) {
+        this.representation = representation;
         this.logger = logger;
+        this.headers = headers;
         this.files = files || [];
 
         this.promise = new Promise((resolve, reject) => {
@@ -25,45 +30,42 @@ class RepStatus {
     /**
      * Fetches status of a representation asset
      *
-     * @param {Object} representation rep url
-     * @param {Object} headers request headers
+     * @private
      * @returns {void}
      */
-    updateStatus(representation, headers) {
-        fetch(representation.links.info.url, {
-            headers
+    updateStatus() {
+        fetch(this.representation.links.info.url, {
+            headers: this.headers
         })
         .then((response) => response.json())
         .then((info) => {
             clearTimeout(this.statusTimeout);
-            /* eslint-disable no-param-reassign */
-            representation.status = info.status;
-            representation.links.files = info.files || [];
-            /* eslint-enable no-param-reassign */
-            this.handleResponse(representation, headers);
+            this.representation.status = info.status;
+            this.representation.links.files = info.files || [];
+            this.handleResponse();
         });
     }
 
     /**
      * Handles the pending response
      *
-     * @param {Object} representation box representation
+     * @private
      * @returns {Boolean} true if we should consider success
      */
-    handlePending(representation) {
+    handlePending() {
         // If no files to compare then return false
         if (this.files.length === 0) {
             return false;
         }
 
         // If no files in response then return false
-        if (!representation.links.files || representation.links.files.length === 0) {
+        if (!this.representation.links.files || this.representation.links.files.length === 0) {
             return false;
         }
 
         // Compare all the files needed for psuedo-success
         return this.files.every((file) => {
-            return representation.links.files.some((asset) => {
+            return this.representation.links.files.some((asset) => {
                 return asset.url.endsWith(file);
             });
         });
@@ -72,15 +74,14 @@ class RepStatus {
     /**
      * Gets the status of a representation asset
      *
-     * @param {Object} representation box representation
-     * @param {Object} headers request headers
+     * @private
      * @returns {void}
      */
-    handleResponse(representation, headers) {
-        switch (representation.status) {
+    handleResponse() {
+        switch (this.representation.status) {
             case 'error':
-                if (representation.message) {
-                    this.reject(representation.message.message);
+                if (this.representation.message) {
+                    this.reject(this.representation.message.message);
                 } else {
                     this.reject();
                 }
@@ -100,11 +101,11 @@ class RepStatus {
                 // If files to test were passed in then a logical success status
                 // is dependent on them and not just status success. This will be
                 // used for multi-assets files like Dash
-                if (this.handlePending(representation)) {
+                if (this.handlePending()) {
                     this.resolve();
                 } else {
                     this.statusTimeout = setTimeout(() => {
-                        this.updateStatus(representation, headers);
+                        this.updateStatus();
                     }, STATUS_UPDATE_INTERVAL_IN_MILLIS);
                 }
                 break;
@@ -117,12 +118,11 @@ class RepStatus {
     /**
      * Gets the status of a representation asset
      *
-     * @param {Object} representation box representation
-     * @param {Object} headers request headers
+     * @public
      * @returns {Promise} Promise to detect represenation status
      */
-    status(representation, headers) {
-        this.handleResponse(representation, headers);
+    success() {
+        this.handleResponse();
         return this.promise;
     }
 }

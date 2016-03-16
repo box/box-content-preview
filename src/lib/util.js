@@ -3,6 +3,31 @@ const loadedCSSAssets = [];
 const prefetchedAssets = [];
 
 /**
+ * Deduces box app url from api url
+ *
+ * @public
+ * @param {String} api api url
+ * @returns {HTMLElement}
+ */
+export function deduceBoxUrl(api) {
+    let origin;
+
+    if (api.endsWith('/api')) {
+        // This is an internal url
+        origin = api.replace('/api', '');
+        const userDomain = origin.match(/^https:\/\/(.*)\.dev\.box\.net$/);
+        if (Array.isArray(userDomain) && userDomain[1]) {
+            origin = `https://app.${userDomain[1]}.inside-box.net`;
+        }
+    } else {
+        // This is an external url
+        origin = 'https://app.box.com';
+    }
+
+    return origin;
+}
+
+/**
  * Creates contextual fragment
  *
  * @public
