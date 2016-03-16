@@ -3,6 +3,26 @@ const loadedCSSAssets = [];
 const prefetchedAssets = [];
 
 /**
+ * Opens url in an iframe
+ * Used for downloads
+ *
+ * @public
+ * @param {String} api api url
+ * @returns {HTMLElement}
+ */
+export function openUrlInsideIframe(url) {
+    let iframe = document.querySelector('#downloadiframe');
+    if (!iframe) {
+        // if no existing iframe create a new one
+        iframe = document.createElement('iframe');
+        iframe.setAttribute('id', 'downloadiframe');
+        iframe.style.display = 'none';
+        iframe = document.body.appendChild(iframe);
+    }
+    iframe.src = url;
+}
+
+/**
  * Deduces box app url from api url
  *
  * @public

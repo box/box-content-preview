@@ -35,23 +35,26 @@ class PreviewError extends Base {
         let extension = 'blank';
         let message = reason || 'This file is either not previewable or not supported';
 
-        switch (this.options.file.extension) {
-            case 'zip':
-                extension = 'zip';
-                break;
-            case 'flv':
-                extension = 'flv';
-                break;
-            case 'boxnote':
-                extension = 'boxnote';
-                message = `<a target="_blank" href="${deduceBoxUrl(this.options.api)}/notes/${this.options.file.id}">Click here to open the Box Note</a>`;
-                break;
-            case 'boxdicom':
-                extension = 'boxdicom';
-                message = `<a target="_blank" href="${deduceBoxUrl(this.options.api)}/dicom_viewer/${this.options.file.id}">Click here to open the Dicom file</a>`;
-                break;
-            default:
-                // no-op
+        // Generic errors will not have the file object
+        if (this.options.file) {
+            switch (this.options.file.extension) {
+                case 'zip':
+                    extension = 'zip';
+                    break;
+                case 'flv':
+                    extension = 'flv';
+                    break;
+                case 'boxnote':
+                    extension = 'boxnote';
+                    message = `<a target="_blank" href="${deduceBoxUrl(this.options.api)}/notes/${this.options.file.id}">Click here to open the Box Note</a>`;
+                    break;
+                case 'boxdicom':
+                    extension = 'boxdicom';
+                    message = `<a target="_blank" href="${deduceBoxUrl(this.options.api)}/dicom_viewer/${this.options.file.id}">Click here to open the Dicom file</a>`;
+                    break;
+                default:
+                    // no-op
+            }
         }
 
         this.iconEl.src = `${this.options.location.staticBaseURI}img/files/160-${extension}.png`;
