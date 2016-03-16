@@ -77,12 +77,12 @@ class AssetLoader {
     }
 
     /**
-     * Loads assets needed for a preview and finally loads the viewer
+     * Polls info endpoint and waits for status success
+     * from conversion when file is not ready
      *
      * @public
-     * @param {Object} viewer chosen viewer
-     * @param {Object} location template of assets
-     * @returns {Promise} Promise to load scripts
+     * @param {RepStatus} instance of rep status
+     * @returns {Promise} Promise to get success status
      */
     determineRepresentationStatus(repStatus) {
         // Load the representation assets
