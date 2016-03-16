@@ -40,7 +40,8 @@ class Video360Controls extends EventEmitter {
 
         // Create the VR toggle button and then hide it.
         this.vrButton = mediaControlsEl.appendChild(document.createElement('button'));
-        this.vrButton.classList.add('box-preview-media-controls-btn', 'box-preview-controls-vr');
+        this.vrButton.classList.add('box-preview-media-controls-btn');
+        this.vrButton.classList.add('box-preview-controls-vr');
         this.vrButton.title = 'Enable VR Mode';
         this.vrButtonSpan = this.vrButton.appendChild(document.createElement('span'));
         this.vrButtonSpan.classList.add('box-preview-vr-toggle-icon');
@@ -48,7 +49,9 @@ class Video360Controls extends EventEmitter {
 
         // Create the button to toggle back to 2D viewing
         this.toggle2dButton = mediaControlsEl.appendChild(document.createElement('button'));
-        this.toggle2dButton.classList.add('box-preview-media-controls-btn', 'box-preview-media-controls-2d', 'no-user-highlight');
+        this.toggle2dButton.classList.add('box-preview-media-controls-btn');
+        this.toggle2dButton.classList.add('box-preview-media-controls-2d');
+        this.toggle2dButton.classList.add('no-user-highlight');
         this.toggle2dButton.title = 'Switch to 2D Viewer';
         const toggle2dButtonSpan = this.toggle2dButton.appendChild(document.createElement('span'));
         toggle2dButtonSpan.classList.add('switch-2d');

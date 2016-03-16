@@ -111,7 +111,8 @@ class Model3dSettings extends Box3DControls {
     addUi() {
         // container
         this.wrapperEl = document.createElement('div');
-        this.wrapperEl.classList.add(CSS_CLASS_OVERLAY, CSS_CLASS_SETTINGS_WRAPPER);
+        this.wrapperEl.classList.add(CSS_CLASS_OVERLAY);
+        this.wrapperEl.classList.add(CSS_CLASS_SETTINGS_WRAPPER);
         this.registerUiItem('settings_container_wrapper', this.wrapperEl);
         this.el.appendChild(this.wrapperEl);
 
@@ -126,8 +127,10 @@ class Model3dSettings extends Box3DControls {
 
         // Settings panel
         this.settingsPanelEl = document.createElement('div');
-        this.settingsPanelEl.classList.add(CSS_CLASS_OVERLAY, 'box-preview-pullup',
-            CSS_CLASS_SETTINGS_PANEL, CSS_CLASS_HIDDEN);
+        this.settingsPanelEl.classList.add(CSS_CLASS_OVERLAY);
+        this.settingsPanelEl.classList.add('box-preview-pullup');
+        this.settingsPanelEl.classList.add(CSS_CLASS_SETTINGS_PANEL);
+        this.settingsPanelEl.classList.add(CSS_CLASS_HIDDEN);
         this.registerUiItem('settings_panel', this.settingsPanelEl);
         this.settingsButtonEl.appendChild(this.settingsPanelEl);
 
@@ -187,7 +190,8 @@ class Model3dSettings extends Box3DControls {
         axisRowEl.appendChild(leftArrowEl);
 
         const axisButtonsEl = document.createElement('ul');
-        axisButtonsEl.classList.add('box-preview-orientation-selector', CSS_CLASS_SETTINGS_PANEL_BUTTON);
+        axisButtonsEl.classList.add('box-preview-orientation-selector');
+        axisButtonsEl.classList.add(CSS_CLASS_SETTINGS_PANEL_BUTTON);
 
         const xAxisEl = this.createOrientationAxis('x', this.handleSelectOrientationX);
         this.orientationXButton = xAxisEl;
@@ -285,7 +289,8 @@ class Model3dSettings extends Box3DControls {
 
         const listLabelEl = document.createElement('span');
         listLabelEl.textContent = listText;
-        listLabelEl.classList.add(CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL, CSS_CLASS_SETTINGS_PANEL_BUTTON);
+        listLabelEl.classList.add(CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL);
+        listLabelEl.classList.add(CSS_CLASS_SETTINGS_PANEL_BUTTON);
         dropdownWrapperEl.appendChild(listLabelEl);
 
         const dropdownEl = document.createElement('ul');
@@ -493,7 +498,7 @@ class Model3dSettings extends Box3DControls {
      * @param {string} mode The name of the render mode
      * @returns {void}
      */
-    setDefaultRenderMode(mode) {
+    setDefaultRenderMode(mode = RENDER_MODE_LIT) {
         this.defaultRenderMode = this.currentDefaultRenderMode = mode;
         this.setRenderText(mode);
     }
@@ -503,7 +508,7 @@ class Model3dSettings extends Box3DControls {
      * @param {String} projection Type of projection to use
      * @returns {void}
      */
-    setDefaultProjection(projection) {
+    setDefaultProjection(projection = 'Perspective') {
         this.defaultProjection = this.currentProjection = projection;
         this.setProjectionText(projection);
     }
