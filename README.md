@@ -175,6 +175,11 @@ Other Methods
 
 `Box.Preview.disableViewers(/* String|Array[String] */ viewers)` disables one or more viewers based on VIEWERNAME. Viewers can also be disabled by setting `disabled: true` on the specific viewer option inside options.
 
+`Box.Preview.print()` prints the file if printable.
+
+`Box.Preview.download()` downloads the file if downloadable.
+
+
 
 Events
 -------

@@ -9,7 +9,7 @@ import loaders from './loaders';
 import cache from './cache';
 import RepStatus from './rep-status';
 import ErrorLoader from './error/error-loader';
-import { decodeKeydown, insertTemplate } from './util';
+import { decodeKeydown, insertTemplate, openUrlInsideIframe } from './util';
 import throttle from 'lodash.throttle';
 import shellTemplate from 'raw!./shell.html';
 
@@ -22,6 +22,8 @@ import {
     SELECTOR_BOX_PREVIEW,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
+    SELECTOR_BOX_PREVIEW_BTN_PRINT,
+    SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     COLOR_HEADER_LIGHT,
     COLOR_HEADER_DARK,
     COLOR_HEADER_BTN_LIGHT,
@@ -566,6 +568,10 @@ class Preview extends EventEmitter {
 
         // Load event is fired when preview loads
         this.viewer.addListener('load', () => {
+            // Show or hide print/download button
+            this.showPrintButton();
+            this.showDownloadButton();
+
             // Once the viewer loads, hide the loading indicator
             if (this.contentContainer) {
                 this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
@@ -618,7 +624,7 @@ class Preview extends EventEmitter {
      * Triggers an error.
      *
      * @private
-     * @param {String|null|undefined|Error} reason error
+     * @param {Error} reason error
      * @returns {void}
      */
     triggerError(err) {
@@ -636,7 +642,7 @@ class Preview extends EventEmitter {
         // Destroy anything still showing
         this.destroy();
 
-        const reason = (err ? err.message : err) || 'An error has occurred while loading the preview';
+        const reason = (err ? err.message : err) || 'This file is either not previewable or not supported';
         const viewer = ErrorLoader.determineViewer();
 
         ErrorLoader.load(viewer, this.options.location).then(() => {
@@ -675,6 +681,34 @@ class Preview extends EventEmitter {
         }
 
         return headers;
+    }
+
+    /**
+     * Shows the print button if the viewers implement print
+     *
+     * @private
+     * @returns {void}
+     */
+    showPrintButton() {
+        if (this.viewer && typeof this.viewer.print === 'function') {
+            this.printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
+            this.printButton.classList.remove(CLASS_HIDDEN);
+            this.printButton.addEventListener('click', this.print);
+        }
+    }
+
+    /**
+     * Shows the print button if the viewers implement print
+     *
+     * @private
+     * @returns {void}
+     */
+    showDownloadButton() {
+        if (this.file && this.file.permissions.can_download) {
+            this.downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
+            this.downloadButton.classList.remove(CLASS_HIDDEN);
+            this.downloadButton.addEventListener('click', this.download);
+        }
     }
 
     /**
@@ -1050,6 +1084,40 @@ class Preview extends EventEmitter {
             });
         } else if (viewers) {
             delete this.disabledViewers[viewers];
+        }
+    }
+
+    /**
+     * Prints
+     *
+     * @public
+     * @returns {void}
+     */
+    print() {
+        if (this.viewer && typeof this.viewer.print === 'function') {
+            this.viewer.print();
+        } else {
+            throw new Error('Unsupported operation!');
+        }
+    }
+
+    /**
+     * Downloads
+     *
+     * @public
+     * @returns {void}
+     */
+    download() {
+        if (this.file && this.file.permissions && this.file.permissions.can_download) {
+            fetch(`${this.options.api}/2.0/files/${this.file.id}?fields=download_url`, {
+                headers: this.getRequestHeaders()
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                openUrlInsideIframe(data.download_url);
+            });
+        } else {
+            throw new Error('Unsupported operation!');
         }
     }
 }
