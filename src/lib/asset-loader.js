@@ -1,4 +1,5 @@
 import autobind from 'autobind-decorator';
+
 import {
     createContentUrl,
     prefetchAssets,
@@ -73,6 +74,19 @@ class AssetLoader {
      */
     determineRepresentation(file, viewer) {
         return file.representations.entries.find((entry) => viewer.REPRESENTATION === entry.representation);
+    }
+
+    /**
+     * Loads assets needed for a preview and finally loads the viewer
+     *
+     * @public
+     * @param {Object} viewer chosen viewer
+     * @param {Object} location template of assets
+     * @returns {Promise} Promise to load scripts
+     */
+    determineRepresentationStatus(repStatus) {
+        // Load the representation assets
+        return repStatus.success();
     }
 
     /**
