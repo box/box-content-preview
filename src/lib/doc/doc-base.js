@@ -62,8 +62,13 @@ class DocBase extends Base {
             this.annotator.destroy();
         }
 
+        // Clean up viewer and PDF document object
         if (this.pdfViewer) {
             this.pdfViewer.cleanup();
+
+            if (this.pdfViewer.pdfDocument) {
+                this.pdfViewer.pdfDocument.destroy();
+            }
         }
 
         super.destroy();
