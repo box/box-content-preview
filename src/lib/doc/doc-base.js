@@ -41,6 +41,9 @@ class DocBase extends Base {
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
         fullscreen.removeListener('exit', this.exitfullscreenHandler);
 
+        // Clean up print blob
+        this.printBlob = null;
+
         // Remove DOM event listeners
         if (this.docEl) {
             this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
@@ -88,9 +91,38 @@ class DocBase extends Base {
         PDFJS.cMapPacked = true;
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab
 
+        // Disable range requests for files smaller than 2MB
+        PDFJS.disableRange = this.options.file.size < 2097152;
+
         this.initViewer(pdfUrl);
+        this.initPrint(pdfUrl);
 
         super.load();
+    }
+
+    /**
+     * Prints the document by providing the PDF representation to the user.
+     *
+     * @returns {void}
+     */
+    print() {
+        if (!this.printBlob) {
+            // @TODO(tjin): Show a message here that the document isn't ready for printing
+            return;
+        }
+
+        // For IE & Edge, use the open or save dialog since we can't open
+        // in a new tab due to security restrictions, see:
+        // http://stackoverflow.com/questions/24007073/open-links-made-by-createobjecturl-in-ie11
+        if (typeof window.navigator.msSaveOrOpenBlob === 'function') {
+            window.navigator.msSaveOrOpenBlob(this.printBlob, 'print.pdf');
+
+        // For other browsers, open in a new tab
+        } else {
+            const printURL = URL.createObjectURL(this.printBlob);
+            window.open(printURL);
+            URL.revokeObjectURL(printURL);
+        }
     }
 
     /**
@@ -240,7 +272,7 @@ class DocBase extends Base {
         PDFJS.getDocument({
             url: pdfUrl,
             httpHeaders: this.appendAuthHeader(),
-            rangeChunkSize: 262144
+            rangeChunkSize: 524288 // 512KB chunk size
         }).then((doc) => {
             this.pdfViewer.setDocument(doc);
         }).catch((err) => {
@@ -266,6 +298,29 @@ class DocBase extends Base {
         // Mousedown and mouseup handler to enable and disable text selection
         this.docEl.addEventListener('mousedown', this.mousedownHandler);
         this.docEl.addEventListener('mouseup', this.mouseupHandler);
+    }
+
+    /**
+     * Initialize variables and elements for printing
+     *
+     * @param {String} pdfUrl The URL of the PDF to load
+     * @returns {void}
+     */
+    initPrint(pdfUrl) {
+        // @TODO(tjin): Can we re-use the same blob used by PDF.js to render the content?
+        // Load blob for printing
+        fetch(pdfUrl, {
+            headers: this.appendAuthHeader()
+        })
+        .then((response) => response.blob())
+        .then((blob) => {
+            this.printBlob = blob;
+        });
+
+        const printNotificationEl = document.createElement('p');
+        printNotificationEl.classList.add('box-preview-print-notification');
+        printNotificationEl.textContent = __('print_notification');
+        this.containerEl.appendChild(printNotificationEl);
     }
 
     /**

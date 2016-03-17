@@ -1,17 +1,18 @@
+// scss-lint:disable SelectorFormat
 .box-preview-doc {
-    position: absolute;
-    top: 0;
     bottom: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
     height: 100%;
-    overflow: auto;
+    left: 0;
     margin: 0;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
 
-    /* Fullscreen CSS */
+    // Fullscreen CSS
     .box-preview-is-fullscreen & {
-        .pdfViewer .page {
+        .page {
             padding: 0;
         }
 
@@ -20,30 +21,29 @@
         }
     }
 
-    /*---------- Override CSS from generic PDFJS viewer build ----------*/
+    //---------- Override CSS from generic PDFJS viewer build ----------//
     .pdfViewer .page {
-        box-sizing: content-box !important;
-    	-moz-box-sizing: content-box !important;
-    	-webkit-box-sizing: content-box !important;
-        position: relative;
-        margin: 10px auto;
-        padding: 0;
         border: 0;
         border-image: none;
-
-        .loadingIcon {
-            background: none;
-        }
+        // scss-lint:disable ImportantRule
+        box-sizing: content-box !important;
+        margin: 10px auto;
+        padding: 0;
+        position: relative;
     }
 
-    /* Only show page loading indicator when viewer has loaded */
-    .box-preview-loaded & .pdfViewer .page .loadingIcon {
+    .loadingIcon {
+        background: none;
+    }
+
+    // Only show page loading indicator when viewer has loaded
+    .box-preview-loaded & .loadingIcon {
         background: url('../../img/loading-icon.gif') center no-repeat;
     }
 }
 
 .box-preview-controls {
-    /* Page num input CSS */
+    // Page num input CSS
     .box-preview-doc-page-num span {
         display: inline;
         font-size: 14px;
@@ -51,10 +51,10 @@
 
     .box-preview-doc-page-num-input {
         display: none;
-        margin: 0 auto;
-        width: auto;
-        text-align: center;
         font-size: 14px;
+        margin: 0 auto;
+        text-align: center;
+        width: auto;
     }
 
     &.show-page-number-input {
@@ -71,5 +71,21 @@
         .box-preview-doc-page-num-input {
             display: block;
         }
+    }
+}
+
+.box-preview-print-notification {
+    display: none;
+    font-size: 24px;
+}
+
+// Hide content when using native print, show message to use print button
+@media print {
+    .box-preview-doc {
+        display: none;
+    }
+
+    .box-preview-print-notification {
+        display: block;
     }
 }
