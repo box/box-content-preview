@@ -1,11 +1,15 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.47.0...HEAD)
+## [v0.48.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.48.0) (2016-03-16)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.47.0...v0.48.0)
 
 **Merged pull requests:**
 
+- DICOM release [\#245](https://gitenterprise.inside-box.net/Preview/Preview/pull/245) ([cebberson](https://gitenterprise.inside-box.net/cebberson))
+- Hooking up print and download buttons [\#244](https://gitenterprise.inside-box.net/Preview/Preview/pull/244) ([phora](https://gitenterprise.inside-box.net/phora))
+- Remove loading indicator when user scrolls past end of progress bar [\#243](https://gitenterprise.inside-box.net/Preview/Preview/pull/243) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Adding some generic files like license and changelog [\#242](https://gitenterprise.inside-box.net/Preview/Preview/pull/242) ([phora](https://gitenterprise.inside-box.net/phora))
+- Adding metadata if not present. Fix for IE classList.add\(\) bug [\#241](https://gitenterprise.inside-box.net/Preview/Preview/pull/241) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
 - Cleanup of addUi. Data driven dropdown creation. More general ui building [\#240](https://gitenterprise.inside-box.net/Preview/Preview/pull/240) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
 - General bug fixes [\#239](https://gitenterprise.inside-box.net/Preview/Preview/pull/239) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
 - Adding ability to update the underlying collection [\#238](https://gitenterprise.inside-box.net/Preview/Preview/pull/238) ([phora](https://gitenterprise.inside-box.net/phora))
