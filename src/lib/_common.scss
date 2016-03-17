@@ -6,7 +6,8 @@ $preview-background-color: rgba(90, 90, 90, .9);
     display: none !important;
 }
 
-* {
+.box-preview-container,
+.box-preview-container * {
     // scss-lint:disable ImportantRule
     box-sizing: border-box !important;
 }
@@ -35,6 +36,7 @@ $preview-background-color: rgba(90, 90, 90, .9);
     display: -ms-flexbox;
     display: flex;
     -ms-flex-align: center;
+    -ms-flex-pack: justify;
     height: 40px;
     justify-content: space-between;
     padding: 0 10px;
