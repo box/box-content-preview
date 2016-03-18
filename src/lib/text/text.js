@@ -2,6 +2,7 @@ import './text.scss';
 import autobind from 'autobind-decorator';
 import fetch from 'isomorphic-fetch';
 import TextBase from './text-base';
+import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../util';
 
 const Box = global.Box || {};
 
@@ -71,6 +72,20 @@ class PlainText extends TextBase {
         this.loaded = true;
         this.emit('load');
         this.preEl.style.visibility = 'visible';
+
+        // Help in printing by creating an iframe with the contents
+        const assetUrlCreator = createAssetUrlCreator(this.options.location);
+        this.printframe = openContentInsideIframe(this.preEl.outerHTML);
+        this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
+    }
+
+    /**
+     * Prints the text
+     *
+     * @returns {void}
+     */
+    print() {
+        this.printframe.contentWindow.print();
     }
 }
 
