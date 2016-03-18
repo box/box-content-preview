@@ -1,6 +1,12 @@
 import autobind from 'autobind-decorator';
 import Controls from '../controls';
 import Base from '../base';
+import {
+    ICON_ZOOM_IN,
+    ICON_ZOOM_OUT,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
+} from '../icons/icons';
 
 @autobind
 class TextBase extends Base {
@@ -62,9 +68,10 @@ class TextBase extends Base {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-text-zoom-in-icon');
-        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-text-zoom-out-icon');
-        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-text-expand-icon');
+        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-text-zoom-in-icon', ICON_ZOOM_IN);
+        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-text-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**

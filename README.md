@@ -14,11 +14,11 @@ The browser needs to have the Promise API implimented. If not, it can be polyfil
 
 Latest version hosted on CDN
 -----------------------------
-* Version: 0.47.0
+* Version: 0.48.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.47.0/en-US/preview.js
-https://cdn01.boxcdn.net/content-experience/0.47.0/en-US/preview.css
+https://cdn01.boxcdn.net/content-experience/0.48.0/en-US/preview.js
+https://cdn01.boxcdn.net/content-experience/0.48.0/en-US/preview.css
 
 Usage
 ------
@@ -174,6 +174,11 @@ Other Methods
 `Box.Preview.enableViewers(/* String|Array[String] */ viewers)` enables one or more viewers based on VIEWERNAME.
 
 `Box.Preview.disableViewers(/* String|Array[String] */ viewers)` disables one or more viewers based on VIEWERNAME. Viewers can also be disabled by setting `disabled: true` on the specific viewer option inside options.
+
+`Box.Preview.print()` prints the file if printable.
+
+`Box.Preview.download()` downloads the file if downloadable.
+
 
 
 Events

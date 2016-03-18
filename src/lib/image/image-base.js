@@ -1,6 +1,10 @@
 import autobind from 'autobind-decorator';
 import Controls from '../controls';
 import Base from '../base';
+import {
+    ICON_ZOOM_IN,
+    ICON_ZOOM_OUT
+} from '../icons/icons';
 
 @autobind
 class ImageBase extends Base {
@@ -57,9 +61,8 @@ class ImageBase extends Base {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon');
-        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon');
-        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-image-expand-icon');
+        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon', ICON_ZOOM_IN);
+        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon', ICON_ZOOM_OUT);
     }
 
     /**

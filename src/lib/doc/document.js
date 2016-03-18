@@ -2,6 +2,14 @@ import './document.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
+import {
+    ICON_ZOOM_IN,
+    ICON_ZOOM_OUT,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT,
+    ICON_DROP_UP,
+    ICON_DROP_DOWN
+} from '../icons/icons';
 
 const Box = global.Box || {};
 
@@ -100,31 +108,23 @@ class Document extends DocBase {
     addEventListenersForDocControls() {
         super.addEventListenersForDocControls();
 
-        this.controls.add(__('zoom_in'), () => {
-            this.zoomIn();
-        }, 'box-preview-doc-zoom-in-icon');
+        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-doc-zoom-in-icon', ICON_ZOOM_IN);
+        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-doc-zoom-out-icon', ICON_ZOOM_OUT);
 
-        this.controls.add(__('zoom_out'), () => {
-            this.zoomOut();
-        }, 'box-preview-doc-zoom-out-icon');
-
-        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-previous-page-icon box-preview-previous-page');
+        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-doc-previous-page-icon box-preview-previous-page', ICON_DROP_UP);
 
         const buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
-
-        this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon box-preview-next-page');
+        this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon box-preview-next-page', ICON_DROP_DOWN);
 
         // Annotation buttons
         if (this.options.viewers.Document && this.options.viewers.Document.annotations) {
-            this.controls.add(__('add_highlight_annotation'),
-                this.annotator.addHighlightAnnotationHandler, '', 'H');
-
-            this.controls.add(__('add_point_annotation'),
-                this.annotator.addPointAnnotationHandler, '', 'P');
+            this.controls.add(__('add_highlight_annotation'), this.annotator.addHighlightAnnotationHandler, '', 'H');
+            this.controls.add(__('add_point_annotation'), this.annotator.addPointAnnotationHandler, '', 'P');
         }
 
-        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**

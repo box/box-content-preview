@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import Controls from '../controls';
 import autobind from 'autobind-decorator';
-const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
 import {
     EVENT_ENABLE_VR,
     EVENT_DISABLE_VR,
@@ -9,6 +8,12 @@ import {
     EVENT_SCENE_LOADED,
     EVENT_TOGGLE_FULLSCREEN
 } from './box3d-constants';
+import {
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
+} from '../icons/icons';
+
+const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
 
 @autobind
 class Box3DControls extends EventEmitter {
@@ -33,7 +38,6 @@ class Box3DControls extends EventEmitter {
         this.el = containerEl;
 
         this.controls = null;
-        this.fullscreenButtonEl = null;
         this.resetButtonEl = null;
         this.vrButtonEl = null;
     }
@@ -45,8 +49,9 @@ class Box3DControls extends EventEmitter {
     addUi() {
         this.controls = new Controls(this.el);
         this.resetButtonEl = this.controls.add(__('reset_camera'), this.handleReset, 'box-preview-reset-icon');
-        this.fullscreenButtonEl = this.controls.add(__('fullscreen'), this.handleToggleFullscreen, 'box-preview-image-expand-icon');
         this.vrButtonEl = this.controls.add(__('vr'), this.handleToggleVr, 'box-preview-vr-toggle-icon');
+        this.controls.add(__('enter_fullscreen'), this.handleToggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.handleToggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
         this.hideVrButton();
     }

@@ -3,6 +3,51 @@ const loadedCSSAssets = [];
 const prefetchedAssets = [];
 
 /**
+ * Opens url in an iframe
+ * Used for downloads
+ *
+ * @public
+ * @param {String} api api url
+ * @returns {HTMLElement}
+ */
+export function openUrlInsideIframe(url) {
+    let iframe = document.querySelector('#downloadiframe');
+    if (!iframe) {
+        // if no existing iframe create a new one
+        iframe = document.createElement('iframe');
+        iframe.setAttribute('id', 'downloadiframe');
+        iframe.style.display = 'none';
+        iframe = document.body.appendChild(iframe);
+    }
+    iframe.src = url;
+}
+
+/**
+ * Deduces box app url from api url
+ *
+ * @public
+ * @param {String} api api url
+ * @returns {HTMLElement}
+ */
+export function deduceBoxUrl(api) {
+    let origin;
+
+    if (api.endsWith('/api')) {
+        // This is an internal url
+        origin = api.replace('/api', '');
+        const userDomain = origin.match(/^https:\/\/(.*)\.dev\.box\.net$/);
+        if (Array.isArray(userDomain) && userDomain[1]) {
+            origin = `https://app.${userDomain[1]}.inside-box.net`;
+        }
+    } else {
+        // This is an external url
+        origin = 'https://app.box.com';
+    }
+
+    return origin;
+}
+
+/**
  * Creates contextual fragment
  *
  * @public

@@ -7,9 +7,9 @@ import Browser from './browser';
 import Logger from './logger';
 import loaders from './loaders';
 import cache from './cache';
-import ErrorLoader from './error/error-loader';
 import RepStatus from './rep-status';
-import { decodeKeydown, insertTemplate } from './util';
+import ErrorLoader from './error/error-loader';
+import { decodeKeydown, insertTemplate, openUrlInsideIframe } from './util';
 import throttle from 'lodash.throttle';
 import shellTemplate from 'raw!./shell.html';
 
@@ -22,6 +22,8 @@ import {
     SELECTOR_BOX_PREVIEW,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
+    SELECTOR_BOX_PREVIEW_BTN_PRINT,
+    SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     COLOR_HEADER_LIGHT,
     COLOR_HEADER_DARK,
     COLOR_HEADER_BTN_LIGHT,
@@ -71,6 +73,9 @@ class Preview extends EventEmitter {
 
         // Auth token
         this.token = '';
+
+        // Default list of loaders for viewers
+        this.loaders = loaders;
 
         // Determine the location of preview.js since all
         // other files are relative to it.
@@ -182,6 +187,9 @@ class Preview extends EventEmitter {
 
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
+
+        // Prefix any user created loaders before our default ones
+        this.loaders = (options.loaders || []).concat(loaders);
 
         // Iterate over all the viewer options and disable any viewer
         // that has an option disabled set to true
@@ -522,17 +530,14 @@ class Preview extends EventEmitter {
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
 
-        // Load all the static assets
-        const promiseToLoadAssets = loader.load(viewer, this.options.location);
-
-        // Status checker
-        const repStatus = new RepStatus(this.logger, viewer.REQUIRED_REPRESENTATIONS);
-
         // Load the representation assets
-        const promiseToGetRepresentationStatusSuccess = repStatus.status(representation, this.getRequestHeaders());
+        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
+
+        // Load all the static assets
+        const promiseToLoadStaticAssets = loader.load(viewer, this.options.location);
 
         // Proceed only when both static and representation assets have been loaded
-        Promise.all([promiseToLoadAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
+        Promise.all([promiseToLoadStaticAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
             // Instantiate the viewer
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
                 file: this.file
@@ -563,6 +568,10 @@ class Preview extends EventEmitter {
 
         // Load event is fired when preview loads
         this.viewer.addListener('load', () => {
+            // Show or hide print/download button
+            this.showPrintButton();
+            this.showDownloadButton();
+
             // Once the viewer loads, hide the loading indicator
             if (this.contentContainer) {
                 this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
@@ -615,7 +624,7 @@ class Preview extends EventEmitter {
      * Triggers an error.
      *
      * @private
-     * @param {String|null|undefined|Error} reason error
+     * @param {Error} reason error
      * @returns {void}
      */
     triggerError(err) {
@@ -635,7 +644,7 @@ class Preview extends EventEmitter {
         // Destroy anything still showing
         this.destroy();
 
-        const reason = (err ? err.message : err) || 'An error has occurred while loading the preview';
+        const reason = (err ? err.message : err) || 'This file is either not previewable or not supported';
         const viewer = ErrorLoader.determineViewer();
 
         ErrorLoader.load(viewer, this.options.location).then(() => {
@@ -674,6 +683,37 @@ class Preview extends EventEmitter {
         }
 
         return headers;
+    }
+
+    /**
+     * Shows the print button if the viewers implement print
+     *
+     * @private
+     * @returns {void}
+     */
+    showPrintButton() {
+        if (this.file && this.file.permissions &&
+            this.file.permissions.can_download &&
+            this.viewer && typeof this.viewer.print === 'function') {
+            this.printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
+            this.printButton.classList.remove(CLASS_HIDDEN);
+            this.printButton.addEventListener('click', this.print);
+        }
+    }
+
+    /**
+     * Shows the print button if the viewers implement print
+     *
+     * @private
+     * @returns {void}
+     */
+    showDownloadButton() {
+        if (this.file && this.file.permissions &&
+            this.file.permissions.can_download) {
+            this.downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
+            this.downloadButton.classList.remove(CLASS_HIDDEN);
+            this.downloadButton.addEventListener('click', this.download);
+        }
     }
 
     /**
@@ -839,7 +879,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     preloadLoaders() {
-        loaders.forEach((loader) => {
+        this.loaders.forEach((loader) => {
             if (loader.enabled && typeof loader.preload === 'function') {
                 loader.preload(this.options);
             }
@@ -854,7 +894,7 @@ class Preview extends EventEmitter {
      * @returns {Object} Loader
      */
     getLoader(file) {
-        return loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+        return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
     }
 
     /**
@@ -971,6 +1011,8 @@ class Preview extends EventEmitter {
      */
     updateCollection(collection = []) {
         this.collection = Array.isArray(collection) ? collection : [];
+        // Also update the original collection that was saved from the initial show
+        this.previewOptions.collection = this.collection;
         this.showNavigation();
     }
 
@@ -1012,7 +1054,7 @@ class Preview extends EventEmitter {
      */
     getViewers() {
         let viewers = [];
-        loaders.forEach((loader) => {
+        this.loaders.forEach((loader) => {
             viewers = viewers.concat(loader.getViewers());
         });
         return viewers;
@@ -1049,6 +1091,42 @@ class Preview extends EventEmitter {
             });
         } else if (viewers) {
             delete this.disabledViewers[viewers];
+        }
+    }
+
+    /**
+     * Prints
+     *
+     * @public
+     * @returns {void}
+     */
+    print() {
+        if (this.file && this.file.permissions &&
+            this.file.permissions.can_download &&
+            this.viewer && typeof this.viewer.print === 'function') {
+            this.viewer.print();
+        } else {
+            throw new Error('Unsupported operation!');
+        }
+    }
+
+    /**
+     * Downloads
+     *
+     * @public
+     * @returns {void}
+     */
+    download() {
+        if (this.file && this.file.permissions && this.file.permissions.can_download) {
+            fetch(`${this.options.api}/2.0/files/${this.file.id}?fields=download_url`, {
+                headers: this.getRequestHeaders()
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                openUrlInsideIframe(data.download_url);
+            });
+        } else {
+            throw new Error('Unsupported operation!');
         }
     }
 }

@@ -3,6 +3,11 @@ import autobind from 'autobind-decorator';
 import Base from './image-base';
 import Browser from '../browser';
 import fetch from 'isomorphic-fetch';
+import {
+    ICON_ROTATE_LEFT,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
+} from '../icons/icons';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -342,17 +347,19 @@ class Image extends Base {
     }
 
     /**
-     * Zooms in
+     * Loads controls
+     *
      * @private
      * @returns {void}
      */
     loadUI() {
         super.loadUI();
-        this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon');
+        this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon', ICON_ROTATE_LEFT);
         if (Browser.supportsBox3D()) {
-            this.controls.add(__('view_as_360'), this.switchTo3D,
-                'box-preview-image-switch-3d-icon', '360°');
+            this.controls.add(__('view_as_360'), this.switchTo3D, 'box-preview-image-switch-3d-icon', '360°');
         }
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 }
 
