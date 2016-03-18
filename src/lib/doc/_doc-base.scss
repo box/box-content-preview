@@ -30,15 +30,16 @@
         margin: 10px auto;
         padding: 0;
         position: relative;
-    }
 
-    .loadingIcon {
-        background: none;
-    }
+        // scss-lint:disable SelectorDepth
+        .loadingIcon {
+            background: none;
+        }
 
-    // Only show page loading indicator when viewer has loaded
-    .box-preview-loaded & .loadingIcon {
-        background: url('../../img/loading-icon.gif') center no-repeat;
+        // Only show page loading indicator when viewer has loaded
+        .box-preview-loaded & .loadingIcon {
+            background: url('../../img/loading-icon.gif') center no-repeat;
+        }
     }
 }
 
