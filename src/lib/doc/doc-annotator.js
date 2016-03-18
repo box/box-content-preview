@@ -17,6 +17,10 @@ const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
 const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 
+// PDF unit = 1/72 inch, CSS pixel = 1/92 inch
+const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
+const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
+
 const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';
 const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 233, 23, 0.5)';
 const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 255, 255, 1)';
@@ -40,6 +44,21 @@ function findClosestElWithClass(element, className) {
 }
 
 /**
+ * Escapes HTML.
+ *
+ * @param {String} str Input string
+ * @returns {String} HTML escaped string
+ */
+function htmlEscape(str) {
+    return str.replace(/&/g, '&amp;') // first!
+              .replace(/>/g, '&gt;')
+              .replace(/</g, '&lt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;')
+              .replace(/`/g, '&#96;');
+}
+
+/**
  * Fast test if a given point is within a polygon. Taken from
  * http://jsperf.com/ispointinpath-boundary-test-speed/6
  *
@@ -60,18 +79,21 @@ function isPointInPolyOpt(poly, x, y) {
  * Converts coordinates in PDF space to coordinates in DOM space.
  *
  * @param {Number[]} coordinates Either a [x,y] coordinate location or
- * quad points in the format of 8xn numbers in PDF space
- * @param {Number} pageHeight DOM height of PDF page
- * @returns {Number[]} Either [x,y] or 8xn coordinates in DOM space
+ * quad points in the format of 8xn numbers in PDF space in PDF units
+ * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
+ * coordinate origin from bottom left (PDF) to top left (DOM)
+ * @param {Number} scale Document zoom scale
+ * @returns {Number[]} Either [x,y] or 8xn coordinates in DOM space in CSS
+ * pixels
  */
-function convertPDFSpaceToDOMSpace(coordinates, pageHeight) {
-    // If input is [x, y] instead of quad points
-    if (coordinates.length === 2) {
-        const [x, y] = coordinates;
+function convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale) {
+    const scaledCoordinates = coordinates.map((val) => val * PDF_UNIT_TO_CSS_PIXEL * scale);
+    if (scaledCoordinates.length === 2) {
+        const [x, y] = scaledCoordinates;
         return [x, pageHeight - y];
     }
 
-    const [x1, y1, x2, y2, x3, y3, x4, y4] = coordinates;
+    const [x1, y1, x2, y2, x3, y3, x4, y4] = scaledCoordinates;
     return [
         x1,
         pageHeight - y1,
@@ -85,18 +107,122 @@ function convertPDFSpaceToDOMSpace(coordinates, pageHeight) {
 }
 
 /**
- * Escapes HTML.
+ * Converts coordinates in DOM space to coordinates in PDF space.
  *
- * @param {String} str Input string
- * @returns {String} HTML escaped string
+ * @param {Number[]} coordinates Either a [x,y] coordinate location or
+ * quad points in the format of 8xn numbers in DOM space in CSS pixels
+ * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
+ * coordinate origin from top left (DOM) to bottom left (PDF)
+ * @param {Number} scale Document zoom scale
+ * @returns {Number[]} Either [x,y] or 8xn coordinates in PDF space in PDF
+ * units
  */
-function htmlEscape(str) {
-    return str.replace(/&/g, '&amp;') // first!
-              .replace(/>/g, '&gt;')
-              .replace(/</g, '&lt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#39;')
-              .replace(/`/g, '&#96;');
+function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
+    let pdfCoordinates = [];
+    if (coordinates.length === 2) {
+        const [x, y] = coordinates;
+        pdfCoordinates = [x, pageHeight - y];
+    } else {
+        const [x1, y1, x2, y2, x3, y3, x4, y4] = coordinates;
+        pdfCoordinates = [
+            x1,
+            pageHeight - y1,
+            x2,
+            pageHeight - y2,
+            x3,
+            pageHeight - y3,
+            x4,
+            pageHeight - y4
+        ];
+    }
+
+    return pdfCoordinates.map((val) => val * CSS_PIXEL_TO_PDF_UNIT / scale);
+}
+
+/**
+ * Returns the coordinates of the quadrilateral representing this element
+ * per the PDF text markup annotation spec. Note that these coordinates
+ * are in PDF default user space, with the origin at the bottom left corner
+ * of the document.
+ *
+ * We do this by letting the browser figure out the coordinates for us.
+ * See http://stackoverflow.com/a/17098667
+ *
+ * @param {HTMLElement} element Element to get quad points for
+ * @param {HTMLElement} pageEl Page element quad points are relative to
+ * @param {Number} scale Document zoom scale
+ * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3,
+ * x4, y4] with (x1, y1) being the lower left (untransformed) corner of the
+ * element and the other 3 vertices in counterclockwise order. These are
+ * in PDF default user space.
+ */
+function getQuadPoints(element, pageEl, scale) {
+    const quadCornerContainerEl = document.createElement('div');
+    quadCornerContainerEl.classList.add('box-preview-quad-corner-container');
+
+    // Create zero-size elements that can be styled to the 4 corners of
+    // quadrilateral around element - using 4 divs is faster than using
+    // one div and moving it around
+    quadCornerContainerEl.innerHTML = `
+        <div class="box-preview-quad-corner corner1"></div>
+        <div class="box-preview-quad-corner corner2"></div>
+        <div class="box-preview-quad-corner corner3"></div>
+        <div class="box-preview-quad-corner corner4"></div>`.trim();
+
+    // Insert helper container into element
+    element.appendChild(quadCornerContainerEl);
+    const quadCorner1El = quadCornerContainerEl.querySelector('.corner1');
+    const quadCorner2El = quadCornerContainerEl.querySelector('.corner2');
+    const quadCorner3El = quadCornerContainerEl.querySelector('.corner3');
+    const quadCorner4El = quadCornerContainerEl.querySelector('.corner4');
+    const corner1Dimensions = quadCorner1El.getBoundingClientRect();
+    const corner2Dimensions = quadCorner2El.getBoundingClientRect();
+    const corner3Dimensions = quadCorner3El.getBoundingClientRect();
+    const corner4Dimensions = quadCorner4El.getBoundingClientRect();
+    const pageDimensions = pageEl.getBoundingClientRect();
+    const pageLeft = pageDimensions.left;
+    const pageBottom = pageDimensions.top;
+
+    // Cleanup helper container
+    element.removeChild(quadCornerContainerEl);
+
+    // Calculate coordinates of these 4 corners
+    const quadPoints = [
+        corner1Dimensions.left - pageLeft,
+        corner1Dimensions.top - pageBottom,
+        corner2Dimensions.left - pageLeft,
+        corner2Dimensions.top - pageBottom,
+        corner3Dimensions.left - pageLeft,
+        corner3Dimensions.top - pageBottom,
+        corner4Dimensions.left - pageLeft,
+        corner4Dimensions.top - pageBottom
+    ];
+
+    // Return quad points at 100% scale in PDF units
+    return convertDOMSpaceToPDFSpace(quadPoints, pageDimensions.height, scale);
+}
+
+/**
+ * Gets coordinates representing upper right corner of the annotation
+ * represented by the provided quad points. Note that these coordinates
+ * are in PDF default user space, with the origin at the bottom left corner
+ * of the document.
+ *
+ * @param {Number[]} quadPoints Quad points of annotation to get upper
+ * right corner for in PDF space in PDF units
+ * @returns {Number[]} [x,y] of upper right corner of quad points in PDF
+ * space in PDF units
+ */
+function getUpperRightCorner(quadPoints) {
+    let [x, y] = [0, 0];
+    quadPoints.forEach((quadPoint) => {
+        const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
+
+        x = Math.max(x, Math.max(x1, x2, x3, x4));
+        y = Math.max(y, Math.max(y1, y2, y3, y4));
+    });
+
+    return [x, y];
 }
 
 /**
@@ -301,9 +427,8 @@ class DocAnnotator extends Annotator {
         const quadPoints = annotation.location.quadPoints;
         const pageHeight = context.canvas.getBoundingClientRect().height;
         quadPoints.forEach((quadPoint) => {
-            const scaledQuadPoint = quadPoint.map((x) => x * this.scale);
-            const DOMQuadPoint = convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight);
-            const [x1, y1, x2, y2, x3, y3, x4, y4] = DOMQuadPoint;
+            const browserQuadPoint = convertPDFSpaceToDOMSpace(quadPoint, pageHeight, this.scale);
+            const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
             // If annotation being drawn is the annotation the mouse is over or
             // the annotation is 'active' or clicked, draw the highlight with
@@ -430,12 +555,13 @@ class DocAnnotator extends Annotator {
 
         // Create remove highlight button and position it above the upper right
         // corner of the highlight
-        const pdfCoordinates = this.getUpperRightCorner(annotation.location.quadPoints, pageEl);
-        const [upperRightX, upperRightY] = convertPDFSpaceToDOMSpace(pdfCoordinates, pageEl.getBoundingClientRect().height);
+        const pageHeight = pageEl.getBoundingClientRect().height;
+        const upperRightCorner = getUpperRightCorner(annotation.location.quadPoints, pageEl);
+        const [browserX, browserY] = convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
 
         // Position button
-        removeHighlightButtonEl.style.left = `${upperRightX - 20}px`;
-        removeHighlightButtonEl.style.top = `${upperRightY - 50}px`;
+        removeHighlightButtonEl.style.left = `${browserX - 20}px`;
+        removeHighlightButtonEl.style.top = `${browserY - 50}px`;
         removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
         removeHighlightButtonEl.setAttribute('data-page', page);
         removeHighlightButtonEl.classList.remove(CLASS_HIDDEN);
@@ -493,9 +619,8 @@ class DocAnnotator extends Annotator {
         let hoverAnnotationID = '';
         highlights.some((highlight) => {
             return highlight.location.quadPoints.some((quadPoint) => {
-                const scaledQuadPoint = quadPoint.map((coordinate) => coordinate * this.scale);
-                const DOMQuadPoint = convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight);
-                const [x1, y1, x2, y2, x3, y3, x4, y4] = DOMQuadPoint;
+                const browserQuadPoint = convertPDFSpaceToDOMSpace(quadPoint, pageHeight, this.scale);
+                const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
                 // Check if mouse is inside a rectangle of this
                 // annotation
@@ -615,7 +740,7 @@ class DocAnnotator extends Annotator {
         // Get quad points for each highlight element
         const quadPoints = [];
         highlightElements.forEach((element) => {
-            quadPoints.push(this.getQuadPoints(element, pageEl));
+            quadPoints.push(getQuadPoints(element, pageEl, this.scale));
         });
 
         // Unselect text and remove rangy highlight
@@ -659,18 +784,16 @@ class DocAnnotator extends Annotator {
         pointAnnotationEl.innerHTML = annotationElString;
 
         const location = annotation.location;
-        const pageScale = this.scale;
-        const scaledX = location.x * pageScale;
-        const scaledY = location.y * pageScale;
-        const page = location.page;
-        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
-
-        pageEl.appendChild(pointAnnotationEl);
+        const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
+        const pageHeight = pageEl.getBoundingClientRect().height;
+        const [browserX, browserY] = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
 
         // Annotation icon is 50px wide, so position it 25px to the left of
         // the saved coordinates to center
-        pointAnnotationEl.style.left = `${scaledX - 25}px`;
-        pointAnnotationEl.style.top = `${scaledY}px`;
+        pointAnnotationEl.style.left = `${browserX - 25}px`;
+        pointAnnotationEl.style.top = `${browserY}px`;
+
+        pageEl.appendChild(pointAnnotationEl);
 
         const showPointAnnotationButtonEl = pointAnnotationEl.querySelector('.show-point-annotation-btn');
         this.addEventHandler(showPointAnnotationButtonEl, (event) => {
@@ -722,10 +845,10 @@ class DocAnnotator extends Annotator {
             const pageDimensions = pageEl.getBoundingClientRect();
             const page = pageEl.getAttribute('data-page-number');
 
-            // Store coordinates at 100% scale
-            const pageScale = this.scale;
-            const x = (e.clientX - pageDimensions.left) / pageScale;
-            const y = (e.clientY - pageDimensions.top) / pageScale;
+            // Store coordinates at 100% scale in PDF space in PDF units
+            const browserCoordinates = [e.clientX - pageDimensions.left, e.clientY - pageDimensions.top];
+            const pdfCoordinates = convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, this.scale);
+            const [x, y] = pdfCoordinates;
             const locationData = { x, y, page };
 
             this.createAnnotationDialog(locationData, POINT_ANNOTATION_TYPE);
@@ -1039,21 +1162,18 @@ class DocAnnotator extends Annotator {
      * Position a dialog at the specified location.
      *
      * @param {HTMLElement} dialogEl Dialog element to position
-     * @param {Object} locationData Data about where to position the dialog
+     * @param {Object} location Annotation location object
      * @param {Number} dialogWidth Width of dialog
      * @returns {void}
      */
-    positionDialog(dialogEl, locationData, dialogWidth) {
+    positionDialog(dialogEl, location, dialogWidth) {
         const positionedDialogEl = dialogEl;
-        const page = locationData.page;
-        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
+        const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
+        const pageHeight = pageEl.getBoundingClientRect().height;
+        const [browserX, browserY] = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
 
-        const pageScale = this.scale;
-        const scaledX = locationData.x * pageScale;
-        const scaledY = locationData.y * pageScale;
-
-        positionedDialogEl.style.left = `${scaledX - dialogWidth / 2}px`;
-        positionedDialogEl.style.top = `${scaledY}px`;
+        positionedDialogEl.style.left = `${browserX - dialogWidth / 2}px`;
+        positionedDialogEl.style.top = `${browserY}px`;
         pageEl.appendChild(dialogEl);
 
         // @TODO(tjin): reposition to avoid sides
@@ -1152,101 +1272,6 @@ class DocAnnotator extends Annotator {
                 element.removeEventListener(TOUCH_EVENT, handler);
             });
         });
-    }
-
-    /**
-     * Returns the coordinates of the quadrilateral representing this element
-     * per the PDF text markup annotation spec. Note that these coordinates
-     * are in PDF default user space, with the origin at the bottom left corner
-     * of the document.
-     *
-     * We do this by letting the browser figure out the coordinates for us.
-     * See http://stackoverflow.com/a/17098667
-     *
-     * @param {HTMLElement} element Element to get quad points for
-     * @param {HTMLElement} relativeEl Element quad points should be relative to
-     * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3,
-     * x4, y4] with (x1, y1) being the lower left (untransformed) corner of the
-     * element and the other 3 vertices in counterclockwise order. These are
-     * in PDF default user space.
-     */
-    getQuadPoints(element, relativeEl) {
-        // Create quad point helper elements once if needed
-        if (!this.quadCornerContainerEl) {
-            this.quadCornerContainerEl = document.createElement('div');
-            this.quadCornerContainerEl.classList.add('box-preview-quad-corner-container');
-
-            // Create zero-size elements that can be styled to the 4 corners of
-            // quadrilateral around element - using 4 divs is faster than using
-            // one div and moving it around
-            this.quadCorner1El = document.createElement('div');
-            this.quadCorner2El = document.createElement('div');
-            this.quadCorner3El = document.createElement('div');
-            this.quadCorner4El = document.createElement('div');
-
-            this.quadCorner1El.classList.add('box-preview-quad-corner', 'corner1');
-            this.quadCorner2El.classList.add('box-preview-quad-corner', 'corner2');
-            this.quadCorner3El.classList.add('box-preview-quad-corner', 'corner3');
-            this.quadCorner4El.classList.add('box-preview-quad-corner', 'corner4');
-
-            this.quadCornerContainerEl.appendChild(this.quadCorner1El);
-            this.quadCornerContainerEl.appendChild(this.quadCorner2El);
-            this.quadCornerContainerEl.appendChild(this.quadCorner3El);
-            this.quadCornerContainerEl.appendChild(this.quadCorner4El);
-        }
-
-        // Insert helper into element to calculate quad points for
-        element.appendChild(this.quadCornerContainerEl);
-
-        const corner1Rect = this.quadCorner1El.getBoundingClientRect();
-        const corner2Rect = this.quadCorner2El.getBoundingClientRect();
-        const corner3Rect = this.quadCorner3El.getBoundingClientRect();
-        const corner4Rect = this.quadCorner4El.getBoundingClientRect();
-        const relativeRect = relativeEl.getBoundingClientRect();
-        const relativeLeft = relativeRect.left;
-        const relativeBottom = relativeRect.bottom;
-
-        // Cleanup helper element
-        element.removeChild(this.quadCornerContainerEl);
-
-        // Calculate PDF default user coordinates of these 4 corners
-        const quadPoints = [
-            corner1Rect.left - relativeLeft,
-            relativeBottom - corner1Rect.bottom,
-            corner2Rect.left - relativeLeft,
-            relativeBottom - corner2Rect.bottom,
-            corner3Rect.left - relativeLeft,
-            relativeBottom - corner3Rect.bottom,
-            corner4Rect.left - relativeLeft,
-            relativeBottom - corner4Rect.bottom
-        ];
-
-        // Return quad points at 100% scale
-        return quadPoints.map((x) => x / this.scale);
-    }
-
-    /**
-     * Gets coordinates representing upper right corner of the annotation
-     * represented by the provided quad points. Note that these coordinates
-     * are in PDF default user space, with the origin at the bottom left corner
-     * of the document.
-     *
-     * @param {Number[]} quadPoints Quad points of annotation to get upper
-     * right corner for in PDF default user space
-     * @returns {Number[]} [x,y] of upper right corner of quad points in PDF
-     * default user space.
-     */
-    getUpperRightCorner(quadPoints) {
-        let [x, y] = [0, 0];
-        quadPoints.forEach((quadPoint) => {
-            const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
-
-            x = Math.max(x, Math.max(x1, x2, x3, x4));
-            y = Math.max(y, Math.max(y1, y2, y3, y4));
-        });
-
-        // Return scaled coordinates
-        return [x, y].map((val) => val * this.scale);
     }
 }
 
