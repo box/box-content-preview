@@ -1,6 +1,10 @@
 import './multi-image.scss';
 import autobind from 'autobind-decorator';
 import ImageBase from './image-base';
+import {
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
+} from '../icons/icons';
 
 const CSS_CLASS_IMAGE = 'box-preview-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
@@ -121,6 +125,18 @@ class MultiImage extends ImageBase {
         this.wrapperEl.parentNode.scrollLeft = (this.wrapperEl.parentNode.scrollWidth - viewportWidth) / 2;
 
         this.emit('resize');
+    }
+
+    /**
+     * Loads controls
+     *
+     * @private
+     * @returns {void}
+     */
+    loadUI() {
+        super.loadUI();
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 }
 
