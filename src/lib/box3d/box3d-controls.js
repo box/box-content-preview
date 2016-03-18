@@ -50,8 +50,8 @@ class Box3DControls extends EventEmitter {
         this.controls = new Controls(this.el);
         this.resetButtonEl = this.controls.add(__('reset_camera'), this.handleReset, 'box-preview-reset-icon');
         this.vrButtonEl = this.controls.add(__('vr'), this.handleToggleVr, 'box-preview-vr-toggle-icon');
-        this.controls.add(__('enter_fullscreen'), this.handleToggleFullscreen, 'box-preview-3d-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.handleToggleFullscreen, 'box-preview-3d-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        this.controls.add(__('enter_fullscreen'), this.handleToggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.handleToggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
         this.hideVrButton();
     }

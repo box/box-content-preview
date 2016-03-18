@@ -56,13 +56,22 @@
     margin: 0 auto;
 }
 
+.box-preview-exit-fullscreen-icon {
+    display: none;
+}
+
+.box-preview-is-fullscreen {
+    .box-preview-enter-fullscreen-icon {
+        display: none;
+    }
+    .box-preview-exit-fullscreen-icon {
+        display: block;
+    }
+}
+
 .box-preview-controls-btn.disabled,
 .box-preview-controls-btn:disabled,
-.box-preview-fullscreen-disabled .box-preview-image-expand-icon,
-.box-preview-fullscreen-disabled .box-preview-text-expand-icon,
-.box-preview-fullscreen-disabled .box-preview-doc-expand-icon,
-.box-preview-fullscreen-disabled .box-preview-media-expand-icon,
-.box-preview-fullscreen-disabled .box-preview-box3d-expand-icon {
+.box-preview-fullscreen-disabled .box-preview-enter-fullscreen-icon {
     pointer-events: none;
     opacity: 0.2;
     cursor: default;

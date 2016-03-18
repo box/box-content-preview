@@ -65,8 +65,8 @@ class ImageBase extends Base {
         this.controls = new Controls(this.containerEl);
         this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon', ICON_ZOOM_IN);
         this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-image-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-image-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**
