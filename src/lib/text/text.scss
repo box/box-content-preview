@@ -7,3 +7,16 @@
     padding: 20px !important;
     margin: 0;
 }
+
+.box-preview-text-exit-fullscreen-icon {
+    display: none;
+}
+
+.box-preview-is-fullscreen {
+    .box-preview-text-enter-fullscreen-icon {
+        display: none;
+    }
+    .box-preview-text-exit-fullscreen-icon {
+        display: block;
+    }
+}

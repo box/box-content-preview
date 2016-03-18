@@ -1,0 +1,12 @@
+.box-preview-image-exit-fullscreen-icon {
+    display: none;
+}
+
+.box-preview-is-fullscreen {
+    .box-preview-image-enter-fullscreen-icon {
+        display: none;
+    }
+    .box-preview-image-exit-fullscreen-icon {
+        display: block;
+    }
+}
