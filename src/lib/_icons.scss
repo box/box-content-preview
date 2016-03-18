@@ -34,40 +34,6 @@
 }
 
 
-/*----- Doc -----*/
-.box-preview-doc-previous-page-icon:before {
-    -shalam-sprite: '../img/dark/up.png' dest-size(20px 20px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -64px -480px;
-    background: url(../img/sprite.png) -91px -248px/128px 436px;
-    /* end shalam */
-}
-
-.box-preview-doc-next-page-icon:before {
-    -shalam-sprite: '../img/dark/down.png' dest-size(20px 20px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -84px -480px;
-    background: url(../img/sprite.png) 0 -298px/128px 436px;
-    /* end shalam */
-}
-
-.box-preview-presentation-previous-page-icon:before {
-    -shalam-sprite: '../img/dark/left.png' dest-size(20px 20px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -104px -480px;
-    background: url(../img/sprite.png) -22px -298px/128px 436px;
-    /* end shalam */
-}
-
-.box-preview-presentation-next-page-icon:before {
-    -shalam-sprite: '../img/dark/right.png' dest-size(20px 20px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -124px -480px;
-    background: url(../img/sprite.png) -44px -298px/128px 436px;
-    /* end shalam */
-}
-
-
 /*----- Media ------*/
 .box-preview-media-gear-icon:before {
     -shalam-sprite: 'controls/settings-cog.png' dest-size(20px 20px);
