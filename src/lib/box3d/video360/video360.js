@@ -127,9 +127,10 @@ class Video360 extends Dash {
                 // layout: window.Box3D.BaseTextureAsset.LAYOUT.STEREO_2D_OVER_UNDER,
                 ignoreStream: true,
                 generateMipmaps: false,
-                filtering: 'Linear',
-                uMapping: 'Clamp',
-                vMapping: 'Clamp',
+                minFilter: 'linear',
+                magFilter: 'linear',
+                uMapping: 'clamp',
+                vMapping: 'clamp',
                 querySelector: `.${this.mediaContainerEl.className} video`
             }
         });

@@ -181,7 +181,7 @@ class Model3dRenderer extends Box3DRenderer {
                 const mat = materials[i];
                 mat.setProperty('useSceneLights', false);
                 mat.setProperty('useEnvironmentMap', true);
-                mat.setProperty('environmentMapProjection', 3);
+                mat.setProperty('environmentMapProjection', 'cubeMap');
                 mat.setProperty('environmentMapCube_0', 'HDR_ENV_MAP_CUBE_0');
                 mat.setProperty('environmentMapCube_1', 'HDR_ENV_MAP_CUBE_1');
                 mat.setProperty('environmentMapCube_2', 'HDR_ENV_MAP_CUBE_2');

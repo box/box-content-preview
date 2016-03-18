@@ -66,10 +66,10 @@ export default [{
     type: 'application',
     parentAssetId: 'APP_ASSET_ID',
     properties: {
-        loadStartupScene: 'SCENE_ID' // The scene to load
+        startupScene: 'SCENE_ID' // The scene to load
     },
     components: {
-        veroldRenderer: {
+        rendererComponent: {
             componentData: {
                 antialias: true,
                 renderOnDemand: false
