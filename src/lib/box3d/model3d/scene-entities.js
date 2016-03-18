@@ -71,17 +71,17 @@ function sceneEntities(prefix) {
         type: 'light',
         parentAssetId: 'SCENE_ID',
         properties: {
-            type: 'AmbientLight'
+            lightType: 'ambient'
         }
     }, {
         id: 'APP_ASSET_ID',
         type: 'application',
         parentAssetId: 'APP_ASSET_ID',
         properties: {
-            loadStartupScene: 'SCENE_ID' // The scene to load
+            startupScene: 'SCENE_ID' // The scene to load
         },
         components: {
-            veroldRenderer: {
+            rendererComponent: {
                 componentData: {
                     antialias: true
                 },
@@ -108,10 +108,11 @@ function sceneEntities(prefix) {
             isHdr: true,
             originalWidth: 1024,
             originalHeight: 512,
-            ignoreStream: true,
-            generateMipmaps: true,
-            filtering: 'Trilinear',
-            vMapping: 'Clamp'
+            stream: false,
+            generateMipmaps: false,
+            minFilter: 'linear',
+            magFilter: 'linear',
+            vMapping: 'clamp'
         },
         resources: [{
             path: `${prefix}third-party/model3d/HDR_Env0.png`,
@@ -133,10 +134,11 @@ function sceneEntities(prefix) {
             isHdr: true,
             originalWidth: 512,
             originalHeight: 256,
-            ignoreStream: true,
-            generateMipmaps: true,
-            filtering: 'Trilinear',
-            vMapping: 'Clamp'
+            stream: false,
+            generateMipmaps: false,
+            minFilter: 'linear',
+            magFilter: 'linear',
+            vMapping: 'clamp'
         },
         resources: [{
             path: `${prefix}third-party/model3d/HDR_Env1.png`,
@@ -158,10 +160,11 @@ function sceneEntities(prefix) {
             isHdr: true,
             originalWidth: 256,
             originalHeight: 128,
-            ignoreStream: true,
+            stream: false,
             generateMipmaps: false,
-            filtering: 'Linear',
-            vMapping: 'Clamp'
+            minFilter: 'linear',
+            magFilter: 'linear',
+            vMapping: 'clamp'
         },
         resources: [{
             path: `${prefix}third-party/model3d/HDR_Env2.png`,
@@ -180,14 +183,13 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             isHdr: true,
-            type: 1015,
+            type: 'float',
             width: 512,
             height: 512,
-            ignoreStream: true,
+            stream: false,
             generateMipmaps: true,
-            filtering: 'Trilinear',
-            vMapping: 'Clamp',
-            uMapping: 'Clamp'
+            vMapping: 'clamp',
+            uMapping: 'clamp'
         },
         components: {
             equirectToCubemap: {
@@ -204,14 +206,13 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             isHdr: true,
-            type: 1015,
+            type: 'float',
             width: 256,
             height: 256,
-            ignoreStream: true,
+            stream: false,
             generateMipmaps: true,
-            filtering: 'Trilinear',
-            vMapping: 'Clamp',
-            uMapping: 'Clamp'
+            vMapping: 'clamp',
+            uMapping: 'clamp'
         },
         components: {
             equirectToCubemap: {
@@ -228,14 +229,13 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             isHdr: true,
-            type: 1015,
+            type: 'float',
             width: 128,
             height: 128,
-            ignoreStream: true,
-            generateMipmaps: false,
-            filtering: 'Linear',
-            vMapping: 'Clamp',
-            uMapping: 'Clamp'
+            stream: false,
+            generateMipmaps: true,
+            vMapping: 'clamp',
+            uMapping: 'clamp'
         },
         components: {
             equirectToCubemap: {

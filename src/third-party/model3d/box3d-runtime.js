@@ -55700,7 +55700,7 @@
 	  return Box3DAsset;
 	}(_Box3DEntity3.default);
 
-	Box3DAsset.defaultProperties = _lodash2.default.extend({}, _Box3DEntity3.default.defaultProperties);
+	Box3DAsset.schema = _lodash2.default.extend({}, _Box3DEntity3.default.schema, {});
 	Box3DAsset.events = {
 	  triggerLoad: {
 	    scope: 'local',
@@ -56299,17 +56299,93 @@
 	     * @param  {String} propertyName Name of the property to set.
 	     * @param  {Mixed} value        Value of the property.
 	     * @param  {Object} options      Options object. Can contain things like silent: true, etc.
+	     * @returns {Boolean} True if the set was successful. False otherwise.
 	     */
 
 	  }, {
 	    key: 'setProperty',
 	    value: function setProperty(propertyName, value, options) {
-	      //TODO - verify  property value against schema.
-	      this.sharedData.previousProperties[propertyName] = _lodash2.default.clone(this.sharedData.properties[propertyName]);
-	      this.sharedData.properties[propertyName] = value;
-	      if (!options || !options.silent) {
-	        this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this, propertyName, value);
+	      // Verify  property value against schema.
+	      if (this.constructor.schema[propertyName]) {
+	        var valid = false;
+	        var formattedValue = undefined;
+	        switch (this.constructor.schema[propertyName].type) {
+	          case 'string':
+	          case 'id':
+	            if (_lodash2.default.isString(value)) {
+	              valid = true;
+	            }
+	            break;
+	          case 'integer':
+	            if (_lodash2.default.isNumber(value) && Math.round(value) === value) {
+	              valid = true;
+	            }
+	            break;
+	          case 'float':
+	            if (_lodash2.default.isNumber(value)) {
+	              valid = true;
+	            }
+	            break;
+	          case 'boolean':
+	            if (_lodash2.default.isBoolean(value)) {
+	              valid = true;
+	            }
+	            break;
+	          case 'object':
+	            if (_lodash2.default.isObject(value)) {
+	              valid = true;
+	            }
+	            break;
+	          case 'array':
+	            if (_lodash2.default.isArray(value)) {
+	              valid = true;
+	            }
+	            break;
+	          case 'vector2':
+	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y)) {
+	              valid = true;
+	              formattedValue = { x: value.x, y: value.y };
+	            }
+	            break;
+	          case 'vector3':
+	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.isNumber(value.z)) {
+	              valid = true;
+	              formattedValue = { x: value.x, y: value.y, z: value.z };
+	            }
+	            break;
+	          case 'vector4':
+	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.isNumber(value.z) && _lodash2.default.isNumber(value.w)) {
+	              valid = true;
+	              formattedValue = { x: value.x, y: value.y, z: value.z, w: value.w };
+	            }
+	            break;
+	          case 'color':
+	            if (_lodash2.default.isString(value)) {
+	              valid = true;
+	            }
+	            break;
+	          default:
+	            _log2.default.error('Forgot to add the type, ' + this.constructor.schema[propertyName].type);
+	            return;
+	        }
+	        if (_lodash2.default.isUndefined(value)) {
+	          valid = true;
+	        }
+	        if (valid) {
+	          if (!formattedValue) {
+	            formattedValue = value;
+	          }
+	          this.sharedData.previousProperties[propertyName] = _lodash2.default.clone(this.sharedData.properties[propertyName]);
+	          this.sharedData.properties[propertyName] = formattedValue;
+	          if (!options || !options.silent) {
+	            this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this, propertyName, formattedValue);
+	          }
+	          return true;
+	        } else {
+	          _log2.default.error('Wrong type specified for ' + propertyName);
+	        }
 	      }
+	      return false;
 	    }
 
 	    /**
@@ -56391,7 +56467,7 @@
 	        if (prefabObj) {
 	          return prefabObj.getProperty(propertyName);
 	        } else {
-	          return this.getPropertyDefault(propertyName);
+	          return this.getDefaultProperty(propertyName);
 	        }
 	      }
 	    }
@@ -56651,38 +56727,42 @@
 	    }
 
 	    /**
-	     * @private
-	     * @method getPropertiesObject
-	     * @return {Object} Object with all of this entities properties as keys.
-	     */
-
-	  }, {
-	    key: 'getPropertiesObject',
-	    value: function getPropertiesObject() {
-	      var properties = {};
-	      _lodash2.default.each(this.constructor.defaultProperties, function (value, property) {
-	        properties[property] = true;
-	      }, this);
-	      return properties;
-	    }
-
-	    /**
 	     * Returns the default property of the object given by 'propertyName'
-	     * @method getPropertyDefault
+	     * @method getDefaultProperty
 	     * @public
 	     * @param  {String} propertyName The name of the property.
 	     * @return {Mixed}              The property value
 	     */
 
 	  }, {
-	    key: 'getPropertyDefault',
-	    value: function getPropertyDefault(propertyName) {
-	      var value = this.constructor.defaultProperties[propertyName];
+	    key: 'getDefaultProperty',
+	    value: function getDefaultProperty(propertyName) {
+	      var value = undefined;
+	      var schemaDef = this.constructor.schema[propertyName];
+	      value = schemaDef ? schemaDef.default : undefined;
+
 	      if (value instanceof Object) {
 	        return _lodash2.default.clone(value);
 	      } else {
 	        return value;
 	      }
+	    }
+
+	    /**
+	     * Returns the default properties of the object given by 'propertyName'
+	     * @method getDefaultProperties
+	     * @public
+	     * @return {Object} List of default values, keyed by property name.
+	     */
+
+	  }, {
+	    key: 'getDefaultProperties',
+	    value: function getDefaultProperties() {
+	      var defaults = {};
+	      _lodash2.default.each(this.constructor.schema, function (val, key) {
+	        defaults[key] = val.default instanceof Object ? _lodash2.default.clone(val) : val.default;
+	      });
+	      return defaults;
 	    }
 
 	    /**
@@ -56706,7 +56786,7 @@
 	        if (prefabProperty) {
 	          return prefabProperty;
 	        } else {
-	          return this.getPropertyDefault(propertyName);
+	          return this.getDefaultProperty(propertyName);
 	        }
 	      }
 	    }
@@ -56737,16 +56817,15 @@
 	    value: function getProperties() {
 	      var myProperties = this.getOwnProperties();
 	      var prefabObj = this.getPrefabObject();
-	      var prefabObjProperties = {};
-	      var propertiesObj;
+	      var propertiesObj = this.getDefaultProperties();
 	      // If this object has a prefab, inherit the prefab's properties in the returned
 	      // structure.
 	      if (prefabObj) {
-	        prefabObjProperties = prefabObj.getOwnProperties();
-	        propertiesObj = _lodash2.default.extend({}, this.constructor.defaultProperties, prefabObjProperties, myProperties);
+	        var prefabObjProperties = prefabObj.getOwnProperties();
+	        propertiesObj = _lodash2.default.extend(propertiesObj, prefabObjProperties, myProperties);
 	        return propertiesObj;
 	      } else {
-	        propertiesObj = _lodash2.default.extend({}, this.constructor.defaultProperties, myProperties);
+	        propertiesObj = _lodash2.default.extend(propertiesObj, myProperties);
 	        return propertiesObj;
 	      }
 	    }
@@ -58902,7 +58981,7 @@
 	  DEPENDENCIES: 2,
 	  COMPONENTS: 3
 	};
-	Box3DEntity.defaultProperties = {};
+	Box3DEntity.schema = {};
 
 	window.Box3D.Box3DEntity = Box3DEntity;
 
@@ -60106,6 +60185,80 @@
 	      }
 	      return value;
 	    }
+	  }, {
+	    key: 'setProperty',
+
+	    /** @inheritdoc */
+	    value: function setProperty(propertyName, value, options) {
+
+	      if (!_get(Object.getPrototypeOf(MaterialAsset.prototype), 'setProperty', this).call(this, propertyName, value, options)) {
+	        var shaderAsset = this.getShader();
+	        var shaderParams = shaderAsset.getProperty('parameters');
+	        if (shaderParams[propertyName]) {
+	          var type = shaderParams[propertyName].type;
+
+	          // Copy the previous value.
+	          this.sharedData.previousProperties[propertyName] = _lodash2.default.clone(this.sharedData.properties[propertyName]);
+
+	          // Handle scalar values
+	          if (type === 't' && (_lodash2.default.isString(value) || value === null) || type === 'f' && _lodash2.default.isNumber(value) || type === 'b' && _lodash2.default.isBoolean(value) || type === 'i' && _lodash2.default.isNumber(value) && Math.round(value) === value || type === 'opt' && shaderParams[propertyName].options.hasOwnProperty(value)) {
+
+	            this.sharedData.properties[propertyName] = value;
+
+	            // Handle colours
+	          } else if (type === 'c') {
+	              var newValue = undefined;
+	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
+	                newValue = this.sharedData.properties[propertyName];
+	              } else {
+	                newValue = { r: 0.0, g: 0.0, b: 0.0 };
+	                this.sharedData.properties[propertyName] = newValue;
+	              }
+	              if (_lodash2.default.isString(value)) {
+	                if (value.slice(0, 2) !== '0x') {
+	                  value = parseInt(value, 10);
+	                  value = '0x' + value.toString(16);
+	                }
+	                MaterialAsset.hexColorToVector(parseInt(value, 16), newValue);
+	              } else if (_lodash2.default.isNumber(value)) {
+	                value = Math.max(0, Math.max(0xffffff, value));
+	                MaterialAsset.hexColorToVector(value, newValue);
+	              } else if (_lodash2.default.isObject(value) && _lodash2.default.isNumber(value.r) && _lodash2.default.isNumber(value.g) && _lodash2.default.isNumber(value.b)) {
+	                newValue.r = value.r;
+	                newValue.g = value.g;
+	                newValue.b = value.b;
+	              }
+
+	              // Handle vectors
+	            } else if (type.charAt(0) === 'v' && _lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y)) {
+	                if (this.sharedData.properties.hasOwnProperty(propertyName)) {
+	                  this.sharedData.properties[propertyName].x = value.x;
+	                  this.sharedData.properties[propertyName].y = value.y;
+	                } else {
+	                  this.sharedData.properties[propertyName] = { x: value.x, y: value.y };
+	                }
+	                if (type === 'v3' && _lodash2.default.isNumber(value.z)) {
+	                  this.sharedData.properties[propertyName].z = value.z;
+	                } else if (type === 'v4' && _lodash2.default.isNumber(value.z) && _lodash2.default.isNumber(value.w)) {
+	                  this.sharedData.properties[propertyName].z = value.z;
+	                  this.sharedData.properties[propertyName].w = value.w;
+	                }
+	              } else if (_lodash2.default.isUndefined(value)) {
+	                delete this.sharedData.properties[propertyName];
+	              } else {
+	                _log2.default.error('Wrong type specified for ' + propertyName);
+	                return;
+	              }
+
+	          // Dispatch change event
+	          if (!options || !options.silent) {
+	            this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this, propertyName, this.sharedData.properties[propertyName]);
+	          }
+	        } else {
+	          _log2.default.error('Unknown property, ' + propertyName + ', set on material.');
+	        }
+	      }
+	    }
 
 	    /**
 	     * Return a list of texture assets that this material currently uses.
@@ -60132,7 +60285,7 @@
 	            var textureAsset;
 	            if (shaderParams[param].type === 't') {
 	              if (this.isParameterUsed(param)) {
-	                textureId = this.getMaterialParameter(param);
+	                textureId = this.getProperty(param);
 	              }
 	              if (textureId) {
 	                textureAsset = this.getAssetById(textureId);
@@ -60179,57 +60332,9 @@
 	      var shaderId = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, 'shader');
 	      // If the shader asset doesn't exist, get the default shader asset.
 	      if (!this.getAssetById(shaderId)) {
-	        shaderId = this.getPropertyDefault('shader');
+	        shaderId = this.getDefaultProperty('shader');
 	      }
 	      return this.getAssetById(shaderId);
-	    }
-
-	    /**
-	     * Return the value of the given material parameter.
-	     * @param  {String} name The name of the parameter
-	     * @return {Mixed}      The value of the parameter, if it exists.
-	     */
-
-	  }, {
-	    key: 'getMaterialParameter',
-	    value: function getMaterialParameter(name) {
-	      var shaderAsset = this.getShader();
-	      var shaderParams = shaderAsset.getProperty('parameters');
-	      var value;
-	      if (shaderParams[name]) {
-	        if (!_lodash2.default.isUndefined(this.getProperty(name))) {
-	          value = this.getProperty(name);
-	        } else {
-	          value = shaderParams[name].default;
-	        }
-	      }
-	      return value;
-	    }
-
-	    /**
-	     * Return the value of the given material parameter.
-	     * @return {Object}      All parameters and their current values.
-	     */
-
-	  }, {
-	    key: 'getMaterialParameters',
-	    value: function getMaterialParameters() {
-	      var shaderAsset = this.getShader();
-	      var shaderParams = shaderAsset.getProperty('parameters');
-	      var returnParams = {};
-	      _lodash2.default.each(shaderParams, function (param, name) {
-	        returnParams[name] = this.getMaterialParameter(name);
-	      }, this);
-	      return returnParams;
-	    }
-	  }, {
-	    key: 'getMaterialParameterDefault',
-	    value: function getMaterialParameterDefault(name) {
-	      var shaderAsset = this.getShader();
-	      var shaderParams = shaderAsset.getProperty('parameters');
-	      if (shaderParams[name]) {
-	        return shaderParams[name].default;
-	      }
 	    }
 
 	    /** @inheritdoc */
@@ -60321,7 +60426,7 @@
 	      if (!shaderParams[param]) {
 	        return false;
 	      }
-	      var value = this.getMaterialParameter(param);
+	      var value = this.getProperty(param);
 
 	      // If this parameter is a texture and is assigned a texture that no longer
 	      // exists, consider its value as null.
@@ -60441,10 +60546,10 @@
 	            if (useDefines) {
 	              var defineName = this._convertToDefine(paramName);
 	              defines[defineName] = 0;
-	              if (shaderParams[paramName].type === 'dd') {
-	                defines[defineName] = this.getMaterialParameter(paramName);
+	              if (shaderParams[paramName].type === 'opt') {
+	                defines[defineName] = shaderParams[paramName].options[this.getProperty(paramName)];
 	              } else if (shaderParams[paramName].type === 't') {
-	                var texId = this.getMaterialParameter(paramName);
+	                var texId = this.getProperty(paramName);
 	                var texture = this.getAssetById(texId);
 	                var mipsDefine = defineName + '_NUM_MIPS';
 	                if (texture) {
@@ -60738,11 +60843,11 @@
 	        transparencyCondition = shaderParams[paramName].transparency;
 	        if (transparencyCondition && this.isParameterUsed(paramName)) {
 	          if (transparencyCondition === 'LessThanOne') {
-	            if (this.getMaterialParameter(paramName) < 1.0) {
+	            if (this.getProperty(paramName) < 1.0) {
 	              return true;
 	            }
 	          } else if (transparencyCondition === 'GreaterThanOne') {
-	            if (this.getMaterialParameter(paramName) > 1.0) {
+	            if (this.getProperty(paramName) > 1.0) {
 	              return true;
 	            }
 	          }
@@ -60831,9 +60936,8 @@
 
 	      if (shaderParams[key]) {
 	        if (shaderParams[key].isUniform) {
-	          value = this.getMaterialParameter(key);
-	          // TODO - 'new' statements here should be avoided if an object already exists
-	          switch (shaderParams[key].type) {
+	          value = this.getProperty(key);
+	          switch (shaderParams[key].type.charAt(0)) {
 	            case 't':
 	              var tex;
 	              var prevTex;
@@ -60881,13 +60985,20 @@
 	                  value = parseInt(value, 10);
 	                  value = '0x' + value.toString(16);
 	                }
-	                value = parseInt(value, 16);
+	                value = MaterialAsset.hexColorToVector(parseInt(value, 16));
+	              } else if (_lodash2.default.isNumber(value)) {
+	                value = Math.max(0, Math.min(0xffffff, value));
+	                value = MaterialAsset.hexColorToVector(value);
 	              }
-	              var newColour = new _three2.default.Color(value);
 	              if (this.box3DRuntime.getThreeRenderer().gammaInput) {
-	                newColour.copyGammaToLinear(newColour);
+	                var gammaValue = {};
+	                gammaValue.r = Math.pow(value.r, 2.2);
+	                gammaValue.g = Math.pow(value.g, 2.2);
+	                gammaValue.b = Math.pow(value.b, 2.2);
+	                this.setUniform(key, gammaValue);
+	              } else {
+	                this.setUniform(key, value);
 	              }
-	              this.setUniform(key, newColour);
 	              break;
 	            case 'b':
 	              if (shaderParams[key].animation && value) {
@@ -60895,29 +61006,20 @@
 	              }
 	              this.setUniform(key, value ? 1 : 0);
 	              break;
-	            case 'v2':
-	              if (shaderParams[key].animation && (value.x || value.y)) {
-	                this.registry.timeValueInUse = true;
-	              }
-	              value = new _three2.default.Vector2(value.x, value.y);
-	              break;
-	            case 'v3':
-	              if (shaderParams[key].animation && (value.x || value.y || value.z)) {
-	                this.registry.timeValueInUse = true;
-	              }
-	              value = new _three2.default.Vector3(value.x, value.y, value.z);
-	              break;
-	            case 'v4':
+	            case 'v':
 	              if (shaderParams[key].animation && (value.x || value.y || value.z || value.w)) {
 	                this.registry.timeValueInUse = true;
 	              }
-	              value = new _three2.default.Vector4(value.x, value.y, value.z, value.w);
+	              this.setUniform(key, value);
+	              break;
+	            case 'opt':
+	              this.setUniform(key, shaderParams[key].options[value]);
 	              break;
 	            default:
 	              this.setUniform(key, value);
 	          }
 	        } else if (shaderParams[key].isRenderParam) {
-	          value = this.isParameterUsed(key) ? this.getMaterialParameter(key) : undefined;
+	          value = this.isParameterUsed(key) ? this.getProperty(key) : undefined;
 	          this.setRenderParam(key, value);
 	        }
 	        // If the parameter changing always requires a material update, do it.
@@ -60935,7 +61037,40 @@
 	        _lodash2.default.each(Box3D.MaterialRegistry.materialObjectTypes, function (def, matObjType) {
 	          if (!def.uniforms || def.uniforms && def.uniforms[uniformName] === undefined) {
 	            if (this.runtimeData[matObjType].uniforms[uniformName]) {
-	              this.runtimeData[matObjType].uniforms[uniformName].value = value;
+	              var uniform = this.runtimeData[matObjType].uniforms[uniformName];
+	              if (uniform.type === 'c') {
+	                if (!uniform.value) {
+	                  uniform.value = new _three2.default.Color();
+	                }
+	                uniform.value.setRGB(value.r, value.g, value.b);
+	              } else if (uniform.type.charAt(0) === 'v') {
+	                if (!uniform.value) {
+	                  switch (uniform.type.charAt(1)) {
+	                    case '4':
+	                      uniform.value = new _three2.default.Vector4(value.x, value.y, value.z, value.w);
+	                      break;
+	                    case '3':
+	                      uniform.value = new _three2.default.Vector3(value.x, value.y, value.z);
+	                      break;
+	                    case '2':
+	                      uniform.value = new _three2.default.Vector2(value.x, value.y);
+	                  }
+	                } else {
+	                  switch (uniform.type.charAt(1)) {
+	                    case '4':
+	                      uniform.value.w = value.w;
+	                    //fallthrough
+	                    case '3':
+	                      uniform.value.z = value.z;
+	                    //fallthrough
+	                    case '2':
+	                      uniform.value.x = value.x;
+	                      uniform.value.y = value.y;
+	                  }
+	                }
+	              } else {
+	                uniform.value = value;
+	              }
 	            } else {
 	              _log2.default.warn('MaterialAsset.setUniform - Trying to set non-existent uniform, ' + uniformName);
 	            }
@@ -61029,104 +61164,15 @@
 	        _get(Object.getPrototypeOf(MaterialAsset.prototype), 'unload', this).call(this);
 	      }
 	    }
-	  }, {
-	    key: 'setColor',
-	    value: function setColor(attribute, newValue, animationTime) {
-	      var that = this;
-	      var ellapsedTime = 0.0;
-	      var newR, newG, newB, oldR, oldG, oldB;
-	      var oldValue;
-
-	      function animateValue(delta) {
-	        ellapsedTime += delta;
-	        if (ellapsedTime > animationTime) {
-	          that.box3DRuntime.off('update', animateValue, this);
-	          that.setProperty(attribute, newValue);
-	        } else {
-	          //Interpolate
-	          var interp = Math.min(ellapsedTime / animationTime, 1.0);
-	          var interpR = (1.0 - interp) * oldR + interp * newR;
-	          var interpG = (1.0 - interp) * oldG + interp * newG;
-	          var interpB = (1.0 - interp) * oldB + interp * newB;
-	          var color = that.runtimeData.static.uniforms[attribute].value;
-	          color.setRGB(interpR, interpG, interpB);
-	          if (that.box3DRuntime.getThreeRenderer().gammaInput) {
-	            color.copyGammaToLinear(color);
-	          }
-	          // that.setUniform( attribute, interpValue );
-	        }
-	      }
-	      if (animationTime) {
-	        oldValue = that.getProperty(attribute);
-	        oldR = (oldValue >> 16 & 255) / 255;
-	        oldG = (oldValue >> 8 & 255) / 255;
-	        oldB = (oldValue & 255) / 255;
-	        newR = (newValue >> 16 & 255) / 255;
-	        newG = (newValue >> 8 & 255) / 255;
-	        newB = (newValue & 255) / 255;
-	        this.box3DRuntime.on('update', animateValue, this);
-	      } else {
-	        this.setProperty(attribute, newValue);
-	      }
-	    }
-	  }, {
-	    key: 'setNumber',
-	    value: function setNumber(attribute, newValue, animationTime) {
-	      var that = this;
-	      var ellapsedTime = 0.0;
-	      var oldValue;
-
-	      function animateValue(delta) {
-	        ellapsedTime += delta;
-	        if (ellapsedTime > animationTime) {
-	          that.box3DRuntime.off('update', animateValue, this);
-	          that.setProperty(attribute, newValue);
-	        } else {
-	          //Interpolate
-	          var interp = Math.min(ellapsedTime / animationTime, 1.0);
-	          var interpValue = (1.0 - interp) * oldValue + interp * newValue;
-	          that.setUniform(attribute, interpValue);
-	        }
-	      }
-	      if (animationTime) {
-	        oldValue = that.getProperty(attribute);
-	        this.box3DRuntime.on('update', animateValue, this);
-	      } else {
-	        this.setProperty(attribute, newValue);
-	      }
-	    }
-	  }, {
-	    key: 'setVector2',
-	    value: function setVector2(attribute, newValue, animationTime) {
-	      var that = this;
-	      var ellapsedTime = 0.0;
-	      var newX, newY, oldX, oldY;
-	      var oldValue;
-
-	      function animateValue(delta) {
-	        ellapsedTime += delta;
-	        if (ellapsedTime > animationTime) {
-	          that.box3DRuntime.off('update', animateValue, this);
-	          that.setProperty(attribute, newValue);
-	        } else {
-	          //Interpolate
-	          var interp = Math.min(ellapsedTime / animationTime, 1.0);
-	          var interpX = (1.0 - interp) * oldX + interp * newX;
-	          var interpY = (1.0 - interp) * oldY + interp * newY;
-	          that.runtimeData.static.uniforms[attribute].value.x = interpX;
-	          that.runtimeData.static.uniforms[attribute].value.y = interpY;
-	        }
-	      }
-	      if (animationTime) {
-	        oldValue = that.getProperty(attribute);
-	        oldX = oldValue.x;
-	        oldY = oldValue.y;
-	        newX = newValue.x;
-	        newY = newValue.y;
-	        this.box3DRuntime.on('update', animateValue, this);
-	      } else {
-	        this.setProperty(attribute, newValue);
-	      }
+	  }], [{
+	    key: 'hexColorToVector',
+	    value: function hexColorToVector(hex, obj) {
+	      hex = Math.floor(hex);
+	      obj = obj ? obj : {};
+	      obj.r = (hex >> 16 & 255) / 255;
+	      obj.g = (hex >> 8 & 255) / 255;
+	      obj.b = (hex & 255) / 255;
+	      return obj;
 	    }
 	  }]);
 
@@ -61139,7 +61185,7 @@
 	    type: 'material',
 	    name: 'Missing Material',
 	    properties: {
-	      baseAlbedo: 13882323
+	      baseAlbedo: { r: 0.8275, g: 0.8275, b: 0.8275 }
 	    }
 	  }
 	};
@@ -61148,117 +61194,18 @@
 	MaterialAsset.STANDIN_TEXTURE_BLACK = 'STANDIN_TEXTURE_BLACK';
 	MaterialAsset.STANDIN_TEXTURE_BLACK_CUBE = 'STANDIN_TEXTURE_BLACK_CUBE';
 	MaterialAsset.STANDIN_TEXTURE_NORMAL = 'STANDIN_TEXTURE_NORMAL';
-	MaterialAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
-	  shader: 'box3d_pbr_spec_gloss_shader'
-	});
-	MaterialAsset.events = {
-	  setColor: {
-	    scope: 'local',
-	    action: true,
-	    category: 'Materials',
-	    params: [{
-	      name: 'parameter',
-	      type: 'dd',
-	      description: 'The colour parameter to modify.',
-	      default: 'albedoColor',
-	      options: {
-	        Diffuse: 'albedoColor',
-	        Specular: 'specularColor',
-	        Emissive: 'emissiveColor'
-	      }
-	    }, {
-	      name: 'value',
-	      type: 'c',
-	      description: 'The colour to set.',
-	      default: 0xff0000
-	    }, {
-	      name: 'animationTime',
-	      type: 'f',
-	      description: 'The length of time that the change will take. i.e. this ' + 'lets you animate the change.',
-	      default: 0.0,
-	      min: 0.0
-	    }]
+	MaterialAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  shader: {
+	    type: 'id',
+	    description: '',
+	    default: 'box3d_pbr_spec_gloss_shader'
 	  },
-	  setNumber: {
-	    scope: 'local',
-	    action: true,
-	    category: 'Materials',
-	    params: [{
-	      name: 'parameter',
-	      type: 'dd',
-	      description: 'The number parameter to modify.',
-	      default: 'colorOpacity',
-	      options: {
-	        'Opacity': 'opacity',
-	        'Rimlight Falloff': 'rimPower',
-	        'Glossiness': 'gloss',
-	        'Scattering Amount': 'scatterLocalScale',
-	        'Normal Map Scale': 'normalScale',
-	        'Parallax Scale': 'parallaxScale',
-	        'Reflectivity': 'reflectivityF0'
-	      }
-	    }, {
-	      name: 'value',
-	      type: 'f',
-	      description: 'The value to set.',
-	      default: 1.0
-	    }, {
-	      name: 'animationTime',
-	      type: 'f',
-	      description: 'The length of time that the change will take. i.e. ' + ' this lets you animate the change.',
-	      default: 0.0,
-	      min: 0.0
-	    }]
-	  },
-	  setVector2: {
-	    scope: 'local',
-	    action: true,
-	    category: 'Materials',
-	    params: [{
-	      name: 'parameter',
-	      type: 'dd',
-	      description: 'The vector parameter to modify.',
-	      default: 'diffuseTextureOffset',
-	      options: {
-	        'Diffuse Texture Offset': 'diffuseTextureOffset',
-	        'Diffuse Texture Scale': 'diffuseTextureScale',
-	        'Diffuse Texture Pan': 'diffuseTexturePan',
-	        'AO Texture Offset': 'aoTextureOffset',
-	        'AO Texture Scale': 'aoTextureScale',
-	        'AO Texture Pan': 'aoTexturePan',
-	        'Specular Texture Offset': 'specularTextureOffset',
-	        'Specular Texture Scale': 'specularTextureScale',
-	        'Specular Texture Pan': 'specularTexturePan',
-	        'Normal Map Offset': 'normalTextureOffset',
-	        'Normal Map Scale': 'normalTextureScale',
-	        'Normal Map Pan': 'normalTexturePan',
-	        'SSS Texture Offset': 'sssTextureOffset',
-	        'SSS Texture Scale': 'sssTextureScale',
-	        'SSS Texture Pan': 'sssTexturePan',
-	        'Displacement Map Offset': 'displacementTextureOffset',
-	        'Displacement Map Scale': 'displacementTextureScale',
-	        'Displacement Map Pan': 'displacementTexturePan',
-	        'Emissive Texture Offset': 'emissiveTextureOffset',
-	        'Emissive Texture Scale': 'emissiveTextureScale',
-	        'Emissive Texture Pan': 'emissiveTexturePan'
-	      }
-	    }, {
-	      name: 'value',
-	      type: 'v2',
-	      description: 'The colour to set.',
-	      default: {
-	        x: 1.0,
-	        y: 1.0
-	      }
-	    }, {
-	      name: 'animationTime',
-	      type: 'f',
-	      description: 'The length of time that the change will take. i.e.' + ' this lets you animate the change.',
-	      default: 0.0,
-	      min: 0.0
-	    }]
+	  enabledFeatures: {
+	    type: 'object',
+	    description: '',
+	    default: null
 	  }
-	};
+	});
 
 	window.Box3D.MaterialAsset = MaterialAsset;
 	// export default MaterialAsset;
@@ -61423,27 +61370,6 @@
 	  return TextureRegistry;
 	}(_BaseRegistry3.default);
 
-	TextureRegistry.textureFilters = ['Nearest', 'Linear', 'Trilinear'];
-	TextureRegistry.textureUVMappings = ['Wrap', 'Clamp', 'Mirror'];
-	TextureRegistry.textureUVMappingsMap = {
-	  Wrap: _three2.default.RepeatWrapping,
-	  Clamp: _three2.default.ClampToEdgeWrapping,
-	  Mirror: _three2.default.MirroredRepeatWrapping
-	};
-	TextureRegistry.textureFiltersMap = {
-	  Nearest: {
-	    minFilter: _three2.default.NearestFilter,
-	    magFilter: _three2.default.NearestFilter
-	  },
-	  Linear: {
-	    minFilter: _three2.default.NearestFilter,
-	    magFilter: _three2.default.LinearFilter
-	  },
-	  Trilinear: {
-	    minFilter: _three2.default.LinearMipMapLinearFilter,
-	    magFilter: _three2.default.LinearFilter
-	  }
-	};
 	exports.default = TextureRegistry;
 
 /***/ },
@@ -61475,10 +61401,6 @@
 	var _Box3DAsset2 = __webpack_require__(12);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	var _TextureRegistry = __webpack_require__(18);
-
-	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61536,12 +61458,17 @@
 
 	      var texture = this.runtimeData instanceof _three2.default.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
 
+	      // Textures should always have flipY turned off because it can't be applied to all
+	      // texture types (e.g. hardware compressed textures). Our shaders will always do
+	      // the y-flip for us.
+	      texture.flipY = false;
+
 	      if (changes.hasOwnProperty('uMapping')) {
-	        texture.wrapS = _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')];
+	        texture.wrapS = BaseTextureAsset.ADDRESS_MODE[this.getProperty('uMapping')];
 	      }
 
 	      if (changes.hasOwnProperty('vMapping')) {
-	        texture.wrapT = _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')];
+	        texture.wrapT = BaseTextureAsset.ADDRESS_MODE[this.getProperty('vMapping')];
 	      }
 
 	      if (changes.hasOwnProperty('anisotropy')) {
@@ -61552,32 +61479,16 @@
 	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
 	      }
 
-	      texture.flipY = false; // TODO: is this necessary here?
-
 	      if (changes.hasOwnProperty('generateMipmaps')) {
 	        var generateMipmaps = this.getProperty('generateMipmaps');
 	        texture.generateMipmaps = generateMipmaps && this.isPowerOfTwo() && !this.isCompressed();
 	      }
 
-	      if (changes.hasOwnProperty('premultiplyAlpha')) {
-	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
+	      if (changes.hasOwnProperty('minFilter')) {
+	        texture.minFilter = BaseTextureAsset.FILTER[this.getProperty('minFilter')];
 	      }
-
-	      if (changes.hasOwnProperty('filtering')) {
-	        var filtering = this.getProperty('filtering');
-	        if (!_TextureRegistry2.default.textureFiltersMap[filtering]) {
-	          filtering = 'Linear';
-	        }
-
-	        if (this.isHdr()) {
-	          var extensions = this.box3DRuntime.getThreeRenderer().extensions;
-	          if (!extensions.get('OES_texture_float_linear') && !extensions.get('OES_texture_half_float_linear')) {
-	            filtering = 'Nearest';
-	          }
-	        }
-
-	        texture.minFilter = _TextureRegistry2.default.textureFiltersMap[filtering].minFilter;
-	        texture.magFilter = _TextureRegistry2.default.textureFiltersMap[filtering].magFilter;
+	      if (changes.hasOwnProperty('magFilter')) {
+	        texture.magFilter = BaseTextureAsset.FILTER[this.getProperty('magFilter')];
 	      }
 
 	      if (this.isHdr() && this.packingFormat) {
@@ -61680,26 +61591,26 @@
 	      dataType = overrideParams.type || this.getDataType();
 
 	      switch (dataType) {
-	        case _three2.default.FloatType:
-	        case _three2.default.UnsignedIntType:
-	        case _three2.default.IntType:
+	        case 'float':
+	        case 'uInt':
+	        case 'int':
 	          channelSize = 4;
 	          break;
 
-	        case _three2.default.ShortType:
-	        case _three2.default.UnsignedShortType:
+	        case 'short':
+	        case 'uShort':
 	          channelSize = 2;
 	          break;
 
-	        case _three2.default.UnsignedByteType:
-	        case _three2.default.ByteType:
+	        case 'uByte':
+	        case 'byte':
 	          channelSize = 1;
 	          break;
 
 	        // The following types dictate the bpp directly.
-	        case _three2.default.UnsignedShort4444Type:
-	        case _three2.default.UnsignedShort5551Type:
-	        case _three2.default.UnsignedShort565Type:
+	        case 'uShort4444':
+	        case 'uShort5551':
+	        case 'uShort565':
 	          return width * height * 2;
 	      }
 	      return width * height * channelSize * numChannels;
@@ -61754,14 +61665,14 @@
 	    value: function getNumChannels(overrideFormat) {
 	      var format = overrideFormat || this.getFormat();
 	      switch (format) {
-	        case _three2.default.AlphaFormat:
-	        case _three2.default.LuminanceFormat:
+	        case 'alpha':
+	        case 'luminance':
 	          return 1;
-	        case _three2.default.LuminanceAlphaFormat:
+	        case 'luminanceAlpha':
 	          return 2;
-	        case _three2.default.RGBFormat:
+	        case 'rgb':
 	          return 3;
-	        case _three2.default.RGBAFormat:
+	        case 'rgba':
 	          return 4;
 	        default:
 	          return 0;
@@ -62155,25 +62066,102 @@
 	}(_Box3DAsset3.default);
 
 	BaseTextureAsset.LAYOUT = {
-	  NORMAL: 101,
-	  STEREO_2D_OVER_UNDER: 102,
-	  STEREO_2D_LEFT_RIGHT: 103,
-	  STEREO_2D_RIGHT_LEFT: 104,
-	  STEREO_CUBE_HORIZONTAL: 105
+	  normal: 101,
+	  stereo2dOverUnder: 102, // ABOVE-BELOW
+	  stereo2dLeftRight: 103, // PARALLEL-EYED
+	  stereo2dRightLeft: 104, // CROSS-EYED
+	  stereoCubeHorizontal: 105
 	};
-	BaseTextureAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
-	  uMapping: 'Wrap',
-	  vMapping: 'Wrap',
-	  filtering: 'Trilinear',
-	  anisotropy: 8,
-	  flipY: false,
-	  isHdr: false,
-	  useHardwareCompression: false,
-	  generateMipmaps: true,
-	  type: _three2.default.UnsignedByteType,
-	  format: _three2.default.RGBFormat,
-	  ignoreStream: true,
-	  layout: BaseTextureAsset.LAYOUT.NORMAL
+	BaseTextureAsset.FORMAT = {
+	  alpha: _three2.default.AlphaFormat,
+	  rgb: _three2.default.RGBFormat,
+	  rgba: _three2.default.RGBAFormat,
+	  rgbe: _three2.default.RGBEFormat,
+	  luminance: _three2.default.LuminanceFormat,
+	  luminanceAlpha: _three2.default.LuminanceAlphaFormat
+	};
+	BaseTextureAsset.ADDRESS_MODE = {
+	  wrap: _three2.default.RepeatWrapping,
+	  clamp: _three2.default.ClampToEdgeWrapping,
+	  mirror: _three2.default.MirroredRepeatWrapping
+	};
+	BaseTextureAsset.FILTER = {
+	  nearest: _three2.default.NearestFilter,
+	  nearestWithNearestMipmap: _three2.default.NearestMipMapNearestFilter,
+	  nearestWithLinearMipmap: _three2.default.NearestMipMapLinearFilter,
+	  linear: _three2.default.LinearFilter,
+	  linearWithNearestMipmap: _three2.default.LinearMipMapNearestFilter,
+	  linearWithLinearMipmap: _three2.default.LinearMipMapLinearFilter
+	};
+	BaseTextureAsset.TYPE = {
+	  uByte: _three2.default.UnsignedByteType,
+	  byte: _three2.default.ByteType,
+	  short: _three2.default.ShortType,
+	  uShort: _three2.default.UnsignedShortType,
+	  int: _three2.default.IntType,
+	  uInt: _three2.default.UnsignedIntType,
+	  float: _three2.default.FloatType,
+	  halfFloat: _three2.default.HalfFloatType,
+	  uShort4444: _three2.default.UnsignedShort4444Type,
+	  uShort5551: _three2.default.UnsignedShort5551Type,
+	  uShort565: _three2.default.UnsignedShort565Type
+	};
+	BaseTextureAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  format: {
+	    type: 'string',
+	    description: '',
+	    default: 'rgb'
+	  },
+	  type: {
+	    type: 'string',
+	    description: '',
+	    default: 'uByte'
+	  },
+	  uMapping: {
+	    type: 'string',
+	    description: '',
+	    default: 'wrap'
+	  },
+	  vMapping: {
+	    type: 'string',
+	    description: '',
+	    default: 'wrap'
+	  },
+	  minFilter: {
+	    type: 'string',
+	    description: '',
+	    default: 'linearWithLinearMipmap'
+	  },
+	  magFilter: {
+	    type: 'string',
+	    description: '',
+	    default: 'linear'
+	  },
+	  anisotropy: {
+	    type: 'float',
+	    description: '',
+	    default: 8.0
+	  },
+	  generateMipmaps: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  },
+	  premultiplyAlpha: {
+	    type: 'boolean',
+	    description: '',
+	    default: false
+	  },
+	  layout: {
+	    type: 'string',
+	    description: '',
+	    default: 'normal'
+	  },
+	  stream: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  }
 	});
 
 	window.Box3D.BaseTextureAsset = BaseTextureAsset;
@@ -64216,7 +64204,7 @@
 	          {
 	            "name": "orientation",
 	            "description": "Orient the object following the curve to either the direction of the curve or to the objects defining the curve.",
-	            "type": "dd",
+	            "type": "opt",
 	            "default": "toCurve",
 	            "options": {
 	              "None": "None",
@@ -64314,7 +64302,7 @@
 	          },
 	          {
 	            "name": "objectUsage",
-	            "type": "dd",
+	            "type": "opt",
 	            "description": "Specify what part of the animation the current object's position represents.",
 	            "default": "beginning",
 	            "options": {
@@ -64367,7 +64355,7 @@
 	          },
 	          {
 	            "name": "objectUsage",
-	            "type": "dd",
+	            "type": "opt",
 	            "description": "Specify what part of the animation the current object's rotation represents.",
 	            "default": "beginning",
 	            "options": {
@@ -64378,7 +64366,7 @@
 	          },
 	          {
 	            "name": "axisOrder",
-	            "type": "dd",
+	            "type": "opt",
 	            "description": "Specify the axis order that the angular velocity will be applied in.",
 	            "default": "YXZ",
 	            "options": {
@@ -64434,7 +64422,7 @@
 	          },
 	          {
 	            "name": "objectUsage",
-	            "type": "dd",
+	            "type": "opt",
 	            "description": "Specify what part of the animation the current object's scale represents.",
 	            "default": "beginning",
 	            "options": {
@@ -68559,10 +68547,6 @@
 	  value: true
 	});
 
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
 	var _lodash = __webpack_require__(2);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
@@ -68595,21 +68579,6 @@
 	  'transition': 'opacity 0.1s ease-in-out, background 0.1s ease-in-out',
 	  'cursor': 'pointer'
 	};
-
-	// const TEXT_CSS = {
-	//   'color': '#fff',
-	//   'font-family': 'proxima_nova_regular,Helvetica,Arial,sans-serif',
-	//   'word-wrap': 'break-word',
-	//   '-webkit-touch-callout': 'none',
-	//   '-webkit-user-select': 'none',
-	//   '-khtml-user-select': 'none',
-	//   '-moz-user-select': 'none',
-	//   '-ms-user-select': 'none',
-	//   'user-select': 'none',
-	//   'pointer-events': 'none',
-	//   'line-height': '115%',
-	//   'font-size': '1.8vmin' //1.8vmax for mobile, 1.8vmin for desktop
-	// };
 
 	var DebugTextureViewer = function (_Box3DComponent) {
 	  _inherits(DebugTextureViewer, _Box3DComponent);
@@ -68744,9 +68713,7 @@
 	    key: 'unregisterTexture',
 	    value: function unregisterTexture(texture) {
 	      if (texture) {
-	        if (!this.textureRegistryById[texture.id]) {
-	          _log2.default.warn('Unregistering render target that isn\'t registered');
-	        } else {
+	        if (this.textureRegistryById[texture.id]) {
 	          delete this.textureRegistryById[texture.id];
 	        }
 	      }
@@ -72775,7 +72742,7 @@
 	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
 	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
 	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'orientation', 'description': 'Orient the object following the curve to either the direction of the curve or to the objects defining the curve.', 'type': 'dd', 'default': 'toCurve', 'options' : { 'None': 'None', 'To Curve' : 'toCurve', 'To Nodes' : 'toNode'}},
+	 *     {name: 'orientation', 'description': 'Orient the object following the curve to either the direction of the curve or to the objects defining the curve.', 'type': 'opt', 'default': 'toCurve', 'options' : { 'None': 'None', 'To Curve' : 'toCurve', 'To Nodes' : 'toNode'}},
 	 *     {name: 'loop', 'type' : 'b', 'description': '', 'default': false}
 	 *   ]
 	 * }
@@ -72798,7 +72765,7 @@
 	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
 	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
 	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -1.0, 'max': 1.0},
-	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s position represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s position represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
 	 *   ]
 	 * }
 	 * @vevent local playAnimateRotation {
@@ -72809,8 +72776,8 @@
 	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
 	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
 	 *     {name: 'angularVelocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -100.0, 'max': 100.0},
-	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s rotation represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *     {name: 'axisOrder', 'type' : 'dd', 'description': 'Specify the axis order that the angular velocity will be applied in.', 'default': 'YXZ', 'options': {
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s rotation represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *     {name: 'axisOrder', 'type' : 'opt', 'description': 'Specify the axis order that the angular velocity will be applied in.', 'default': 'YXZ', 'options': {
 	 *       'XYZ': 'XYZ',
 	 *       'YXZ': 'YXZ',
 	 *       'ZXY': 'ZXY',
@@ -72828,7 +72795,7 @@
 	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
 	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
 	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -10.0, 'max': 10.0},
-	 *     {name: 'objectUsage', 'type' : 'dd', 'description': 'Specify what part of the animation the current object\'s scale represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s scale represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
 	 *   ]
 	 * }
 	 * @vevent local pauseCurveAnimation { 'action': true, 'category': 'Animation', 'parameters': []}
@@ -74349,7 +74316,7 @@
 	          }
 	          dist.multiply(scale);
 	          var size = dist.length();
-	          if (this.getEntity().getProperty('type') === 'PerspectiveCamera') {
+	          if (this.getEntity().getProperty('cameraType') === 'perspective') {
 	            newDistance = Math.abs(size / (2.0 * Math.tan(this.getEntity().getProperty('fov') * Math.PI / 360.0)));
 	          } else {
 	            newDistance = 0.5 * (this.getEntity().getProperty('near') + this.getEntity().getProperty('far'));
@@ -75026,11 +74993,6 @@
 	    value: function updateTexture() {
 	      if (this.inputTexture) {
 	        this.inputTexture.off('load', this.renderToCube, this);
-	        if (this.inputTexture.getProperty('isHDR')) {
-	          this.getEntity().setProperty('isHDR', true);
-	        } else {
-	          this.getEntity().setProperty('isHDR', false);
-	        }
 	        this.inputTexture.when('load', this.renderToCube, this);
 	        if (this.inputTexture.isUnloaded()) {
 	          this.inputTexture.load();
@@ -75982,7 +75944,7 @@
 	          }
 	          dist.multiply(scale);
 	          var size = dist.length();
-	          if (this.getEntity().getProperty('type') === 'PerspectiveCamera') {
+	          if (this.getEntity().getProperty('cameraType') === 'perspective') {
 	            newDistance = Math.abs(size / (2.0 * Math.tan(this.getEntity().getProperty('fov') * Math.PI / 360.0)));
 	          } else {
 	            newDistance = 0.5 * (this.getEntity().getProperty('near') + this.getEntity().getProperty('far'));
@@ -80366,7 +80328,7 @@
 	          // Based on the layout being used and the eye that this skybox represents, use only the
 	          // appropriate part of the texture.
 	          this.currentMaterial.defines.STEREO_EYE = this.leftEye ? 'STEREO_EYE_LEFT' : 'STEREO_EYE_RIGHT';
-	          this.currentMaterial.defines.LAYOUT = this.skyboxTexture.getProperty('layout');
+	          this.currentMaterial.defines.LAYOUT = _BaseTextureAsset2.default.LAYOUT[this.skyboxTexture.getProperty('layout')];
 	          this.currentMaterial.needsUpdate = true;
 	        }
 
@@ -80429,7 +80391,7 @@
 	      // 'vec4 worldPosition = modelMatrix * vec4( position, 1.0 );',
 	      'vCameraVector = (modelMatrix * vec4( position, 1.0 )).xyz;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
 
-	      this.skyboxPShader = ['#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', '#if (LAYOUT == LAYOUT_STEREO_2D_OVER_UNDER)', 'sampleUV.y *= 0.5;', '#if (STEREO_EYE == STEREO_EYE_LEFT)', 'sampleUV.y += 0.5;', '#endif', '#endif', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );', '}'].join('\n');
+	      this.skyboxPShader = ['#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', '#if (LAYOUT == LAYOUT_STEREO2DOVERUNDER)', 'sampleUV.y *= 0.5;', '#if (STEREO_EYE == STEREO_EYE_LEFT)', 'sampleUV.y += 0.5;', '#endif', '#endif', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );', '}'].join('\n');
 
 	      this.skyboxMaterialCube = new _three2.default.ShaderMaterial({
 	        vertexShader: this.skyboxVShader,
@@ -80456,8 +80418,8 @@
 	      });
 
 	      _lodash2.default.each(_BaseTextureAsset2.default.LAYOUT, function (value, name) {
-	        _this3.skyboxMaterialCube.defines['LAYOUT_' + name] = value;
-	        _this3.skyboxMaterial2D.defines['LAYOUT_' + name] = value;
+	        _this3.skyboxMaterialCube.defines['LAYOUT_' + name.toUpperCase()] = value;
+	        _this3.skyboxMaterial2D.defines['LAYOUT_' + name.toUpperCase()] = value;
 	      }, this);
 
 	      this.skyboxMaterial2D.defines.LAYOUT = 'LAYOUT_NORMAL';
@@ -80800,7 +80762,7 @@
 	        // Setup appropriate material for transforming 2D texture to cube map
 	        var shader = undefined;
 	        var layout = this.inputTexture.getProperty('layout');
-	        if (layout === _BaseTextureAsset2.default.LAYOUT.NORMAL) {
+	        if (layout === _BaseTextureAsset2.default.LAYOUT.normal) {
 	          shader = _three2.default.ShaderLib['equirect'];
 	          shader.uniforms.tFlip.value = 1.0;
 	          var transformMaterial = new _three2.default.ShaderMaterial({
@@ -80811,7 +80773,7 @@
 	            side: _three2.default.BackSide
 	          });
 	          this.skyboxMesh.material = transformMaterial;
-	        } else if (layout === _BaseTextureAsset2.default.LAYOUT.STEREO_CUBE_HORIZONTAL) {
+	        } else if (layout === _BaseTextureAsset2.default.LAYOUT.stereoCubeHorizontal) {
 	          shader = this.stereoCubeShader;
 	          var materials = new Array(6);
 	          for (var i = 0; i < 6; i++) {
@@ -80839,11 +80801,6 @@
 
 	        // Bind to texture loading
 	        this.inputTexture.off('load', this.renderToCube, this);
-	        if (this.inputTexture.getProperty('isHDR')) {
-	          this.getEntity().setProperty('isHDR', true);
-	        } else {
-	          this.getEntity().setProperty('isHDR', false);
-	        }
 	        this.inputTexture.when('load', this.renderToCube, this);
 	        if (this.inputTexture.isUnloaded()) {
 	          this.inputTexture.load();
@@ -86923,7 +86880,7 @@
 	    value: function createRuntimeData(callback) {
 	      this.box3DRuntime.setCurrentApp(this.id);
 	      var assetRegistry = this.box3DRuntime.assetRegistry;
-	      var scene = assetRegistry.getAssetById(this.getProperty('loadStartupScene'));
+	      var scene = assetRegistry.getAssetById(this.getProperty('startupScene'));
 	      if (scene) {
 	        scene.load();
 	      }
@@ -86935,11 +86892,12 @@
 	  return ApplicationAsset;
 	}(_Box3DAsset3.default);
 
-	ApplicationAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
-	  loadStartupScene: null,
-	  useBox3DLoader: true,
-	  engineName: 'Default',
-	  container: '#verold3d'
+	ApplicationAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  startupScene: {
+	    type: 'boolean',
+	    description: '',
+	    default: null
+	  }
 	});
 
 	window.Box3D.ApplicationAsset = ApplicationAsset;
@@ -89388,6 +89346,23 @@
 	  return MeshGeometryAsset;
 	}(_BaseGeometryAsset3.default);
 
+	MeshGeometryAsset.schema = _lodash2.default.extend({}, _BaseGeometryAsset3.default.schema, {
+	  attributes: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  indices: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  primitives: {
+	    type: 'array',
+	    description: '',
+	    default: []
+	  }
+	});
 	MeshGeometryAsset.arrayTypes = {
 	  int8: Int8Array,
 	  uint8: Uint8Array,
@@ -89799,24 +89774,87 @@
 	  return PrimitiveGeometryAsset;
 	}(_BaseGeometryAsset3.default);
 
-	PrimitiveGeometryAsset.defaultProperties = _lodash2.default.extend({}, _BaseGeometryAsset3.default.defaultProperties);
-	PrimitiveGeometryAsset.defaultProperties = _lodash2.default.extend({}, _BaseGeometryAsset3.default.defaultProperties, {
-	  type: 'sphere',
-	  radius: 100,
-	  segmentsU: 12,
-	  segmentsV: 12,
-	  sizeX: 100,
-	  sizeY: 100,
-	  sizeZ: 100,
-	  segmentsX: 1,
-	  segmentsY: 1,
-	  segmentsZ: 1,
-	  radiusTop: 50,
-	  radiusBottom: 50,
-	  height: 100,
-	  open: false,
-	  tubeRadius: 20,
-	  arcAngle: Math.PI * 2.0
+	PrimitiveGeometryAsset.schema = _lodash2.default.extend({}, _BaseGeometryAsset3.default.schema, {
+	  type: {
+	    type: 'string',
+	    description: '',
+	    default: 'sphere'
+	  },
+	  radius: {
+	    type: 'float',
+	    description: '',
+	    default: 100
+	  },
+	  segmentsU: {
+	    type: 'integer',
+	    description: '',
+	    default: 12
+	  },
+	  segmentsV: {
+	    type: 'integer',
+	    description: '',
+	    default: 12
+	  },
+	  sizeX: {
+	    type: 'float',
+	    description: '',
+	    default: 100
+	  },
+	  sizeY: {
+	    type: 'float',
+	    description: '',
+	    default: 100
+	  },
+	  sizeZ: {
+	    type: 'float',
+	    description: '',
+	    default: 100
+	  },
+	  segmentsX: {
+	    type: 'integer',
+	    description: '',
+	    default: 1
+	  },
+	  segmentsY: {
+	    type: 'integer',
+	    description: '',
+	    default: 1
+	  },
+	  segmentsZ: {
+	    type: 'integer',
+	    description: '',
+	    default: 1
+	  },
+	  radiusTop: {
+	    type: 'float',
+	    description: '',
+	    default: 50
+	  },
+	  radiusBottom: {
+	    type: 'float',
+	    description: '',
+	    default: 50
+	  },
+	  height: {
+	    type: 'float',
+	    description: '',
+	    default: 100
+	  },
+	  open: {
+	    type: 'boolean',
+	    description: '',
+	    default: false
+	  },
+	  tubeRadius: {
+	    type: 'float',
+	    description: '',
+	    default: 20
+	  },
+	  arcAngle: {
+	    type: 'float',
+	    description: '',
+	    default: Math.PI * 2.0
+	  }
 	});
 
 	window.Box3D.PrimitiveGeometryAsset = PrimitiveGeometryAsset;
@@ -89829,8 +89867,6 @@
 	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -89870,42 +89906,36 @@
 	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
 	  }
 
+	  /** @inheritdoc */
+
 	  _createClass(PrefabAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(PrefabAsset.prototype), 'initialize', this).call(this, properties);
-	      this.addOriginalTypeToDefaults(properties.originalType);
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
 	    key: 'createRuntimeData',
 	    value: function createRuntimeData(callback) {
 	      this.runtimeData = new _three2.default.Object3D();
 	      callback();
 	    }
 
-	    /**
-	     * Add the default properties from the class defined by this prefab's 'originalType' to the
-	     * default properties for this type.
-	     * @method  addOriginalTypeToDefaults
-	     * @private
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'addOriginalTypeToDefaults',
-	    value: function addOriginalTypeToDefaults() {
+	    key: 'getDefaultProperty',
+	    value: function getDefaultProperty(propertyName) {
 	      var originalType = this.get('originalType') || 'node';
 	      var objectClass = this.getObjectClass(originalType);
-	      _lodash2.default.extend(PrefabAsset.defaultProperties, objectClass.defaultProperties);
+	      var value = undefined;
+	      var schemaDef = objectClass.schema[propertyName];
+	      value = schemaDef ? schemaDef.default : undefined;
+
+	      if (value instanceof Object) {
+	        return _lodash2.default.clone(value);
+	      } else {
+	        return value;
+	      }
 	    }
 	  }]);
 
 	  return PrefabAsset;
 	}(_Box3DAsset3.default);
-
-	PrefabAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties);
 
 	window.Box3D.PrefabAsset = PrefabAsset;
 	exports.default = PrefabAsset;
@@ -89932,17 +89962,9 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DEntity = __webpack_require__(13);
-
-	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
-
 	var _BaseTextureAsset2 = __webpack_require__(19);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
-
-	var _TextureRegistry = __webpack_require__(18);
-
-	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -89980,12 +90002,12 @@
 	      var height = this.getHeight();
 
 	      this.runtimeData = new _three2.default.WebGLRenderTarget(width, height, {
-	        wrapS: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')],
-	        wrapT: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')],
+	        wrapS: _BaseTextureAsset3.default.ADDRESS_MODE[this.getProperty('uMapping')],
+	        wrapT: _BaseTextureAsset3.default.ADDRESS_MODE[this.getProperty('vMapping')],
 	        minFilter: _three2.default.LinearFilter,
 	        magFilter: _three2.default.LinearFilter,
-	        format: this.getProperty('format'),
-	        type: this.getProperty('type'),
+	        format: _BaseTextureAsset3.default.FORMAT[this.getProperty('format')],
+	        type: _BaseTextureAsset3.default.TYPE[this.getProperty('type')],
 	        stencilBuffer: this.getProperty('stencilBuffer')
 	      });
 
@@ -90017,8 +90039,8 @@
 	          delete this.runtimeData.__webglFramebuffer;
 	        }
 
-	        this.runtimeData.texture.format = this.getProperty('format');
-	        this.runtimeData.texture.type = this.getProperty('type');
+	        this.runtimeData.texture.format = _BaseTextureAsset3.default.FORMAT[this.getProperty('format')];
+	        this.runtimeData.texture.type = _BaseTextureAsset3.default.TYPE[this.getProperty('type')];
 	        this.runtimeData.texture.height = this.getHeight();
 	        this.runtimeData.texture.width = this.getWidth();
 	      }
@@ -90049,51 +90071,37 @@
 	        this.runtimeData.needsUpdate = true;
 	      }
 	    }
-
-	    /**
-	     * Temp function to set data from three.js texture. This should be replaced with a way to
-	     * create an asset from a url, blob data, etc. as this method doesn't set the asset up for
-	     * unload, reload, property changes, etc.
-	     */
-
-	  }, {
-	    key: 'setFromThreeData',
-	    value: function setFromThreeData(threeTexture) {
-	      var _this2 = this;
-
-	      if (!threeTexture instanceof _three2.default.Texture) {
-	        return;
-	      }
-	      this.loadBase(function () {
-	        _this2.runtimeData = threeTexture;
-	        _this2.setProperty('width', threeTexture.image.width, { silent: true });
-	        _this2.setProperty('height', threeTexture.image.height, { silent: true });
-	        _this2.setProperty('format', threeTexture.format, { silent: true });
-	        _this2.setProperty('type', threeTexture.type, { silent: true });
-
-	        // TODO: _applyPropertiesLoaded() should only be called by Box3DEntity and
-	        // 'loadBase' should only be triggered there as well. We should investigate
-	        // using Box3DEntity.reloadBase() here instead.
-	        _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), '_applyPropertiesLoaded', _this2).call(_this2, _this2.getPropertiesObject());
-	        _this2.runtimeData.needsUpdate = true;
-	        _this2.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
-	      });
-	    }
 	  }]);
 
 	  return RenderTexture2DAsset;
 	}(_BaseTextureAsset3.default);
 
-	RenderTexture2DAsset.defaultProperties = _lodash2.default.extend({}, _BaseTextureAsset3.default.defaultProperties, {
-	  format: _three2.default.RGBAFormat,
-	  type: _three2.default.UnsignedByteType,
-	  width: 256,
-	  height: 256,
-	  filtering: 'Linear',
-	  useHardwareCompression: false,
-	  stencilBuffer: false,
-	  depthBuffer: false,
-	  generateMipmaps: false
+	RenderTexture2DAsset.schema = _lodash2.default.extend({}, _BaseTextureAsset3.default.schema, {
+	  width: {
+	    type: 'integer',
+	    description: '',
+	    default: 256
+	  },
+	  height: {
+	    type: 'integer',
+	    description: '',
+	    default: 256
+	  },
+	  stencilBuffer: {
+	    type: 'boolean',
+	    description: '',
+	    default: false
+	  },
+	  depthBuffer: {
+	    type: 'boolean',
+	    description: '',
+	    default: false
+	  },
+	  generateMipmaps: {
+	    type: 'boolean',
+	    description: _BaseTextureAsset3.default.schema.generateMipmaps.description,
+	    default: false
+	  }
 	});
 
 	window.Box3D.RenderTexture2DAsset = RenderTexture2DAsset;
@@ -90126,10 +90134,6 @@
 	var _BaseTextureAsset2 = __webpack_require__(19);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
-
-	var _TextureRegistry = __webpack_require__(18);
-
-	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -90166,12 +90170,12 @@
 	      var height = this.getHeight();
 
 	      this.runtimeData = new _three2.default.WebGLRenderTargetCube(width, height, {
-	        wrapS: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('uMapping')],
-	        wrapT: _TextureRegistry2.default.textureUVMappingsMap[this.getProperty('vMapping')],
+	        wrapS: _BaseTextureAsset3.default.ADDRESS_MODE[this.getProperty('uMapping')],
+	        wrapT: _BaseTextureAsset3.default.ADDRESS_MODE[this.getProperty('vMapping')],
 	        minFilter: _three2.default.LinearFilter,
 	        magFilter: _three2.default.LinearFilter,
-	        format: this.getProperty('format'),
-	        type: this.getProperty('type'),
+	        format: _BaseTextureAsset3.default.FORMAT[this.getProperty('format')],
+	        type: _BaseTextureAsset3.default.TYPE[this.getProperty('type')],
 	        stencilBuffer: this.getProperty('stencilBuffer')
 	      });
 
@@ -90202,8 +90206,8 @@
 	          delete this.runtimeData.__webglFramebuffer;
 	        }
 
-	        this.runtimeData.texture.format = this.getProperty('format');
-	        this.runtimeData.texture.type = this.getProperty('type');
+	        this.runtimeData.texture.format = _BaseTextureAsset3.default.FORMAT[this.getProperty('format')];
+	        this.runtimeData.texture.type = _BaseTextureAsset3.default.TYPE[this.getProperty('type')];
 	        this.runtimeData.texture.width = this.getWidth();
 	        this.runtimeData.texture.height = this.runtimeData.width;
 	      }
@@ -90268,16 +90272,32 @@
 	  return RenderTextureCubeAsset;
 	}(_BaseTextureAsset3.default);
 
-	RenderTextureCubeAsset.defaultProperties = _lodash2.default.extend({}, _BaseTextureAsset3.default.defaultProperties, {
-	  format: _three2.default.RGBAFormat,
-	  type: _three2.default.UnsignedByteType,
-	  width: 256,
-	  height: 256,
-	  filtering: 'Linear',
-	  useHardwareCompression: false,
-	  stencilBuffer: false,
-	  depthBuffer: false,
-	  generateMipmaps: false
+	RenderTextureCubeAsset.schema = _lodash2.default.extend({}, _BaseTextureAsset3.default.schema, {
+	  width: {
+	    type: 'integer',
+	    description: '',
+	    default: 256
+	  },
+	  height: {
+	    type: 'integer',
+	    description: '',
+	    default: 256
+	  },
+	  stencilBuffer: {
+	    type: 'boolean',
+	    description: '',
+	    default: false
+	  },
+	  depthBuffer: {
+	    type: 'boolean',
+	    description: '',
+	    default: false
+	  },
+	  generateMipmaps: {
+	    type: 'boolean',
+	    description: _BaseTextureAsset3.default.schema.generateMipmaps.description,
+	    default: false
+	  }
 	});
 
 	window.Box3D.RenderTextureCubeAsset = RenderTextureCubeAsset;
@@ -90568,11 +90588,23 @@
 	  return SceneAsset;
 	}(_Box3DAsset3.default);
 
-	SceneAsset.defaultProperties = _lodash2.default.extend({}, _Box3DAsset3.default.defaultProperties, {
-	  fogEnabled: false,
-	  fogType: 'FogExp2',
-	  fogColor: 0xbbbbbb,
-	  fogDensity: 0.0004
+	SceneAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  fogEnabled: {
+	    type: 'boolean',
+	    default: false
+	  },
+	  fogType: {
+	    type: 'string',
+	    default: 'FogExp2'
+	  },
+	  fogColor: {
+	    type: 'color',
+	    default: 0xbbbbbb
+	  },
+	  fogDensity: {
+	    type: 'float',
+	    default: 0.0004
+	  }
 	});
 
 	window.Box3D.SceneAsset = SceneAsset;
@@ -90662,7 +90694,7 @@
 	          return;
 	        }
 	        switch (param.type) {
-	          case 'dd':
+	          case 'opt':
 	            uniform.type = 'i';
 	            uniform.value = param.default;
 	            break;
@@ -90934,12 +90966,12 @@
 	        albedoMapUVChannel: {
 	          displayName: 'UV Channel',
 	          description: 'Which UV channel to use with the albedo map.',
-	          type: 'dd',
+	          type: 'opt',
 	          options: {
-	            'UV 0': 0,
-	            'UV 1': 1
+	            uv0: 0,
+	            uv1: 1
 	          },
-	          default: 0,
+	          default: 'uv0',
 	          enabledWhen: {
 	            albedoMapUVChannel: {
 	              notEqualDefault: true
@@ -91015,13 +91047,13 @@
 	    alphaBlendMode: {
 	      displayName: 'Alpha Mode',
 	      description: 'This option controls whether the alpha channel of the color texture is' + ' used for transparency or just to blend with the Base Color (default).',
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        'Alpha Transparency': 0,
-	        'Masked Transparency': 2,
-	        'Color Blend': 1
+	        alphaTransparency: 0,
+	        maskedTransparency: 2,
+	        colorBlend: 1
 	      },
-	      default: 1,
+	      default: 'colorBlend',
 	      transparency: 'LessThanOne'
 	    },
 	    useAlphaFromAlbedoMap: {
@@ -91101,12 +91133,12 @@
 	        specularMapUVChannel: {
 	          displayName: 'UV Channel',
 	          description: 'Which UV channel to use with the specular map.',
-	          type: 'dd',
+	          type: 'opt',
 	          options: {
-	            'UV 0': 0,
-	            'UV 1': 1
+	            uv0: 0,
+	            uv1: 1
 	          },
-	          default: 0,
+	          default: 'uv0',
 	          enabledWhen: {
 	            specularMapUVChannel: {
 	              notEqualDefault: true
@@ -91192,12 +91224,12 @@
 	        metalnessMapUVChannel: {
 	          displayName: 'UV Channel',
 	          description: 'Which UV channel to use with the metalness map.',
-	          type: 'dd',
+	          type: 'opt',
 	          options: {
-	            'UV 0': 0,
-	            'UV 1': 1
+	            uv0: 0,
+	            uv1: 1
 	          },
-	          default: 0,
+	          default: 'uv0',
 	          enabledWhen: {
 	            metalnessMapUVChannel: {
 	              notEqualDefault: true
@@ -91512,14 +91544,14 @@
 	        },
 	        or: [{
 	          environmentMapProjection: {
-	            notEqual: 3
+	            notEqual: 'cubeMap'
 	          },
 	          environmentMap2D_0: {
 	            notEqualDefault: true
 	          }
 	        }, {
 	          environmentMapProjection: {
-	            equal: 3
+	            equal: 'cubeMap'
 	          },
 	          environmentMapCube_0: {
 	            notEqualDefault: true
@@ -91530,13 +91562,13 @@
 	    environmentMapProjection: {
 	      displayName: 'Specular Light Map Type',
 	      description: 'This controls how the lighting textures will map to the surface. "Panorama"' + ' is also known as an "equirectangular" map.',
-	      type: 'dd',
-	      default: 5,
+	      type: 'opt',
+	      default: 'panorama',
 	      options: {
-	        'Cube Map': 3,
-	        'Sphere Map': 4,
-	        'Planar': 6,
-	        'Panorama': 5
+	        cubeMap: 3,
+	        sphereMap: 4,
+	        planar: 6,
+	        panorama: 5
 	      },
 	      forceUpdate: true,
 	      displayWhen: {
@@ -91557,7 +91589,7 @@
 	          equal: true
 	        },
 	        environmentMapProjection: {
-	          equal: 3
+	          equal: 'cubeMap'
 	        },
 	        environmentMapCube_0: {
 	          notEqualDefault: true
@@ -91568,7 +91600,7 @@
 	          equal: true
 	        },
 	        environmentMapProjection: {
-	          equal: 3
+	          equal: 'cubeMap'
 	        }
 	      }
 	    },
@@ -91625,7 +91657,7 @@
 	          equal: true
 	        },
 	        environmentMapProjection: {
-	          notEqual: 3
+	          notEqual: 'cubeMap'
 	        },
 	        environmentMap2D_0: {
 	          notEqualDefault: true
@@ -91636,7 +91668,7 @@
 	          equal: true
 	        },
 	        environmentMapProjection: {
-	          notEqual: 3
+	          notEqual: 'cubeMap'
 	        }
 	      }
 	    },
@@ -91744,14 +91776,14 @@
 	    side: {
 	      displayName: 'Cull Mode',
 	      description: 'This controls which side of the geometry will be visible.',
-	      type: 'dd',
+	      type: 'opt',
 	      isRenderParam: true,
 	      options: {
-	        'Front Only': THREE.FrontSide,
-	        'Back Only': THREE.BackSide,
-	        'Double-Sided': THREE.DoubleSide
+	        frontOnly: THREE.FrontSide,
+	        backOnly: THREE.BackSide,
+	        doubleSided: THREE.DoubleSide
 	      },
-	      default: THREE.DoubleSide
+	      default: 'doubleSided'
 	    },
 	    fog: {
 	      displayName: 'Enable Fog',
@@ -91765,18 +91797,18 @@
 	      displayName: 'Depth Function',
 	      description: '',
 	      isRenderParam: true,
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        'Never': THREE.NeverDepth,
-	        'Always': THREE.AlwaysDepth,
-	        'Less Than': THREE.LessDepth,
-	        'Less Than or Equal': THREE.LessEqualDepth,
-	        'Equal': THREE.EqualDepth,
-	        'Greater Than or Equal': THREE.GreaterEqualDepth,
-	        'Greater Than': THREE.GreaterDepth,
-	        'Not Equal': THREE.NotEqualDepth
+	        never: THREE.NeverDepth,
+	        always: THREE.AlwaysDepth,
+	        lessThan: THREE.LessDepth,
+	        lessThanOrEqual: THREE.LessEqualDepth,
+	        equal: THREE.EqualDepth,
+	        greaterThanOrEqual: THREE.GreaterEqualDepth,
+	        greaterThan: THREE.GreaterDepth,
+	        notEqual: THREE.NotEqualDepth
 	      },
-	      default: THREE.LessEqualDepth
+	      default: 'lessThanOrEqual'
 	    },
 	    depthWrite: {
 	      displayName: 'Enable Depth Write',
@@ -91796,34 +91828,34 @@
 	      displayName: 'Blending Mode',
 	      description: 'This controls how the material will be blended with the color behind it.',
 	      isRenderParam: true,
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        None: THREE.NoBlending,
-	        Normal: THREE.NormalBlending,
-	        Additive: THREE.AdditiveBlending,
-	        Subtractive: THREE.SubtractiveBlending,
-	        Multiplicative: THREE.MultiplyBlending,
-	        Custom: THREE.CustomBlending
+	        none: THREE.NoBlending,
+	        normal: THREE.NormalBlending,
+	        additive: THREE.AdditiveBlending,
+	        subtractive: THREE.SubtractiveBlending,
+	        multiplicative: THREE.MultiplyBlending,
+	        custom: THREE.CustomBlending
 	      },
-	      default: THREE.NormalBlending,
+	      default: 'normal',
 	      transparency: 'GreaterThanOne'
 	    },
 	    blendEquation: {
 	      displayName: 'Blending Equation',
 	      description: 'TODO.',
 	      isRenderParam: true,
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        'Add': THREE.AddEquation,
-	        'Subtract': THREE.SubtractEquation,
-	        'Reverse Subtract': THREE.ReverseSubtractEquation,
-	        'Minimum': THREE.MinEquation,
-	        'Maximum': THREE.MaxEquation
+	        add: THREE.AddEquation,
+	        subtract: THREE.SubtractEquation,
+	        reverseSubtract: THREE.ReverseSubtractEquation,
+	        minimum: THREE.MinEquation,
+	        maximum: THREE.MaxEquation
 	      },
-	      default: THREE.AddEquation,
+	      default: 'add',
 	      displayWhen: {
 	        blending: {
-	          equal: THREE.CustomBlending
+	          equal: 'custom'
 	        }
 	      }
 	    },
@@ -91831,21 +91863,21 @@
 	      displayName: 'Blend Source',
 	      description: 'TODO.',
 	      isRenderParam: true,
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        'Zero': THREE.ZeroFactor,
-	        'One': THREE.OneFactor,
-	        'Source Color': THREE.SrcColorFactor,
-	        'One Minus Source Color': THREE.OneMinusSrcColorFactor,
-	        'Source Alpha': THREE.SrcAlphaFactor,
-	        'One Minus Source Alpha': THREE.OneMinusSrcAlphaFactor,
-	        'Destination Alpha': THREE.DstAlphaFactor,
-	        'One Minus Destination Alpha': THREE.OneMinusDstAlphaFactor
+	        zero: THREE.ZeroFactor,
+	        one: THREE.OneFactor,
+	        sourceColor: THREE.SrcColorFactor,
+	        oneMinusSourceColor: THREE.OneMinusSrcColorFactor,
+	        sourceAlpha: THREE.SrcAlphaFactor,
+	        oneMinusSourceAlpha: THREE.OneMinusSrcAlphaFactor,
+	        destinationAlpha: THREE.DstAlphaFactor,
+	        oneMinusDestinationAlpha: THREE.OneMinusDstAlphaFactor
 	      },
-	      default: THREE.SrcAlphaFactor,
+	      default: 'sourceAlpha',
 	      displayWhen: {
 	        blending: {
-	          equal: THREE.CustomBlending
+	          equal: 'custom'
 	        }
 	      }
 	    },
@@ -91853,24 +91885,24 @@
 	      displayName: 'Blend Destination',
 	      description: 'TODO.',
 	      isRenderParam: true,
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        'Zero': THREE.ZeroFactor,
-	        'One': THREE.OneFactor,
-	        'Source Color': THREE.SrcColorFactor,
-	        'One Minus Source Color': THREE.OneMinusSrcColorFactor,
-	        'Source Alpha': THREE.SrcAlphaFactor,
-	        'One Minus Source Alpha': THREE.OneMinusSrcAlphaFactor,
-	        'Destination Alpha': THREE.DstAlphaFactor,
-	        'One Minus Destination Alpha': THREE.OneMinusDstAlphaFactor,
-	        'Destination Color': THREE.DstColorFactor,
-	        'One Minus Destination Color': THREE.OneMinusDstColorFactor,
-	        'Source Alpha Saturate': THREE.SrcAlphaSaturateFactor
+	        zero: THREE.ZeroFactor,
+	        one: THREE.OneFactor,
+	        sourceColor: THREE.SrcColorFactor,
+	        oneMinusSourceColor: THREE.OneMinusSrcColorFactor,
+	        sourceAlpha: THREE.SrcAlphaFactor,
+	        oneMinusSourceAlpha: THREE.OneMinusSrcAlphaFactor,
+	        destinationAlpha: THREE.DstAlphaFactor,
+	        oneMinusDestinationAlpha: THREE.OneMinusDstAlphaFactor,
+	        destinationColor: THREE.DstColorFactor,
+	        oneMinusDestinationColor: THREE.OneMinusDstColorFactor,
+	        sourceAlphaSaturate: THREE.SrcAlphaSaturateFactor
 	      },
-	      default: THREE.OneFactor,
+	      default: 'one',
 	      displayWhen: {
 	        blending: {
-	          equal: THREE.CustomBlending
+	          equal: 'custom'
 	        }
 	      }
 	    },
@@ -91881,7 +91913,7 @@
 	      default: false,
 	      displayWhen: {
 	        blending: {
-	          equal: THREE.CustomBlending
+	          equal: 'custom'
 	        }
 	      }
 	    },
@@ -91889,18 +91921,18 @@
 	      displayName: 'Alpha Blend Equation',
 	      description: 'TODO',
 	      isRenderParam: true,
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        'Add': THREE.AddEquation,
-	        'Subtract': THREE.SubtractEquation,
-	        'Reverse Subtract': THREE.ReverseSubtractEquation,
-	        'Minimum': THREE.MinEquation,
-	        'Maximum': THREE.MaxEquation
+	        add: THREE.AddEquation,
+	        subtract: THREE.SubtractEquation,
+	        reverseSubtract: THREE.ReverseSubtractEquation,
+	        minimum: THREE.MinEquation,
+	        maximum: THREE.MaxEquation
 	      },
-	      default: THREE.AddEquation,
+	      default: 'add',
 	      displayWhen: {
 	        blending: {
-	          equal: THREE.CustomBlending
+	          equal: 'custom'
 	        },
 	        useSeparateAlphaBlend: {
 	          equal: true
@@ -91916,21 +91948,21 @@
 	      displayName: 'Alpha Blend Source',
 	      description: 'TODO.',
 	      isRenderParam: true,
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        'Zero': THREE.ZeroFactor,
-	        'One': THREE.OneFactor,
-	        'Source Color': THREE.SrcColorFactor,
-	        'One Minus Source Color': THREE.OneMinusSrcColorFactor,
-	        'Source Alpha': THREE.SrcAlphaFactor,
-	        'One Minus Source Alpha': THREE.OneMinusSrcAlphaFactor,
-	        'Destination Alpha': THREE.DstAlphaFactor,
-	        'One Minus Destination Alpha': THREE.OneMinusDstAlphaFactor
+	        zero: THREE.ZeroFactor,
+	        one: THREE.OneFactor,
+	        sourceColor: THREE.SrcColorFactor,
+	        oneMinusSourceColor: THREE.OneMinusSrcColorFactor,
+	        sourceAlpha: THREE.SrcAlphaFactor,
+	        oneMinusSourceAlpha: THREE.OneMinusSrcAlphaFactor,
+	        destinationAlpha: THREE.DstAlphaFactor,
+	        oneMinusDestinationAlpha: THREE.OneMinusDstAlphaFactor
 	      },
-	      default: THREE.SrcAlphaFactor,
+	      default: 'sourceAlpha',
 	      displayWhen: {
 	        blending: {
-	          equal: THREE.CustomBlending
+	          equal: 'custom'
 	        },
 	        useSeparateAlphaBlend: {
 	          equal: true
@@ -91946,24 +91978,24 @@
 	      displayName: 'Alpha Blend Destination',
 	      description: 'TODO.',
 	      isRenderParam: true,
-	      type: 'dd',
+	      type: 'opt',
 	      options: {
-	        'Zero': THREE.ZeroFactor,
-	        'One': THREE.OneFactor,
-	        'Source Color': THREE.SrcColorFactor,
-	        'One Minus Source Color': THREE.OneMinusSrcColorFactor,
-	        'Source Alpha': THREE.SrcAlphaFactor,
-	        'One Minus Source Alpha': THREE.OneMinusSrcAlphaFactor,
-	        'Destination Alpha': THREE.DstAlphaFactor,
-	        'One Minus Destination Alpha': THREE.OneMinusDstAlphaFactor,
-	        'Destination Color': THREE.DstColorFactor,
-	        'One Minus Destination Color': THREE.OneMinusDstColorFactor,
-	        'Source Alpha Saturate': THREE.SrcAlphaSaturateFactor
+	        zero: THREE.ZeroFactor,
+	        one: THREE.OneFactor,
+	        sourceColor: THREE.SrcColorFactor,
+	        oneMinusSourceColor: THREE.OneMinusSrcColorFactor,
+	        sourceAlpha: THREE.SrcAlphaFactor,
+	        oneMinusSourceAlpha: THREE.OneMinusSrcAlphaFactor,
+	        destinationAlpha: THREE.DstAlphaFactor,
+	        oneMinusDestinationAlpha: THREE.OneMinusDstAlphaFactor,
+	        destinationColor: THREE.DstColorFactor,
+	        oneMinusDestinationColor: THREE.OneMinusDstColorFactor,
+	        sourceAlphaSaturate: THREE.SrcAlphaSaturateFactor
 	      },
-	      default: THREE.OneFactor,
+	      default: 'one',
 	      displayWhen: {
 	        blending: {
-	          equal: THREE.CustomBlending
+	          equal: 'custom'
 	        },
 	        useSeparateAlphaBlend: {
 	          equal: true
@@ -92384,9 +92416,9 @@
 
 	      var width = this.getProperty('originalWidth');
 	      var height = this.getProperty('originalHeight');
-	      var ignoreStream = this.getProperty('ignoreStream');
+	      var stream = this.getProperty('stream');
 
-	      if (ignoreStream || width < 1024 && height < 1024) {
+	      if (!stream || width < 1024 && height < 1024) {
 	        this._directLoad(onTexture2DLoaded, onTexture2DLoadError, onTexture2DLoadProgress);
 	      } else {
 	        this._streamingLoad(onTexture2DLoaded, onTexture2DLoadError, onTexture2DLoadProgress);
@@ -92555,10 +92587,6 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
@@ -92589,10 +92617,10 @@
 	    return _possibleConstructorReturn(this, Object.getPrototypeOf(TextureCubeAsset).call(this, json));
 	  }
 
+	  /** @inheritdoc */
+
 	  _createClass(TextureCubeAsset, [{
 	    key: 'createRuntimeData',
-
-	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
 	      var _this2 = this;
 
@@ -92659,10 +92687,6 @@
 
 	  return TextureCubeAsset;
 	}(_BaseTextureAsset3.default);
-
-	TextureCubeAsset.defaultProperties = _lodash2.default.extend({}, _BaseTextureAsset3.default.defaultProperties, {
-	  useHardwareCompression: false
-	});
 
 	window.Box3D.TextureCubeAsset = TextureCubeAsset;
 	exports.default = TextureCubeAsset;
@@ -92853,15 +92877,37 @@
 	  return TextureVideoAsset;
 	}(_BaseTextureAsset3.default);
 
-	TextureVideoAsset.defaultProperties = _lodash2.default.extend({}, _BaseTextureAsset3.default.defaultProperties, {
-	  uMapping: 'Clamp',
-	  vMapping: 'Clamp',
-	  filtering: 'Linear',
-	  useHardwareCompression: false,
-	  generateMipmaps: false,
-	  autoPlay: true,
-	  state: 'play',
-	  loop: true
+	TextureVideoAsset.schema = _lodash2.default.extend({}, _BaseTextureAsset3.default.schema, {
+	  uMapping: {
+	    type: 'string',
+	    description: _BaseTextureAsset3.default.schema.uMapping.description,
+	    default: 'clamp'
+	  },
+	  vMapping: {
+	    type: 'string',
+	    description: _BaseTextureAsset3.default.schema.vMapping.description,
+	    default: 'clamp'
+	  },
+	  generateMipmaps: {
+	    type: 'boolean',
+	    description: _BaseTextureAsset3.default.schema.generateMipmaps.description,
+	    default: false
+	  },
+	  autoPlay: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  },
+	  state: {
+	    type: 'string',
+	    description: '',
+	    default: 'play'
+	  },
+	  loop: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  }
 	});
 	TextureVideoAsset.events = {
 	  pause: {
@@ -93577,26 +93623,42 @@
 	  return Box3DObject;
 	}(_Box3DEntity3.default);
 
-	Box3DObject.defaultProperties = _lodash2.default.extend({}, _Box3DEntity3.default.defaultProperties, {
-	  visible: true,
+	Box3DObject.schema = _lodash2.default.extend({}, _Box3DEntity3.default.schema, {
 	  position: {
-	    x: 0.0,
-	    y: 0.0,
-	    z: 0.0
+	    type: 'vector3',
+	    description: '',
+	    default: { x: 0, y: 0, z: 0 }
 	  },
 	  quaternion: {
-	    x: 0.0,
-	    y: 0.0,
-	    z: 0.0,
-	    w: 1.0
+	    type: 'vector4',
+	    description: '',
+	    default: { x: 0, y: 0, z: 0, w: 1 }
 	  },
 	  scale: {
-	    x: 1.0,
-	    y: 1.0,
-	    z: 1.0
+	    type: 'vector3',
+	    description: '',
+	    default: { x: 1, y: 1, z: 1 }
 	  },
-	  castShadow: true,
-	  receiveShadow: true
+	  castShadow: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  },
+	  receiveShadow: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  },
+	  visible: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  },
+	  bounds: {
+	    type: 'object',
+	    description: '',
+	    default: null
+	  }
 	});
 	Box3DObject.events = {
 	  toggleVisibility: {
@@ -93672,9 +93734,9 @@
 
 	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
-	      var type = this.getProperty('type');
+	      var type = this.getProperty('cameraType');
 
-	      if (type === 'OrthographicCamera') {
+	      if (type === 'orthographic') {
 	        this.runtimeData = new _three2.default.OrthographicCamera();
 	      } else {
 	        // default to a perspective camera
@@ -93693,14 +93755,14 @@
 	      _get(Object.getPrototypeOf(CameraObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If the camera type changed, we need to re-create runtimeData.
-	      if (changes.hasOwnProperty('type') && reason !== 'init') {
+	      if (changes.hasOwnProperty('cameraType') && reason !== 'init') {
 	        this.reloadBase();
 	        return;
 	      }
 
-	      var type = this.getProperty('type');
+	      var type = this.getProperty('cameraType');
 
-	      if (type === 'PerspectiveCamera') {
+	      if (type === 'perspective') {
 	        // If any of the camera properties have changed, we'll need to update the
 	        // projection matrix for the camera.
 	        if (changes.hasOwnProperty('fov') || changes.hasOwnProperty('aspect') || changes.hasOwnProperty('near') || changes.hasOwnProperty('far')) {
@@ -93710,7 +93772,7 @@
 	          this.runtimeData.far = this.getProperty('far');
 	          this.runtimeData.updateProjectionMatrix();
 	        }
-	      } else if (type === 'OrthographicCamera') {
+	      } else if (type === 'orthographic') {
 	        // If any of the shadow camera properties have changed, we'll need to update the
 	        // projection matrix for the camera.
 	        if (changes.hasOwnProperty('left') || changes.hasOwnProperty('right') || changes.hasOwnProperty('top') || changes.hasOwnProperty('bottom') || changes.hasOwnProperty('near') || changes.hasOwnProperty('far')) {
@@ -93729,16 +93791,52 @@
 	  return CameraObject;
 	}(_Box3DObject3.default);
 
-	CameraObject.defaultProperties = _lodash2.default.extend({}, _Box3DObject3.default.defaultProperties, {
-	  type: 'PerspectiveCamera',
-	  fov: 50,
-	  aspect: 16.0 / 9.0,
-	  near: 1.0,
-	  far: 120000.0,
-	  right: 100.0,
-	  left: -100.0,
-	  top: 100.0,
-	  bottom: -100.0
+	CameraObject.schema = _lodash2.default.extend({}, _Box3DObject3.default.schema, {
+	  projectionType: {
+	    type: 'string',
+	    description: '',
+	    default: 'perspective'
+	  },
+	  fov: {
+	    type: 'float',
+	    description: '',
+	    default: 50
+	  },
+	  aspect: {
+	    type: 'float',
+	    description: '',
+	    default: 16.0 / 9.0
+	  },
+	  near: {
+	    type: 'float',
+	    description: '',
+	    default: 1.0
+	  },
+	  far: {
+	    type: 'float',
+	    description: '',
+	    default: 120000.0
+	  },
+	  right: {
+	    type: 'float',
+	    description: '',
+	    default: 100.0
+	  },
+	  left: {
+	    type: 'float',
+	    description: '',
+	    default: -100.0
+	  },
+	  top: {
+	    type: 'float',
+	    description: '',
+	    default: 100.0
+	  },
+	  bottom: {
+	    type: 'float',
+	    description: '',
+	    default: -100.0
+	  }
 	});
 	CameraObject.events = {};
 
@@ -93817,16 +93915,16 @@
 	  }, {
 	    key: 'createRuntimeData',
 	    value: function createRuntimeData(callback) {
-	      var type = this.getProperty('type');
+	      var type = this.getProperty('lightType');
 	      var colour = new _three2.default.Color(this.getProperty('color'));
 
-	      if (type === 'DirectionalLight') {
+	      if (type === 'directional') {
 	        this.runtimeData = new _three2.default.DirectionalLight(colour);
-	      } else if (type === 'AmbientLight') {
+	      } else if (type === 'ambient') {
 	        this.runtimeData = new _three2.default.AmbientLight(colour);
-	      } else if (type === 'SpotLight') {
+	      } else if (type === 'spot') {
 	        this.runtimeData = new _three2.default.SpotLight(colour);
-	      } else if (type === 'HemisphereLight') {
+	      } else if (type === 'hemisphere') {
 	        this.runtimeData = new _three2.default.HemisphereLight(colour);
 	      } else {
 	        // default case is a point light
@@ -93847,7 +93945,7 @@
 	      _get(Object.getPrototypeOf(LightObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If the light type changed, we need to re-create the runtimeData.
-	      if (changes.hasOwnProperty('type') && reason !== 'init') {
+	      if (changes.hasOwnProperty('lightType') && reason !== 'init') {
 	        this.reloadBase();
 	        return;
 	      }
@@ -93860,9 +93958,9 @@
 	        this.runtimeData.color.setHex(this.getProperty('color'));
 	      }
 
-	      var type = this.getProperty('type');
+	      var type = this.getProperty('lightType');
 
-	      if (type === 'DirectionalLight') {
+	      if (type === 'directional') {
 	        // If any of the shadow camera properties have changed, we'll need to update the
 	        // projection matrix for the camera.
 	        if (changes.hasOwnProperty('shadowCameraNear') || changes.hasOwnProperty('shadowCameraFar') || changes.hasOwnProperty('shadowCameraLeft') || changes.hasOwnProperty('shadowCameraRight') || changes.hasOwnProperty('shadowCameraTop') || changes.hasOwnProperty('shadowCameraBottom')) {
@@ -93909,7 +94007,7 @@
 	            }
 	          })();
 	        }
-	      } else if (type === 'PointLight') {
+	      } else if (type === 'point') {
 	        if (changes.hasOwnProperty('scale')) {
 	          this.runtimeData.distance = 100 * this.getProperty('scale').x;
 	        }
@@ -94010,23 +94108,87 @@
 	  return LightObject;
 	}(_Box3DObject3.default);
 
-	LightObject.defaultProperties = _lodash2.default.extend({}, _Box3DObject3.default.defaultProperties, {
-	  type: 'DirectionalLight',
-	  color: 0xbbbbbb,
-	  intensity: 1.0,
-	  target: null,
-	  distance: 1000.0,
-	  castShadow: false,
-	  shadowCameraNear: 1.4,
-	  shadowCameraFar: 50,
-	  shadowCameraLeft: -12.0,
-	  shadowCameraRight: 12.0,
-	  shadowCameraTop: 12.0,
-	  shadowCameraBottom: -12.0,
-	  shadowBias: -0.0015,
-	  shadowDarkness: 0.5,
-	  shadowMapWidth: 1024,
-	  shadowMapHeight: 1024
+	LightObject.schema = _lodash2.default.extend({}, _Box3DObject3.default.schema, {
+	  lightType: {
+	    type: 'string',
+	    description: '',
+	    default: 'directional'
+	  },
+	  color: {
+	    type: 'color',
+	    description: '',
+	    default: 0xbbbbbb
+	  },
+	  intensity: {
+	    type: 'float',
+	    description: '',
+	    default: 1.0
+	  },
+	  target: {
+	    type: 'id',
+	    description: '',
+	    default: null
+	  },
+	  distance: {
+	    type: 'float',
+	    description: '',
+	    default: 1000.0
+	  },
+	  castShadow: {
+	    type: 'boolean',
+	    description: '',
+	    default: false
+	  },
+	  shadowCameraNear: {
+	    type: 'float',
+	    description: '',
+	    default: 1.4
+	  },
+	  shadowCameraFar: {
+	    type: 'float',
+	    description: '',
+	    default: 50.0
+	  },
+	  shadowCameraLeft: {
+	    type: 'float',
+	    description: '',
+	    default: -12.0
+	  },
+	  shadowCameraRight: {
+	    type: 'float',
+	    description: '',
+	    default: 12.0
+	  },
+	  shadowCameraTop: {
+	    type: 'float',
+	    description: '',
+	    default: 12.0
+	  },
+	  shadowCameraBottom: {
+	    type: 'float',
+	    description: '',
+	    default: -12.0
+	  },
+	  shadowBias: {
+	    type: 'float',
+	    description: '',
+	    default: -0.0015
+	  },
+	  shadowDarkness: {
+	    type: 'float',
+	    description: '',
+	    default: 0.5
+	  },
+	  shadowMapWidth: {
+	    type: 'integer',
+	    description: '',
+	    default: 1024
+	  },
+	  shadowMapHeight: {
+	    type: 'integer',
+	    description: '',
+	    default: 102
+	  }
 	});
 	LightObject.events = {
 	  setColor: {
@@ -94228,6 +94390,14 @@
 
 	  return SkinnedMeshObject;
 	}(_BaseMeshObject3.default);
+
+	SkinnedMeshObject.schema = _lodash2.default.extend({}, _BaseMeshObject3.default.schema, {
+	  useVertexTexture: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  }
+	});
 
 	window.Box3D.SkinnedMeshObject = SkinnedMeshObject;
 	exports.default = SkinnedMeshObject;
@@ -95128,10 +95298,22 @@
 	  return BaseMeshObject;
 	}(_Box3DObject3.default);
 
-	BaseMeshObject.defaultProperties = _lodash2.default.extend({}, _Box3DObject3.default.defaultProperties, {
-	  customDepthMaterial: null,
-	  materials: ['missingMaterial'],
-	  geometryId: null
+	BaseMeshObject.schema = _lodash2.default.extend({}, _Box3DObject3.default.schema, {
+	  customDepthMaterial: {
+	    type: 'id',
+	    description: '',
+	    default: null
+	  },
+	  materials: {
+	    type: 'array',
+	    description: '',
+	    default: ['missingMaterial']
+	  },
+	  geometryId: {
+	    type: 'id',
+	    description: '',
+	    default: null
+	  }
 	});
 	BaseMeshObject.events = {
 	  setMaterial: {

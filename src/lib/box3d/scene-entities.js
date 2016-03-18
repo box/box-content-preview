@@ -65,17 +65,17 @@ function sceneEntities() {
         type: 'light',
         parentAssetId: 'SCENE_ID',
         properties: {
-            type: 'AmbientLight'
+            lightType: 'ambient'
         }
     }, {
         id: 'APP_ASSET_ID',
         type: 'application',
         parentAssetId: 'APP_ASSET_ID',
         properties: {
-            loadStartupScene: 'SCENE_ID' // The scene to load
+            startupScene: 'SCENE_ID' // The scene to load
         },
         components: {
-            veroldRenderer: {
+            rendererComponent: {
                 componentData: {
                     antialias: true
                 },

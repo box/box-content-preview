@@ -633,6 +633,8 @@ class Preview extends EventEmitter {
             return;
         }
 
+        console.error(err);
+
         // Mark as error being processed which should prevent viewer loading
         this.open = false;
 

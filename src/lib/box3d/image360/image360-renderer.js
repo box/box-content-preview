@@ -86,9 +86,10 @@ class Image360Renderer extends Box3DRenderer {
             properties: {
                 ignoreStream: true,
                 generateMipmaps: false,
-                filtering: 'Linear',
-                uMapping: 'Clamp',
-                vMapping: 'Clamp',
+                minFilter: 'linear',
+                magFilter: 'linear',
+                uMapping: 'clamp',
+                vMapping: 'clamp',
                 fileId: fileProperties.id,
                 filename: fileProperties.name,
                 originalImage: fileProperties.extension === 'jpg' || fileProperties.fileExtension === 'png'
