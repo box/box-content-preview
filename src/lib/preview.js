@@ -1009,6 +1009,8 @@ class Preview extends EventEmitter {
      */
     updateCollection(collection = []) {
         this.collection = Array.isArray(collection) ? collection : [];
+        // Also update the original collection that was saved from the initial show
+        this.previewOptions.collection = this.collection;
         this.showNavigation();
     }
 

@@ -2,6 +2,12 @@ import './presentation.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
+import {
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT,
+    ICON_DROP_UP,
+    ICON_DROP_DOWN
+} from '../icons/icons';
 
 const Box = global.Box || {};
 
@@ -51,13 +57,14 @@ class Presentation extends DocBase {
     addEventListenersForDocControls() {
         super.addEventListenersForDocControls();
 
-        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon box-preview-previous-page');
+        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon box-preview-previous-page', ICON_DROP_UP);
 
         const buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
 
-        this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page');
-        this.controls.add(__('fullscreen'), this.toggleFullscreen, 'box-preview-doc-expand-icon');
+        this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page', ICON_DROP_DOWN);
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-doc-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-doc-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**

@@ -74,3 +74,16 @@
     border-right: 12px solid transparent;
     border-top: 8px solid rgba(35, 35, 35, 0.95);
 }
+
+.box-preview-3d-exit-fullscreen-icon {
+    display: none;
+}
+
+.box-preview-is-fullscreen {
+    .box-preview-3d-enter-fullscreen-icon {
+        display: none;
+    }
+    .box-preview-3d-exit-fullscreen-icon {
+        display: block;
+    }
+}
