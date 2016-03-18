@@ -3,9 +3,7 @@ import Controls from '../controls';
 import Base from '../base';
 import {
     ICON_ZOOM_IN,
-    ICON_ZOOM_OUT,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
+    ICON_ZOOM_OUT
 } from '../icons/icons';
 
 @autobind
@@ -65,8 +63,6 @@ class ImageBase extends Base {
         this.controls = new Controls(this.containerEl);
         this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon', ICON_ZOOM_IN);
         this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**
