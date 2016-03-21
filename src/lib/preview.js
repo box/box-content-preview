@@ -179,6 +179,9 @@ class Preview extends EventEmitter {
         // Save the reference to the api endpoint
         this.options.api = options.api ? options.api.replace(/\/$/, '') : API;
 
+        // Shared link header
+        this.options.sharedLink = options.sharedLink;
+
         // Show or hide the header
         this.options.header = options.header || 'light';
 
