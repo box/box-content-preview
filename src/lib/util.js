@@ -14,12 +14,13 @@ function createDownloadIframe() {
         // if no existing iframe create a new one
         iframe = document.createElement('iframe');
         iframe.setAttribute('id', 'downloadiframe');
+        iframe.width = '10000px';
+        iframe.height = '10000px';
         iframe.style.display = 'none';
         iframe = document.body.appendChild(iframe);
     }
     // Clean the iframe up
-    iframe.contentDocument.body.innerHTML = '';
-    iframe.contentDocument.head.innerHTML = '';
+    iframe.contentDocument.write('<body></body>');
     return iframe;
 }
 
@@ -48,6 +49,7 @@ export function openUrlInsideIframe(url) {
 export function openContentInsideIframe(content) {
     const iframe = createDownloadIframe();
     iframe.contentDocument.body.innerHTML = content;
+    iframe.contentDocument.close();
     return iframe;
 }
 

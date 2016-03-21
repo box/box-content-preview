@@ -76,7 +76,7 @@ class PlainText extends TextBase {
         // Help in printing by creating an iframe with the contents
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         this.printframe = openContentInsideIframe(this.preEl.outerHTML);
-        this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
+        this.printframe.contentDocument.body.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
     }
 
     /**
@@ -85,7 +85,12 @@ class PlainText extends TextBase {
      * @returns {void}
      */
     print() {
-        this.printframe.contentWindow.print();
+        this.printframe.contentWindow.focus();
+        if (typeof this.printframe.contentDocument.execCommand === 'function') {
+            this.printframe.contentDocument.execCommand('print', false, null);
+        } else {
+            this.printframe.contentWindow.print();
+        }
     }
 }
 
