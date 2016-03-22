@@ -99,6 +99,30 @@ function isPointInPolyOpt(poly, x, y) {
 }
 
 /**
+ * Returns whether or not the selection represented by the highlight elements
+ * is reversed by detecting if the mouse cursor is closer to the top-most
+ * or bottom-most element.
+ *
+ * @param {Event} event DOM Event
+ * @param {HTMLElement[]} elements Elements representing selection
+ * @returns {Boolean} Whether or not the selection is reversed
+ */
+function isSelectionReversed(event, elements) {
+    const topDimensions = elements[0].getBoundingClientRect();
+    const bottomDimensions = elements[elements.length - 1].getBoundingClientRect();
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+
+    // Calculate distance between mouse and top left corner of top selection
+    // line vs distance between mouse and bottom right corner of bottom
+    // selection line
+    const topLength = Math.sqrt(Math.pow(topDimensions.left - mouseX, 2) + Math.pow(topDimensions.top - mouseY, 2));
+    const bottomLength = Math.sqrt(Math.pow(bottomDimensions.right - mouseX, 2) + Math.pow(bottomDimensions.bottom - mouseY, 2));
+
+    return topLength < bottomLength;
+}
+
+/**
  * Converts coordinates in PDF space to coordinates in DOM space.
  *
  * @param {Number[]} coordinates Either a [x,y] coordinate location or
@@ -544,77 +568,6 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Shows the remove highlight button for an annotation.
-     *
-     * @param {Annotation} annotation Annotation to show remove button for
-     * @returns {void}
-     */
-    showRemoveHighlightButton(annotation) {
-        const page = annotation.location.page;
-        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
-
-        let removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
-        if (!removeHighlightButtonEl) {
-            removeHighlightButtonEl = document.createElement('button');
-            removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
-            removeHighlightButtonEl.innerHTML = ICON_DELETE;
-
-            this.addEventHandler(removeHighlightButtonEl, (event) => {
-                event.stopPropagation();
-
-                const annotationID = removeHighlightButtonEl.getAttribute('data-annotation-id');
-
-                this.deleteAnnotation(annotationID, true).then(() => {
-                    // Redraw highlights on page
-                    const pageNum = parseInt(removeHighlightButtonEl.getAttribute('data-page'), 10);
-                    this.drawHighlightAnnotationsOnPage(pageNum);
-
-                    // Hide button
-                    removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
-                });
-            });
-        }
-
-        // Create remove highlight button and position it above the upper right
-        // corner of the highlight
-        const pageHeight = pageEl.getBoundingClientRect().height;
-        const upperRightCorner = getUpperRightCorner(annotation.location.quadPoints, pageEl);
-        const [browserX, browserY] = convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
-
-        // Position button
-        removeHighlightButtonEl.style.left = `${browserX - 20}px`;
-        removeHighlightButtonEl.style.top = `${browserY - 50}px`;
-        removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
-        removeHighlightButtonEl.setAttribute('data-page', page);
-        removeHighlightButtonEl.classList.remove(CLASS_HIDDEN);
-        pageEl.appendChild(removeHighlightButtonEl);
-    }
-
-    /**
-     * Hides the add highlight button.
-     *
-     * @returns {void}
-     */
-    hideAddHighlightButton() {
-        const addHighlightButtonEl = document.querySelector('.box-preview-add-highlight-btn');
-        if (addHighlightButtonEl) {
-            addHighlightButtonEl.classList.add(CLASS_HIDDEN);
-        }
-    }
-
-    /**
-     * Hides the remove highlight button.
-     *
-     * @returns {void}
-     */
-    hideRemoveHighlightButton() {
-        const removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
-        if (removeHighlightButtonEl) {
-            removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
-        }
-    }
-
-    /**
      * Returns the highlight annotation ID of the highlight located at the
      * specified mouse location.
      *
@@ -675,6 +628,157 @@ class DocAnnotator extends Annotator {
         });
 
         return hoverAnnotationID;
+    }
+
+    /**
+     * Handler to show the add highlight button. Shown when mouse is
+     * released or touch is ended and there is a selection on screen.
+     *
+     * @returns {void}
+     */
+    showAddHighlightButtonHandler(event) {
+        // Do nothing if there is no selection
+        const selection = window.getSelection();
+        if (selection.isCollapsed || selection.rangeCount < 1) {
+            return;
+        }
+
+        // Use Rangy to save the current selection because using the
+        // highlight module can mess with the selection. We restore this
+        // selection after we clean up the highlight
+        const savedSelection = rangy.saveSelection();
+
+        const pageEl = getPageElAndPageNumber(selection.anchorNode.parentNode).pageEl;
+        if (!pageEl) {
+            return;
+        }
+
+        // We use Rangy to turn the selection into a highlight, which creates
+        // spans around the selection that we can then turn into quadpoints
+        const highlight = this.highlighter.highlightSelection('highlight', {
+            containerElementId: pageEl.id
+        })[0];
+        const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0);
+        if (highlightEls.length === 0) {
+            return;
+        }
+
+        let addHighlightButtonEl = document.querySelector('.box-preview-add-highlight-btn');
+        if (!addHighlightButtonEl) {
+            addHighlightButtonEl = document.createElement('button');
+            addHighlightButtonEl.classList.add('box-preview-add-highlight-btn');
+            addHighlightButtonEl.innerHTML = ICON_HIGHLIGHT;
+
+            this.addEventHandler(addHighlightButtonEl, (ev) => {
+                // @TODO(tjin): Maybe redo this so we aren't just calling that handler
+                this.addHighlightAnnotationHandler(ev);
+
+                // Hide button
+                addHighlightButtonEl.classList.add(CLASS_HIDDEN);
+            });
+        }
+
+        // Calculate where to position button
+        const pageDimensions = pageEl.getBoundingClientRect();
+        let buttonX;
+        let buttonY;
+
+        // If selection is reversed, button should be placed before the first
+        // line of selection
+        if (isSelectionReversed(event, highlightEls)) {
+            const firstHighlightEl = highlightEls[0];
+            const dimensions = firstHighlightEl.getBoundingClientRect();
+            buttonX = dimensions.left - pageDimensions.left - 20;
+            buttonY = dimensions.top - pageDimensions.top - 50;
+
+        // Otherwise, button should be placed after bottom line of selection
+        } else {
+            const lastHighlightEl = highlightEls[highlightEls.length - 1];
+            const dimensions = lastHighlightEl.getBoundingClientRect();
+            buttonX = dimensions.right - pageDimensions.left - 20;
+            buttonY = dimensions.top - pageDimensions.top - 50;
+        }
+
+        // Position button
+        addHighlightButtonEl.style.left = `${buttonX}px`;
+        addHighlightButtonEl.style.top = `${buttonY}px`;
+        addHighlightButtonEl.classList.remove(CLASS_HIDDEN);
+        pageEl.appendChild(addHighlightButtonEl);
+
+        // Clean up rangy highlight and restore selection
+        this.removeRangyHighlight(highlight);
+        rangy.restoreSelection(savedSelection);
+    }
+
+    /**
+     * Hides the add highlight button.
+     *
+     * @returns {void}
+     */
+    hideAddHighlightButton() {
+        const addHighlightButtonEl = document.querySelector('.box-preview-add-highlight-btn');
+        if (addHighlightButtonEl) {
+            addHighlightButtonEl.classList.add(CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Shows the remove highlight button for an annotation.
+     *
+     * @param {Annotation} annotation Annotation to show remove button for
+     * @returns {void}
+     */
+    showRemoveHighlightButton(annotation) {
+        const page = annotation.location.page;
+        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
+
+        let removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
+        if (!removeHighlightButtonEl) {
+            removeHighlightButtonEl = document.createElement('button');
+            removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
+            removeHighlightButtonEl.innerHTML = ICON_DELETE;
+
+            this.addEventHandler(removeHighlightButtonEl, (event) => {
+                event.stopPropagation();
+
+                const annotationID = removeHighlightButtonEl.getAttribute('data-annotation-id');
+
+                this.deleteAnnotation(annotationID, true).then(() => {
+                    // Redraw highlights on page
+                    const pageNum = parseInt(removeHighlightButtonEl.getAttribute('data-page'), 10);
+                    this.drawHighlightAnnotationsOnPage(pageNum);
+
+                    // Hide button
+                    removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
+                });
+            });
+        }
+
+        // Create remove highlight button and position it above the upper right
+        // corner of the highlight
+        const pageHeight = pageEl.getBoundingClientRect().height;
+        const upperRightCorner = getUpperRightCorner(annotation.location.quadPoints, pageEl);
+        const [browserX, browserY] = convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
+
+        // Position button
+        removeHighlightButtonEl.style.left = `${browserX - 20}px`;
+        removeHighlightButtonEl.style.top = `${browserY - 50}px`;
+        removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
+        removeHighlightButtonEl.setAttribute('data-page', page);
+        removeHighlightButtonEl.classList.remove(CLASS_HIDDEN);
+        pageEl.appendChild(removeHighlightButtonEl);
+    }
+
+    /**
+     * Hides the remove highlight button.
+     *
+     * @returns {void}
+     */
+    hideRemoveHighlightButton() {
+        const removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
+        if (removeHighlightButtonEl) {
+            removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
+        }
     }
 
     /**
@@ -749,68 +853,8 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Handler for showing the add highlight button. Shown when mouse is
-     * released or touch is ended and there is a selection on screen.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     */
-    showAddHighlightButtonHandler(event) {
-        event.stopPropagation();
-
-        // Do nothing if there is no selection
-        const selection = window.getSelection();
-        if (selection.isCollapsed || selection.rangeCount < 1) {
-            return;
-        }
-
-        // Use rangy to save the current selection because using the
-        // highlight module can mess with the selection
-        const savedSelection = rangy.saveSelection();
-
-        // We use Rangy to turn the selection into a highlight, which creates
-        // spans around the selection that we can then turn into quadpoints
-        const pageEl = getPageElAndPageNumber(selection.anchorNode.parentNode).pageEl;
-        const highlight = this.highlighter.highlightSelection('highlight', {
-            containerElementId: pageEl.id
-        })[0];
-        const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0);
-        if (highlightEls.length === 0) {
-            return;
-        }
-
-        let addHighlightButtonEl = document.querySelector('.box-preview-add-highlight-btn');
-        if (!addHighlightButtonEl) {
-            addHighlightButtonEl = document.createElement('button');
-            addHighlightButtonEl.classList.add('box-preview-add-highlight-btn');
-            addHighlightButtonEl.innerHTML = ICON_HIGHLIGHT;
-
-            this.addEventHandler(addHighlightButtonEl, (ev) => {
-                // @TODO(tjin): Maybe redo this so we aren't just calling that handler
-                this.addHighlightAnnotationHandler(ev);
-
-                // Hide button
-                addHighlightButtonEl.classList.add(CLASS_HIDDEN);
-            });
-        }
-
-        // Position button
-        const lastHighlightEl = highlightEls[highlightEls.length - 1];
-        const dimensions = lastHighlightEl.getBoundingClientRect();
-        const pageDimensions = pageEl.getBoundingClientRect();
-        addHighlightButtonEl.style.left = `${dimensions.right - pageDimensions.left - 20}px`;
-        addHighlightButtonEl.style.top = `${dimensions.top - pageDimensions.top - 50}px`;
-        addHighlightButtonEl.classList.remove(CLASS_HIDDEN);
-        pageEl.appendChild(addHighlightButtonEl);
-
-        // Clean up rangy highlight and restore selection
-        this.removeRangyHighlight(highlight);
-        rangy.restoreSelection(savedSelection);
-    }
-
-    /**
-     * Event handler for adding a highlight annotation. Shows a create
-     * highlight annotation dialog with the currently selected text.
+     * Event handler for adding a highlight annotation. Generates a highlight
+     * out of the current window selection and saves it.
      *
      * @param {Event} event DOM event
      * @returns {void}
@@ -825,6 +869,9 @@ class DocAnnotator extends Annotator {
         }
 
         const { pageEl, page } = getPageElAndPageNumber(selection.anchorNode.parentNode);
+        if (!pageEl) {
+            return;
+        }
 
         // We use Rangy to turn the selection into a highlight, which creates
         // spans around the selection that we can then turn into quadpoints
