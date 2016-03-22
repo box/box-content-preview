@@ -22,6 +22,7 @@ import {
     SELECTOR_BOX_PREVIEW,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     COLOR_HEADER_LIGHT,
@@ -571,7 +572,8 @@ class Preview extends EventEmitter {
 
         // Load event is fired when preview loads
         this.viewer.addListener('load', () => {
-            // Show or hide print/download button
+            // Show or hide annotate/print/download buttons
+            this.showAnnotateButton();
             this.showPrintButton();
             this.showDownloadButton();
 
@@ -686,6 +688,20 @@ class Preview extends EventEmitter {
         }
 
         return headers;
+    }
+
+    /**
+     * Shows the annotate button if the viewers implement annotate
+     *
+     * @private
+     * @returns {void}
+     */
+    showAnnotateButton() {
+        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable()) {
+            this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+            this.annotateButton.classList.remove(CLASS_HIDDEN);
+            this.annotateButton.addEventListener('click', this.viewer.annotator.addPointAnnotationHandler);
+        }
     }
 
     /**

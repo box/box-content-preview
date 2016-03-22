@@ -258,6 +258,18 @@ class DocBase extends Base {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
 
+    /**
+     * Returns whether or not viewer is annotatable.
+     *
+     * @public
+     * @returns {Boolean} Whether or not viewer is annotatable
+     */
+    isAnnotatable() {
+        const viewerName = this.constructor.name;
+        return this.options.viewers && this.options.viewers[viewerName] &&
+            this.options.viewers[viewerName].annotations;
+    }
+
     /* ----- Private Helpers ----- */
 
     /**
