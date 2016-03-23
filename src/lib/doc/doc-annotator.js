@@ -7,15 +7,17 @@ import rangy from 'rangy';
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
 import rangyClassApplier from 'rangy/lib/rangy-classapplier';
 import rangyHighlight from 'rangy/lib/rangy-highlighter';
+import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
 
 import { CLASS_HIDDEN } from '../constants';
-import { ICON_DELETE } from '../icons/icons';
+import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const POINT_ANNOTATION_TYPE = 'point';
 const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
+const TOUCH_END = Browser.isMobile() ? 'touchend' : 'mouseup';
 
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
@@ -41,6 +43,27 @@ function findClosestElWithClass(element, className) {
     }
 
     return null;
+}
+
+/**
+ * Returns the page element and page number that the element is on.
+ *
+ * @param {HTMLElement} element Element to find page and page number for
+ * @returns {Object} Page element/page number if found or null/-1 if not
+ */
+function getPageElAndPageNumber(element) {
+    const pageEl = findClosestElWithClass(element, 'page');
+    if (pageEl) {
+        return {
+            pageEl,
+            page: parseInt(pageEl.getAttribute('data-page-number'), 10)
+        };
+    }
+
+    return {
+        pageEl: null,
+        page: -1
+    };
 }
 
 /**
@@ -73,6 +96,30 @@ function isPointInPolyOpt(poly, x, y) {
         ((poly[i][1] <= y && y < poly[j][1]) || (poly[j][1] <= y && y < poly[i][1])) && (x < (poly[j][0] - poly[i][0]) * (y - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0]) && (c = !c);
     return c;
     /* eslint-enable */
+}
+
+/**
+ * Returns whether or not the selection represented by the highlight elements
+ * is reversed by detecting if the mouse cursor is closer to the top-most
+ * or bottom-most element.
+ *
+ * @param {Event} event DOM Event
+ * @param {HTMLElement[]} elements Elements representing selection
+ * @returns {Boolean} Whether or not the selection is reversed
+ */
+function isSelectionReversed(event, elements) {
+    const topDimensions = elements[0].getBoundingClientRect();
+    const bottomDimensions = elements[elements.length - 1].getBoundingClientRect();
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+
+    // Calculate distance between mouse and top left corner of top selection
+    // line vs distance between mouse and bottom right corner of bottom
+    // selection line
+    const topLength = Math.sqrt(Math.pow(topDimensions.left - mouseX, 2) + Math.pow(topDimensions.top - mouseY, 2));
+    const bottomLength = Math.sqrt(Math.pow(bottomDimensions.right - mouseX, 2) + Math.pow(bottomDimensions.bottom - mouseY, 2));
+
+    return topLength < bottomLength;
 }
 
 /**
@@ -258,6 +305,7 @@ class DocAnnotator extends Annotator {
         // Remove highlight mousemove and click handler
         document.removeEventListener('mousemove', this.highlightMousemoveHandler());
         document.removeEventListener(TOUCH_EVENT, this.highlightClickHandler);
+        document.removeEventListener(TOUCH_END, this.showAddHighlightButtonHandler);
     }
 
     /**
@@ -302,6 +350,9 @@ class DocAnnotator extends Annotator {
 
         // Add click handler for activating a highlight
         document.addEventListener(TOUCH_EVENT, this.highlightClickHandler);
+
+        // Add mouseup/touchend event for showing the add highlight button
+        document.addEventListener(TOUCH_END, this.showAddHighlightButtonHandler);
     }
 
     /**
@@ -517,69 +568,6 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Shows the remove highlight button for an annotation.
-     *
-     * @param {Annotation} annotation Annotation to show remove button for
-     * @returns {void}
-     */
-    showRemoveHighlightButton(annotation) {
-        const page = annotation.location.page;
-        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
-
-        let removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
-        if (!removeHighlightButtonEl) {
-            removeHighlightButtonEl = document.createElement('button');
-            removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
-            removeHighlightButtonEl.innerHTML = ICON_DELETE;
-
-            this.addEventHandler(removeHighlightButtonEl, (event) => {
-                event.stopPropagation();
-
-                const annotationID = removeHighlightButtonEl.getAttribute('data-annotation-id');
-
-                this.deleteAnnotation(annotationID, true).then(() => {
-                    // Redraw highlights on page
-                    const pageNum = removeHighlightButtonEl.getAttribute('data-page');
-                    this.drawHighlightAnnotationsOnPage(pageNum);
-
-                    // Hide button
-                    removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
-                });
-            });
-
-            pageEl.appendChild(removeHighlightButtonEl);
-        } else {
-            removeHighlightButtonEl.parentNode.removeChild(removeHighlightButtonEl);
-            pageEl.appendChild(removeHighlightButtonEl);
-        }
-
-        // Create remove highlight button and position it above the upper right
-        // corner of the highlight
-        const pageHeight = pageEl.getBoundingClientRect().height;
-        const upperRightCorner = getUpperRightCorner(annotation.location.quadPoints, pageEl);
-        const [browserX, browserY] = convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
-
-        // Position button
-        removeHighlightButtonEl.style.left = `${browserX - 20}px`;
-        removeHighlightButtonEl.style.top = `${browserY - 50}px`;
-        removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
-        removeHighlightButtonEl.setAttribute('data-page', page);
-        removeHighlightButtonEl.classList.remove(CLASS_HIDDEN);
-    }
-
-    /**
-     * Hides the remove highlight button.
-     *
-     * @returns {void}
-     */
-    hideRemoveHighlightButton() {
-        const removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
-        if (removeHighlightButtonEl) {
-            removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
-        }
-    }
-
-    /**
      * Returns the highlight annotation ID of the highlight located at the
      * specified mouse location.
      *
@@ -643,6 +631,157 @@ class DocAnnotator extends Annotator {
     }
 
     /**
+     * Handler to show the add highlight button. Shown when mouse is
+     * released or touch is ended and there is a selection on screen.
+     *
+     * @returns {void}
+     */
+    showAddHighlightButtonHandler(event) {
+        // Do nothing if there is no selection
+        const selection = window.getSelection();
+        if (selection.isCollapsed || selection.rangeCount < 1) {
+            return;
+        }
+
+        // Use Rangy to save the current selection because using the
+        // highlight module can mess with the selection. We restore this
+        // selection after we clean up the highlight
+        const savedSelection = rangy.saveSelection();
+
+        const pageEl = getPageElAndPageNumber(selection.anchorNode.parentNode).pageEl;
+        if (!pageEl) {
+            return;
+        }
+
+        // We use Rangy to turn the selection into a highlight, which creates
+        // spans around the selection that we can then turn into quadpoints
+        const highlight = this.highlighter.highlightSelection('highlight', {
+            containerElementId: pageEl.id
+        })[0];
+        const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0);
+        if (highlightEls.length === 0) {
+            return;
+        }
+
+        let addHighlightButtonEl = document.querySelector('.box-preview-add-highlight-btn');
+        if (!addHighlightButtonEl) {
+            addHighlightButtonEl = document.createElement('button');
+            addHighlightButtonEl.classList.add('box-preview-add-highlight-btn');
+            addHighlightButtonEl.innerHTML = ICON_HIGHLIGHT;
+
+            this.addEventHandler(addHighlightButtonEl, (ev) => {
+                // @TODO(tjin): Maybe redo this so we aren't just calling that handler
+                this.addHighlightAnnotationHandler(ev);
+
+                // Hide button
+                addHighlightButtonEl.classList.add(CLASS_HIDDEN);
+            });
+        }
+
+        // Calculate where to position button
+        const pageDimensions = pageEl.getBoundingClientRect();
+        let buttonX;
+        let buttonY;
+
+        // If selection is reversed, button should be placed before the first
+        // line of selection
+        if (isSelectionReversed(event, highlightEls)) {
+            const firstHighlightEl = highlightEls[0];
+            const dimensions = firstHighlightEl.getBoundingClientRect();
+            buttonX = dimensions.left - pageDimensions.left - 20;
+            buttonY = dimensions.top - pageDimensions.top - 50;
+
+        // Otherwise, button should be placed after bottom line of selection
+        } else {
+            const lastHighlightEl = highlightEls[highlightEls.length - 1];
+            const dimensions = lastHighlightEl.getBoundingClientRect();
+            buttonX = dimensions.right - pageDimensions.left - 20;
+            buttonY = dimensions.top - pageDimensions.top - 50;
+        }
+
+        // Position button
+        addHighlightButtonEl.style.left = `${buttonX}px`;
+        addHighlightButtonEl.style.top = `${buttonY}px`;
+        addHighlightButtonEl.classList.remove(CLASS_HIDDEN);
+        pageEl.appendChild(addHighlightButtonEl);
+
+        // Clean up rangy highlight and restore selection
+        this.removeRangyHighlight(highlight);
+        rangy.restoreSelection(savedSelection);
+    }
+
+    /**
+     * Hides the add highlight button.
+     *
+     * @returns {void}
+     */
+    hideAddHighlightButton() {
+        const addHighlightButtonEl = document.querySelector('.box-preview-add-highlight-btn');
+        if (addHighlightButtonEl) {
+            addHighlightButtonEl.classList.add(CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Shows the remove highlight button for an annotation.
+     *
+     * @param {Annotation} annotation Annotation to show remove button for
+     * @returns {void}
+     */
+    showRemoveHighlightButton(annotation) {
+        const page = annotation.location.page;
+        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
+
+        let removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
+        if (!removeHighlightButtonEl) {
+            removeHighlightButtonEl = document.createElement('button');
+            removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
+            removeHighlightButtonEl.innerHTML = ICON_DELETE;
+
+            this.addEventHandler(removeHighlightButtonEl, (event) => {
+                event.stopPropagation();
+
+                const annotationID = removeHighlightButtonEl.getAttribute('data-annotation-id');
+
+                this.deleteAnnotation(annotationID, true).then(() => {
+                    // Redraw highlights on page
+                    const pageNum = parseInt(removeHighlightButtonEl.getAttribute('data-page'), 10);
+                    this.drawHighlightAnnotationsOnPage(pageNum);
+
+                    // Hide button
+                    removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
+                });
+            });
+        }
+
+        // Create remove highlight button and position it above the upper right
+        // corner of the highlight
+        const pageHeight = pageEl.getBoundingClientRect().height;
+        const upperRightCorner = getUpperRightCorner(annotation.location.quadPoints, pageEl);
+        const [browserX, browserY] = convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
+
+        // Position button
+        removeHighlightButtonEl.style.left = `${browserX - 20}px`;
+        removeHighlightButtonEl.style.top = `${browserY - 50}px`;
+        removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
+        removeHighlightButtonEl.setAttribute('data-page', page);
+        removeHighlightButtonEl.classList.remove(CLASS_HIDDEN);
+        pageEl.appendChild(removeHighlightButtonEl);
+    }
+
+    /**
+     * Hides the remove highlight button.
+     *
+     * @returns {void}
+     */
+    hideRemoveHighlightButton() {
+        const removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
+        if (removeHighlightButtonEl) {
+            removeHighlightButtonEl.classList.add(CLASS_HIDDEN);
+        }
+    }
+
+    /**
      * Handler for mousemove over the document. Adds a hover effect for
      * highlight annotations.
      *
@@ -651,12 +790,10 @@ class DocAnnotator extends Annotator {
     highlightMousemoveHandler() {
         if (!this.throttledHighlightMousemoveHandler) {
             this.throttledHighlightMousemoveHandler = throttle((event) => {
-                const pageEl = findClosestElWithClass(event.target, 'page');
-                if (!pageEl) {
+                const page = getPageElAndPageNumber(event.target).page;
+                if (page === -1) {
                     return;
                 }
-
-                const page = pageEl.getAttribute('data-page-number');
 
                 // Redraw annotations only if annotation we're currently over
                 // has changed
@@ -673,8 +810,10 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Handler for click on document for activating highlights. Changes style
-     * of highlight to show active state and shows a delete button.
+     * Document click handler for handling highlights. Activates highlights
+     * when they are clicked on by changing style to be a darker shade and
+     * showing the delete highlight button. Also hides any existing add or
+     * remove highlight buttons beforehand.
      *
      * @param {Event} event DOM event
      * @returns {void}
@@ -682,21 +821,26 @@ class DocAnnotator extends Annotator {
     highlightClickHandler(event) {
         event.stopPropagation();
 
-        const pageEl = findClosestElWithClass(event.target, 'page');
-        if (!pageEl) {
+        // Hide add highlight button if there is no current selection
+        const selection = window.getSelection();
+        if (selection.isCollapsed || selection.rangeCount < 1) {
+            this.hideAddHighlightButton();
+        }
+
+        // Stop dealing with highlights if the click was outside a page
+        const page = getPageElAndPageNumber(event.target).page;
+        if (page === -1) {
             return;
         }
 
-        const page = pageEl.getAttribute('data-page-number');
-        const clickedAnnotationID = this.getHighlightIDFromMousePoint(event.clientX, event.clientY, page);
-
         // Redraw with active annotation if needed
+        const clickedAnnotationID = this.getHighlightIDFromMousePoint(event.clientX, event.clientY, page);
         if (this.activeAnnotationID !== clickedAnnotationID) {
             this.activeAnnotationID = clickedAnnotationID;
             this.drawHighlightAnnotationsOnPage(page);
         }
 
-        // Hide any existing remove highlight button
+        // Hide remove highlight button
         this.hideRemoveHighlightButton();
 
         // Show remove highlight button if we clicked on an annotation
@@ -709,8 +853,8 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Event handler for adding a highlight annotation. Shows a create
-     * highlight annotation dialog with the currently selected text.
+     * Event handler for adding a highlight annotation. Generates a highlight
+     * out of the current window selection and saves it.
      *
      * @param {Event} event DOM event
      * @returns {void}
@@ -718,28 +862,30 @@ class DocAnnotator extends Annotator {
     addHighlightAnnotationHandler(event) {
         event.stopPropagation();
 
-        // Get selection location and dimensions
+        // Do nothing if there is no selection
         const selection = window.getSelection();
-        if (selection.rangeCount < 1) {
+        if (selection.isCollapsed || selection.rangeCount < 1) {
             return;
         }
 
-        const pageEl = findClosestElWithClass(selection.anchorNode.parentNode, 'page');
-        const page = pageEl ? pageEl.getAttribute('data-page-number') : 1;
+        const { pageEl, page } = getPageElAndPageNumber(selection.anchorNode.parentNode);
+        if (!pageEl) {
+            return;
+        }
 
         // We use Rangy to turn the selection into a highlight, which creates
         // spans around the selection that we can then turn into quadpoints
         const highlight = this.highlighter.highlightSelection('highlight', {
             containerElementId: pageEl.id
         })[0];
-        const highlightElements = [].slice.call(document.querySelectorAll('.highlight'), 0);
-        if (highlightElements.length === 0) {
+        const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0);
+        if (highlightEls.length === 0) {
             return;
         }
 
         // Get quad points for each highlight element
         const quadPoints = [];
-        highlightElements.forEach((element) => {
+        highlightEls.forEach((element) => {
             quadPoints.push(getQuadPoints(element, pageEl, this.scale));
         });
 
@@ -834,18 +980,14 @@ class DocAnnotator extends Annotator {
         this.addEventHandler(document, (e) => {
             e.stopPropagation();
 
-            const pageEl = findClosestElWithClass(e.target, 'page');
-
             // If click isn't on a page, disregard
+            const { pageEl, page } = getPageElAndPageNumber(e.target);
             if (!pageEl) {
                 return;
             }
 
-            // Generate annotation parameters and location data to store
-            const pageDimensions = pageEl.getBoundingClientRect();
-            const page = pageEl.getAttribute('data-page-number');
-
             // Store coordinates at 100% scale in PDF space in PDF units
+            const pageDimensions = pageEl.getBoundingClientRect();
             const browserCoordinates = [e.clientX - pageDimensions.left, e.clientY - pageDimensions.top];
             const pdfCoordinates = convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, this.scale);
             const [x, y] = pdfCoordinates;
