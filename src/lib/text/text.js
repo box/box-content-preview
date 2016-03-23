@@ -2,6 +2,7 @@ import './text.scss';
 import autobind from 'autobind-decorator';
 import fetch from 'isomorphic-fetch';
 import TextBase from './text-base';
+import Browser from '../browser';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../util';
 
 const Box = global.Box || {};
@@ -76,7 +77,8 @@ class PlainText extends TextBase {
         // Help in printing by creating an iframe with the contents
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         this.printframe = openContentInsideIframe(this.preEl.outerHTML);
-        this.printframe.contentDocument.body.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
+        this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
+        this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('text.css')));
     }
 
     /**
@@ -86,8 +88,8 @@ class PlainText extends TextBase {
      */
     print() {
         this.printframe.contentWindow.focus();
-        if (typeof this.printframe.contentDocument.execCommand === 'function') {
-            this.printframe.contentDocument.execCommand('print', false, null);
+        if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
+            this.printframe.contentWindow.document.execCommand('print', false, null);
         } else {
             this.printframe.contentWindow.print();
         }

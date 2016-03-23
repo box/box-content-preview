@@ -14,13 +14,11 @@ function createDownloadIframe() {
         // if no existing iframe create a new one
         iframe = document.createElement('iframe');
         iframe.setAttribute('id', 'downloadiframe');
-        iframe.width = '10000px';
-        iframe.height = '10000px';
         iframe.style.display = 'none';
         iframe = document.body.appendChild(iframe);
     }
     // Clean the iframe up
-    iframe.contentDocument.write('<body></body>');
+    iframe.contentDocument.write('<head></head><body></body>');
     return iframe;
 }
 

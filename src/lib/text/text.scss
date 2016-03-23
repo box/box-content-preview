@@ -6,4 +6,18 @@
     left: 0;
     padding: 20px !important;
     margin: 0;
+    white-space: pre-wrap;
+    text-align: left;
+}
+
+@media print {
+      body, html, .box-preview-text {
+          width: 100%;
+          height: 100%;
+          overflow: visible;
+          position: static;
+          padding: 0;
+          margin: 0;
+          border: 0 none;
+      }
 }
