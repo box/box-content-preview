@@ -1,11 +1,15 @@
 $annotation-base-color: #fafafa;
 $annotation-border-color: #dfdfdf;
-$annotation-separator-color: #444;
 $annotation-button-background-color: #555;
-$white-color: #fff;
+$annotation-font-color-lighter: rgba(68, 68, 68, .7);
+$annotation-font-color: rgba(68, 68, 68, 1);
+$annotation-separator-color: #444;
+$point-annotation-button-background-color: #22a7f0;
 $shadow-color: rgba(0, 0, 0, .25);
+$white-color: #fff;
 
-.box-preview-annotation-dialog {
+.box-preview-create-annotation-dialog,
+.box-preview-show-annotation-dialog {
     position: absolute;
     z-index: 9999; // Annotation dialog should be above other content
 
@@ -13,19 +17,39 @@ $shadow-color: rgba(0, 0, 0, .25);
         display: none;
     }
 
-    .caret-up {
-        border-bottom: 5px solid $annotation-base-color;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        height: 0;
-        margin: 0 auto;
-        width: 0;
-    }
-
     .annotation-container {
         background-color: $annotation-base-color;
-        border-radius: 5px;
+        border: 1px solid $annotation-border-color;
+        border-radius: 4px;
+        box-shadow: 0 0 4px 0 $shadow-color;
         padding: 5px;
+
+        // CSS arrow for caret above container
+        &::after,
+        &::before {
+            border: solid transparent;
+            content: ' ';
+            height: 0;
+            left: 50%;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            transform: rotate(-225deg);
+            width: 0;
+        }
+
+        &::after {
+            border-color: transparent transparent $annotation-base-color $annotation-base-color;
+            border-width: 6px;
+            margin: -5px 0 0 -6px;
+        }
+
+        &::before {
+            border-color: transparent transparent $annotation-border-color $annotation-border-color;
+            border-width: 6px;
+            box-shadow: -2px 2px 4px -2px $shadow-color;
+            margin: -6px 0 0 -6px;
+        }
     }
 
     .annotation-textarea {
@@ -63,18 +87,18 @@ $shadow-color: rgba(0, 0, 0, .25);
         width: 250px;
 
         .user-name {
-            color: $white-color;
+            color: $annotation-font-color;
             font-size: 13px;
         }
 
         .comment-date {
-            color: $white-color;
+            color: $annotation-font-color;
             font-size: 11px;
             padding-top: 2px;
         }
 
         .comment-text {
-            color: $white-color;
+            color: $annotation-font-color;
             font-size: 12px;
             padding-top: 5px;
         }
@@ -92,7 +116,7 @@ $shadow-color: rgba(0, 0, 0, .25);
     }
 
     .delete-confirmation-message {
-        color: $white-color;
+        color: $annotation-font-color;
         font-size: 12px;
         padding: 5px 0 3px;
         text-align: center;
@@ -108,22 +132,19 @@ $shadow-color: rgba(0, 0, 0, .25);
     .btn {
         border: 0;
         border-radius: 2px;
+        color: $annotation-font-color-lighter;
         cursor: pointer;
         padding: 10px 20px;
 
-        span {
-            opacity: .7;
-        }
-
-        &:hover span {
-            opacity: 1;
+        &:hover {
+            color: $annotation-font-color;
         }
     }
 
     .btn-plain {
         background-color: transparent;
         border-style: none;
-        color: $annotation-base-color;
+        color: $annotation-font-color;
         cursor: pointer;
     }
 
@@ -142,7 +163,7 @@ $shadow-color: rgba(0, 0, 0, .25);
 
     .post-annotation-btn {
         background-color: $annotation-button-background-color;
-        color: $white-color;
+        color: $annotation-font-color;
         position: absolute;
         right: 0;
     }
@@ -154,7 +175,7 @@ $shadow-color: rgba(0, 0, 0, .25);
 
     .cancel-delete-btn {
         background-color: $annotation-button-background-color;
-        color: $white-color;
+        color: $annotation-font-color;
         left: 60px;
         position: absolute;
         width: 80px;
@@ -162,18 +183,26 @@ $shadow-color: rgba(0, 0, 0, .25);
 
     .confirm-delete-btn {
         background-color: $annotation-button-background-color;
-        color: $white-color;
+        color: $annotation-font-color;
         position: absolute;
         right: 60px;
         width: 80px;
     }
+}
 
-    .show-point-annotation-btn {
-        background-color: $annotation-base-color;
-        color: $white-color;
-        font-size: 14px;
-        padding: 10px 15px;
-    }
+.box-preview-show-point-annotation-btn {
+    background-color: $point-annotation-button-background-color;
+    border-radius: 50%; // Circle
+    border-style: none;
+    box-shadow: 0 0 4px 0 $shadow-color;
+    color: $white-color;
+    cursor: pointer;
+    font-size: 11px;
+    height: 22px;
+    line-height: 22px;
+    padding: 0;
+    position: absolute;
+    width: 22px;
 }
 
 .box-preview-annotation-layer {
