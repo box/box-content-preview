@@ -355,7 +355,7 @@ class Image extends Base {
     loadUI() {
         super.loadUI();
         this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon', ICON_ROTATE_LEFT);
-        if (Browser.supportsBox3D()) {
+        if (Browser.hasWebGL()) {
             this.controls.add(__('view_as_360'), this.switchTo3D, 'box-preview-image-switch-3d-icon', '360°');
         }
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);

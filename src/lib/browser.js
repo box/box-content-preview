@@ -181,12 +181,12 @@ class Browser {
 
     /**
      * Returns true if the browser supports full capabilities required by
-     * the Box3DRuntime
+     * the Box3DRuntime for displaying Model Preview
      *
      * @public
-     * @returns {Boolean} true if browser fully supports Box3DRuntime
+     * @returns {Boolean} true if browser fully supports Model Previewing
      */
-    static supportsBox3D() {
+    static supportsModel3D() {
         if (!Browser.hasWebGL()) {
             return false;
         }

@@ -339,14 +339,14 @@ class Model3dRenderer extends Box3DRenderer {
                             bottom: -50,
                             left: -50 * aspect,
                             right: 50 * aspect,
-                            type: 'OrthographicCamera'
+                            cameraType: 'orthographic'
                         });
                         enableZoom = false;
                         break;
                     case CAMERA_PROJECTION_PERSPECTIVE:
                         camera.setProperties({
                             aspect: this.getAspect(),
-                            type: 'PerspectiveCamera'
+                            cameraType: 'perspective'
                         });
                         enableZoom = true;
                         break;
