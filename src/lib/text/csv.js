@@ -55,7 +55,6 @@ class CSV extends TextBase {
                         return;
                     }
                     this.data = results.data;
-                    console.error(this.data);
                     this.finishLoading();
                     URL.revokeObjectURL(papaWorkerBlob);
                 }

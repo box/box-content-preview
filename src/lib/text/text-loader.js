@@ -8,7 +8,7 @@ const VIEWERS = [
         REPRESENTATION: 'original',
         EXTENSIONS: ['md'],
         SCRIPTS: [`${STATIC_URI}highlight.js`, 'markdown.js'],
-        STYLESHEETS: [`${STATIC_URI}github.css`, 'markdown.css'],
+        STYLESHEETS: [`${STATIC_URI}github.css`, 'text.css'],
         CONSTRUCTOR: 'MarkDown',
         PREFETCH: 'xhr'
     },
