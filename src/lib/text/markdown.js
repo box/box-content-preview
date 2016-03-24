@@ -63,7 +63,7 @@ class MarkDown extends TextBase {
             const assetUrlCreator = createAssetUrlCreator(this.options.location);
             this.printframe = openContentInsideIframe(this.preEl.outerHTML);
             this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
-            this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('text.css')));
+            this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('markdown.css')));
         });
 
         super.load();
