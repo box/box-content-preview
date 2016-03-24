@@ -41,14 +41,14 @@ $white-color: #fff;
         &::after {
             border-color: transparent transparent $annotation-base-color $annotation-base-color;
             border-width: 6px;
-            margin: -5px 0 0 -6px;
+            margin: -4px 0 0 -6px;
         }
 
         &::before {
             border-color: transparent transparent $annotation-border-color $annotation-border-color;
             border-width: 6px;
             box-shadow: -2px 2px 4px -2px $shadow-color;
-            margin: -6px 0 0 -6px;
+            margin: -5px 0 0 -6px;
         }
     }
 
@@ -188,6 +188,15 @@ $white-color: #fff;
         right: 60px;
         width: 80px;
     }
+}
+
+// Hard code widths to solve layout issues
+.box-preview-create-annotation-dialog {
+    width: 262px;
+}
+
+.box-preview-show-annotation-dialog {
+    width: 317px;
 }
 
 .box-preview-show-point-annotation-btn {

@@ -47,7 +47,7 @@ class DocBase extends Base {
         // Remove DOM event listeners
         if (this.docEl) {
             this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
-            this.docEl.removeEventListener('pagesrendered', this.pagesrenderedHandler);
+            this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
         }
@@ -143,7 +143,7 @@ class DocBase extends Base {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(this.pdfViewer.currentScale);
-            this.annotator.renderAnnotations();
+            this.annotator.needToReRender = true;
         }
     }
 
@@ -498,6 +498,11 @@ class DocBase extends Base {
      * @returns {void}
      */
     pagerenderedHandler() {
+        if (this.annotator && this.annotator.needToReRender) {
+            this.annotator.renderAnnotations();
+            this.annotator.needToReRender = false;
+        }
+
         if (this.loaded) {
             return;
         }

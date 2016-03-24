@@ -10,6 +10,18 @@ import rangyHighlight from 'rangy/lib/rangy-highlighter';
 import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
+
+import {
+    CREATE_ANNOTATION_DIALOG_CLASS,
+    SHOW_ANNOTATION_DIALOG_CLASS,
+    ANNOTATION_TEXTAREA_CLASS,
+    CANCEL_ANNOTATION_BUTTON_CLASS,
+    COMMENTS_CONTAINER_CLASS,
+    POST_ANNOTATION_BUTTON_CLASS,
+    REPLY_ANNOTATION_BUTTON_CLASS,
+    REPLY_CONTAINER_CLASS,
+    REPLY_CONTENT_CLASS
+} from '../annotation/constants';
 import { CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
 
@@ -42,6 +54,22 @@ function findClosestElWithClass(element, className) {
     }
 
     return null;
+}
+
+/**
+ * Finds the closest element with a data type and returns that data type.
+ *
+ * @param {HTMLElement} element Element to find closest data type for
+ * @returns {string} Closest data type or empty string
+ */
+function findClosestDataType(element) {
+    for (let el = element; el && el !== document; el = el.parentNode) {
+        if (el && el.getAttribute('data-type')) {
+            return el.getAttribute('data-type');
+        }
+    }
+
+    return '';
 }
 
 /**
@@ -379,13 +407,10 @@ class DocAnnotator extends Annotator {
         this.hoverAnnotationID = ''; // ID of annotation user is hovered over
         this.activeAnnotationID = ''; // ID of active annotation (clicked)
 
-        // Arbitrary unique numeric point annotation ID used for display purposes
-        this.pointAnnotationID = 1;
-
         // Add mousemove handler for adding a hover effect to highlights
         document.addEventListener('mousemove', this.highlightMousemoveHandler());
 
-        // Add click handlers for activating a highlight or hiding point comments
+        // Add click handlers for activating a highlight or showing and hiding point comments
         document.addEventListener(TOUCH_EVENT, this.highlightClickHandler);
         document.addEventListener(TOUCH_EVENT, this.pointClickHandler);
 
@@ -560,6 +585,9 @@ class DocAnnotator extends Annotator {
     drawHighlightAnnotationsOnPage(page) {
         // let time = new Date().getTime();
         const pageEl = document.querySelector(`[data-page-number="${page}"]`);
+        if (!pageEl) {
+            return;
+        }
 
         // Create an annotation layer on the page if it doesn't exist
         let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
@@ -980,9 +1008,9 @@ class DocAnnotator extends Annotator {
         // Create point annotation HTML
         const pointAnnotationButtonEl = document.createElement('button');
         pointAnnotationButtonEl.classList.add('box-preview-show-point-annotation-btn');
+        pointAnnotationButtonEl.setAttribute('data-type', 'show-point-annotation-btn');
         pointAnnotationButtonEl.setAttribute('data-thread-id', annotation.threadID);
-        pointAnnotationButtonEl.textContent = this.pointAnnotationID;
-        this.pointAnnotationID++; // Increment arbitrary point annotation ID
+        pointAnnotationButtonEl.textContent = 'P';
 
         const location = annotation.location;
         const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
@@ -993,11 +1021,6 @@ class DocAnnotator extends Annotator {
         pointAnnotationButtonEl.style.left = `${browserX - 11}px`;
         pointAnnotationButtonEl.style.top = `${browserY - 11}px`;
         pageEl.appendChild(pointAnnotationButtonEl);
-
-        this.addEventHandler(pointAnnotationButtonEl, (event) => {
-            event.stopPropagation();
-            this.showAnnotationDialog(annotation.threadID);
-        });
     }
 
     /**
@@ -1016,19 +1039,25 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Handler for click on document for hiding point comments and dialog.
+     * Handler for click on document for showing and hiding point comments
+     * and dialog.
      *
      * @param {Event} event DOM event
      * @returns {void}
      */
     pointClickHandler(event) {
         // If we aren't inside an annotation dialog, hide the annotation dialog
-        if (!findClosestElWithClass(event.target, 'box-preview-create-annotation-dialog')) {
-            hideElement('.box-preview-create-annotation-dialog');
+        if (!findClosestElWithClass(event.target, CREATE_ANNOTATION_DIALOG_CLASS)) {
+            hideElement(`.${CREATE_ANNOTATION_DIALOG_CLASS}`);
         }
 
-        if (!findClosestElWithClass(event.target, 'box-preview-show-annotation-dialog')) {
-            hideElement('.box-preview-show-annotation-dialog');
+        if (!findClosestElWithClass(event.target, SHOW_ANNOTATION_DIALOG_CLASS)) {
+            hideElement(`.${SHOW_ANNOTATION_DIALOG_CLASS}`);
+        }
+
+        // If we clicked on a point annotation icon, show that annotation
+        if (findClosestDataType(event.target) === 'show-point-annotation-btn') {
+            this.showAnnotationDialog(event.target.getAttribute('data-thread-id'));
         }
     }
 
@@ -1079,10 +1108,10 @@ class DocAnnotator extends Annotator {
      */
     createAnnotationDialog(locationData, annotationType) {
         // Create annotation dialog HTML
-        let annotationDialogEl = document.querySelector('.box-preview-create-annotation-dialog');
+        let annotationDialogEl = document.querySelector(`.${CREATE_ANNOTATION_DIALOG_CLASS}`);
         if (!annotationDialogEl) {
             annotationDialogEl = document.createElement('div');
-            annotationDialogEl.classList.add('box-preview-create-annotation-dialog');
+            annotationDialogEl.classList.add(CREATE_ANNOTATION_DIALOG_CLASS);
             const annotationElString = `
                 <div class="annotation-container">
                     <textarea class="annotation-textarea"></textarea>
@@ -1094,9 +1123,9 @@ class DocAnnotator extends Annotator {
             annotationDialogEl.innerHTML = annotationElString;
         }
 
-        const postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn');
-        const cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation-btn');
-        const annotationTextEl = annotationDialogEl.querySelector('.annotation-textarea');
+        const postButtonEl = annotationDialogEl.querySelector(`.${POST_ANNOTATION_BUTTON_CLASS}`);
+        const cancelButtonEl = annotationDialogEl.querySelector(`.${CANCEL_ANNOTATION_BUTTON_CLASS}`);
+        const annotationTextEl = annotationDialogEl.querySelector(`.${ANNOTATION_TEXTAREA_CLASS}`);
 
         // Clean up existing handler
         this.removeEventHandlers(postButtonEl, cancelButtonEl);
@@ -1127,7 +1156,7 @@ class DocAnnotator extends Annotator {
             hideElement('.box-preview-create-annotation-dialog');
         });
 
-        this.positionDialog(annotationDialogEl, locationData, 260);
+        this.positionDialog(annotationDialogEl, locationData, 262);
 
         // Clear and focus comment textarea
         annotationTextEl.value = '';
@@ -1148,16 +1177,16 @@ class DocAnnotator extends Annotator {
             }
 
             // Find existing show annotation dialog or create one
-            let annotationDialogEl = document.querySelector('.box-preview-show-annotation-dialog');
+            let annotationDialogEl = document.querySelector(`.${SHOW_ANNOTATION_DIALOG_CLASS}`);
             if (!annotationDialogEl) {
                 annotationDialogEl = document.createElement('div');
-                annotationDialogEl.classList.add('box-preview-show-annotation-dialog');
+                annotationDialogEl.classList.add(SHOW_ANNOTATION_DIALOG_CLASS);
                 annotationDialogEl.innerHTML = `
                     <div class="annotation-container">
                         <div class="annotation-comments"></div>
                         <div class="reply-container">
                             <button class="btn-plain add-reply-btn">+ Add Reply</button>
-                            <div class="reply-container box-preview-is-hidden">
+                            <div class="reply-content-container box-preview-is-hidden">
                                 <textarea class="reply annotation-textarea"></textarea>
                                 <div class="button-container">
                                     <button class="btn cancel-annotation-btn">Cancel</button>
@@ -1170,11 +1199,11 @@ class DocAnnotator extends Annotator {
 
             // Remove old event handlers for reply buttons and delete-related
             // buttons inside the comment thread
-            const replyEl = annotationDialogEl.querySelector('.reply-container');
-            const replyButtonEl = replyEl.querySelector('.add-reply-btn');
-            const cancelButtonEl = replyEl.querySelector('.cancel-annotation-btn');
-            const postButtonEl = replyEl.querySelector('.post-annotation-btn');
-            const annotationCommentsEl = annotationDialogEl.querySelector('.annotation-comments');
+            const replyContainerEl = annotationDialogEl.querySelector(`.${REPLY_CONTAINER_CLASS}`);
+            const replyButtonEl = replyContainerEl.querySelector(`.${REPLY_ANNOTATION_BUTTON_CLASS}`);
+            const cancelButtonEl = replyContainerEl.querySelector(`.${CANCEL_ANNOTATION_BUTTON_CLASS}`);
+            const postButtonEl = replyContainerEl.querySelector(`.${POST_ANNOTATION_BUTTON_CLASS}`);
+            const annotationCommentsEl = annotationDialogEl.querySelector(`.${COMMENTS_CONTAINER_CLASS}`);
             const commentButtonEls = [].slice.call(annotationCommentsEl.querySelectorAll('button'), 0);
             this.removeEventHandlers(replyButtonEl, cancelButtonEl, postButtonEl, ...commentButtonEls);
 
@@ -1183,14 +1212,14 @@ class DocAnnotator extends Annotator {
 
             // Bind event handlers for reply buttons
             const firstAnnotation = annotations[0];
-            const replyContainerEl = replyEl.querySelector('.reply-container');
-            const replyTextEl = replyEl.querySelector('.annotation-textarea');
+            const replyContentEl = replyContainerEl.querySelector(`.${REPLY_CONTENT_CLASS}`);
+            const replyTextEl = replyContainerEl.querySelector(`.${ANNOTATION_TEXTAREA_CLASS}`);
 
             // Clicking '+ Add Reply' to initiate adding a reply annotation
             this.addEventHandler(replyButtonEl, () => {
                 event.stopPropagation();
                 hideElement(replyButtonEl);
-                showElement(replyContainerEl);
+                showElement(replyContentEl);
 
                 replyTextEl.value = '';
                 replyTextEl.focus();
@@ -1200,14 +1229,14 @@ class DocAnnotator extends Annotator {
             this.addEventHandler(cancelButtonEl, () => {
                 event.stopPropagation();
                 showElement(replyButtonEl);
-                hideElement(replyContainerEl);
+                hideElement(replyContentEl);
             });
 
             // Clicking 'Post' to add a reply annotation
             this.addEventHandler(postButtonEl, () => {
                 event.stopPropagation();
                 showElement(replyButtonEl);
-                hideElement(replyContainerEl);
+                hideElement(replyContentEl);
 
                 const newAnnotation = Annotation.copy(firstAnnotation, {
                     text: replyTextEl.value.trim(),
@@ -1231,7 +1260,7 @@ class DocAnnotator extends Annotator {
 
             // All annotations in a thread should have the same location
             const locationData = firstAnnotation.location || {};
-            this.positionDialog(annotationDialogEl, locationData, 315);
+            this.positionDialog(annotationDialogEl, locationData, 316);
         });
     }
 
@@ -1304,12 +1333,7 @@ class DocAnnotator extends Annotator {
 
                 // If this was the root comment in this thread, remove the whole thread
                 if (isRootAnnotation) {
-                    const annotationDialogEl = document.querySelector('.box-preview-show-annotation-dialog');
-                    const replyButtonEl = annotationDialogEl.querySelector('.add-reply-btn');
-                    const cancelButtonEl = annotationDialogEl.querySelector('.cancel-annotation-btn');
-                    const postButtonEl = annotationDialogEl.querySelector('.post-annotation-btn');
-                    this.removeEventHandlers(replyButtonEl, cancelButtonEl, postButtonEl);
-                    annotationDialogEl.parentNode.removeChild(annotationDialogEl);
+                    hideElement(`.${SHOW_ANNOTATION_DIALOG_CLASS}`);
 
                     // Remove point icon when we delete whole thread
                     const pointAnnotationButtonEl = document.querySelector(`[data-thread-id="${annotation.threadID}"]`);

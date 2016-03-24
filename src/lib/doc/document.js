@@ -71,7 +71,7 @@ class Document extends DocBase {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(this.pdfViewer.currentScale);
-            this.annotator.renderAnnotations();
+            this.annotator.needToReRender = true;
         }
     }
 
@@ -94,7 +94,7 @@ class Document extends DocBase {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(this.pdfViewer.currentScale);
-            this.annotator.renderAnnotations();
+            this.annotator.needToReRender = true;
         }
     }
 
@@ -116,6 +116,13 @@ class Document extends DocBase {
         const buttonContent = pageNumTemplate.replace(/\>\s*\</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-doc-next-page-icon box-preview-next-page', ICON_DROP_DOWN);
+
+        // Annotation buttons
+        if (this.options.viewers.Document && this.options.viewers.Document.annotations) {
+            this.controls.add(__('add_highlight_annotation'), this.annotator.addHighlightAnnotationHandler, '', 'H');
+            this.controls.add(__('add_point_annotation'), this.annotator.addPointAnnotationHandler, '', 'P');
+        }
+
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
