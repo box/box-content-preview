@@ -252,7 +252,7 @@ class Dash extends VideoBase {
         this.resize();
         this.loadFilmStrip();
 
-        if (Browser.supportsBox3D()) {
+        if (Browser.hasWebGL()) {
             this.switchTo360El = this.containerEl.querySelector('.box-preview-image-switch-360-icon');
             this.switchTo360El.classList.remove(CSS_CLASS_HIDDEN);
             this.switchTo360El.addEventListener('click', this.switchTo360);
