@@ -92,7 +92,7 @@ class Image360Renderer extends Box3DRenderer {
                 vMapping: 'clamp',
                 fileId: fileProperties.id,
                 filename: fileProperties.name,
-                originalImage: fileProperties.extension === 'jpg' || fileProperties.fileExtension === 'png'
+                representation: (fileProperties.extension === 'jpg' || fileProperties.fileExtension === 'png') ? 'original' : undefined
             }
         });
         return new Promise((resolve) => {
