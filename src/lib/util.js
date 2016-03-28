@@ -3,14 +3,12 @@ const loadedCSSAssets = [];
 const prefetchedAssets = [];
 
 /**
- * Opens url in an iframe
- * Used for downloads
+ * Creates an empty iframe or uses an existing one
+ * for the purposes of downloading or printing
  *
- * @public
- * @param {String} api api url
- * @returns {HTMLElement}
+ * @returns {HTMLElement} iframe
  */
-export function openUrlInsideIframe(url) {
+function createDownloadIframe() {
     let iframe = document.querySelector('#downloadiframe');
     if (!iframe) {
         // if no existing iframe create a new one
@@ -19,7 +17,38 @@ export function openUrlInsideIframe(url) {
         iframe.style.display = 'none';
         iframe = document.body.appendChild(iframe);
     }
+    // Clean the iframe up
+    iframe.contentDocument.write('<head></head><body></body>');
+    return iframe;
+}
+
+/**
+ * Opens url in an iframe
+ * Used for downloads
+ *
+ * @public
+ * @param {String} api api url
+ * @returns {HTMLElement}
+ */
+export function openUrlInsideIframe(url) {
+    const iframe = createDownloadIframe();
     iframe.src = url;
+    return iframe;
+}
+
+/**
+ * Opens content in an iframe
+ * Used for printing
+ *
+ * @public
+ * @param {String} content html content
+ * @returns {HTMLElement}
+ */
+export function openContentInsideIframe(content) {
+    const iframe = createDownloadIframe();
+    iframe.contentDocument.body.innerHTML = content;
+    iframe.contentDocument.close();
+    return iframe;
 }
 
 /**
