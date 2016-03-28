@@ -1343,7 +1343,9 @@ class DocAnnotator extends Annotator {
                     }
                 }
             }).catch(() => {
+                /* eslint-disable no-console */
                 console.log('There was an error deleting your annotation');
+                /* eslint-enable no-console */
             });
         });
 
