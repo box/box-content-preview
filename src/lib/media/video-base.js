@@ -3,6 +3,7 @@ import MediaBase from './media-base';
 import throttle from 'lodash.throttle';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
+const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 
 @autobind
 class VideoBase extends MediaBase {
@@ -22,6 +23,16 @@ class VideoBase extends MediaBase {
     }
 
     /**
+     * Shows the loading indicator.
+     *
+     * @private
+     * @returns {void}
+     */
+    waitingHandler() {
+        this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
+    }
+
+    /**
      * [destructor]
      * @returns {void}
      */
@@ -29,6 +40,7 @@ class VideoBase extends MediaBase {
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('mousemove', this.mousemoveHandler);
             this.mediaEl.removeEventListener('click', this.togglePlay);
+            this.mediaEl.removeEventListener('waiting', this.waitingHandler);
         }
         super.destroy();
     }
@@ -64,6 +76,7 @@ class VideoBase extends MediaBase {
 
         this.mediaEl.addEventListener('mousemove', this.mousemoveHandler);
         this.mediaEl.addEventListener('click', this.togglePlay);
+        this.mediaEl.addEventListener('waiting', this.waitingHandler);
     }
 
     /**

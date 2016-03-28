@@ -50,7 +50,6 @@ class MediaBase extends Base {
                 this.mediaEl.removeEventListener('volumechange', this.updateVolumeIcon);
                 this.mediaEl.removeEventListener('playing', this.playingHandler);
                 this.mediaEl.removeEventListener('pause', this.pauseHandler);
-                this.mediaEl.removeEventListener('waiting', this.waitingHandler);
                 this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
 
                 this.mediaEl.removeAttribute('src');
@@ -239,16 +238,6 @@ class MediaBase extends Base {
     }
 
     /**
-     * Shows the loading indicator.
-     *
-     * @private
-     * @returns {void}
-     */
-    waitingHandler() {
-        this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
-    }
-
-    /**
      * Shows the play icon.
      *
      * @private
@@ -299,7 +288,6 @@ class MediaBase extends Base {
         this.mediaEl.addEventListener('volumechange', this.updateVolumeIcon);
         this.mediaEl.addEventListener('playing', this.playingHandler);
         this.mediaEl.addEventListener('pause', this.pauseHandler);
-        this.mediaEl.addEventListener('waiting', this.waitingHandler);
         this.mediaEl.addEventListener('ended', this.resetPlayIcon);
     }
 
