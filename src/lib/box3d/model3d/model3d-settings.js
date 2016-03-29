@@ -107,8 +107,10 @@ class Model3dSettings extends Box3DControls {
 
     /**
      * @inheritdoc
+     * @param {Boolean} [saveEnabled] Whether or not to display the save button. In the case that
+     * metadata isn't available, then we shouldn't be allowed to save to it
      */
-    addUi() {
+    addUi(saveEnabled) {
         // container
         this.wrapperEl = document.createElement('div');
         this.wrapperEl.classList.add(CSS_CLASS_OVERLAY);
@@ -150,7 +152,7 @@ class Model3dSettings extends Box3DControls {
 
         // Save and reset buttons
         // #TODO @jholdstock: disable save and revert buttons if not an editor
-        const saveButtonsPanelRowEl = this.createSaveButtons();
+        const saveButtonsPanelRowEl = this.createSaveButtons(saveEnabled);
         this.settingsPanelEl.appendChild(saveButtonsPanelRowEl);
 
         // Add event for hiding UI if anything but the panel is selected
@@ -216,14 +218,17 @@ class Model3dSettings extends Box3DControls {
 
     /**
      * Create a row of save buttons
+     * @param {Boolean} [saveEnabled] If we allow saving to metadata, show the save button
      * @returns {HtmlElement} A row elment with save/revert buttons
      */
-    createSaveButtons() {
+    createSaveButtons(saveEnabled = true) {
         const saveButtonRowEl = this.createSettingsRow();
 
-        const saveButtonEl = this.createSettingsButton('Save', this.saveSceneDefaults);
-        saveButtonEl.classList.add('box-preview-settings-save-btn');
-        saveButtonRowEl.appendChild(saveButtonEl);
+        if (saveEnabled) {
+            const saveButtonEl = this.createSettingsButton('Save', this.saveSceneDefaults);
+            saveButtonEl.classList.add('box-preview-settings-save-btn');
+            saveButtonRowEl.appendChild(saveButtonEl);
+        }
 
         const resetButtonEl = this.createSettingsButton('Reset', this.resetSceneDefaults);
         saveButtonRowEl.appendChild(resetButtonEl);

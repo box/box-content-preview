@@ -228,6 +228,9 @@ class Model3d extends Box3D {
                 this.controls.handleSetRenderMode(defaults.defaultRenderMode);
             })
             .catch((error) => {
+                // Make sure to display the settings panel, but hide the save button
+                this.settings.addUi(false);
+
                 super.handleSceneLoaded();
                 /* eslint-disable no-console */
                 console.error(error);
