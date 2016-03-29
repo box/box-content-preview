@@ -61,7 +61,7 @@ export function openContentInsideIframe(content) {
 export function deduceBoxUrl(api) {
     let origin;
 
-    if (api.endsWith('/api')) {
+    if (api && api.endsWith('/api')) {
         // This is an internal url
         origin = api.replace('/api', '');
         const userDomain = origin.match(/^https:\/\/(.*)\.dev\.box\.net$/);
