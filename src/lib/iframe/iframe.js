@@ -25,11 +25,10 @@ class IFrame extends Base {
     }
 
     /**
-     * Loads a swf object.
+     * Loads a boxnote or boxdicom file
      *
      * @public
-     * @param {String} swfUrl The swf to load
-     * @returns {Promise} Promise to load a swf
+     * @returns {void}
      */
     load() {
         let src = `${deduceBoxUrl(this.options.api)}`;
