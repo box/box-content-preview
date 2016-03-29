@@ -261,11 +261,8 @@ class Model3dRenderer extends Box3DRenderer {
      * @param {Error} error with reason for unsupported representation
      * @returns {void}
      */
-    onUnsupportedRepresentation(error) {
-        /* eslint-disable no-console */
-        console.error(error);
-        /* eslint-enable no-console */
-        this.destroy();
+    onUnsupportedRepresentation() {
+        this.emit('error', new Error('Out of date model preview format'));
     }
 
     /**
