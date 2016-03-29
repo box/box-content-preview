@@ -1,4 +1,5 @@
 import './model3d.scss';
+import Browser from '../../browser';
 import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';
@@ -17,6 +18,7 @@ import {
     EVENT_METADATA_UPDATE_FAILURE,
     EVENT_RESET_SCENE_DEFAULTS
 } from './model3d-constants';
+import { EVENT_ERROR } from '../box3d-constants';
 
 const Box = global.Box || {};
 
@@ -38,6 +40,11 @@ class Model3d extends Box3D {
      */
     constructor(container, options) {
         super(container, options);
+
+        if (!Browser.supportsModel3D()) {
+            this.wrapperEl.parentElement.removeChild(this.wrapperEl);
+            this.emit(EVENT_ERROR, new Error('Your Browser Does Not Support Model Preview'));
+        }
 
         this.missingAssets = null;
         this.loadTimeout = 100000;
