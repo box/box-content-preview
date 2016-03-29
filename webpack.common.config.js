@@ -30,7 +30,8 @@ module.exports = function(language) {
             box3d:          [ lib + '/box3d/box3d.js' ],
             model3d:        [ lib + '/box3d/model3d/model3d.js' ],
             image360:       [ lib + '/box3d/image360/image360.js' ],
-            video360:       [ lib + '/box3d/video360/video360.js' ]
+            video360:       [ lib + '/box3d/video360/video360.js' ],
+            iframe:         [ lib + '/iframe/iframe.js' ]
         },
 
         module: {
