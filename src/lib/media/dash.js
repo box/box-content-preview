@@ -284,7 +284,7 @@ class Dash extends VideoBase {
         if (videoTracks.length) {
             // Iterate over all available video representations and find the one that
             // seems the biggest so that the video player is set to the max size
-            const largestRepresentation = videoTracks.reduce((a, b) => a.width > b.width ? a : b);
+            const largestRepresentation = videoTracks.reduce((a, b) => (a.width > b.width ? a : b));
 
             this.videoWidth = largestRepresentation.width;
             this.videoHeight = largestRepresentation.height;
