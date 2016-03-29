@@ -131,7 +131,8 @@ class Video360 extends Dash {
                 magFilter: 'linear',
                 uMapping: 'clamp',
                 vMapping: 'clamp',
-                querySelector: `.${this.mediaContainerEl.className} video`
+                querySelector: `.${this.mediaContainerEl.className} video`,
+                autoPlay: false
             }
         });
         return new Promise((resolve) => {
