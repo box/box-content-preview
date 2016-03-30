@@ -13247,14 +13247,6 @@
 	        this.documentVisible = true;
 	        this.state = 'initializing';
 
-	        this.componentSettings = _lodash2.default.extend({
-	          enabled: true,
-	          editor: false,
-	          runtime: true
-	        }, properties.componentSettings || {});
-
-	        _log2.default.info('Components settings:', JSON.stringify(this.componentSettings));
-
 	        // Initialize the entity dispatcher.
 	        this.entityDispatcher = properties.entityDispatcher || new _EntityDispatcher2.default();
 
@@ -54092,7 +54084,7 @@
 	          prefabInstanceId: descriptor.prefabInstanceId,
 	          properties: entity.getOwnProperties(),
 	          children: entity.getChildren(),
-	          components: entity.getComponents()
+	          components: entity.componentRegistry.get()
 	        };
 	        return returnJson;
 	      };
@@ -54142,7 +54134,7 @@
 	      }, this);
 	      entity.setProperties(jsonDescriptor.properties);
 	      entity.setChildren(jsonDescriptor.children);
-	      entity.setComponents(jsonDescriptor.components);
+	      entity.componentRegistry.set(jsonDescriptor.components);
 	    }
 
 	    /**
@@ -54173,9 +54165,10 @@
 	          },
 	          children: jsonDescriptor.children || [],
 	          previousChildren: [],
-	          properties: jsonDescriptor.properties || jsonDescriptor.payload || {},
+	          properties: jsonDescriptor.properties || {},
 	          previousProperties: {},
-	          components: jsonDescriptor.components || {}
+	          components: jsonDescriptor.components || [],
+	          previousComponents: []
 	        };
 	        if (jsonDescriptor.originalType) {
 	          json.originalType = jsonDescriptor.originalType;
@@ -54224,9 +54217,10 @@
 	          prefabInstanceId: jsonDescriptor.prefabInstanceId,
 	          children: jsonDescriptor.children || [],
 	          previousChildren: [],
-	          properties: jsonDescriptor.properties || jsonDescriptor.payload || {},
+	          properties: jsonDescriptor.properties || {},
 	          previousProperties: {},
-	          components: jsonDescriptor.components || {}
+	          components: jsonDescriptor.components || [],
+	          previousComponents: []
 	        };
 	        this.entities[json.id] = json;
 	      }
@@ -54311,7 +54305,7 @@
 	    value: function dispatchPropertiesChanged(entity, json) {
 	      var _this2 = this;
 
-	      this.fireExternalUpdate(entity.id, { payload: json });
+	      this.fireExternalUpdate(entity.id, { properties: json });
 
 	      // Apply changes in each engine
 
@@ -54375,19 +54369,19 @@
 	     * @method dispatchComponentAdded
 	     * @private
 	     * @param  {Box3DEntity} entity       The entity that the change was made on.
-	     * @param  {Object} component   Json descriptors for component that has been added
+	     * @param  {Array} newComponentIds   Array of ID's for components that have been added
 	     */
 
 	  }, {
-	    key: 'dispatchComponentAdded',
-	    value: function dispatchComponentAdded(entity, newComponent) {
-	      this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
+	    key: 'dispatchComponentsAdded',
+	    value: function dispatchComponentsAdded(entity, newComponentIds) {
+	      this.fireExternalUpdate(entity.id, { components: entity.componentRegistry.getDescriptors() });
 
 	      // Apply changes in each engine
 	      for (var i = 0; i < this.engines.length; i++) {
 	        var _entityToChange4 = this.engines[i].getEntityById(entity.id);
 
-	        _entityToChange4.trigger('change:components', [newComponent], []);
+	        _entityToChange4.trigger('add:components', newComponentIds);
 	      }
 	    }
 
@@ -54396,18 +54390,18 @@
 	     * @method dispatchComponentRemoved
 	     * @private
 	     * @param  {Box3DEntity} entity       The entity that the change was made on.
-	     * @param  {Object} component   Json descriptors for component that has been removed
+	     * @param  {Array} componentIds  Array of IDs for components that have been removed
 	     */
 
 	  }, {
-	    key: 'dispatchComponentRemoved',
-	    value: function dispatchComponentRemoved(entity, component) {
-	      this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
+	    key: 'dispatchComponentsRemoved',
+	    value: function dispatchComponentsRemoved(entity, componentIds) {
+	      this.fireExternalUpdate(entity.id, { components: entity.componentRegistry.getDescriptors() });
 
 	      // Apply changes in each engine
 	      for (var i = 0; i < this.engines.length; i++) {
 	        var _entityToChange5 = this.engines[i].getEntityById(entity.id);
-	        _entityToChange5.trigger('change:components', [], [component]);
+	        _entityToChange5.trigger('remove:components', componentIds);
 	      }
 	    }
 
@@ -54416,19 +54410,18 @@
 	     * @method  dispatchComponentChanged
 	     * @private
 	     * @param  {Box3DEntity} entity       The entity that the change was made on.
-	     * @param  {Array} addedComponents   Array of json descriptors for components that are added.
-	     * @param  {Array} removedComponents Array of json descriptors for components that are removed.
+	     * @param  {Array} changedComponents   Array of ids for components that have been changed.
 	     */
 
 	  }, {
-	    key: 'dispatchComponentChanged',
-	    value: function dispatchComponentChanged(entity, addedComponents, removedComponents) {
-	      this.fireExternalUpdate(entity.id, { components: entity.getComponentDescriptors() });
+	    key: 'dispatchComponentsChanged',
+	    value: function dispatchComponentsChanged(entity, changedComponents) {
+	      this.fireExternalUpdate(entity.id, { components: entity.componentRegistry.getDescriptors() });
 
 	      // Apply changes in each engine
 	      for (var i = 0; i < this.engines.length; i++) {
 	        var _entityToChange6 = this.engines[i].getEntityById(entity.id);
-	        _entityToChange6.trigger('change:components', addedComponents, removedComponents);
+	        _entityToChange6.trigger('change:components', changedComponents);
 	      }
 	    }
 
@@ -55053,6 +55046,8 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -55108,7 +55103,7 @@
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.registry = properties.registry;
-	      _Box3DEntity3.default.prototype.initialize.call(this, properties);
+	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'initialize', this).call(this, properties);
 
 	      this.on('addObjectEntity', this.registerObject, this);
 	      this.on('removeObjectEntity', this.unregisterObject, this);
@@ -55125,7 +55120,7 @@
 	      this.off('removeObjectEntity', this.unregisterObject, this);
 
 	      //Uninitialize this asset ( will force unload the asset and its children)
-	      _Box3DEntity3.default.prototype.uninitialize.call(this);
+	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'uninitialize', this).call(this);
 
 	      //Uninitialize all child objects. Most of these will probably already be unloaded
 	      //but, if not, this will force unload them.
@@ -55137,7 +55132,7 @@
 	  }, {
 	    key: 'load',
 	    value: function load(callback) {
-	      _Box3DEntity3.default.prototype.load.call(this, callback);
+	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'load', this).call(this, callback);
 	      if (!this.isDependenciesLoaded()) {
 	        this.loadDependencies();
 	      }
@@ -55392,7 +55387,7 @@
 	      //abort xhr request associated with this
 	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
 
-	      _Box3DEntity3.default.prototype.unload.call(this, options);
+	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /**
@@ -55606,8 +55601,8 @@
 	          prefabAssetId: object.get('prefabAssetId'),
 	          prefabInstanceId: object.get('prefabInstanceId'),
 	          type: object.type,
-	          properties: _lodash2.default.clone(object.getOwnProperties()),
-	          components: _lodash2.default.clone(object.getComponentDescriptors())
+	          properties: _lodash2.default.cloneDeep(object.getOwnProperties()),
+	          components: _lodash2.default.cloneDeep(object.componentRegistry.getDescriptors())
 	        };
 	        var newObj = asset.createObject(objectJson);
 	        cloneMap[object.id] = newObj;
@@ -55648,8 +55643,8 @@
 	      newAssetJSON.name = options.name !== undefined ? options.name : this.getName();
 	      newAssetJSON.type = this.getType();
 	      newAssetJSON.folder = this.get('folder');
-	      newAssetJSON.properties = _lodash2.default.clone(this.getOwnProperties());
-	      newAssetJSON.components = _lodash2.default.clone(this.getComponents());
+	      newAssetJSON.properties = _lodash2.default.cloneDeep(this.getOwnProperties());
+	      newAssetJSON.components = _lodash2.default.cloneDeep(this.componentRegistry.getDescriptors());
 
 	      newAsset = assets.createAsset(newAssetJSON);
 	      // Clone all this asset's objects into the new asset
@@ -55738,10 +55733,6 @@
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
-
-	var _uuid = __webpack_require__(9);
-
-	var _uuid2 = _interopRequireDefault(_uuid);
 
 	var _RuntimeEvents2 = __webpack_require__(4);
 
@@ -55901,6 +55892,8 @@
 	  }, {
 	    key: 'initialize',
 	    value: function initialize(properties) {
+	      var _this2 = this;
+
 	      if (!properties.box3DRuntime) {
 	        _log2.default.error('Can\'t create an entity without an engine reference.');
 	        return false;
@@ -55919,7 +55912,12 @@
 
 	      this.on('startTimer', this.startTimer, this);
 
-	      this.box3DRuntime.on('scriptDeleted', this.onScriptDeleted, this);
+	      _lodash2.default.each(this.sharedData.properties, function (value, key) {
+	        Box3DEntity._setValueObj.value = value;
+	        if (!_this2.verifyProperty(key, Box3DEntity._setValueObj)) {
+	          _log2.default.warn('Property, ' + key + ', does not exist or has an invalid property.');
+	        }
+	      });
 
 	      this.initializeComponents();
 	      this.registerDependencies();
@@ -55932,8 +55930,6 @@
 
 	      this.off('startTimer', this.startTimer, this);
 
-	      this.box3DRuntime.off('scriptDeleted', this.onScriptDeleted, this);
-
 	      this.off('change:name', this._nameChanged, this);
 	      this.off('change:properties', this._propertyChanged, this);
 	      this.off('change:children', this._childrenChanged, this);
@@ -55941,8 +55937,7 @@
 	      this.unregisterDependencies();
 
 	      if (this.componentRegistry) {
-	        this.off('change:components', this.componentRegistry.onEntityComponentsChanges, this.componentRegistry);
-	        this.componentRegistry.unloadComponents();
+	        this.componentRegistry.uninitialize();
 	        this.componentRegistry = null;
 	      }
 
@@ -55966,7 +55961,6 @@
 	        this.componentRegistry = new _ComponentRegistry2.default({
 	          box3DEntity: this
 	        });
-	        this.on('change:components', this.componentRegistry.onEntityComponentsChanges, this.componentRegistry);
 	        this.componentRegistry.initialize();
 	      }
 	    }
@@ -56112,19 +56106,19 @@
 	  }, {
 	    key: 'registerDependency',
 	    value: function registerDependency(assetId) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var parentAsset = this.getParentAsset();
 	      assetId = _lodash2.default.isObject(assetId) ? assetId.id : assetId;
 	      var asset = this.box3DRuntime.getEntityById(assetId);
 	      if (asset) {
 	        (function () {
-	          if (parentAsset && parentAsset !== _this2) {
+	          if (parentAsset && parentAsset !== _this3) {
 	            parentAsset.registerSubDependency(assetId);
 	          } else {
 	            parentAsset = null;
 	          }
-	          var dependencies = _this2.getOwnDependencies();
+	          var dependencies = _this3.getOwnDependencies();
 	          if (!dependencies[assetId]) {
 	            dependencies[assetId] = {
 	              count: 1
@@ -56137,13 +56131,13 @@
 	              }
 	              for (var j = 0; j < dependencies[assetId].count; j++) {
 	                if (newAssetId) {
-	                  _this2.registerSubDependency(newAssetId);
+	                  _this3.registerSubDependency(newAssetId);
 	                  if (parentAsset) {
 	                    parentAsset.registerSubDependency(newAssetId);
 	                  }
 	                }
 	                if (oldAssetId) {
-	                  _this2.unregisterSubDependency(oldAssetId);
+	                  _this3.unregisterSubDependency(oldAssetId);
 	                  if (parentAsset) {
 	                    parentAsset.unregisterSubDependency(oldAssetId);
 	                  }
@@ -56151,10 +56145,10 @@
 	              }
 	            };
 	            // A new dependency was added so make sure that our state isn't 'loaded' anymore.
-	            if (_this2.isDependenciesLoaded()) {
-	              _this2.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.INPROGRESS);
+	            if (_this3.isDependenciesLoaded()) {
+	              _this3.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.INPROGRESS);
 	            }
-	            if (!_this2.isUnloaded() && asset.isUnloaded()) {
+	            if (!_this3.isUnloaded() && asset.isUnloaded()) {
 	              asset.load();
 	            }
 	            // When each dependency is loaded, check if we're done and mark dependencies as
@@ -56163,8 +56157,8 @@
 	              if (this.checkIfOwnDependenciesLoaded()) {
 	                this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
 	              }
-	            }, _this2);
-	            asset.on('change:dependency', dependencies[assetId].onSubDependencyChange, _this2);
+	            }, _this3);
+	            asset.on('change:dependency', dependencies[assetId].onSubDependencyChange, _this3);
 	          } else {
 	            dependencies[assetId].count++;
 	          }
@@ -56177,9 +56171,9 @@
 	                parentAsset.registerSubDependency(id);
 	              }
 	            }
-	          }, _this2);
+	          }, _this3);
 
-	          _this2.registerSubDependency(assetId);
+	          _this3.registerSubDependency(assetId);
 	        })();
 	      }
 	    }
@@ -56291,6 +56285,106 @@
 	        this.box3DRuntime.entityDispatcher.dispacthAttributeChanged(this, attrib, undefined, options);
 	      }
 	    }
+	  }, {
+	    key: 'verifyProperty',
+	    value: function verifyProperty(propertyName, valueObj) {
+	      // Verify property value against schema.
+	      if (this.constructor.schema[propertyName]) {
+	        var value = valueObj.value;
+	        var newValue = undefined;
+	        switch (this.constructor.schema[propertyName].type) {
+	          case 'string':
+	          case 'id':
+	            if (_lodash2.default.isString(value)) {
+	              return true;
+	            }
+	            break;
+	          case 'integer':
+	            if (_lodash2.default.isNumber(value) && Math.round(value) === value) {
+	              return true;
+	            }
+	            break;
+	          case 'float':
+	            if (_lodash2.default.isNumber(value)) {
+	              return true;
+	            }
+	            break;
+	          case 'boolean':
+	            if (_lodash2.default.isBoolean(value)) {
+	              return true;
+	            }
+	            break;
+	          case 'object':
+	            if (_lodash2.default.isObject(value)) {
+	              return true;
+	            }
+	            break;
+	          case 'array':
+	            if (_lodash2.default.isArray(value)) {
+	              return true;
+	            }
+	            break;
+	          case 'vector2':
+	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.size(value) === 2) {
+	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
+	                newValue = this.sharedData.properties[propertyName];
+	                newValue.x = value.x;
+	                newValue.y = value.y;
+	              } else {
+	                newValue = { x: value.x, y: value.y };
+	              }
+	              return true;
+	            }
+	            break;
+	          case 'vector3':
+	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.isNumber(value.z) && _lodash2.default.size(value) === 3) {
+	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
+	                newValue = this.sharedData.properties[propertyName];
+	                newValue.x = value.x;
+	                newValue.y = value.y;
+	                newValue.z = value.z;
+	              } else {
+	                newValue = { x: value.x, y: value.y, z: value.z };
+	              }
+	            }
+	            break;
+	          case 'vector4':
+	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.isNumber(value.z) && _lodash2.default.isNumber(value.w) && _lodash2.default.size(value) === 4) {
+	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
+	                newValue = this.sharedData.properties[propertyName];
+	                newValue.x = value.x;
+	                newValue.y = value.y;
+	                newValue.z = value.z;
+	                newValue.w = value.w;
+	              } else {
+	                newValue = { x: value.x, y: value.y, z: value.z, w: value.w };
+	              }
+	            }
+	            break;
+	          case 'color':
+	            if (_lodash2.default.isNumber(value.r) && _lodash2.default.isNumber(value.g) && _lodash2.default.isNumber(value.b) && _lodash2.default.size(value) === 3) {
+	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
+	                newValue = this.sharedData.properties[propertyName];
+	                newValue.r = value.r;
+	                newValue.g = value.g;
+	                newValue.b = value.b;
+	              } else {
+	                newValue = { r: value.r, g: value.g, b: value.b };
+	              }
+	            }
+	            break;
+	          default:
+	            _log2.default.error('Forgot to add the type, ' + this.constructor.schema[propertyName].type);
+	            return false;
+	        }
+	        valueObj.value = newValue;
+	        return true;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: 'setProperty',
 
 	    /**
 	     * Set a new or existing property for this object.
@@ -56301,91 +56395,18 @@
 	     * @param  {Object} options      Options object. Can contain things like silent: true, etc.
 	     * @returns {Boolean} True if the set was successful. False otherwise.
 	     */
-
-	  }, {
-	    key: 'setProperty',
 	    value: function setProperty(propertyName, value, options) {
-	      // Verify  property value against schema.
-	      if (this.constructor.schema[propertyName]) {
-	        var valid = false;
-	        var formattedValue = undefined;
-	        switch (this.constructor.schema[propertyName].type) {
-	          case 'string':
-	          case 'id':
-	            if (_lodash2.default.isString(value)) {
-	              valid = true;
-	            }
-	            break;
-	          case 'integer':
-	            if (_lodash2.default.isNumber(value) && Math.round(value) === value) {
-	              valid = true;
-	            }
-	            break;
-	          case 'float':
-	            if (_lodash2.default.isNumber(value)) {
-	              valid = true;
-	            }
-	            break;
-	          case 'boolean':
-	            if (_lodash2.default.isBoolean(value)) {
-	              valid = true;
-	            }
-	            break;
-	          case 'object':
-	            if (_lodash2.default.isObject(value)) {
-	              valid = true;
-	            }
-	            break;
-	          case 'array':
-	            if (_lodash2.default.isArray(value)) {
-	              valid = true;
-	            }
-	            break;
-	          case 'vector2':
-	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y)) {
-	              valid = true;
-	              formattedValue = { x: value.x, y: value.y };
-	            }
-	            break;
-	          case 'vector3':
-	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.isNumber(value.z)) {
-	              valid = true;
-	              formattedValue = { x: value.x, y: value.y, z: value.z };
-	            }
-	            break;
-	          case 'vector4':
-	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.isNumber(value.z) && _lodash2.default.isNumber(value.w)) {
-	              valid = true;
-	              formattedValue = { x: value.x, y: value.y, z: value.z, w: value.w };
-	            }
-	            break;
-	          case 'color':
-	            if (_lodash2.default.isString(value)) {
-	              valid = true;
-	            }
-	            break;
-	          default:
-	            _log2.default.error('Forgot to add the type, ' + this.constructor.schema[propertyName].type);
-	            return;
-	        }
-	        if (_lodash2.default.isUndefined(value)) {
-	          valid = true;
-	        }
-	        if (valid) {
-	          if (!formattedValue) {
-	            formattedValue = value;
-	          }
-	          this.sharedData.previousProperties[propertyName] = _lodash2.default.clone(this.sharedData.properties[propertyName]);
-	          this.sharedData.properties[propertyName] = formattedValue;
-	          if (!options || !options.silent) {
-	            this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this, propertyName, formattedValue);
-	          }
-	          return true;
-	        } else {
-	          _log2.default.error('Wrong type specified for ' + propertyName);
+	      Box3DEntity._setValueObj.value = value;
+	      if (this.verifyProperty(propertyName, Box3DEntity._setValueObj)) {
+	        var newValue = Box3DEntity._setValueObj.value;
+	        // Copy the previous value.
+	        this.sharedData.previousProperties[propertyName] = _lodash2.default.clone(this.sharedData.properties[propertyName]);
+	        this.sharedData.properties[propertyName] = newValue;
+	        // Dispatch change event
+	        if (!options || !options.silent) {
+	          this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this, propertyName, newValue);
 	        }
 	      }
-	      return false;
 	    }
 
 	    /**
@@ -56863,17 +56884,6 @@
 	      var elapsedTime = 0.0;
 	      this.box3DRuntime.on('update', updateTimer, this);
 	    }
-	  }, {
-	    key: 'onScriptDeleted',
-	    value: function onScriptDeleted(scriptId) {
-	      if (this.componentRegistry) {
-	        var comps = this.getComponentsByScriptId(scriptId);
-	        _lodash2.default.each(comps, function (component, id) {
-	          _log2.default.info('Removing component from ' + this.type + ', ' + this.id + ', because the script asset has been deleted.');
-	          this.removeComponent(id);
-	        }, this);
-	      }
-	    }
 
 	    /**
 	     * Traverse this entity's hierarchy and call the given function for each of them.
@@ -57306,11 +57316,11 @@
 	  }, {
 	    key: 'load',
 	    value: function load(callback) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      this.when('load', function () {
 	        if (_lodash2.default.isFunction(callback)) {
-	          callback(_this3);
+	          callback(_this4);
 	        }
 	      }, this);
 
@@ -57393,7 +57403,7 @@
 	  }, {
 	    key: 'loadBase',
 	    value: function loadBase(callback) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      if (this.isBaseLoaded()) {
 	        this.trigger('loadBase', this);
@@ -57409,14 +57419,14 @@
 
 	        this.createRuntimeData(function () {
 	          // Apply the initial set of properties.
-	          _this4._applyPropertiesLoaded(_this4.getProperties(), 'init');
+	          _this5._applyPropertiesLoaded(_this5.getProperties(), 'init');
 
 	          // Start listening to prefab change events.
-	          if (_this4.isInstance()) {
-	            _this4._initPrefabBindings();
+	          if (_this5.isInstance()) {
+	            _this5._initPrefabBindings();
 	          }
-	          if (_this4.state[Box3DEntity.STATE_TYPE.BASE] <= Box3DEntity.STATE.SUCCEEDED) {
-	            _this4.markState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.SUCCEEDED);
+	          if (_this5.state[Box3DEntity.STATE_TYPE.BASE] <= Box3DEntity.STATE.SUCCEEDED) {
+	            _this5.markState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.SUCCEEDED);
 	          }
 	        });
 	      }
@@ -57436,7 +57446,7 @@
 	  }, {
 	    key: 'reloadBase',
 	    value: function reloadBase(callback) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      // Stop listening to prefab change events.
 	      if (this.isInstance()) {
@@ -57456,7 +57466,7 @@
 	      this.loadBase(function () {
 	        // Add the new runtimeData to the parent.
 	        if (parent) {
-	          parent.add(_this5.runtimeData);
+	          parent.add(_this6.runtimeData);
 	        }
 
 	        if (_lodash2.default.isFunction(callback)) {
@@ -57476,7 +57486,7 @@
 	  }, {
 	    key: 'loadDependencies',
 	    value: function loadDependencies(callback) {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      //Bind to loading progress of dependencies
 	      var dependencies = this.getDependencies();
@@ -57485,7 +57495,7 @@
 	        this.once('loadDependencies', callback, this);
 	      }
 	      this.box3DRuntime.loadEntities(dependencyKeys, function () {
-	        _this6.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
+	        _this7.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
 	      });
 	    }
 
@@ -57546,189 +57556,6 @@
 	      } else {
 	        _log2.default.warn('Box3DEntity.removeChildById - object, ' + childId + ', is not part ' + 'of this asset.');
 	      }
-	    }
-
-	    /**
-	     * Return objects describing the components currently on this entity (that are matched
-	     * by the predicate function). If no predicate is defined, all will be returned.
-	     * @param  {Function} predicate Function called on each descriptor to filter results. Return
-	     * true from the function to include the descriptor in the results.
-	     * @return {Object}           All matching component descriptors.
-	     */
-
-	  }, {
-	    key: 'getComponentDescriptors',
-	    value: function getComponentDescriptors(predicate) {
-	      var results = {};
-	      var all = !_lodash2.default.isFunction(predicate);
-	      if (all) {
-	        return this.sharedData.components;
-	      } else {
-	        _lodash2.default.each(this.sharedData.components, function (comp, id) {
-	          if (predicate(comp)) {
-	            results[id] = comp;
-	          }
-	        }, this);
-	        return results;
-	      }
-	    }
-
-	    /**
-	     * Adds a new component to the Box3DEntity. componentId is optional and, if not specified, a
-	     * unique id will be generated for you.
-	     * @method addComponent
-	     * @param  {Mixed} script         Either a string scriptId or a script asset
-	     * @param  {Object} componentData the parameters to pass into the component
-	     * @param  {String} componentId an identifier which is unique to the Box3DEntity (optional)
-	     */
-
-	  }, {
-	    key: 'addComponent',
-	    value: function addComponent(scriptId, componentData, componentId) {
-
-	      var id = componentId ? componentId : (0, _uuid2.default)();
-	      var newComponent = {
-	        id: id,
-	        scriptId: scriptId,
-	        componentData: componentData ? componentData : {},
-	        enabled: true
-	      };
-	      this.sharedData.previousComponents = _lodash2.default.cloneDeep(this.sharedData.components);
-	      this.sharedData.components[id] = newComponent;
-	      this.box3DRuntime.entityDispatcher.dispatchComponentAdded(this, newComponent);
-	      return this.componentRegistry.components[id];
-	    }
-
-	    /**
-	     * Removes a component
-	     * @method removeComponent
-	     * @param  {mixed} componentId either a componentId or a component object.
-	     * @return {String} Id of the removed component.
-	     */
-
-	  }, {
-	    key: 'removeComponent',
-	    value: function removeComponent(componentId) {
-	      var componentToRemove;
-	      if (_lodash2.default.isObject(componentId)) {
-	        _lodash2.default.each(this.componentRegistry.components, function (c, id) {
-	          if (c === componentId) {
-	            componentId = id;
-	          }
-	        }, this);
-	      }
-	      this.sharedData.previousComponents = _lodash2.default.cloneDeep(this.sharedData.components);
-	      componentToRemove = this.sharedData.components[componentId];
-	      delete this.sharedData.components[componentId];
-	      this.box3DRuntime.entityDispatcher.dispatchComponentRemoved(this, componentToRemove);
-	      return componentId;
-	    }
-
-	    /**
-	     * Set the entire list of components for this entity. This will remove components
-	     * that are not specified.
-	     * @method  setComponents
-	     * @public
-	     * @param {Object} componentDescriptors Dictionary of component descriptors, keyed
-	     * on the component Id.
-	     * @param  {Object} options Standard options structure. Can contain {silent: true}
-	     */
-
-	  }, {
-	    key: 'setComponents',
-	    value: function setComponents(componentDescriptors, options) {
-	      var _this7 = this;
-
-	      var removeComponents = [];
-	      var addComponents = [];
-	      this.sharedData.previousComponents = _lodash2.default.cloneDeep(this.sharedData.components);
-	      _lodash2.default.each(this.sharedData.components, function (value, key) {
-	        if (!componentDescriptors[key]) {
-	          removeComponents.push(value);
-	        }
-	      }, this);
-	      _lodash2.default.each(componentDescriptors, function (value, key) {
-	        if (!this.sharedData.components[key]) {
-	          addComponents.push(value);
-	        }
-	        this.sharedData.components[key] = componentDescriptors[key];
-	      }, this);
-	      removeComponents.forEach(function (comp) {
-	        delete _this7.sharedData.components[comp.id];
-	      });
-	      if (!options || !options.silent) {
-	        this.box3DRuntime.entityDispatcher.dispatchComponentChanged(this, addComponents, removeComponents);
-	      }
-	    }
-
-	    /**
-	     * Erase this entity's components.
-	     * @method clearComponents
-	     * @param  {Object} options Standard options structure
-	     */
-
-	  }, {
-	    key: 'clearComponents',
-	    value: function clearComponents(options) {
-	      this.setComponents({}, options);
-	    }
-
-	    /**
-	     * Copy the components attached to the given object to this object.
-	     * This will add components that don't exist as well as copy attribute
-	     * values for components that do exist, overwriting the existing values.
-	     * @method copyComponents
-	     * @param  {Box3D.Box3DEntity} object  The source object
-	     * @param  {Object} options The standard options object
-	     */
-
-	  }, {
-	    key: 'copyComponents',
-	    value: function copyComponents(object, options) {
-	      var changes = {};
-	      var objComponents = object.getComponentDescriptors();
-	      var myComponents = this.getComponentDescriptors();
-
-	      // Copy components
-	      _lodash2.default.extend(changes, myComponents, objComponents);
-
-	      // Copy component data
-	      _lodash2.default.each(objComponents, function (component, id) {
-	        if (myComponents[id]) {
-	          _lodash2.default.extend(changes[id].componentData, myComponents[id].componentData, component.componentData);
-	        }
-	      }, this);
-
-	      this.setComponents(changes, options);
-	    }
-
-	    /**
-	     * Copy the components attached to the given object to this object.
-	     * This will add components that don't exist and leave existing components
-	     * unmodified.
-	     * @method mergeComponents
-	     * @param  {Box3D.Box3DEntity} object  The source object
-	     * @param  {Object} options The standard options object
-	     */
-
-	  }, {
-	    key: 'mergeComponents',
-	    value: function mergeComponents(object, options) {
-	      var changes = {};
-	      var objComponents = object.getComponentDescriptors();
-	      var myComponents = this.getComponentDescriptors();
-
-	      // Merge components
-	      _lodash2.default.extend(changes, objComponents, myComponents);
-
-	      // Merge component data
-	      _lodash2.default.each(objComponents, function (component, id) {
-	        if (myComponents[id]) {
-	          _lodash2.default.extend(changes[id].componentData, component.componentData, myComponents[id].componentData);
-	        }
-	      }, this);
-
-	      this.setComponents(changes, options);
 	    }
 
 	    /**
@@ -58032,7 +57859,20 @@
 	  }, {
 	    key: 'isComponentsLoaded',
 	    value: function isComponentsLoaded() {
-	      return !this.box3DRuntime.componentSettings.enabled || Box3DEntity.checkLoadFinished(this.state[Box3DEntity.STATE_TYPE.COMPONENTS]);
+	      return Box3DEntity.checkLoadFinished(this.state[Box3DEntity.STATE_TYPE.COMPONENTS]);
+	    }
+
+	    /**
+	     * Returns true if all the components on this entity are fully unloaded
+	     * @public
+	     * @method isComponentsUnloaded
+	     * @return {Boolean} True, if the components are all unloaded
+	     */
+
+	  }, {
+	    key: 'isComponentsUnloaded',
+	    value: function isComponentsUnloaded() {
+	      return Box3DEntity.STATE.PENDING === this.state[Box3DEntity.STATE_TYPE.COMPONENTS];
 	    }
 
 	    /**
@@ -58148,7 +57988,7 @@
 
 	      newObjectJSON.type = this.getType();
 	      newObjectJSON.properties = _lodash2.default.cloneDeep(this.getOwnProperties());
-	      newObjectJSON.components = _lodash2.default.cloneDeep(this.getComponentDescriptors());
+	      newObjectJSON.components = _lodash2.default.cloneDeep(this.componentRegistry.getDescriptors());
 
 	      newObject = parentAsset.createObject(newObjectJSON);
 
@@ -58262,38 +58102,13 @@
 	    value: function _childrenChanged(addedChildren, removedChildren) {
 	      var _this8 = this;
 
-	      var i;
-	      var child;
-	      // Asset.load - everything loaded
-	      // Asset.loadBase - base loaded
-	      // Asset.loadObjects - object's base are loaded
-	      // Asset.loadDependencies - dependencies loaded
-	      // Asset.loadComponents?
-	      // Asset.on('load')
-	      // Asset.on('loadBase')
-	      // Asset.on('loadObjects')
-	      // Asset.on('loadDependencies')
-	      // Asset.on('loadComponents')
-	      //
-	      // Maybe objects don't have anything for loading. No load* methods at all.
-	      // Instead, you could do things like:
-	      // Object.whenReady(callback);
-	      // Object.whenFullyLoaded
-	      // Object.on('create');
-	      //
-	      // Make hierarchy tracking only for assets
-	      // Parent asset listens to all object's 'load' and 'unload'
-	      // When an object loads, inform the parent asset
-	      // When an object base unloads, inform the parent asset
-	      // When an asset unloads, any asset with it as a dependency will be listening to the unload
-
 	      if (this.isUnloaded()) {
 	        return;
 	      }
 
-	      for (i = 0; i < removedChildren.length; i++) {
+	      for (var i = 0; i < removedChildren.length; i++) {
 	        //Remove the child
-	        child = removedChildren[i];
+	        var child = removedChildren[i];
 	        if (child) {
 	          if (this.isBaseLoaded()) {
 	            this.runtimeData.remove(child.runtimeData);
@@ -58359,7 +58174,6 @@
 	      if (this.dontAcceptPrefabUpdates) {
 	        return;
 	      }
-	      // var changeList = model.changed;
 	      var properties = this.getOwnProperties();
 	      var propertyChanges = {};
 	      var topLevel = this.isInstanceTop();
@@ -58622,232 +58436,6 @@
 
 	      return box;
 	    }
-	  }, {
-	    key: 'getComponentData',
-	    value: function getComponentData(componentId, attribute) {
-
-	      var thisComponent = this.getComponentDescriptors()[componentId];
-	      if (thisComponent) {
-	        var returnObj = {};
-	        var prefabObj = this.getPrefabObject();
-	        if (prefabObj) {
-
-	          var prefabComponentData = prefabObj.getComponentData(componentId, attribute);
-	          if (prefabComponentData) {
-	            _lodash2.default.extend(returnObj, _lodash2.default.cloneDeep(prefabComponentData));
-	          }
-	        }
-	        _lodash2.default.extend(returnObj, _lodash2.default.cloneDeep(thisComponent.componentData));
-	        // TODO - re-enable this functionality when putting prefab logic back in.
-	        // this._linkupComponentReferences(returnObj);
-	        if (attribute) {
-	          return returnObj[attribute];
-	        } else {
-	          return returnObj;
-	        }
-	      } else if (!componentId) {
-	        var compData = {};
-	        var comps = this.getComponents();
-	        _lodash2.default.each(comps, function (comp, id) {
-	          compData[id] = this.getComponentData(id);
-	        }, this);
-	        return compData;
-	      } else {
-	        return null;
-	      }
-	    }
-	  }, {
-	    key: 'getPreviousComponentData',
-	    value: function getPreviousComponentData(componentId, attribute) {
-
-	      var thisComponent = this.previousComponents[componentId];
-	      if (thisComponent) {
-	        var returnObj = {};
-
-	        var prefabObj = this.getPrefabObject();
-	        if (prefabObj) {
-	          var prefabComponentData = prefabObj.getPreviousComponentData(componentId, attribute);
-	          if (prefabComponentData) {
-	            _lodash2.default.extend(returnObj, _lodash2.default.cloneDeep(prefabComponentData));
-	          }
-	        }
-	        _lodash2.default.extend(returnObj, _lodash2.default.cloneDeep(thisComponent.componentData));
-	        // TODO - re-enable this functionality when putting prefab logic back in.
-	        // this._linkupComponentReferences(returnObj);
-	        if (attribute) {
-	          return returnObj[attribute];
-	        } else {
-	          return returnObj;
-	        }
-	      } else if (!componentId) {
-	        var compData = {};
-	        var comps = this.getComponents();
-	        _lodash2.default.each(comps, function (comp, id) {
-	          compData[id] = this.getPreviousComponentData(id);
-	        }, this);
-	        return compData;
-	      } else {
-	        return null;
-	      }
-	    }
-
-	    /**
-	     * Returns the first component found with the provided script Id
-	     * @method getComponentByScriptId
-	     * @param  {String} scriptId The asset Id of the script asset used by the components
-	     * @return {Object} The first component matching the search.
-	     */
-
-	  }, {
-	    key: 'getComponentByScriptId',
-	    value: function getComponentByScriptId(scriptId) {
-	      var comps = this.getComponents(function (comp) {
-	        return comp.getScriptId() === scriptId;
-	      });
-	      if (_lodash2.default.isEmpty(comps)) {
-	        return null;
-	      } else {
-	        return _lodash2.default.values(comps)[0];
-	      }
-	    }
-
-	    /**
-	     * Returns all components with the provided script Id
-	     * @method getComponentsByScriptId
-	     * @param  {String} scriptId The asset Id of the script asset used by the components
-	     * @return {Object} An object containing all components matching the search,
-	     * keyed by component ids.
-	     */
-
-	  }, {
-	    key: 'getComponentsByScriptId',
-	    value: function getComponentsByScriptId(scriptId) {
-	      return this.getComponents(function (comp) {
-	        return comp.getScriptId() === scriptId;
-	      });
-	    }
-
-	    /**
-	     * Returns first component with the provided script name
-	     * @method getComponentByScriptName
-	     * @param  {String} scriptName The name of the script asset used by the components
-	     * @return {Object} The first component that matches the search.
-	     */
-
-	  }, {
-	    key: 'getComponentByScriptName',
-	    value: function getComponentByScriptName(scriptName) {
-	      return this.getComponent(function (comp) {
-	        return comp.getScriptName() === scriptName;
-	      });
-	    }
-
-	    /**
-	     * Returns all components with the provided script name
-	     * @method getComponentsByScriptName
-	     * @param  {String} scriptName The name of the script asset used by the components
-	     * @return {Object} An object containing all components matching the search,
-	     * keyed by component ids.
-	     */
-
-	  }, {
-	    key: 'getComponentsByScriptName',
-	    value: function getComponentsByScriptName(scriptName) {
-	      return this.getComponents(function (comp) {
-	        return comp.getScriptName() === scriptName;
-	      });
-	    }
-
-	    /**
-	     * Returns the single component with the specified id, if it exists.
-	     * @method getComponentById
-	     * @param  {String} componentId The ID of the component that you're looking for.
-	     * @return {Object}             The component, if it exists.
-	     */
-
-	  }, {
-	    key: 'getComponentById',
-	    value: function getComponentById(componentId) {
-	      if (this.componentRegistry && this.componentRegistry.components[componentId]) {
-	        return this.componentRegistry.components[componentId];
-	      } else {
-	        return null;
-	      }
-	    }
-
-	    /**
-	     * Return the first component attached to this entity that matches the specified filter
-	     * @method getComponent
-	     * @param  {Function} predicate Filter function that takes a component parameter and returns
-	     * true on match and false otherwise.
-	     * @return {Object} The component matching the filter
-	     */
-
-	  }, {
-	    key: 'getComponent',
-	    value: function getComponent(predicate) {
-	      var components = this.componentRegistry.components;
-	      if (!_lodash2.default.isFunction(predicate)) {
-	        if (_lodash2.default.size(components)) {
-	          return components[_lodash2.default.keys(components)[0]];
-	        } else {
-	          return undefined;
-	        }
-	      } else {
-	        for (var i in components) {
-	          if (components.hasOwnProperty(i)) {
-	            if (predicate(components[i])) {
-	              return components[i];
-	            }
-	          }
-	        }
-	        return undefined;
-	      }
-	    }
-
-	    /**
-	     * Return all of the components attached to this entity matching the specified filter
-	     * @method getComponents
-	     * @param  {Function} predicate Filter function that takes a component parameter and returns
-	     * true on match and false otherwise.
-	     * @return {Object} The components matching the filter
-	     */
-
-	  }, {
-	    key: 'getComponents',
-	    value: function getComponents(predicate) {
-	      if (!_lodash2.default.isFunction(predicate)) {
-	        return this.componentRegistry.components;
-	      } else {
-	        var results = {};
-	        _lodash2.default.each(this.componentRegistry.components, function (component, id) {
-	          if (predicate(component)) {
-	            results[id] = component;
-	          }
-	        }, this);
-	        return results;
-	      }
-	    }
-
-	    /**
-	     * Return all of the components attached to this entity (or its hierarchy) that match
-	     * the specified filter
-	     * @method getComponentsInHierarchy
-	     * @param  {Object} filter One or more filters to match.
-	     * e.g. { scriptName: name, id: id, etc. }
-	     * @return {Object}        The components matching the filter
-	     */
-
-	  }, {
-	    key: 'getComponentsInHierarchy',
-	    value: function getComponentsInHierarchy(predicate) {
-	      var results = {};
-	      var decendants = this.getDescendants();
-	      _lodash2.default.each(decendants, function (obj) {
-	        _lodash2.default.extend(results, obj.getComponents(predicate));
-	      }, this);
-	      return results;
-	    }
 
 	    //Check this object's child references, parent reference, parent asset reference, etc.
 	    //and fix them, if possible.
@@ -58982,6 +58570,7 @@
 	  COMPONENTS: 3
 	};
 	Box3DEntity.schema = {};
+	Box3DEntity._setValueObj = { value: null };
 
 	window.Box3D.Box3DEntity = Box3DEntity;
 
@@ -58992,6 +58581,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -59029,11 +58620,9 @@
 
 	// import ScriptAsset from 'Box3DRuntime/AssetRegistry/ScriptAsset';
 
-	/* global Box3D */
-
 	var box3dEntityEventMap = {
-	  objectLoaded: 'load',
-	  objectCreated: 'loadBase',
+	  entityLoaded: 'load',
+	  entityCreated: 'loadBase',
 	  loadChildren: 'loadChildren',
 	  loadDependencies: 'loadDependencies'
 	};
@@ -59077,28 +58666,365 @@
 	    value: function initialize() {
 	      var _this2 = this;
 
-	      var componentJson = this.box3DEntity.getComponentDescriptors();
+	      function onScriptDeleted(scriptId) {
+	        var comps = this.getByScriptId(scriptId);
+	        for (var i = 0; i < comps.length; i++) {
+	          _log2.default.info('Removing component from ' + this.box3DEntity.type + ', ' + this.box3DEntity.id + ', because the script asset has been deleted.');
+	          this.remove(comps[i]);
+	        }
+	      }
+	      this.listenTo(this.box3DEntity.box3DRuntime, 'scriptDeleted', onScriptDeleted, this);
+	      this.listenTo(this.box3DEntity, 'change:components', this.onComponentsChanged, this);
+	      this.listenTo(this.box3DEntity, 'add:components', this.onComponentsAdded, this);
+	      this.listenTo(this.box3DEntity, 'remove:components', this.onComponentsRemoved, this);
 
-	      // TODO - put component ordering back in.
-	      // var keys = this._sortComponentKeys(componentJson);
+	      var componentJson = this.getDescriptors();
 	      var keys = _lodash2.default.keys(componentJson);
 	      Promise.all(keys.map(function (componentId) {
 	        return new Promise(function (resolve) {
-	          var component = componentJson[componentId],
-	              componentData = _this2.box3DEntity.getComponentData(componentId);
-	          if (component && !_this2.components[componentId]) {
-	            _this2._createComponent(component.scriptId, componentData, componentId, !!component.enabled, function () {
-	              resolve();
-	            });
-	          } else {
+	          var componentDesc = componentJson[componentId];
+	          _this2.createComponentObject(componentId, componentDesc, function (component) {
+	            _this2.assignAttributeValues(component);
 	            resolve();
-	          }
+	          });
 	        });
 	      })).then(function () {
-	        //Don't trigger loadComponents here. The components aren't 'loaded' until they're all
-	        //initialized.
-	        // that.box3DEntity.trigger('loadComponents', that.box3DEntity );
+	        // Call awake() on each component
+	        for (var i = 0; i < keys.length; i++) {
+	          var component = _this2.getById(keys[i]);
+	          if (typeof component.awake === 'function') {
+	            component.awake();
+	          }
+	        }
+	      }).catch(function (err) {
+	        _log2.default.error('Failed to initialize component registry.', err);
 	      });
+	    }
+	  }, {
+	    key: 'uninitialize',
+	    value: function uninitialize() {
+	      this.stopListening();
+	      this.unloadComponents();
+	    }
+
+	    /**
+	     * Return objects describing the components currently on this entity (that are matched
+	     * by the predicate function). If no predicate is defined, all will be returned.
+	     * @param  {Function} predicate Function called on each descriptor to filter results. Return
+	     * true from the function to include the descriptor in the results.
+	     * @public
+	     * @method getDescriptors
+	     * @return {Object}           All matching component descriptors.
+	     */
+
+	  }, {
+	    key: 'getDescriptors',
+	    value: function getDescriptors(predicate) {
+	      var all = !_lodash2.default.isFunction(predicate);
+	      var components = this.box3DEntity.sharedData.components;
+	      if (all) {
+	        return components;
+	      } else {
+	        var _ret = function () {
+	          var results = {};
+	          Object.keys(components).forEach(function (id) {
+	            var comp = components[id];
+	            if (predicate(comp)) {
+	              results[id] = comp;
+	            }
+	          });
+	          return {
+	            v: results
+	          };
+	        }();
+
+	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	      }
+	    }
+
+	    /**
+	     * Return the descriptor of a component with the given id
+	     * @public
+	     * @method getDescriptorById
+	     * @param  {String} id Component id
+	     * @return {Object}    JSON representing the component.
+	     */
+
+	  }, {
+	    key: 'getDescriptorById',
+	    value: function getDescriptorById(id) {
+	      return this.box3DEntity.sharedData.components[id];
+	    }
+
+	    /**
+	     * Return the previous descriptor of a component with the given id
+	     * @public
+	     * @method getPreviousDescriptorById
+	     * @param  {String} id Component id
+	     * @return {Object}    JSON representing the component.
+	     */
+
+	  }, {
+	    key: 'getPreviousDescriptorById',
+	    value: function getPreviousDescriptorById(id) {
+	      return this.box3DEntity.sharedData.previousComponents[id];
+	    }
+
+	    /**
+	     * Adds a new component to the Box3DEntity.
+	     * @method add
+	     * @param  {Mixed} script         Either a string scriptId or a script asset
+	     * @param  {Object} componentData the parameters to pass into the component
+	     */
+
+	  }, {
+	    key: 'add',
+	    value: function add(scriptId) {
+	      var componentData = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var name = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
+
+	      var id = (0, _uuid2.default)();
+	      var newComponent = {
+	        scriptId: scriptId,
+	        componentData: componentData,
+	        enabled: true,
+	        name: name
+	      };
+	      var sharedData = this.box3DEntity.sharedData;
+	      sharedData.previousComponents = _lodash2.default.cloneDeep(sharedData.components);
+	      sharedData.components[id] = newComponent;
+	      var entityDispatcher = this.box3DEntity.box3DRuntime.entityDispatcher;
+	      entityDispatcher.dispatchComponentsAdded(this.box3DEntity, [id]);
+	      return this.components[id];
+	    }
+
+	    /**
+	     * Removes a component
+	     * @method remove
+	     * @param  {Object} component The component object to remove.
+	     * @return {Boolean} True if the component was removed successfuly.
+	     */
+
+	  }, {
+	    key: 'remove',
+	    value: function remove(component) {
+	      var sharedData = this.box3DEntity.sharedData;
+	      var componentId = _lodash2.default.isObject(component) ? component.getId() : component;
+	      if (sharedData.components[componentId]) {
+	        sharedData.previousComponents = _lodash2.default.cloneDeep(sharedData.components);
+	        delete sharedData.components[componentId];
+	        var entityDispatcher = this.box3DEntity.box3DRuntime.entityDispatcher;
+	        entityDispatcher.dispatchComponentsRemoved(this.box3DEntity, [component.getId()]);
+	        return true;
+	      }
+	      return false;
+	    }
+
+	    /**
+	     * Returns the first component found with the provided script Id
+	     * @method getFirstByScriptId
+	     * @param  {String} scriptId The asset Id of the script asset used by the components
+	     * @return {Object} The first component matching the search.
+	     */
+
+	  }, {
+	    key: 'getFirstByScriptId',
+	    value: function getFirstByScriptId(scriptId) {
+	      var comps = this.get(function (comp) {
+	        return comp.getScriptId() === scriptId;
+	      });
+	      if (_lodash2.default.isEmpty(comps)) {
+	        return null;
+	      } else {
+	        return _lodash2.default.values(comps)[0];
+	      }
+	    }
+
+	    /**
+	     * Returns all components with the provided script Id
+	     * @method getByScriptId
+	     * @param  {String} scriptId The asset Id of the script asset used by the components
+	     * @return {Object} An object containing all components matching the search,
+	     * keyed by component ids.
+	     */
+
+	  }, {
+	    key: 'getByScriptId',
+	    value: function getByScriptId(scriptId) {
+	      return this.get(function (comp) {
+	        return comp.getScriptId() === scriptId;
+	      });
+	    }
+
+	    /**
+	     * Returns first component with the provided script name
+	     * @method getFirstByScriptName
+	     * @param  {String} scriptName The name of the script asset used by the components
+	     * @return {Object} The first component that matches the search.
+	     */
+
+	  }, {
+	    key: 'getFirstByScriptName',
+	    value: function getFirstByScriptName(scriptName) {
+	      return this.getFirst(function (comp) {
+	        return comp.getScriptName() === scriptName;
+	      });
+	    }
+
+	    /**
+	     * Returns all components with the provided script name
+	     * @method getByScriptName
+	     * @param  {String} scriptName The name of the script asset used by the components
+	     * @return {Object} An object containing all components matching the search,
+	     * keyed by component ids.
+	     */
+
+	  }, {
+	    key: 'getByScriptName',
+	    value: function getByScriptName(scriptName) {
+	      return this.get(function (comp) {
+	        return comp.getScriptName() === scriptName;
+	      });
+	    }
+
+	    /**
+	     * Return the first component attached to this entity that matches the specified filter
+	     * @method getFirst
+	     * @param  {Function} predicate Filter function that takes a component parameter and returns
+	     * true on match and false otherwise.
+	     * @return {Object} The component matching the filter
+	     */
+
+	  }, {
+	    key: 'getFirst',
+	    value: function getFirst(predicate) {
+	      var components = this.components;
+	      if (!_lodash2.default.isFunction(predicate)) {
+	        if (_lodash2.default.size(components)) {
+	          return components[_lodash2.default.keys(components)[0]];
+	        } else {
+	          return undefined;
+	        }
+	      } else {
+	        for (var i in components) {
+	          if (components.hasOwnProperty(i)) {
+	            if (predicate(components[i])) {
+	              return components[i];
+	            }
+	          }
+	        }
+	        return undefined;
+	      }
+	    }
+
+	    /**
+	     * Return the component with the given ID, if there is one.
+	     * @public
+	     * @method getById
+	     * @param  {String} componentId Unique ID of the component
+	     * @return {Object}             The component
+	     */
+
+	  }, {
+	    key: 'getById',
+	    value: function getById(componentId) {
+	      return this.components[componentId];
+	    }
+
+	    /**
+	     * Return all of the components attached to this entity matching the specified filter
+	     * @method get
+	     * @param  {Function} predicate Filter function that takes a component parameter and returns
+	     * true on match and false otherwise.
+	     * @return {Object} The components matching the filter
+	     */
+
+	  }, {
+	    key: 'get',
+	    value: function get(predicate) {
+	      var _this3 = this;
+
+	      if (!_lodash2.default.isFunction(predicate)) {
+	        return this.components;
+	      } else {
+	        var _ret2 = function () {
+	          var results = {};
+	          Object.keys(_this3.components).forEach(function (id) {
+	            var component = _this3.components[id];
+	            if (predicate(component)) {
+	              results[id] = component;
+	            }
+	          });
+	          return {
+	            v: results
+	          };
+	        }();
+
+	        if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+	      }
+	    }
+
+	    /**
+	     * Set the entire list of components for this entity. This will remove components
+	     * that are not specified.
+	     * @method  set
+	     * @public
+	     * @param {Object} componentDescriptors Dictionary of component descriptors, keyed
+	     * on the component Id.
+	     * @param  {Object} options Standard options structure. Can contain {silent: true}
+	     */
+
+	  }, {
+	    key: 'set',
+	    value: function set(componentDescriptors) {
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var addComponentIds = [];
+	      var removeComponentIds = [];
+	      var changedComponents = {};
+	      var sharedData = this.box3DEntity.sharedData;
+	      var entityDispatcher = this.box3DEntity.box3DRuntime.entityDispatcher;
+	      sharedData.previousComponents = _lodash2.default.cloneDeep(sharedData.components);
+
+	      // Delete components that have been removed.
+	      Object.keys(sharedData.components).forEach(function (id) {
+	        if (!componentDescriptors[id]) {
+	          removeComponentIds.push(id);
+	        }
+	      });
+	      removeComponentIds.forEach(function (compId) {
+	        delete sharedData.components[compId];
+	      });
+
+	      // Add and update other components
+	      Object.keys(componentDescriptors).forEach(function (id) {
+	        if (!sharedData.components[id]) {
+	          sharedData.components[id] = componentDescriptors[id];
+	          addComponentIds.push(id);
+	        } else {
+	          _lodash2.default.extend(sharedData.components[id], componentDescriptors[id]);
+	          changedComponents[id] = componentDescriptors[id];
+	        }
+	      });
+
+	      // Dispatch events for changes
+	      if (!options.silent) {
+	        entityDispatcher.dispatchComponentsRemoved(this.box3DEntity, removeComponentIds);
+	        entityDispatcher.dispatchComponentsAdded(this.box3DEntity, addComponentIds);
+	        entityDispatcher.dispatchComponentsChanged(this.box3DEntity, changedComponents);
+	      }
+	    }
+
+	    /**
+	     * Erase this entity's components.
+	     * @method clearAll
+	     * @param  {Object} options Standard options structure
+	     */
+
+	  }, {
+	    key: 'clearAll',
+	    value: function clearAll(options) {
+	      this.set({}, options);
 	    }
 
 	    // TODO - put component ordering back in.
@@ -59123,496 +59049,418 @@
 	    //   }
 	    // }
 
-	  }, {
-	    key: 'onEntityComponentsChanges',
-	    value: function onEntityComponentsChanges(addedComponents, removedComponents) {
-	      var i, componentDesc;
-	      if (!this.box3DEntity.box3DRuntime.componentSettings.enabled) {
-	        return;
-	      }
-	      for (i = 0; i < addedComponents.length; i++) {
-	        componentDesc = addedComponents[i];
-	        // TODO - how do we handle inherited (prefab) attribute values?
-	        this._createComponent(componentDesc.scriptId, componentDesc.componentData, componentDesc.id, componentDesc.enabled);
-	      }
+	    /**
+	     * Called when one or more components on this entity have been modified.
+	     * @param  {Object} componentDescriptors The descriptors for each changed component,
+	     * keyed on the component's id.
+	     * @method onComponentsChanged
+	     * @private
+	     * @return {void}
+	     */
 
-	      for (i = 0; i < removedComponents.length; i++) {
-	        componentDesc = removedComponents[i];
-	        this.unloadComponent(componentDesc.id);
-	        this._removeComponent(componentDesc.id);
-	      }
-	    }
 	  }, {
-	    key: '_assignAttribute',
-	    value: function _assignAttribute(attributeName, attributeDef, finalComponentData) {
-	      if (attributeDef.type === 'asset' && finalComponentData[attributeName]) {
-	        var assetId = finalComponentData[attributeName];
-	        if (!_lodash2.default.isObject(assetId)) {
-	          var asset = this.box3DEntity.box3DRuntime.assetRegistry.getAssetById(assetId);
-	          finalComponentData[attributeName] = asset;
+	    key: 'onComponentsChanged',
+	    value: function onComponentsChanged(componentDescriptors) {
+	      var _this4 = this;
+
+	      Object.keys(componentDescriptors).forEach(function (id) {
+	        var desc = componentDescriptors[id];
+	        if (!desc) {
+	          return;
 	        }
-	      } else if (attributeDef.type === 'object') {
-	        if (!_lodash2.default.isObject(finalComponentData[attributeName])) {
-	          finalComponentData[attributeName] = this.box3DEntity.box3DRuntime.getEntityById(finalComponentData[attributeName]);
+	        var component = _this4.getById(id);
+	        var scriptAsset = component.getScriptAsset();
+	        if (!scriptAsset || !component) {
+	          return;
 	        }
-	      } else if (attributeDef.type === 'c') {
-	        finalComponentData[attributeName] = new _three2.default.Color(finalComponentData[attributeName]);
-	      } else if (attributeDef.type === 'a') {
-	        //Handle arrays of different types
-	        if (attributeDef.subType.type === 'asset') {
-	          _lodash2.default.each(finalComponentData[attributeName], function (id, idx) {
-	            finalComponentData[attributeName][idx] = this.box3DEntity.box3DRuntime.assetRegistry.getAssetById(id);
-	          }, this);
-	        } else if (attributeDef.subType.type === 'object') {
-	          _lodash2.default.each(finalComponentData[attributeName], function (id, idx) {
-	            finalComponentData[attributeName][idx] = this.box3DEntity.box3DRuntime.getEntityById(id);
-	          }, this);
-	        } else if (attributeDef.subType.type === 'custom') {
-	          _lodash2.default.each(finalComponentData[attributeName], function (custAttr) {
-	            _lodash2.default.each(attributeDef.subType.attributes, function (attr, name) {
-	              this._assignAttribute(name, attr, custAttr);
-	            }, this);
-	          }, this);
-	        }
-	      } else if (attributeDef.type === 'custom') {
-	        if (!finalComponentData[attributeName]) {
-	          finalComponentData[attributeName] = {};
-	        }
-	        _lodash2.default.each(attributeDef.attributes, function (attr, name) {
-	          this._assignAttribute(name, attr, finalComponentData[attributeName]);
-	        }, this);
-	      }
+	        var changedAttributes = [];
+	        var scriptAttributes = scriptAsset.getProperty('attributes') || {};
+	        Object.keys(scriptAttributes).forEach(function (attrName) {
+	          var attrDef = scriptAttributes[attrName];
+	          var attribValue = component.getAttribute(attrDef.name);
+	          _this4.translateAttributeValue(component, attrDef.name, attrDef, attribValue);
+	          if (component.getAttribute(attrDef.name) !== component.getPreviousAttribute(attrDef.name)) {
+	            changedAttributes.push(attrDef.name);
+	          }
+	        });
+	        component.attributesChanged(changedAttributes);
+	      });
 	    }
 
-	    //Link up entities to component data and assign the final attribute values to the component.
+	    /**
+	     * Called when one or more components have been added to this entity.
+	     * @param  {Array} addedComponentIds Array of new component ids.
+	     * @method onComponentsAdded
+	     * @private
+	     * @return {void}
+	     */
 
 	  }, {
-	    key: '_buildAttributes',
-	    value: function _buildAttributes(scriptAsset, finalComponentData, component) {
+	    key: 'onComponentsAdded',
+	    value: function onComponentsAdded(addedComponentIds) {
+	      var _this5 = this;
 
+	      for (var i = 0; i < addedComponentIds.length; i++) {
+	        var componentDesc = this.getDescriptorById(addedComponentIds[i]);
+	        this.createComponentObject(addedComponentIds[i], componentDesc, function (component) {
+	          _this5.assignAttributeValues(component);
+	        });
+	      }
+	      // Call awake() on each component that was just added
+	      for (var i = 0; i < addedComponentIds.length; i++) {
+	        var component = this.getById(addedComponentIds[i]);
+	        if (typeof component.awake === 'function') {
+	          component.awake();
+	        }
+	      }
+	      //If the object is already loaded when the component is created,
+	      //explicitly load the component
+	      if (!this.box3DEntity.isComponentsUnloaded()) {
+	        for (var i = 0; i < addedComponentIds.length; i++) {
+	          this.loadComponent(addedComponentIds[i]);
+	        }
+	      }
+	    }
+
+	    /**
+	     * Called when one or more components have been removed from this entity.
+	     * @param  {Array} removedComponentIds Array of removed component ids.
+	     * @method onComponentsRemoved
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'onComponentsRemoved',
+	    value: function onComponentsRemoved(removedComponentIds) {
+	      function _removeComponent(componentId) {
+	        if (this.components[componentId]) {
+	          var component = this.components[componentId];
+	          this.components[componentId] = undefined;
+	          delete this.components[componentId];
+	          component.box3DEntity = undefined;
+	          component.__box3d__ = undefined;
+
+	          this.trigger('remove', componentId);
+	        }
+	      }
+
+	      for (var i = 0; i < removedComponentIds.length; i++) {
+	        this.unloadComponent(removedComponentIds[i]);
+	        _removeComponent.call(this, removedComponentIds[i]);
+	      }
+	    }
+
+	    /**
+	     * Translate a attribute value to a value that is assigned as a member of
+	     * the component. This function is called recursively for custom attibs.
+	     * @method  translateAttributeValue
+	     * @private
+	     * @param  {Object} obj            The object to set with the resulting member variable. This is
+	     * usually the component but, for custom attibs, it can be a sub-object.
+	     * @param  {String} attributeName  Name of the attribute
+	     * @param  {String} attributeDef   Definition of the attribute
+	     * @param  {Mixed} attributeValue Raw value of the attribute before translation
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'translateAttributeValue',
+	    value: function translateAttributeValue(obj, attributeName, attributeDef, attributeValue) {
+	      var _this6 = this;
+
+	      var assetRegistry = this.box3DEntity.box3DRuntime.assetRegistry;
+	      switch (attributeDef.type) {
+	        case 'asset':
+	          obj[attributeName] = assetRegistry.getAssetById(attributeValue);
+	          break;
+	        case 'object':
+	          obj[attributeName] = this.box3DEntity.getObjectById(attributeValue);
+	          break;
+	        case 'custom':
+	          obj[attributeName] = obj[attributeName] || {};
+	          Object.keys(attributeValue).forEach(function (key) {
+	            _this6.translateAttributeValue(obj[attributeName], key, attributeDef.attributes[key], attributeValue[key]);
+	          });
+	          break;
+	        case 'c':
+	          obj[attributeName] = obj[attributeName] || new _three2.default.Color();
+	          obj[attributeName].setRGB(attributeValue.r, attributeValue.g, attributeValue.b);
+	          break;
+	        case 'a':
+	          obj[attributeName] = obj[attributeName] || [];
+	          //Handle arrays of different types
+	          switch (attributeDef.subType.type) {
+	            case 'asset':
+	              attributeValue.forEach(function (id, idx) {
+	                obj[attributeName][idx] = assetRegistry.getAssetById(id);
+	              });
+	              break;
+	            case 'object':
+	              attributeValue.forEach(function (id, idx) {
+	                obj[attributeName][idx] = _this6.box3DEntity.getObjectById(id);
+	              });
+	              break;
+	            case 'custom':
+	              attributeValue.forEach(function (subObj, idx) {
+	                obj[attributeName][idx] = obj[attributeName] || {};
+	                Object.keys(subObj).forEach(function (key) {
+	                  _this6.translateAttributeValue(obj[attributeName][idx], key, attributeDef.subType.attributes[key], attributeValue[idx][key]);
+	                });
+	              });
+	              break;
+	            default:
+	              attributeValue.forEach(function (value, idx) {
+	                obj[attributeName][idx] = value;
+	              });
+	          }
+	          break;
+	        case 'v2':
+	          obj[attributeName] = obj[attributeName] || new _three2.default.Vector2();
+	          obj[attributeName].set(attributeValue.x, attributeValue.y);
+	          break;
+	        case 'v3':
+	          obj[attributeName] = obj[attributeName] || new _three2.default.Vector3();
+	          obj[attributeName].set(attributeValue.x, attributeValue.y, attributeValue.z);
+	          break;
+	        case 'v4':
+	          obj[attributeName] = obj[attributeName] || new _three2.default.Vector4();
+	          obj[attributeName].set(attributeValue.x, attributeValue.y, attributeValue.z, attributeValue.w);
+	          break;
+	        default:
+	          obj[attributeName] = attributeValue;
+	      }
+	    }
+
+	    /**
+	     * Take raw attribute values and create all member variables from them.
+	     * @method assignAttributeValues
+	     * @private
+	     * @param  {Object} component The component to update.
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'assignAttributeValues',
+	    value: function assignAttributeValues(component) {
+	      var _this7 = this;
+
+	      var scriptAsset = component.getScriptAsset();
 	      var scriptAttributes = scriptAsset.getProperty('attributes') || {};
-	      _lodash2.default.each(scriptAttributes, function (attr, name) {
-	        this._assignAttribute(name, attr, finalComponentData);
-	      }, this);
-	      _lodash2.default.extend(component, finalComponentData);
+	      Object.keys(scriptAttributes).forEach(function (attribName) {
+	        var attrDef = scriptAttributes[attribName];
+	        var attribValue = component.getAttribute(attrDef.name);
+	        _this7.translateAttributeValue(component, attrDef.name, attrDef, attribValue);
+	      });
 	    }
 	  }, {
 	    key: '_buildEvents',
 	    value: function _buildEvents(scriptAsset) {
+	      var _this8 = this;
+
 	      var eventList = scriptAsset.getProperty('events') || {};
-	      _lodash2.default.each(eventList, function (params, name) {
-	        this.box3DEntity.registerComponentEvent(name, params.parameters, params.scope, params.action, params.category, params.filter);
+	      Object.keys(eventList).forEach(function (name) {
+	        var params = eventList[name];
+	        _this8.box3DEntity.registerComponentEvent(name, params.parameters, params.scope, params.action, params.category, params.filter);
 	      }, this);
 	    }
-	  }, {
-	    key: '_offloadEvents',
-	    value: function _offloadEvents(scriptAsset) {
-	      var eventList = scriptAsset.getProperty('events') || {};
-	      _lodash2.default.each(eventList, function (params, name) {
-	        this.box3DEntity.removeComponentEvent(name, params.scope);
-	      }, this);
-	    }
-	  }, {
-	    key: '_createComponent',
-	    value: function _createComponent(scriptId, componentData, componentId, enabled, fn) {
-	      var klass, scriptName, scriptAsset, component;
 
-	      if (scriptId instanceof Box3D.ScriptAsset) {
-	        scriptId = scriptId.id;
-	      }
+	    /**
+	     * Create the actual component using the given id and descriptor
+	     * @method createComponentObject
+	     * @private
+	     * @param  {String}   componentId   Id of the component object
+	     * @param  {Object}   componentDesc Json describing the component
+	     * @param  {Function} fn            Callback when finished creating the component
+	     * @return {void}
+	     */
 
-	      if (!componentId) {
-	        componentId = (0, _uuid2.default)();
-	      }
+	  }, {
+	    key: 'createComponentObject',
+	    value: function createComponentObject(componentId, componentDesc, fn) {
+	      var _this9 = this;
+
+	      var classConstructor = undefined,
+	          scriptName = undefined,
+	          component = undefined;
+
+	      var scriptId = componentDesc.scriptId;
+	      var enabled = !!componentDesc.enabled;
 
 	      if (this.components[componentId]) {
-	        return _log2.default.error('Component with id: ' + componentId + ' already exists!');
+	        _log2.default.error('Component with id: ' + componentId + ' already exists!');
+	        return;
 	      }
 
-	      scriptAsset = this.box3DEntity.box3DRuntime.assetRegistry.getAssetById(scriptId);
-
-	      if (!scriptAsset) {
-	        scriptAsset = _lodash2.default.first(this.box3DEntity.box3DRuntime.assetRegistry.Scripts.find({
-	          name: scriptId
-	        }));
-	      }
-
+	      var scriptAsset = this.box3DEntity.box3DRuntime.assetRegistry.getAssetById(scriptId);
 	      if (!scriptAsset) {
 	        _log2.default.warn('Unable to find script asset for ' + scriptId);
 	        return;
 	      }
 
-	      if (!scriptAsset.isRunnable()) {
-	        _log2.default.info('Skipping component: ' + componentId + ' using script ' + scriptAsset.getName());
-	        this.trigger('add', componentId);
-	        return null;
-	      }
-
-	      scriptAsset.load(_lodash2.default.bind(function onScriptLoad() {
-	        klass = scriptAsset.sharedData.klass;
+	      scriptAsset.load(function () {
+	        classConstructor = scriptAsset.sharedData.classConstructor;
 	        scriptName = scriptAsset.getName();
 
-	        component = new klass();
+	        component = new classConstructor();
 
-	        this.components[componentId] = component;
+	        _this9.components[componentId] = component;
 
-	        component.__box3d__ = {};
-	        component.__box3d__.id = componentId;
-	        component.__box3d__.scriptName = scriptName;
-	        component.__box3d__.componentData = _lodash2.default.cloneDeep(componentData);
-	        component.__box3d__.scriptId = scriptId;
-	        component.__box3d__.enabled = enabled;
+	        component.__box3d__ = {
+	          id: componentId,
+	          scriptName: scriptName,
+	          scriptId: scriptId,
+	          enabled: enabled
+	        };
 
-	        component.box3DEntity = this.box3DEntity;
-	        component.events = this.box3DEntity.box3DRuntime.globalEvents;
+	        component.box3DEntity = _this9.box3DEntity;
 
-	        if (!this.box3DEntity.getParentAsset().loadComponents) {
-	          this.trigger('add', componentId);
-	          if (_lodash2.default.isFunction(fn)) {
-	            return fn(component);
-	          }
-	          return;
-	        }
+	        _this9._buildEvents(scriptAsset);
 
-	        if (this.box3DEntity.box3DRuntime.componentSettings.runtime) {
-	          if (typeof component.preInit === 'function') {
-	            component.preInit();
-	          }
-	        } else if (this.box3DEntity.box3DRuntime.componentSettings.editor) {
-	          if (typeof component.preInitEditor === 'function') {
-	            component.preInitEditor();
-	          }
-	        }
-
-	        this._buildEvents(scriptAsset);
-
-	        //If the object is already loaded when the component is created,
-	        //explicitly load the component
-	        if (!this.box3DEntity.isBaseUnloaded()) {
-	          this.loadComponent(componentId);
-	        }
-
-	        this.trigger('add', componentId);
+	        _this9.trigger('add', componentId);
 
 	        if (_lodash2.default.isFunction(fn)) {
 	          return fn(component);
 	        }
-	      }, this));
+	      });
 	    }
 	  }, {
 	    key: 'loadComponent',
-	    value: function loadComponent(componentId) {
+	    value: function loadComponent(component) {
+	      var _this10 = this;
 
-	      var component = this.components[componentId];
+	      component = _lodash2.default.isObject(component) ? component : this.components[component];
 	      if (!component) {
-	        _log2.default.warn('Trying to load component, ' + componentId + ', that doesn\'t exist for entity, ' + this.box3DEntity.id);
+	        _log2.default.warn('Trying to load component, ' + component + ', that doesn\'t exist for entity, ' + this.box3DEntity.id);
 	        return;
 	      }
 
-	      var scriptAsset = this.box3DEntity.box3DRuntime.assetRegistry.getAssetById(component.__box3d__.scriptId);
-	      var defaultComponentData = scriptAsset.getDefaultComponentData();
-	      var finalComponentData = _lodash2.default.extend(defaultComponentData || {}, _lodash2.default.cloneDeep(component.__box3d__.componentData));
-	      var that = this;
+	      this.assignAttributeValues(component);
 
-	      if (this.box3DEntity.box3DRuntime.componentSettings.runtime) {
+	      // We'll call start() because we're loading the component
+	      if (typeof component.init === 'function') {
+	        component.init();
+	      }
 
-	        // If the object is already loading or loaded, trigger the init call.
-	        if (typeof component.init === 'function') {
-	          this._buildAttributes(scriptAsset, finalComponentData, component);
-	          component.init();
+	      Object.keys(engineEventMap).forEach(function (eventName) {
+	        var fnName = engineEventMap[eventName];
+	        if (typeof component[fnName] === 'function') {
+	          _this10.box3DEntity.box3DRuntime.on(eventName, component[fnName], component);
 	        }
+	      });
 
-	        _lodash2.default.each(engineEventMap, function (fnName, eventName) {
-	          if (typeof component[fnName] === 'function') {
-	            this.box3DEntity.box3DRuntime.on(eventName, component[fnName], component);
-	          }
-	        }, this);
-
-	        _lodash2.default.each(box3dEntityEventMap, function (fnName, eventName) {
-	          if (typeof component[fnName] === 'function') {
-	            this.box3DEntity.on(eventName, component[fnName], component);
-	          }
-	        }, this);
-
-	        if (typeof component.objectCreated === 'function') {
-	          if (this.box3DEntity.isBaseLoaded()) {
-	            component.objectCreated();
-	          } else {
-	            this.box3DEntity.once('loadBase', component.objectCreated, component);
-	          }
+	      Object.keys(box3dEntityEventMap).forEach(function (eventName) {
+	        var fnName = box3dEntityEventMap[eventName];
+	        if (typeof component[fnName] === 'function') {
+	          _this10.box3DEntity.on(eventName, component[fnName], component);
 	        }
+	      });
 
-	        if (typeof component.componentsLoaded === 'function') {
-	          if (this.box3DEntity.isComponentsLoaded()) {
-	            component.componentsLoaded();
-	          } else {
-	            this.box3DEntity.once('loadComponents', component.componentsLoaded, component);
-	          }
+	      if (typeof component.entityCreated === 'function') {
+	        if (this.box3DEntity.isBaseLoaded()) {
+	          component.entityCreated();
+	        } else {
+	          this.box3DEntity.once('loadBase', component.entityCreated, component);
 	        }
+	      }
 
-	        if (typeof component.objectLoaded === 'function') {
-	          this.box3DEntity.when('loadChildren', component.objectLoaded, component);
+	      if (typeof component.componentsLoaded === 'function') {
+	        if (this.box3DEntity.isComponentsLoaded()) {
+	          component.componentsLoaded();
+	        } else {
+	          this.box3DEntity.once('loadComponents', component.componentsLoaded, component);
 	        }
+	      }
 
-	        if (typeof component.sceneLoaded === 'function') {
-	          var scene = this.box3DEntity.getParentAsset();
-	          scene.when('load', component.sceneLoaded, component);
-	        }
+	      if (typeof component.entityLoaded === 'function') {
+	        this.box3DEntity.when('loadChildren', component.entityLoaded, component);
+	      }
 
-	        if (typeof component.enabled === 'function') {
-	          component.listenTo(component, 'enable', component.enabled);
-	        }
+	      if (typeof component.assetLoaded === 'function') {
+	        var scene = this.box3DEntity.getParentAsset();
+	        scene.when('load', component.assetLoaded, component);
+	      }
 
-	        if (typeof component.disabled === 'function') {
-	          component.listenTo(component, 'disable', component.disabled);
-	        }
-	      } else if (this.box3DEntity.box3DRuntime.componentSettings.editor) {
-	        // Editor components
-	        if (typeof component.editorInit === 'function') {
+	      if (typeof component.enabled === 'function') {
+	        component.listenTo(component, 'enable', component.enabled);
+	      }
 
-	          try {
-	            that._buildAttributes(scriptAsset, finalComponentData, component);
-	            component.editorInit();
-	          } catch (e) {
-	            _log2.default.error('Failed to start editor component, ' + component.getId() + ', from script, ' + scriptAsset.getName() + '. Error caught: ', e.message);
-	          }
-	        }
-
-	        if (scriptAsset && typeof component.reload === 'function') {
-	          scriptAsset.on('script_changed', component.reload, component);
-	        }
+	      if (typeof component.disabled === 'function') {
+	        component.listenTo(component, 'disable', component.disabled);
 	      }
 	    }
 	  }, {
 	    key: 'unloadComponent',
-	    value: function unloadComponent(componentId) {
-	      var component, scriptAsset, scriptRegistry;
+	    value: function unloadComponent(component) {
+	      var _this11 = this;
 
-	      if (this.components) {
-	        if (_lodash2.default.isObject(componentId)) {
-	          _lodash2.default.each(this.components, function (c, id) {
-	            if (!component && c === componentId) {
-	              component = c;
-	              componentId = id;
-	            }
-	          }, this);
-	        } else {
-	          component = this.components[componentId];
-	        }
-
-	        if (!_lodash2.default.isObject(component)) {
-	          return;
-	        }
-
-	        scriptRegistry = this.box3DEntity.box3DRuntime.assetRegistry.Scripts;
-	        scriptAsset = scriptRegistry.assets[component.__box3d__.scriptId];
-
-	        try {
-	          if (!this.box3DEntity || !this.box3DEntity.box3DRuntime) {
-	            return;
-	          }
-
-	          if (this.box3DEntity.box3DRuntime.componentSettings.runtime) {
-	            // Play mode components
-	            _lodash2.default.each(engineEventMap, function (fnName, eventName) {
-	              if (typeof component[fnName] === 'function') {
-	                this.box3DEntity.box3DRuntime.off(eventName, component[fnName], component);
-	              }
-	            }, this);
-
-	            _lodash2.default.each(box3dEntityEventMap, function (fnName, eventName) {
-	              if (typeof component[fnName] === 'function') {
-	                this.box3DEntity.off(eventName, component[fnName], component);
-	              }
-	            }, this);
-
-	            if (!this.box3DEntity.isBaseUnloaded() && typeof component.shutdown === 'function') {
-	              component.shutdown();
-	            }
-	          } else if (this.box3DEntity.box3DRuntime.componentSettings.editor) {
-	            // Editor components
-
-	            this._offloadEvents(scriptAsset);
-
-	            if (!this.box3DEntity.isBaseUnloaded() && typeof component.editorShutdown === 'function') {
-	              component.editorShutdown();
-	            }
-
-	            if (scriptAsset && typeof component.reload === 'function') {
-	              scriptAsset.off('script_changed', component.reload, component);
-	            }
-	          }
-
-	          if (typeof component.stopListening === 'function') {
-	            component.stopListening();
-	          }
-	          if (typeof component.objectCreated === 'function') {
-	            this.box3DEntity.off('loadBase', component.objectCreated, component);
-	          }
-	          if (typeof component.componentsLoaded === 'function') {
-	            this.box3DEntity.off('loadComponents', component.componentsLoaded, component);
-	          }
-	          if (typeof component.objectLoaded === 'function') {
-	            this.box3DEntity.off('loadChildren', component.objectLoaded, component);
-	          }
-	          if (typeof component.sceneLoaded === 'function') {
-	            var scene = this.box3DEntity.getParentAsset();
-	            scene.off('loadChildren', component.sceneLoaded, component);
-	          }
-	          if (typeof component.init === 'function') {
-	            this.box3DEntity.off('loadStarted', component.init, component);
-	          }
-	        } catch (e) {
-	          _log2.default.error('Error while destroying component: ' + component.__box3d__.scriptName);
-	          _log2.default.error(e.stack);
-	        }
+	      component = _lodash2.default.isString(component) ? this.components[component] : component;
+	      if (!component) {
+	        return;
 	      }
-	    }
-	  }, {
-	    key: '_removeComponent',
-	    value: function _removeComponent(componentId) {
-	      if (this.components[componentId]) {
-	        var component = this.components[componentId];
-	        this.components[componentId] = undefined;
-	        delete this.components[componentId];
-	        component.box3DEntity = undefined;
-	        component.events = undefined;
-	        component.__box3d__ = undefined;
+	      // Do we need to do this?
+	      if (!this.box3DEntity || !this.box3DEntity.box3DRuntime) {
+	        return;
+	      }
 
-	        this.trigger('remove', componentId);
+	      Object.keys(engineEventMap).forEach(function (eventName) {
+	        var fnName = engineEventMap[eventName];
+	        if (typeof component[fnName] === 'function') {
+	          _this11.box3DEntity.box3DRuntime.off(eventName, component[fnName], component);
+	        }
+	      });
+
+	      Object.keys(box3dEntityEventMap).forEach(function (eventName) {
+	        var fnName = box3dEntityEventMap[eventName];
+	        if (typeof component[fnName] === 'function') {
+	          _this11.box3DEntity.off(eventName, component[fnName], component);
+	        }
+	      });
+
+	      if (!this.box3DEntity.isUnloaded() && typeof component.shutdown === 'function') {
+	        component.shutdown();
+	      }
+
+	      if (typeof component.stopListening === 'function') {
+	        component.stopListening();
+	      }
+	      if (typeof component.entityCreated === 'function') {
+	        this.box3DEntity.off('loadBase', component.entityCreated, component);
+	      }
+	      if (typeof component.componentsLoaded === 'function') {
+	        this.box3DEntity.off('loadComponents', component.componentsLoaded, component);
+	      }
+	      if (typeof component.entityLoaded === 'function') {
+	        this.box3DEntity.off('loadChildren', component.entityLoaded, component);
+	      }
+	      if (typeof component.assetLoaded === 'function') {
+	        var scene = this.box3DEntity.getParentAsset();
+	        scene.off('loadChildren', component.assetLoaded, component);
+	      }
+	      if (typeof component.init === 'function') {
+	        this.box3DEntity.off('loadStarted', component.init, component);
 	      }
 	    }
 	  }, {
 	    key: 'unloadComponents',
 	    value: function unloadComponents() {
-	      if (this.box3DEntity.getParentAsset().loadComponents) {
-	        _lodash2.default.each(this.components, function (comp, id) {
-	          this.unloadComponent(id);
-	        }, this);
-	      }
+	      var _this12 = this;
+
+	      Object.keys(this.components).forEach(function (id) {
+	        var comp = _this12.components[id];
+	        _this12.unloadComponent(comp);
+	      });
 	    }
 	  }, {
 	    key: 'loadComponents',
 	    value: function loadComponents() {
-	      if (this.box3DEntity.getParentAsset().loadComponents) {
-	        _lodash2.default.each(this.components, function (comp, id) {
-	          this.loadComponent(id);
-	        }, this);
-	      }
+	      var _this13 = this;
+
+	      Object.keys(this.components).forEach(function (id) {
+	        var comp = _this13.components[id];
+	        _this13.loadComponent(comp);
+	      });
 	      this.box3DEntity.markState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
-	    }
-
-	    /**
-	     * Get components matching query
-	     * @method get
-	     * @param  {mixed} query Either a query object such as { scriptName: 'Your Script Name' } or a
-	     *                       string. If this is a string, then multiple searches will be performed
-	     *                       until a match is found in this order 'id', 'scriptName', 'scriptId'
-	     * @return {Box3D.Box3DComponent} an array of components matching the query
-	     */
-
-	  }, {
-	    key: 'get',
-	    value: function get(query) {
-	      var found = [];
-
-	      if (_lodash2.default.isString(query)) {
-	        var val = query;
-
-	        // if this matches a script id, just return it
-	        if (this.components[val]) {
-	          return [this.components[val]];
-	        }
-
-	        // these can have multiple components
-	        _lodash2.default.each(['scriptName', 'scriptId'], function (prop) {
-	          if (found.length < 1) {
-	            var query = {};
-	            query[prop] = val;
-
-	            found = this.get(query);
-	          }
-	        }, this);
-
-	        return found;
-	      }
-
-	      if (!_lodash2.default.isObject(query) || !_lodash2.default.size(query)) {
-	        return [];
-	      }
-
-	      if (this.components) {
-	        _lodash2.default.each(this.components, function (component) {
-	          var match = true;
-	          if (component) {
-	            _lodash2.default.each(query, function (val, prop) {
-	              if (component.__box3d__[prop] !== val) {
-	                match = false;
-	              }
-	            });
-
-	            if (match) {
-	              found.push(component);
-	            }
-	          }
-	        });
-	      }
-
-	      return found;
-	    }
-
-	    /**
-	     * Returns an array of all attached components
-	     * @method all
-	     * @return {Array} an array of components
-	     */
-
-	  }, {
-	    key: 'all',
-	    value: function all() {
-	      return _lodash2.default.toArray(this.components);
-	    }
-
-	    /**
-	     * Get a component. This is a convenience method that wraps Components.get, this will just
-	     * return the first entity. If query is not specified then it will return the first of all
-	     * components.
-	     * @method first
-	     * @param  {mixed} [query] Either a query object such as { scriptName: 'Your Script Name' }
-	     *                         or a string. If this is a string, then multiple searches will
-	     *                         be performed until a match is found in this order 'id',
-	     *                         'scriptName', 'scriptId'
-	     * @return {Box3D.Box3DComponent} this first component matching the query
-	     */
-
-	  }, {
-	    key: 'first',
-	    value: function first(query) {
-	      if (!query) {
-	        return _lodash2.default.first(this.all());
-	      }
-	      return _lodash2.default.first(this.get(query));
-	    }
-
-	    /**
-	     * Remove all components
-	     * @method empty
-	     */
-	    // empty() {
-	    //   _.each(this.components, this.unloadComponent, this);
-	    // },
-
-	    /**
-	     * Iterate over all of the components and call `fn` for each
-	     * @method  each
-	     * @param  {Function} fn      the function to call on each component
-	     * @param  {Mixed}   context  the value of `this` for each function call
-	     */
-
-	  }, {
-	    key: 'each',
-	    value: function each(fn, context) {
-	      return _lodash2.default.each(this.components, fn, context);
 	    }
 	  }]);
 
@@ -60137,30 +59985,13 @@
 	   */
 
 	  _createClass(MaterialAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(MaterialAsset.prototype), 'initialize', this).call(this, properties);
-	      this.on('setColor', this.setColor, this);
-	      this.on('setNumber', this.setNumber, this);
-	      this.on('setVector2', this.setVector2, this);
-	    }
-	  }, {
-	    key: 'uninitialize',
-	    value: function uninitialize() {
-	      _get(Object.getPrototypeOf(MaterialAsset.prototype), 'uninitialize', this).call(this);
-	      this.off('setColor', this.setColor, this);
-	      this.off('setNumber', this.setNumber, this);
-	      this.off('setVector2', this.setVector2, this);
-	    }
+	    key: 'registerDependencies',
 
 	    /**
 	     * Rebuild dependencies for this material.
 	     * @method registerDependencies
 	     * @private
 	     */
-
-	  }, {
-	    key: 'registerDependencies',
 	    value: function registerDependencies() {
 	      var textures = this.getReferencedAssetsList(true);
 	      // Register fresh list of dependencies
@@ -60186,78 +60017,83 @@
 	      return value;
 	    }
 	  }, {
-	    key: 'setProperty',
+	    key: 'verifyProperty',
+	    value: function verifyProperty(propertyName, valueObj) {
+	      if (_get(Object.getPrototypeOf(MaterialAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	        return true;
+	      }
+	      var shaderAsset = this.getShader();
+	      var shaderParams = shaderAsset.getProperty('parameters');
+	      if (shaderParams[propertyName]) {
+	        var type = shaderParams[propertyName].type;
+	        var value = valueObj.value;
+	        var newValue = undefined;
+	        // Handle scalar values
+	        if (type === 't' && (_lodash2.default.isString(value) || value === null) || type === 'f' && _lodash2.default.isNumber(value) || type === 'b' && _lodash2.default.isBoolean(value) || type === 'i' && _lodash2.default.isNumber(value) && Math.round(value) === value || type === 'opt' && shaderParams[propertyName].options.hasOwnProperty(value)) {
 
-	    /** @inheritdoc */
-	    value: function setProperty(propertyName, value, options) {
+	          newValue = value;
 
-	      if (!_get(Object.getPrototypeOf(MaterialAsset.prototype), 'setProperty', this).call(this, propertyName, value, options)) {
-	        var shaderAsset = this.getShader();
-	        var shaderParams = shaderAsset.getProperty('parameters');
-	        if (shaderParams[propertyName]) {
-	          var type = shaderParams[propertyName].type;
+	          // Handle colours
+	        } else if (type === 'c') {
+	            if (this.sharedData.properties.hasOwnProperty(propertyName) && _lodash2.default.isObject(this.sharedData.properties[propertyName])) {
+	              newValue = this.sharedData.properties[propertyName];
+	            } else {
+	              newValue = { r: 0.0, g: 0.0, b: 0.0 };
+	              // this.sharedData.properties[propertyName] = newValue;
+	            }
+	            if (_lodash2.default.isString(value)) {
+	              var hexValue = value;
+	              if (hexValue.slice(0, 2) !== '0x') {
+	                hexValue = parseInt(hexValue, 10);
+	                hexValue = '0x' + hexValue.toString(16);
+	              }
+	              MaterialAsset.hexColorToVector(parseInt(hexValue, 16), newValue);
+	            } else if (_lodash2.default.isNumber(value)) {
+	              var clampedVal = Math.max(0, Math.max(0xffffff, value));
+	              MaterialAsset.hexColorToVector(clampedVal, newValue);
+	            } else if (_lodash2.default.isObject(value) && _lodash2.default.isNumber(value.r) && _lodash2.default.isNumber(value.g) && _lodash2.default.isNumber(value.b)) {
+	              newValue.r = value.r;
+	              newValue.g = value.g;
+	              newValue.b = value.b;
+	              var min = shaderParams[propertyName].min;
+	              var max = shaderParams[propertyName].max;
+	              if (min !== undefined) {
+	                newValue.r = Math.max(newValue.r, min);
+	                newValue.g = Math.max(newValue.g, min);
+	                newValue.b = Math.max(newValue.b, min);
+	              }
+	              if (max !== undefined) {
+	                newValue.r = Math.min(newValue.r, max);
+	                newValue.g = Math.min(newValue.g, max);
+	                newValue.b = Math.min(newValue.b, max);
+	              }
+	            }
 
-	          // Copy the previous value.
-	          this.sharedData.previousProperties[propertyName] = _lodash2.default.clone(this.sharedData.properties[propertyName]);
-
-	          // Handle scalar values
-	          if (type === 't' && (_lodash2.default.isString(value) || value === null) || type === 'f' && _lodash2.default.isNumber(value) || type === 'b' && _lodash2.default.isBoolean(value) || type === 'i' && _lodash2.default.isNumber(value) && Math.round(value) === value || type === 'opt' && shaderParams[propertyName].options.hasOwnProperty(value)) {
-
-	            this.sharedData.properties[propertyName] = value;
-
-	            // Handle colours
-	          } else if (type === 'c') {
-	              var newValue = undefined;
+	            // Handle vectors
+	          } else if (type.charAt(0) === 'v' && _lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y)) {
 	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
 	                newValue = this.sharedData.properties[propertyName];
 	              } else {
-	                newValue = { r: 0.0, g: 0.0, b: 0.0 };
-	                this.sharedData.properties[propertyName] = newValue;
+	                newValue = {};
 	              }
-	              if (_lodash2.default.isString(value)) {
-	                if (value.slice(0, 2) !== '0x') {
-	                  value = parseInt(value, 10);
-	                  value = '0x' + value.toString(16);
-	                }
-	                MaterialAsset.hexColorToVector(parseInt(value, 16), newValue);
-	              } else if (_lodash2.default.isNumber(value)) {
-	                value = Math.max(0, Math.max(0xffffff, value));
-	                MaterialAsset.hexColorToVector(value, newValue);
-	              } else if (_lodash2.default.isObject(value) && _lodash2.default.isNumber(value.r) && _lodash2.default.isNumber(value.g) && _lodash2.default.isNumber(value.b)) {
-	                newValue.r = value.r;
-	                newValue.g = value.g;
-	                newValue.b = value.b;
+	              newValue.x = value.x;
+	              newValue.y = value.y;
+	              if (type === 'v3' && _lodash2.default.isNumber(value.z)) {
+	                newValue.z = value.z;
+	              } else if (type === 'v4' && _lodash2.default.isNumber(value.z) && _lodash2.default.isNumber(value.w)) {
+	                newValue.z = value.z;
+	                newValue.w = value.w;
 	              }
-
-	              // Handle vectors
-	            } else if (type.charAt(0) === 'v' && _lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y)) {
-	                if (this.sharedData.properties.hasOwnProperty(propertyName)) {
-	                  this.sharedData.properties[propertyName].x = value.x;
-	                  this.sharedData.properties[propertyName].y = value.y;
-	                } else {
-	                  this.sharedData.properties[propertyName] = { x: value.x, y: value.y };
-	                }
-	                if (type === 'v3' && _lodash2.default.isNumber(value.z)) {
-	                  this.sharedData.properties[propertyName].z = value.z;
-	                } else if (type === 'v4' && _lodash2.default.isNumber(value.z) && _lodash2.default.isNumber(value.w)) {
-	                  this.sharedData.properties[propertyName].z = value.z;
-	                  this.sharedData.properties[propertyName].w = value.w;
-	                }
-	              } else if (_lodash2.default.isUndefined(value)) {
-	                delete this.sharedData.properties[propertyName];
-	              } else {
-	                _log2.default.error('Wrong type specified for ' + propertyName);
-	                return;
-	              }
-
-	          // Dispatch change event
-	          if (!options || !options.silent) {
-	            this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this, propertyName, this.sharedData.properties[propertyName]);
-	          }
-	        } else {
-	          _log2.default.error('Unknown property, ' + propertyName + ', set on material.');
-	        }
+	            } else if (_lodash2.default.isUndefined(value)) {
+	              newValue = undefined;
+	            } else {
+	              _log2.default.error('Wrong type specified for ' + propertyName);
+	              return false;
+	            }
+	        valueObj.value = newValue;
+	        return true;
 	      }
+	      return false;
 	    }
 
 	    /**
@@ -60980,16 +60816,6 @@
 	              }
 	              break;
 	            case 'c':
-	              if (_lodash2.default.isString(value)) {
-	                if (value.slice(0, 2) !== '0x') {
-	                  value = parseInt(value, 10);
-	                  value = '0x' + value.toString(16);
-	                }
-	                value = MaterialAsset.hexColorToVector(parseInt(value, 16));
-	              } else if (_lodash2.default.isNumber(value)) {
-	                value = Math.max(0, Math.min(0xffffff, value));
-	                value = MaterialAsset.hexColorToVector(value);
-	              }
 	              if (this.box3DRuntime.getThreeRenderer().gammaInput) {
 	                var gammaValue = {};
 	                gammaValue.r = Math.pow(value.r, 2.2);
@@ -62110,7 +61936,7 @@
 	  format: {
 	    type: 'string',
 	    description: '',
-	    default: 'rgb'
+	    default: 'rgba'
 	  },
 	  type: {
 	    type: 'string',
@@ -62161,6 +61987,31 @@
 	    type: 'boolean',
 	    description: '',
 	    default: true
+	  },
+	  isHdr: {
+	    type: 'boolean',
+	    default: false
+	  },
+	  originalWidth: {
+	    type: 'integer',
+	    description: 'The width, in pixels, of the original image file.',
+	    default: undefined
+	  },
+	  originalHeight: {
+	    type: 'integer',
+	    description: 'The height, in pixels, of the original image file.',
+	    default: undefined
+	  },
+	  // Properties for defining where the data is loaded from
+	  // TODO - Clean this up. Perhaps a single 'location' property that
+	  // contains the necessary info inside.
+	  isLocal: {
+	    type: 'boolean',
+	    default: false
+	  },
+	  filename: {
+	    type: 'string',
+	    default: ''
 	  }
 	});
 
@@ -62283,7 +62134,7 @@
 
 	        json = _lodash2.default.extend({}, componentDef, { type: 'script' });
 	        var scriptAsset = this.box3DRuntime.assetRegistry.createAsset(json);
-	        scriptAsset.sharedData.klass = constructor;
+	        scriptAsset.sharedData.classConstructor = constructor;
 	      }, this);
 	    }
 	  }, {
@@ -65846,7 +65697,11 @@
 	        "name": "clearColor",
 	        "type": "c",
 	        "description": "When the render target is cleared, this colour will be used",
-	        "default": 0
+	        "default": {
+	          "r": 0,
+	          "g": 0,
+	          "b": 0
+	        }
 	      },
 	      "clearAlpha": {
 	        "name": "clearAlpha",
@@ -65911,7 +65766,7 @@
 	        "name": "logarithmicDepthBuffer",
 	        "type": "b",
 	        "description": "Use logarithmic z values while rendering.",
-	        "default": true
+	        "default": false
 	      }
 	    },
 	    "attributesOrder": [
@@ -66289,7 +66144,11 @@
 	      "fontColor": {
 	        "name": "fontColor",
 	        "type": "c",
-	        "default": 16777215,
+	        "default": {
+	          "r": 1,
+	          "g": 1,
+	          "b": 1
+	        },
 	        "description": "Color of the text"
 	      },
 	      "fontFamily": {
@@ -66461,8 +66320,8 @@
 	  }
 
 	  _createClass(ObjectPicker, [{
-	    key: 'preInit',
-	    value: function preInit() {
+	    key: 'awake',
+	    value: function awake() {
 	      this.getRuntime().once('endHover:bound', this._enableHover, this);
 	      this.getRuntime().once('beginHover:bound', this._enableHover, this);
 	    }
@@ -66481,8 +66340,8 @@
 	      this.initMeshRegistry();
 
 	      //listen to register objects
-	      this.getEvents().on('registerPickingObject', this.registerObject, this);
-	      this.getEvents().on('unregisterPickingObject', this.unregisterObject, this);
+	      this.getGlobalEvents().on('registerPickingObject', this.registerObject, this);
+	      this.getGlobalEvents().on('unregisterPickingObject', this.unregisterObject, this);
 
 	      this.resize();
 	    }
@@ -66500,8 +66359,8 @@
 	      this.uninitPickingEvents();
 
 	      this.getRuntime().off('resize', this.resize, this);
-	      this.getEvents().off('registerPickingObject', this.registerObject, this);
-	      this.getEvents().off('unregisterPickingObject', this.unregisterObject, this);
+	      this.getGlobalEvents().off('registerPickingObject', this.registerObject, this);
+	      this.getGlobalEvents().off('unregisterPickingObject', this.unregisterObject, this);
 
 	      var parentAsset = this.getEntity().getParentAsset();
 	      parentAsset.off('meshLoaded', this.registerMesh, this);
@@ -66822,7 +66681,7 @@
 
 	        var renderViews = [];
 	        _lodash2.default.each(cameras, function (camera) {
-	          var renderViewComponents = camera.getComponentsByScriptId('render_view_component');
+	          var renderViewComponents = camera.getByScriptId('render_view_component');
 	          _lodash2.default.each(renderViewComponents, function (renderViewComponent) {
 	            if (renderViewComponent.isEnabled()) {
 	              if (renderViews.length > 0) {
@@ -67019,6 +66878,18 @@
 	    }
 
 	    /**
+	     * Get the script asset for this component
+	     * @method getScriptAsset
+	     * @return {Box3D.ScriptAsset} the script asset
+	     */
+
+	  }, {
+	    key: 'getScriptAsset',
+	    value: function getScriptAsset() {
+	      return this.getAssetRegistry().getAssetById(this.getScriptId());
+	    }
+
+	    /**
 	     * Get the script name of this component
 	     * @method getScriptName
 	     * @return {String} the script name
@@ -67027,7 +66898,7 @@
 	  }, {
 	    key: 'getScriptName',
 	    value: function getScriptName() {
-	      var script = this.getAssetRegistry().getAssetById(this.getScriptId());
+	      var script = this.getScriptAsset();
 	      return script.getName();
 	    }
 
@@ -67042,32 +66913,102 @@
 	    value: function getScriptId() {
 	      return this.__box3d__.scriptId;
 	    }
-	  }, {
-	    key: 'componentDataChanged',
-	    value: function componentDataChanged(changedComponentData, previousComponentData) {
-	      var scriptAsset = this.getAssetRegistry().getAssetById(this.getScriptId());
-	      var compData = this.box3DEntity.getComponentData(this.getId());
-	      this.getComponentRegistry()._buildAttributes(scriptAsset, compData, this);
 
-	      if (this.attributesChanged && !this.box3DEntity.isBaseUnloaded()) {
-	        this.attributesChanged(changedComponentData, previousComponentData);
+	    /**
+	     * Return the complete set of attribute values for this component, including inherited values
+	     * (from a prefab) and default values, if not overridden.
+	     * @method getAttributes
+	     * @public
+	     * @return {Object} All attribute values.
+	     */
+
+	  }, {
+	    key: 'getAttributes',
+	    value: function getAttributes() {
+	      var returnObj = {};
+	      // Get default data
+	      var defaults = this.getDefaultAttributes();
+	      _lodash2.default.extend(returnObj, defaults);
+	      var prefabObj = this.getEntity().getPrefabObject();
+	      if (prefabObj) {
+	        var prefComp = prefabObj.componentRegistry.getById(this.getId());
+	        if (prefComp) {
+	          var prefabComponentData = prefComp.getAttributes();
+	          _lodash2.default.extend(returnObj, _lodash2.default.cloneDeep(prefabComponentData));
+	        }
 	      }
-	      this.trigger('attributesChanged', changedComponentData, previousComponentData);
+	      var compDesc = this.getEntity().componentRegistry.getDescriptorById(this.getId());
+	      _lodash2.default.extend(returnObj, _lodash2.default.cloneDeep(compDesc.componentData));
+
+	      // TODO - PREFABS - re-enable this functionality when putting prefab logic back in.
+	      // this._linkupComponentReferences(returnObj);
+	      return returnObj;
 	    }
+
+	    /**
+	     * Return the complete set of previous attribute values for this component, including
+	     * inherited values (from a prefab) and default values, if not overridden.
+	     * @method getPreviousAttributes
+	     * @public
+	     * @return {Object} All previous attribute values.
+	     */
+
+	  }, {
+	    key: 'getPreviousAttributes',
+	    value: function getPreviousAttributes() {
+	      var returnObj = {};
+	      // Get default data
+	      var defaults = this.getDefaultAttributes();
+	      _lodash2.default.extend(returnObj, defaults);
+	      var prefabObj = this.getEntity().getPrefabObject();
+	      if (prefabObj) {
+	        var prefComp = prefabObj.componentRegistry.getById(this.getId());
+	        if (prefComp) {
+	          var prefabComponentData = prefComp.getPreviousAttributes();
+	          _lodash2.default.extend(returnObj, _lodash2.default.cloneDeep(prefabComponentData));
+	        }
+	      }
+	      var compDesc = this.getEntity().componentRegistry.getPreviousDescriptorById(this.getId());
+	      if (compDesc) {
+	        _lodash2.default.extend(returnObj, _lodash2.default.cloneDeep(compDesc.componentData));
+	      }
+	      // TODO - PREFABS - re-enable this functionality when putting prefab logic back in.
+	      // this._linkupComponentReferences(returnObj);
+	      return returnObj;
+	    }
+
+	    /**
+	     * Set the specified attribute to the specified value. This works across engine instances.
+	     * @method getDefaultAttributes
+	     * @public
+	     * @param  {String} attrib  The attribute name
+	     * @param {Mixed} value   The new value of the attribute.
+	     */
+
 	  }, {
 	    key: 'getDefaultAttributes',
 	    value: function getDefaultAttributes() {
 	      var scriptAsset = this.getAssetRegistry().getAssetById(this.getScriptId());
 	      var scriptAttributes = scriptAsset.getProperty('attributes') || {};
 	      var returnVal = {};
-	      _lodash2.default.each(scriptAttributes, function (attr, name) {
-	        returnVal[name] = attr.default;
-	      }, this);
+	      Object.keys(scriptAttributes).forEach(function (name) {
+	        var attr = scriptAttributes[name];
+	        if (attr.hasOwnProperty('default')) {
+	          returnVal[name] = attr.default;
+	        } else if (attr.type === 'custom') {
+	          returnVal[name] = {};
+	          Object.keys(attr.attributes).forEach(function (subName) {
+	            returnVal[name][subName] = attr.attributes[subName].default;
+	          });
+	        }
+	      });
 	      return returnVal;
 	    }
 
 	    /**
 	     * Set the specified attribute to the specified value. This works across engine instances.
+	     * @method setAttribute
+	     * @public
 	     * @param  {String} attrib  The attribute name
 	     * @param {Mixed} value   The new value of the attribute.
 	     */
@@ -67075,13 +67016,22 @@
 	  }, {
 	    key: 'setAttribute',
 	    value: function setAttribute(attrib, value) {
-	      if (this.box3DEntity && _lodash2.default.isString(attrib)) {
-	        // TODO - reimplement setting component attributes
-	        _log2.default.warn('TODO - Reimplement setting component attributes.');
+	      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-	        var params = {};
-	        params['components.' + this.getId() + '.componentData.' + attrib] = value;
-	        // this.box3DEntity.setComponent(this.getId());
+	      if (this.getEntity() && _lodash2.default.isString(attrib)) {
+	        var componentJson = this.getEntity().sharedData.components[this.getId()];
+	        var changedComponent = {};
+	        var entityDispatcher = this.getRuntime().entityDispatcher;
+
+	        changedComponent[this.getId()] = componentJson;
+	        if (!componentJson.componentData) {
+	          componentJson.componentData = {};
+	        }
+	        componentJson.componentData[attrib] = value;
+	        // Dispatch events for changes
+	        if (!options.silent) {
+	          entityDispatcher.dispatchComponentsChanged(this.box3DEntity, changedComponent);
+	        }
 	      }
 	    }
 
@@ -67089,6 +67039,8 @@
 	     * Get the value of the specified attribute. Note that if the attribute has been
 	     * directly changed on this instance of the component, the returned value will give
 	     * you the saved value (i.e. the same value that a 'resetAttribute' call would yield)
+	     * @method getAttribute
+	     * @public
 	     * @param  {String} attrib  The attribute name
 	     * @return {Mixed}        The saved attribute value.
 	     */
@@ -67097,15 +67049,24 @@
 	    key: 'getAttribute',
 	    value: function getAttribute(attrib) {
 	      if (this.box3DEntity && _lodash2.default.isString(attrib)) {
-	        var compData = this.box3DEntity.getComponentData(this.getId());
+	        var compData = this.getAttributes();
 	        return compData[attrib];
 	      }
 	    }
+
+	    /**
+	     * Get the previous value of the specified attribute.
+	     * @method getPreviousAttribute
+	     * @public
+	     * @param  {String} attrib  The attribute name
+	     * @return {Mixed}        The previous attribute value.
+	     */
+
 	  }, {
 	    key: 'getPreviousAttribute',
 	    value: function getPreviousAttribute(attrib) {
 	      if (this.box3DEntity && _lodash2.default.isString(attrib)) {
-	        var compData = this.box3DEntity.getPreviousComponentData(this.getId());
+	        var compData = this.getPreviousAttributes();
 	        return compData[attrib];
 	      }
 	    }
@@ -67162,7 +67123,7 @@
 	  }, {
 	    key: 'remove',
 	    value: function remove() {
-	      this.getEntity().removeComponent(this);
+	      this.getComponentRegistry().remove(this);
 	    }
 
 	    /**
@@ -67185,8 +67146,10 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      this.__box3d__.enabled = true;
-	      this.trigger('enable');
+	      if (!this.__box3d__.enabled) {
+	        this.__box3d__.enabled = true;
+	        this.trigger('enable');
+	      }
 	    }
 
 	    /**
@@ -67197,8 +67160,10 @@
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      this.__box3d__.enabled = false;
-	      this.trigger('disable');
+	      if (this.__box3d__.enabled) {
+	        this.__box3d__.enabled = false;
+	        this.trigger('disable');
+	      }
 	    }
 
 	    /**
@@ -67269,14 +67234,14 @@
 
 	    /**
 	     * Returns the global event system
-	     * @method getEvents
+	     * @method getGlobalEvents
 	     * @return {RuntimeEvents} the global RuntimeEvents instance
 	     */
 
 	  }, {
-	    key: 'getEvents',
-	    value: function getEvents() {
-	      return this.events;
+	    key: 'getGlobalEvents',
+	    value: function getGlobalEvents() {
+	      return this.box3DEntity.box3DRuntime.globalEvents;
 	    }
 
 	    /**
@@ -67315,7 +67280,8 @@
 	    key: 'getInput',
 	    value: function getInput() {
 	      if (!this.input) {
-	        this.input = this.getRuntime().getApplication().componentRegistry.first('Input Controller');
+	        var compRegistry = this.getRuntime().getApplication().componentRegistry;
+	        this.input = compRegistry.getFirstByScriptName('Input Controller');
 	      }
 	      return this.input;
 	    }
@@ -67356,24 +67322,28 @@
 	    }
 
 	    /***
-	     * Forces the component to remove and readd itself
+	     * Forces the component to remove and re-add itself
 	     */
 
 	  }, {
 	    key: 'reload',
 	    value: function reload() {
-	      var params,
-	          object = this.getEntity();
-	      params = [this.getScriptId(), this.box3DEntity.getComponentData(this.getId()), this.getId()];
-	      object.removeComponent(params[2]);
-	      object.addComponent(params[0], params[1], params[2]);
+	      var params = [this.getScriptId(), this.getAttributes(), this.getName()];
+	      this.getComponentRegistry().remove(this);
+	      this.getComponentRegistry().add(params[0], params[1], params[2]);
 	    }
-	  }, {
-	    key: 'preInit',
-	    value: function preInit() {}
 
 	    /**
-	     * Called after the component is created
+	     * Called when the component is created.
+	     * @return {[type]} [description]
+	     */
+
+	  }, {
+	    key: 'awake',
+	    value: function awake() {}
+
+	    /**
+	     * Called after the entity that this component is attached to starts to load.
 	     * @method init
 	     */
 
@@ -67382,7 +67352,7 @@
 	    value: function init() {}
 
 	    /**
-	     * Called on component or object destroy
+	     * Called when the component or entity is unloaded
 	     * @method shutdown
 	     */
 
@@ -67461,30 +67431,31 @@
 
 	    /**
 	     * Called when the Three.JS object data is available
-	     * @method  objectCreated
+	     * @method  entityCreated
 	     */
 
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {}
+	    key: 'entityCreated',
+	    value: function entityCreated() {}
 
 	    /**
 	     * Called when the Three.JS object is completely loaded, including all of it's children
-	     * @method  objectLoaded
+	     * and dependencies like textures, geometry, etc.
+	     * @method  entityLoaded
 	     */
 
 	  }, {
-	    key: 'objectLoaded',
-	    value: function objectLoaded() {}
+	    key: 'entityLoaded',
+	    value: function entityLoaded() {}
 
 	    /**
-	     * Called when the scene is fully loaded
-	     * @method sceneLoaded
+	     * Called when the parent asset is fully loaded
+	     * @method assetLoaded
 	     */
 
 	  }, {
-	    key: 'sceneLoaded',
-	    value: function sceneLoaded() {}
+	    key: 'assetLoaded',
+	    value: function assetLoaded() {}
 	  }]);
 
 	  return Box3DComponent;
@@ -67773,8 +67744,8 @@
 	      });
 	    }
 	  }, {
-	    key: 'objectLoaded',
-	    value: function objectLoaded() {
+	    key: 'entityLoaded',
+	    value: function entityLoaded() {
 
 	      var threeScene = this.getThreeScene();
 	      threeScene.add(this.cubeCamera);
@@ -67784,7 +67755,7 @@
 	  }, {
 	    key: 'initEditorObject',
 	    value: function initEditorObject() {
-	      this.objectLoaded();
+	      this.entityLoaded();
 
 	      this.boxGeometry = new _three2.default.BoxGeometry(25, 25, 25, 1, 1, 1);
 
@@ -67824,7 +67795,7 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.cubeTexture !== undefined) {
+	      if (changes.indexOf('cubeTexture') !== -1) {
 	        if (this.cubeTexture) {
 	          var that = this;
 	          this.cubeTexture.when('load', function () {
@@ -67858,7 +67829,7 @@
 	          this.cubeMaterial.uniforms['tCube'].value = this.tempRenderTexture.runtimeData;
 	        }
 	      }
-	      if (changes.near || changes.far) {
+	      if (changes.indexOf('near') !== -1 || changes.indexOf('far') !== -1) {
 	        this.cameraPX.near = this.near;
 	        this.cameraPX.far = this.far;
 	        this.cameraPX.updateProjectionMatrix();
@@ -68320,7 +68291,7 @@
 
 	        this.getScene().once('load', function () {
 	          this.getRuntime().globalEvents.trigger('studioApp::registerPickingObject', this.getEntity(), this.curveMesh);
-	          this.getEvents().on('studioApp::toggleEditorVisualization', this.toggleVisualization, this);
+	          this.getGlobalEvents().on('studioApp::toggleVisualization', this.toggleVisualization, this);
 	        }, this);
 
 	        this.getScene().load();
@@ -68388,7 +68359,7 @@
 	      this.getEntity().off('editorSelected', this.onSelected, this);
 	      this.getEntity().off('editorUnselected', this.onUnselected, this);
 	      this.getEntity().off('propertyChanges', this.initCurve, this);
-	      this.getEvents().off('studioApp::toggleEditorVisualization', this.toggleVisualization, this);
+	      this.getGlobalEvents().off('studioApp::toggleVisualization', this.toggleVisualization, this);
 
 	      this.cleanupCurveMesh();
 	      this.cleanupOrientationHelpers();
@@ -68595,8 +68566,8 @@
 	  }
 
 	  _createClass(DebugTextureViewer, [{
-	    key: 'preInit',
-	    value: function preInit() {
+	    key: 'awake',
+	    value: function awake() {
 	      this.getRuntime().on('assetLoaded', this.registerTexture, this);
 	      this.getRuntime().on('assetUnloaded', this.unregisterTexture, this);
 	    }
@@ -69098,8 +69069,8 @@
 	    }
 	  }, {
 	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
-	      this.updateFilters(changes);
+	    value: function attributesChanged() {
+	      this.updateFilters();
 	    }
 	  }, {
 	    key: 'updateFilters',
@@ -69111,14 +69082,14 @@
 	      if (toneMapping && toneMapping.enabled && this.isEnabled()) {
 
 	        setTimeout(function () {
-	          var renderer = that.getEntity().getComponentByScriptId('box3d_renderer');
+	          var renderer = that.getComponentRegistry().getFirstByScriptId('box3d_renderer');
 	          if (renderer) {
 	            renderer.setAttribute('gammaOutput', false);
 	          }
 	        }, 0);
 	      } else {
 	        setTimeout(function () {
-	          var renderer = that.getEntity().getComponentByScriptId('box3d_renderer');
+	          var renderer = that.getComponentRegistry().getFirstByScriptId('box3d_renderer');
 	          if (renderer) {
 	            renderer.setAttribute('gammaOutput', true);
 	          }
@@ -69354,7 +69325,7 @@
 	            this.listenTo(entity, sourceEvent.event, this.onEvent);
 	          }
 	        } else {
-	          entity = this.getEvents();
+	          entity = this.getGlobalEvents();
 	          this.listenTo(entity, sourceEvent.event, this.onEvent);
 	        }
 	        bindEventName = sourceEvent.event + ':bound';
@@ -69385,7 +69356,7 @@
 	                callEvent(entity, eventName, parameters);
 	              }
 	            } else {
-	              callEvent(this.getEvents(), eventName, parameters);
+	              callEvent(this.getGlobalEvents(), eventName, parameters);
 	            }
 	          }
 	        }, this));
@@ -70302,9 +70273,9 @@
 	      this.on('enable', this.onEnable, this);
 	      this.on('disable', this.onDisable, this);
 
-	      this.listenTo(this.getEvents(), 'fullscreen::toggle', this.toggle);
-	      this.listenTo(this.getEvents(), 'fullscreen::enable', this.enable);
-	      this.listenTo(this.getEvents(), 'fullscreen::disable', this.disable);
+	      this.listenTo(this.getGlobalEvents(), 'fullscreen::toggle', this.toggle);
+	      this.listenTo(this.getGlobalEvents(), 'fullscreen::enable', this.enable);
+	      this.listenTo(this.getGlobalEvents(), 'fullscreen::disable', this.disable);
 	    }
 	  }, {
 	    key: 'toggle',
@@ -70522,12 +70493,12 @@
 	  }, {
 	    key: 'componentsLoaded',
 	    value: function componentsLoaded() {
-	      this.renderViewComp = this.getEntity().getComponentByScriptId('render_view_component');
-	      this.renderFiltersComp = this.getEntity().getComponentByScriptId('camera_filters_script');
+	      this.renderViewComp = this.getEntity().componentRegistry.getFirstByScriptId('render_view_component');
+	      this.renderFiltersComp = this.getEntity().componentRegistry.getFirstByScriptId('camera_filters_script');
 	    }
 	  }, {
-	    key: 'objectLoaded',
-	    value: function objectLoaded() {
+	    key: 'entityLoaded',
+	    value: function entityLoaded() {
 	      this.initHMDEffect();
 	      if (this.isEnabled()) {
 	        this.onEnabled();
@@ -71173,7 +71144,7 @@
 	      if (this.mouseEvents.eventHandler) {
 	        var button = this.getKeyByValue(this.mouseButtons, e.button);
 	        if (button) {
-	          this.getEvents().trigger('mouse_down_' + button);
+	          this.getGlobalEvents().trigger('mouse_down_' + button);
 	        }
 	      }
 	    }
@@ -71199,7 +71170,7 @@
 	      if (this.mouseEvents.eventHandler) {
 	        var button = this.getKeyByValue(this.mouseButtons, e.button);
 	        if (button) {
-	          this.getEvents().trigger('mouse_up_' + button);
+	          this.getGlobalEvents().trigger('mouse_up_' + button);
 	        }
 	      }
 	    }
@@ -71268,7 +71239,7 @@
 	      if (this.keyEvents.eventHandler) {
 	        var button = this.getKeyByValue(keyCodes, e.keyCode);
 	        if (button) {
-	          this.getEvents().trigger('keypress_' + button);
+	          this.getGlobalEvents().trigger('keypress_' + button);
 	        }
 	      }
 	    }
@@ -71297,7 +71268,7 @@
 	      }
 
 	      if (this.touchEvents.eventHandler) {
-	        this.getEvents().trigger('touch_start');
+	        this.getGlobalEvents().trigger('touch_start');
 	      }
 	    }
 	  }, {
@@ -71310,7 +71281,7 @@
 	      this.onTouchEvent(e, 'touchEnd');
 
 	      if (this.touchEvents.eventHandler) {
-	        this.getEvents().trigger('touch_end');
+	        this.getGlobalEvents().trigger('touch_end');
 	      }
 	    }
 	  }, {
@@ -71607,11 +71578,11 @@
 	            var state = device.getState();
 
 	            if (state.orientation && this.vrEvents.orientation) {
-	              this.getEvents().trigger('vr_orientation', state.orientation);
+	              this.getGlobalEvents().trigger('vr_orientation', state.orientation);
 	            }
 
 	            if (state.position && this.vrEvents.position) {
-	              this.getEvents().trigger('vr_position', state.position);
+	              this.getGlobalEvents().trigger('vr_position', state.position);
 	            }
 	            this.getRuntime().needsRender = true;
 	          }, this);
@@ -71798,17 +71769,15 @@
 
 	  _createClass(Animation, [{
 	    key: 'attributesChanged',
-	    value: function attributesChanged(changes, previous) {
-	      if (previous && previous.asset) {
-	        this.getScene().unregisterAnimation(previous.asset);
+	    value: function attributesChanged(changes) {
+	      if (changes.indexOf('asset') !== -1) {
+	        this.getScene().unregisterAnimation(this.getPreviousAttribute('asset'));
+	        if (this.asset) {
+	          this.getScene().registerAnimation(this.asset.id);
+	        }
+	        // Reload the animation while resetting the play state and current time.
+	        this.reload(true);
 	      }
-
-	      if (this.asset) {
-	        this.getScene().registerAnimation(this.asset.id);
-	      }
-
-	      // Reload the animation while resetting the play state and current time.
-	      this.reload(true);
 	    }
 	  }, {
 	    key: 'editorInit',
@@ -71816,9 +71785,9 @@
 	      this.init();
 
 	      if (this.getEntity().isChildrenLoaded()) {
-	        this.objectLoaded();
+	        this.entityLoaded();
 	      } else {
-	        this.getEntity().once('loadChildren', this.objectLoaded, this);
+	        this.getEntity().once('loadChildren', this.entityLoaded, this);
 	      }
 
 	      this.getRuntime().on('update', this.update, this);
@@ -72011,8 +71980,8 @@
 	     */
 
 	  }, {
-	    key: 'objectLoaded',
-	    value: function objectLoaded() {
+	    key: 'entityLoaded',
+	    value: function entityLoaded() {
 	      this.reload(true);
 	    }
 
@@ -72454,7 +72423,7 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.showPreview !== undefined) {
+	      if (changes.indexOf('showPreview') !== -1) {
 	        this.playing = this.showPreview;
 	      }
 	      if (!this.playing) {
@@ -72600,12 +72569,12 @@
 	    key: 'editorInit',
 	    value: function editorInit() {
 	      this.init();
-	      this.getEntity().on('loadBase', this.objectCreated, this);
+	      this.getEntity().on('loadBase', this.entityCreated, this);
 	    }
 	  }, {
 	    key: 'editorShutdown',
 	    value: function editorShutdown() {
-	      this.getEntity().off('loadBase', this.objectCreated, this);
+	      this.getEntity().off('loadBase', this.entityCreated, this);
 	      this.shutdown();
 	    }
 	  }, {
@@ -72665,8 +72634,8 @@
 	      this.m_Uniforms = undefined;
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 
 	      var that = this;
 	      this.updateUniforms(function () {
@@ -72821,10 +72790,6 @@
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
 
 	var _Box3DComponent2 = __webpack_require__(23);
 
@@ -72991,8 +72956,7 @@
 
 	      if (curveObjectId) {
 	        curveObject = this.getRuntime().getEntityById(curveObjectId);
-	        var components = curveObject.getComponentsByScriptId('curve_component');
-	        curveComponent = components[_lodash2.default.keys(components)[0]];
+	        curveComponent = curveObject.getFirstByScriptId('curve_component');
 	      }
 	      if (!curveComponent) {
 	        return;
@@ -73957,7 +73921,6 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(OrbitCamera).call(this));
 
-	    _this.isEditor = false;
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
 	    _this._tempVector2 = new _three2.default.Vector3();
@@ -74018,136 +73981,31 @@
 	  }
 
 	  _createClass(OrbitCamera, [{
-	    key: 'editorInit',
-	    value: function editorInit() {
-	      // var that = this;
-	      this.isEditor = true;
-	      this.init();
-	      this.pivotPoint.add(new _three2.default.Mesh(new _three2.default.SphereGeometry(0.025, 12, 12), new _three2.default.MeshBasicMaterial({
-	        wireframe: true
-	      })));
-	      this.pivotPoint.visible = false;
-	      this.getRuntime().on('update', this.editorUpdate, this);
-	      this.getEntity().on('editorSelected', this.onSelected, this);
-	      this.getEntity().on('editorUnselected', this.onUnselected, this);
-	      var that = this;
-	      this.getEvents().trigger('studioApp::isSelected', this.getEntity(), function (selected) {
-	        if (selected) {
-	          that.onSelected();
-	        }
-	      });
-	    }
-	  }, {
-	    key: 'editorShutdown',
-	    value: function editorShutdown() {
-	      this.shutdown();
-	      this.getRuntime().off('update', this.editorUpdate, this);
-	      this.getEntity().off('editorSelected', this.onSelected, this);
-	      this.getEntity().off('editorUnselected', this.onUnselected, this);
-	      this.getEntity().reset();
-	      if (this.transformControls) {
-	        this.transformControls.detach(this.pivotPoint);
-	        if (this.transformControls.parent) {
-	          this.transformControls.parent.remove(this.transformControls);
-	        }
-	        this.transformControls.destroy();
-	      }
-	      this.pivotPoint.visible = false;
-	    }
-	  }, {
-	    key: 'onSelected',
-	    value: function onSelected() {
-	      var that = this;
-	      if (!this.transformControls) {
-	        var editorCamera;
-	        this.getEvents().trigger('studioApp::getCurrentCamera', function (camera) {
-	          editorCamera = camera.runtimeData;
-	        });
-	        this.transformControls = new _three2.default.TransformControls(editorCamera, this.getRuntime().canvas);
-	        this.transformControls.size = 0.75;
-	        this.transformControls.addEventListener('change_final', function () {
-	          that.setAttribute('targetOffset', that.pivotPoint.position);
-	        });
-	        this.initTarget();
-	      }
-	      if (this.isEnabled()) {
-	        this.transformControls.attach(this.pivotPoint);
-	        this.pivotPoint.visible = true;
-	      }
-	    }
-	  }, {
-	    key: 'onUnselected',
-	    value: function onUnselected() {
-	      if (this.isEnabled()) {
-	        this.pivotPoint.visible = false;
-	        if (this.transformControls) {
-	          this.transformControls.detach(this.pivotPoint);
-	        }
-	        this.getEntity().reset();
-	      }
-	    }
-	  }, {
-	    key: 'editorUpdate',
-	    value: function editorUpdate(delta) {
-	      if (this.isEnabled() && this.transformControls && this.pivotPoint.visible) {
-	        this.transformControls.update();
-	        this.updateCamera(delta);
-
-	        var editorCamera;
-	        this.getEvents().trigger('studioApp::getCurrentCamera', function (camera) {
-	          editorCamera = camera.runtimeData;
-	        });
-	        if (this.pivotPoint.parent) {
-	          this._tempVector.subVectors(this.pivotPoint.getWorldPosition(), editorCamera.getWorldPosition());
-	          var distance = this._tempVector.length();
-	          this.pivotPoint.scale.copy(this.pivotPoint.parent.getWorldScale());
-	          this.pivotPoint.scale.x = distance / this.pivotPoint.scale.x;
-	          this.pivotPoint.scale.y = distance / this.pivotPoint.scale.y;
-	          this.pivotPoint.scale.z = distance / this.pivotPoint.scale.z;
-	        }
-	      }
-	    }
-	  }, {
 	    key: 'onEnable',
 	    value: function onEnable() {
-	      if (this.isEditor) {
-	        this.onSelected();
-	      } else {
-	        this.getEntity().reset();
-	        this.targetOffset = this.getAttribute('targetOffset');
-	        this.attributesChanged({
-	          targetOffset: this.targetOffset
-	        });
-	        this.currentMoveSpeed.set(0, 0);
-	        this.moveStart.copy(this.currentMousePosition);
-	      }
+
+	      this.getEntity().reset();
+	      this.targetOffset = new _three2.default.Vector3();
+	      var offset = this.getAttribute('targetOffset');
+	      this.targetOffset.copy(offset);
+	      this.attributesChanged(['targetOffset']);
+	      this.currentMoveSpeed.set(0, 0);
+	      this.moveStart.copy(this.currentMousePosition);
 	    }
 	  }, {
 	    key: 'onDisable',
 	    value: function onDisable() {
-	      if (this.isEditor) {
-	        this.pivotPoint.visible = false;
-	        this.transformControls.detach(this.pivotPoint);
-	        this.getEntity().reset();
-	      } else {
-	        this.getEntity().reset();
-	      }
+	      this.getEntity().reset();
 	    }
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.targetObject !== undefined) {
+	      if (changes.indexOf('targetObject') !== -1) {
 	        this.targetMoved = true;
 	        this.initTarget();
-
-	        if (this.isEditor) {
-	          this.pivotPoint.scale.copy(this.pivotPoint.parent.getWorldScale());
-	          this.pivotPoint.scale.x = 1.0 / this.pivotPoint.scale.x;
-	          this.pivotPoint.scale.y = 1.0 / this.pivotPoint.scale.y;
-	          this.pivotPoint.scale.z = 1.0 / this.pivotPoint.scale.z;
-	        }
-	      } else if (changes.targetOffset && changes.targetOffset.x !== undefined) {
-	        this.setTargetOffset(changes.targetOffset);
+	      } else if (changes.indexOf('targetOffset') !== -1 && this.targetOffset.x !== undefined) {
+	        // Creates an infinite recursion because this triggers a change event
+	        // this.setTargetOffset(this.targetOffset);
 	      }
 	    }
 	  }, {
@@ -74166,17 +74024,15 @@
 	      this.on('enable', this.onEnable, this);
 	      this.on('disable', this.onDisable, this);
 
-	      if (!this.isEditor) {
-	        if (window.Box3D.isMobile()) {
-	          engine.on('touchStart', this.onTouchStart, this);
-	          engine.on('touchMove', this.onTouchMove, this);
-	          engine.on('touchEnd', this.onTouchEnd, this);
-	        } else {
-	          engine.on('mouseUp', this.onMouseUp, this);
-	          engine.on('mouseDown', this.onMouseDown, this);
-	          engine.on('mouseMove', this.onMouseMove, this);
-	          engine.on('mouseScroll', this.onMouseScroll, this);
-	        }
+	      if (window.Box3D.isMobile()) {
+	        engine.on('touchStart', this.onTouchStart, this);
+	        engine.on('touchMove', this.onTouchMove, this);
+	        engine.on('touchEnd', this.onTouchEnd, this);
+	      } else {
+	        engine.on('mouseUp', this.onMouseUp, this);
+	        engine.on('mouseDown', this.onMouseDown, this);
+	        engine.on('mouseMove', this.onMouseMove, this);
+	        engine.on('mouseScroll', this.onMouseScroll, this);
 	      }
 
 	      this.getEntity().on('enableOrbitCameraController', this.orbitCameraEnable, this);
@@ -74216,8 +74072,8 @@
 	      this.getEntity().off('focusOnTarget', this.focusOnTarget, this);
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.quaternionStart.copy(this.getRuntimeData().quaternion);
 	      this.eulerStart.setFromQuaternion(this.quaternionStart, 'YXZ');
 	    }
@@ -74238,9 +74094,6 @@
 	        } else {
 	          that.getThreeScene().add(that.pivotPoint);
 	          that.pivotPoint.position.copy(that.targetOffset);
-	        }
-	        if (that.isEditor && that.transformControls) {
-	          that.getThreeScene().add(that.transformControls);
 	        }
 	      }, this);
 	    }
@@ -74427,7 +74280,7 @@
 	      }
 
 	      //Handle automatic orbiting when there has been to user input for a given amount of time.
-	      if (this.autoOrbit && !this.isEditor && this.ellapsedTimeSinceInput > this.autoOrbitDelay) {
+	      if (this.autoOrbit && this.ellapsedTimeSinceInput > this.autoOrbitDelay) {
 	        //update cursor position so that when we zoom/move the camera, it won't
 	        //attempt to force itself to where it began rotating from(the jitter)
 	        this.currentMousePosition.x -= this.autoOrbitSpeed * 0.1 * Math.min(1.0, this.ellapsedTimeSinceInput - this.autoOrbitDelay) % (2.0 * Math.PI) * delta;
@@ -74960,7 +74813,7 @@
 	  _createClass(PanoramaToCubeMap, [{
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.inputTexture !== undefined) {
+	      if (changes.indexOf('inputTexture') !== -1) {
 	        this.updateTexture();
 	      }
 	    }
@@ -74972,8 +74825,8 @@
 	      this.createSkybox();
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.updateTexture();
 	    }
 	  }, {
@@ -75610,7 +75463,6 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewCamera).call(this));
 
-	    _this.isEditor = false;
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
 	    _this._tempVector2 = new _three2.default.Vector3();
@@ -75668,131 +75520,24 @@
 	  }
 
 	  _createClass(PreviewCamera, [{
-	    key: 'editorInit',
-	    value: function editorInit() {
-	      // var that = this;
-	      this.isEditor = true;
-	      this.init();
-	      this.pivotPoint.add(new _three2.default.Mesh(new _three2.default.SphereGeometry(0.025, 12, 12), new _three2.default.MeshBasicMaterial({ wireframe: true })));
-	      this.pivotPoint.visible = false;
-	      this.getRuntime().on('update', this.editorUpdate, this);
-	      this.getEntity().on('editorSelected', this.onSelected, this);
-	      this.getEntity().on('editorUnselected', this.onUnselected, this);
-	      var that = this;
-	      this.getEvents().trigger('studioApp::isSelected', this.getEntity(), function (selected) {
-	        if (selected) {
-	          that.onSelected();
-	        }
-	      });
-	    }
-	  }, {
-	    key: 'editorShutdown',
-	    value: function editorShutdown() {
-	      this.shutdown();
-	      this.getRuntime().off('update', this.editorUpdate, this);
-	      this.getEntity().off('editorSelected', this.onSelected, this);
-	      this.getEntity().off('editorUnselected', this.onUnselected, this);
-	      this.getEntity().reset();
-	      if (this.transformControls) {
-	        this.transformControls.detach(this.pivotPoint);
-	        if (this.transformControls.parent) {
-	          this.transformControls.parent.remove(this.transformControls);
-	        }
-	        this.transformControls.destroy();
-	      }
-	      this.pivotPoint.visible = false;
-	    }
-	  }, {
-	    key: 'onSelected',
-	    value: function onSelected() {
-	      var that = this;
-	      if (!this.transformControls) {
-	        var editorCamera;
-	        this.getEvents().trigger('studioApp::getCurrentCamera', function (camera) {
-	          editorCamera = camera.runtimeData;
-	        });
-	        this.transformControls = new _three2.default.TransformControls(editorCamera, this.getRuntime().canvas);
-	        this.transformControls.size = 0.75;
-	        // this.transformControls.addEventListener('change', function(gizmo) {
-	        // });
-	        this.transformControls.addEventListener('change_final', function () {
-	          that.setAttribute('targetOffset', that.pivotPoint.position);
-	        });
-	        this.initTarget();
-	      }
-	      if (this.isEnabled()) {
-	        this.transformControls.attach(this.pivotPoint);
-	        this.pivotPoint.visible = true;
-	      }
-	    }
-	  }, {
-	    key: 'onUnselected',
-	    value: function onUnselected() {
-	      if (this.isEnabled()) {
-	        this.pivotPoint.visible = false;
-	        if (this.transformControls) {
-	          this.transformControls.detach(this.pivotPoint);
-	        }
-	        this.getEntity().reset();
-	      }
-	    }
-	  }, {
-	    key: 'editorUpdate',
-	    value: function editorUpdate(delta) {
-	      if (this.isEnabled() && this.transformControls && this.pivotPoint.visible) {
-	        this.transformControls.update();
-	        this.updateCamera(delta);
-
-	        var editorCamera;
-	        this.getEvents().trigger('studioApp::getCurrentCamera', function (camera) {
-	          editorCamera = camera.runtimeData;
-	        });
-	        if (this.pivotPoint.parent) {
-	          this._tempVector.subVectors(this.pivotPoint.getWorldPosition(), editorCamera.getWorldPosition());
-	          var distance = this._tempVector.length();
-	          this.pivotPoint.scale.copy(this.pivotPoint.parent.getWorldScale());
-	          this.pivotPoint.scale.x = distance / this.pivotPoint.scale.x;
-	          this.pivotPoint.scale.y = distance / this.pivotPoint.scale.y;
-	          this.pivotPoint.scale.z = distance / this.pivotPoint.scale.z;
-	        }
-	      }
-	    }
-	  }, {
 	    key: 'onEnable',
 	    value: function onEnable() {
-	      if (this.isEditor) {
-	        this.onSelected();
-	      } else {
-	        this.targetOffset = ORIGIN_VEC;
-	        this.attributesChanged({ targetOffset: this.targetOffset });
-	        this.currentMoveSpeed.set(0, 0);
-	        this.moveStart.copy(this.currentDraggingMousePosition);
-	      }
+	      this.targetOffset = ORIGIN_VEC;
+	      this.attributesChanged(['targetOffset']);
+	      this.currentMoveSpeed.set(0, 0);
+	      this.moveStart.copy(this.currentDraggingMousePosition);
 	    }
 	  }, {
 	    key: 'onDisable',
-	    value: function onDisable() {
-	      if (this.isEditor) {
-	        this.pivotPoint.visible = false;
-	        this.transformControls.detach(this.pivotPoint);
-	        this.getEntity().reset();
-	      }
-	    }
+	    value: function onDisable() {}
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.targetObject !== undefined) {
+	      if (changes.indexOf('targetObject') !== -1) {
 	        this.targetMoved = true;
 	        this.initTarget();
-
-	        if (this.isEditor) {
-	          this.pivotPoint.scale.copy(this.pivotPoint.parent.getWorldScale());
-	          this.pivotPoint.scale.x = 1.0 / this.pivotPoint.scale.x;
-	          this.pivotPoint.scale.y = 1.0 / this.pivotPoint.scale.y;
-	          this.pivotPoint.scale.z = 1.0 / this.pivotPoint.scale.z;
-	        }
-	      } else if (changes.targetOffset && changes.targetOffset.x !== undefined) {
-	        this.setTargetOffset(changes.targetOffset);
+	      } else if (changes.indexOf('targetOffset') !== -1 && this.targetOffset.x !== undefined) {
+	        this.setTargetOffset(this.targetOffset);
 	      }
 	    }
 	  }, {
@@ -75808,17 +75553,15 @@
 	      this.listenTo(this, 'enable', this.onEnable, this);
 	      this.listenTo(this, 'disable', this.onDisable, this);
 
-	      if (!this.isEditor) {
-	        if (window.Box3D.isMobile()) {
-	          this.listenTo(this.getRuntime(), 'touchStart', this.onTouchStart, this);
-	          this.listenTo(this.getRuntime(), 'touchMove', this.onTouchMove, this);
-	          this.listenTo(this.getRuntime(), 'touchEnd', this.onTouchEnd, this);
-	        } else {
-	          this.listenTo(this.getRuntime(), 'mouseUp', this.onMouseUp, this);
-	          this.listenTo(this.getRuntime(), 'mouseDown', this.onMouseDown, this);
-	          this.listenTo(this.getRuntime(), 'mouseMove', this.onMouseMove, this);
-	          this.listenTo(this.getRuntime(), 'mouseScroll', this.onMouseScroll, this);
-	        }
+	      if (window.Box3D.isMobile()) {
+	        this.listenTo(this.getRuntime(), 'touchStart', this.onTouchStart, this);
+	        this.listenTo(this.getRuntime(), 'touchMove', this.onTouchMove, this);
+	        this.listenTo(this.getRuntime(), 'touchEnd', this.onTouchEnd, this);
+	      } else {
+	        this.listenTo(this.getRuntime(), 'mouseUp', this.onMouseUp, this);
+	        this.listenTo(this.getRuntime(), 'mouseDown', this.onMouseDown, this);
+	        this.listenTo(this.getRuntime(), 'mouseMove', this.onMouseMove, this);
+	        this.listenTo(this.getRuntime(), 'mouseScroll', this.onMouseScroll, this);
 	      }
 
 	      this.listenTo(this.getEntity(), 'enableOrbitCameraController', this.orbitCameraEnable, this);
@@ -75837,8 +75580,8 @@
 	      this.stopListening();
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.resetOrbitRotation();
 	    }
 
@@ -75880,9 +75623,6 @@
 	        } else {
 	          that.getThreeScene().add(that.pivotPoint);
 	          that.pivotPoint.position.copy(that.targetOffset);
-	        }
-	        if (that.isEditor && that.transformControls) {
-	          that.getThreeScene().add(that.transformControls);
 	        }
 	      }, this);
 	    }
@@ -76055,7 +75795,7 @@
 	      }
 
 	      //Handle automatic orbiting when there has been to user input for a given amount of time.
-	      if (this.autoOrbit && !this.isEditor && this.ellapsedTimeSinceInput > this.autoOrbitDelay) {
+	      if (this.autoOrbit && this.ellapsedTimeSinceInput > this.autoOrbitDelay) {
 	        //update cursor position so that when we zoom/move the camera, it won't
 	        // attempt to force itself to where it began rotating from(the jitter)
 	        this.currentDraggingMousePosition.x -= this.autoOrbitSpeed * 0.1 * Math.min(1.0, this.ellapsedTimeSinceInput - this.autoOrbitDelay) % (2.0 * Math.PI) * delta;
@@ -76619,10 +76359,10 @@
 	  }
 
 	  _createClass(PreviewCameraFocus, [{
-	    key: 'sceneLoaded',
-	    value: function sceneLoaded() {
+	    key: 'assetLoaded',
+	    value: function assetLoaded() {
 
-	      this.previewCamControl = this.getEntity().getComponentByScriptName('Preview Camera Controller');
+	      this.previewCamControl = this.getComponentRegistry().getFirstByScriptName('Preview Camera Controller');
 
 	      //explicit set of target
 	      this.previewCamControl.setTarget(this.getScene());
@@ -76879,22 +76619,26 @@
 	  }
 
 	  _createClass(PreviewVRControls, [{
-	    key: 'sceneLoaded',
-	    value: function sceneLoaded() {
-	      this.previewCamControl = this.getEntity().getComponentByScriptName(this.cameraControllerName);
+	    key: 'init',
+	    value: function init() {
 	      this.listenTo(this, 'enable', this.onEnable);
 	      this.listenTo(this, 'disable', this.onDisable);
+	    }
+	  }, {
+	    key: 'assetLoaded',
+	    value: function assetLoaded() {
+	      this.previewCamControl = this.getComponentRegistry().getFirstByScriptName(this.cameraControllerName);
 	    }
 	  }, {
 	    key: 'onEnable',
 	    value: function onEnable() {
 	      // Bind to orientation updates so that we can update the VR camera
-	      this.getEvents().on('vr_orientation', this.onVrOrientation, this);
+	      this.getGlobalEvents().on('vr_orientation', this.onVrOrientation, this);
 	    }
 	  }, {
 	    key: 'onDisable',
 	    value: function onDisable() {
-	      this.getEvents().off('vr_orientation', this.onVrOrientation, this);
+	      this.getGlobalEvents().off('vr_orientation', this.onVrOrientation, this);
 	    }
 	  }, {
 	    key: 'onVrOrientation',
@@ -76902,8 +76646,8 @@
 	      this.vrOrientation = orientation;
 	    }
 	  }, {
-	    key: 'postUpdate',
-	    value: function postUpdate() {
+	    key: 'preUpdate',
+	    value: function preUpdate() {
 
 	      if (this.isEnabled() && this.previewCamControl) {
 
@@ -77060,8 +76804,8 @@
 	      });
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.initCameras();
 	      this.initTexture();
 	    }
@@ -77127,7 +76871,7 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.reflectionTexture !== undefined) {
+	      if (changes.indexOf('reflectionTexture') !== -1) {
 	        this.initTexture();
 	      }
 	    }
@@ -77585,8 +77329,8 @@
 	      this.updateFilters();
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.resize();
 	    }
 	  }, {
@@ -77679,11 +77423,11 @@
 	      this.depthMaterial.skinned.blending = _three2.default.NoBlending;
 	      this.depthMaterial.skinned.skinning = true;
 
-	      this.updateFilters(this);
+	      this.updateFilters();
 	    }
 	  }, {
 	    key: 'updateFilters',
-	    value: function updateFilters(changes) {
+	    value: function updateFilters() {
 
 	      this.needsDepthPass = false;
 	      var needsCopyPass = false;
@@ -77776,13 +77520,11 @@
 	      //Bloom
 	      var bloom = this.bloom.override ? this.bloom : this.defaultFilters.bloom;
 	      this.bloomPass.copyUniforms.opacity.value = bloom.strength !== undefined ? bloom.strength : 1;
-	      if (changes && changes.bloom) {
-	        if (changes.bloom.resolution) {
-	          var resolution = bloom.resolution !== undefined ? bloom.resolution : 256;
-	          var aspect = this.getRenderer().getWidth() / this.getRenderer().getHeight();
+	      if (this.bloom.resolution) {
+	        var resolution = bloom.resolution !== undefined ? bloom.resolution : 256;
+	        var aspect = this.getRenderer().getWidth() / this.getRenderer().getHeight();
 
-	          this.bloomPass.setSize(resolution * aspect, resolution);
-	        }
+	        this.bloomPass.setSize(resolution * aspect, resolution);
 	      }
 	      _three2.default.BloomPass.blurX.x = 1.0 / this.bloomPass.resolutionX;
 	      _three2.default.BloomPass.blurY.y = 1.0 / this.bloomPass.resolutionY;
@@ -78160,12 +77902,12 @@
 	        id: 'flatShaded',
 	        type: 'material',
 	        properties: {
-	          emisiveColor: 0xeee5dd
+	          emissiveColor: { r: 0.933, g: 0.898, b: 0.687 }
 	        },
 	        side: _three2.default.DoubleSide
 	      };
 
-	      this.getEvents().on('setRenderMode', this.setRenderMode, this);
+	      this.getGlobalEvents().on('setRenderMode', this.setRenderMode, this);
 
 	      this.sceneAsset = this.box3DEntity.getParentAsset();
 	      this.assetRegistry = this.box3DEntity.box3DRuntime.assetRegistry;
@@ -78407,7 +78149,7 @@
 	        this.lightsAreDisabled = true;
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'light') {
-	            if (obj.getProperty('type') === 'AmbientLight') {
+	            if (obj.getProperty('lightType') === 'ambient') {
 	              obj.runtimeData.color.setRGB(1.0, 1.0, 1.0);
 	            } else {
 	              obj.runtimeData.intensity = 0;
@@ -78419,9 +78161,9 @@
 	        this.lightsAreDisabled = false;
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'light') {
-	            if (obj.getProperty('type') === 'AmbientLight') {
+	            if (obj.getProperty('lightType') === 'ambient') {
 	              var colour = obj.getProperty('color');
-	              obj.setProperty('color', 0x000000, {
+	              obj.setProperty('color', { r: 0, g: 0, b: 0 }, {
 	                silent: true
 	              });
 	              obj.setProperty('color', colour);
@@ -78609,7 +78351,7 @@
 	  }, {
 	    key: 'componentsLoaded',
 	    value: function componentsLoaded() {
-	      this.filters = this.getEntity().getComponentByScriptId('camera_filters_script');
+	      this.filters = this.getEntity().componentRegistry.getFirstByScriptId('camera_filters_script');
 	    }
 	  }, {
 	    key: 'enableRenderView',
@@ -78649,10 +78391,10 @@
 	  }, {
 	    key: 'setViewport',
 	    value: function setViewport(x, y, width, height, animationTime) {
-	      this.viewportLeft = x;
-	      this.viewportBottom = y;
-	      this.viewportWidth = width;
-	      this.viewportHeight = height;
+	      this.viewportLeft = x.toString();
+	      this.viewportBottom = y.toString();
+	      this.viewportWidth = width.toString();
+	      this.viewportHeight = height.toString();
 
 	      if (!animationTime) {
 	        this.resize();
@@ -78881,7 +78623,7 @@
 	 * }
 	 * @vattr Color clearColor {
 	 *   description: 'When the render target is cleared, this colour will be used',
-	 *   default: 0x000000
+	 *   default: {r: 0, g: 0, b:0}
 	 * }
 	 * @vattr Float clearAlpha {
 	 *   description: 'When the render target is cleared, this value will be used to clear the transparency',
@@ -78930,7 +78672,7 @@
 	 * }
 	 * @vattr Boolean logarithmicDepthBuffer {
 	 *   description: 'Use logarithmic z values while rendering.',
-	 *   default: true
+	 *   default: false
 	 * }
 	 */
 	/* eslint-enable */
@@ -79018,14 +78760,14 @@
 	  _createClass(DefaultRenderer, [{
 	    key: 'editorInit',
 	    value: function editorInit() {
-	      this.preInit();
-	      this.objectCreated();
+	      this.awake();
+	      this.entityCreated();
 	      this.applyRenderSettings();
 	      this.getRuntime().on('postRender', this.postRender, this);
 	    }
 	  }, {
-	    key: 'preInit',
-	    value: function preInit() {
+	    key: 'awake',
+	    value: function awake() {
 	      this.canvas = this.getRuntime().canvas;
 	      this.initDefaultRenderer();
 
@@ -79071,15 +78813,15 @@
 	      this.canvas = undefined;
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.getRuntime().trigger('resize');
 	    }
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
 	      var rebuildMaterials = false;
-	      if (changes.shadowsEnabledMobile !== undefined) {
+	      if (changes.indexOf('shadowsEnabledMobile') !== -1) {
 	        rebuildMaterials = true;
 	      }
 	      this.shadowsEnabled = Box3D.isMobile() ? this.shadowsEnabledMobile && this.shadowsEnabled : this.shadowsEnabled;
@@ -79087,34 +78829,34 @@
 
 	      this.getRuntime().renderOnDemand = this.renderOnDemand;
 
-	      if (changes.clearAlpha !== undefined) {
-	        this.threeRenderer.setClearColor(this.clearColor, changes.clearAlpha);
+	      if (changes.indexOf('clearAlpha') !== -1) {
+	        this.threeRenderer.setClearColor(this.clearColor, this.clearAlpha);
 	      }
-	      if (changes.clearColor !== undefined) {
-	        this.threeRenderer.setClearColor(changes.clearColor, this.clearAlpha);
+	      if (changes.indexOf('clearColor') !== -1) {
+	        this.threeRenderer.setClearColor(this.clearColor, this.clearAlpha);
 	      }
 
-	      if (changes.gammaOutput !== undefined) {
+	      if (changes.indexOf('gammaOutput') !== -1) {
 	        rebuildMaterials = true;
 	      }
-	      if (changes.gammaInput !== undefined) {
+	      if (changes.indexOf('gammaInput') !== -1) {
 	        rebuildMaterials = true;
 	      }
-	      if (changes.shadowsEnabled !== undefined) {
+	      if (changes.indexOf('shadowsEnabled') !== -1) {
 	        rebuildMaterials = true;
 	      }
-	      if (changes.shadowDebug !== undefined) {
+	      if (changes.indexOf('shadowDebug') !== -1) {
 	        rebuildMaterials = true;
 	      }
-	      if (changes.shadowCascade !== undefined) {
+	      if (changes.indexOf('shadowCascade') !== -1) {
 	        rebuildMaterials = true;
 	      }
-	      if (changes.shadowType !== undefined) {
-	        this.shadowType = parseInt(changes.shadowType, 10);
+	      if (changes.indexOf('shadowType') !== -1) {
+	        this.shadowType = parseInt(this.shadowType, 10);
 	        _log2.default.warn('TODO - need to recreate the shadow maps if the shadow' + ' filtering has changed because PCFSoftShadowMap reuires the shadowmap' + ' to be rendered with no filtering.');
 	        rebuildMaterials = true;
 	      }
-	      if (changes.devicePixelRatio !== undefined) {
+	      if (changes.indexOf('devicePixelRatio') !== -1) {
 	        this.getRuntime().trigger('resize');
 	      }
 
@@ -79615,10 +79357,10 @@
 	    key: 'editorInit',
 	    value: function editorInit() {
 	      this.getRuntime().on('update', this.update, this);
-	      this.getEntity().once('loadBase', this.objectCreated, this);
+	      this.getEntity().once('loadBase', this.entityCreated, this);
 	      this.rotate = this.previewRotation;
 	      if (this.getEntity().isBaseLoaded()) {
-	        this.objectCreated();
+	        this.entityCreated();
 	      }
 	      this.on('enable', this.onEnable, this);
 	      this.on('disable', this.onDisable, this);
@@ -79664,17 +79406,17 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.rotation && !_lodash2.default.isEmpty(changes.rotation)) {
+	      if (changes.indexOf('rotation') && !_lodash2.default.isEmpty(this.rotation)) {
 	        this.initRotation();
 	      }
-	      if (changes.previewRotation !== undefined) {
+	      if (changes.indexOf('previewRotation') !== -1) {
 	        this.rotate = this.previewRotation;
 	        this.initRotation();
 	      }
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.initialQuaternion = new _three2.default.Quaternion();
 	      this.initialQuaternion.copy(this.getRuntimeData().quaternion);
 	      this.initRotation();
@@ -79828,7 +79570,7 @@
 	        /**************************************************************************************/
 	      }
 
-	      this.getEvents().trigger('sceneLoadComplete', this.scene);
+	      this.getGlobalEvents().trigger('sceneLoadComplete', this.scene);
 	    }
 	  }]);
 
@@ -79945,12 +79687,12 @@
 	    key: 'editorInit',
 	    value: function editorInit() {
 	      this.init();
-	      this.getEntity().on('loadBase', this.objectCreated, this);
+	      this.getEntity().on('loadBase', this.entityCreated, this);
 	    }
 	  }, {
 	    key: 'editorShutdown',
 	    value: function editorShutdown() {
-	      this.getEntity().off('loadBase', this.objectCreated, this);
+	      this.getEntity().off('loadBase', this.entityCreated, this);
 	      this.shutdown();
 	    }
 	  }, {
@@ -80013,8 +79755,8 @@
 	      this.m_Uniforms = undefined;
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      if (this.autoLoad) {
 	        this.renderNoise();
 	      }
@@ -80028,45 +79770,36 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(attributes) {
-	      if (attributes.scale && attributes.scale.x !== undefined) {
-	        this.m_Uniforms.scale.value.x = attributes.scale.x;
-	        this.m_Uniforms.scale.value.y = attributes.scale.y;
+	      if (attributes.indexOf('scale') !== -1 && this.scale.x !== undefined) {
+	        this.m_Uniforms.scale.value.x = this.scale.x;
+	        this.m_Uniforms.scale.value.y = this.scale.y;
 	      }
-	      if (attributes.offset && attributes.offset.x !== undefined) {
-	        this.m_Uniforms.offset.value.x = attributes.offset.x;
-	        this.m_Uniforms.offset.value.y = attributes.offset.y;
+	      if (attributes.indexOf('offset') !== -1 && attributes.offset.x !== undefined) {
+	        this.m_Uniforms.offset.value.x = this.offset.x;
+	        this.m_Uniforms.offset.value.y = this.offset.y;
 	      }
-	      if (attributes.layerScale && attributes.layerScale.x !== undefined) {
-	        this.m_Uniforms.layerScale.value.x = attributes.layerScale.x;
-	        this.m_Uniforms.layerScale.value.y = attributes.layerScale.y;
-	        this.m_Uniforms.layerScale.value.z = attributes.layerScale.z;
-	        this.m_Uniforms.layerScale.value.w = attributes.layerScale.w;
+	      if (attributes.indexOf('layerScale') !== -1 && this.layerScale.x !== undefined) {
+	        this.m_Uniforms.layerScale.value.x = this.layerScale.x;
+	        this.m_Uniforms.layerScale.value.y = this.layerScale.y;
+	        this.m_Uniforms.layerScale.value.z = this.layerScale.z;
+	        this.m_Uniforms.layerScale.value.w = this.layerScale.w;
 	      }
-	      if (attributes.layerAmplitude && attributes.layerAmplitude.x !== undefined) {
-	        this.m_Uniforms.layerAmplitude.value.x = attributes.layerAmplitude.x;
-	        this.m_Uniforms.layerAmplitude.value.y = attributes.layerAmplitude.y;
-	        this.m_Uniforms.layerAmplitude.value.z = attributes.layerAmplitude.z;
-	        this.m_Uniforms.layerAmplitude.value.w = attributes.layerAmplitude.w;
+	      if (attributes.indexOf('layerAmplitude') !== -1 && this.layerAmplitude.x !== undefined) {
+	        this.m_Uniforms.layerAmplitude.value.x = this.layerAmplitude.x;
+	        this.m_Uniforms.layerAmplitude.value.y = this.layerAmplitude.y;
+	        this.m_Uniforms.layerAmplitude.value.z = this.layerAmplitude.z;
+	        this.m_Uniforms.layerAmplitude.value.w = this.layerAmplitude.w;
 	      }
 	      this.renderNoise();
 	    }
 	  }], [{
 	    key: 'changeNoiseValues',
 	    value: function changeNoiseValues(layerAmplitude, layerScale, scale, offset) {
-	      var values = {};
-	      if (layerAmplitude) {
-	        values.layerAmplitude = layerAmplitude;
-	      }
-	      if (layerScale) {
-	        values.layerScale = layerScale;
-	      }
-	      if (scale) {
-	        values.scale = scale;
-	      }
-	      if (offset) {
-	        values.offset = offset;
-	      }
-	      this.attributesChanged(values);
+	      this.layerAmplitude = layerAmplitude;
+	      this.layerScale = layerScale;
+	      this.scale = scale;
+	      this.offset = offset;
+	      this.attributesChanged(['layerAmplitude', 'layerScale', 'scale', 'offset']);
 	    }
 	  }]);
 
@@ -80187,28 +79920,22 @@
 	      this.renderer = this.getThreeRenderer();
 
 	      this.createGeometry();
-	      this.createScene();
-
-	      this.skyboxRenderPass = new _three2.default.RenderPass(this.skyboxScene);
-	      this.skyboxRenderPass.clear = true;
-	      this.skyboxRenderPass.enabled = false;
 
 	      this.createMaterial();
 	      this.initTexture();
-	      this.createMesh();
 
 	      this.mainScene = this.getEntity().getParentAsset();
 
-	      this.on('enable', this.enable, this);
-	      this.on('disable', this.disable, this);
+	      this.on('enable', this.onEnable, this);
+	      this.on('disable', this.onDisable, this);
 	      this.getEntity().on('setSkyboxTexture', this.setSkyboxTexture, this);
 	      this.getRuntime().on('rebuildMaterials', this.rebuildMaterials, this);
 	    }
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
-	      this.off('enable', this.enable, this);
-	      this.off('disable', this.disable, this);
+	      this.off('enable', this.onEnable, this);
+	      this.off('disable', this.onDisable, this);
 	      this.getRuntime().off('rebuildMaterials', this.rebuildMaterials, this);
 	      this.getEntity().off('setSkyboxTexture', this.setSkyboxTexture, this);
 	      if (this.skyboxScene) {
@@ -80228,31 +79955,31 @@
 	  }, {
 	    key: 'createScene',
 	    value: function createScene() {
-	      this.skyboxScene = new _three2.default.Scene();
-	      this.skyboxScene.matrixAutoUpdate = false;
+	      this.skyboxScene = this.getRuntimeData();
+	      // this.skyboxScene.matrixAutoUpdate = false;
 	    }
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changed) {
-	      if (changed.skyboxTexture !== undefined) {
+	      if (changed.indexOf('skyboxTexture') !== -1) {
 	        this.initTexture();
 	        this.skyboxMesh.material = this.currentMaterial;
 	      }
-	      if (changed.color) {
+	      if (changed.indexOf('color') !== -1) {
 	        this.skyboxUniforms.color.value = this.color;
 	      }
-	      if (changed.skyboxFogScale !== undefined) {
+	      if (changed.indexOf('skyboxFogScale') !== -1) {
 	        this.skyboxMaterialCube.uniforms.skyboxFogScale.value = this.skyboxFogScale;
 	        this.skyboxMaterial2D.uniforms.skyboxFogScale.value = this.skyboxFogScale;
 	      }
-	      if (changed.skyboxFogPower !== undefined) {
+	      if (changed.indexOf('skyboxFogPower') !== -1) {
 	        this.skyboxMaterialCube.uniforms.skyboxFogPower.value = this.skyboxFogPower;
 	        this.skyboxMaterial2D.uniforms.skyboxFogPower.value = this.skyboxFogPower;
 	      }
 	      if (this.skyboxScene && this.mainScene.runtimeData && this.mainScene.runtimeData.fog) {
 	        this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
 	      }
-	      if (changed.size) {
+	      if (changed.indexOf('size') !== -1) {
 	        if (this.skyboxMesh) {
 	          this.skyboxScene.remove(this.skyboxMesh);
 	          this.skyboxMesh.geometry = undefined;
@@ -80261,10 +79988,15 @@
 	          this.createMesh();
 	        }
 	      }
+	      if (changed.indexOf('leftEye') !== -1 && this.skyboxTexture) {
+	        this.currentMaterial.defines.STEREO_EYE = this.leftEye ? 'STEREO_EYE_LEFT' : 'STEREO_EYE_RIGHT';
+	        this.currentMaterial.defines.LAYOUT = _BaseTextureAsset2.default.LAYOUT[this.skyboxTexture.getProperty('layout')];
+	        this.currentMaterial.needsUpdate = true;
+	      }
 	    }
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      if (this.skyboxScene) {
 	        this.skyboxScene.add(this.skyboxMesh);
 	        if (this.skyboxTexture && !this.skyboxTexture.isLoaded()) {
@@ -80273,19 +80005,17 @@
 	      }
 	    }
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      if (this.skyboxScene) {
 	        this.skyboxScene.remove(this.skyboxMesh);
 	      }
 	    }
 	  }, {
-	    key: 'objectLoaded',
-	    value: function objectLoaded() {
-	      this.getRenderer().addRenderPass(this.skyboxRenderPass, -1);
-	      if (this.mainScene.runtimeData.fog) {
-	        this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
-	      }
+	    key: 'entityCreated',
+	    value: function entityCreated() {
+	      this.createScene();
+	      this.createMesh();
 	      this.rebuildMaterials();
 	    }
 	  }, {
@@ -80301,7 +80031,7 @@
 	      this.skyboxMesh.frustumCulled = false;
 	      this.skyboxMesh.castShadow = false;
 	      this.skyboxMesh.receiveShadow = false;
-	      this.skyboxMesh.matrixAutoUpdate = false;
+	      this.skyboxMesh.matrixAutoUpdate = true;
 	      this.skyboxMesh.name = 'Skybox';
 	      if (this.isEnabled()) {
 	        this.skyboxScene.add(this.skyboxMesh);
@@ -80316,7 +80046,6 @@
 	      if (!this.skyboxTexture) {
 	        this.currentMaterial = this.skyboxMaterialNoTex;
 	        this.currentMaterial.needsUpdate = true;
-	        this.skyboxRenderPass.enabled = true;
 	      } else {
 	        if (this.skyboxTexture.type === 'textureCube' || this.skyboxTexture.type === 'renderTextureCube') {
 	          this.currentMaterial = this.skyboxMaterialCube;
@@ -80335,7 +80064,6 @@
 	        this.skyboxTexture.when('load', function () {
 	          _this2.skyboxUniforms.environmentTexture.value = _this2.skyboxTexture.runtimeData;
 	          _this2.currentMaterial.needsUpdate = true;
-	          _this2.skyboxRenderPass.enabled = true;
 	        }, this);
 	        if (this.isEnabled()) {
 	          this.skyboxTexture.load();
@@ -80391,7 +80119,7 @@
 	      // 'vec4 worldPosition = modelMatrix * vec4( position, 1.0 );',
 	      'vCameraVector = (modelMatrix * vec4( position, 1.0 )).xyz;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
 
-	      this.skyboxPShader = ['#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', '#if (LAYOUT == LAYOUT_STEREO2DOVERUNDER)', 'sampleUV.y *= 0.5;', '#if (STEREO_EYE == STEREO_EYE_LEFT)', 'sampleUV.y += 0.5;', '#endif', '#endif', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );', '}'].join('\n');
+	      this.skyboxPShader = ['#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', '#if (LAYOUT == LAYOUT_STEREO2DOVERUNDER)', 'sampleUV.y *= 0.5;', '#if (STEREO_EYE != STEREO_EYE_LEFT)', 'sampleUV.y += 0.5;', '#endif', '#endif', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );', '}'].join('\n');
 
 	      this.skyboxMaterialCube = new _three2.default.ShaderMaterial({
 	        vertexShader: this.skyboxVShader,
@@ -80425,6 +80153,8 @@
 	      this.skyboxMaterial2D.defines.LAYOUT = 'LAYOUT_NORMAL';
 	      this.skyboxMaterialCube.defines.LAYOUT = 'LAYOUT_NORMAL';
 	      this.skyboxMaterial2D.defines.STEREO_EYE_LEFT = '1';
+	      this.skyboxMaterial2D.defines.STEREO_EYE_RIGHT = '2';
+	      this.skyboxMaterialCube.defines.STEREO_EYE_LEFT = '1';
 	      this.skyboxMaterialCube.defines.STEREO_EYE_RIGHT = '2';
 	      this.skyboxMaterial2D.defines.STEREO_EYE = 'STEREO_EYE_LEFT';
 	      this.skyboxMaterialCube.defines.STEREO_EYE = 'STEREO_EYE_LEFT';
@@ -80459,7 +80189,7 @@
 	@vfilter renderTexture2D
 	@vcategory Text
 	@vattr string text { default : 'My Text', description : 'Text you want to display' }
-	@vattr color fontColor { default : 0xFFFFFF, description : 'Color of the text'}
+	@vattr color fontColor { default : {r: 1, g: 1, b:1}, description : 'Color of the text'}
 	@vattr string fontFamily { default : 'Calibri', description : 'Font family to render'}
 	@vattr integer pointSize { default : 48, description : 'Font size', min : 2, max : 100 }
 	*/
@@ -80508,7 +80238,7 @@
 	    key: 'editorInit',
 	    value: function editorInit() {
 	      this.init();
-	      this.getEntity().once('load', this.sceneLoaded, this);
+	      this.getEntity().once('load', this.assetLoaded, this);
 	    }
 	  }, {
 	    key: 'editorShutdown',
@@ -80521,8 +80251,8 @@
 	      this.createLabel();
 	    }
 	  }, {
-	    key: 'sceneLoaded',
-	    value: function sceneLoaded() {
+	    key: 'assetLoaded',
+	    value: function assetLoaded() {
 	      this.renderText();
 	    }
 	  }, {
@@ -80715,10 +80445,10 @@
 	  _createClass(Texture2dToCubeMap, [{
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.inputTexture !== undefined) {
+	      if (changes.indexOf('inputTexture') !== -1) {
 	        var prevTex = this.getPreviousAttribute('inputTexture');
 	        this.unregisterDependency(prevTex);
-	        this.registerDependency(changes.inputTexture);
+	        this.registerDependency(this.inputTexture);
 	        this.updateTexture();
 	      }
 	    }
@@ -80731,8 +80461,8 @@
 	      this.createSkybox();
 	    }
 	  }, {
-	    key: 'objectCreated',
-	    value: function objectCreated() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.updateTexture();
 	    }
 	  }, {
@@ -86999,6 +86729,10 @@
 	  value: true
 	});
 
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
 	var _log = __webpack_require__(6);
 
 	var _log2 = _interopRequireDefault(_log);
@@ -87035,10 +86769,10 @@
 	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DocumentAsset).call(this, json));
 	  }
 
-	  /** @inheritdoc */
-
 	  _createClass(DocumentAsset, [{
 	    key: 'createRuntimeData',
+
+	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
 	      var _this2 = this;
 
@@ -87090,6 +86824,14 @@
 
 	  return DocumentAsset;
 	}(_Box3DAsset3.default);
+
+	DocumentAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  filename: {
+	    type: 'string',
+	    description: '',
+	    default: ''
+	  }
+	});
 
 	window.Box3D.DocumentAsset = DocumentAsset;
 	exports.default = DocumentAsset;
@@ -87234,25 +86976,6 @@
 	}
 
 	/**
-	 * Encode an RGB triplet as an integer.
-	 * @method encodeRgb
-	 * @private
-	 * @param {Number} r the red component
-	 * @param {Number} g the green component
-	 * @param {Number} b the blue component
-	 * @returns {Integer} the encoded RGB integer
-	 */
-	Shim.prototype.encodeRgb = function (r, g, b) {
-	  r = Math.max(0, Math.min(1, r));
-	  g = Math.max(0, Math.min(1, g));
-	  b = Math.max(0, Math.min(1, b));
-
-	  return (Math.round(r * 255) << 16) |
-	    (Math.round(g * 255) << 8) |
-	    Math.round(b * 255);
-	};
-
-	/**
 	 * Transforms a collection of entities.
 	 * @method mapEntities
 	 * @public
@@ -87388,7 +87111,7 @@
 
 	  if ((properties.opacity && properties.opacity < 0.999) || properties.alphaMap) {
 	    properties.enabledFeatures.transparency = true;
-	    properties.alphaBlendMode = 0;
+	    properties.alphaBlendMode = 'alphaTransparency';
 	  } else {
 	    delete properties.opacity;
 	  }
@@ -87446,13 +87169,27 @@
 	 * @returns {Object} The transformed texture entity
 	 */
 	Shim.prototype.mapTexture = function(texture) {
-	  var textureProps = texture.properties,
-	      isVideoTexture = this.isVideoTexture(textureProps.filename);
+	  var textureProps = texture.properties;
+	  var isVideoTexture = this.isVideoTexture(textureProps.filename);
+	  var properties = {};
 
 	  // Remap the texture2D to a video texture entity
 	  if (isVideoTexture) {
 	    texture.type = 'textureVideo';
 	  }
+
+	  if (textureProps.hasOwnProperty('wrapModeU')) {
+	    properties.uMapping = textureProps.wrapModeU === 'repeat' ? 'wrap' : 'clamp';
+	  }
+	  if (textureProps.hasOwnProperty('wrapModeV')) {
+	    properties.vMapping = textureProps.wrapModeV === 'repeat' ? 'wrap' : 'clamp';
+	  }
+
+	  if (textureProps.hasOwnProperty('filename')) {
+	    properties.filename = textureProps.filename;
+	  }
+
+	  texture.properties = properties;
 
 	  return texture;
 	};
@@ -87504,7 +87241,7 @@
 
 	    if (srcProperties.hasOwnProperty(srcColorName)) {
 	      if (scalar) {
-	        // In case that the output is scalar but the input isn't, just take the red component.
+	        // In case that the output is scalar but the input isn't, just take an average.
 	        if (srcProperties[srcColorName] instanceof Object) {
 	          dstProperties[dstColorName] = (srcProperties[srcColorName].r +
 	            srcProperties[srcColorName].g + srcProperties[srcColorName].b) / 3.0 * factor;
@@ -87512,14 +87249,14 @@
 	          dstProperties[dstColorName] = srcProperties[srcColorName] * factor;
 	        }
 	      } else {
-	        dstProperties[dstColorName] = this.encodeRgb(
-	          srcProperties[srcColorName].r * factor,
-	          srcProperties[srcColorName].g * factor,
-	          srcProperties[srcColorName].b * factor
-	        );
+	        dstProperties[dstColorName] = {
+	          r: srcProperties[srcColorName].r * factor,
+	          g: srcProperties[srcColorName].g * factor,
+	          b: srcProperties[srcColorName].b * factor
+	        };
 	      }
 	    } else {
-	      dstProperties[dstColorName] = scalar ? 1 : this.encodeRgb(1, 1, 1);
+	      dstProperties[dstColorName] = scalar ? 1 : {r: 1, g: 1, b: 1};
 	    }
 	  }
 
@@ -89634,6 +89371,13 @@
 	  LINES: 'lines',
 	  TRIANGLES: 'triangles'
 	};
+	BaseGeometryAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  bounds: {
+	    type: 'object',
+	    description: '',
+	    default: null
+	  }
+	});
 
 	window.Box3D.BaseGeometryAsset = BaseGeometryAsset;
 	exports.default = BaseGeometryAsset;
@@ -89868,6 +89612,8 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -89906,9 +89652,23 @@
 	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
 	  }
 
-	  /** @inheritdoc */
-
 	  _createClass(PrefabAsset, [{
+	    key: 'verifyProperty',
+	    value: function verifyProperty(propertyName, valueObj) {
+	      if (_get(Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	        return true;
+	      }
+	      var originalType = this.get('originalType') || 'node';
+	      var objectClass = this.getObjectClass(originalType);
+	      // return objectClass.verifyProperty.call(this, propertyName, valueObj);
+	      // TODO: this doesn't actually verify that the property is valid. It only checks
+	      // that it exists.
+	      return !!objectClass.schema[propertyName];
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
 	    key: 'createRuntimeData',
 	    value: function createRuntimeData(callback) {
 	      this.runtimeData = new _three2.default.Object3D();
@@ -90434,7 +90194,7 @@
 	        prefabInstanceId: newTopObjectId,
 	        type: prefab.get('originalType') || 'model',
 	        properties: {},
-	        components: _lodash2.default.extend({}, prefab.getComponentDescriptors())
+	        components: _lodash2.default.extend({}, prefab.componentRegistry.getDescriptors())
 	      };
 	      var that = this;
 
@@ -90453,7 +90213,7 @@
 	          prefabInstanceId: topInst.id,
 	          type: prefabObject.type,
 	          properties: {},
-	          components: _lodash2.default.extend({}, prefabObject.getComponentDescriptors())
+	          components: _lodash2.default.extend({}, prefabObject.componentRegistry.getDescriptors())
 	        };
 	        var inst = that.createObject(instanceJSON);
 	        instanceMap[prefabObject.id] = inst;
@@ -90840,6 +90600,31 @@
 	  return ShaderAsset;
 	}(_Box3DAsset3.default);
 
+	ShaderAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  features: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  parameters: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  uniforms: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  vertexShader: {
+	    type: 'string',
+	    default: ''
+	  },
+	  fragmentShader: {
+	    type: 'string',
+	    default: ''
+	  }
+	});
 	ShaderAsset.builtInAssetDescriptors = {
 	  PBR_Metalness: _Box3DShaderPBR_MetalRoughness2.default,
 	  PBR_Specular: _Box3DShaderPBR_SpecGloss2.default
@@ -90928,7 +90713,9 @@
 	      displayName: 'Base Albedo',
 	      description: 'A color to tint the material with.',
 	      type: 'c',
-	      default: 0xffffff,
+	      default: { r: 1.0, g: 1.0, b: 1.0 },
+	      min: 0.0,
+	      max: 1.0,
 	      isUniform: true,
 	      enabledWhen: {
 	        or: [{
@@ -91095,7 +90882,9 @@
 	      displayName: 'Specular Color',
 	      description: 'A color to tint the material with.',
 	      type: 'c',
-	      default: 0xffffff,
+	      default: { r: 1.0, g: 1.0, b: 1.0 },
+	      min: 0.0,
+	      max: 1.0,
 	      isUniform: true,
 	      enabledWhen: {
 	        or: [{
@@ -91716,7 +91505,7 @@
 	      displayName: 'Emissive Color',
 	      description: 'A color that represents the light emitted by the material.',
 	      type: 'c',
-	      default: 0xffffff,
+	      default: { r: 0.0, g: 0.0, b: 0.0 },
 	      isUniform: true,
 	      enabledWhen: {
 	        or: [{
@@ -92054,7 +91843,7 @@
 /* 130 */
 /***/ function(module, exports) {
 
-	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t#extension GL_EXT_frag_depth : enable\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\tuniform float reflectionFresnel;\r\n\t\t#ifdef ENVIRONMENT_MAP_CUBE_0\r\n\t\t\tuniform samplerCube environmentMapCube_0;\r\n\t\t\tuniform samplerCube environmentMapCube_1;\r\n\t\t\tuniform samplerCube environmentMapCube_2;\r\n\t\t#elif defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\tuniform sampler2D environmentMap2D_0;\r\n\t\t\tuniform sampler2D environmentMap2D_1;\r\n\t\t\tuniform sampler2D environmentMap2D_2;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t#if NUM_SHADOWS > 0\r\n\t\t\t\tuniform sampler2D shadowMap[ NUM_SHADOWS ];\r\n\t\t\t\tuniform vec2 shadowMapSize[ NUM_SHADOWS ];\r\n\t\t\t\tuniform float shadowBias[ NUM_SHADOWS ];\r\n\t\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\t#endif\r\n\r\n\t\t\tfloat unpackDepth( const in vec4 rgba_depth ) {\r\n\t\t\t\tconst vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\r\n\t\t\t\tfloat depth = dot( rgba_depth, bit_shift );\r\n\t\t\t\treturn depth;\r\n\t\t\t}\r\n\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\n#ifdef USE_ENVIRONMENT_MAP\r\nvec3 getReflectionFromRoughness(in vec3 ref0, in vec3 ref1, in vec3 ref2, in float roughness) {\r\n\tvec3 colour1, colour2;\r\n\tfloat interp = roughness * 2.0;\r\n\tif (roughness <= 0.5) {\r\n\t\tcolour1 = ref0;\r\n\t\tcolour2 = ref1;\r\n\t} else {\r\n\t\tinterp -= 1.0;\r\n\t\tcolour1 = ref1;\r\n\t\tcolour2 = ref2;\r\n\t}\r\n\treturn mix(colour1, colour2, interp);\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t#ifdef GAMMA_INPUT\r\n\t\t  albedoTex.xyz *= albedoTex.xyz;\r\n\t\t#endif\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  emissiveTex *= emissiveTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  sssTex *= sssTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 envMapReflectedColor;\r\n\t\t\tvec3 envMapDiffuseColor;\r\n\r\n\t\t\t#if defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\t\tvec3 reflectedColor0 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor1 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor2 = vec3(0.0);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 sampleUV;\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tmipBias = roughnessValue * 6.0;\r\n\t\t\t\t\treflectedColor0 = textureCube( environmentMapCube_0, sampleUV, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 3.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = textureCube( environmentMapCube_1, sampleUV, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 sampleUV;\r\n\t\t\t\t\t//Sphere map reflection\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t\t\t\t\t//Planar reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tmipBias = roughnessValue * 10.0;\r\n\t\t\t\t\treflectedColor0 = texture2D( environmentMap2D_0, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 5.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = texture2D( environmentMap2D_1, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\tenvMapReflectedColor = getReflectionFromRoughness(reflectedColor0, reflectedColor1, reflectedColor2, roughnessValue);\r\n\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\tenvMapDiffuseColor = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tenvMapDiffuseColor = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t\t#if NUM_SHADOWS > 0 && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\t\t\t\t\tfloat shadowValues[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\tfloat shadowValuesScatter[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\t\t\t\t\t\tvec3 shadowColour = vec3(1.0);\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_DIR_LIGHTS; s ++ ) {\r\n\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\tvec3 frustumColors[3];\r\n\t\t\t\t\t\tfrustumColors[0] = vec3( 1.0, 0.5, 0.0 );\r\n\t\t\t\t\t\tfrustumColors[1] = vec3( 0.0, 1.0, 0.8 );\r\n\t\t\t\t\t\tfrustumColors[2] = vec3( 0.0, 0.5, 1.0 );\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\tint inFrustumCount = 0;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat fDepth;\r\n\t\t\t\t\t//int lightIndex = 0;\r\n\t\t\t\t\tint frustumIndex = 0;\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_SHADOWS; s ++ ) {\r\n\r\n\t\t\t\t\t\tvec3 shadowCoord = vShadowCoord[ s ].xyz / vShadowCoord[ s ].w;\r\n\t\t\t\t\t\t// \"if ( something && something )\" \t\t breaks ATI OpenGL shader compiler\r\n\t\t\t\t\t\t// \"if ( all( something, something ) )\"  using this instead\r\n\r\n\t\t\t\t\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\r\n\t\t\t\t\t\tbool inFrustum = all( inFrustumVec );\r\n\r\n\t\t\t\t\t\t// don't shadow pixels outside of light frustum\r\n\t\t\t\t\t\t// use just first frustum (for cascades)\r\n\t\t\t\t\t\t// don't shadow pixels behind far plane of light frustum\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\tinFrustumCount += int( inFrustum );\r\n\t\t\t\t\t\t\tbvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\tbool frustumTest = all( frustumTestVec );\r\n\r\n\t\t\t\t\t\tif ( frustumTest ) {\r\n\r\n\t\t\t\t\t\t\tshadowCoord.z += shadowBias[ s ];\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_TYPE_PCF_SOFT\r\n\r\n\t\t\t\t\t\t\t\t// Percentage-close filtering\r\n\t\t\t\t\t\t\t\t// (9 pixel kernel)\r\n\t\t\t\t\t\t\t\t// http://fabiensanglard.net/shadowmappingPCF/\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\r\n\r\n\t\t\t\t\t\t\t\t//const float shadowDelta = 1.0 / 9.0;\r\n\t\t\t\t\t\t\t\t//const float kernelCornerWeight = 1.0 / 16.0;\r\n\t\t\t\t\t\t\t\t//const float kernelEdgeWeight = 1.0 / 8.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.0 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.0 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tmat3 shadowKernel;\r\n\t\t\t\t\t\t\t\tmat3 depthKernel;\r\n\r\n\t\t\t\t\t\t\t\tdepthKernel[0][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\r\n\t\t\t\t\t\t\t\tvec3 shadowZ = vec3( shadowCoord.z );\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[0] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[1] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[2] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tvec2 fractionalCoord = 1.0 - fract(shadowCoord.xy * shadowMapSize[s].xy );\r\n\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\tvec4 shadowValueVector;\r\n\t\t\t\t\t\t\t\tshadowValueVector.x = mix(shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.y = mix(shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.z = mix(shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.w = mix(shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\r\n\r\n\t\t\t\t\t\t\t\tshadow = dot(shadowValueVector, vec4(1.0));\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\t\tdepthKernel[0] = mix( depthKernel[1], depthKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\t\tdepthKernel[1] = mix( depthKernel[2], depthKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\t\tvec4 depthValues;\r\n\t\t\t\t\t\t\t\t\tdepthValues.x = mix(depthKernel[0][1], depthKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.y = mix(depthKernel[0][2], depthKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.z = mix(depthKernel[1][1], depthKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.w = mix(depthKernel[1][2], depthKernel[1][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tfloat totalDepth = dot(depthValues, vec4(1.0));// + dot(depthKernel[1], vec3(1.0)) + dot(depthKernel[2], vec3(1.0));\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 4.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 100.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 1000.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#elif defined( SHADOWMAP_TYPE_PCF )\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\t\t\t\t\t\t\t\tconst float shadowDelta = 1.0 / 9.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.25 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.25 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tfloat totalDepth = 0.0;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy, 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 9.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 10000.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 100.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tvec4 rgbaDepth = texture2DProj( shadowMap[ s ], vec4( vShadowCoord[ s ].w * ( shadowCoord.xy ), 0.05, vShadowCoord[ s ].w ) );\r\n\t\t\t\t\t\t\t\t// vec4 rgbaDepth = texture2D( shadowMap[ s ], shadowCoord.xy );\r\n\t\t\t\t\t\t\t\tfloat fDepth = unpackDepth( rgbaDepth );\r\n\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) {\r\n\r\n\t\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= 0.0;\r\n\t\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 0.0;\r\n\t\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - fDepth );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum && inFrustumCount == 1 ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t//frustumIndex ++;\r\n\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\t\t\t\t\tfloat shadowValue = 1.0;\r\n\t\t\t\t\tfloat shadowValueScatter = 1.0;\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0) && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\r\n\t\t\t\t\t\tshadowValue = shadowValues[ i ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0)\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValueScatter = shadowValuesScatter[ i ];\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * (specWeight * shadowValue) + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * shadowValue * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && defined( SHADOWMAP_DEBUG )\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\ttotalDiffuse *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t#ifdef SPECULAR_COLOR\r\n\t\t\t\t\t\t\ttotalSpecular *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && (defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0))\r\n\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\t\tvec3 reflectance_term = envMapReflectedColor.xyz * fresnel;\r\n\t\t\t\t#if !defined(METALNESS)\r\n\t\t\t\t\treflectance_term *= (1.0 - roughnessValue);\r\n\t\t\t\t#endif\r\n\t\t\t\ttotalSpecular += reflectance_term * specularColorValue;\r\n\r\n\t\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\ttotalDiffuse += envMapDiffuseColor;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t#ifdef GAMMA_OUTPUT\r\n\t\t\tfinalColor = sqrt( finalColor );\r\n\t\t#endif\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
+	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\tuniform float reflectionFresnel;\r\n\t\t#ifdef ENVIRONMENT_MAP_CUBE_0\r\n\t\t\tuniform samplerCube environmentMapCube_0;\r\n\t\t\tuniform samplerCube environmentMapCube_1;\r\n\t\t\tuniform samplerCube environmentMapCube_2;\r\n\t\t#elif defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\tuniform sampler2D environmentMap2D_0;\r\n\t\t\tuniform sampler2D environmentMap2D_1;\r\n\t\t\tuniform sampler2D environmentMap2D_2;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t#if NUM_SHADOWS > 0\r\n\t\t\t\tuniform sampler2D shadowMap[ NUM_SHADOWS ];\r\n\t\t\t\tuniform vec2 shadowMapSize[ NUM_SHADOWS ];\r\n\t\t\t\tuniform float shadowBias[ NUM_SHADOWS ];\r\n\t\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\t#endif\r\n\r\n\t\t\tfloat unpackDepth( const in vec4 rgba_depth ) {\r\n\t\t\t\tconst vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\r\n\t\t\t\tfloat depth = dot( rgba_depth, bit_shift );\r\n\t\t\t\treturn depth;\r\n\t\t\t}\r\n\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\n#ifdef USE_ENVIRONMENT_MAP\r\nvec3 getReflectionFromRoughness(in vec3 ref0, in vec3 ref1, in vec3 ref2, in float roughness) {\r\n\tvec3 colour1, colour2;\r\n\tfloat interp = roughness * 2.0;\r\n\tif (roughness <= 0.5) {\r\n\t\tcolour1 = ref0;\r\n\t\tcolour2 = ref1;\r\n\t} else {\r\n\t\tinterp -= 1.0;\r\n\t\tcolour1 = ref1;\r\n\t\tcolour2 = ref2;\r\n\t}\r\n\treturn mix(colour1, colour2, interp);\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t#ifdef GAMMA_INPUT\r\n\t\t  albedoTex.xyz *= albedoTex.xyz;\r\n\t\t#endif\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  emissiveTex *= emissiveTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  sssTex *= sssTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 envMapReflectedColor;\r\n\t\t\tvec3 envMapDiffuseColor;\r\n\r\n\t\t\t#if defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\t\tvec3 reflectedColor0 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor1 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor2 = vec3(0.0);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 sampleUV;\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tmipBias = roughnessValue * 6.0;\r\n\t\t\t\t\treflectedColor0 = textureCube( environmentMapCube_0, sampleUV, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 3.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = textureCube( environmentMapCube_1, sampleUV, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 sampleUV;\r\n\t\t\t\t\t//Sphere map reflection\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t\t\t\t\t//Planar reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tmipBias = roughnessValue * 10.0;\r\n\t\t\t\t\treflectedColor0 = texture2D( environmentMap2D_0, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 5.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = texture2D( environmentMap2D_1, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\tenvMapReflectedColor = getReflectionFromRoughness(reflectedColor0, reflectedColor1, reflectedColor2, roughnessValue);\r\n\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\tenvMapDiffuseColor = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tenvMapDiffuseColor = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t\t#if NUM_SHADOWS > 0 && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\t\t\t\t\tfloat shadowValues[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\tfloat shadowValuesScatter[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\t\t\t\t\t\tvec3 shadowColour = vec3(1.0);\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_DIR_LIGHTS; s ++ ) {\r\n\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\tvec3 frustumColors[3];\r\n\t\t\t\t\t\tfrustumColors[0] = vec3( 1.0, 0.5, 0.0 );\r\n\t\t\t\t\t\tfrustumColors[1] = vec3( 0.0, 1.0, 0.8 );\r\n\t\t\t\t\t\tfrustumColors[2] = vec3( 0.0, 0.5, 1.0 );\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\tint inFrustumCount = 0;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat fDepth;\r\n\t\t\t\t\t//int lightIndex = 0;\r\n\t\t\t\t\tint frustumIndex = 0;\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_SHADOWS; s ++ ) {\r\n\r\n\t\t\t\t\t\tvec3 shadowCoord = vShadowCoord[ s ].xyz / vShadowCoord[ s ].w;\r\n\t\t\t\t\t\t// \"if ( something && something )\" \t\t breaks ATI OpenGL shader compiler\r\n\t\t\t\t\t\t// \"if ( all( something, something ) )\"  using this instead\r\n\r\n\t\t\t\t\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\r\n\t\t\t\t\t\tbool inFrustum = all( inFrustumVec );\r\n\r\n\t\t\t\t\t\t// don't shadow pixels outside of light frustum\r\n\t\t\t\t\t\t// use just first frustum (for cascades)\r\n\t\t\t\t\t\t// don't shadow pixels behind far plane of light frustum\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\tinFrustumCount += int( inFrustum );\r\n\t\t\t\t\t\t\tbvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\tbool frustumTest = all( frustumTestVec );\r\n\r\n\t\t\t\t\t\tif ( frustumTest ) {\r\n\r\n\t\t\t\t\t\t\tshadowCoord.z += shadowBias[ s ];\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_TYPE_PCF_SOFT\r\n\r\n\t\t\t\t\t\t\t\t// Percentage-close filtering\r\n\t\t\t\t\t\t\t\t// (9 pixel kernel)\r\n\t\t\t\t\t\t\t\t// http://fabiensanglard.net/shadowmappingPCF/\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\r\n\r\n\t\t\t\t\t\t\t\t//const float shadowDelta = 1.0 / 9.0;\r\n\t\t\t\t\t\t\t\t//const float kernelCornerWeight = 1.0 / 16.0;\r\n\t\t\t\t\t\t\t\t//const float kernelEdgeWeight = 1.0 / 8.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.0 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.0 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tmat3 shadowKernel;\r\n\t\t\t\t\t\t\t\tmat3 depthKernel;\r\n\r\n\t\t\t\t\t\t\t\tdepthKernel[0][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\r\n\t\t\t\t\t\t\t\tvec3 shadowZ = vec3( shadowCoord.z );\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[0] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[1] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[2] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tvec2 fractionalCoord = 1.0 - fract(shadowCoord.xy * shadowMapSize[s].xy );\r\n\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\tvec4 shadowValueVector;\r\n\t\t\t\t\t\t\t\tshadowValueVector.x = mix(shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.y = mix(shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.z = mix(shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.w = mix(shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\r\n\r\n\t\t\t\t\t\t\t\tshadow = dot(shadowValueVector, vec4(1.0));\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\t\tdepthKernel[0] = mix( depthKernel[1], depthKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\t\tdepthKernel[1] = mix( depthKernel[2], depthKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\t\tvec4 depthValues;\r\n\t\t\t\t\t\t\t\t\tdepthValues.x = mix(depthKernel[0][1], depthKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.y = mix(depthKernel[0][2], depthKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.z = mix(depthKernel[1][1], depthKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.w = mix(depthKernel[1][2], depthKernel[1][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tfloat totalDepth = dot(depthValues, vec4(1.0));// + dot(depthKernel[1], vec3(1.0)) + dot(depthKernel[2], vec3(1.0));\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 4.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 100.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 1000.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#elif defined( SHADOWMAP_TYPE_PCF )\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\t\t\t\t\t\t\t\tconst float shadowDelta = 1.0 / 9.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.25 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.25 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tfloat totalDepth = 0.0;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy, 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 9.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 10000.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 100.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tvec4 rgbaDepth = texture2DProj( shadowMap[ s ], vec4( vShadowCoord[ s ].w * ( shadowCoord.xy ), 0.05, vShadowCoord[ s ].w ) );\r\n\t\t\t\t\t\t\t\t// vec4 rgbaDepth = texture2D( shadowMap[ s ], shadowCoord.xy );\r\n\t\t\t\t\t\t\t\tfloat fDepth = unpackDepth( rgbaDepth );\r\n\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) {\r\n\r\n\t\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= 0.0;\r\n\t\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 0.0;\r\n\t\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - fDepth );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum && inFrustumCount == 1 ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t//frustumIndex ++;\r\n\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\t\t\t\t\tfloat shadowValue = 1.0;\r\n\t\t\t\t\tfloat shadowValueScatter = 1.0;\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0) && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\r\n\t\t\t\t\t\tshadowValue = shadowValues[ i ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0)\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValueScatter = shadowValuesScatter[ i ];\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * (specWeight * shadowValue) + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * shadowValue * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && defined( SHADOWMAP_DEBUG )\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\ttotalDiffuse *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t#ifdef SPECULAR_COLOR\r\n\t\t\t\t\t\t\ttotalSpecular *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && (defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0))\r\n\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\t\tvec3 reflectance_term = envMapReflectedColor.xyz * fresnel;\r\n\t\t\t\t#if !defined(METALNESS)\r\n\t\t\t\t\treflectance_term *= (1.0 - roughnessValue);\r\n\t\t\t\t#endif\r\n\t\t\t\ttotalSpecular += reflectance_term * specularColorValue;\r\n\r\n\t\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\ttotalDiffuse += envMapDiffuseColor;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t#ifdef GAMMA_OUTPUT\r\n\t\t\tfinalColor = sqrt( finalColor );\r\n\t\t#endif\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
 
 /***/ },
 /* 131 */
@@ -92196,20 +91985,11 @@
 	      return ScriptAsset.getDefaultComponentData(this.getProperty('attributes'));
 	    }
 	  }, {
-	    key: 'isRunnable',
-	    value: function isRunnable() {
-	      if (this.box3DRuntime.componentSettings.enabled) {
-	        return true;
-	      }
-
-	      return false;
-	    }
-	  }, {
 	    key: 'loadBase',
 	    value: function loadBase() {
 	      if (this.isBaseLoaded()) {
 	        this.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
-	      } else if (this.isRunnable()) {
+	      } else {
 	        var externalDependencies = [];
 
 	        _lodash2.default.each(this.getProperty('externalDependencies'), function (dependency) {
@@ -92244,6 +92024,52 @@
 
 	  return ScriptAsset;
 	}(_Box3DAsset3.default);
+
+	ScriptAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  attributes: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  description: {
+	    type: 'string',
+	    default: ''
+	  },
+	  attributesOrder: {
+	    type: 'array',
+	    default: []
+	  },
+	  events: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  externalDependencies: {
+	    type: 'array',
+	    default: []
+	  },
+	  filter: {
+	    type: 'array',
+	    default: []
+	  },
+	  category: {
+	    type: 'string',
+	    default: ''
+	  },
+	  parsedComments: {
+	    type: 'boolean',
+	    default: true
+	  },
+	  flags: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  path: {
+	    type: 'string',
+	    default: ''
+	  }
+	});
 
 	window.Box3D.ScriptAsset = ScriptAsset;
 	exports.default = ScriptAsset;
@@ -92414,15 +92240,16 @@
 	        _this2.trigger('loadProgress', _this2);
 	      };
 
-	      var width = this.getProperty('originalWidth');
-	      var height = this.getProperty('originalHeight');
-	      var stream = this.getProperty('stream');
+	      // Disabling this temporarily as we only have the "2048" representation in Preview SDK.
+	      // const width = this.getProperty('originalWidth');
+	      // const height = this.getProperty('originalHeight');
+	      // const stream = this.getProperty('stream');
 
-	      if (!stream || width < 1024 && height < 1024) {
-	        this._directLoad(onTexture2DLoaded, onTexture2DLoadError, onTexture2DLoadProgress);
-	      } else {
-	        this._streamingLoad(onTexture2DLoaded, onTexture2DLoadError, onTexture2DLoadProgress);
-	      }
+	      // if (!stream || (width < 1024 && height < 1024)) {
+	      this._directLoad(onTexture2DLoaded, onTexture2DLoadError, onTexture2DLoadProgress);
+	      // } else {
+	      //   this._streamingLoad(onTexture2DLoaded, onTexture2DLoadError, onTexture2DLoadProgress);
+	      // }
 	    }
 	  }, {
 	    key: 'createTextureData',
@@ -92496,7 +92323,7 @@
 	        this.runtimeData = new _three2.default.WebGLRenderTarget(data.properties.width, data.properties.height, {
 	          minFilter: _three2.default.LinearFilter,
 	          magFilter: _three2.default.LinearFilter,
-	          format: _three2.default.RGBFormat,
+	          format: _three2.default.RGBAFormat,
 	          type: _three2.default.FloatType,
 	          stencilBuffer: false
 	        });
@@ -93792,7 +93619,7 @@
 	}(_Box3DObject3.default);
 
 	CameraObject.schema = _lodash2.default.extend({}, _Box3DObject3.default.schema, {
-	  projectionType: {
+	  cameraType: {
 	    type: 'string',
 	    description: '',
 	    default: 'perspective'
@@ -94117,7 +93944,7 @@
 	  color: {
 	    type: 'color',
 	    description: '',
-	    default: 0xbbbbbb
+	    default: { r: 0.7333, g: 0.7333, b: 0.7333 }
 	  },
 	  intensity: {
 	    type: 'float',

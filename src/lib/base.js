@@ -164,7 +164,13 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     toggleFullscreen() {
-        fullscreen.toggle(this.containerEl, this.vrDevice);
+        // If there is a specific element designated for fullscreen, use it.
+        // e.g. VR requires this element to be the canvas used for 3D.
+        if (this.fullscreenEl) {
+            fullscreen.toggle(this.fullscreenEl, this.vrDevice);
+        } else {
+            fullscreen.toggle(this.containerEl, this.vrDevice);
+        }
     }
 
     /**
