@@ -27,6 +27,10 @@
     user-select: none;
 }
 
+.box-preview-box3d.box-preview-invisible {
+    visibility: hidden;
+}
+
 .box-preview-box3d canvas:active {
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;

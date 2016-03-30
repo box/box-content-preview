@@ -18,7 +18,11 @@ import {
     EVENT_METADATA_UPDATE_FAILURE,
     EVENT_RESET_SCENE_DEFAULTS
 } from './model3d-constants';
-import { EVENT_ERROR } from '../box3d-constants';
+import {
+    CSS_CLASS_INVISIBLE,
+    EVENT_ERROR,
+    EVENT_TRIGGER_RESIZE
+} from '../box3d-constants';
 
 const Box = global.Box || {};
 
@@ -45,6 +49,8 @@ class Model3d extends Box3D {
             this.wrapperEl.parentElement.removeChild(this.wrapperEl);
             this.emit(EVENT_ERROR, new Error('Your Browser Does Not Support Model Preview'));
         }
+
+        this.wrapperEl.classList.add(CSS_CLASS_INVISIBLE);
 
         this.missingAssets = null;
         this.loadTimeout = 100000;
@@ -233,16 +239,22 @@ class Model3d extends Box3D {
 
                 // Update controls ui
                 this.controls.handleSetRenderMode(defaults.defaultRenderMode);
+                this.showWrapper();
             })
             .catch((error) => {
                 // Make sure to display the settings panel, but hide the save button
                 this.settings.addUi(false);
-
                 super.handleSceneLoaded();
+                this.showWrapper();
                 /* eslint-disable no-console */
                 console.error(error);
                 /* eslint-enable no-console */
             });
+    }
+
+    showWrapper() {
+        this.wrapperEl.classList.remove(CSS_CLASS_INVISIBLE);
+        this.renderer.emit(EVENT_TRIGGER_RESIZE);
     }
 
     /**

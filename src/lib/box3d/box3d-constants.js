@@ -13,10 +13,12 @@ export const EVENT_SCENE_LOADED = 'sceneLoaded';
 export const EVENT_SHOW_VR_BUTTON = 'showVrButton';
 export const EVENT_TOGGLE_FULLSCREEN = 'toggleFullscreen';
 export const EVENT_TRIGGER_RENDER = 'triggerRender';
+export const EVENT_TRIGGER_RESIZE = 'triggerResize';
 
 // CSS CLASSES
 export const CSS_CLASS_BOX3D = 'box-preview-box3d';
-export const CSS_CLASS_HIDDEN = 'box-preview-hidden';
+export const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
+export const CSS_CLASS_INVISIBLE = 'box-preview-invisible';
 
 // OTHER CONSTANT VARIABLES
 export const CACHE_KEY_BOX3D = 'box3d';
