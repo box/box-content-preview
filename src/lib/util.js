@@ -146,15 +146,37 @@ export function createStylesheet(url) {
 }
 
 /**
+ * Builds a list of required XHR headers.
+ *
+ * @public
+ * @param {Object} [headers] optional headers
+ * @param {String} [token] optional auth token
+ * @param {String} [sharedLink] optional shared link
+ * @returns {Object} Headers
+ */
+export function getHeaders(headers = {}, token = '', sharedLink = '') {
+    /* eslint-disable no-param-reassign */
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+    if (sharedLink) {
+        headers.BoxApi = `shared_link=${sharedLink}`;
+    }
+    /* eslint-enable no-param-reassign */
+    return headers;
+}
+
+/**
  * Creates the content URLs
  *
  * @public
  * @param {String} url content url
  * @param {String} [token] optional auth token
+ * @param {String} [sharedLink] optional shared link
  * @returns {String} content urls
  */
-export function createContentUrl(url, token) {
-    if (!token) {
+export function createContentUrl(url, token = '', sharedLink = '') {
+    if (!token && !sharedLink) {
         return url;
     }
 
@@ -164,7 +186,19 @@ export function createContentUrl(url, token) {
         delim = '&';
     }
 
-    return `${url}${delim}access_token=${token}`;
+    let params = '';
+    if (token) {
+        params = `access_token=${token}`;
+    }
+
+    if (sharedLink) {
+        if (params) {
+            params = `${params}&`;
+        }
+        params = `${params}shared_link=${encodeURI(sharedLink)}`;
+    }
+
+    return `${url}${delim}${params}`;
 }
 
 /**

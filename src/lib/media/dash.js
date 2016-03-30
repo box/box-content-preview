@@ -4,6 +4,8 @@ import VideoBase from './video-base';
 import cache from '../cache';
 import fullscreen from '../fullscreen';
 import Browser from '../browser';
+import { createContentUrl, getHeaders } from '../util';
+import RepStatus from '../rep-status';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
@@ -121,9 +123,7 @@ class Dash extends VideoBase {
 
         return (url, headers) => {
             if (url && url.indexOf(token) === -1) {
-                /* eslint-disable no-param-reassign */
-                headers.authorization = this.options.authorization;
-                /* eslint-enable no-param-reassign */
+                getHeaders(headers, token, this.options.sharedLink);
             }
         };
     }
@@ -268,7 +268,9 @@ class Dash extends VideoBase {
     loadFilmStrip() {
         const filmstrip = this.options.file.representations.entries.find((entry) => entry.representation === 'filmstrip');
         if (filmstrip) {
-            this.mediaControls.initFilmstrip(filmstrip, this.aspect, this.options.token);
+            const url = createContentUrl(filmstrip.links.content.url, this.options.token, this.options.sharedLink);
+            const status = new RepStatus(filmstrip, getHeaders({}, this.options.token, this.options.sharedLink));
+            this.mediaControls.initFilmstrip(url, status, this.aspect);
         }
     }
 

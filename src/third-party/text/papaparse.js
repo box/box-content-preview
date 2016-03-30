@@ -552,9 +552,14 @@
                 xhr.setRequestHeader('If-None-Match', 'webkit-no-cache'); // https://bugs.webkit.org/show_bug.cgi?id=82672
             }
 
-            if (this._config.authorization)
+            if (this._config.token)
             {
-                xhr.setRequestHeader('Authorization', this._config.authorization);
+                xhr.setRequestHeader('Authorization', 'Bearer ' + this._config.token);
+            }
+
+            if (this._config.sharedLink)
+            {
+                xhr.setRequestHeader('BoxApi', 'shared_link=' + this._config.sharedLink);
             }
 
             try {

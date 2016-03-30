@@ -9,7 +9,7 @@ import loaders from './loaders';
 import cache from './cache';
 import RepStatus from './rep-status';
 import ErrorLoader from './error/error-loader';
-import { decodeKeydown, insertTemplate, openUrlInsideIframe } from './util';
+import { decodeKeydown, insertTemplate, openUrlInsideIframe, getHeaders } from './util';
 import throttle from 'lodash.throttle';
 import shellTemplate from 'raw!./shell.html';
 
@@ -165,14 +165,14 @@ class Preview extends EventEmitter {
         // Reset all options
         this.options = {};
 
-        // Authorization header with tokens
+        // Authorization token
         this.options.token = token[this.file.id];
 
         // Save handle to the token fetcher as viewers might need it
         this.options.tokenFetcher = this.fetchTokens;
 
-        // Authorization header with tokens
-        this.options.authorization = `Bearer ${this.options.token}`;
+        // Shared link header
+        this.options.sharedLink = options.sharedLink;
 
         // Save the location of preview for viewers
         this.options.location = Object.assign({}, this.location);
@@ -589,6 +589,11 @@ class Preview extends EventEmitter {
                 file: this.file
             });
 
+            // Hookup for phantom JS health check
+            if (typeof window.callPhantom === 'function') {
+                window.callPhantom(1);
+            }
+
             // Prefetch other files
             this.prefetch();
         });
@@ -660,6 +665,11 @@ class Preview extends EventEmitter {
                 metrics: this.logger.done(this.count),
                 file: this.file
             });
+
+            // Hookup for phantom JS health check
+            if (typeof window.callPhantom === 'function') {
+                window.callPhantom(0);
+            }
         });
     }
 
@@ -671,14 +681,11 @@ class Preview extends EventEmitter {
      * @returns {Object} Headers
      */
     getRequestHeaders(token) {
-        const authToken = token || this.options.token;
         const hints = Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4';
         const headers = {
-            Authorization: `Bearer ${authToken}`,
             'X-Rep-Hints': `3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
         };
-
-        return headers;
+        return getHeaders(headers, token || this.options.token, this.options.sharedLink);
     }
 
     /**

@@ -5,7 +5,8 @@ import {
     prefetchAssets,
     loadStylesheets,
     loadScripts,
-    createAssetUrlCreator
+    createAssetUrlCreator,
+    getHeaders
 } from './util';
 
 @autobind
@@ -132,16 +133,22 @@ class AssetLoader {
         // Prefetch the scripts needed for this preview
         prefetchAssets(viewer.SCRIPTS.map(assetUrlCreator));
 
+        const token = options.token(file.id)[file.id];
+        let sharedLink = options.sharedLink;
+
+        if (sharedLink && file.shared_link) {
+            // Prefer the file scoped shared link over the globally provided shared link
+            sharedLink = file.shared_link.url;
+        }
+
         if (viewer.PREFETCH === 'xhr') {
             fetch(representation.links.content.url, {
-                headers: {
-                    Authorization: `Bearer ${options.token(file.id)[file.id]}`
-                }
+                headers: getHeaders({}, token, sharedLink)
             });
         } else {
             const img = document.createElement('img');
             img.crossOrigin = 'anonymous';
-            img.src = createContentUrl(representation.links.content.url, options.token(file.id)[file.id]);
+            img.src = createContentUrl(representation.links.content.url, token, sharedLink);
         }
     }
 
