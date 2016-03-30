@@ -239,7 +239,7 @@ class DocBase extends Base {
         this.pdfViewer.pagesRotation = this.pageRotation;
 
         // Re-render and scroll to appropriate page
-        this.pdfViewer.forceRendering();
+        this.pdfViewer.update();
         this.setPage(currentPageNum);
     }
 
@@ -268,6 +268,20 @@ class DocBase extends Base {
         const viewerName = this.constructor.name;
         return this.options.viewers && this.options.viewers[viewerName] &&
             this.options.viewers[viewerName].annotations;
+    }
+
+    /**
+     * Returns click handler for toggling point annotation mode.
+     *
+     * @public
+     * @returns {Function|null} Click handler
+     */
+    getPointAnnotationClickHandler() {
+        if (!this.isAnnotatable()) {
+            return null;
+        }
+
+        return this.annotator.togglePointAnnotationModeHandler;
     }
 
     /* ----- Private Helpers ----- */
@@ -474,7 +488,10 @@ class DocBase extends Base {
      * @returns {void}
      */
     pagesinitHandler() {
-        this.pdfViewer.currentScaleValue = 'auto';
+        // Directly call _setScale so we can choose to set the second param,
+        // noScroll to true - this keeps the padding at the top of the first
+        // page
+        this.pdfViewer._setScale('auto', true);
 
         // Initialize annotations before loading controls since there are
         // annotations controls
