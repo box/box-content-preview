@@ -76646,8 +76646,8 @@
 	      this.vrOrientation = orientation;
 	    }
 	  }, {
-	    key: 'preUpdate',
-	    value: function preUpdate() {
+	    key: 'update',
+	    value: function update() {
 
 	      if (this.isEnabled() && this.previewCamControl) {
 
