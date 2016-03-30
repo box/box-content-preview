@@ -1,5 +1,37 @@
 # Change Log
 
+## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
+
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.49.0...HEAD)
+
+**Merged pull requests:**
+
+- Eslint issues [\#265](https://gitenterprise.inside-box.net/Preview/Preview/pull/265) ([phora](https://gitenterprise.inside-box.net/phora))
+
+## [v0.49.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.49.0) (2016-03-28)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.48.0...v0.49.0)
+
+**Merged pull requests:**
+
+- Remove loading indicator on audio files while scrolling [\#264](https://gitenterprise.inside-box.net/Preview/Preview/pull/264) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- updates and original representation for image 360 bug [\#263](https://gitenterprise.inside-box.net/Preview/Preview/pull/263) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- switched out supprotsBox3D\(\) to supportsModel3D\(\) and calling hasWebGl\(\)... [\#262](https://gitenterprise.inside-box.net/Preview/Preview/pull/262) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Printing of text files and some fixes [\#261](https://gitenterprise.inside-box.net/Preview/Preview/pull/261) ([phora](https://gitenterprise.inside-box.net/phora))
+- Styling point annotations and dialogs [\#260](https://gitenterprise.inside-box.net/Preview/Preview/pull/260) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Hookup up new annotations buttons [\#259](https://gitenterprise.inside-box.net/Preview/Preview/pull/259) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing missing shared link option [\#258](https://gitenterprise.inside-box.net/Preview/Preview/pull/258) ([phora](https://gitenterprise.inside-box.net/phora))
+- Store highlight and point annotations in PDF space. [\#257](https://gitenterprise.inside-box.net/Preview/Preview/pull/257) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Coxp 908 box3d entity schemas [\#255](https://gitenterprise.inside-box.net/Preview/Preview/pull/255) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Fixing icon css [\#254](https://gitenterprise.inside-box.net/Preview/Preview/pull/254) ([phora](https://gitenterprise.inside-box.net/phora))
+- Making fullscreen styles common [\#253](https://gitenterprise.inside-box.net/Preview/Preview/pull/253) ([phora](https://gitenterprise.inside-box.net/phora))
+- Fix document CSS so there is no incorrect reference to loading icon [\#252](https://gitenterprise.inside-box.net/Preview/Preview/pull/252) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Moving some icons to use SVGs [\#251](https://gitenterprise.inside-box.net/Preview/Preview/pull/251) ([phora](https://gitenterprise.inside-box.net/phora))
+- CSS fixes [\#250](https://gitenterprise.inside-box.net/Preview/Preview/pull/250) ([phora](https://gitenterprise.inside-box.net/phora))
+- Properly cleanup after PDFJS when viewer is closed [\#249](https://gitenterprise.inside-box.net/Preview/Preview/pull/249) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update Changelog [\#248](https://gitenterprise.inside-box.net/Preview/Preview/pull/248) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- PDFJS 1.4.137 [\#247](https://gitenterprise.inside-box.net/Preview/Preview/pull/247) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add support for printing documents to Preview SDK. [\#246](https://gitenterprise.inside-box.net/Preview/Preview/pull/246) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
 ## [v0.48.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.48.0) (2016-03-16)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.47.0...v0.48.0)
 

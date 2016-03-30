@@ -34,7 +34,7 @@ class SWF extends Base {
      *
      * @public
      * @param {String} swfUrl The swf to load
-     * @returns {Promise} Promise to load a swf
+     * @returns {void}
      */
     load(swfUrl) {
         /* global swfobject */

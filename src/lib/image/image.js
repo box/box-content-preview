@@ -8,6 +8,9 @@ import {
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT
 } from '../icons/icons';
+import {
+    CLASS_INVISIBLE
+} from '../constants';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -31,6 +34,10 @@ class Image extends Base {
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_IMAGE;
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
+
+        // hides image tag until content is loaded
+        this.imageEl.classList.add(CLASS_INVISIBLE);
+
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
@@ -70,6 +77,7 @@ class Image extends Base {
             this.loaded = true;
             this.emit('load');
             this.zoom();
+            this.imageEl.classList.remove(CLASS_INVISIBLE);
             if (this.options.ui !== false) {
                 this.loadUI();
             }

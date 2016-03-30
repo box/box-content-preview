@@ -180,9 +180,6 @@ class Preview extends EventEmitter {
         // Save the reference to the api endpoint
         this.options.api = options.api ? options.api.replace(/\/$/, '') : API;
 
-        // Shared link header
-        this.options.sharedLink = options.sharedLink;
-
         // Show or hide the header
         this.options.header = options.header || 'light';
 
@@ -638,8 +635,6 @@ class Preview extends EventEmitter {
             return;
         }
 
-        console.error(err);
-
         // Mark as error being processed which should prevent viewer loading
         this.open = false;
 
@@ -682,10 +677,6 @@ class Preview extends EventEmitter {
             Authorization: `Bearer ${authToken}`,
             'X-Rep-Hints': `3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
         };
-
-        if (this.options.sharedLink) {
-            headers.BoxApi = `shared_link=${this.options.sharedLink}`;
-        }
 
         return headers;
     }
@@ -815,6 +806,10 @@ class Preview extends EventEmitter {
     showNavigation() {
         // Before showing or updating navigation do some cleanup
         // that may be needed if the collection changes
+
+        if (!this.container) {
+            return;
+        }
 
         const leftNavigation = this.container.querySelector(SELECTOR_NAVIGATION_LEFT);
         const rightNavigation = this.container.querySelector(SELECTOR_NAVIGATION_RIGHT);
