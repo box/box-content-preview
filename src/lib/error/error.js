@@ -32,7 +32,7 @@ class PreviewError extends Base {
      */
     load(url, reason) {
         let extension = 'blank';
-        const message = reason || 'This file is either not previewable or not supported';
+        const message = reason || __('error_default');
 
         // Generic errors will not have the file object
         if (this.options.file) {
