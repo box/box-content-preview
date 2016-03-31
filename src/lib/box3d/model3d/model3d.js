@@ -208,6 +208,7 @@ class Model3d extends Box3D {
      */
     @autobind
     handleSceneLoaded() {
+        super.handleSceneLoaded();
         this.notifyAssetsMissing();
 
         // Get scene defaults for up/forward axes, and render mode
@@ -216,8 +217,6 @@ class Model3d extends Box3D {
                 if (resp.status !== 200) {
                     throw new Error(`Error loading template for ${this.options.file.id}`);
                 }
-
-                super.handleSceneLoaded();
 
                 const defaults = resp.response;
 
@@ -244,7 +243,6 @@ class Model3d extends Box3D {
             .catch((error) => {
                 // Make sure to display the settings panel, but hide the save button
                 this.settings.addUi(false);
-                super.handleSceneLoaded();
                 this.showWrapper();
                 /* eslint-disable no-console */
                 console.error(error);

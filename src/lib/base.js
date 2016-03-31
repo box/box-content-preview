@@ -164,7 +164,7 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     toggleFullscreen() {
-        fullscreen.toggle(this.containerEl, this.vrDevice);
+        fullscreen.toggle(this.containerEl);
     }
 
     /**

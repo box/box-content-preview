@@ -120,7 +120,7 @@ class Document extends DocBase {
         // Annotation buttons
         if (this.options.viewers.Document && this.options.viewers.Document.annotations) {
             this.controls.add(__('add_highlight_annotation'), this.annotator.addHighlightAnnotationHandler, '', 'H');
-            this.controls.add(__('add_point_annotation'), this.annotator.addPointAnnotationHandler, '', 'P');
+            this.controls.add(__('add_point_annotation'), this.annotator.togglePointAnnotationModeHandler, '', 'P');
         }
 
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);

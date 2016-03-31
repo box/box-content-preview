@@ -2,7 +2,6 @@
 import autobind from 'autobind-decorator';
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
-import { EVENT_SCENE_LOADED } from '../box3d-constants';
 import {
     EVENT_CLOSE_UI,
     EVENT_SET_RENDER_MODE,
@@ -215,7 +214,7 @@ class Model3dRenderer extends Box3DRenderer {
             }
 
             // Attach PreviewAxisRotation component to the instance
-            instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
+            instance.componentRegistry.add('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
 
             instance.on('axis_transition_complete', () => {
                 instance.alignToPosition({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 });
@@ -252,8 +251,7 @@ class Model3dRenderer extends Box3DRenderer {
     onSceneLoad() {
         this.reset();
         this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
-        this.enableVrIfPresent();
-        this.emit(EVENT_SCENE_LOADED);
+        super.onSceneLoad();
     }
 
     /**
@@ -349,7 +347,7 @@ class Model3dRenderer extends Box3DRenderer {
                         break;
                     // no default
                 }
-                const controllerComponent = camera.getComponentById('previewCameraController');
+                const controllerComponent = camera.componentRegistry.getById('previewCameraController');
                 controllerComponent.setAttribute('enableZoom', enableZoom);
                 camera.trigger('resetOrbitCameraController');
             }

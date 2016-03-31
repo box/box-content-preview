@@ -1,6 +1,7 @@
 /* global BoxSDK */
 import './video360.scss';
 import autobind from 'autobind-decorator';
+import fullscreen from '../../fullscreen';
 import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';
 import Video360Renderer from './video360-renderer';
@@ -57,7 +58,7 @@ class Video360 extends Dash {
         super.destroy();
         const box3d = this.renderer.box3d;
         const scene = box3d.getEntityById('SCENE_ID');
-        const skybox = scene.getComponentByScriptId('skybox_renderer');
+        const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
         skybox.setSkyboxTexture(null);
         this.textureAsset.destroy();
         this.destroyControls();
@@ -77,9 +78,10 @@ class Video360 extends Dash {
         this.renderer.initBox3d(this.optionsObj)
             .then(this.create360Environment)
             .then(() => {
+                this.fullscreenEl = this.renderer.box3d.canvas;
                 super.loadedmetadataHandler();
-                this.renderer.enableVrIfPresent();
                 this.createControls();
+                this.renderer.enableVrIfPresent();
             });
     }
 
@@ -121,15 +123,14 @@ class Video360 extends Dash {
     create360Environment() {
         const box3d = this.renderer.box3d;
         const scene = box3d.getEntityById('SCENE_ID');
-        const skybox = scene.getComponentByScriptId('skybox_renderer');
-        skybox.setSkyboxTexture(null);
+        const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
         this.textureAsset = box3d.assetRegistry.createAsset({
             id: 'VIDEO_TEX_ID',
             type: 'textureVideo',
             properties: {
-                // layout: window.Box3D.BaseTextureAsset.LAYOUT.STEREO_2D_OVER_UNDER,
-                ignoreStream: true,
+                // layout: 'stereo2dOverUnder',
+                stream: true,
                 generateMipmaps: false,
                 minFilter: 'linear',
                 magFilter: 'linear',
@@ -141,11 +142,19 @@ class Video360 extends Dash {
         });
         return new Promise((resolve) => {
             this.textureAsset.load(() => {
-                skybox.setSkyboxTexture(this.textureAsset.id);
+                skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                 skybox.enable();
                 resolve();
             });
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    @autobind
+    toggleFullscreen() {
+        fullscreen.toggle(this.renderer.box3d.canvas, this.vrDevice);
     }
 
     /**
