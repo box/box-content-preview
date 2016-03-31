@@ -3,7 +3,6 @@ import EventEmitter from 'events';
 import controlsTemplate from 'raw!./media-controls.html';
 import Scrubber from './scrubber';
 import Settings from './settings';
-import RepStatus from '../rep-status';
 import { insertTemplate } from '../util';
 
 const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
@@ -388,13 +387,13 @@ class MediaControls extends EventEmitter {
      * Sets up the filmstrip
      *
      * @private
-     * @param {Object} representation filmstrip representation
-     * @param {Number} aspect aspect ratio
-     * @param {String} token auth token
+     * @param {String} url filmstrip url
+     * @param {RepStatus} status status of filmstrip
+     * @param {Number} aspect ratio
      * @returns {void}
      */
-    initFilmstrip(representation, aspect, token) {
-        this.filmstripUrl = `${representation.links.content.url}?access_token=${token}`;
+    initFilmstrip(url, status, aspect) {
+        this.filmstripUrl = url;
 
         this.filmstripContainerEl = this.containerEl.appendChild(document.createElement('div'));
         this.filmstripContainerEl.className = 'box-preview-media-filmstrip-container';
@@ -425,10 +424,8 @@ class MediaControls extends EventEmitter {
             }
         };
 
-        const repStatus = new RepStatus(representation, {
-            Authorization: `Bearer ${token}`
-        });
-        repStatus.success().then(this.setFilmstrip);
+        // Once the filmstrip status is success, load it
+        status.success().then(this.setFilmstrip);
     }
 
     /**

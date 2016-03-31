@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import fullscreen from './fullscreen';
-import { createContentUrl } from './util';
+import { createContentUrl, getHeaders } from './util';
 import debounce from 'lodash.debounce';
 
 import {
@@ -115,7 +115,7 @@ class Base extends EventEmitter {
      * @returns {Object} fetch headers
      */
     appendAuthParam(url) {
-        return createContentUrl(url, this.options.token);
+        return createContentUrl(url, this.options.token, this.options.sharedLink);
     }
 
     /**
@@ -126,10 +126,7 @@ class Base extends EventEmitter {
      * @returns {Object} fetch headers
      */
     appendAuthHeader(headers = {}) {
-        /* eslint-disable no-param-reassign */
-        headers.Authorization = this.options.authorization;
-        /* eslint-enable no-param-reassign */
-        return headers;
+        return getHeaders(headers, this.options.token, this.options.sharedLink);
     }
 
     /**

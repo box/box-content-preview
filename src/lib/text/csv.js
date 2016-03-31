@@ -46,7 +46,8 @@ class CSV extends TextBase {
             Papa.parse(csvUrl, {
                 worker: Browser.getName() !== 'Edge' && Browser.getName() !== 'Explorer', // IE and Edge don't work with worker
                 download: true,
-                authorization: this.options.authorization,
+                token: this.options.token,
+                sharedLink: this.options.sharedLink,
                 error: (err, file, inputElem, reason) => {
                     this.emit('error', reason);
                 },
