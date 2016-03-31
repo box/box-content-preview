@@ -1,7 +1,7 @@
 import ImageLoader from './image/image-loader';
 import Image360Loader from './box3d/image360/image360-loader';
 import SwfLoader from './swf/swf-loader';
-import TextLoader from './text/text-loader';
+// import TextLoader from './text/text-loader';
 import MediaLoader from './media/media-loader';
 import Video360Loader from './box3d/video360/video360-loader';
 import DocLoader from './doc/doc-loader';
@@ -14,7 +14,8 @@ export default [
     SwfLoader,
     MediaLoader,
     Video360Loader,
-    TextLoader, // should come before document
+    // Not using the text or csv viewer for now
+    // TextLoader, // should come before document
     DocLoader, // should come after text
     ImageLoader,
     Image360Loader,
