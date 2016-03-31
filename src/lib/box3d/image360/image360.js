@@ -3,6 +3,7 @@ import Box3D from '../box3d';
 import autobind from 'autobind-decorator';
 import Image360Controls from './image360-controls';
 import Image360Renderer from './image360-renderer';
+
 import {
     EVENT_RELOAD,
     EVENT_SWITCH_2D
