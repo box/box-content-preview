@@ -10,6 +10,7 @@ import {
 } from './image360-constants';
 
 const Box = global.Box || {};
+const CSS_CLASS_IMAGE_360 = 'box-preview-image-360';
 
 /**
  * Image360
@@ -17,6 +18,12 @@ const Box = global.Box || {};
  * @class
  */
 class Image360 extends Box3D {
+
+    constructor(container, options) {
+        super(container, options);
+
+        this.wrapperEl.classList.add(CSS_CLASS_IMAGE_360);
+    }
 
     /**
      * @inheritdoc

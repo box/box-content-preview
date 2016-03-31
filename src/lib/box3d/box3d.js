@@ -78,6 +78,7 @@ class Box3D extends Base {
         if (this.renderer) {
             this.renderer.on(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
+            this.renderer.on(EVENT_ERROR, this.handleRendererError);
         }
     }
 
@@ -194,6 +195,11 @@ class Box3D extends Base {
     @autobind
     handleReset() {
         this.renderer.reset();
+    }
+
+    @autobind
+    handleRendererError(error) {
+        this.emit(EVENT_ERROR, error);
     }
 }
 

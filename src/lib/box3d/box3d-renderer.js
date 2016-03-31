@@ -5,7 +5,8 @@ import {
     CACHE_KEY_BOX3D,
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
-    EVENT_TRIGGER_RENDER
+    EVENT_TRIGGER_RENDER,
+    EVENT_TRIGGER_RESIZE
 } from './box3d-constants';
 
 const INPUT_SETTINGS = {
@@ -40,6 +41,7 @@ class Box3DRenderer extends EventEmitter {
         this.vrDevice = null;
         this.boxSdk = boxSdk;
         this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
+        this.on(EVENT_TRIGGER_RESIZE, this.handleOnResize);
     }
 
     /**
@@ -72,6 +74,7 @@ class Box3DRenderer extends EventEmitter {
         this.box3d.resourceLoader.destroy();
 
         this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
+        this.removeListener(EVENT_TRIGGER_RESIZE, this.handleOnResize);
     }
 
     /**
@@ -281,6 +284,17 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
         this.box3d.trigger('render');
+    }
+
+    /**
+     * Call the onResize of the engine
+     * @returns {void}
+     */
+    handleOnResize() {
+        if (!this.box3d) {
+            return;
+        }
+        this.box3d.onResize();
     }
 
     /**

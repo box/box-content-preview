@@ -17,6 +17,8 @@ import {
     EVENT_SWITCH_2D
 } from './video360-constants';
 
+const CSS_CLASS_VIDEO_360 = 'box-preview-video-360';
+
 /**
  * Video360
  * This is the entry point for the video360 preview.
@@ -41,6 +43,8 @@ class Video360 extends Dash {
         this.mediaEl.style.display = 'none';
         this.mediaContainerEl.style.width = '100%';
         this.mediaContainerEl.style.height = '100%';
+        // dash specific class
+        this.wrapperEl.classList.add(CSS_CLASS_VIDEO_360);
 
         const sdkOpts = { token: options.token, apiBase: options.api };
         this.boxSdk = new BoxSDK(sdkOpts);
@@ -132,7 +136,8 @@ class Video360 extends Dash {
                 magFilter: 'linear',
                 uMapping: 'clamp',
                 vMapping: 'clamp',
-                querySelector: `.${this.mediaContainerEl.className} video`
+                querySelector: `.${this.mediaContainerEl.className} video`,
+                autoPlay: false
             }
         });
         return new Promise((resolve) => {

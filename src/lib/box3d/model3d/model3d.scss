@@ -123,17 +123,17 @@ $blue-highlight: #22A7F0;
     /* -> containing block */
 }
 
-.box-preview-box3d .box-preview-default-setting-selector span {
+.box-preview-box3d .box-preview-settings-panel .box-preview-default-setting-selector span {
     display: block;
     position: relative;
     height: 34px;
 }
 
-.box-preview-box3d .box-preview-default-setting-selector span:hover {
+.box-preview-box3d .box-preview-settings-panel .box-preview-default-setting-selector span:hover {
     color: #fff;
 }
 
-.box-preview-box3d .box-preview-default-setting-selector span:after {
+.box-preview-box3d .box-preview-settings-panel .box-preview-default-setting-selector span:after {
     content: "\2228";
     position: absolute;
     /* -> containing block */
