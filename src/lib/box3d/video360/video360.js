@@ -1,6 +1,7 @@
 /* global BoxSDK */
 import './video360.scss';
 import autobind from 'autobind-decorator';
+import fullscreen from '../../fullscreen';
 import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';
 import Video360Renderer from './video360-renderer';
@@ -141,6 +142,14 @@ class Video360 extends Dash {
                 resolve();
             });
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    @autobind
+    toggleFullscreen() {
+        fullscreen.toggle(this.renderer.box3d.canvas, this.vrDevice);
     }
 
     /**
