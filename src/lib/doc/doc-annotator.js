@@ -12,15 +12,20 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 import throttle from 'lodash.throttle';
 
 import {
-    CREATE_ANNOTATION_DIALOG_CLASS,
-    SHOW_ANNOTATION_DIALOG_CLASS,
+    ADD_HIGHLIGHT_BUTTON_CLASS,
+    ANNOTATION_DIALOG_CLASS,
     ANNOTATION_TEXTAREA_CLASS,
     CANCEL_ANNOTATION_BUTTON_CLASS,
     COMMENTS_CONTAINER_CLASS,
+    CREATE_ANNOTATION_DIALOG_CLASS,
+    POINT_ANNOTATION_ICON_CLASS,
+    POINT_ANNOTATION_MODE_CLASS,
+    POINT_ANNOTATION_PLACEHOLDER_CLASS,
     POST_ANNOTATION_BUTTON_CLASS,
     REPLY_ANNOTATION_BUTTON_CLASS,
     REPLY_CONTAINER_CLASS,
-    REPLY_CONTENT_CLASS
+    REPLY_CONTENT_CLASS,
+    SHOW_ANNOTATION_DIALOG_CLASS
 } from '../annotation/constants';
 import { CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
@@ -363,11 +368,10 @@ class DocAnnotator extends Annotator {
         // Remove saved click event handlers
         this.removeAllEventHandlers();
 
-        // Remove event listeners
-        document.removeEventListener('mousemove', this.highlightMousemoveHandler());
-        document.removeEventListener(TOUCH_EVENT, this.highlightClickHandler);
+        // Remove event listeners not managed by our 'addEventHandler'
+        document.removeEventListener('mousemove', this.mousemoveHandler());
         document.removeEventListener(TOUCH_EVENT, this.pointClickHandler);
-        document.removeEventListener(TOUCH_END, this.showAddHighlightButtonHandler);
+        this.unbindHighlightHandlers();
     }
 
     /**
@@ -407,15 +411,16 @@ class DocAnnotator extends Annotator {
         this.hoverAnnotationID = ''; // ID of annotation user is hovered over
         this.activeAnnotationID = ''; // ID of active annotation (clicked)
 
-        // Add mousemove handler for adding a hover effect to highlights
-        document.addEventListener('mousemove', this.highlightMousemoveHandler());
+        // Add handler for annotation hover behavior
+        document.addEventListener('mousemove', this.mousemoveHandler());
 
-        // Add click handlers for activating a highlight or showing and hiding point comments
-        document.addEventListener(TOUCH_EVENT, this.highlightClickHandler);
+        // Add handler for point annotation click behavior (for mobile)
         document.addEventListener(TOUCH_EVENT, this.pointClickHandler);
 
-        // Add mouseup/touchend event for showing the add highlight button
-        document.addEventListener(TOUCH_END, this.showAddHighlightButtonHandler);
+        // Hide annotation dialogs and buttons on right click
+        document.addEventListener('contextmenu', this.contextmenuHandler);
+
+        this.bindHighlightHandlers();
     }
 
     /**
@@ -424,8 +429,7 @@ class DocAnnotator extends Annotator {
      * @returns {Promise} Promise for fetching saved annotations
      */
     fetchAnnotations() {
-        // @TODO(tjin): Load/unload annotations by page based on pages loaded
-        // from document viewer
+        // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
 
         // Fetch map of thread ID to annotations, return the promise
         return this.annotationService.getAnnotationsForFile(this.fileID).then((annotationsMap) => {
@@ -507,8 +511,7 @@ class DocAnnotator extends Annotator {
      * @returns {Promise} Promise to remove annotation
      */
     deleteAnnotation(annotationID, removeFromMap) {
-        // Remove from in-memory map. We use Array.prototype.some to short
-        // circuit loop
+        // Remove from in-memory map. We use Array.prototype.some to short circuit loop
         if (removeFromMap) {
             Object.keys(this.annotations).some((page) => {
                 const pageAnnotations = this.annotations[page];
@@ -524,6 +527,20 @@ class DocAnnotator extends Annotator {
 
         // Remove from persistant store
         return this.annotationService.delete(annotationID);
+    }
+
+    /**
+     * Right click handler - hides annotations-related dialogs, buttons,
+     * and icons.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    contextmenuHandler() {
+        hideElement(`.${ADD_HIGHLIGHT_BUTTON_CLASS}`);
+        hideElement(`.${CREATE_ANNOTATION_DIALOG_CLASS}`);
+        hideElement(`.${SHOW_ANNOTATION_DIALOG_CLASS}`);
+        hideElement(`.${POINT_ANNOTATION_PLACEHOLDER_CLASS}`);
     }
 
 
@@ -748,6 +765,29 @@ class DocAnnotator extends Annotator {
     }
 
     /**
+     * Binds highlight-related event handlers.
+     *
+     * @returns {void}
+     */
+    bindHighlightHandlers() {
+        // Add click handlers for activating a highlight or showing and hiding point comments
+        document.addEventListener(TOUCH_EVENT, this.highlightClickHandler);
+
+        // Add mouseup/touchend event for showing the add highlight button
+        document.addEventListener(TOUCH_END, this.showAddHighlightButtonHandler);
+    }
+
+    /**
+     * Unbinds highlight-related event handlers.
+     *
+     * @returns {void}
+     */
+    unbindHighlightHandlers() {
+        document.removeEventListener(TOUCH_EVENT, this.highlightClickHandler);
+        document.removeEventListener(TOUCH_END, this.showAddHighlightButtonHandler);
+    }
+
+    /**
      * Handler to show the add highlight button. Shown when mouse is
      * released or touch is ended and there is a selection on screen.
      *
@@ -780,10 +820,10 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        let addHighlightButtonEl = document.querySelector('.box-preview-add-highlight-btn');
+        let addHighlightButtonEl = document.querySelector(`.${ADD_HIGHLIGHT_BUTTON_CLASS}`);
         if (!addHighlightButtonEl) {
             addHighlightButtonEl = document.createElement('button');
-            addHighlightButtonEl.classList.add('box-preview-add-highlight-btn');
+            addHighlightButtonEl.classList.add(ADD_HIGHLIGHT_BUTTON_CLASS);
             addHighlightButtonEl.innerHTML = ICON_HIGHLIGHT;
 
             this.addEventHandler(addHighlightButtonEl, (ev) => {
@@ -798,8 +838,7 @@ class DocAnnotator extends Annotator {
         let buttonX;
         let buttonY;
 
-        // If selection is reversed, button should be placed before the first
-        // line of selection
+        // If selection is reversed, button should be placed before the first line of selection
         if (isSelectionReversed(event, highlightEls)) {
             const firstHighlightEl = highlightEls[0];
             const dimensions = firstHighlightEl.getBoundingClientRect();
@@ -855,8 +894,7 @@ class DocAnnotator extends Annotator {
             });
         }
 
-        // Create remove highlight button and position it above the upper right
-        // corner of the highlight
+        // Create remove highlight button and position it above the upper right corner of the highlight
         const pageHeight = pageEl.getBoundingClientRect().height;
         const upperRightCorner = getUpperRightCorner(annotation.location.quadPoints, pageEl);
         const [browserX, browserY] = convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
@@ -871,31 +909,74 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Handler for mousemove over the document. Adds a hover effect for
-     * highlight annotations.
+     * Handler for mousemove over the document. Controls highlight and point
+     * annotation hover behavior. We use a single throttled mousemove handler
+     * for performance.
      *
      * @returns {Function} mousemove handler
      */
-    highlightMousemoveHandler() {
-        if (!this.throttledHighlightMousemoveHandler) {
-            this.throttledHighlightMousemoveHandler = throttle((event) => {
-                const page = getPageElAndPageNumber(event.target).page;
+    mousemoveHandler() {
+        if (!this.throttledMousemoveHandler) {
+            this.throttledMousemoveHandler = throttle((event) => {
+                // Short circuit all mousemove behavior if we are not on a page
+                const eventTarget = event.target;
+                const { pageEl, page } = getPageElAndPageNumber(eventTarget);
                 if (page === -1) {
+                    hideElement(`.${POINT_ANNOTATION_ICON_CLASS}`);
                     return;
                 }
 
-                // Redraw annotations only if annotation we're currently over
-                // has changed
-                const hoverAnnotationID = this.getHighlightIDFromMousePoint(event.clientX, event.clientY, page);
-                if (hoverAnnotationID !== this.hoverAnnotationID) {
-                    // Cache which annotation we're currently over
-                    this.hoverAnnotationID = hoverAnnotationID;
-                    this.drawHighlightAnnotationsOnPage(page);
+                // Point annotation hover behavior
+                const dataType = findClosestDataType(eventTarget);
+                const inAnnotationDialog = dataType === 'show-annotation-dialog' || dataType === 'create-annotation-dialog';
+
+                // Show annotation thread when hovering over point icon
+                if (dataType === 'show-point-annotation-btn') {
+                    this.showAnnotationDialog(event.target.getAttribute('data-thread-id'));
+                } else if (!inAnnotationDialog) {
+                    hideElement(`.${SHOW_ANNOTATION_DIALOG_CLASS}`);
                 }
-            }, 100);
+
+                // Get or create point annotation mode icon
+                let pointAnnotationIconEl = document.querySelector(`.${POINT_ANNOTATION_ICON_CLASS}`);
+                if (!pointAnnotationIconEl) {
+                    pointAnnotationIconEl = document.createElement('div');
+                    pointAnnotationIconEl.classList.add(POINT_ANNOTATION_ICON_CLASS);
+                    pointAnnotationIconEl.classList.add(CLASS_HIDDEN);
+                }
+
+                // Append point annotation icon to correct parent
+                if (!pageEl.contains(pointAnnotationIconEl)) {
+                    pageEl.appendChild(pointAnnotationIconEl);
+                }
+
+                // If in annotation mode and mouse is not in a dialog, make icon track the mouse
+                const docEl = document.querySelector('.box-preview-doc');
+                const inAnnotationMode = docEl.classList.contains(POINT_ANNOTATION_MODE_CLASS);
+                if (inAnnotationMode && !inAnnotationDialog) {
+                    const pageDimensions = pageEl.getBoundingClientRect();
+                    // Icon is 22px wide so we shift icon left/up 11px to center on cursor
+                    pointAnnotationIconEl.style.left = `${event.clientX - pageDimensions.left - 11}px`;
+                    pointAnnotationIconEl.style.top = `${event.clientY - pageDimensions.top - 11}px`;
+                    showElement(pointAnnotationIconEl);
+                } else {
+                    hideElement(pointAnnotationIconEl);
+                }
+
+                // Highlight annotation hover behavior
+                if (!inAnnotationMode) {
+                    // Redraw annotations only if annotation we're currently over has changed
+                    const hoverAnnotationID = this.getHighlightIDFromMousePoint(event.clientX, event.clientY, page);
+                    if (hoverAnnotationID !== this.hoverAnnotationID) {
+                        // Cache which annotation we're currently over
+                        this.hoverAnnotationID = hoverAnnotationID;
+                        this.drawHighlightAnnotationsOnPage(page);
+                    }
+                }
+            });
         }
 
-        return this.throttledHighlightMousemoveHandler;
+        return this.throttledMousemoveHandler;
     }
 
     /**
@@ -913,7 +994,7 @@ class DocAnnotator extends Annotator {
         // Hide add highlight button if there is no current selection
         const selection = window.getSelection();
         if (selection.isCollapsed || selection.rangeCount < 1) {
-            hideElement('.box-preview-add-highlight-btn');
+            hideElement(`.${ADD_HIGHLIGHT_BUTTON_CLASS}`);
         }
 
         // Stop dealing with highlights if the click was outside a page
@@ -1010,7 +1091,6 @@ class DocAnnotator extends Annotator {
         pointAnnotationButtonEl.classList.add('box-preview-show-point-annotation-btn');
         pointAnnotationButtonEl.setAttribute('data-type', 'show-point-annotation-btn');
         pointAnnotationButtonEl.setAttribute('data-thread-id', annotation.threadID);
-        pointAnnotationButtonEl.textContent = 'P';
 
         const location = annotation.location;
         const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
@@ -1039,25 +1119,72 @@ class DocAnnotator extends Annotator {
     }
 
     /**
+     * Shows a placeholder point annotation icon at the specified location.
+     *
+     * @param {Object} location Location data for where to place placeholder
+     * @returns {void}
+     */
+    showPlaceholderPointAnnotation(location) {
+        let pointAnnotationButtonEl = document.querySelector(`.${POINT_ANNOTATION_PLACEHOLDER_CLASS}`);
+        if (!pointAnnotationButtonEl) {
+            pointAnnotationButtonEl = document.createElement('button');
+            pointAnnotationButtonEl.classList.add(POINT_ANNOTATION_PLACEHOLDER_CLASS);
+        }
+
+        const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
+        const pageHeight = pageEl.getBoundingClientRect().height;
+        const [browserX, browserY] = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
+        pointAnnotationButtonEl.style.left = `${browserX - 11}px`;
+        pointAnnotationButtonEl.style.top = `${browserY - 11}px`;
+        showElement(pointAnnotationButtonEl);
+        pageEl.appendChild(pointAnnotationButtonEl);
+    }
+
+    /**
      * Handler for click on document for showing and hiding point comments
-     * and dialog.
+     * and dialog. This is mainly used for mobile compatibility since on the
+     * web, we have a hover interaction.
      *
      * @param {Event} event DOM event
      * @returns {void}
      */
     pointClickHandler(event) {
-        // If we aren't inside an annotation dialog, hide the annotation dialog
-        if (!findClosestElWithClass(event.target, CREATE_ANNOTATION_DIALOG_CLASS)) {
-            hideElement(`.${CREATE_ANNOTATION_DIALOG_CLASS}`);
-        }
-
-        if (!findClosestElWithClass(event.target, SHOW_ANNOTATION_DIALOG_CLASS)) {
-            hideElement(`.${SHOW_ANNOTATION_DIALOG_CLASS}`);
-        }
-
         // If we clicked on a point annotation icon, show that annotation
         if (findClosestDataType(event.target) === 'show-point-annotation-btn') {
             this.showAnnotationDialog(event.target.getAttribute('data-thread-id'));
+
+        // Otherwise, hide point annotation dialogs and placeholder
+        } else {
+            hideElement(`.${CREATE_ANNOTATION_DIALOG_CLASS}`);
+            hideElement(`.${SHOW_ANNOTATION_DIALOG_CLASS}`);
+            hideElement(`.${POINT_ANNOTATION_PLACEHOLDER_CLASS}`);
+        }
+    }
+
+    /**
+     * Toggles point annotation mode on and off. When point annotation mode is
+     * on, clicking an area will create a point annotation at that location.
+     *
+     * @returns {void}
+     */
+    togglePointAnnotationModeHandler() {
+        const docEl = document.querySelector('.box-preview-doc');
+
+        // If in annotation mode, turn it off
+        if (docEl.classList.contains(POINT_ANNOTATION_MODE_CLASS)) {
+            docEl.classList.remove(POINT_ANNOTATION_MODE_CLASS);
+            this.removeEventHandlers(docEl);
+
+            // Enable highlight-related events
+            this.bindHighlightHandlers();
+
+        // Otherwise, enable annotation mode
+        } else {
+            docEl.classList.add(POINT_ANNOTATION_MODE_CLASS);
+            this.addEventHandler(docEl, this.addPointAnnotationHandler);
+
+            // Disable highlight-related events
+            this.unbindHighlightHandlers();
         }
     }
 
@@ -1075,27 +1202,28 @@ class DocAnnotator extends Annotator {
 
         // @TODO(tjin): Investigate edge cases with existing highlights in 'bindOnClickCreateComment'
 
-        this.addEventHandler(document, (e) => {
-            e.stopPropagation();
+        // If click isn't on a page, ignore
+        const eventTarget = event.target;
+        const { pageEl, page } = getPageElAndPageNumber(eventTarget);
+        if (!pageEl) {
+            return;
+        }
 
-            // If click isn't on a page, disregard
-            const { pageEl, page } = getPageElAndPageNumber(e.target);
-            if (!pageEl) {
-                return;
-            }
+        // If click is inside an annotation dialog, ignore
+        const dataType = findClosestDataType(eventTarget);
+        if (dataType === 'show-annotation-dialog' ||
+            dataType === 'create-annotation-dialog') {
+            return;
+        }
 
-            // Store coordinates at 100% scale in PDF space in PDF units
-            const pageDimensions = pageEl.getBoundingClientRect();
-            const browserCoordinates = [e.clientX - pageDimensions.left, e.clientY - pageDimensions.top];
-            const pdfCoordinates = convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, this.scale);
-            const [x, y] = pdfCoordinates;
-            const locationData = { x, y, page };
+        // Store coordinates at 100% scale in PDF space in PDF units
+        const pageDimensions = pageEl.getBoundingClientRect();
+        const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageDimensions.top];
+        const pdfCoordinates = convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, this.scale);
+        const [x, y] = pdfCoordinates;
+        const locationData = { x, y, page };
 
-            this.createAnnotationDialog(locationData, POINT_ANNOTATION_TYPE);
-
-            // Cleanup handler
-            this.removeEventHandlers(document);
-        });
+        this.createAnnotationDialog(locationData, POINT_ANNOTATION_TYPE);
     }
 
     /* ---------- Dialogs ---------- */
@@ -1107,10 +1235,16 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     createAnnotationDialog(locationData, annotationType) {
+        // Show a placeholder & hide point annotation indicator
+        this.showPlaceholderPointAnnotation(locationData);
+        hideElement(`.${POINT_ANNOTATION_ICON_CLASS}`);
+
         // Create annotation dialog HTML
         let annotationDialogEl = document.querySelector(`.${CREATE_ANNOTATION_DIALOG_CLASS}`);
         if (!annotationDialogEl) {
             annotationDialogEl = document.createElement('div');
+            annotationDialogEl.setAttribute('data-type', 'create-annotation-dialog');
+            annotationDialogEl.classList.add(ANNOTATION_DIALOG_CLASS);
             annotationDialogEl.classList.add(CREATE_ANNOTATION_DIALOG_CLASS);
             const annotationElString = `
                 <div class="annotation-container">
@@ -1140,7 +1274,8 @@ class DocAnnotator extends Annotator {
 
             // Save annotation
             this.createAnnotation(annotation, true).then((createdAnnotation) => {
-                hideElement('.box-preview-create-annotation-dialog');
+                hideElement(`.${CREATE_ANNOTATION_DIALOG_CLASS}`);
+                hideElement(`.${POINT_ANNOTATION_PLACEHOLDER_CLASS}`);
 
                 // Show point annotation icon
                 this.showPointAnnotation(createdAnnotation);
@@ -1153,10 +1288,11 @@ class DocAnnotator extends Annotator {
         // Clicking 'Cancel' to cancel annotation
         this.addEventHandler(cancelButtonEl, (event) => {
             event.stopPropagation();
-            hideElement('.box-preview-create-annotation-dialog');
+            hideElement(`.${CREATE_ANNOTATION_DIALOG_CLASS}`);
+            hideElement(`.${POINT_ANNOTATION_PLACEHOLDER_CLASS}`);
         });
 
-        this.positionDialog(annotationDialogEl, locationData, 262);
+        this.positionDialog(annotationDialogEl, locationData, 302);
 
         // Clear and focus comment textarea
         annotationTextEl.value = '';
@@ -1176,10 +1312,13 @@ class DocAnnotator extends Annotator {
                 return;
             }
 
-            // Find existing show annotation dialog or create one
+            // Create annotation dialog if needed (one doesn't exist or one
+            // that exists is not the one we need)
             let annotationDialogEl = document.querySelector(`.${SHOW_ANNOTATION_DIALOG_CLASS}`);
-            if (!annotationDialogEl) {
+            if (!annotationDialogEl || annotationDialogEl.getAttribute('data-thread-id') === threadID) {
                 annotationDialogEl = document.createElement('div');
+                annotationDialogEl.setAttribute('data-type', 'show-annotation-dialog');
+                annotationDialogEl.classList.add(ANNOTATION_DIALOG_CLASS);
                 annotationDialogEl.classList.add(SHOW_ANNOTATION_DIALOG_CLASS);
                 annotationDialogEl.innerHTML = `
                     <div class="annotation-container">
@@ -1260,7 +1399,7 @@ class DocAnnotator extends Annotator {
 
             // All annotations in a thread should have the same location
             const locationData = firstAnnotation.location || {};
-            this.positionDialog(annotationDialogEl, locationData, 316);
+            this.positionDialog(annotationDialogEl, locationData, 357);
         });
     }
 
@@ -1343,9 +1482,7 @@ class DocAnnotator extends Annotator {
                     }
                 }
             }).catch(() => {
-                /* eslint-disable no-console */
-                console.log('There was an error deleting your annotation');
-                /* eslint-enable no-console */
+                // console.log('There was an error deleting your annotation');
             });
         });
 
@@ -1369,8 +1506,10 @@ class DocAnnotator extends Annotator {
         // Center middle of dialog with point
         positionedDialogEl.style.left = `${browserX - dialogWidth / 2}px`;
 
-        // Position 27px below point (22px point icon/2 + 6px caret + 10px padding)
-        positionedDialogEl.style.top = `${browserY + 27}px`;
+        // Position 11px above point (22px point icon/2, and tranpsarent border
+        // on dialog pushes it down - we do this to create a larger mouseover
+        // area)
+        positionedDialogEl.style.top = `${browserY - 11}px`;
         showElement(positionedDialogEl);
         pageEl.appendChild(dialogEl);
 

@@ -688,10 +688,11 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showAnnotateButton() {
+        // @TODO(tjin): Add permission checks here once we have annotation permissions
         if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable()) {
             this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
             this.annotateButton.classList.remove(CLASS_HIDDEN);
-            this.annotateButton.addEventListener('click', this.viewer.annotator.addPointAnnotationHandler);
+            this.annotateButton.addEventListener('click', this.viewer.annotator.togglePointAnnotationModeHandler);
         }
     }
 
