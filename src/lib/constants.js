@@ -1,3 +1,4 @@
+export const CLASS_ACTIVE = 'box-preview-is-active';
 export const CLASS_NAVIGATION_VISIBILITY = 'box-preview-is-navigation-visible';
 export const CLASS_HIDDEN = 'box-preview-is-hidden';
 export const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
