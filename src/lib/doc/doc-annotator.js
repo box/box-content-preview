@@ -11,7 +11,7 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
 
-import * as CONSTANTS from '../annotation/constants';
+import * as constants from '../annotation/constants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE, ICON_DELETE_SMALL, ICON_HIGHLIGHT } from '../icons/icons';
 
@@ -129,7 +129,7 @@ function hideElement(elementOrSelector) {
 function resetTextarea(element) {
     const textareaEl = element;
     textareaEl.value = '';
-    textareaEl.setAttribute('style', '');
+    textareaEl.style = '';
     textareaEl.classList.remove(CLASS_ACTIVE);
 }
 
@@ -200,8 +200,8 @@ function isElementInViewport(element) {
     return (
         dimensions.top >= 0 &&
         dimensions.left >= 0 &&
-        dimensions.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        dimensions.right <= (window.innerWidth || document.documentElement.clientWidth)
+        dimensions.bottom <= window.innerHeight &&
+        dimensions.right <= window.innerWidth
     );
 }
 
@@ -554,10 +554,10 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     contextmenuHandler() {
-        hideElement(CONSTANTS.SELECTOR_HIGHLIGHT_BUTTON_ADD);
-        hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_CREATE);
-        hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_SHOW);
-        hideElement(CONSTANTS.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+        hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+        hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
     }
 
     /**
@@ -574,7 +574,7 @@ class DocAnnotator extends Annotator {
                 const eventTarget = event.target;
                 const { pageEl, page } = getPageElAndPageNumber(eventTarget);
                 if (page === -1) {
-                    hideElement(CONSTANTS.SELECTOR_ANNOTATION_POINT_ICON);
+                    hideElement(constants.SELECTOR_ANNOTATION_POINT_ICON);
                     return;
                 }
 
@@ -593,17 +593,17 @@ class DocAnnotator extends Annotator {
                 } else {
                     if (!this.timeoutHandler) {
                         this.timeoutHandler = setTimeout(() => {
-                            hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_SHOW);
+                            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
                             this.timeoutHandler = null;
                         }, MENU_HIDE_TIMEOUT);
                     }
                 }
 
                 // Get or create point annotation mode icon
-                let pointAnnotationIconEl = document.querySelector(CONSTANTS.SELECTOR_ANNOTATION_POINT_ICON);
+                let pointAnnotationIconEl = document.querySelector(constants.SELECTOR_ANNOTATION_POINT_ICON);
                 if (!pointAnnotationIconEl) {
                     pointAnnotationIconEl = document.createElement('div');
-                    pointAnnotationIconEl.classList.add(CONSTANTS.CLASS_ANNOTATION_POINT_ICON);
+                    pointAnnotationIconEl.classList.add(constants.CLASS_ANNOTATION_POINT_ICON);
                     pointAnnotationIconEl.classList.add(CLASS_HIDDEN);
                 }
 
@@ -614,7 +614,7 @@ class DocAnnotator extends Annotator {
 
                 // If in annotation mode and mouse is not in a dialog, make icon track the mouse
                 const docEl = document.querySelector('.box-preview-doc');
-                const inAnnotationMode = docEl.classList.contains(CONSTANTS.CLASS_ANNOTATION_POINT_MODE);
+                const inAnnotationMode = docEl.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
                 if (inAnnotationMode && !inAnnotationDialog) {
                     const pageDimensions = pageEl.getBoundingClientRect();
                     // Icon is 22px wide so we shift icon left/up 11px to center on cursor
@@ -900,7 +900,7 @@ class DocAnnotator extends Annotator {
         }
 
         // Do nothing if any annotation dialog is open
-        const annotationDialogEls = [].slice.call(document.querySelectorAll(CONSTANTS.SELECTOR_ANNOTATION_DIALOG), 0);
+        const annotationDialogEls = [].slice.call(document.querySelectorAll(constants.SELECTOR_ANNOTATION_DIALOG), 0);
         if (annotationDialogEls.some((dialogEl) => !dialogEl.classList.contains(CLASS_HIDDEN))) {
             return;
         }
@@ -925,10 +925,10 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        let addHighlightButtonEl = document.querySelector(CONSTANTS.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        let addHighlightButtonEl = document.querySelector(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
         if (!addHighlightButtonEl) {
             addHighlightButtonEl = document.createElement('button');
-            addHighlightButtonEl.classList.add(CONSTANTS.CLASS_HIGHLIGHT_BUTTON_ADD);
+            addHighlightButtonEl.classList.add(constants.CLASS_HIGHLIGHT_BUTTON_ADD);
             addHighlightButtonEl.innerHTML = ICON_HIGHLIGHT;
 
             this.addEventHandler(addHighlightButtonEl, this.addHighlightAnnotationHandler);
@@ -1024,7 +1024,7 @@ class DocAnnotator extends Annotator {
         // Hide add highlight button if there is no current selection
         const selection = window.getSelection();
         if (selection.isCollapsed || selection.rangeCount < 1) {
-            hideElement(CONSTANTS.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+            hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
         }
 
         // Stop dealing with highlights if the click was outside a page
@@ -1106,7 +1106,7 @@ class DocAnnotator extends Annotator {
         });
 
         // Hide add highlight button
-        hideElement(CONSTANTS.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
     }
 
     /* ---------- Point Annotations ---------- */
@@ -1156,10 +1156,10 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showPlaceholderPointAnnotation(location) {
-        let pointPlaceholderEl = document.querySelector(CONSTANTS.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+        let pointPlaceholderEl = document.querySelector(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         if (!pointPlaceholderEl) {
             pointPlaceholderEl = document.createElement('button');
-            pointPlaceholderEl.classList.add(CONSTANTS.CLASS_ANNOTATION_POINT_PLACEHOLDER);
+            pointPlaceholderEl.classList.add(constants.CLASS_ANNOTATION_POINT_PLACEHOLDER);
         }
 
         const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
@@ -1186,15 +1186,15 @@ class DocAnnotator extends Annotator {
         if (dataType === 'show-point-annotation-btn') {
             this.showAnnotationDialog(eventTarget.getAttribute('data-thread-id'));
         } else if (dataType === 'show-annotation-dialog') {
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_CREATE);
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+            hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         } else if (dataType === 'create-annotation-dialog') {
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_SHOW);
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+            hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         } else {
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_CREATE);
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_SHOW);
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+            hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         }
     }
 
@@ -1208,8 +1208,8 @@ class DocAnnotator extends Annotator {
         const docEl = document.querySelector('.box-preview-doc');
 
         // If in annotation mode, turn it off
-        if (docEl.classList.contains(CONSTANTS.CLASS_ANNOTATION_POINT_MODE)) {
-            docEl.classList.remove(CONSTANTS.CLASS_ANNOTATION_POINT_MODE);
+        if (docEl.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)) {
+            docEl.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             this.removeEventHandlers(docEl);
 
             // Enable highlight-related events
@@ -1217,7 +1217,7 @@ class DocAnnotator extends Annotator {
 
         // Otherwise, enable annotation mode
         } else {
-            docEl.classList.add(CONSTANTS.CLASS_ANNOTATION_POINT_MODE);
+            docEl.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
             this.addEventHandler(docEl, this.addPointAnnotationHandler);
 
             // Disable highlight-related events
@@ -1274,15 +1274,15 @@ class DocAnnotator extends Annotator {
     createAnnotationDialog(locationData, annotationType) {
         // Show a placeholder & hide point annotation indicator
         this.showPlaceholderPointAnnotation(locationData);
-        hideElement(CONSTANTS.SELECTOR_ANNOTATION_POINT_ICON);
+        hideElement(constants.SELECTOR_ANNOTATION_POINT_ICON);
 
         // Create annotation dialog HTML
-        let annotationDialogEl = document.querySelector(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_CREATE);
+        let annotationDialogEl = document.querySelector(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
         if (!annotationDialogEl) {
             annotationDialogEl = document.createElement('div');
             annotationDialogEl.setAttribute('data-type', 'create-annotation-dialog');
-            annotationDialogEl.classList.add(CONSTANTS.CLASS_ANNOTATION_DIALOG);
-            annotationDialogEl.classList.add(CONSTANTS.CLASS_ANNOTATION_DIALOG_CREATE);
+            annotationDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+            annotationDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG_CREATE);
             const annotationElString = `
                 <div class="annotation-container">
                     <textarea class="annotation-textarea ${CLASS_ACTIVE}" placeholder="Add a comment here..."></textarea>
@@ -1294,9 +1294,9 @@ class DocAnnotator extends Annotator {
             annotationDialogEl.innerHTML = annotationElString;
         }
 
-        const postButtonEl = annotationDialogEl.querySelector(CONSTANTS.SELECTOR_ANNOTATION_BUTTON_POST);
-        const cancelButtonEl = annotationDialogEl.querySelector(CONSTANTS.SELECTOR_ANNOTATION_BUTTON_CANCEL);
-        const annotationTextEl = annotationDialogEl.querySelector(CONSTANTS.SELECTOR_ANNOTATION_TEXTAREA);
+        const postButtonEl = annotationDialogEl.querySelector(constants.SELECTOR_ANNOTATION_BUTTON_POST);
+        const cancelButtonEl = annotationDialogEl.querySelector(constants.SELECTOR_ANNOTATION_BUTTON_CANCEL);
+        const annotationTextEl = annotationDialogEl.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
 
         // Clean up existing handler
         this.removeEventHandlers(postButtonEl, cancelButtonEl);
@@ -1311,8 +1311,8 @@ class DocAnnotator extends Annotator {
 
             // Save annotation
             this.createAnnotation(annotation, true).then((createdAnnotation) => {
-                hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_CREATE);
-                hideElement(CONSTANTS.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+                hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+                hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
 
                 // Show point annotation icon
                 this.showPointAnnotation(createdAnnotation);
@@ -1325,8 +1325,8 @@ class DocAnnotator extends Annotator {
         // Clicking 'Cancel' to cancel annotation
         this.addEventHandler(cancelButtonEl, (event) => {
             event.stopPropagation();
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_CREATE);
-            hideElement(CONSTANTS.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+            hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         });
 
         this.positionDialog(annotationDialogEl, locationData);
@@ -1348,7 +1348,7 @@ class DocAnnotator extends Annotator {
      */
     showAnnotationDialog(threadID) {
         // Don't regenerate dialog if the appropriate one is open already
-        let annotationDialogEl = document.querySelector(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_SHOW);
+        let annotationDialogEl = document.querySelector(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
         if (annotationDialogEl && !annotationDialogEl.classList.contains(CLASS_HIDDEN) &&
             annotationDialogEl.getAttribute('data-thread-id') === threadID) {
             return;
@@ -1363,8 +1363,8 @@ class DocAnnotator extends Annotator {
             if (!annotationDialogEl) {
                 annotationDialogEl = document.createElement('div');
                 annotationDialogEl.setAttribute('data-type', 'show-annotation-dialog');
-                annotationDialogEl.classList.add(CONSTANTS.CLASS_ANNOTATION_DIALOG);
-                annotationDialogEl.classList.add(CONSTANTS.CLASS_ANNOTATION_DIALOG_SHOW);
+                annotationDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+                annotationDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG_SHOW);
                 annotationDialogEl.innerHTML = `
                     <div class="annotation-container">
                         <div class="annotation-comments"></div>
@@ -1380,12 +1380,12 @@ class DocAnnotator extends Annotator {
 
             annotationDialogEl.setAttribute('data-thread-id', threadID);
 
-            const replyContainerEl = annotationDialogEl.querySelector(CONSTANTS.SELECTOR_REPLY_CONTAINER);
-            const replyButtonContainerEl = replyContainerEl.querySelector(CONSTANTS.SELECTOR_BUTTON_CONTAINER);
-            const replyTextEl = replyContainerEl.querySelector(CONSTANTS.SELECTOR_ANNOTATION_TEXTAREA);
-            const cancelButtonEl = replyContainerEl.querySelector(CONSTANTS.SELECTOR_ANNOTATION_BUTTON_CANCEL);
-            const postButtonEl = replyContainerEl.querySelector(CONSTANTS.SELECTOR_ANNOTATION_BUTTON_POST);
-            const annotationCommentsEl = annotationDialogEl.querySelector(CONSTANTS.SELECTOR_COMMENTS_CONTAINER);
+            const replyContainerEl = annotationDialogEl.querySelector(constants.SELECTOR_REPLY_CONTAINER);
+            const replyButtonContainerEl = replyContainerEl.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
+            const replyTextEl = replyContainerEl.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            const cancelButtonEl = replyContainerEl.querySelector(constants.SELECTOR_ANNOTATION_BUTTON_CANCEL);
+            const postButtonEl = replyContainerEl.querySelector(constants.SELECTOR_ANNOTATION_BUTTON_POST);
+            const annotationCommentsEl = annotationDialogEl.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
             const commentButtonEls = [].slice.call(annotationCommentsEl.querySelectorAll('button'), 0);
 
             // Remove old event handlers for reply buttons and delete-related buttons inside the comment thread
@@ -1531,7 +1531,7 @@ class DocAnnotator extends Annotator {
 
                 // If this was the root comment in this thread, remove the whole thread
                 if (isRootAnnotation) {
-                    hideElement(CONSTANTS.SELECTOR_ANNOTATION_DIALOG_SHOW);
+                    hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
 
                     // Remove point icon when we delete whole thread
                     const pointAnnotationButtonEl = document.querySelector(`[data-thread-id="${annotation.threadID}"]`);
