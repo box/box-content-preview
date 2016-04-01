@@ -470,7 +470,7 @@ class Preview extends EventEmitter {
         // The caller function tries to catch all network specific errors
         try {
             if (file.type !== 'file') {
-                throw new Error('Not a Box File');
+                throw new Error(__('error_box_file_fetch'));
             }
 
             // Save reference to the file and update logger
@@ -490,7 +490,7 @@ class Preview extends EventEmitter {
                 this.loadViewer();
             }
         } catch (err) {
-            this.triggerError(err);
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
         }
     }
 
@@ -549,7 +549,9 @@ class Preview extends EventEmitter {
 
             // Load the representation into the viewer
             this.viewer.load(representation.links.content.url);
-        }).catch(this.triggerError);
+        }).catch((err) => {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_representation_load')));
+        });
     }
 
     /**
@@ -617,7 +619,7 @@ class Preview extends EventEmitter {
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
-            this.triggerError('Failed to fetch file data due to network error');
+            this.triggerError(new Error(__('error_network_fetch')));
             return;
         }
 
@@ -649,7 +651,7 @@ class Preview extends EventEmitter {
         // Destroy anything still showing
         this.destroy();
 
-        const reason = (err ? err.message : err) || 'This file is either not previewable or not supported';
+        const reason = err instanceof Error ? err.message : __('error_default');
         const viewer = ErrorLoader.determineViewer();
 
         ErrorLoader.load(viewer, this.options.location).then(() => {
