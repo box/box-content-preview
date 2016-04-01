@@ -18,6 +18,7 @@ import { ICON_DELETE, ICON_DELETE_SMALL, ICON_HIGHLIGHT } from '../icons/icons';
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const MENU_HIDE_TIMEOUT = 500;
 const MOUSEMOVE_THROTTLE = 25;
+const POINT_ANNOTATION_ICON_WIDTH = 16;
 const POINT_ANNOTATION_TYPE = 'point';
 const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 const TOUCH_END = Browser.isMobile() ? 'touchend' : 'mouseup';
@@ -580,13 +581,14 @@ class DocAnnotator extends Annotator {
 
                 // Point annotation hover behavior
                 const dataType = findClosestDataType(eventTarget);
+                const inPointAnnotationIcon = dataType === 'show-point-annotation-btn';
                 const inAnnotationDialog = dataType === 'show-annotation-dialog' || dataType === 'create-annotation-dialog';
 
                 // Show annotation thread when hovering over point icon
-                if (dataType === 'show-point-annotation-btn') {
+                if (inPointAnnotationIcon) {
                     clearTimeout(this.timeoutHandler);
                     this.timeoutHandler = null;
-                    this.showAnnotationDialog(event.target.getAttribute('data-thread-id'));
+                    this.showAnnotationDialog(eventTarget.getAttribute('data-thread-id'));
                 } else if (inAnnotationDialog) {
                     clearTimeout(this.timeoutHandler);
                     this.timeoutHandler = null;
@@ -615,11 +617,11 @@ class DocAnnotator extends Annotator {
                 // If in annotation mode and mouse is not in a dialog, make icon track the mouse
                 const docEl = document.querySelector('.box-preview-doc');
                 const inAnnotationMode = docEl.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
-                if (inAnnotationMode && !inAnnotationDialog) {
+                if (inAnnotationMode && !inAnnotationDialog && !inPointAnnotationIcon) {
                     const pageDimensions = pageEl.getBoundingClientRect();
-                    // Icon is 22px wide so we shift icon left/up 11px to center on cursor
-                    pointAnnotationIconEl.style.left = `${event.clientX - pageDimensions.left - 11}px`;
-                    pointAnnotationIconEl.style.top = `${event.clientY - pageDimensions.top - 11}px`;
+                    // Shift icon to center on cursor
+                    pointAnnotationIconEl.style.left = `${event.clientX - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+                    pointAnnotationIconEl.style.top = `${event.clientY - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
                     showElement(pointAnnotationIconEl);
                 } else {
                     hideElement(pointAnnotationIconEl);
@@ -1128,9 +1130,8 @@ class DocAnnotator extends Annotator {
         const pageHeight = pageEl.getBoundingClientRect().height;
         const [browserX, browserY] = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
 
-        // Annotation icon is 22px wide
-        pointAnnotationButtonEl.style.left = `${browserX - 11}px`;
-        pointAnnotationButtonEl.style.top = `${browserY - 11}px`;
+        pointAnnotationButtonEl.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+        pointAnnotationButtonEl.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
         pageEl.appendChild(pointAnnotationButtonEl);
     }
 
@@ -1165,8 +1166,9 @@ class DocAnnotator extends Annotator {
         const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
         const pageHeight = pageEl.getBoundingClientRect().height;
         const [browserX, browserY] = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
-        pointPlaceholderEl.style.left = `${browserX - 11}px`;
-        pointPlaceholderEl.style.top = `${browserY - 11}px`;
+
+        pointPlaceholderEl.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+        pointPlaceholderEl.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
         showElement(pointPlaceholderEl);
         pageEl.appendChild(pointPlaceholderEl);
     }
@@ -1284,6 +1286,7 @@ class DocAnnotator extends Annotator {
             annotationDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG);
             annotationDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG_CREATE);
             const annotationElString = `
+                <div class="annotation-container-caret"></div>
                 <div class="annotation-container">
                     <textarea class="annotation-textarea ${CLASS_ACTIVE}" placeholder="Add a comment here..."></textarea>
                     <div class="button-container">
@@ -1307,6 +1310,10 @@ class DocAnnotator extends Annotator {
 
             // Get annotation text and create annotation
             const annotationText = annotationTextEl.value;
+            if (annotationText.trim() === '') {
+                return;
+            }
+
             const annotation = this.createAnnotationObject(annotationType, annotationText, locationData);
 
             // Save annotation
@@ -1366,6 +1373,7 @@ class DocAnnotator extends Annotator {
                 annotationDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG);
                 annotationDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG_SHOW);
                 annotationDialogEl.innerHTML = `
+                    <div class="annotation-container-caret"></div>
                     <div class="annotation-container">
                         <div class="annotation-comments"></div>
                         <div class="reply-container">
@@ -1425,12 +1433,17 @@ class DocAnnotator extends Annotator {
             this.addEventHandler(postButtonEl, (event) => {
                 event.stopPropagation();
 
+                const replyText = replyTextEl.value;
+                if (replyText.trim() === '') {
+                    return;
+                }
+
                 resetTextarea(replyTextEl);
                 hideElement(replyButtonContainerEl);
 
                 // Create annotation, but don't add to in-memory map since a thread already exists
                 const newAnnotation = Annotation.copy(firstAnnotation, {
-                    text: replyTextEl.value.trim(),
+                    text: replyText.trim(),
                     user: this.user
                 });
                 this.createAnnotation(newAnnotation, false).then((createdAnnotation) => {
@@ -1564,15 +1577,52 @@ class DocAnnotator extends Annotator {
         // Show dialog so we can get width
         pageEl.appendChild(dialogEl);
         showElement(positionedDialogEl);
-        const dimensions = dialogEl.getBoundingClientRect();
+        const dialogDimensions = dialogEl.getBoundingClientRect();
+        const dialogWidth = dialogDimensions.width;
+        const pageDimensions = pageEl.getBoundingClientRect();
+        const pageWidth = pageDimensions.width;
 
-        // Center middle of dialog with point
-        positionedDialogEl.style.left = `${browserX - dimensions.width / 2}px`;
+        // Center middle of dialog with point - this coordinate is with respect to the page
+        let dialogLeftX = browserX - dialogWidth / 2;
 
-        // Position 7px below location and transparent border pushes it down further
-        positionedDialogEl.style.top = `${browserY + 7}px`;
+        // Position 7px below location and transparent border pushes it down
+        // further - this coordinate is with respect to the page
+        const dialogTopY = browserY + 7;
 
-        // @TODO(tjin): reposition to avoid sides
+        // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
+        const dialogPastLeft = dialogLeftX < 0;
+        const dialogPastRight = dialogLeftX + dialogWidth > pageWidth;
+
+        // Only reposition if one side is past page boundary - if both are,
+        // just center the dialog and cause scrolling since there is nothing
+        // else we can do
+        const annotationCaretEl = dialogEl.querySelector('.annotation-container-caret');
+        if (dialogPastLeft && !dialogPastRight) {
+            // Leave a minimum of 10 pixels so caret doesn't go off edge
+            const caretLeftX = Math.max(10, browserX);
+            annotationCaretEl.style.right = 'initial';
+            annotationCaretEl.style.left = `${caretLeftX}px`;
+
+            dialogLeftX = 0;
+
+        // Fix the dialog and move caret appropriately
+        } else if (dialogPastRight && !dialogPastLeft) {
+            // Leave a minimum of 10 pixels so caret doesn't go off edge
+            const caretRightX = Math.max(10, pageWidth - browserX);
+            annotationCaretEl.style.right = `${caretRightX}px`;
+            annotationCaretEl.style.left = 'initial';
+
+            dialogLeftX = pageWidth - dialogWidth;
+
+        // Reset caret to center
+        } else {
+            annotationCaretEl.style.right = 'initial';
+            annotationCaretEl.style.left = '50%';
+        }
+
+        // Position the dialog
+        positionedDialogEl.style.left = `${dialogLeftX}px`;
+        positionedDialogEl.style.top = `${dialogTopY}px`;
     }
 
     /* ---------- Helpers ---------- */

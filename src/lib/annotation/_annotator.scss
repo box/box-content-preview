@@ -13,10 +13,10 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 //---------- Point CSS ----------//
 .box-preview-annotation-dialog {
     // Transparent border for hover detection
-    border: 20px solid transparent;
+    border-top: 20px solid transparent;
     cursor: auto; // Overrides cursor: none from annotation mode
     position: absolute;
-    width: 322px; // Hard-coded width to solve layout issues
+    width: 282px; // Hard-coded width to solve layout issues
     z-index: 9999; // Annotation dialog should be above other content
 
     .annotation-container {
@@ -25,6 +25,11 @@ $color-text-lighter: rgba(68, 68, 68, .5);
         border-radius: 4px;
         box-shadow: 0 0 4px 0 $color-shadow;
         padding: 15px;
+    }
+
+    .annotation-container-caret {
+        left: 50%;
+        position: absolute;
 
         // CSS arrow for caret above container
         &::after,
@@ -200,15 +205,14 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     border-radius: 50%; // Circle
     border-style: none;
     box-shadow: 0 0 4px 0 $color-shadow;
-    font-size: 11px;
-    height: 22px;
-    line-height: 22px;
+    height: 16px;
     padding: 0;
     position: absolute;
-    width: 22px;
+    width: 16px;
 }
 
-.box-preview-point-annotation-icon {
+.box-preview-point-annotation-icon,
+.box-preview-point-annotation-placeholder {
     pointer-events: none;
 }
 
