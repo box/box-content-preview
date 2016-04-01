@@ -1,7 +1,3 @@
-const loadedJSAssets = [];
-const loadedCSSAssets = [];
-const prefetchedAssets = [];
-
 /**
  * Creates an empty iframe or uses an existing one
  * for the purposes of downloading or printing
@@ -240,8 +236,7 @@ export function prefetchAssets(urls) {
     const head = document.getElementsByTagName('head')[0];
 
     urls.forEach((url) => {
-        if (prefetchedAssets.indexOf(url) === -1) {
-            prefetchedAssets.push(url);
+        if (!head.querySelector(`link[rel="prefetch"][href="${url}"]`)) {
             head.appendChild(createPrefetch(url));
         }
     });
@@ -257,8 +252,7 @@ export function loadStylesheets(urls) {
     const head = document.getElementsByTagName('head')[0];
 
     urls.forEach((url) => {
-        if (loadedCSSAssets.indexOf(url) === -1) {
-            loadedCSSAssets.push(url);
+        if (!head.querySelector(`link[rel="stylesheet"][href="${url}"]`)) {
             head.appendChild(createStylesheet(url));
         }
     });
@@ -275,8 +269,7 @@ export function loadScripts(urls) {
     const promises = [];
 
     urls.forEach((url) => {
-        if (loadedJSAssets.indexOf(url) === -1) {
-            loadedJSAssets.push(url);
+        if (!head.querySelector(`script[src="${url}"]`)) {
             const script = createScript(url);
             promises.push(new Promise((resolve, reject) => {
                 script.addEventListener('load', resolve);
