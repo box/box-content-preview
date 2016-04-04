@@ -139,7 +139,7 @@ class Model3dControls extends Box3DControls {
      * render mode icon, and send an event
      * @returns {void}
      */
-    handleSetRenderMode(renderMode) {
+    handleSetRenderMode(renderMode = 'Lit') {
         const current = this.renderModesSelectorEl.querySelector(`.${CSS_CLASS_CURRENT_RENDER_MODE}`);
         if (current) {
             current.classList.remove(CSS_CLASS_CURRENT_RENDER_MODE);
