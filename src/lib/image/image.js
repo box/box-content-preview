@@ -3,14 +3,8 @@ import autobind from 'autobind-decorator';
 import Base from './image-base';
 import Browser from '../browser';
 import fetch from 'isomorphic-fetch';
-import {
-    ICON_ROTATE_LEFT,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
-} from '../icons/icons';
-import {
-    CLASS_INVISIBLE
-} from '../constants';
+import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../icons/icons';
+import { CLASS_INVISIBLE } from '../constants';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';

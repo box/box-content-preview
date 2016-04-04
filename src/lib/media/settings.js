@@ -1,13 +1,69 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import cache from '../cache';
-import settingTemplate from 'raw!./settings.html';
 import { insertTemplate } from '../util';
 
 const CLASS_SETTINGS = 'box-preview-media-settings';
 const CLASS_SETTINGS_SELECTED = 'box-preview-media-settings-icon-selected';
 const SELECTOR_SETTINGS_ICON = '.box-preview-media-settings-icon';
 const SELECTOR_SETTINGS_VALUE = '.box-preview-media-settings-value';
+
+const SETTINGS_TEMPLATE = `<div class="box-preview-media-settings">
+    <div class="box-preview-media-settings-item box-preview-media-settings-item-speed" data-type="speed">
+        <div class="box-preview-media-settings-label">${__('media_speed')}</div>
+        <div class="box-preview-media-settings-value">${__('media_speed_normal')}</div>
+        <div class="box-preview-media-settings-arrow"></div>
+    </div>
+    <div class="box-preview-media-settings-item box-preview-media-settings-item-quality" data-type="quality">
+        <div class="box-preview-media-settings-label">${__('media_quality')}</div>
+        <div class="box-preview-media-settings-value">${__('media_quality_auto')}</div>
+        <div class="box-preview-media-settings-arrow"></div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed box-preview-media-settings-sub-item-speed" data-type="menu">
+        <div class="box-preview-media-settings-arrow-reversed"></div>
+        <div class="box-preview-media-settings-label">${__('media_speed')}</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="0.25">
+        <div class="box-preview-media-settings-icon"></div>
+        <div class="box-preview-media-settings-value">0.25</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="0.5">
+        <div class="box-preview-media-settings-icon"></div>
+        <div class="box-preview-media-settings-value">0.5</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="1.0">
+        <div class="box-preview-media-settings-icon box-preview-media-settings-icon-selected"></div>
+        <div class="box-preview-media-settings-value">${__('media_speed_normal')}</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="1.25">
+        <div class="box-preview-media-settings-icon"></div>
+        <div class="box-preview-media-settings-value">1.25</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="1.5">
+        <div class="box-preview-media-settings-icon"></div>
+        <div class="box-preview-media-settings-value">1.5</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="2.0">
+        <div class="box-preview-media-settings-icon"></div>
+        <div class="box-preview-media-settings-value">2.0</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-quality box-preview-media-settings-sub-item-quality" data-type="menu">
+        <div class="box-preview-media-settings-arrow-reversed"></div>
+        <div class="box-preview-media-settings-label">${__('media_quality')}</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-quality" data-type="quality" data-value="sd">
+        <div class="box-preview-media-settings-icon"></div>
+        <div class="box-preview-media-settings-value">480p</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-quality" data-type="quality" data-value="hd">
+        <div class="box-preview-media-settings-icon"></div>
+        <div class="box-preview-media-settings-value">1080p</div>
+    </div>
+    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-quality" data-type="quality" data-value="auto">
+        <div class="box-preview-media-settings-icon box-preview-media-settings-icon-selected"></div>
+        <div class="box-preview-media-settings-value">${__('media_quality_auto')}</div>
+    </div>
+</div>`;
 
 @autobind
 class Settings extends EventEmitter {
@@ -23,7 +79,7 @@ class Settings extends EventEmitter {
         super();
         this.containerEl = containerEl;
 
-        insertTemplate(this.containerEl, settingTemplate);
+        insertTemplate(this.containerEl, SETTINGS_TEMPLATE);
 
         this.settings = this.containerEl.lastElementChild;
         this.settings.addEventListener('click', this.menuClickHandler);
