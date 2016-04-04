@@ -157,12 +157,12 @@ class MediaControls extends EventEmitter {
      * @returns {void}
      */
     setupScrubbers() {
-        this.timeScrubber = new Scrubber(this.timeScrubberEl, 'Time', 0, 0, 1);
+        this.timeScrubber = new Scrubber(this.timeScrubberEl, __('media_time_slider'), 0, 0, 1);
         this.timeScrubber.on('valuechange', (value) => {
             this.emit('timeupdate', value);
         });
 
-        this.volScrubber = new Scrubber(this.volScrubberEl, 'Volume', 0, 1, 1);
+        this.volScrubber = new Scrubber(this.volScrubberEl, __('media_volume_slider'), 0, 1, 1);
         this.volScrubber.on('valuechange', (value) => {
             this.emit('volumeupdate', value);
         });

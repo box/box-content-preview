@@ -5,6 +5,7 @@ import fetch from 'isomorphic-fetch';
 import marked from 'marked';
 import Browser from '../browser';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../util';
+import { CLASS_INVISIBLE } from '../constants';
 
 const Box = global.Box || {};
 
@@ -22,7 +23,7 @@ class MarkDown extends TextBase {
         this.containerEl.innerHTML = '<pre class="hljs box-preview-text"><code></code></pre>';
         this.preEl = this.containerEl.firstElementChild;
         this.markDownEl = this.preEl.firstElementChild;
-        this.preEl.style.visibility = 'hidden'; // Hide the element till data loads
+        this.preEl.classList.add(CLASS_INVISIBLE); // Hide the element till data loads
     }
 
     /**
@@ -57,7 +58,7 @@ class MarkDown extends TextBase {
 
             this.loaded = true;
             this.emit('load');
-            this.preEl.style.visibility = 'visible';
+            this.preEl.classList.remove(CLASS_INVISIBLE);
 
             // Help in printing by creating an iframe with the contents
             const assetUrlCreator = createAssetUrlCreator(this.options.location);
