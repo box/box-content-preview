@@ -1569,6 +1569,9 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     positionDialog(dialogEl, location) {
+        // Hide add highlight button
+        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+
         const positionedDialogEl = dialogEl;
         const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
         const pageHeight = pageEl.getBoundingClientRect().height;

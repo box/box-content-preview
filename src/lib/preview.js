@@ -522,11 +522,11 @@ class Preview extends EventEmitter {
         // Determine the asset loader to use
         const loader = this.getLoader(this.file);
 
-        // Log the type of file
-        this.logger.setType(loader.getType());
-
         // Determine the viewer to use
         const viewer = loader.determineViewer(this.file);
+
+        // Log the type of file
+        this.logger.setType(viewer.CONSTRUCTOR);
 
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
@@ -541,7 +541,8 @@ class Preview extends EventEmitter {
         Promise.all([promiseToLoadStaticAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
             // Instantiate the viewer
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
-                file: this.file
+                file: this.file,
+                viewerName: viewer.CONSTRUCTOR // name of the viewer, cannot rely on constructor.name
             }));
 
             // Add listeners for viewer load / error event

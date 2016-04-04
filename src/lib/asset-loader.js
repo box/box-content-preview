@@ -13,18 +13,6 @@ import {
 class AssetLoader {
 
     /**
-     * Returns the high level content type for
-     * logging purposes.
-     *
-     * @public
-     * @returns {String} content type
-     */
-    getType() {
-        const name = this.constructor.name || 'none';
-        return name.replace('Loader', '').toLowerCase();
-    }
-
-    /**
      * Determines if this loader can be used
      *
      * @public

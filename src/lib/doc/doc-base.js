@@ -265,7 +265,7 @@ class DocBase extends Base {
      * @returns {Boolean} Whether or not viewer is annotatable
      */
     isAnnotatable() {
-        const viewerName = this.constructor.name;
+        const viewerName = this.options.viewerName;
         return this.options.viewers && this.options.viewers[viewerName] &&
             this.options.viewers[viewerName].annotations;
     }
