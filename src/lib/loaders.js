@@ -12,12 +12,12 @@ import ErrorLoader from './error/error-loader';
 // Order in this list matters
 export default [
     SwfLoader,
-    MediaLoader,
     Video360Loader,
+    MediaLoader,
     TextLoader, // should come before document
     DocLoader, // should come after text
-    ImageLoader,
     Image360Loader,
+    ImageLoader,
     Model3dLoader,
     IFrameLoader,
     ErrorLoader // should be the last loader

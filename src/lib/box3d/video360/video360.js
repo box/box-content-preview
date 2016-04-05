@@ -12,10 +12,6 @@ import {
     EVENT_DISABLE_VR,
     EVENT_SHOW_VR_BUTTON
 } from '../box3d-constants';
-import {
-    EVENT_RELOAD,
-    EVENT_SWITCH_2D
-} from './video360-constants';
 
 const CSS_CLASS_VIDEO_360 = 'box-preview-video-360';
 
@@ -95,7 +91,6 @@ class Video360 extends Dash {
         this.controls = new Video360Controls(this.mediaContainerEl);
         this.controls.on(EVENT_ENABLE_VR, this.handleEnableVr);
         this.controls.on(EVENT_DISABLE_VR, this.handleDisableVr);
-        this.controls.on(EVENT_SWITCH_2D, this.switchTo2dViewer);
     }
 
     /**
@@ -108,7 +103,6 @@ class Video360 extends Dash {
         if (this.controls) {
             this.controls.removeListener(EVENT_ENABLE_VR, this.handleEnableVr);
             this.controls.removeListener(EVENT_DISABLE_VR, this.handleDisableVr);
-            this.controls.removeListener(EVENT_SWITCH_2D, this.switchTo2dViewer);
             this.controls.destroy();
         }
     }
@@ -155,17 +149,6 @@ class Video360 extends Dash {
     @autobind
     toggleFullscreen() {
         fullscreen.toggle(this.renderer.box3d.canvas, this.vrDevice);
-    }
-
-    /**
-     * Switches back to 2D viewer
-     * @returns {void}
-     */
-    @autobind
-    switchTo2dViewer() {
-        Box.Preview.enableViewers('Dash');
-        Box.Preview.enableViewers('MP4');
-        this.emit(EVENT_RELOAD);
     }
 
     /**

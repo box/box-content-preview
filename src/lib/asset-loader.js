@@ -47,7 +47,16 @@ class AssetLoader {
             if (disabledViewers.indexOf(viewer.CONSTRUCTOR) > -1) {
                 return false;
             }
-            return viewer.EXTENSIONS.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => viewer.REPRESENTATION === entry.representation);
+            // In the case that the extension contains more than one part (e.g. file.360.mp4),
+            // check if a preview matches the combined extension or just the last one.
+            const basename = file.name.slice(0, file.name.lastIndexOf('.'));
+            let secondExt = '';
+            const secondExtIndex = basename.lastIndexOf('.');
+            if (secondExtIndex !== -1) {
+                secondExt = `${basename.slice(basename.lastIndexOf('.') + 1)}.${file.extension}`;
+            }
+            return (viewer.EXTENSIONS.indexOf(file.extension) > -1 || viewer.EXTENSIONS.indexOf(secondExt) > -1) &&
+                file.representations.entries.some((entry) => viewer.REPRESENTATION === entry.representation);
         });
     }
 
