@@ -1,7 +1,8 @@
 import AssetLoader from '../../asset-loader';
 
 const STATIC_URI = 'third-party/';
-const VIDEO_FORMATS = ['360.3g2', '360.3gp', '360.avi', '360.m2v', '360.m2ts', '360.m4v', '360.mkv', '360.mov', '360.mp4', '360.mpeg', '360.mpg', '360.mts', '360.qt', '360.wmv'];
+const VIDEO_FORMATS = ['360.3g2', '360.3gp', '360.avi', '360.m2v', '360.m2ts', '360.m4v', '360.mkv',
+    '360.mov', '360.mp4', '360.mpeg', '360.mpg', '360.mts', '360.qt', '360.wmv'];
 
 const VIEWERS = [
     {

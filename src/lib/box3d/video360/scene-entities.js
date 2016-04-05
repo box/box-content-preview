@@ -29,7 +29,7 @@ export default [{
             componentData: {
                 enablePan: false,
                 enableZoom: false,
-                usePointerLock: true
+                inertialDamping: 0.2
             },
             enabled: true,
             scriptId: 'orbit_camera_controller'
