@@ -155,7 +155,10 @@ class Video360 extends Dash {
      */
     @autobind
     toggleFullscreen() {
-        fullscreen.toggle(this.vrEnabled ? this.renderer.box3d.canvas : this.wrapperEl, this.vrDevice);
+        const fullscreenEl = this.vrEnabled ? this.renderer.box3d.canvas : this.wrapperEl;
+        const vrDevice = this.vrEnabled ? this.renderer.vrDevice : null;
+
+        fullscreen.toggle(fullscreenEl, vrDevice);
     }
 
     /**
@@ -176,7 +179,6 @@ class Video360 extends Dash {
     @autobind
     handleEnableVr() {
         this.vrEnabled = true;
-        this.vrDevice = this.renderer.vrDevice;
         this.renderer.enableVr();
     }
 
