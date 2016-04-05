@@ -311,7 +311,7 @@ class Model3d extends Box3D {
      * @returns {void}
      */
     @autobind
-    handleSetRenderMode(mode) {
+    handleSetRenderMode(mode = 'Lit') {
         this.renderer.setRenderMode(mode);
     }
 

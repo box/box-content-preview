@@ -385,7 +385,7 @@ class Model3dSettings extends Box3DControls {
         const dropdownEls = this.settingsPanelEl.querySelectorAll(`div.${CSS_CLASS_DEFAULT_SETTING_SELECTOR} ul`);
         Object.keys(dropdownEls).forEach((nodeKey) => {
             const node = dropdownEls[nodeKey];
-            if (node === exceptionEl) {
+            if (!node || !(node instanceof HTMLElement) || node === exceptionEl) {
                 return;
             }
             node.classList.add(CSS_CLASS_HIDDEN);
