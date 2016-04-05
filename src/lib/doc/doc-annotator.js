@@ -130,7 +130,8 @@ function hideElement(elementOrSelector) {
 function resetTextarea(element) {
     const textareaEl = element;
     textareaEl.value = '';
-    textareaEl.style = '';
+    textareaEl.style.width = '';
+    textareaEl.style.height = '';
     textareaEl.classList.remove(CLASS_ACTIVE);
 }
 
@@ -1251,7 +1252,8 @@ class DocAnnotator extends Annotator {
         // If click is inside an annotation dialog, ignore
         const dataType = findClosestDataType(eventTarget);
         if (dataType === 'show-annotation-dialog' ||
-            dataType === 'create-annotation-dialog') {
+            dataType === 'create-annotation-dialog' ||
+            dataType === 'show-point-annotation-btn') {
             return;
         }
 
@@ -1305,7 +1307,7 @@ class DocAnnotator extends Annotator {
         this.removeEventHandlers(postButtonEl, cancelButtonEl);
 
         // Clicking 'Post' to add annotation
-        this.addEventHandler(postButtonEl, () => {
+        this.addEventHandler(postButtonEl, (event) => {
             event.stopPropagation();
 
             // Get annotation text and create annotation
@@ -1402,6 +1404,7 @@ class DocAnnotator extends Annotator {
             // Reset thread
             annotationCommentsEl.innerHTML = '';
             resetTextarea(replyTextEl);
+            hideElement(replyButtonContainerEl);
 
             // Clicking in textarea shows reply buttons
             this.addEventHandler(replyTextEl, (event) => {
