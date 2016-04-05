@@ -1,8 +1,9 @@
 import AssetLoader from '../../asset-loader';
+import Browser from '../../browser';
+import autobind from 'autobind-decorator';
 
 const STATIC_URI = 'third-party/';
-const VIDEO_FORMATS = ['360.3g2', '360.3gp', '360.avi', '360.m2v', '360.m2ts', '360.m4v', '360.mkv',
-    '360.mov', '360.mp4', '360.mpeg', '360.mpg', '360.mts', '360.qt', '360.wmv'];
+const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
 
 const VIEWERS = [
     {
@@ -30,6 +31,7 @@ const VIEWERS = [
     }
 ];
 
+@autobind
 class Video360Loader extends AssetLoader {
 
     /**
@@ -39,6 +41,26 @@ class Video360Loader extends AssetLoader {
     constructor() {
         super();
         this.viewers = VIEWERS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    determineViewer(file, disabledViewers = []) {
+        const viewer = super.determineViewer(file, disabledViewers);
+        if (viewer) {
+            // For now, we'll only support this preview if the filename has a secondary
+            // extension of '360' (e.g. file.360.mp4)
+            const basename = file.name.slice(0, file.name.lastIndexOf('.'));
+            const subExt = basename.slice(basename.lastIndexOf('.') + 1);
+            if (subExt === '360') {
+                if (!Browser.hasWebGL()) {
+                    throw new Error('Your Browser Doesn\'t support WebGL. Upgrade your browser to view 360° video.');
+                }
+                return viewer;
+            }
+        }
+        return false;
     }
 }
 
