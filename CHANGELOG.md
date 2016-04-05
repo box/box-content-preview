@@ -1,11 +1,33 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.49.0...HEAD)
+## [v0.51.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.51.0) (2016-04-05)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.50.0...v0.51.0)
 
 **Merged pull requests:**
 
+- \[Annotations\] Bug fixes [\#283](https://gitenterprise.inside-box.net/Preview/Preview/pull/283) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Various fixes for Image360, Video360, and Model3D [\#282](https://gitenterprise.inside-box.net/Preview/Preview/pull/282) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Fixing viewer name and not using this.constructor.name [\#281](https://gitenterprise.inside-box.net/Preview/Preview/pull/281) ([phora](https://gitenterprise.inside-box.net/phora))
+- Localizations and cleanup [\#279](https://gitenterprise.inside-box.net/Preview/Preview/pull/279) ([phora](https://gitenterprise.inside-box.net/phora))
+
+## [v0.50.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.50.0) (2016-04-02)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.49.0...v0.50.0)
+
+**Merged pull requests:**
+
+- \[Annotations\] Repositioning dialogs at side [\#278](https://gitenterprise.inside-box.net/Preview/Preview/pull/278) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Changing technique to prevent duplicates [\#277](https://gitenterprise.inside-box.net/Preview/Preview/pull/277) ([phora](https://gitenterprise.inside-box.net/phora))
+- \[Annotations\] Style and interaction changes to match design [\#276](https://gitenterprise.inside-box.net/Preview/Preview/pull/276) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Replacing text and csv viewers with document viewer [\#275](https://gitenterprise.inside-box.net/Preview/Preview/pull/275) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Localizing error messages [\#274](https://gitenterprise.inside-box.net/Preview/Preview/pull/274) ([phora](https://gitenterprise.inside-box.net/phora))
+- Bug fixes 03/28/2015 [\#273](https://gitenterprise.inside-box.net/Preview/Preview/pull/273) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- \[Annotations\] Point annotation mode [\#272](https://gitenterprise.inside-box.net/Preview/Preview/pull/272) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding option to pass in shared link [\#271](https://gitenterprise.inside-box.net/Preview/Preview/pull/271) ([phora](https://gitenterprise.inside-box.net/phora))
+- Coxp 429 components refactor [\#270](https://gitenterprise.inside-box.net/Preview/Preview/pull/270) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Only display image after image is loaded [\#269](https://gitenterprise.inside-box.net/Preview/Preview/pull/269) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- PDFJS 1.4.166 [\#268](https://gitenterprise.inside-box.net/Preview/Preview/pull/268) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Iframe viewer for boxnote and boxdicom [\#267](https://gitenterprise.inside-box.net/Preview/Preview/pull/267) ([phora](https://gitenterprise.inside-box.net/phora))
+- Update changelog to v0.49.0 [\#266](https://gitenterprise.inside-box.net/Preview/Preview/pull/266) ([tjin](https://gitenterprise.inside-box.net/tjin))
 - Eslint issues [\#265](https://gitenterprise.inside-box.net/Preview/Preview/pull/265) ([phora](https://gitenterprise.inside-box.net/phora))
 
 ## [v0.49.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.49.0) (2016-03-28)
