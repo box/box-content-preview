@@ -168,6 +168,30 @@ function isPointInPolyOpt(poly, x, y) {
 }
 
 /**
+ * Returns the Rangy highlight object and highlight elements representing
+ * the current selection on the given page element.
+ *
+ * @param {HTMLElement} pageEl Page element to get selection objects from
+ * @param {Object} highlighter Rangy highlighter
+ * @returns {Object} Rangy highlight object and highlight DOM elements
+ */
+function getHighlightAndHighlightEls(pageEl, highlighter) {
+    // We use Rangy to turn the selection into a highlight, which creates
+    // spans around the selection that we can then turn into quadpoints
+    const highlight = highlighter.highlightSelection('highlight', {
+        containerElementId: pageEl.id
+    })[0];
+    const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0).filter((element) => {
+        return element.tagName && element.tagName === 'SPAN';
+    });
+
+    return {
+        highlight,
+        highlightEls
+    };
+}
+
+/**
  * Returns whether or not the selection represented by the highlight elements
  * is reversed by detecting if the mouse cursor is closer to the top-most
  * or bottom-most element.
@@ -189,6 +213,34 @@ function isSelectionReversed(event, elements) {
     const bottomLength = Math.sqrt(Math.pow(bottomDimensions.right - mouseX, 2) + Math.pow(bottomDimensions.bottom - mouseY, 2));
 
     return topLength < bottomLength;
+}
+
+/**
+ * Returns whether or not there currently is a non-empty selection.
+ *
+ * @returns {Boolean} Whether there is a non-empty selection
+ */
+function isSelectionPresent() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount < 1) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Returns whether or not there is a dialog open.
+ *
+ * @returns {Boolean} Whether a dialog is open or not
+ */
+function isDialogOpen() {
+    const annotationDialogEls = [].slice.call(document.querySelectorAll(constants.SELECTOR_ANNOTATION_DIALOG), 0);
+    if (annotationDialogEls.some((dialogEl) => !dialogEl.classList.contains(CLASS_HIDDEN))) {
+        return true;
+    }
+
+    return false;
 }
 
 /**
@@ -555,11 +607,17 @@ class DocAnnotator extends Annotator {
      * @param {Event} event DOM event
      * @returns {void}
      */
-    contextmenuHandler() {
+    contextmenuHandler(event) {
         hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
         hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
         hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
         hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+
+        // Reset highlight
+        this.activeAnnotationID = '';
+        const page = getPageElAndPageNumber(event.target).page;
+        this.drawHighlightAnnotationsOnPage(page);
     }
 
     /**
@@ -586,7 +644,7 @@ class DocAnnotator extends Annotator {
                 const inAnnotationDialog = dataType === 'show-annotation-dialog' || dataType === 'create-annotation-dialog';
 
                 // Show annotation thread when hovering over point icon
-                if (inPointAnnotationIcon) {
+                if (inPointAnnotationIcon && !isSelectionPresent()) {
                     clearTimeout(this.timeoutHandler);
                     this.timeoutHandler = null;
                     this.showAnnotationDialog(eventTarget.getAttribute('data-thread-id'));
@@ -751,57 +809,6 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Shows the remove highlight button for an annotation.
-     *
-     * @param {Annotation} annotation Annotation to show remove button for
-     * @returns {void}
-     */
-    showRemoveHighlightButton(annotation) {
-        const page = annotation.location.page;
-        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
-
-        let removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
-        if (!removeHighlightButtonEl) {
-            removeHighlightButtonEl = document.createElement('button');
-            removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
-            removeHighlightButtonEl.innerHTML = ICON_DELETE;
-
-            this.addEventHandler(removeHighlightButtonEl, (event) => {
-                event.stopPropagation();
-
-                const annotationID = removeHighlightButtonEl.getAttribute('data-annotation-id');
-
-                this.deleteAnnotation(annotationID, true).then(() => {
-                    // Redraw highlights on page
-                    const pageNum = removeHighlightButtonEl.getAttribute('data-page');
-                    this.drawHighlightAnnotationsOnPage(pageNum);
-
-                    // Hide button
-                    hideElement(removeHighlightButtonEl);
-                });
-            });
-
-            pageEl.appendChild(removeHighlightButtonEl);
-        } else {
-            removeHighlightButtonEl.parentNode.removeChild(removeHighlightButtonEl);
-            pageEl.appendChild(removeHighlightButtonEl);
-        }
-
-        // Create remove highlight button and position it above the upper right
-        // corner of the highlight
-        const pageHeight = pageEl.getBoundingClientRect().height;
-        const upperRightCorner = getUpperRightCorner(annotation.location.quadPoints, pageEl);
-        const [browserX, browserY] = convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
-
-        // Position button
-        removeHighlightButtonEl.style.left = `${browserX - 20}px`;
-        removeHighlightButtonEl.style.top = `${browserY - 50}px`;
-        removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
-        removeHighlightButtonEl.setAttribute('data-page', page);
-        showElement(removeHighlightButtonEl);
-    }
-
-    /**
      * Returns the highlight annotation ID of the highlight located at the
      * specified mouse location.
      *
@@ -896,34 +903,24 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showAddHighlightButtonHandler(event) {
-        // Do nothing if there is no selection
-        const selection = window.getSelection();
-        if (selection.isCollapsed || selection.rangeCount < 1) {
+        if (!isSelectionPresent() || isDialogOpen()) {
             return;
         }
 
-        // Do nothing if any annotation dialog is open
-        const annotationDialogEls = [].slice.call(document.querySelectorAll(constants.SELECTOR_ANNOTATION_DIALOG), 0);
-        if (annotationDialogEls.some((dialogEl) => !dialogEl.classList.contains(CLASS_HIDDEN))) {
-            return;
-        }
+        // Hide remove highlight button
+        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
 
         // Use Rangy to save the current selection because using the
         // highlight module can mess with the selection. We restore this
         // selection after we clean up the highlight
         const savedSelection = rangy.saveSelection();
 
-        const pageEl = getPageElAndPageNumber(selection.anchorNode.parentNode).pageEl;
+        const pageEl = getPageElAndPageNumber(event.target).pageEl;
         if (!pageEl) {
             return;
         }
 
-        // We use Rangy to turn the selection into a highlight, which creates
-        // spans around the selection that we can then turn into quadpoints
-        const highlight = this.highlighter.highlightSelection('highlight', {
-            containerElementId: pageEl.id
-        })[0];
-        const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0);
+        const { highlight, highlightEls } = getHighlightAndHighlightEls(pageEl, this.highlighter);
         if (highlightEls.length === 0) {
             return;
         }
@@ -978,10 +975,10 @@ class DocAnnotator extends Annotator {
         const page = annotation.location.page;
         const pageEl = document.querySelector(`[data-page-number="${page}"]`);
 
-        let removeHighlightButtonEl = document.querySelector('.box-preview-remove-highlight-btn');
+        let removeHighlightButtonEl = document.querySelector(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
         if (!removeHighlightButtonEl) {
             removeHighlightButtonEl = document.createElement('button');
-            removeHighlightButtonEl.classList.add('box-preview-remove-highlight-btn');
+            removeHighlightButtonEl.classList.add(constants.CLASS_HIGHLIGHT_BUTTON_REMOVE);
             removeHighlightButtonEl.innerHTML = ICON_DELETE;
 
             this.addEventHandler(removeHighlightButtonEl, (event) => {
@@ -1025,14 +1022,13 @@ class DocAnnotator extends Annotator {
         event.stopPropagation();
 
         // Hide add highlight button if there is no current selection
-        const selection = window.getSelection();
-        if (selection.isCollapsed || selection.rangeCount < 1) {
+        if (!isSelectionPresent()) {
             hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
         }
 
-        // Stop dealing with highlights if the click was outside a page
+        // Do nothing if the click was outside a page or a dialog is open
         const page = getPageElAndPageNumber(event.target).page;
-        if (page === -1) {
+        if (page === -1 || isDialogOpen()) {
             return;
         }
 
@@ -1044,7 +1040,7 @@ class DocAnnotator extends Annotator {
         }
 
         // Hide any existing remove highlight button
-        hideElement('.box-preview-remove-highlight-btn');
+        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
 
         // Show remove highlight button if we clicked on an annotation
         if (this.activeAnnotationID) {
@@ -1066,22 +1062,17 @@ class DocAnnotator extends Annotator {
         event.stopPropagation();
 
         // Do nothing if there is no selection
-        const selection = window.getSelection();
-        if (selection.isCollapsed || selection.rangeCount < 1) {
+        if (!isSelectionPresent()) {
             return;
         }
 
+        const selection = window.getSelection();
         const { pageEl, page } = getPageElAndPageNumber(selection.anchorNode.parentNode);
         if (!pageEl) {
             return;
         }
 
-        // We use Rangy to turn the selection into a highlight, which creates
-        // spans around the selection that we can then turn into quadpoints
-        const highlight = this.highlighter.highlightSelection('highlight', {
-            containerElementId: pageEl.id
-        })[0];
-        const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0);
+        const { highlight, highlightEls } = getHighlightAndHighlightEls(pageEl, this.highlighter);
         if (highlightEls.length === 0) {
             return;
         }
@@ -1183,6 +1174,8 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     pointClickHandler(event) {
+        event.stopPropagation();
+
         const eventTarget = event.target;
         const dataType = findClosestDataType(eventTarget);
 
