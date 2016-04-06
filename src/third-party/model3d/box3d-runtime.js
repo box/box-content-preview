@@ -64861,16 +64861,16 @@
 	        "type": "v2",
 	        "description": "Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.",
 	        "default": {
-	          "max": 75,
-	          "min": -75
+	          "x": 75,
+	          "y": -75
 	        },
 	        "max": {
-	          "max": 90,
-	          "min": 90
+	          "x": 90,
+	          "y": 90
 	        },
 	        "min": {
-	          "max": -90,
-	          "min": -90.001
+	          "x": -90,
+	          "y": -90.001
 	        }
 	      },
 	      "enablePan": {
@@ -74274,8 +74274,10 @@
 	      this.tempEuler.x -= this.orbitMovement.y;
 	      this.tempEuler.y -= this.orbitMovement.x;
 	      if (this.tempEuler.x > this.pitchAngleBoundsRadians.max) {
+	        this.eulerStart.x -= this.tempEuler.x - this.pitchAngleBoundsRadians.max;
 	        this.tempEuler.x = this.pitchAngleBoundsRadians.max;
 	      } else if (this.tempEuler.x < this.pitchAngleBoundsRadians.min) {
+	        this.eulerStart.x += this.pitchAngleBoundsRadians.min - this.tempEuler.x;
 	        this.tempEuler.x = this.pitchAngleBoundsRadians.min;
 	      }
 
@@ -75372,9 +75374,9 @@
 	}
 	@vattr Vector2 pitchAngleBounds {
 	  'description' : 'Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.',
-	  'default': {'max': 75.0, 'min': -75.0 },
-	  'max': { 'max': 90.0, 'min': 90.0 },
-	  'min': { 'max': -90.0, 'min': -90.001 }
+	  'default': {x: 75.0, y: -75.0 },
+	  'max': { x: 90.0, y: 90.0 },
+	  'min': { x: -90.0, y: -90.001 }
 	}
 	@vattr bool enablePan {
 	  'default': true,
@@ -75513,7 +75515,7 @@
 	    _this.eulerStart = new _three2.default.Euler(0, 0, 0, 'YXZ');
 	    _this.currentDraggingMousePosition = new _three2.default.Vector2();
 
-	    _this.pitchAngleBoundsRadians = { max: 0.0, min: 0.0 };
+	    _this.pitchAngleBoundsRadians = { x: 0.0, y: 0.0 };
 	    _this.onMouseDown_PointerLock = _this.onMouseDown_PointerLock.bind(_this);
 	    _this.onMouseUp_PointerLock = _this.onMouseUp_PointerLock.bind(_this);
 	    return _this;
@@ -75546,8 +75548,8 @@
 	      if (this.usePointerLock) {
 	        this.togglePointerLock(true);
 	      }
-	      this.pitchAngleBoundsRadians.max = Math.PI * this.pitchAngleBounds.max / 180.0;
-	      this.pitchAngleBoundsRadians.min = Math.PI * this.pitchAngleBounds.min / 180.0;
+	      this.pitchAngleBoundsRadians.max = Math.PI * this.pitchAngleBounds.x / 180.0;
+	      this.pitchAngleBoundsRadians.min = Math.PI * this.pitchAngleBounds.y / 180.0;
 
 	      this.getEntity().when('loadBase', this.initTarget, this);
 	      this.listenTo(this, 'enable', this.onEnable, this);
@@ -75789,8 +75791,10 @@
 	      this.targetEuler.x -= this.mouseDraggedMovement.y;
 	      this.targetEuler.y -= this.mouseDraggedMovement.x;
 	      if (this.targetEuler.x > this.pitchAngleBoundsRadians.max) {
+	        this.eulerStart.x -= this.targetEuler.x - this.pitchAngleBoundsRadians.max;
 	        this.targetEuler.x = this.pitchAngleBoundsRadians.max;
 	      } else if (this.targetEuler.x < this.pitchAngleBoundsRadians.min) {
+	        this.eulerStart.x += this.pitchAngleBoundsRadians.min - this.targetEuler.x;
 	        this.targetEuler.x = this.pitchAngleBoundsRadians.min;
 	      }
 

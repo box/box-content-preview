@@ -50,7 +50,8 @@ Usage
 
 Clone and compile
 ------------------
-1. `git clone git@gitenterprise.inside-box.net:Preview/Preview.git`
+1. Fork the preview repo `https://gitenterprise.inside-box.net/Preview/Preview`
+1. Clone your own fork `git clone git@gitenterprise.inside-box.net:YOURLDAP/Preview.git`
 2. `cd Preview`
 3. `npm install`
 4. `npm run build` (builds resource bundles and does a clean build)

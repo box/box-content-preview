@@ -42,6 +42,8 @@ class Video360 extends Dash {
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_VIDEO_360);
 
+        this.vrEnabled = false;
+
         const sdkOpts = { token: options.token, apiBase: options.api };
         this.boxSdk = new BoxSDK(sdkOpts);
         this.optionsObj = options;
@@ -74,7 +76,6 @@ class Video360 extends Dash {
         this.renderer.initBox3d(this.optionsObj)
             .then(this.create360Environment)
             .then(() => {
-                this.fullscreenEl = this.renderer.box3d.canvas;
                 super.loadedmetadataHandler();
                 this.createControls();
                 this.renderer.enableVrIfPresent();
@@ -148,7 +149,10 @@ class Video360 extends Dash {
      */
     @autobind
     toggleFullscreen() {
-        fullscreen.toggle(this.renderer.box3d.canvas, this.vrDevice);
+        const fullscreenEl = this.vrEnabled ? this.renderer.box3d.canvas : this.wrapperEl;
+        const vrDevice = this.vrEnabled ? this.renderer.vrDevice : null;
+
+        fullscreen.toggle(fullscreenEl, vrDevice);
     }
 
     /**
@@ -157,7 +161,7 @@ class Video360 extends Dash {
      */
     @autobind
     handleEnableVr() {
-        this.vrDevice = this.renderer.vrDevice;
+        this.vrEnabled = true;
         this.renderer.enableVr();
     }
 
@@ -167,6 +171,7 @@ class Video360 extends Dash {
      */
     @autobind
     handleDisableVr() {
+        this.vrEnabled = false;
         this.renderer.disableVr();
     }
 

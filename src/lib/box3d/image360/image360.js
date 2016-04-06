@@ -17,6 +17,11 @@ class Image360 extends Box3D {
         super(container, options);
 
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE_360);
+
+        // Override timeout as we're often downloading the original representation
+        // to ensure that we get the maximum resolution image. On a 3G connection,
+        // the default 15 seconds is often not enough.
+        this.loadTimeout = 120000;
     }
 
     /**
