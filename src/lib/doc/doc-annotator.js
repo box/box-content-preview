@@ -11,6 +11,7 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
 
+import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/constants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE, ICON_DELETE_SMALL, ICON_HIGHLIGHT } from '../icons/icons';
@@ -23,391 +24,9 @@ const POINT_ANNOTATION_TYPE = 'point';
 const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 const TOUCH_END = Browser.isMobile() ? 'touchend' : 'mouseup';
 
-// PDF unit = 1/72 inch, CSS pixel = 1/92 inch
-const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
-const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
-
 const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';
 const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 233, 23, 0.5)';
 const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 255, 255, 1)';
-
-/* ---------- Helpers ---------- */
-/**
- * Finds the closest ancestor DOM element with the specified class.
- *
- * @param {HTMLElement} element Element to search ancestors of
- * @param {String} className Class name to query
- * @returns {HTMLElement|null} Closest ancestor with given class or null
- */
-function findClosestElWithClass(element, className) {
-    for (let el = element; el && el !== document; el = el.parentNode) {
-        if (el.classList && el.classList.contains(className)) {
-            return el;
-        }
-    }
-
-    return null;
-}
-
-/**
- * Finds the closest element with a data type and returns that data type.
- *
- * @param {HTMLElement} element Element to find closest data type for
- * @returns {string} Closest data type or empty string
- */
-function findClosestDataType(element) {
-    for (let el = element; el && el !== document; el = el.parentNode) {
-        if (el && el.getAttribute('data-type')) {
-            return el.getAttribute('data-type');
-        }
-    }
-
-    return '';
-}
-
-/**
- * Returns the page element and page number that the element is on.
- *
- * @param {HTMLElement} element Element to find page and page number for
- * @returns {Object} Page element/page number if found or null/-1 if not
- */
-function getPageElAndPageNumber(element) {
-    const pageEl = findClosestElWithClass(element, 'page');
-    if (pageEl) {
-        return {
-            pageEl,
-            page: parseInt(pageEl.getAttribute('data-page-number'), 10)
-        };
-    }
-
-    return {
-        pageEl: null,
-        page: -1
-    };
-}
-
-/**
- * Shows the specified element or element with specified selector.
- *
- * @param {HTMLElement|String} elementOrSelector Element or CSS selector
- * @returns {void}
- */
-function showElement(elementOrSelector) {
-    let element = elementOrSelector;
-    if (typeof elementOrSelector === 'string' || elementOrSelector instanceof String) {
-        element = document.querySelector(elementOrSelector);
-    }
-
-    if (element) {
-        element.classList.remove(CLASS_HIDDEN);
-    }
-}
-
-/**
- * Hides the specified element or element with specified selector.
- *
- * @param {HTMLElement|String} elementOrSelector Element or CSS selector
- * @returns {void}
- */
-function hideElement(elementOrSelector) {
-    let element = elementOrSelector;
-    if (typeof elementOrSelector === 'string' || elementOrSelector instanceof String) {
-        element = document.querySelector(elementOrSelector);
-    }
-
-    if (element) {
-        element.classList.add(CLASS_HIDDEN);
-    }
-}
-
-/**
- * Reset textarea element - clears value, resets styles, and remove active
- * state.
- *
- * @param {HTMLElement} element Textarea to reset
- * @returns {void}
- */
-function resetTextarea(element) {
-    const textareaEl = element;
-    textareaEl.value = '';
-    textareaEl.style.width = '';
-    textareaEl.style.height = '';
-    textareaEl.classList.remove(CLASS_ACTIVE);
-}
-
-/**
- * Escapes HTML.
- *
- * @param {String} str Input string
- * @returns {String} HTML escaped string
- */
-function htmlEscape(str) {
-    return str.replace(/&/g, '&amp;') // first!
-              .replace(/>/g, '&gt;')
-              .replace(/</g, '&lt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#39;')
-              .replace(/`/g, '&#96;');
-}
-
-/**
- * Fast test if a given point is within a polygon. Taken from
- * http://jsperf.com/ispointinpath-boundary-test-speed/6
- *
- * @param {Number[]} poly Polygon defined by array of [x,y] coordinates
- * @param {Number} x X coordinate of point to Test
- * @param {Number} y Y coordinate of point to Test
- * @returns {Boolean} Whether or not point is in the polygon
- */
-function isPointInPolyOpt(poly, x, y) {
-    /* eslint-disable */
-    for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
-        ((poly[i][1] <= y && y < poly[j][1]) || (poly[j][1] <= y && y < poly[i][1])) && (x < (poly[j][0] - poly[i][0]) * (y - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0]) && (c = !c);
-    return c;
-    /* eslint-enable */
-}
-
-/**
- * Returns the Rangy highlight object and highlight elements representing
- * the current selection on the given page element.
- *
- * @param {HTMLElement} pageEl Page element to get selection objects from
- * @param {Object} highlighter Rangy highlighter
- * @returns {Object} Rangy highlight object and highlight DOM elements
- */
-function getHighlightAndHighlightEls(pageEl, highlighter) {
-    // We use Rangy to turn the selection into a highlight, which creates
-    // spans around the selection that we can then turn into quadpoints
-    const highlight = highlighter.highlightSelection('highlight', {
-        containerElementId: pageEl.id
-    })[0];
-    const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0).filter((element) => {
-        return element.tagName && element.tagName === 'SPAN';
-    });
-
-    return {
-        highlight,
-        highlightEls
-    };
-}
-
-/**
- * Returns whether or not the selection represented by the highlight elements
- * is reversed by detecting if the mouse cursor is closer to the top-most
- * or bottom-most element.
- *
- * @param {Event} event DOM Event
- * @param {HTMLElement[]} elements Elements representing selection
- * @returns {Boolean} Whether or not the selection is reversed
- */
-function isSelectionReversed(event, elements) {
-    const topDimensions = elements[0].getBoundingClientRect();
-    const bottomDimensions = elements[elements.length - 1].getBoundingClientRect();
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-
-    // Calculate distance between mouse and top left corner of top selection
-    // line vs distance between mouse and bottom right corner of bottom
-    // selection line
-    const topLength = Math.sqrt(Math.pow(topDimensions.left - mouseX, 2) + Math.pow(topDimensions.top - mouseY, 2));
-    const bottomLength = Math.sqrt(Math.pow(bottomDimensions.right - mouseX, 2) + Math.pow(bottomDimensions.bottom - mouseY, 2));
-
-    return topLength < bottomLength;
-}
-
-/**
- * Returns whether or not there currently is a non-empty selection.
- *
- * @returns {Boolean} Whether there is a non-empty selection
- */
-function isSelectionPresent() {
-    const selection = window.getSelection();
-    if (!selection || selection.isCollapsed || selection.rangeCount < 1) {
-        return false;
-    }
-
-    return true;
-}
-
-/**
- * Returns whether or not there is a dialog open.
- *
- * @returns {Boolean} Whether a dialog is open or not
- */
-function isDialogOpen() {
-    const annotationDialogEls = [].slice.call(document.querySelectorAll(constants.SELECTOR_ANNOTATION_DIALOG), 0);
-    if (annotationDialogEls.some((dialogEl) => !dialogEl.classList.contains(CLASS_HIDDEN))) {
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Checks whether element is fully in viewport.
- *
- * @returns {Boolean} Whether element is fully in viewport
- */
-function isElementInViewport(element) {
-    const dimensions = element.getBoundingClientRect();
-
-    return (
-        dimensions.top >= 0 &&
-        dimensions.left >= 0 &&
-        dimensions.bottom <= window.innerHeight &&
-        dimensions.right <= window.innerWidth
-    );
-}
-
-/**
- * Converts coordinates in PDF space to coordinates in DOM space.
- *
- * @param {Number[]} coordinates Either a [x,y] coordinate location or
- * quad points in the format of 8xn numbers in PDF space in PDF units
- * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
- * coordinate origin from bottom left (PDF) to top left (DOM)
- * @param {Number} scale Document zoom scale
- * @returns {Number[]} Either [x,y] or 8xn coordinates in DOM space in CSS
- * pixels
- */
-function convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale) {
-    const scaledCoordinates = coordinates.map((val) => val * PDF_UNIT_TO_CSS_PIXEL * scale);
-    if (scaledCoordinates.length === 2) {
-        const [x, y] = scaledCoordinates;
-        return [x, pageHeight - y];
-    }
-
-    const [x1, y1, x2, y2, x3, y3, x4, y4] = scaledCoordinates;
-    return [
-        x1,
-        pageHeight - y1,
-        x2,
-        pageHeight - y2,
-        x3,
-        pageHeight - y3,
-        x4,
-        pageHeight - y4
-    ];
-}
-
-/**
- * Converts coordinates in DOM space to coordinates in PDF space.
- *
- * @param {Number[]} coordinates Either a [x,y] coordinate location or
- * quad points in the format of 8xn numbers in DOM space in CSS pixels
- * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
- * coordinate origin from top left (DOM) to bottom left (PDF)
- * @param {Number} scale Document zoom scale
- * @returns {Number[]} Either [x,y] or 8xn coordinates in PDF space in PDF
- * units
- */
-function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
-    let pdfCoordinates = [];
-    if (coordinates.length === 2) {
-        const [x, y] = coordinates;
-        pdfCoordinates = [x, pageHeight - y];
-    } else {
-        const [x1, y1, x2, y2, x3, y3, x4, y4] = coordinates;
-        pdfCoordinates = [
-            x1,
-            pageHeight - y1,
-            x2,
-            pageHeight - y2,
-            x3,
-            pageHeight - y3,
-            x4,
-            pageHeight - y4
-        ];
-    }
-
-    return pdfCoordinates.map((val) => val * CSS_PIXEL_TO_PDF_UNIT / scale);
-}
-
-/**
- * Returns the coordinates of the quadrilateral representing this element
- * per the PDF text markup annotation spec. Note that these coordinates
- * are in PDF default user space, with the origin at the bottom left corner
- * of the document.
- *
- * We do this by letting the browser figure out the coordinates for us.
- * See http://stackoverflow.com/a/17098667
- *
- * @param {HTMLElement} element Element to get quad points for
- * @param {HTMLElement} pageEl Page element quad points are relative to
- * @param {Number} scale Document zoom scale
- * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3,
- * x4, y4] with (x1, y1) being the lower left (untransformed) corner of the
- * element and the other 3 vertices in counterclockwise order. These are
- * in PDF default user space.
- */
-function getQuadPoints(element, pageEl, scale) {
-    const quadCornerContainerEl = document.createElement('div');
-    quadCornerContainerEl.classList.add('box-preview-quad-corner-container');
-
-    // Create zero-size elements that can be styled to the 4 corners of
-    // quadrilateral around element - using 4 divs is faster than using
-    // one div and moving it around
-    quadCornerContainerEl.innerHTML = `
-        <div class="box-preview-quad-corner corner1"></div>
-        <div class="box-preview-quad-corner corner2"></div>
-        <div class="box-preview-quad-corner corner3"></div>
-        <div class="box-preview-quad-corner corner4"></div>`.trim();
-
-    // Insert helper container into element
-    element.appendChild(quadCornerContainerEl);
-    const quadCorner1El = quadCornerContainerEl.querySelector('.corner1');
-    const quadCorner2El = quadCornerContainerEl.querySelector('.corner2');
-    const quadCorner3El = quadCornerContainerEl.querySelector('.corner3');
-    const quadCorner4El = quadCornerContainerEl.querySelector('.corner4');
-    const corner1Dimensions = quadCorner1El.getBoundingClientRect();
-    const corner2Dimensions = quadCorner2El.getBoundingClientRect();
-    const corner3Dimensions = quadCorner3El.getBoundingClientRect();
-    const corner4Dimensions = quadCorner4El.getBoundingClientRect();
-    const pageDimensions = pageEl.getBoundingClientRect();
-    const pageLeft = pageDimensions.left;
-    const pageBottom = pageDimensions.top;
-
-    // Cleanup helper container
-    element.removeChild(quadCornerContainerEl);
-
-    // Calculate coordinates of these 4 corners
-    const quadPoints = [
-        corner1Dimensions.left - pageLeft,
-        corner1Dimensions.top - pageBottom,
-        corner2Dimensions.left - pageLeft,
-        corner2Dimensions.top - pageBottom,
-        corner3Dimensions.left - pageLeft,
-        corner3Dimensions.top - pageBottom,
-        corner4Dimensions.left - pageLeft,
-        corner4Dimensions.top - pageBottom
-    ];
-
-    // Return quad points at 100% scale in PDF units
-    return convertDOMSpaceToPDFSpace(quadPoints, pageDimensions.height, scale);
-}
-
-/**
- * Gets coordinates representing upper right corner of the annotation
- * represented by the provided quad points. Note that these coordinates
- * are in PDF default user space, with the origin at the bottom left corner
- * of the document.
- *
- * @param {Number[]} quadPoints Quad points of annotation to get upper
- * right corner for in PDF space in PDF units
- * @returns {Number[]} [x,y] of upper right corner of quad points in PDF
- * space in PDF units
- */
-function getUpperRightCorner(quadPoints) {
-    let [x, y] = [0, 0];
-    quadPoints.forEach((quadPoint) => {
-        const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
-
-        x = Math.max(x, Math.max(x1, x2, x3, x4));
-        y = Math.max(y, Math.max(y1, y2, y3, y4));
-    });
-
-    return [x, y];
-}
 
 /**
  * Document annotator class. Extends base annotator class.
@@ -608,15 +227,15 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     contextmenuHandler(event) {
-        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
-        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
-        hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
-        hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
-        hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
+        annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+        annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+        annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
 
         // Reset highlight
         this.activeAnnotationID = '';
-        const page = getPageElAndPageNumber(event.target).page;
+        const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
         this.drawHighlightAnnotationsOnPage(page);
     }
 
@@ -632,19 +251,19 @@ class DocAnnotator extends Annotator {
             this.throttledMousemoveHandler = throttle((event) => {
                 // Short circuit all mousemove behavior if we are not on a page
                 const eventTarget = event.target;
-                const { pageEl, page } = getPageElAndPageNumber(eventTarget);
+                const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(eventTarget);
                 if (page === -1) {
-                    hideElement(constants.SELECTOR_ANNOTATION_POINT_ICON);
+                    annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_ICON);
                     return;
                 }
 
                 // Point annotation hover behavior
-                const dataType = findClosestDataType(eventTarget);
+                const dataType = annotatorUtil.findClosestDataType(eventTarget);
                 const inPointAnnotationIcon = dataType === 'show-point-annotation-btn';
                 const inAnnotationDialog = dataType === 'show-annotation-dialog' || dataType === 'create-annotation-dialog';
 
                 // Show annotation thread when hovering over point icon
-                if (inPointAnnotationIcon && !isSelectionPresent()) {
+                if (inPointAnnotationIcon && !annotatorUtil.isSelectionPresent()) {
                     clearTimeout(this.timeoutHandler);
                     this.timeoutHandler = null;
                     this.showAnnotationDialog(eventTarget.getAttribute('data-thread-id'));
@@ -654,7 +273,7 @@ class DocAnnotator extends Annotator {
                 } else {
                     if (!this.timeoutHandler) {
                         this.timeoutHandler = setTimeout(() => {
-                            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+                            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
                             this.timeoutHandler = null;
                         }, MENU_HIDE_TIMEOUT);
                     }
@@ -681,9 +300,9 @@ class DocAnnotator extends Annotator {
                     // Shift icon to center on cursor
                     pointAnnotationIconEl.style.left = `${event.clientX - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
                     pointAnnotationIconEl.style.top = `${event.clientY - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-                    showElement(pointAnnotationIconEl);
+                    annotatorUtil.showElement(pointAnnotationIconEl);
                 } else {
-                    hideElement(pointAnnotationIconEl);
+                    annotatorUtil.hideElement(pointAnnotationIconEl);
                 }
 
                 // Highlight annotation hover behavior
@@ -716,7 +335,7 @@ class DocAnnotator extends Annotator {
         const quadPoints = annotation.location.quadPoints;
         const pageHeight = context.canvas.getBoundingClientRect().height;
         quadPoints.forEach((quadPoint) => {
-            const browserQuadPoint = convertPDFSpaceToDOMSpace(quadPoint, pageHeight, this.scale);
+            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, this.scale);
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
             // If annotation being drawn is the annotation the mouse is over or
@@ -848,12 +467,12 @@ class DocAnnotator extends Annotator {
         let hoverAnnotationID = '';
         highlights.some((highlight) => {
             return highlight.location.quadPoints.some((quadPoint) => {
-                const browserQuadPoint = convertPDFSpaceToDOMSpace(quadPoint, pageHeight, this.scale);
+                const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, this.scale);
                 const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
                 // Check if mouse is inside a rectangle of this
                 // annotation
-                const isPointInPoly = isPointInPolyOpt([
+                const isPointInPoly = annotatorUtil.isPointInPolyOpt([
                     [x1, y1],
                     [x2, y2],
                     [x3, y3],
@@ -903,24 +522,24 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     showAddHighlightButtonHandler(event) {
-        if (!isSelectionPresent() || isDialogOpen()) {
+        if (!annotatorUtil.isSelectionPresent() || annotatorUtil.isDialogOpen()) {
             return;
         }
 
         // Hide remove highlight button
-        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
+        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
 
         // Use Rangy to save the current selection because using the
         // highlight module can mess with the selection. We restore this
         // selection after we clean up the highlight
         const savedSelection = rangy.saveSelection();
 
-        const pageEl = getPageElAndPageNumber(event.target).pageEl;
+        const pageEl = annotatorUtil.getPageElAndPageNumber(event.target).pageEl;
         if (!pageEl) {
             return;
         }
 
-        const { highlight, highlightEls } = getHighlightAndHighlightEls(pageEl, this.highlighter);
+        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(pageEl, this.highlighter);
         if (highlightEls.length === 0) {
             return;
         }
@@ -940,7 +559,7 @@ class DocAnnotator extends Annotator {
         let buttonY;
 
         // If selection is reversed, button should be placed before the first line of selection
-        if (isSelectionReversed(event, highlightEls)) {
+        if (annotatorUtil.isSelectionReversed(event, highlightEls)) {
             const firstHighlightEl = highlightEls[0];
             const dimensions = firstHighlightEl.getBoundingClientRect();
             buttonX = dimensions.left - pageDimensions.left - 20;
@@ -957,7 +576,7 @@ class DocAnnotator extends Annotator {
         // Position button
         addHighlightButtonEl.style.left = `${buttonX}px`;
         addHighlightButtonEl.style.top = `${buttonY}px`;
-        showElement(addHighlightButtonEl);
+        annotatorUtil.showElement(addHighlightButtonEl);
         pageEl.appendChild(addHighlightButtonEl);
 
         // Clean up rangy highlight and restore selection
@@ -990,22 +609,22 @@ class DocAnnotator extends Annotator {
                     // Redraw highlights on page
                     const pageNum = parseInt(removeHighlightButtonEl.getAttribute('data-page'), 10);
                     this.drawHighlightAnnotationsOnPage(pageNum);
-                    hideElement(removeHighlightButtonEl);
+                    annotatorUtil.hideElement(removeHighlightButtonEl);
                 });
             });
         }
 
         // Create remove highlight button and position it above the upper right corner of the highlight
         const pageHeight = pageEl.getBoundingClientRect().height;
-        const upperRightCorner = getUpperRightCorner(annotation.location.quadPoints, pageEl);
-        const [browserX, browserY] = convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
+        const upperRightCorner = annotatorUtil.getUpperRightCorner(annotation.location.quadPoints, pageEl);
+        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
 
         // Position button
         removeHighlightButtonEl.style.left = `${browserX - 20}px`;
         removeHighlightButtonEl.style.top = `${browserY - 50}px`;
         removeHighlightButtonEl.setAttribute('data-annotation-id', annotation.annotationID);
         removeHighlightButtonEl.setAttribute('data-page', page);
-        showElement(removeHighlightButtonEl);
+        annotatorUtil.showElement(removeHighlightButtonEl);
         pageEl.appendChild(removeHighlightButtonEl);
     }
 
@@ -1022,13 +641,13 @@ class DocAnnotator extends Annotator {
         event.stopPropagation();
 
         // Hide add highlight button if there is no current selection
-        if (!isSelectionPresent()) {
-            hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        if (!annotatorUtil.isSelectionPresent()) {
+            annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
         }
 
         // Do nothing if the click was outside a page or a dialog is open
-        const page = getPageElAndPageNumber(event.target).page;
-        if (page === -1 || isDialogOpen()) {
+        const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
+        if (page === -1 || annotatorUtil.isDialogOpen()) {
             return;
         }
 
@@ -1040,7 +659,7 @@ class DocAnnotator extends Annotator {
         }
 
         // Hide any existing remove highlight button
-        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
+        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
 
         // Show remove highlight button if we clicked on an annotation
         if (this.activeAnnotationID) {
@@ -1062,17 +681,17 @@ class DocAnnotator extends Annotator {
         event.stopPropagation();
 
         // Do nothing if there is no selection
-        if (!isSelectionPresent()) {
+        if (!annotatorUtil.isSelectionPresent()) {
             return;
         }
 
         const selection = window.getSelection();
-        const { pageEl, page } = getPageElAndPageNumber(selection.anchorNode.parentNode);
+        const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(selection.anchorNode.parentNode);
         if (!pageEl) {
             return;
         }
 
-        const { highlight, highlightEls } = getHighlightAndHighlightEls(pageEl, this.highlighter);
+        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(pageEl, this.highlighter);
         if (highlightEls.length === 0) {
             return;
         }
@@ -1080,7 +699,7 @@ class DocAnnotator extends Annotator {
         // Get quad points for each highlight element
         const quadPoints = [];
         highlightEls.forEach((element) => {
-            quadPoints.push(getQuadPoints(element, pageEl, this.scale));
+            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, this.scale));
         });
 
         // Unselect text and remove rangy highlight
@@ -1100,7 +719,7 @@ class DocAnnotator extends Annotator {
         });
 
         // Hide add highlight button
-        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
     }
 
     /* ---------- Point Annotations ---------- */
@@ -1120,7 +739,7 @@ class DocAnnotator extends Annotator {
         const location = annotation.location;
         const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
         const pageHeight = pageEl.getBoundingClientRect().height;
-        const [browserX, browserY] = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
+        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
 
         pointAnnotationButtonEl.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
         pointAnnotationButtonEl.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
@@ -1157,11 +776,11 @@ class DocAnnotator extends Annotator {
 
         const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
         const pageHeight = pageEl.getBoundingClientRect().height;
-        const [browserX, browserY] = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
+        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
 
         pointPlaceholderEl.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
         pointPlaceholderEl.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-        showElement(pointPlaceholderEl);
+        annotatorUtil.showElement(pointPlaceholderEl);
         pageEl.appendChild(pointPlaceholderEl);
     }
 
@@ -1177,20 +796,20 @@ class DocAnnotator extends Annotator {
         event.stopPropagation();
 
         const eventTarget = event.target;
-        const dataType = findClosestDataType(eventTarget);
+        const dataType = annotatorUtil.findClosestDataType(eventTarget);
 
         if (dataType === 'show-point-annotation-btn') {
             this.showAnnotationDialog(eventTarget.getAttribute('data-thread-id'));
         } else if (dataType === 'show-annotation-dialog') {
-            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
-            hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         } else if (dataType === 'create-annotation-dialog') {
-            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
-            hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         } else {
-            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
-            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
-            hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         }
     }
 
@@ -1231,19 +850,15 @@ class DocAnnotator extends Annotator {
     addPointAnnotationHandler(event) {
         event.stopPropagation();
 
-        // @TODO(tjin): Close existing open annotations
-
-        // @TODO(tjin): Investigate edge cases with existing highlights in 'bindOnClickCreateComment'
-
         // If click isn't on a page, ignore
         const eventTarget = event.target;
-        const { pageEl, page } = getPageElAndPageNumber(eventTarget);
+        const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(eventTarget);
         if (!pageEl) {
             return;
         }
 
         // If click is inside an annotation dialog, ignore
-        const dataType = findClosestDataType(eventTarget);
+        const dataType = annotatorUtil.findClosestDataType(eventTarget);
         if (dataType === 'show-annotation-dialog' ||
             dataType === 'create-annotation-dialog' ||
             dataType === 'show-point-annotation-btn') {
@@ -1253,7 +868,7 @@ class DocAnnotator extends Annotator {
         // Store coordinates at 100% scale in PDF space in PDF units
         const pageDimensions = pageEl.getBoundingClientRect();
         const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageDimensions.top];
-        const pdfCoordinates = convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, this.scale);
+        const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, this.scale);
         const [x, y] = pdfCoordinates;
         const locationData = { x, y, page };
 
@@ -1271,7 +886,7 @@ class DocAnnotator extends Annotator {
     createAnnotationDialog(locationData, annotationType) {
         // Show a placeholder & hide point annotation indicator
         this.showPlaceholderPointAnnotation(locationData);
-        hideElement(constants.SELECTOR_ANNOTATION_POINT_ICON);
+        annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_ICON);
 
         // Create annotation dialog HTML
         let annotationDialogEl = document.querySelector(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
@@ -1313,8 +928,8 @@ class DocAnnotator extends Annotator {
 
             // Save annotation
             this.createAnnotation(annotation, true).then((createdAnnotation) => {
-                hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
-                hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+                annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+                annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
 
                 // Show point annotation icon
                 this.showPointAnnotation(createdAnnotation);
@@ -1327,8 +942,8 @@ class DocAnnotator extends Annotator {
         // Clicking 'Cancel' to cancel annotation
         this.addEventHandler(cancelButtonEl, (event) => {
             event.stopPropagation();
-            hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
-            hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
+            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
         });
 
         this.positionDialog(annotationDialogEl, locationData);
@@ -1336,7 +951,7 @@ class DocAnnotator extends Annotator {
         annotationTextEl.value = '';
 
         // Focus only if in viewport - otherwise, focus forces a scroll
-        if (isElementInViewport(annotationTextEl)) {
+        if (annotatorUtil.isElementInViewport(annotationTextEl)) {
             annotationTextEl.focus();
         }
     }
@@ -1396,15 +1011,15 @@ class DocAnnotator extends Annotator {
 
             // Reset thread
             annotationCommentsEl.innerHTML = '';
-            resetTextarea(replyTextEl);
-            hideElement(replyButtonContainerEl);
+            annotatorUtil.resetTextarea(replyTextEl);
+            annotatorUtil.hideElement(replyButtonContainerEl);
 
             // Clicking in textarea shows reply buttons
             this.addEventHandler(replyTextEl, (event) => {
                 event.stopPropagation();
 
                 replyTextEl.classList.add(CLASS_ACTIVE);
-                showElement(replyButtonContainerEl);
+                annotatorUtil.showElement(replyButtonContainerEl);
             });
 
             // Typing in textarea shows reply buttons
@@ -1412,15 +1027,15 @@ class DocAnnotator extends Annotator {
                 event.stopPropagation();
 
                 replyTextEl.classList.add(CLASS_ACTIVE);
-                showElement(replyButtonContainerEl);
+                annotatorUtil.showElement(replyButtonContainerEl);
             }, 'keydown');
 
             // Clicking 'Cancel' to cancel adding a reply annotation
             this.addEventHandler(cancelButtonEl, (event) => {
                 event.stopPropagation();
 
-                resetTextarea(replyTextEl);
-                hideElement(replyButtonContainerEl);
+                annotatorUtil.resetTextarea(replyTextEl);
+                annotatorUtil.hideElement(replyButtonContainerEl);
                 replyTextEl.focus();
             });
 
@@ -1434,8 +1049,8 @@ class DocAnnotator extends Annotator {
                     return;
                 }
 
-                resetTextarea(replyTextEl);
-                hideElement(replyButtonContainerEl);
+                annotatorUtil.resetTextarea(replyTextEl);
+                annotatorUtil.hideElement(replyButtonContainerEl);
 
                 // Create annotation, but don't add to in-memory map since a thread already exists
                 const newAnnotation = Annotation.copy(firstAnnotation, {
@@ -1448,7 +1063,7 @@ class DocAnnotator extends Annotator {
                 });
 
                 // Focus only if in viewport - otherwise, focus forces a scroll
-                if (isElementInViewport(replyTextEl)) {
+                if (annotatorUtil.isElementInViewport(replyTextEl)) {
                     replyTextEl.focus();
                 }
             });
@@ -1465,7 +1080,7 @@ class DocAnnotator extends Annotator {
             this.positionDialog(annotationDialogEl, locationData);
 
             // Focus only if in viewport - otherwise, focus forces a scroll
-            if (isElementInViewport(replyTextEl)) {
+            if (annotatorUtil.isElementInViewport(replyTextEl)) {
                 replyTextEl.focus();
             }
         });
@@ -1479,13 +1094,13 @@ class DocAnnotator extends Annotator {
      * @returns {HTMLElement} Annotation comment element
      */
     createAnnotationCommentEl(annotation) {
-        const avatarUrl = htmlEscape(annotation.user.avatarUrl);
-        const userName = htmlEscape(annotation.user.name);
+        const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl);
+        const userName = annotatorUtil.htmlEscape(annotation.user.name);
         const created = new Date(annotation.created).toLocaleDateString(
             'en-US',
             { hour: '2-digit', minute: '2-digit' }
         );
-        const text = htmlEscape(annotation.text);
+        const text = annotatorUtil.htmlEscape(annotation.text);
 
         const annotationEl = document.createElement('div');
         annotationEl.classList.add('annotation-comment');
@@ -1515,7 +1130,7 @@ class DocAnnotator extends Annotator {
         this.addEventHandler(deleteButtonEl, (event) => {
             event.stopPropagation();
 
-            showElement(deleteConfirmationEl);
+            annotatorUtil.showElement(deleteConfirmationEl);
             cancelDeleteButtonEl.focus();
         });
 
@@ -1523,7 +1138,7 @@ class DocAnnotator extends Annotator {
         this.addEventHandler(cancelDeleteButtonEl, (event) => {
             event.stopPropagation();
 
-            hideElement(deleteConfirmationEl);
+            annotatorUtil.hideElement(deleteConfirmationEl);
             deleteButtonEl.focus();
         });
 
@@ -1540,7 +1155,7 @@ class DocAnnotator extends Annotator {
 
                 // If this was the root comment in this thread, remove the whole thread
                 if (isRootAnnotation) {
-                    hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+                    annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
 
                     // Remove point icon when we delete whole thread
                     const pointAnnotationButtonEl = document.querySelector(`[data-thread-id="${annotation.threadID}"]`);
@@ -1566,16 +1181,16 @@ class DocAnnotator extends Annotator {
      */
     positionDialog(dialogEl, location) {
         // Hide add highlight button
-        hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
 
         const positionedDialogEl = dialogEl;
         const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
         const pageHeight = pageEl.getBoundingClientRect().height;
-        const [browserX, browserY] = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
+        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
 
         // Show dialog so we can get width
         pageEl.appendChild(dialogEl);
-        showElement(positionedDialogEl);
+        annotatorUtil.showElement(positionedDialogEl);
         const dialogDimensions = dialogEl.getBoundingClientRect();
         const dialogWidth = dialogDimensions.width;
         const pageDimensions = pageEl.getBoundingClientRect();
