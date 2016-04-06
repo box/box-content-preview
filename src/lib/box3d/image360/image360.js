@@ -1,13 +1,7 @@
 import './image360.scss';
 import Box3D from '../box3d';
-import autobind from 'autobind-decorator';
-import Image360Controls from './image360-controls';
+import Box3DControls from '../box3d-controls';
 import Image360Renderer from './image360-renderer';
-
-import {
-    EVENT_RELOAD,
-    EVENT_SWITCH_2D
-} from './image360-constants';
 
 const Box = global.Box || {};
 const CSS_CLASS_IMAGE_360 = 'box-preview-image-360';
@@ -35,39 +29,9 @@ class Image360 extends Box3D {
      */
     createSubModules() {
         if (this.options.ui !== false) {
-            this.controls = new Image360Controls(this.wrapperEl);
+            this.controls = new Box3DControls(this.wrapperEl);
         }
         this.renderer = new Image360Renderer(this.wrapperEl, this.boxSdk);
-    }
-
-    /**
-    * @inheritdoc
-     */
-    attachEventHandlers() {
-        super.attachEventHandlers();
-        if (this.controls) {
-            this.controls.on(EVENT_SWITCH_2D, this.switchTo2dViewer);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    detachEventHandlers() {
-        super.detachEventHandlers();
-        if (this.controls) {
-            this.controls.removeListener(EVENT_SWITCH_2D, this.switchTo2dViewer);
-        }
-    }
-
-    /**
-     * Switches back to 2D viewer
-     * @returns {void}
-     */
-    @autobind
-    switchTo2dViewer() {
-        Box.Preview.enableViewers('Image');
-        this.emit(EVENT_RELOAD);
     }
 }
 

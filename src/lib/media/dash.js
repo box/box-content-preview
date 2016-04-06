@@ -3,12 +3,10 @@ import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 import cache from '../cache';
 import fullscreen from '../fullscreen';
-import Browser from '../browser';
 import { createContentUrl, getHeaders } from '../util';
 import RepStatus from '../rep-status';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
-const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
 const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
@@ -41,9 +39,6 @@ class Dash extends VideoBase {
         }
         if (this.mediaControls) {
             this.mediaControls.removeListener('qualitychange', this.handleQuality);
-        }
-        if (this.switchTo360El) {
-            this.switchTo360El.removeEventListener('click', this.switchTo360);
         }
         super.destroy();
     }
@@ -126,17 +121,6 @@ class Dash extends VideoBase {
                 getHeaders(headers, token, this.options.sharedLink);
             }
         };
-    }
-
-    /**
-     * Switches the viewer to 3D
-     * @public
-     * @returns {void}
-     */
-    switchTo360() {
-        Box.Preview.disableViewers('Dash');
-        Box.Preview.disableViewers('MP4');
-        this.emit('reload');
     }
 
     /**
@@ -251,12 +235,6 @@ class Dash extends VideoBase {
         this.calculateVideoDimensions();
         this.resize();
         this.loadFilmStrip();
-
-        if (Browser.hasWebGL()) {
-            this.switchTo360El = this.containerEl.querySelector('.box-preview-image-switch-360-icon');
-            this.switchTo360El.classList.remove(CSS_CLASS_HIDDEN);
-            this.switchTo360El.addEventListener('click', this.switchTo360);
-        }
     }
 
     /**

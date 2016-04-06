@@ -3,9 +3,6 @@ import {
     EVENT_ENABLE_VR,
     EVENT_DISABLE_VR
 } from '../box3d-constants';
-import {
-    EVENT_SWITCH_2D
-} from './video360-constants';
 
 const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
 
@@ -46,20 +43,6 @@ class Video360Controls extends EventEmitter {
         this.vrButtonSpan = this.vrButton.appendChild(document.createElement('span'));
         this.vrButtonSpan.classList.add('box-preview-vr-toggle-icon');
         this.vrButton.classList.add(CSS_CLASS_HIDDEN);
-
-        // Create the button to toggle back to 2D viewing
-        this.toggle2dButton = mediaControlsEl.appendChild(document.createElement('button'));
-        this.toggle2dButton.classList.add('box-preview-media-controls-btn');
-        this.toggle2dButton.classList.add('box-preview-media-controls-2d');
-        this.toggle2dButton.classList.add('no-user-highlight');
-        this.toggle2dButton.title = 'Switch to 2D Viewer';
-        const toggle2dButtonSpan = this.toggle2dButton.appendChild(document.createElement('span'));
-        toggle2dButtonSpan.classList.add('switch-2d');
-        toggle2dButtonSpan.textContent = '2D';
-
-        // Hide the 360 button that Dash creates
-        const toggle360Button = this.el.querySelector('.box-preview-image-switch-360-icon');
-        toggle360Button.classList.add(CSS_CLASS_HIDDEN);
     }
 
     /**
@@ -68,7 +51,6 @@ class Video360Controls extends EventEmitter {
      */
     attachEventHandlers() {
         this.vrButton.addEventListener('click', this.handleToggleVr.bind(this));
-        this.toggle2dButton.addEventListener('click', this.switchTo2dViewer.bind(this));
     }
 
     /**
@@ -86,14 +68,6 @@ class Video360Controls extends EventEmitter {
      */
     showVrButton() {
         this.vrButton.classList.remove(CSS_CLASS_HIDDEN);
-    }
-
-    /**
-     * Switches back to 2D viewer
-     * @returns {void}
-     */
-    switchTo2dViewer() {
-        this.emit(EVENT_SWITCH_2D);
     }
 
     /**

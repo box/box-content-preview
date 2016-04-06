@@ -1,4 +1,5 @@
-import AssetLoader from '../../asset-loader';
+import Base360Loader from '../base360-loader';
+import autobind from 'autobind-decorator';
 
 const STATIC_URI = 'third-party/';
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
@@ -29,7 +30,8 @@ const VIEWERS = [
     }
 ];
 
-class Video360Loader extends AssetLoader {
+@autobind
+class Video360Loader extends Base360Loader {
 
     /**
      * Instantiates a loader for 360 degree video preview.
