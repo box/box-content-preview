@@ -10,6 +10,7 @@ export const CLASS_ANNOTATION_TEXTAREA = 'annotation-textarea';
 export const CLASS_BUTTON_CONTAINER = 'button-container';
 export const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
 export const CLASS_HIGHLIGHT_BUTTON_ADD = 'box-preview-add-highlight-btn';
+export const CLASS_HIGHLIGHT_BUTTON_REMOVE = 'box-preview-remove-highlight-btn';
 export const CLASS_REPLY_CONTAINER = 'reply-container';
 
 export const SELECTOR_ANNOTATION_BUTTON_CANCEL = `.${CLASS_ANNOTATION_BUTTON_CANCEL}`;
@@ -23,4 +24,5 @@ export const SELECTOR_ANNOTATION_TEXTAREA = `.${CLASS_ANNOTATION_TEXTAREA}`;
 export const SELECTOR_BUTTON_CONTAINER = `.${CLASS_BUTTON_CONTAINER}`;
 export const SELECTOR_COMMENTS_CONTAINER = `.${CLASS_COMMENTS_CONTAINER}`;
 export const SELECTOR_HIGHLIGHT_BUTTON_ADD = `.${CLASS_HIGHLIGHT_BUTTON_ADD}`;
+export const SELECTOR_HIGHLIGHT_BUTTON_REMOVE = `.${CLASS_HIGHLIGHT_BUTTON_REMOVE}`;
 export const SELECTOR_REPLY_CONTAINER = `.${CLASS_REPLY_CONTAINER}`;
