@@ -66,13 +66,14 @@ class Document extends DocBase {
             newScale = Math.ceil(newScale * 10) / 10;
             newScale = Math.min(MAX_SCALE, newScale);
         } while (--numTicks > 0 && newScale < MAX_SCALE);
-        this.pdfViewer.currentScaleValue = newScale;
 
         // Redraw annotations if needed
         if (this.annotator) {
-            this.annotator.setScale(this.pdfViewer.currentScale);
+            this.annotator.setScale(newScale);
             this.annotator.needToReRender = true;
         }
+
+        this.pdfViewer.currentScaleValue = newScale;
     }
 
     /**
@@ -89,13 +90,14 @@ class Document extends DocBase {
             newScale = Math.floor(newScale * 10) / 10;
             newScale = Math.max(MIN_SCALE, newScale);
         } while (--numTicks > 0 && newScale > MIN_SCALE);
-        this.pdfViewer.currentScaleValue = newScale;
 
         // Redraw annotations if needed
         if (this.annotator) {
-            this.annotator.setScale(this.pdfViewer.currentScale);
+            this.annotator.setScale(newScale);
             this.annotator.needToReRender = true;
         }
+
+        this.pdfViewer.currentScaleValue = newScale;
     }
 
     /* ----- Helpers ----- */
