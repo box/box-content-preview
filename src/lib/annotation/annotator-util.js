@@ -350,9 +350,10 @@ export function getQuadPoints(element, pageEl, scale) {
 
 /**
  * Gets coordinates representing upper right corner of the annotation
- * represented by the provided quad points. Note that these coordinates
- * are in PDF default user space, with the origin at the bottom left corner
- * of the document.
+ * represented by the provided quad points. We define upper right corner
+ * as the top right corner of the rectangle representing the top-most
+ * annotation. Note that these coordinates are in PDF default user space, with
+ * the origin at the bottom left corner of the document.
  *
  * @param {Number[]} quadPoints Quad points of annotation to get upper
  * right corner for in PDF space in PDF units
@@ -364,8 +365,13 @@ export function getUpperRightCorner(quadPoints) {
     quadPoints.forEach((quadPoint) => {
         const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
 
-        x = Math.max(x, Math.max(x1, x2, x3, x4));
-        y = Math.max(y, Math.max(y1, y2, y3, y4));
+        // If this rectangle is higher than previously recorded highest,
+        // use the right edge of this rectangle
+        const tempY = Math.max(y, Math.max(y1, y2, y3, y4));
+        if (tempY > y) {
+            x = Math.max(x, Math.max(x1, x2, x3, x4));
+            y = tempY;
+        }
     });
 
     return [x, y];
