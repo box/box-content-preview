@@ -14,7 +14,7 @@ const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 
 const ANONYMOUS_USER = {
     name: 'Kylo Ren',
-    avatarUrl: 'https://cloud.box.com/shared/static/x0tgsfl8vo2umx9kumd4jsq1p74ah8sn.png'
+    avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
 };
 
 /**
@@ -221,16 +221,11 @@ class Annotator {
     }
 
     /**
-     * Right click handler - hides annotation related elements and resets
-     * annotation state.
+     * Right click handler. Should be overridden.
      *
      * @returns {void}
      */
-    contextmenuHandler() {
-        annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_CREATE);
-        annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
-        annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_PLACEHOLDER);
-    }
+    contextmenuHandler() {}
 
     /**
      * Handler for mousemove over the document. Should be overridden.

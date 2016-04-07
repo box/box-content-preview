@@ -17,7 +17,7 @@ import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const MENU_HIDE_TIMEOUT = 500;
-const MOUSEMOVE_THROTTLE = 25;
+const MOUSEMOVE_THROTTLE = 15;
 const POINT_ANNOTATION_ICON_WIDTH = 16;
 const TOUCH_EVENT = Browser.isMobile() ? 'touchstart' : 'click';
 const TOUCH_END = Browser.isMobile() ? 'touchend' : 'mouseup';
@@ -93,23 +93,56 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Right click handler - hides annotations-related dialogs, buttons,
-     * and icons.
+     * Performs annotation animation based on mouse position in memory. This
+     * tracks the point annotation icon with the mouse if in annotation mode
+     * and makes highlights darker on hover if not.
      *
-     * @param {Event} event DOM event
      * @returns {void}
      */
-    contextmenuHandler(event) {
-        super.contextmenuHandler();
+    doAnnotationAnimation() {
+        const { x, y, page, dataType } = this.getMousePosition();
 
-        // Hide highlight buttons
-        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
-        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
+        // Get or create point annotation mode icon
+        let pointAnnotationIconEl = document.querySelector(constants.SELECTOR_ANNOTATION_POINT_ICON);
+        if (!pointAnnotationIconEl) {
+            pointAnnotationIconEl = document.createElement('div');
+            pointAnnotationIconEl.classList.add(constants.CLASS_ANNOTATION_POINT_ICON);
+            pointAnnotationIconEl.classList.add(CLASS_HIDDEN);
+        }
 
-        // Reset highlight
-        this.activeAnnotationID = '';
-        const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
-        this.drawHighlightAnnotationsOnPage(page);
+        // Append point annotation icon to correct parent
+        const pageEl = document.querySelector(`[data-page-number="${page}"]`);
+        if (!pageEl.contains(pointAnnotationIconEl)) {
+            pageEl.appendChild(pointAnnotationIconEl);
+        }
+
+        const docEl = document.querySelector('.box-preview-doc');
+        const inAnnotationMode = docEl.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
+        const inAnnotationDialog = dataType === 'show-annotation-dialog' || dataType === 'create-annotation-dialog';
+        const inPointAnnotationIcon = dataType === 'show-point-annotation-btn';
+
+        // If in annotation mode and mouse is not in a dialog, make icon track the mouse
+        if (inAnnotationMode && !inAnnotationDialog && !inPointAnnotationIcon) {
+            const pageDimensions = pageEl.getBoundingClientRect();
+            pointAnnotationIconEl.style.left = `${x - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+            pointAnnotationIconEl.style.top = `${y - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+            annotatorUtil.showElement(pointAnnotationIconEl);
+
+        // Otherwise, hide the annotation icon and make highlight annotations darker on hover
+        } else {
+            annotatorUtil.hideElement(pointAnnotationIconEl);
+
+            // Redraw annotations only if annotation we're currently over has changed
+            const hoverAnnotationID = this.getHighlightIDFromMousePoint(x, y, page);
+            if (hoverAnnotationID !== this.hoverAnnotationID) {
+                // Cache which annotation we're currently over
+                this.hoverAnnotationID = hoverAnnotationID;
+                this.drawHighlightAnnotationsOnPage(page);
+            }
+        }
+
+        // Animation is complete
+        this.pendingAnimation = false;
     }
 
     /**
@@ -122,76 +155,67 @@ class DocAnnotator extends Annotator {
     mousemoveHandler() {
         if (!this.throttledMousemoveHandler) {
             this.throttledMousemoveHandler = throttle((event) => {
-                // Short circuit all mousemove behavior if we are not on a page
-                const eventTarget = event.target;
-                const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(eventTarget);
+                // Saves mouse position in memory
+                this.setMousePosition(event);
+
+                const { page, dataType } = this.getMousePosition();
                 if (page === -1) {
                     annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_ICON);
-                    return;
+                    return; // Short circuit - we aren't on a page
                 }
 
-                // Point annotation hover behavior
-                const dataType = annotatorUtil.findClosestDataType(eventTarget);
-                const inPointAnnotationIcon = dataType === 'show-point-annotation-btn';
+                const eventTarget = event.target;
+                const threadID = eventTarget.getAttribute('data-thread-id');
                 const inAnnotationDialog = dataType === 'show-annotation-dialog' || dataType === 'create-annotation-dialog';
+                const inPointAnnotationIcon = dataType === 'show-point-annotation-btn';
 
                 // Show annotation thread when hovering over point icon
                 if (inPointAnnotationIcon && !annotatorUtil.isSelectionPresent()) {
+                    this.showAnnotationDialog(threadID);
+                }
+
+                // If we are on the point annotation icon or in an annotation dialog, don't close dialogs
+                if (inPointAnnotationIcon || inAnnotationDialog) {
                     clearTimeout(this.timeoutHandler);
                     this.timeoutHandler = null;
-                    this.showAnnotationDialog(eventTarget.getAttribute('data-thread-id'));
-                } else if (inAnnotationDialog) {
-                    clearTimeout(this.timeoutHandler);
-                    this.timeoutHandler = null;
-                } else {
-                    if (!this.timeoutHandler) {
-                        this.timeoutHandler = setTimeout(() => {
-                            annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
-                            this.timeoutHandler = null;
-                        }, MENU_HIDE_TIMEOUT);
-                    }
+                    annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_POINT_ICON);
+                    return; // Short circuit - we don't need any further animations
                 }
 
-                // Get or create point annotation mode icon
-                let pointAnnotationIconEl = document.querySelector(constants.SELECTOR_ANNOTATION_POINT_ICON);
-                if (!pointAnnotationIconEl) {
-                    pointAnnotationIconEl = document.createElement('div');
-                    pointAnnotationIconEl.classList.add(constants.CLASS_ANNOTATION_POINT_ICON);
-                    pointAnnotationIconEl.classList.add(CLASS_HIDDEN);
+                // Hide dialog when mouse leaves point annotaiton icon or dialog
+                if (!this.timeoutHandler) {
+                    this.timeoutHandler = setTimeout(() => {
+                        annotatorUtil.hideElement(constants.SELECTOR_ANNOTATION_DIALOG_SHOW);
+                        this.timeoutHandler = null;
+                    }, MENU_HIDE_TIMEOUT);
                 }
 
-                // Append point annotation icon to correct parent
-                if (!pageEl.contains(pointAnnotationIconEl)) {
-                    pageEl.appendChild(pointAnnotationIconEl);
-                }
-
-                // If in annotation mode and mouse is not in a dialog, make icon track the mouse
-                const docEl = document.querySelector('.box-preview-doc');
-                const inAnnotationMode = docEl.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
-                if (inAnnotationMode && !inAnnotationDialog && !inPointAnnotationIcon) {
-                    const pageDimensions = pageEl.getBoundingClientRect();
-                    // Shift icon to center on cursor
-                    pointAnnotationIconEl.style.left = `${event.clientX - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-                    pointAnnotationIconEl.style.top = `${event.clientY - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-                    annotatorUtil.showElement(pointAnnotationIconEl);
-                } else {
-                    annotatorUtil.hideElement(pointAnnotationIconEl);
-                }
-
-                // Highlight annotation hover behavior
-                if (!inAnnotationMode) {
-                    // Redraw annotations only if annotation we're currently over has changed
-                    const hoverAnnotationID = this.getHighlightIDFromMousePoint(event.clientX, event.clientY, page);
-                    if (hoverAnnotationID !== this.hoverAnnotationID) {
-                        // Cache which annotation we're currently over
-                        this.hoverAnnotationID = hoverAnnotationID;
-                        this.drawHighlightAnnotationsOnPage(page);
-                    }
+                // Animations for annotation mode and highlights
+                if (!this.pendingAnimation) {
+                    this.pendingAnimation = true;
+                    window.requestAnimationFrame(this.doAnnotationAnimation);
                 }
             }, MOUSEMOVE_THROTTLE);
         }
 
         return this.throttledMousemoveHandler;
+    }
+
+    /**
+     * Right click handler - resets highlight state and hides highlight buttons.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    contextmenuHandler(event) {
+        // Hide highlight buttons
+        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
+
+        // Reset highlight
+        this.activeAnnotationID = '';
+        const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
+        this.drawHighlightAnnotationsOnPage(page);
     }
 
     /* ---------- Highlight Annotations ---------- */
@@ -259,12 +283,13 @@ class DocAnnotator extends Annotator {
         // Create an annotation layer on the page if it doesn't exist
         let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
         if (!annotationLayerEl) {
-            const pageDimensions = pageEl.getBoundingClientRect();
-            const textLayerEl = pageEl.querySelector('.textLayer');
             annotationLayerEl = document.createElement('canvas');
             annotationLayerEl.classList.add('box-preview-annotation-layer');
+            const pageDimensions = pageEl.getBoundingClientRect();
             annotationLayerEl.width = pageDimensions.width;
             annotationLayerEl.height = pageDimensions.height;
+
+            const textLayerEl = pageEl.querySelector('.textLayer');
             pageEl.insertBefore(annotationLayerEl, textLayerEl);
         }
 
@@ -489,8 +514,8 @@ class DocAnnotator extends Annotator {
 
         // Create remove highlight button and position it above the upper right corner of the highlight
         const pageHeight = pageEl.getBoundingClientRect().height;
-        const upperRightCorner = annotatorUtil.getUpperRightCorner(annotation.location.quadPoints, pageEl);
-        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(upperRightCorner, pageHeight, this.scale);
+        const coordinates = annotatorUtil.getUpperRightCorner(annotation.location.quadPoints, pageEl);
+        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, this.scale);
 
         // Position button
         removeHighlightButtonEl.style.left = `${browserX - 20}px`;
@@ -596,6 +621,35 @@ class DocAnnotator extends Annotator {
     }
 
     /* ---------- Helpers ---------- */
+    /**
+     * Saves mouse position from event in memory.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    setMousePosition(event) {
+        const eventTarget = event.target;
+        this.mouseX = event.clientX;
+        this.mouseY = event.clientY;
+        this.mousePage = annotatorUtil.getPageElAndPageNumber(eventTarget).page;
+        this.mouseDataType = annotatorUtil.findClosestDataType(eventTarget);
+    }
+
+    /**
+     * Gets mouse position from memory.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    getMousePosition() {
+        return {
+            x: this.mouseX || 0,
+            y: this.mouseY || 0,
+            page: this.mousePage || 1,
+            dataType: this.mouseDataType || ''
+        };
+    }
+
     /**
      * Helper to remove a Rangy highlight by deleting the highlight in the
      * internal highlighter list that has a matching ID. We can't directly use
