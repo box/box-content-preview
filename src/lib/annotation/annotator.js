@@ -124,11 +124,24 @@ class Annotator {
     }
 
     /**
+     * Clears annotations on page.
+     *
+     * @returns {void}
+     */
+    clearAnnotations() {
+        const pointAnnotationButtonEls = [].slice.call(document.querySelectorAll(constants.SELECTOR_ANNOTATION_POINT), 0);
+        pointAnnotationButtonEls.forEach((pointAnnotationButtonEl) => {
+            pointAnnotationButtonEl.parentNode.removeChild(pointAnnotationButtonEl);
+        });
+    }
+
+    /**
      * Renders annotations from memory.
      *
      * @returns {void}
      */
     renderAnnotations() {
+        this.clearAnnotations();
         this.showPointAnnotations();
     }
 
@@ -666,7 +679,6 @@ class Annotator {
                     // Remove point icon when we delete whole thread
                     const pointAnnotationButtonEl = document.querySelector(`[data-thread-id="${annotation.threadID}"]`);
                     if (pointAnnotationButtonEl) {
-                        this.removeEventHandlers(pointAnnotationButtonEl);
                         pointAnnotationButtonEl.parentNode.removeChild(pointAnnotationButtonEl);
                     }
                 }
