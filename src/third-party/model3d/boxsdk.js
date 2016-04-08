@@ -46,19 +46,19 @@
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
 	var _representationLoaderRm = __webpack_require__(1);
 	
 	var _representationLoaderRm2 = _interopRequireDefault(_representationLoaderRm);
 	
-	var _representationLoaderV2 = __webpack_require__(7);
+	var _representationLoaderV = __webpack_require__(7);
 	
-	var _representationLoaderV22 = _interopRequireDefault(_representationLoaderV2);
+	var _representationLoaderV2 = _interopRequireDefault(_representationLoaderV);
 	
 	var _metadata = __webpack_require__(9);
 	
 	var _metadata2 = _interopRequireDefault(_metadata);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	/**
 	 * Acts as an abstraction layer to Representation loading. It will create the proper
@@ -71,12 +71,13 @@
 	function BoxSDK() {
 	  var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	
+	
 	  if (opts.hasOwnProperty('token')) {
 	    // use V2 client
-	    this.representationLoader = new _representationLoaderV22['default'](opts);
+	    this.representationLoader = new _representationLoaderV2.default(opts);
 	  } else {
 	    // use runmode client
-	    this.representationLoader = new _representationLoaderRm2['default'](opts);
+	    this.representationLoader = new _representationLoaderRm2.default(opts);
 	  }
 	
 	  // lazily created through accessor
@@ -111,7 +112,7 @@
 	BoxSDK.prototype.getMetadataClient = function (token, apiBase) {
 	
 	  if (!this.metadata) {
-	    this.metadata = new _metadata2['default'](token || this.token, apiBase || this.apiBase);
+	    this.metadata = new _metadata2.default(token || this.token, apiBase || this.apiBase);
 	  }
 	
 	  return this.metadata;
@@ -139,15 +140,9 @@
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
 	var _lie = __webpack_require__(2);
 	
@@ -157,9 +152,17 @@
 	
 	var _baseRepresentationLoader2 = _interopRequireDefault(_baseRepresentationLoader);
 	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
 	var FILE_ASSOC_URL = '/index.php?rm=preview_file_association';
 	
-	var RepresentationLoaderRM = (function (_BaseLoader) {
+	var RepresentationLoaderRM = function (_BaseLoader) {
 	  _inherits(RepresentationLoaderRM, _BaseLoader);
 	
 	  /**
@@ -176,10 +179,12 @@
 	
 	    _classCallCheck(this, RepresentationLoaderRM);
 	
-	    _get(Object.getPrototypeOf(RepresentationLoaderRM.prototype), 'constructor', this).call(this, opts);
-	
 	    //for creating URLs with a shared name appended
-	    this.sharedName = opts.sharedName;
+	
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RepresentationLoaderRM).call(this, opts));
+	
+	    _this.sharedName = opts.sharedName;
+	    return _this;
 	  }
 	
 	  /**
@@ -195,13 +200,14 @@
 	   * By default, response will be requested as an arraybuffer.
 	   */
 	
+	
 	  _createClass(RepresentationLoaderRM, [{
 	    key: 'load',
 	    value: function load(fileId, fileVersionId, repType, progress, params) {
-	      var _this = this;
+	      var _this2 = this;
 	
 	      return this.buildRepresentationUrl(fileId, fileVersionId, repType).then(function (url) {
-	        return _this.getRepresentation(url, progress, params);
+	        return _this2.getRepresentation(url, progress, params);
 	      });
 	    }
 	
@@ -218,21 +224,23 @@
 	     * @returns {Promise} A promise whos resolution recieves an object containing
 	     * the relevant file and file version ids, as fileId and fileVersionId
 	     */
+	
 	  }, {
 	    key: 'getFileIds',
 	    value: function getFileIds(filePath, baseFileId) {
-	      var _this2 = this;
+	      var _this3 = this;
 	
 	      var data = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	
+	
 	      if (!filePath) {
-	        return _lie2['default'].reject(new Error('No File Path Passed to getFileIds!'));
+	        return _lie2.default.reject(new Error('No File Path Passed to getFileIds!'));
 	      }
 	
 	      // Check cache for file ids
 	      var ids = this.getFromCache(filePath);
 	      if (ids) {
-	        return _lie2['default'].resolve(ids);
+	        return _lie2.default.resolve(ids);
 	      }
 	
 	      data.filePaths = {
@@ -242,23 +250,23 @@
 	
 	      var url = this.apiBase + FILE_ASSOC_URL + '&' + this.xhr.encodeToUri(data);
 	
-	      return new _lie2['default'](function (resolve, reject) {
+	      return new _lie2.default(function (resolve, reject) {
 	
-	        _this2.get(url).then(function (xhr) {
+	        _this3.get(url).then(function (xhr) {
 	          if (xhr.status === 200) {
 	
 	            var _data = JSON.parse(xhr.response);
 	
 	            if (_data.item) {
-	              _this2.addToCache(filePath, _data.item.fileId, _data.item.fileVersionId);
-	              resolve(_this2.getFromCache(filePath));
+	              _this3.addToCache(filePath, _data.item.fileId, _data.item.fileVersionId);
+	              resolve(_this3.getFromCache(filePath));
 	            } else {
 	              reject(new Error('No file association for: ' + filePath));
 	            }
 	          } else {
 	            reject(new Error(xhr.statusText));
 	          }
-	        })['catch'](reject);
+	        }).catch(reject);
 	      });
 	    }
 	
@@ -272,6 +280,7 @@
 	     * Throws error if not provided
 	     * @returns {Promise} A promise that resolves in a Url to GET, for representation
 	    */
+	
 	  }, {
 	    key: 'buildRepresentationUrl',
 	    value: function buildRepresentationUrl(fileId, fileVersionId, repParams) {
@@ -280,7 +289,7 @@
 	        throw new Error('Insufficient arguments for building asset url. File ID: ' + fileId + '\n        File Version: ' + fileVersionId + ' RepParams: ' + repParams);
 	      }
 	
-	      return _lie2['default'].resolve(this.apiBase + '/representation/file_version_' + fileVersionId + '/' + repParams);
+	      return _lie2.default.resolve(this.apiBase + '/representation/file_version_' + fileVersionId + '/' + repParams);
 	    }
 	
 	    /**
@@ -292,10 +301,13 @@
 	    * @param {function} [progress] The callback to call on load progress of the GET request
 	    * @returns {Promise} A Promise that resolves with an XHR response
 	    */
+	
 	  }, {
 	    key: 'get',
-	    value: function get(url, params, progress) {
-	      if (params === undefined) params = {};
+	    value: function get(url) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progress = arguments[2];
+	
 	
 	      if (this.sharedName) {
 	        url = this.appendSharedName(url);
@@ -312,6 +324,7 @@
 	    * @param {string} url The URL to check and then append a shared name to
 	    * @returns {string} The newly formatted URL
 	    */
+	
 	  }, {
 	    key: 'appendSharedName',
 	    value: function appendSharedName(url) {
@@ -325,6 +338,7 @@
 	    * Destructor
 	    * @returns {void}
 	    */
+	
 	  }, {
 	    key: 'destroy',
 	    value: function destroy() {
@@ -335,7 +349,7 @@
 	  }]);
 	
 	  return RepresentationLoaderRM;
-	})(_baseRepresentationLoader2['default']);
+	}(_baseRepresentationLoader2.default);
 	
 	module.exports = RepresentationLoaderRM;
 
@@ -389,7 +403,7 @@
 	  var promise = new this.constructor(INTERNAL);
 	  /* istanbul ignore else */
 	  if (!process.browser) {
-	    if (typeof onRejected === 'function' && this.handled === UNHANDLED) {
+	    if (this.handled === UNHANDLED) {
 	      this.handled = null;
 	    }
 	  }
@@ -807,11 +821,7 @@
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _lie = __webpack_require__(2);
 	
@@ -821,9 +831,13 @@
 	
 	var _xhr2 = _interopRequireDefault(_xhr);
 	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
 	var DEFAULT_API_BASE = 'https://api.box.com';
 	
-	var BaseRepresentationLoader = (function () {
+	var BaseRepresentationLoader = function () {
 	
 	  /**
 	   * Base loader that handles loading representations from Box, creating representation urls
@@ -844,7 +858,7 @@
 	    //cache of file and version ids!
 	    this.idCache = {};
 	
-	    this.xhr = new _xhr2['default']();
+	    this.xhr = new _xhr2.default();
 	  }
 	
 	  /**
@@ -852,6 +866,7 @@
 	   * @public
 	   * @returns {Promise} Should return a promise that results in the representation requested
 	   */
+	
 	
 	  _createClass(BaseRepresentationLoader, [{
 	    key: 'load',
@@ -870,6 +885,7 @@
 	     * @returns {Promise} A promise that resolves with an XHR response, by default
 	     * response data of the XHR Will be an array buffer
 	    */
+	
 	  }, {
 	    key: 'getRepresentation',
 	    value: function getRepresentation(url, progress) {
@@ -877,7 +893,8 @@
 	
 	      var params = arguments.length <= 2 || arguments[2] === undefined ? { responseType: 'arraybuffer' } : arguments[2];
 	
-	      return new _lie2['default'](function (resolve, reject) {
+	
+	      return new _lie2.default(function (resolve, reject) {
 	        _this.get(url, params, progress).then(function (xhr) {
 	          switch (xhr.status) {
 	            case 200:
@@ -888,7 +905,7 @@
 	            default:
 	              reject(new Error('Issue Loading ' + url));
 	          }
-	        })['catch'](reject);
+	        }).catch(reject);
 	      });
 	    }
 	
@@ -901,6 +918,7 @@
 	     * @returns {Promise} A promise whos resolution recieves an object containing the
 	     * relevant file and file version ids
 	     */
+	
 	  }, {
 	    key: 'getFileIds',
 	    value: function getFileIds() /*filePath, data*/{
@@ -917,6 +935,7 @@
 	     * @param {string} repParams The representation parameters we want to get!
 	     * @returns {Promise} A promise that resolves in a Url to make a request to, for representation
 	    */
+	
 	  }, {
 	    key: 'buildRepresentationUrl',
 	    value: function buildRepresentationUrl() /*fileId, fileVersion, repParams*/{
@@ -930,6 +949,7 @@
 	     * @param {string} url New url to use for requests
 	     * @returns {void}
 	    */
+	
 	  }, {
 	    key: 'setApiBase',
 	    value: function setApiBase(url) {
@@ -945,10 +965,12 @@
 	    * @param {function} [progress] The callback to call on load progress of the GET request
 	    * @returns {Promise} A Promise that resolves with the XHR response
 	    */
+	
 	  }, {
 	    key: 'get',
-	    value: function get(url, params, progress) {
-	      if (params === undefined) params = { withCredentials: true, responseType: null };
+	    value: function get(url) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? { withCredentials: true, responseType: null } : arguments[1];
+	      var progress = arguments[2];
 	
 	      return this.xhr.get(url, progress, params);
 	    }
@@ -961,6 +983,7 @@
 	     * @param {string} fileVersionId The Box File Version ID, to cache, of the Box Representation
 	     * @returns {void}
 	    */
+	
 	  }, {
 	    key: 'addToCache',
 	    value: function addToCache(path, fileId, fileVersionId) {
@@ -979,6 +1002,7 @@
 	     * @param {string} key The key to file ids that we want
 	     * @returns {Object} Object from cache containing the file id and file version id
 	    */
+	
 	  }, {
 	    key: 'getFromCache',
 	    value: function getFromCache(key) {
@@ -990,6 +1014,7 @@
 	    * @public
 	    * @returns {void}
 	    */
+	
 	  }, {
 	    key: 'destroy',
 	    value: function destroy() {
@@ -1004,7 +1029,7 @@
 	  }]);
 	
 	  return BaseRepresentationLoader;
-	})();
+	}();
 	
 	module.exports = BaseRepresentationLoader;
 
@@ -1014,21 +1039,23 @@
 
 	'use strict';
 	
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _lie = __webpack_require__(2);
 	
 	var _lie2 = _interopRequireDefault(_lie);
 	
-	var XHR = (function () {
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var XHR = function () {
 	
 	  /**
 	   * Module that handles working with XHR requests
@@ -1058,6 +1085,7 @@
 	  * @returns {string} The key at which the request is stored
 	  */
 	
+	
 	  _createClass(XHR, [{
 	    key: 'addRequest',
 	    value: function addRequest(xhr, url, key) {
@@ -1083,6 +1111,7 @@
 	    * @param {string} key The key at which to remove the request
 	    * @returns {void}
 	    */
+	
 	  }, {
 	    key: 'removeRequest',
 	    value: function removeRequest(key) {
@@ -1096,6 +1125,7 @@
 	    * @param {string} key The key that the xhr has been stored at
 	    * @returns {Object} The aborted XHR request
 	    */
+	
 	  }, {
 	    key: 'abortRequest',
 	    value: function abortRequest(key) {
@@ -1114,6 +1144,7 @@
 	    * @public
 	    * @returns {void}
 	    */
+	
 	  }, {
 	    key: 'abortRequests',
 	    value: function abortRequests() {
@@ -1140,23 +1171,26 @@
 	    * @returns {Promise} A Promise that resolves with an object describing the result.
 	    * includes: status, response, and the original XHR.
 	    */
+	
 	  }, {
 	    key: 'makeRequest',
-	    value: function makeRequest(url, method, params, progress) {
-	      if (method === undefined) method = 'GET';
-	      if (params === undefined) params = null;
+	    value: function makeRequest(url) {
+	      var method = arguments.length <= 1 || arguments[1] === undefined ? 'GET' : arguments[1];
+	      var params = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 	
 	      var _this = this;
 	
+	      var progress = arguments[3];
 	      var options = arguments.length <= 4 || arguments[4] === undefined ? { withCredentials: true,
 	        xhrKey: undefined, responseType: undefined, info: undefined, headers: undefined,
 	        sendToken: true } : arguments[4];
 	
+	
 	      if (!url) {
-	        return _lie2['default'].reject(new Error('No URL provided'));
+	        return _lie2.default.reject(new Error('No URL provided'));
 	      }
 	
-	      return new _lie2['default'](function (resolve, reject) {
+	      return new _lie2.default(function (resolve, reject) {
 	        var xhr = new XMLHttpRequest();
 	
 	        var key = _this.addRequest(xhr, url, options.xhrKey);
@@ -1239,6 +1273,7 @@
 	    * @param {object} [options] The options to apply to the request XHR
 	    * @returns {Promise} Resolves with a response XHR object
 	    */
+	
 	  }, {
 	    key: 'get',
 	    value: function get(url, progress, options) {
@@ -1255,6 +1290,7 @@
 	    * @param {object} [options] The options to apply to the request XHR
 	    * @returns {Promise} Resolves with a response XHR object
 	    */
+	
 	  }, {
 	    key: 'post',
 	    value: function post(url, params, progress, options) {
@@ -1271,6 +1307,7 @@
 	    * @param {object} [options] The options to apply to the request XHR
 	    * @returns {Promise} Resolves with a response XHR object
 	    */
+	
 	  }, {
 	    key: 'put',
 	    value: function put(url, params, progress, options) {
@@ -1287,6 +1324,7 @@
 	    * @param {object} [options] The options to apply to the request XHR
 	    * @returns {Promise} Resolves with a response XHR object
 	    */
+	
 	  }, {
 	    key: 'delete',
 	    value: function _delete(url, params, progress, options) {
@@ -1300,6 +1338,7 @@
 	     * @param {Object} data The object we want to encode
 	     * @returns {string} Url with query params
 	     */
+	
 	  }, {
 	    key: 'encodeToUri',
 	    value: function encodeToUri(data) {
@@ -1319,7 +1358,7 @@
 	
 	        var val = data[keys[i]];
 	
-	        if (typeof val === 'object') {
+	        if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object') {
 	          val = JSON.stringify(val);
 	        }
 	
@@ -1335,6 +1374,7 @@
 	    * @param {object} xhr The xhr object to check the size of
 	    * @returns {int} Size of asset, in bytes
 	    */
+	
 	  }, {
 	    key: 'getContentLength',
 	    value: function getContentLength(xhr) {
@@ -1350,6 +1390,7 @@
 	    * @returns {object} status object that contains the total size of the asset we are loading,
 	    * the number of bytes currently loaded, and the XHR itself
 	    */
+	
 	  }, {
 	    key: 'getLoadStatus',
 	    value: function getLoadStatus(xhr) {
@@ -1373,6 +1414,7 @@
 	    * Return the list of current requests
 	    * @returns {object} The current requests being made
 	    */
+	
 	  }, {
 	    key: 'getCurrentRequests',
 	    value: function getCurrentRequests() {
@@ -1385,6 +1427,7 @@
 	    * @param {string} authToken The Oauth2 token to use
 	    * @returns {void}
 	    */
+	
 	  }, {
 	    key: 'setAuthToken',
 	    value: function setAuthToken(authToken) {
@@ -1394,10 +1437,9 @@
 	  }]);
 	
 	  return XHR;
-	})();
-	
-	exports['default'] = XHR;
-	module.exports = exports['default'];
+	}();
+
+	exports.default = XHR;
 
 /***/ },
 /* 7 */
@@ -1405,15 +1447,9 @@
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _get = function get(_x4, _x5, _x6) { var _again = true; _function: while (_again) { var object = _x4, property = _x5, receiver = _x6; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x4 = parent; _x5 = property; _x6 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
 	var _lie = __webpack_require__(2);
 	
@@ -1427,6 +1463,14 @@
 	
 	var _baseRepresentationLoader2 = _interopRequireDefault(_baseRepresentationLoader);
 	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
 	var CONVERT_STATUS = {
 	  none: 'none', // No representation
 	  success: 'success', // Representation available
@@ -1438,7 +1482,7 @@
 	var POLL_TIME = 500; // in milliseconds
 	var MAX_POLL_RETRIES = 5; // number of times to poll a single representation
 	
-	var RepresentationLoaderV2 = (function (_BaseLoader) {
+	var RepresentationLoaderV2 = function (_BaseLoader) {
 	  _inherits(RepresentationLoaderV2, _BaseLoader);
 	
 	  /**
@@ -1459,17 +1503,18 @@
 	      throw new Error('No OAuth Token Provided!');
 	    }
 	
-	    _get(Object.getPrototypeOf(RepresentationLoaderV2.prototype), 'constructor', this).call(this, opts);
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RepresentationLoaderV2).call(this, opts));
 	
-	    this.xhr.setAuthToken(opts.token);
+	    _this.xhr.setAuthToken(opts.token);
 	
 	    // keep track of content bases, to make sure we aren't making unnecessary
 	    // file info requests
-	    this.contentBaseCache = {};
+	    _this.contentBaseCache = {};
 	
-	    this.search = new _search2['default'](this.xhr, this.apiBase);
+	    _this.search = new _search2.default(_this.xhr, _this.apiBase);
 	
-	    this.pollRetries = {};
+	    _this.pollRetries = {};
+	    return _this;
 	  }
 	
 	  /**
@@ -1482,10 +1527,12 @@
 	  * @returns {Promise} A Promise that resolves with the XHR response object
 	  */
 	
+	
 	  _createClass(RepresentationLoaderV2, [{
 	    key: 'get',
-	    value: function get(url, params, progress) {
-	      if (params === undefined) params = {};
+	    value: function get(url) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progress = arguments[2];
 	
 	      params.withCredentials = false;
 	      return this.xhr.get(url, progress, params);
@@ -1497,6 +1544,7 @@
 	    * @param {string} pathName The path name to split into directories and the file name
 	    * @returns {array} List of parent folder names and the name of the file, as the last entry
 	    */
+	
 	  }, {
 	    key: 'extractDirectoryNames',
 	    value: function extractDirectoryNames(pathName) {
@@ -1519,6 +1567,7 @@
 	    * @param {array} folderNames The array of folder names to compare against
 	    * @returns {int} The number of matches
 	    */
+	
 	  }, {
 	    key: 'countPathMatches',
 	    value: function countPathMatches(pathEntries, folderNames) {
@@ -1559,15 +1608,16 @@
 	    * @returns {Promise} A promise that resolves with the best matching file ids as an object
 	    * with fileId and fileVersionId, or null if none available
 	    */
+	
 	  }, {
 	    key: 'searchForFileIds',
 	    value: function searchForFileIds(path, ancestorFolderId) {
-	      var _this = this;
+	      var _this2 = this;
 	
 	      var folders = this.extractDirectoryNames(path),
 	          name = folders.pop(); // grab the file name off of the end of the list
 	
-	      return new _lie2['default'](function (resolve, reject) {
+	      return new _lie2.default(function (resolve, reject) {
 	
 	        var nameAndExtension = name.split('.');
 	        name = nameAndExtension[0];
@@ -1589,7 +1639,7 @@
 	        }
 	
 	        // search.search resolves in JSON
-	        _this.search.search(name, searchParams).then(function (response) {
+	        _this2.search.search(name, searchParams).then(function (response) {
 	
 	          var results = response.response,
 	              bestMatch = null;
@@ -1605,7 +1655,7 @@
 	
 	              results.entries.forEach(function (entry) {
 	
-	                var matches = _this.countPathMatches(entry.path_collection.entries, folders);
+	                var matches = _this2.countPathMatches(entry.path_collection.entries, folders);
 	
 	                if (matches > bestMatchCount) {
 	                  bestMatchCount = matches;
@@ -1623,7 +1673,7 @@
 	            fileId: bestMatch.id,
 	            fileVersionId: bestMatch.file_version.id
 	          });
-	        })['catch'](reject);
+	        }).catch(reject);
 	      });
 	    }
 	
@@ -1638,33 +1688,34 @@
 	     * @returns {Promise} A promise whos resolution recieves an object containing
 	     * a fileId and fileVersionId. If none are found, an error will be thrown
 	     */
+	
 	  }, {
 	    key: 'getFileIds',
 	    value: function getFileIds(filePath, folderId) {
-	      var _this2 = this;
+	      var _this3 = this;
 	
 	      if (!filePath) {
-	        return _lie2['default'].reject(new Error('No File Path Passed to getFileIds()!'));
+	        return _lie2.default.reject(new Error('No File Path Passed to getFileIds()!'));
 	      }
 	
 	      // Check cache for file ids
 	      var ids = this.getFromCache(filePath);
 	      if (ids) {
-	        return _lie2['default'].resolve(ids);
+	        return _lie2.default.resolve(ids);
 	      }
 	
 	      // use search API!
-	      return new _lie2['default'](function (resolve, reject) {
+	      return new _lie2.default(function (resolve, reject) {
 	
-	        _this2.searchForFileIds(filePath, folderId).then(function (ids) {
+	        _this3.searchForFileIds(filePath, folderId).then(function (ids) {
 	
 	          if (!ids) {
 	            return reject(new Error('No file and file version ids for ' + filePath));
 	          }
 	
-	          _this2.addToCache(filePath, ids.fileId, ids.fileVersionId);
-	          resolve(_this2.getFromCache(filePath));
-	        })['catch'](reject);
+	          _this3.addToCache(filePath, ids.fileId, ids.fileVersionId);
+	          resolve(_this3.getFromCache(filePath));
+	        }).catch(reject);
 	      });
 	    }
 	
@@ -1678,26 +1729,28 @@
 	     * the content url.
 	     * @returns {Promise} A promise that resolves in the content url to get the representation
 	     */
+	
 	  }, {
 	    key: 'getRepresentationUrl',
 	    value: function getRepresentationUrl(fileId, entryValidator) {
-	      var _this3 = this;
+	      var _this4 = this;
 	
 	      var properties = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 	
+	
 	      if (!entryValidator) {
-	        return _lie2['default'].reject('No validator supplied to find content for ${fileId}');
+	        return _lie2.default.reject('No validator supplied to find content for ${fileId}');
 	      }
 	
 	      var props = properties ? '?' + this.xhr.encodeToUri(properties) : '';
 	
 	      if (!this.contentBaseCache[fileId]) {
 	        (function () {
-	          var fileInfo = _this3.apiBase + '/2.0/files/' + fileId + '?fields=representations';
+	          var fileInfo = _this4.apiBase + '/2.0/files/' + fileId + '?fields=representations';
 	
-	          _this3.contentBaseCache[fileId] = new _lie2['default'](function (resolve, reject) {
+	          _this4.contentBaseCache[fileId] = new _lie2.default(function (resolve, reject) {
 	
-	            _this3.get(fileInfo, { responseType: 'json' }).then(function (resp) {
+	            _this4.get(fileInfo, { responseType: 'json' }).then(function (resp) {
 	              if (resp.status !== 200) {
 	                throw new Error('Failed to find file representation info for: ' + fileId);
 	              }
@@ -1705,32 +1758,31 @@
 	              var info = resp.response;
 	
 	              if (!info.representations) {
-	                throw new Error('No representations for current file');
-	              }
-	              // iterate over the represetantations to get the one for 3d
-	              var entries = info.representations.entries,
-	                  length = entries.length,
-	                  contentAvailable = false;
-	
-	              for (var i = 0; i < length; ++i) {
-	                var entry = entries[i];
-	                // Check if a valid entry
-	                if (entryValidator(entry)) {
-	                  _this3.getContentUrl(entry).then(resolve)['catch'](reject);
-	                  contentAvailable = true;
-	                  break;
-	                }
+	                throw new Error('No representations for ' + fileId);
 	              }
 	
-	              if (!contentAvailable) {
-	                throw new Error('No representation available for ' + fileId);
-	              }
-	            });
+	              resolve(info.representations.entries);
+	            }).catch(reject);
 	          });
 	        })();
 	      }
 	
-	      return this.contentBaseCache[fileId].then(function (contentBase) {
+	      return this.contentBaseCache[fileId].then(function (entries) {
+	
+	        // iterate over the represetantations to get the one for 3d
+	        var length = entries.length;
+	
+	        for (var i = 0; i < length; ++i) {
+	          var entry = entries[i];
+	          // Check if a valid entry
+	          if (entryValidator(entry)) {
+	            return _this4.getContentUrl(entry);
+	          }
+	        }
+	
+	        // If we get to this point, everything went wrong
+	        throw new Error('No valid representation found for ' + fileId);
+	      }).then(function (contentBase) {
 	        return '' + contentBase + props;
 	      });
 	    }
@@ -1740,14 +1792,15 @@
 	     * @param {[type]} entry [description]
 	     * @returns {[type]} [description]
 	     */
+	
 	  }, {
 	    key: 'getContentUrl',
 	    value: function getContentUrl(entry) {
-	      var _this4 = this;
+	      var _this5 = this;
 	
 	      var links = entry.links;
 	
-	      return new _lie2['default'](function (resolve, reject) {
+	      return new _lie2.default(function (resolve, reject) {
 	
 	        switch (entry.status) {
 	          case CONVERT_STATUS.success:
@@ -1755,11 +1808,11 @@
 	            break;
 	          case CONVERT_STATUS.none:
 	          case CONVERT_STATUS.pending:
-	            _this4.pollInfoStatus(links.info.url).then(function () {
-	              _this4.clearPollCount(links.info.url);
+	            _this5.pollInfoStatus(links.info.url).then(function () {
+	              _this5.clearPollCount(links.info.url);
 	              resolve(links.content.url);
-	            })['catch'](function (err) {
-	              _this4.clearPollCount(links.info.url);
+	            }).catch(function (err) {
+	              _this5.clearPollCount(links.info.url);
 	              reject(err);
 	            });
 	            break;
@@ -1777,22 +1830,24 @@
 	     * @returns {Promise} A Promise that resolves if representation is ready, and rejects if fails OR
 	     * polling takes too long
 	     */
+	
 	  }, {
 	    key: 'pollInfoStatus',
 	    value: function pollInfoStatus(url) {
-	      var _this5 = this;
+	      var _this6 = this;
 	
 	      var waitTime = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	
 	
 	      var timesPolled = this.incrementPollCount(url);
 	
 	      if (timesPolled >= MAX_POLL_RETRIES) {
-	        return _lie2['default'].reject(new Error('Max poll time exceeded for ' + url));
+	        return _lie2.default.reject(new Error('Max poll time exceeded for ' + url));
 	      }
 	
-	      return new _lie2['default'](function (resolve, reject) {
+	      return new _lie2.default(function (resolve, reject) {
 	
-	        _this5.get(url, { responseType: 'json' }).then(function (response) {
+	        _this6.get(url, { responseType: 'json' }).then(function (response) {
 	          if (response.status !== 200) {
 	            throw new Error('Info not available for ' + url);
 	          }
@@ -1806,7 +1861,7 @@
 	            case CONVERT_STATUS.none:
 	            case CONVERT_STATUS.pending:
 	              window.setTimeout(function () {
-	                _this5.pollInfoStatus(url, POLL_TIME).then(resolve)['catch'](function () {
+	                _this6.pollInfoStatus(url, POLL_TIME).then(resolve).catch(function () {
 	                  reject(new Error('Error getting info @ ' + url));
 	                });
 	              }, waitTime);
@@ -1815,7 +1870,7 @@
 	            default:
 	              throw new Error('Error getting info @ ' + url);
 	          }
-	        })['catch'](reject);
+	        }).catch(reject);
 	      });
 	    }
 	
@@ -1824,6 +1879,7 @@
 	     * @param {String} url The url we are polling
 	     * @returns {Number} The number of times we have polled the url
 	     */
+	
 	  }, {
 	    key: 'incrementPollCount',
 	    value: function incrementPollCount(url) {
@@ -1836,6 +1892,7 @@
 	     * @param {String} url The url we are done polling
 	     * @returns {void}
 	     */
+	
 	  }, {
 	    key: 'clearPollCount',
 	    value: function clearPollCount(url) {
@@ -1846,6 +1903,7 @@
 	    * Destructor
 	    * @returns {void}
 	    */
+	
 	  }, {
 	    key: 'destroy',
 	    value: function destroy() {
@@ -1856,7 +1914,7 @@
 	  }]);
 	
 	  return RepresentationLoaderV2;
-	})(_baseRepresentationLoader2['default']);
+	}(_baseRepresentationLoader2.default);
 	
 	module.exports = RepresentationLoaderV2;
 
@@ -1866,17 +1924,17 @@
 
 	'use strict';
 	
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var DEFAULT_API_BASE = 'https://api.box.com';
 	
-	var Search = (function () {
+	var Search = function () {
 	
 	  /**
 	   * Client for searching for items stored in Box
@@ -1904,6 +1962,7 @@
 	  * @returns {void}
 	  */
 	
+	
 	  _createClass(Search, [{
 	    key: 'setApiBase',
 	    value: function setApiBase(url) {
@@ -1917,6 +1976,7 @@
 	    * @param {object} [params] Params to turn into query parameters for search API
 	    * @returns {string} A URL, with added query parameters, that is valid for Search API
 	    */
+	
 	  }, {
 	    key: 'createSearchQuery',
 	    value: function createSearchQuery(query, params) {
@@ -1937,6 +1997,7 @@
 	    * @param {object} [params] Any additional query params we want to look for
 	    * @returns {Promise} A promise that resolves with the response XHR (response will be in json)
 	    */
+	
 	  }, {
 	    key: 'search',
 	    value: function search(query, params) {
@@ -1947,10 +2008,9 @@
 	  }]);
 	
 	  return Search;
-	})();
-	
-	exports['default'] = Search;
-	module.exports = exports['default'];
+	}();
+
+	exports.default = Search;
 
 /***/ },
 /* 9 */
@@ -1958,25 +2018,25 @@
 
 	'use strict';
 	
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _xhr = __webpack_require__(6);
 	
 	var _xhr2 = _interopRequireDefault(_xhr);
 	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
 	var API_BASE = 'https://api.box.com';
 	var UPDATE_HEADERS = { 'Content-Type': 'application/json-patch+json' };
 	var CREATE_HEADERS = { 'Content-Type': 'application/json' };
 	
-	var Metadata = (function () {
+	var Metadata = function () {
 	
 	  /**
 	  * Client for using Box Metadata
@@ -1989,7 +2049,7 @@
 	  function Metadata(token, apiBase) {
 	    _classCallCheck(this, Metadata);
 	
-	    this.xhr = new _xhr2['default'](token);
+	    this.xhr = new _xhr2.default(token);
 	    this.apiBase = apiBase !== undefined ? apiBase : API_BASE;
 	  }
 	
@@ -1998,6 +2058,7 @@
 	   * @param {string} baseUrl The base url we want to set for all Metadata requests
 	   * @returns {void}
 	   */
+	
 	
 	  _createClass(Metadata, [{
 	    key: 'setApiBase',
@@ -2011,6 +2072,7 @@
 	     * @param {string} token The auth token
 	     * @returns {void}
 	     */
+	
 	  }, {
 	    key: 'setAuthToken',
 	    value: function setAuthToken(token) {
@@ -2026,6 +2088,7 @@
 	    * @param {string} template The display name of the template
 	    * @returns {Promise} A promise that resolves in the metadata as json
 	    */
+	
 	  }, {
 	    key: 'get',
 	    value: function get(id, scope, template) {
@@ -2039,6 +2102,7 @@
 	    * @param {string} id The file id of the file we want to get metadata for
 	    * @returns {Promise} A promise that resolves in the metadata as json
 	    */
+	
 	  }, {
 	    key: 'getAll',
 	    value: function getAll(id) {
@@ -2059,6 +2123,7 @@
 	     * instance that includes the key:value pairs defined. If the template already exists,
 	     * a 409 status code will be returned. Use update() instead
 	     */
+	
 	  }, {
 	    key: 'create',
 	    value: function create(id, scope, template, customKeyVal) {
@@ -2075,6 +2140,7 @@
 	     * 'add' and 'replace' operations.
 	     * @returns {object} A metdata template operation object
 	     */
+	
 	  }, {
 	    key: 'createOperation',
 	    value: function createOperation(operation, path, value) {
@@ -2115,6 +2181,7 @@
 	     * template that includes key:value pairs defined by a user or application.
 	     * If no template present, a 404 will be returned
 	     */
+	
 	  }, {
 	    key: 'update',
 	    value: function update(id, scope, template, operation) {
@@ -2137,11 +2204,12 @@
 	     * @returns {promise} A promise that resolves in an XHR response, with a status of 204
 	     * if the DELETE is successful
 	     */
+	
 	  }, {
 	    key: 'delete',
 	    value: function _delete(id, scope, template) {
 	
-	      return this.xhr['delete'](this.apiBase + 'files/' + id + '/metadata/' + scope + '/' + template);
+	      return this.xhr.delete(this.apiBase + 'files/' + id + '/metadata/' + scope + '/' + template);
 	    }
 	
 	    /**
@@ -2150,6 +2218,7 @@
 	    * @param {string} id The file id of the file we want to get metadata for
 	    * @returns {Promise} A promise that resolves in the metadata as json
 	    */
+	
 	  }, {
 	    key: 'getGlobalProperties',
 	    value: function getGlobalProperties(id) {
@@ -2162,6 +2231,7 @@
 	     * @public
 	     * @returns {Promise} A promise that resolves in the metadata as json
 	     */
+	
 	  }, {
 	    key: 'getEnterpriseTemplates',
 	    value: function getEnterpriseTemplates() {
@@ -2176,6 +2246,7 @@
 	    * @param {string} template The display name of the template
 	    * @returns {Promise} A promise that resolves in the schema as json
 	    */
+	
 	  }, {
 	    key: 'getSchemaForTemplate',
 	    value: function getSchemaForTemplate(scope, template) {
@@ -2185,11 +2256,10 @@
 	  }]);
 	
 	  return Metadata;
-	})();
-	
-	exports['default'] = Metadata;
-	module.exports = exports['default'];
+	}();
+
+	exports.default = Metadata;
 
 /***/ }
 /******/ ]);
-//# sourceMappingURL=boxsdk-0.2.1.js.map
+//# sourceMappingURL=boxsdk-0.2.2.js.map
