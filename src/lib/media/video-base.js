@@ -1,9 +1,9 @@
 import autobind from 'autobind-decorator';
 import MediaBase from './media-base';
 import throttle from 'lodash.throttle';
+import { CLASS_PREVIEW_LOADED } from '../constants';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
-const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 
 @autobind
 class VideoBase extends MediaBase {

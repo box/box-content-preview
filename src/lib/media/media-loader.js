@@ -14,6 +14,13 @@ const VIEWERS = [
         STYLESHEETS: ['mp3.css'],
         CONSTRUCTOR: 'MP3'
     },
+    // {
+    //     REPRESENTATION: 'original',
+    //     EXTENSIONS: ['flv'],
+    //     SCRIPTS: ['third-party/swf/swfobject.js', 'flash.js'],
+    //     STYLESHEETS: ['flash.css'],
+    //     CONSTRUCTOR: 'Flash'
+    // },
     {
         REPRESENTATION: 'dash',
         EXTENSIONS: VIDEO_FORMATS,

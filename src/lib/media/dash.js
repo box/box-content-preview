@@ -5,6 +5,7 @@ import cache from '../cache';
 import fullscreen from '../fullscreen';
 import { createContentUrl, getHeaders } from '../util';
 import RepStatus from '../rep-status';
+import { CLASS_PREVIEW_LOADED } from '../constants';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
@@ -167,7 +168,7 @@ class Dash extends VideoBase {
         const quality = cache.get('media-quality');
 
         if (showLoadingIndicator && !this.mediaEl.paused && !this.mediaEl.ended) {
-            this.containerEl.classList.remove('box-preview-loaded');
+            this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
         }
 
         switch (quality) {
