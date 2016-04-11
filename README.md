@@ -32,9 +32,9 @@ Usage
     <!-- Polyfill promise API if using Internet Explorer -->
     <script src="//cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js"></script>
 
-    <!-- version 0.45.0 of preview library for locale en-US -->
-    <script src="//cdn01.boxcdn.net/content-experience/0.45.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.45.0/en-US/preview.css" />
+    <!-- version 0.51.0 of preview library for locale en-US -->
+    <script src="//cdn01.boxcdn.net/content-experience/0.51.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.51.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="width:500px; height:212px;"></div>
