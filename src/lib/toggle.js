@@ -25,7 +25,6 @@ class Toggle extends EventEmitter {
     updateCheckbox() {
         this.input.checked = this.on;
         this.emit(this.on ? 'on' : 'off');
-        console.error(this.on ? 'on' : 'off');
     }
 
     clickHandler() {
