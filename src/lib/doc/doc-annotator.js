@@ -39,9 +39,6 @@ class DocAnnotator extends Annotator {
      */
     destroy() {
         super.destroy();
-
-        // Remove click handlers bound to document
-        this.unbindHighlightHandlers();
         document.removeEventListener('mousemove', this.mousemoveHandler());
         document.removeEventListener(TOUCH_EVENT, this.pointClickHandler);
     }
@@ -79,7 +76,7 @@ class DocAnnotator extends Annotator {
         this.hoverAnnotationID = ''; // ID of annotation user is hovered over
         this.activeAnnotationID = ''; // ID of active annotation (clicked)
 
-        this.bindHighlightHandlers();
+        this.bindAnnotationHandlers();
     }
 
     /**
@@ -399,7 +396,7 @@ class DocAnnotator extends Annotator {
      *
      * @returns {void}
      */
-    bindHighlightHandlers() {
+    bindAnnotationHandlers() {
         // Add click handlers for activating a highlight or showing and hiding point comments
         document.addEventListener(TOUCH_EVENT, this.highlightClickHandler);
 
@@ -412,7 +409,7 @@ class DocAnnotator extends Annotator {
      *
      * @returns {void}
      */
-    unbindHighlightHandlers() {
+    unbindAnnotationHandlers() {
         document.removeEventListener(TOUCH_EVENT, this.highlightClickHandler);
         document.removeEventListener(TOUCH_END, this.showAddHighlightButtonHandler);
     }

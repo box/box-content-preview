@@ -197,9 +197,9 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
+.box-preview-point-annotation-btn,
 .box-preview-point-annotation-icon,
-.box-preview-point-annotation-placeholder,
-.box-preview-show-point-annotation-btn {
+.box-preview-point-annotation-placeholder {
     background-color: $color-button-background-primary-light;
     border-radius: 50%; // Circle
     border-style: none;

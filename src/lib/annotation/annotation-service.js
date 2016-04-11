@@ -11,6 +11,16 @@ import autobind from 'autobind-decorator';
 class AnnotationService {
 
     /**
+     * @constructor
+     * @param {String} api API endpoint
+     * @param {String} token Authorization token
+     */
+    constructor(api, token) {
+        this.api = api;
+        this.token = token;
+    }
+
+    /**
      * Gets annotations on the specified file.
      *
      * @param {string} fileID ID of file to fetch annotations for
@@ -122,7 +132,6 @@ class AnnotationService {
     }
 
     /* ---------- Static ---------- */
-
     /**
      * Generates a rfc4122v4-compliant GUID, from
      * http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript.
@@ -160,4 +169,4 @@ class AnnotationService {
     }
 }
 
-export default AnnotationService;
+export default new AnnotationService();

@@ -13,6 +13,7 @@ export const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
 export const CLASS_HIGHLIGHT_BUTTON_ADD = 'box-preview-add-highlight-btn';
 export const CLASS_HIGHLIGHT_BUTTON_REMOVE = 'box-preview-remove-highlight-btn';
 export const CLASS_REPLY_CONTAINER = 'reply-container';
+export const CLASS_REPLY_TEXTAREA = 'reply-textarea';
 
 export const SELECTOR_ANNOTATION_BUTTON_CANCEL = `.${CLASS_ANNOTATION_BUTTON_CANCEL}`;
 export const SELECTOR_ANNOTATION_BUTTON_POST = `.${CLASS_ANNOTATION_BUTTON_POST}`;
@@ -28,3 +29,4 @@ export const SELECTOR_COMMENTS_CONTAINER = `.${CLASS_COMMENTS_CONTAINER}`;
 export const SELECTOR_HIGHLIGHT_BUTTON_ADD = `.${CLASS_HIGHLIGHT_BUTTON_ADD}`;
 export const SELECTOR_HIGHLIGHT_BUTTON_REMOVE = `.${CLASS_HIGHLIGHT_BUTTON_REMOVE}`;
 export const SELECTOR_REPLY_CONTAINER = `.${CLASS_REPLY_CONTAINER}`;
+export const SELECTOR_REPLY_TEXTAREA = `.${CLASS_REPLY_TEXTAREA}`;
