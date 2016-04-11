@@ -283,7 +283,9 @@ class MediaBase extends Base {
      * @returns {void}
      */
     removeLoadingIcon() {
-        this.containerEl.classList.add(CLASS_PREVIEW_LOADED);
+        if (this.containerEl) {
+            this.containerEl.classList.add(CLASS_PREVIEW_LOADED);
+        }
     }
 
     /**
