@@ -221,21 +221,18 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     loadedmetadataHandler() {
-        super.loadedmetadataHandler();
-        this.handleQuality(false);
-    }
+        if (this.destroyed) {
+            return;
+        }
 
-    /**
-     * Loads the UI
-     *
-     * @private
-     * @returns {void}
-     */
-    loadUI() {
-        super.loadUI();
+        this.handleQuality(false);
         this.calculateVideoDimensions();
-        this.resize();
+        this.loadUI();
         this.loadFilmStrip();
+        this.resize();
+
+        this.loaded = true;
+        this.emit('load');
     }
 
     /**
@@ -295,8 +292,10 @@ class Dash extends VideoBase {
         }
 
         // Reset any prior set widths and heights
+        // We are only going to modify the widths and not heights
+        // This is because in Chrome its not possible to set a height
+        // that larger than the current videoHeight.
         this.mediaEl.style.width = '';
-        this.mediaEl.style.height = '';
 
         // Add a new width or height. Don't need to add both
         // since the video will auto adjust the other dimension accordingly.
@@ -307,7 +306,7 @@ class Dash extends VideoBase {
             if (this.aspect >= 1) {
                 this.mediaEl.style.width = `${viewport.width}px`;
             } else {
-                this.mediaEl.style.height = `${viewport.height}px`;
+                this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
         } else if (width <= viewport.width && height <= viewport.height) {
             // Case 2: The video ends up fitting within the viewport of preview
@@ -317,7 +316,7 @@ class Dash extends VideoBase {
             if (this.aspect >= 1) {
                 this.mediaEl.style.width = `${width}px`;
             } else {
-                this.mediaEl.style.height = `${height}px`;
+                this.mediaEl.style.width = `${height * this.aspect}px`;
             }
         } else {
             // Case 3: The video overflows the viewport of preview
@@ -336,7 +335,7 @@ class Dash extends VideoBase {
             if (newHeightIfWidthUsed <= viewport.height) {
                 this.mediaEl.style.width = `${viewport.width}px`;
             } else if (newWidthIfHeightUsed <= viewport.width) {
-                this.mediaEl.style.height = `${viewport.height}px`;
+                this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
         }
 

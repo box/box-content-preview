@@ -905,8 +905,8 @@ class Preview extends EventEmitter {
      */
     preloadLoaders() {
         this.loaders.forEach((loader) => {
-            if (loader.enabled && typeof loader.preload === 'function') {
-                loader.preload(this.options);
+            if (typeof loader.preload === 'function') {
+                loader.preload(this.location);
             }
         });
     }
@@ -1116,6 +1116,18 @@ class Preview extends EventEmitter {
             });
         } else if (viewers) {
             delete this.disabledViewers[viewers];
+        }
+    }
+
+    /**
+     * Resizes the preview
+     *
+     * @public
+     * @returns {void}
+     */
+    resize() {
+        if (this.viewer && typeof this.viewer.resize === 'function') {
+            this.viewer.resize();
         }
     }
 

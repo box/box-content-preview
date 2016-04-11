@@ -2,6 +2,7 @@ import AssetLoader from '../asset-loader';
 import { createAssetUrlCreator, prefetchAssets } from '../util';
 
 const STATIC_URI = 'third-party/doc/';
+const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'document.js'];
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 // For example, a pdf file can be previewed both natively (majority use case) using the original
@@ -10,7 +11,7 @@ const VIEWERS = [
     {
         REPRESENTATION: 'original',
         EXTENSIONS: ['pdf'],
-        SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'document.js'],
+        SCRIPTS: SCRIPTS_DOCUMENT,
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         CONSTRUCTOR: 'Document',
         PREFETCH: 'xhr'
@@ -26,7 +27,7 @@ const VIEWERS = [
     {
         REPRESENTATION: 'pdf',
         EXTENSIONS: ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'csv', 'cxx', 'diff', 'doc', 'docx', 'erb', 'gdoc', 'groovy', 'gsheet', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'log', 'm', 'make', 'md', 'ml', 'mm', 'msg', 'odp', 'ods', 'odt', 'pdf', 'php', 'pl', 'plist', 'ppt', 'pptx', 'properties', 'py', 'rb', 'rst', 'rtf', 'sass', 'scala', 'scm', 'script', 'sh', 'sml', 'sql', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl', 'yaml'],
-        SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'document.js'],
+        SCRIPTS: SCRIPTS_DOCUMENT,
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         CONSTRUCTOR: 'Document',
         PREFETCH: 'xhr'
@@ -45,17 +46,20 @@ class DocLoader extends AssetLoader {
     }
 
     /**
-     * Some pre loading stuff
+     * Some pre loading stuff for documents
      *
      * @override
-     * @param {Object} options some options
+     * @param {Object} location assets locations
      * @returns {void}
      */
-    preload(options) {
+    preload(location) {
         // Since the pdf worker is pretty big, lets prefetch it
-        const assetUrlCreator = createAssetUrlCreator(options.location);
-        const pdfWorkerUrl = assetUrlCreator(`${STATIC_URI}pdf.worker.js`);
-        prefetchAssets([pdfWorkerUrl]);
+        const assetUrlCreator = createAssetUrlCreator(location);
+        const assets = [];
+        SCRIPTS_DOCUMENT.forEach((script) => {
+            assets.push(assetUrlCreator(script));
+        });
+        prefetchAssets(assets);
     }
 }
 
