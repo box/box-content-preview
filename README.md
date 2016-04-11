@@ -180,6 +180,7 @@ Other Methods
 
 `Box.Preview.download()` downloads the file if downloadable.
 
+`Box.Preview.resize()` resizes the current preview if applicable. This function only needs to be called when preview's viewport has changed while the window object has not. If the window is resizing, then preview will automatically resize itself.
 
 
 Events
