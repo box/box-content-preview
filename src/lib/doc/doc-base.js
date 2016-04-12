@@ -239,13 +239,7 @@ class DocBase extends Base {
             newScale = Math.min(MAX_SCALE, newScale);
         } while (--numTicks > 0 && newScale < MAX_SCALE);
 
-        // Redraw annotations if needed
-        if (this.annotator) {
-            this.annotator.setScale(newScale);
-            this.annotator.needToReRender = true;
-        }
-
-        this.pdfViewer.currentScaleValue = newScale;
+        this.setScale(newScale);
     }
 
     /**
@@ -263,13 +257,23 @@ class DocBase extends Base {
             newScale = Math.max(MIN_SCALE, newScale);
         } while (--numTicks > 0 && newScale > MIN_SCALE);
 
+        this.setScale(newScale);
+    }
+
+    /**
+     * Sets zoom scale.
+     *
+     * @param {Number} scale Numerical zoom scale
+     * @returns {void}
+     */
+    setScale(scale) {
         // Redraw annotations if needed
         if (this.annotator) {
-            this.annotator.setScale(newScale);
+            this.annotator.setScale(scale);
             this.annotator.needToReRender = true;
         }
 
-        this.pdfViewer.currentScaleValue = newScale;
+        this.pdfViewer.currentScaleValue = scale;
     }
 
     /**
