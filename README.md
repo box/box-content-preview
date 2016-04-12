@@ -1,19 +1,20 @@
 Box Preview
-============
+===========
+-------------
 
 Overview
----------
+========
 The Box Preview library allows developers to preview their Box file(s) in an application. The library fetches representations through the Box Content API, chooses the appropriate viewer for the file type and finally renders the preview. The library also allows back and forth navigation for previewing of multiple files.
 
 Browser Support
-----------------
+===============
 * Chrome, Firefox, Safari and Edge.
 * Limited support on Internet Explorer 10+.
 
 The browser needs to have the Promise API implimented. If not, it can be polyfilled by including a promise library like bluebird before any other script includes: https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js
 
 Latest version hosted on CDN
------------------------------
+============================
 * Version: 0.51.0
 * Locale: en-US
 
@@ -21,7 +22,7 @@ https://cdn01.boxcdn.net/content-experience/0.51.0/en-US/preview.js
 https://cdn01.boxcdn.net/content-experience/0.51.0/en-US/preview.css
 
 Usage
-------
+=====
 ```html
 <!DOCTYPE html>
 <html lang="en-US">
@@ -49,7 +50,7 @@ Usage
 ```
 
 Clone and compile
-------------------
+=================
 1. Fork the preview repo `https://gitenterprise.inside-box.net/Preview/Preview`
 1. Clone your own fork `git clone git@gitenterprise.inside-box.net:YOURLDAP/Preview.git`
 2. `cd Preview`
@@ -60,7 +61,7 @@ Clone and compile
 
 
 While developing
------------------
+================
 Install git pre-commit hook `cp build/pre-commit.sh .git/hooks/pre-commit`.
 
 Install SCSS linter `gem install scss_lint` for linting SCSS files.
@@ -73,17 +74,17 @@ Install SCSS linter `gem install scss_lint` for linting SCSS files.
 *For more script commands see `package.json`*
 
 Release build
---------------
+=============
 `npm run release` does a release build.
 
 
 Demo and testing local changes
--------------------------------
+==============================
 https://gitenterprise.inside-box.net/Preview/demo
 
 
 API
----
+===
 
 The recommended way to show a preview is by calling `Box.Preview.show(fileId, { options })` where fileId is a `Box_File` id. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
 
@@ -93,7 +94,7 @@ preview.show(fileId, { options });
 ```
 
 { options }
-------------
+===========
 
 ```javascript
 {
@@ -115,7 +116,7 @@ preview.show(fileId, { options });
 ```
 
 Token
-------
+=====
 
 In order for preview to work over the API it needs an auth token. The value passed in for the token option above can either be a string token or a token generator function. If passing in a string, it is assumed that the token never expires or changes. If however the token expires or changes over time, then a generator function should be passed in instead. The generator function should take in a file id or a list of file ids as the argument. It should return a `Promise` which should resolve to either a string token (for example when the same token is being used for all files) OR a json map of { file id: token } pairs. A sample implementation is below:
 
@@ -154,13 +155,13 @@ function token(id) {
 ```
 
 VIEWERNAME
------------
+==========
 
 The name of the vewier. Can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be gotten by calling `Box.Preview.getViewers()`.
 
 
 Other Methods
---------------
+=============
 
 `Box.Preview.hide(/* optional Boolean */ destroy)` hides the previewer. If destroy is true, then container's contents are also removed.
 
@@ -184,7 +185,7 @@ Other Methods
 
 
 Events
--------
+======
 
 The preview object exposes `addListener` and `removeListener` for binding to events. Events should be bound before calling `show()` otherwise they can be missed.
 
@@ -205,13 +206,36 @@ Box.Preview.removeListener(EVENTNAME, listener);
 
 EVENTNAME can be one of the following
 
+* `viewer` event will be fired when we have the viewer instance 1st available. This will be the same object that is part of the `load` event also. This event will be fired before `load` so that clients can attach their listeners before the `load` event fires.
+
 * `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation is happening. The value argument will be an object contaianing
 ```javascript
   {
       error: 'message', // Error message if any that happened while loading the preview
-      viewer: {...},    // Instance of the current viewer object, only if no error message
+      viewer: {...},    // Instance of the current viewer object, only if no error message. Same value as the `viewer` event.
       metrics: {...},   // Performance metrics
       file: {...}       // Box file object as returned by the [https://box-content.readme.io/reference#files](Box content API)
   }
 ```
 * `navigate` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event happens.
+
+Examples
+--------
+
+```javascript
+Box.Preview.addListener('viewer', (viewer) => {
+    viewer.addListener('rotate', () => {
+        // do something
+    });
+});
+
+OR
+
+Box.Preview.addListener('load', (data) => {
+    const viewer = data.viewer;
+    viewer.addListener('rotate', () => {
+        // do something
+    });
+});
+
+```
