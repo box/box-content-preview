@@ -13,6 +13,9 @@ const PRESENTATION_MODE_STATE = {
     CHANGING: 2,
     FULLSCREEN: 3
 };
+const DEFAULT_SCALE_DELTA = 1.1;
+const MAX_SCALE = 10.0;
+const MIN_SCALE = 0.1;
 
 @autobind
 class DocBase extends Base {
@@ -154,8 +157,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     previousPage() {
-        this.pdfViewer.currentPageNumber--;
-        this.checkPaginationButtons();
+        this.setPage(this.pdfViewer.currentPageNumber - 1);
     }
 
     /**
@@ -165,8 +167,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     nextPage() {
-        this.pdfViewer.currentPageNumber++;
-        this.checkPaginationButtons();
+        this.setPage(this.pdfViewer.currentPageNumber + 1);
     }
 
     /**
@@ -221,6 +222,54 @@ class DocBase extends Base {
                 nextPageButtonEl.disabled = false;
             }
         }
+    }
+
+    /**
+     * Zoom into document.
+     *
+     * @param {Number} ticks Number of times to zoom in
+     * @returns {void}
+     */
+    zoomIn(ticks = 1) {
+        let numTicks = ticks;
+        let newScale = this.pdfViewer.currentScale;
+        do {
+            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(2);
+            newScale = Math.ceil(newScale * 10) / 10;
+            newScale = Math.min(MAX_SCALE, newScale);
+        } while (--numTicks > 0 && newScale < MAX_SCALE);
+
+        // Redraw annotations if needed
+        if (this.annotator) {
+            this.annotator.setScale(newScale);
+            this.annotator.needToReRender = true;
+        }
+
+        this.pdfViewer.currentScaleValue = newScale;
+    }
+
+    /**
+     * Zoom out of document.
+     *
+     * @param {Number} ticks Number of times to zoom out
+     * @returns {void}
+     */
+    zoomOut(ticks = 1) {
+        let numTicks = ticks;
+        let newScale = this.pdfViewer.currentScale;
+        do {
+            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(2);
+            newScale = Math.floor(newScale * 10) / 10;
+            newScale = Math.max(MIN_SCALE, newScale);
+        } while (--numTicks > 0 && newScale > MIN_SCALE);
+
+        // Redraw annotations if needed
+        if (this.annotator) {
+            this.annotator.setScale(newScale);
+            this.annotator.needToReRender = true;
+        }
+
+        this.pdfViewer.currentScaleValue = newScale;
     }
 
     /**
@@ -480,6 +529,33 @@ class DocBase extends Base {
     }
 
     /* ----- Event Handlers ----- */
+    /**
+     * Handles keyboard events for document viewer.
+     *
+     * @private
+     * @param {String} key keydown key
+     * @returns {Boolean} consumed or not
+     */
+    onKeydown(key) {
+        switch (key) {
+            case 'ArrowLeft':
+                this.previousPage();
+                break;
+            case 'ArrowRight':
+                this.nextPage();
+                break;
+            case '[':
+                this.previousPage();
+                break;
+            case ']':
+                this.nextPage();
+                break;
+            default:
+                return false;
+        }
+
+        return true;
+    }
 
     /**
      * Handler for 'pagesinit' event
