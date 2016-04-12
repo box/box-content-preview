@@ -545,6 +545,10 @@ class Preview extends EventEmitter {
                 viewerName: viewer.CONSTRUCTOR // name of the viewer, cannot rely on constructor.name
             }));
 
+            // Once the viewer instance has been created, emit it so that clients can attach their events.
+            // Viewer object will still be sent along the load event also.
+            this.emit('viewer', this.viewer);
+
             // Add listeners for viewer load / error event
             this.attachViewerListeners();
 
