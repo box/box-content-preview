@@ -3,19 +3,15 @@ import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 import {
-    ICON_ZOOM_IN,
-    ICON_ZOOM_OUT,
+    ICON_DROP_DOWN,
+    ICON_DROP_UP,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
-    ICON_DROP_UP,
-    ICON_DROP_DOWN
+    ICON_ZOOM_IN,
+    ICON_ZOOM_OUT
 } from '../icons/icons';
 
 const Box = global.Box || {};
-
-const DEFAULT_SCALE_DELTA = 1.1;
-const MAX_SCALE = 10.0;
-const MIN_SCALE = 0.1;
 
 /**
  * Document viewer for non-powerpoint documents
@@ -50,54 +46,6 @@ class Document extends DocBase {
         }
 
         super.destroy();
-    }
-
-    /**
-     * Zoom into document
-     *
-     * @param {Number} ticks Number of times to zoom in
-     * @returns {void}
-     */
-    zoomIn(ticks = 1) {
-        let numTicks = ticks;
-        let newScale = this.pdfViewer.currentScale;
-        do {
-            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(2);
-            newScale = Math.ceil(newScale * 10) / 10;
-            newScale = Math.min(MAX_SCALE, newScale);
-        } while (--numTicks > 0 && newScale < MAX_SCALE);
-
-        // Redraw annotations if needed
-        if (this.annotator) {
-            this.annotator.setScale(newScale);
-            this.annotator.needToReRender = true;
-        }
-
-        this.pdfViewer.currentScaleValue = newScale;
-    }
-
-    /**
-     * Zoom out of document
-     *
-     * @param {Number} ticks Number of times to zoom out
-     * @returns {void}
-     */
-    zoomOut(ticks = 1) {
-        let numTicks = ticks;
-        let newScale = this.pdfViewer.currentScale;
-        do {
-            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(2);
-            newScale = Math.floor(newScale * 10) / 10;
-            newScale = Math.max(MIN_SCALE, newScale);
-        } while (--numTicks > 0 && newScale > MIN_SCALE);
-
-        // Redraw annotations if needed
-        if (this.annotator) {
-            this.annotator.setScale(newScale);
-            this.annotator.needToReRender = true;
-        }
-
-        this.pdfViewer.currentScaleValue = newScale;
     }
 
     /* ----- Helpers ----- */
@@ -137,6 +85,25 @@ class Document extends DocBase {
         super.addEventListenersForDocElement();
 
         this.docEl.addEventListener('mousewheel', this.mousewheelHandler);
+    }
+
+    /**
+     * Handles keyboard events for presentation viewer.
+     *
+     * @private
+     * @param {String} key keydown key
+     * @returns {Boolean} consumed or not
+     */
+    onKeydown(key) {
+        if (key === 'Shift++') {
+            this.zoomIn();
+            return true;
+        } else if (key === 'Shift+_') {
+            this.zoomOut();
+            return true;
+        }
+
+        return super.onKeydown(key);
     }
 
     /**

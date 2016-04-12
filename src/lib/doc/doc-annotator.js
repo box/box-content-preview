@@ -155,6 +155,10 @@ class DocAnnotator extends Annotator {
     mousemoveHandler() {
         if (!this.throttledMousemoveHandler) {
             this.throttledMousemoveHandler = throttle((event) => {
+                if (!this.annotations || this.annotations.length === 0) {
+                    return; // Short circuit - no annotations
+                }
+
                 // Saves mouse position in memory
                 this.setMousePosition(event);
 

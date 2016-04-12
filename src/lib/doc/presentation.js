@@ -2,11 +2,13 @@ import './presentation.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
+
+import { CLASS_INVISIBLE } from '../constants';
 import {
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
+    ICON_DROP_DOWN,
     ICON_DROP_UP,
-    ICON_DROP_DOWN
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
 } from '../icons/icons';
 
 const Box = global.Box || {};
@@ -46,7 +48,63 @@ class Presentation extends DocBase {
         super.destroy();
     }
 
+    /**
+     * Go to specified page. We implement presentation mode by hiding the
+     * previous current page and showing the new page.
+     *
+     * @param {number} pageNum Page to navigate to
+     * @public
+     * @returns {void}
+     */
+    setPage(pageNum) {
+        let pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
+        pageEl.classList.add(CLASS_INVISIBLE);
+
+        super.setPage(pageNum);
+
+        pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
+        pageEl.classList.remove(CLASS_INVISIBLE);
+    }
+
     /* ----- Private Helpers ----- */
+    /**
+     * Handles keyboard events for presentation viewer.
+     *
+     * @private
+     * @param {String} key keydown key
+     * @returns {Boolean} consumed or not
+     */
+    onKeydown(key) {
+        if (key === 'ArrowDown') {
+            this.nextPage();
+            return true;
+        } else if (key === 'ArrowUp') {
+            this.previousPage();
+            return true;
+        }
+
+        return super.onKeydown(key);
+    }
+
+    /**
+     * Handler for 'pagesinit' event.
+     *
+     * @private
+     * @returns {void}
+     */
+    pagesinitHandler() {
+        // We implement presentation mode by hiding other pages except for the first page
+        const pageEls = [].slice.call(this.docEl.querySelectorAll('.pdfViewer .page'), 0);
+        pageEls.forEach((pageEl) => {
+            if (pageEl.getAttribute('data-page-number') === '1') {
+                return;
+            }
+
+            pageEl.classList.add(CLASS_INVISIBLE);
+        });
+
+        super.pagesinitHandler();
+    }
 
     /**
      * Adds event listeners for presentation controls
@@ -63,6 +121,12 @@ class Presentation extends DocBase {
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
 
         this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page', ICON_DROP_DOWN);
+
+        // Annotation buttons
+        if (this.isAnnotatable()) {
+            this.controls.add(__('add_point_annotation'), this.getPointAnnotationClickHandler(), '', 'P');
+        }
+
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
