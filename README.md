@@ -70,6 +70,7 @@ Install SCSS linter `gem install scss_lint` for linting SCSS files.
 * `npm run watch` to only generate JS webpack bundles on file changes.
 * `npm run test` launches karma tests with chrome browser to debug tests.
 * `npm run coverage` launches karma tests with PhantomJS and dumps coverage inside `reports\coverage`.
+* `npm run test-file -- FILENAME` launches test for FILENAME-test.js instead of all tests.
 
 *For more script commands see `package.json`*
 
