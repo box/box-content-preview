@@ -81,6 +81,7 @@
   },
   "scripts": {
     "test": "karma start karma.dev.conf.js",
+    "test-file": "./build/test.sh",
     "coverage": "COVERAGE=1 karma start karma.dev.conf.js",
     "sync": "./build/push_to_dev.sh",
     "dev": "./node_modules/.bin/webpack --progress --colors",
