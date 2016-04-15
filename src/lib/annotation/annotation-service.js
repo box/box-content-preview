@@ -1,73 +1,59 @@
+/**
+ * @fileoverview Box annotations service that fetches, persists, and updates
+ * annotations. Annotations will be saved to local storage for now. Applications
+ * that want to self-host annotations should implement their own versions of
+ * this service.
+ * @author tjin
+ */
+
 import autobind from 'autobind-decorator';
 
-/**
- * Box annotations service that fetches, persists, and updates annotations.
- * Annotations will be saved to local storage for now. Applications that want
- * to self-host annotations should implement their own versions of this service.
- *
- * @TODO(tjin): Separate this into Base + LocalStorage extension later
- */
- @autobind
+@autobind
 class AnnotationService {
 
+    //--------------------------------------------------------------------------
+    // Static
+    //--------------------------------------------------------------------------
+
     /**
-     * @constructor
-     * @param {String} api API endpoint
-     * @param {String} token Authorization token
+     * Generates a rfc4122v4-compliant GUID, from
+     * http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript.
+     *
+     * @returns {string} UUID for annotation
      */
-    constructor(api, token) {
-        this.api = api;
-        this.token = token;
+    static generateID() {
+        /* eslint-disable */
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
+        /* eslint-enable */
+    }
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    /**
+     * Gets a map of thread ID to annotations in that thread.
+     *
+     * @param {string} fileVersionID File version ID to fetch annotations for
+     * @returns {Promise} Promise that resolves with thread map
+     */
+    getThreadMapForFileVersionID(fileVersionID) {
+        return this.getAnnotationsForFileVersionID(fileVersionID).then(this._createThreadMapFromAnnotations);
     }
 
     /**
      * Gets annotations on the specified file.
      *
-     * @param {string} fileID ID of file to fetch annotations for
-     * @returns {Map} Map of thread ID to annotations
+     * @param {string} fileVersionID File version ID to fetch annotations for
+     * @returns {Promise} Promise that resolves with fetched annotations
      */
-    getAnnotationsForFile(fileID) {
-        return new Promise((resolve) => {
-            const result = new Map();
-            const annotations = this.localAnnotations;
-            const matchingAnnotations = annotations.filter((annotation) => annotation.fileID === fileID);
-
-            // Construct map of thread ID to annotations
-            matchingAnnotations.forEach((annotation) => {
-                const threadID = annotation.threadID;
-                const annotationsInThread = result.get(threadID) || [];
-                annotationsInThread.push(annotation);
-                result.set(threadID, annotationsInThread);
-            });
-
-            // Sort annotations by date created
-            for (const threadedAnnotations of result.values()) {
-                threadedAnnotations.sort((a, b) => {
-                    return a.created - b.created;
-                });
-            }
-
-            resolve(result);
-        });
-    }
-
-    /**
-     * Gets annotations in the specified thread.
-     *
-     * @param {string} threadID ID of thread to fetch annotations for
-     * @returns {Annotation[]} Array of annotations in this thread
-     */
-    getAnnotationsForThread(threadID) {
+    getAnnotationsForFileVersionID(fileVersionID) {
         return new Promise((resolve) => {
             const annotations = this.localAnnotations;
-            const matchingAnnotations = annotations.filter((annotation) => annotation.threadID === threadID);
-
-            // Sort annotations by date created
-            matchingAnnotations.sort((a, b) => {
-                return a.created - b.created;
-            });
-
-            resolve(matchingAnnotations);
+            resolve(annotations.filter((annotation) => annotation.fileVersionID === fileVersionID));
         });
     }
 
@@ -79,10 +65,16 @@ class AnnotationService {
      */
     create(annotation) {
         return new Promise((resolve) => {
+            const createdAnnotation = annotation;
+            createdAnnotation.annotationID = AnnotationService.generateID();
+            createdAnnotation.created = (new Date()).getTime();
+            createdAnnotation.modified = createdAnnotation.created;
+
             const annotations = this.localAnnotations;
-            annotations.push(annotation);
+            annotations.push(createdAnnotation);
             this.localAnnotations = annotations;
-            resolve(annotation);
+
+            resolve(createdAnnotation);
         });
     }
 
@@ -131,23 +123,41 @@ class AnnotationService {
         });
     }
 
-    /* ---------- Static ---------- */
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
     /**
-     * Generates a rfc4122v4-compliant GUID, from
-     * http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript.
+     * Generates a map of thread ID to annotations in thread.
      *
-     * @returns {string} UUID for annotation
+     * @param {Annotation[]} annotations Annotations to generate map from
+     * @returns {Promise} Promise that resolves with thread map
+     * @private
      */
-    static generateID() {
-        /* eslint-disable */
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-            return v.toString(16);
+    _createThreadMapFromAnnotations(annotations) {
+        const threadMap = {};
+
+        // Construct map of thread ID to annotations
+        annotations.forEach((annotation) => {
+            const threadID = annotation.threadID;
+            threadMap[threadID] = threadMap[threadID] || [];
+            threadMap[threadID].push(annotation);
         });
-        /* eslint-enable */
+
+        // Sort annotations by date created
+        Object.keys(threadMap).forEach((threadID) => {
+            threadMap[threadID].sort((a, b) => {
+                return a.created - b.created;
+            });
+        });
+
+        return threadMap;
     }
 
-    /* ---------- Getters & Setters ---------- */
+    //--------------------------------------------------------------------------
+    // Getters and setters
+    //--------------------------------------------------------------------------
+
     /**
      * Gets annotations saved in local storage
      *
@@ -169,4 +179,4 @@ class AnnotationService {
     }
 }
 
-export default new AnnotationService();
+export default AnnotationService;

@@ -26,6 +26,7 @@ class AnnotationDialog extends EventEmitter {
      * The data object for constructing a dialog.
      *
      * @typedef {Object} AnnotationDialogData
+     * @property {HTMLElement} annotatedElement HTML element being annotated on
      * @property {Annotation[]} annotations Annotations in dialog, can be an
      * empty array for a new thread
      * @property {Object} location Location object
@@ -45,6 +46,7 @@ class AnnotationDialog extends EventEmitter {
     constructor(data) {
         super();
 
+        this.annotatedElement = data.annotatedElement;
         this.location = data.location;
         this.threadID = data.threadID;
 
@@ -57,9 +59,15 @@ class AnnotationDialog extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        this.unbindDOMListeners();
-        this.element.parentNode.removeChild(this.element);
-        this.element = null;
+        if (this.element) {
+            this._unbindDOMListeners();
+
+            if (this.element.parentNode) {
+                this.element.parentNode.removeChild(this.element);
+            }
+
+            this.element = null;
+        }
     }
 
     /**
@@ -72,60 +80,22 @@ class AnnotationDialog extends EventEmitter {
         clearTimeout(this.timeoutHandler);
         this.timeoutHandler = null;
 
-        // Position dialog
-        const pageEl = document.querySelector(`[data-page-number="${this.location.page}"]`);
-        const pageHeight = pageEl.getBoundingClientRect().height;
-        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace([this.location.x, this.location.y], pageHeight, this.scale);
+        // If dialog hasn't been positioned before, position
+        if (!this.positioned) {
+            this._position();
 
-        // Show dialog so we can get width
-        pageEl.appendChild(this.element);
-        annotatorUtil.showElement(this.element);
-        const dialogDimensions = this.element.getBoundingClientRect();
-        const dialogWidth = dialogDimensions.width;
-        const pageDimensions = pageEl.getBoundingClientRect();
-        const pageWidth = pageDimensions.width;
-
-        // Center middle of dialog with point - this coordinate is with respect to the page
-        let dialogLeftX = browserX - dialogWidth / 2;
-
-        // Position 7px below location and transparent border pushes it down
-        // further - this coordinate is with respect to the page
-        const dialogTopY = browserY + 7;
-
-        // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
-        const dialogPastLeft = dialogLeftX < 0;
-        const dialogPastRight = dialogLeftX + dialogWidth > pageWidth;
-
-        // Only reposition if one side is past page boundary - if both are,
-        // just center the dialog and cause scrolling since there is nothing
-        // else we can do
-        const annotationCaretEl = this.element.querySelector('.annotation-container-caret');
-        if (dialogPastLeft && !dialogPastRight) {
-            // Leave a minimum of 10 pixels so caret doesn't go off edge
-            const caretLeftX = Math.max(10, browserX);
-            annotationCaretEl.style.right = 'initial';
-            annotationCaretEl.style.left = `${caretLeftX}px`;
-
-            dialogLeftX = 0;
-
-        // Fix the dialog and move caret appropriately
-        } else if (dialogPastRight && !dialogPastLeft) {
-            // Leave a minimum of 10 pixels so caret doesn't go off edge
-            const caretRightX = Math.max(10, pageWidth - browserX);
-            annotationCaretEl.style.right = `${caretRightX}px`;
-            annotationCaretEl.style.left = 'initial';
-
-            dialogLeftX = pageWidth - dialogWidth;
-
-        // Reset caret to center
+        // Otherwise, just show the dialog
         } else {
-            annotationCaretEl.style.right = 'initial';
-            annotationCaretEl.style.left = '50%';
+            annotatorUtil.showElement(this.element);
         }
 
-        // Position the dialog
-        this.element.style.left = `${dialogLeftX}px`;
-        this.element.style.top = `${dialogTopY}px`;
+        // Focus textarea if visible
+        const textAreaEl = this._inCreateMode() ?
+            this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA) :
+            this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        if (annotatorUtil.isElementInViewport(textAreaEl)) {
+            textAreaEl.focus();
+        }
     }
 
     /**
@@ -149,17 +119,16 @@ class AnnotationDialog extends EventEmitter {
      * @returns {void}
      */
     addAnnotation(annotation) {
-        // If this is the first annotation added, hide the 'create' section
-        // and show the 'show' section
-        if (this.annotations.length === 0) {
+        // If in create mode, switch to show mode
+        if (this._inCreateMode()) {
             const createSectionEl = this.element.querySelector('[data-section="create"]');
             const showSectionEl = this.element.querySelector('[data-section="show"]');
-
             annotatorUtil.hideElement(createSectionEl);
             annotatorUtil.showElement(showSectionEl);
         }
 
         this._addAnnotationElement(annotation);
+        this._deactivateReply(); // Deactivate reply area and focus
     }
 
     /**
@@ -173,6 +142,7 @@ class AnnotationDialog extends EventEmitter {
         if (annotationEl) {
             annotationEl.parentNode.removeChild(annotationEl);
         }
+        this._deactivateReply(); // Deactivate reply area and focus
     }
 
     //--------------------------------------------------------------------------
@@ -189,20 +159,19 @@ class AnnotationDialog extends EventEmitter {
     _setup(annotations) {
         // Generate HTML of dialog
         this.element = document.createElement('div');
-        this.element.setAttribute('data-type', 'create-annotation-dialog');
+        this.element.setAttribute('data-type', 'annotation-dialog');
         this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
-        this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG_CREATE);
         this.element.innerHTML = `
             <div class="annotation-container-caret"></div>
-            <section class="annotation-container" data-section="create">
-                <section class="${this.annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
+            <div class="annotation-container">
+                <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
                     <textarea class="annotation-textarea ${CLASS_ACTIVE}" placeholder="Add a comment here..."></textarea>
                     <div class="button-container">
                         <button class="btn cancel-annotation-btn" data-type="cancel-annotation-btn">CANCEL</button>
                         <button class="btn btn-primary post-annotation-btn" data-type="post-annotation-btn">POST</button>
                     </div>
                 </section>
-                <section class="${this.annotations.length ? '' : CLASS_HIDDEN}" data-section="show">
+                <section class="${annotations.length ? '' : CLASS_HIDDEN}" data-section="show">
                     <div class="annotation-comments"></div>
                     <div class="reply-container">
                         <textarea class="reply-textarea" placeholder="Post a reply..." data-type="reply-textarea"></textarea>
@@ -263,6 +232,68 @@ class AnnotationDialog extends EventEmitter {
     }
 
     /**
+     * Positions the dialog.
+     *
+     * @returns {void}
+     * @private
+     */
+    _position() {
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`) || this.annotatedElement;
+        const [browserX, browserY] = annotatorUtil.getBrowserCoordinatesFromLocation(this.location, this.annotatedElement);
+
+        // Show dialog so we can get width
+        pageEl.appendChild(this.element);
+        annotatorUtil.showElement(this.element);
+        const dialogDimensions = this.element.getBoundingClientRect();
+        const dialogWidth = dialogDimensions.width;
+        const pageDimensions = pageEl.getBoundingClientRect();
+        const pageWidth = pageDimensions.width;
+
+        // Center middle of dialog with point - this coordinate is with respect to the page
+        let dialogLeftX = browserX - dialogWidth / 2;
+
+        // Position 7px below location and transparent border pushes it down
+        // further - this coordinate is with respect to the page
+        const dialogTopY = browserY + 7;
+
+        // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
+        const dialogPastLeft = dialogLeftX < 0;
+        const dialogPastRight = dialogLeftX + dialogWidth > pageWidth;
+
+        // Only reposition if one side is past page boundary - if both are,
+        // just center the dialog and cause scrolling since there is nothing
+        // else we can do
+        const annotationCaretEl = this.element.querySelector('.annotation-container-caret');
+        if (dialogPastLeft && !dialogPastRight) {
+            // Leave a minimum of 10 pixels so caret doesn't go off edge
+            const caretLeftX = Math.max(10, browserX);
+            annotationCaretEl.style.right = 'initial';
+            annotationCaretEl.style.left = `${caretLeftX}px`;
+
+            dialogLeftX = 0;
+
+        // Fix the dialog and move caret appropriately
+        } else if (dialogPastRight && !dialogPastLeft) {
+            // Leave a minimum of 10 pixels so caret doesn't go off edge
+            const caretRightX = Math.max(10, pageWidth - browserX);
+            annotationCaretEl.style.right = `${caretRightX}px`;
+            annotationCaretEl.style.left = 'initial';
+
+            dialogLeftX = pageWidth - dialogWidth;
+
+        // Reset caret to center
+        } else {
+            annotationCaretEl.style.right = 'initial';
+            annotationCaretEl.style.left = '50%';
+        }
+
+        // Position the dialog
+        this.element.style.left = `${dialogLeftX}px`;
+        this.element.style.top = `${dialogTopY}px`;
+        this.positioned = true;
+    }
+
+    /**
      * Binds DOM event listeners.
      *
      * @returns {void}
@@ -271,8 +302,8 @@ class AnnotationDialog extends EventEmitter {
     _bindDOMListeners() {
         this.element.addEventListener('keydown', this._keydownHandler);
         this.element.addEventListener('click', this._clickHandler);
-        this.element.addEventListener('mouseover', this.show);
-        this.element.addEventListener('mouseout', this.hide);
+        this.element.addEventListener('mouseenter', this._mouseenterHandler);
+        this.element.addEventListener('mouseleave', this._mouseleaveHandler);
     }
 
     /**
@@ -284,8 +315,32 @@ class AnnotationDialog extends EventEmitter {
     _unbindDOMListeners() {
         this.element.removeEventListener('keydown', this._keydownHandler);
         this.element.removeEventListener('click', this._clickHandler);
-        this.element.removeEventListener('mouseover', this.show);
-        this.element.removeEventListener('mouseout', this.hide);
+        this.element.removeEventListener('mouseenter', this._mouseenterHandler);
+        this.element.removeEventListener('mouseleave', this._mouseleaveHandler);
+    }
+
+    /**
+     * Mouseenter handler. Clears hide timeout.
+     *
+     * @returns {void}
+     * @private
+     */
+    _mouseenterHandler() {
+        // Reset hide timeout handler
+        clearTimeout(this.timeoutHandler);
+        this.timeoutHandler = null;
+    }
+
+    /**
+     * Mouseleave handler. Hides dialog if we aren't creating the first one.
+     *
+     * @returns {void}
+     * @private
+     */
+    _mouseleaveHandler() {
+        if (!this._inCreateMode()) {
+            this.hide();
+        }
     }
 
     /**
@@ -300,7 +355,7 @@ class AnnotationDialog extends EventEmitter {
 
         const dataType = annotatorUtil.findClosestDataType(event.target);
         if (dataType === 'reply-textarea') {
-            this.activateReply();
+            this._activateReply();
         }
     }
 
@@ -336,7 +391,7 @@ class AnnotationDialog extends EventEmitter {
 
             // Canceling a reply
             case 'cancel-reply-btn':
-                this._cancelReply();
+                this._deactivateReply();
                 break;
 
             // Clicking 'Post' button to create a reply annotation
@@ -346,17 +401,17 @@ class AnnotationDialog extends EventEmitter {
 
             // Clicking trash icon to initiate deletion
             case 'delete-btn':
-                this.showDeleteConfirmation(annotationID);
+                this._showDeleteConfirmation(annotationID);
                 break;
 
             // Clicking 'Cancel' button to cancel deletion
             case 'cancel-delete-btn':
-                this.hideDeleteConfirmation(annotationID);
+                this._hideDeleteConfirmation(annotationID);
                 break;
 
             // Clicking 'Delete' button to confirm deletion
             case 'confirm-delete-btn': {
-                this.deleteAnnotation(annotationID);
+                this._deleteAnnotation(annotationID);
                 break;
             }
             default:
@@ -377,10 +432,8 @@ class AnnotationDialog extends EventEmitter {
             return;
         }
 
-        this.emit('annotationcreate', {
-            text,
-            threadID: this.threadID
-        });
+        this.emit('annotationcreate', { text });
+        annotationTextEl.value = '';
     }
 
     /**
@@ -390,10 +443,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _cancelAnnotation() {
-        this.emit('annotationcancel', {
-            threadID: this.threadID
-        });
-        this.hide();
+        this.emit('annotationcancel');
     }
 
     /**
@@ -404,20 +454,20 @@ class AnnotationDialog extends EventEmitter {
      */
     _activateReply() {
         const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
-        const replyButtonEls = this.element.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
-        replyTextEl.classlist.add(CLASS_ACTIVE);
+        const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
+        replyTextEl.classList.add(CLASS_ACTIVE);
         annotatorUtil.showElement(replyButtonEls);
     }
 
     /**
-     * Cancels a reply.
+     * Deactivate reply textarea.
      *
      * @returns {void}
      * @private
      */
-    _cancelReply() {
+    _deactivateReply() {
         const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
-        const replyButtonEls = this.element.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
+        const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl);
         annotatorUtil.hideElement(replyButtonEls);
         replyTextEl.focus();
@@ -436,10 +486,8 @@ class AnnotationDialog extends EventEmitter {
             return;
         }
 
-        this.emit('annotationcreate', {
-            text,
-            threadID: this.threadID
-        });
+        this.emit('annotationcreate', { text });
+        replyTextEl.value = '';
     }
 
     /**
@@ -480,10 +528,18 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _deleteAnnotation(annotationID) {
-        this.emit('delete-annotation', {
-            annotationID,
-            threadID: this.threadID
-        });
+        this.emit('annotationdelete', { annotationID });
+    }
+
+    /**
+     * Returns whether the dialog is in create mode.
+     *
+     * @returns {Boolean} Whether dialog is in 'create' mode or not
+     * @private
+     */
+    _inCreateMode() {
+        const createSectionEl = this.element.querySelector('[data-section="create"]');
+        return !createSectionEl.classList.contains(CLASS_HIDDEN);
     }
 }
 

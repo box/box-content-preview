@@ -25,6 +25,7 @@ class AnnotationThread extends EventEmitter {
      * The data object for constructing a thread.
      *
      * @typedef {Object} AnnotationThreadData
+     * @property {HTMLElement} annotatedElement HTML element being annotated on
      * @property {Annotation[]} [annotations] Annotations in thread - none if
      * this is a new thread
      * @property {AnnotationService} annotationService Annotations CRUD service
@@ -47,6 +48,7 @@ class AnnotationThread extends EventEmitter {
     constructor(data) {
         super();
 
+        this.annotatedElement = data.annotatedElement;
         this.annotations = data.annotations || [];
         this.annotationService = data.annotationService;
         this.fileVersionID = data.fileVersionID;
@@ -63,13 +65,18 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     destroy() {
+        this._unbindCustomListenersOnDialog();
         this.dialog.destroy();
 
-        this._unbindCustomListeners();
-        this._unbindDOMListeners();
+        if (this.element) {
+            this._unbindDOMListeners();
 
-        this.element.parentNode.removeChild(this.element);
-        this.element = null;
+            if (this.element.parentNode) {
+                this.element.parentNode.removeChild(this.element);
+            }
+
+            this.element = null;
+        }
     }
 
     /**
@@ -78,13 +85,8 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     show() {
-        const pageEl = document.querySelector(`[data-page-number="${location.page}"]`);
-        if (!pageEl) {
-            return;
-        }
-
-        const pageHeight = pageEl.getBoundingClientRect().height;
-        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, this.scale);
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`) || this.annotatedElement;
+        const [browserX, browserY] = annotatorUtil.getBrowserCoordinatesFromLocation(this.location, this.annotatedElement);
 
         // Position and append to page
         this.element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
@@ -92,6 +94,15 @@ class AnnotationThread extends EventEmitter {
         pageEl.appendChild(this.element);
 
         annotatorUtil.showElement(this.element);
+    }
+
+    /**
+     * Hides the annotation indicator.
+     *
+     * @returns {void}
+     */
+    hide() {
+        annotatorUtil.hideElement(this.element);
     }
 
     /**
@@ -126,10 +137,10 @@ class AnnotationThread extends EventEmitter {
             // If this is the first annotation in the thread
             if (this.annotations.length === 1) {
                 // Broadcast that a thread was created
-                this.emit('threadcreated', this);
+                this.emit('threadcreated');
             }
 
-            // Add new annotation to dialog
+            // Add annotation element to dialog
             this.dialog.addAnnotation(savedAnnotation);
         }).catch(() => {/* No-op */});
     }
@@ -146,9 +157,8 @@ class AnnotationThread extends EventEmitter {
 
             // If this annotation was the last one in the thread
             if (this.annotations.length === 0) {
-                // Broadcast that a thread was deleted and destroy the thread
-                this.emit('threaddeleted', this);
-                this.destroy();
+                // Broadcast that a thread was deleted
+                this.emit('threaddeleted');
 
             // Otherwise, remove deleted annotation from dialog
             } else {
@@ -169,29 +179,15 @@ class AnnotationThread extends EventEmitter {
      * @private
      */
     _setup() {
-        const dialogData = {
-            threadID: this.threadID,
-            location: this.location
-        };
-
         this.dialog = new AnnotationDialog({
+            annotatedElement: this.annotatedElement,
             annotations: this.annotations,
             location: this.location,
             threadID: this.threadID
-        })
-
-        // If there are no annotations, use the 'create' dialog
-        if (this.annotations.length === 0) {
-            this.dialog = new CreateAnnotationDialog(dialogData);
-
-        // Otherwise, use the 'show' dialog
-        } else {
-            dialogData.annotations = this.annotations;
-            this.dialog = new ShowAnnotationDialog(dialogData);
-        }
+        });
+        this._bindCustomListenersOnDialog();
 
         this.element = this._createElement();
-        this._bindCustomListeners();
         this._bindDOMListeners();
     }
 
@@ -204,55 +200,14 @@ class AnnotationThread extends EventEmitter {
     _createElement() {
         const indicatorEl = document.createElement('button');
         indicatorEl.classList.add('box-preview-point-annotation-btn');
-        indicatorEl.setAttribute('data-type', 'point-annotation-btn');
+        indicatorEl.setAttribute('data-type', 'annotation-thread');
         indicatorEl.setAttribute('data-thread-id', this.threadID);
 
         return indicatorEl;
     }
 
     /**
-     * Binds custom event listeners for the annotation.
-     *
-     * @returns {void}
-     * @private
-     */
-    _bindCustomListeners() {
-        // Annotation created
-        this.addListener('annotationcreate', (data) => {
-            if (data && data.threadID === this.threadID) {
-                this.saveAnnotation(data.text);
-            }
-        });
-
-        // Annotation canceled
-        this.addListener('annotationcancel', (data) => {
-            if (data && data.threadID === this.threadID) {
-                this.destroy();
-            }
-        });
-
-        // Annotation deleted
-        this.addListener('annotationdelete', (data) => {
-            if (data && data.threadID === this.threadID) {
-                this.deleteAnnotation(data.annotationID);
-            }
-        });
-    }
-
-    /**
-     * Unbinds custom event listeners for the annotation.
-     *
-     * @returns {void}
-     * @private
-     */
-    _unbindCustomListeners() {
-        this.removeAllListeners(['annotationcreate']);
-        this.removeAllListeners(['annotationcancel']);
-        this.removeAllListeners(['annotationdelete']);
-    }
-
-    /**
-     * Binds DOM event listeners for the annotation.
+     * Binds DOM event listeners for the thread.
      *
      * @returns {void}
      * @private
@@ -260,11 +215,11 @@ class AnnotationThread extends EventEmitter {
     _bindDOMListeners() {
         this.element.addEventListener('click', this.showDialog);
         this.element.addEventListener('mouseover', this.showDialog);
-        this.element.addEventListener('mouseout', this.hideDialog);
+        this.element.addEventListener('mouseout', this._mouseoutHandler);
     }
 
     /**
-     * Unbinds DOM event listeners for the annotation.
+     * Unbinds DOM event listeners for the thread.
      *
      * @returns {void}
      * @private
@@ -272,7 +227,54 @@ class AnnotationThread extends EventEmitter {
     _unbindDOMListeners() {
         this.element.removeEventListener('click', this.showDialog);
         this.element.removeEventListener('mouseover', this.showDialog);
-        this.element.removeEventListener('mouseout', this.hideDialog);
+        this.element.removeEventListener('mouseout', this._mouseoutHandler);
+    }
+
+    /**
+     * Mouseout handler. Hides dialog if we aren't creating the first one.
+     *
+     * @returns {void}
+     * @private
+     */
+    _mouseoutHandler() {
+        if (this.annotations.length !== 0) {
+            this.hideDialog();
+        }
+    }
+
+    /**
+     * Binds custom event listeners for the dialog.
+     *
+     * @returns {void}
+     * @private
+     */
+    _bindCustomListenersOnDialog() {
+        // Annotation created
+        this.dialog.addListener('annotationcreate', (data) => {
+            this.saveAnnotation(data.text);
+        });
+
+        // Annotation canceled
+        this.dialog.addListener('annotationcancel', () => {
+            this.destroy();
+        });
+
+        // Annotation deleted
+        this.dialog.addListener('annotationdelete', (data) => {
+            this.deleteAnnotation(data.annotationID);
+        });
+    }
+
+    /**
+     * Unbinds custom event listeners for the dialog.
+     *
+     * @returns {void}
+     * @private
+     */
+    _unbindCustomListenersOnDialog() {
+        this.removeAllListeners(['annotationcreate']);
+        this.removeAllListeners(['annotationcancel']);
+        this.removeAllListeners(['annotationdelete']);
     }
 
     /**

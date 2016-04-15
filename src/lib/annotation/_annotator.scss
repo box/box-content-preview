@@ -59,7 +59,8 @@ $color-text-lighter: rgba(68, 68, 68, .5);
         }
     }
 
-    .annotation-textarea {
+    .annotation-textarea,
+    .reply-textarea {
         border: 1px solid $color-border;
         border-radius: 3px;
         display: block;
@@ -198,12 +199,12 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 }
 
 .box-preview-point-annotation-btn,
-.box-preview-point-annotation-icon,
-.box-preview-point-annotation-placeholder {
+.box-preview-point-annotation-icon {
     background-color: $color-button-background-primary-light;
     border-radius: 50%; // Circle
     border-style: none;
     box-shadow: 0 0 4px 0 $color-shadow;
+    cursor: pointer;
     height: 16px;
     padding: 0;
     position: absolute;

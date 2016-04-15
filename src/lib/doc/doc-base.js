@@ -429,10 +429,13 @@ class DocBase extends Base {
      * @returns {void}
      */
     initAnnotations() {
-        const fileID = this.options.file.id;
-        this.annotator = new DocAnnotator(fileID);
-        this.annotator.setScale(this.pdfViewer.currentScale);
+        const fileVersionID = this.options.file.file_version.id;
+        this.annotator = new DocAnnotator({
+            annotatedElement: this.docEl,
+            fileVersionID
+        });
         this.annotator.init();
+        this.annotator.setScale(this.pdfViewer.currentScale);
     }
 
     /**

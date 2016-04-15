@@ -309,6 +309,21 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
 }
 
 /**
+ * Returns browser coordinates given an annotation location object and
+ * the HTML element being annotated on.
+ *
+ * @param {Object} location Annotation location object
+ * @param {HTMLElement} annotatedElement HTML element being annotated on
+ * @returns {Number[]} [x,y] browser coordinates
+ */
+export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
+    const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
+    const pageHeight = pageEl.getBoundingClientRect().height;
+    const scale = parseInt(annotatedElement.getAttribute('data-scale'), 10) || 1;
+    return convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, scale);
+}
+
+/**
  * Returns the coordinates of the quadrilateral representing this element
  * per the PDF text markup annotation spec. Note that these coordinates
  * are in PDF default user space, with the origin at the bottom left corner
