@@ -1,6 +1,8 @@
 import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 
+import { CLASS_HIDDEN } from './constants';
+
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
@@ -159,6 +161,24 @@ class Controls {
         });
 
         return button;
+    }
+
+    /**
+     * Enables the controls.
+     *
+     * @returns {void}
+     */
+    enable() {
+        this.controlsEl.classList.remove(CLASS_HIDDEN);
+    }
+
+    /**
+     * Disables the controls.
+     *
+     * @returns {void}
+     */
+    disable() {
+        this.controlsEl.classList.add(CLASS_HIDDEN);
     }
 
 }

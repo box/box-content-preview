@@ -7,8 +7,9 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 
-import * as annotatorUtil from '../annotation/annotator-util';
-import * as constants from '../annotation/constants';
+import * as annotatorUtil from './annotator-util';
+import * as constants from './annotation-constants';
+import { decodeKeydown } from '../util.js';
 
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE_SMALL } from '../icons/icons';
@@ -101,10 +102,15 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Hides the dialog.
      *
+     * @param {Boolean} [noDelay] Whether or not to have a timeout delay
      * @returns {void}
      */
-    hide() {
-        if (!this.timeoutHandler) {
+    hide(noDelay = false) {
+        if (noDelay) {
+            annotatorUtil.hideElement(this.element);
+            clearTimeout(this.timeoutHandler);
+            this.timeoutHandler = null;
+        } else if (!this.timeoutHandler) {
             this.timeoutHandler = setTimeout(() => {
                 annotatorUtil.hideElement(this.element);
                 this.timeoutHandler = null;
@@ -352,6 +358,12 @@ class AnnotationDialog extends EventEmitter {
      */
     _keydownHandler(event) {
         event.stopPropagation();
+
+        const key = decodeKeydown(event);
+        if (key === 'Escape') {
+            this.hide(true); // hide without delay
+            return;
+        }
 
         const dataType = annotatorUtil.findClosestDataType(event.target);
         if (dataType === 'reply-textarea') {

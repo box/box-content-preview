@@ -8,15 +8,18 @@
 import autobind from 'autobind-decorator';
 import AnnotationService from './annotation-service';
 import AnnotationThread from './annotation-thread';
+import EventEmitter from 'events';
 import throttle from 'lodash.throttle';
 
-import * as annotatorUtil from '../annotation/annotator-util';
-import * as constants from '../annotation/constants';
+import * as annotatorUtil from './annotator-util';
+import * as constants from './annotation-constants';
 
 import { CLASS_HIDDEN } from '../constants';
+import { ICON_ANNOTATION } from '../icons/icons';
 
 const MOUSEMOVE_THROTTLE = 15;
 const POINT_ANNOTATION_ICON_WIDTH = 16;
+const POINT_ANNOTATION_TYPE = 'point';
 
 const ANONYMOUS_USER = {
     name: 'Kylo Ren',
@@ -24,7 +27,7 @@ const ANONYMOUS_USER = {
 };
 
 @autobind
-class Annotator {
+class Annotator extends EventEmitter {
 
     //--------------------------------------------------------------------------
     // Typedef
@@ -51,6 +54,7 @@ class Annotator {
      * @returns {Annotator} Annotator instance
      */
     constructor(data) {
+        super();
         this.annotatedElement = data.annotatedElement;
         this.annotationService = data.annotationService || new AnnotationService();
         this.fileVersionID = data.fileVersionID;
@@ -63,6 +67,8 @@ class Annotator {
      * @returns {void}
      */
     destroy() {
+        this._destroyControls();
+
         Object.keys(this.threads).forEach((page) => {
             this.threads[page].forEach((thread) => {
                 this._unbindCustomListenersOnThread(thread);
@@ -78,6 +84,7 @@ class Annotator {
      */
     init() {
         this.setScale(1);
+        this._setupControls();
         this._setupAnnotations();
     }
 
@@ -118,7 +125,7 @@ class Annotator {
      * @returns {Number} Scale
      */
     getScale() {
-        return parseInt(this.annotatedElement.getAttribute('data-scale'), 10) || 1;
+        return parseFloat(this.annotatedElement.getAttribute('data-scale')) || 1;
     }
 
     /**
@@ -130,12 +137,14 @@ class Annotator {
     togglePointAnnotationModeHandler() {
         // If in annotation mode, turn it off
         if (this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)) {
+            this.emit('pointannotationmodeexit');
             this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             this._unbindPointModeListeners();
             this._bindDOMListeners(); // Re-enable other annotations
 
         // Otherwise, enable annotation mode
         } else {
+            this.emit('pointannotationmodeenter');
             this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
             this._bindPointModeListeners();
             this._unbindDOMListeners(); // Disable other annotations
@@ -145,6 +154,44 @@ class Annotator {
     //--------------------------------------------------------------------------
     // Private functions
     //--------------------------------------------------------------------------
+
+    /**
+     * Sets up annotation controls - this is needed if there is no Preview
+     * header, where the controls are normally.
+     *
+     * @returns {void}
+     * @private
+     */
+    _setupControls() {
+        // No need to set up controls if Preview header exists
+        if (document.querySelector('.box-preview-header')) {
+            return;
+        }
+
+        const annotationButtonContainerEl = document.createElement('div');
+        annotationButtonContainerEl.classList.add('box-preview-annotation-controls');
+        annotationButtonContainerEl.innerHTML = `
+            <button class="btn box-preview-btn-annotate" data-type="point-annotation-mode-btn">${ICON_ANNOTATION}</button>`.trim();
+        const pointAnnotationModeBtnEl = annotationButtonContainerEl.querySelector('.box-preview-btn-annotate');
+        pointAnnotationModeBtnEl.addEventListener('click', this.togglePointAnnotationModeHandler);
+        const docEl = document.querySelector('.box-preview-doc');
+        docEl.appendChild(annotationButtonContainerEl);
+    }
+
+    /**
+     * Destroys annotation controls if there are any.
+     *
+     * @returns {void}
+     * @private
+     */
+    _destroyControls() {
+        const annotationButtonContainerEl = document.querySelector('.box-preview-annotation-controls');
+        if (annotationButtonContainerEl) {
+            const pointAnnotationModeBtnEl = annotationButtonContainerEl.querySelector('.box-preview-btn-annotate');
+            pointAnnotationModeBtnEl.removeEventListener('click', this.togglePointAnnotationModeHandler);
+            annotationButtonContainerEl.parentNode.removeChild(annotationButtonContainerEl);
+        }
+    }
 
     /**
      * Annotations setup.
@@ -174,17 +221,10 @@ class Annotator {
                 Object.keys(threadMap).forEach((threadID) => {
                     const annotations = threadMap[threadID];
                     const firstAnnotation = annotations[0];
-                    const thread = new AnnotationThread({
-                        annotatedElement: this.annotatedElement,
-                        annotations,
-                        annotationService: this.annotationService,
-                        fileVersionID: this.fileVersionID,
-                        location: firstAnnotation.location,
-                        threadID,
-                        user: this.user
-                    });
+                    const location = firstAnnotation.location;
 
-                    const page = firstAnnotation.location.page || 1;
+                    const thread = this._createAnnotationThread(annotations, location, firstAnnotation.type);
+                    const page = location.page || 1;
                     this.threads[page] = this.threads[page] || [];
                     this.threads[page].push(thread);
 
@@ -203,10 +243,7 @@ class Annotator {
     _clearAnnotations() {
         Object.keys(this.threads).forEach((page) => {
             this.threads[page].forEach((thread) => {
-                // @TODO(tjin): move highlights to threads
-                if (thread.annotations[0].type === 'point') {
-                    thread.hide();
-                }
+                thread.hide();
             });
         });
     }
@@ -220,10 +257,7 @@ class Annotator {
     _showAnnotations() {
         Object.keys(this.threads).forEach((page) => {
             this.threads[page].forEach((thread) => {
-                // @TODO(tjin): move highlights to threads
-                if (thread.annotations[0].type === 'point') {
-                    thread.show();
-                }
+                thread.show();
             });
         });
     }
@@ -268,9 +302,6 @@ class Annotator {
 
             // Unbind listeners
             this._unbindCustomListenersOnThread(thread);
-
-            // Destroy the thread
-            thread.destroy();
         });
     }
 
@@ -339,17 +370,8 @@ class Annotator {
         const [x, y] = pdfCoordinates;
         const location = { x, y, page };
 
-        // Create new thread with no annotations
-        const thread = new AnnotationThread({
-            annotatedElement: this.annotatedElement,
-            annotations: [],
-            annotationService: this.annotationService,
-            fileVersionID: this.fileVersionID,
-            location,
-            user: this.user
-        });
-
-        // Show the thread indicator and dialog
+        // Create new thread with no annotations, show indicator, and show dialog
+        const thread = this._createAnnotationThread([], location, POINT_ANNOTATION_TYPE);
         thread.show();
         thread.showDialog();
 
@@ -425,6 +447,58 @@ class Annotator {
 
         // Animation is complete
         this.pendingAnimation = false;
+    }
+
+    /**
+     * Saves mouse position from event in memory.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    _setMousePosition(event) {
+        const eventTarget = event.target;
+        this.mouseX = event.clientX;
+        this.mouseY = event.clientY;
+        this.mousePage = annotatorUtil.getPageElAndPageNumber(eventTarget).page;
+        this.mouseDataType = annotatorUtil.findClosestDataType(eventTarget);
+    }
+
+    /**
+     * Gets mouse position from memory.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     * @private
+     */
+    _getMousePosition() {
+        return {
+            x: this.mouseX || 0,
+            y: this.mouseY || 0,
+            page: this.mousePage || 1,
+            dataType: this.mouseDataType || ''
+        };
+    }
+
+    /**
+     * Creates a new AnnotationThread.
+     *
+     * @param {Annotation[]} annotations Annotations in thread
+     * @param {Object} location Location object
+     * @param {String} type Annotation type
+     * @returns {AnnotationThread} Created annotation thread
+     * @private
+     */
+    /* eslint-disable no-unused-vars */
+    _createAnnotationThread(annotations, location, type) {
+        // Type may be used by other annotators
+        return new AnnotationThread({
+            annotatedElement: this.annotatedElement,
+            annotations,
+            annotationService: this.annotationService,
+            fileVersionID: this.fileVersionID,
+            location,
+            user: this.user
+        });
     }
 }
 

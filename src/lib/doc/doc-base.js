@@ -436,6 +436,19 @@ class DocBase extends Base {
         });
         this.annotator.init();
         this.annotator.setScale(this.pdfViewer.currentScale);
+
+        // Disable controls during point annotation mode
+        this.annotator.on('pointannotationmodeenter', () => {
+            if (this.controls) {
+                this.controls.disable();
+            }
+        });
+
+        this.annotator.on('pointannotationmodeexit', () => {
+            if (this.controls) {
+                this.controls.enable();
+            }
+        });
     }
 
     /**

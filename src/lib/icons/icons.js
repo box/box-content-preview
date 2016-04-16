@@ -1,3 +1,4 @@
+import ANNOTATION from 'raw!./annotation_24px.svg';
 import DROP_DOWN from 'raw!./arrow_drop_down_24px.svg';
 import DROP_UP from 'raw!./arrow_drop_up_24px.svg';
 import DELETE from 'raw!./delete_24px.svg';
@@ -9,6 +10,7 @@ import ROTATE_LEFT from 'raw!./rotate_left_24px.svg';
 import ZOOM_IN from 'raw!./zoom_in_24px.svg';
 import ZOOM_OUT from 'raw!./zoom_out_24px.svg';
 
+export const ICON_ANNOTATION = ANNOTATION;
 export const ICON_DROP_DOWN = DROP_DOWN;
 export const ICON_DROP_UP = DROP_UP;
 export const ICON_DELETE = DELETE;

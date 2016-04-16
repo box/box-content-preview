@@ -10,7 +10,25 @@ $color-text: rgb(68, 68, 68);
 $color-text-light: rgba(68, 68, 68, .8);
 $color-text-lighter: rgba(68, 68, 68, .5);
 
-//---------- Point CSS ----------//
+.box-preview-annotation-controls {
+    background-color: $color-base;
+    border-bottom-left-radius: 4px;
+    overflow: hidden;
+    position: fixed;
+    right: 15px;
+    top: 0;
+
+    .btn {
+        background-color: transparent;
+        border-style: none;
+        cursor: pointer;
+        padding: 3px 5px;
+    }
+}
+
+//------------------------------------------------------------------------------
+// CSS for points and dialogs
+//------------------------------------------------------------------------------
 .box-preview-annotation-dialog {
     // Transparent border for hover detection
     border-top: 20px solid transparent;
@@ -229,7 +247,9 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
-//---------- Highlight CSS ----------//
+//------------------------------------------------------------------------------
+// CSS for highlights
+//------------------------------------------------------------------------------
 .box-preview-annotation-layer {
     bottom: 0;
     cursor: text;

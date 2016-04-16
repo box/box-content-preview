@@ -7,6 +7,7 @@
  */
 
 import autobind from 'autobind-decorator';
+import Annotation from './annotation';
 
 @autobind
 class AnnotationService {
@@ -65,10 +66,11 @@ class AnnotationService {
      */
     create(annotation) {
         return new Promise((resolve) => {
-            const createdAnnotation = annotation;
-            createdAnnotation.annotationID = AnnotationService.generateID();
-            createdAnnotation.created = (new Date()).getTime();
-            createdAnnotation.modified = createdAnnotation.created;
+            const annotationData = annotation;
+            annotationData.annotationID = AnnotationService.generateID();
+            annotationData.created = (new Date()).getTime();
+            annotationData.modified = annotationData.created;
+            const createdAnnotation = new Annotation(annotationData);
 
             const annotations = this.localAnnotations;
             annotations.push(createdAnnotation);

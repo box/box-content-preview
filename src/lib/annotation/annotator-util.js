@@ -3,7 +3,7 @@
  * @author tjin
  */
 
-import { SELECTOR_ANNOTATION_DIALOG } from '../annotation/constants';
+import { SELECTOR_ANNOTATION_DIALOG } from './annotation-constants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
@@ -305,7 +305,17 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
         ];
     }
 
-    return pdfCoordinates.map((val) => val * CSS_PIXEL_TO_PDF_UNIT / scale);
+    return pdfCoordinates.map((val) => (val * CSS_PIXEL_TO_PDF_UNIT / scale).toFixed(4));
+}
+
+/**
+ * Returns zoom scale of annotated element.
+ *
+ * @param {HTMLElement} annotatedElement HTML element being annotated on
+ * @returns {Number} Zoom scale
+ */
+export function getScale(annotatedElement) {
+    return parseFloat(annotatedElement.getAttribute('data-scale')) || 1;
 }
 
 /**
@@ -319,7 +329,7 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
     const pageHeight = pageEl.getBoundingClientRect().height;
-    const scale = parseInt(annotatedElement.getAttribute('data-scale'), 10) || 1;
+    const scale = getScale(annotatedElement);
     return convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, scale);
 }
 

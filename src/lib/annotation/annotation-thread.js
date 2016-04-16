@@ -13,6 +13,7 @@ import EventEmitter from 'events';
 import * as annotatorUtil from './annotator-util';
 
 const POINT_ANNOTATION_ICON_WIDTH = 16;
+const POINT_ANNOTATION_TYPE = 'point';
 
 @autobind
 class AnnotationThread extends EventEmitter {
@@ -65,8 +66,10 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        this._unbindCustomListenersOnDialog();
-        this.dialog.destroy();
+        if (this.dialog) {
+            this._unbindCustomListenersOnDialog();
+            this.dialog.destroy();
+        }
 
         if (this.element) {
             this._unbindDOMListeners();
@@ -111,7 +114,9 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     showDialog() {
-        this.dialog.show();
+        if (this.dialog) {
+            this.dialog.show();
+        }
     }
 
     /**
@@ -120,17 +125,20 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     hideDialog() {
-        this.dialog.hide();
+        if (this.dialog) {
+            this.dialog.hide();
+        }
     }
 
     /**
      * Saves an annotation.
      *
+     * @param {String} type Type of annotation
      * @param {String} text Text of annotation to save
      * @returns {void}
      */
-    saveAnnotation(text) {
-        const annotationData = this._createAnnotationData(text);
+    saveAnnotation(type, text) {
+        const annotationData = this._createAnnotationData(type, text);
         this.annotationService.create(annotationData).then((savedAnnotation) => {
             this.annotations.push(savedAnnotation);
 
@@ -141,7 +149,9 @@ class AnnotationThread extends EventEmitter {
             }
 
             // Add annotation element to dialog
-            this.dialog.addAnnotation(savedAnnotation);
+            if (this.dialog) {
+                this.dialog.addAnnotation(savedAnnotation);
+            }
         }).catch(() => {/* No-op */});
     }
 
@@ -157,12 +167,15 @@ class AnnotationThread extends EventEmitter {
 
             // If this annotation was the last one in the thread
             if (this.annotations.length === 0) {
-                // Broadcast that a thread was deleted
+                // Destroy and broadcast that thread was deleted
+                this.destroy();
                 this.emit('threaddeleted');
 
             // Otherwise, remove deleted annotation from dialog
             } else {
-                this.dialog.removeAnnotation(annotationID);
+                if (this.dialog) {
+                    this.dialog.removeAnnotation(annotationID);
+                }
             }
         });
     }
@@ -251,7 +264,7 @@ class AnnotationThread extends EventEmitter {
     _bindCustomListenersOnDialog() {
         // Annotation created
         this.dialog.addListener('annotationcreate', (data) => {
-            this.saveAnnotation(data.text);
+            this.saveAnnotation(POINT_ANNOTATION_TYPE, data.text);
         });
 
         // Annotation canceled
@@ -280,13 +293,14 @@ class AnnotationThread extends EventEmitter {
     /**
      * Create an annotation data object to pass to annotation service.
      *
+     * @param {String} type Type of annotation
      * @param {String} text Annotation text
      * @returns {Object} Annotation data
      */
-    _createAnnotationData(text) {
+    _createAnnotationData(type, text) {
         return {
             fileVersionID: this.fileVersionID,
-            type: 'point',
+            type,
             text,
             location: this.location,
             user: this.user,
