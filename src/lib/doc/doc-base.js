@@ -13,6 +13,8 @@ import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
+import findBarTemplate from 'raw!./pdf-find-bar.html';
+import PDFFindBar from './pdf-find-bar';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -49,6 +51,8 @@ class DocBase extends Base {
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = 60000;
+
+        this.createFindBar(container);
     }
 
     /**
@@ -66,6 +70,16 @@ class DocBase extends Base {
             this.controls.destroy();
         }
 
+        // Destroy the find bar and controller
+        if (this.findBar) {
+            this.findBar.destroy();
+        }
+
+        if (this.findController.findBar) {
+            this.findController.findBar.destroy();
+        }
+
+        // Destroy the annotator
         if (this.annotator && typeof this.annotator.destroy === 'function') {
             this.annotator.removeAllListeners('pointmodeenter');
             this.annotator.removeAllListeners('pointmodeexit');
@@ -78,6 +92,10 @@ class DocBase extends Base {
 
             if (this.pdfViewer.pdfDocument) {
                 this.pdfViewer.pdfDocument.destroy();
+            }
+
+            if (this.pdfViewer.findController.findBar) {
+                this.pdfViewer.findController.findBar.destroy();
             }
         }
 
@@ -99,8 +117,40 @@ class DocBase extends Base {
         this.setupPdfjs();
         this.initViewer(pdfUrl);
         this.initPrint(pdfUrl);
+        this.initFindController();
 
         super.load();
+    }
+
+    createFindBar(container) {
+        this.headerEl = container.firstChild;
+
+        this.findBarEl = this.headerEl.appendChild(document.createElement('div'));
+        this.findBarEl.classList.add('findbar');
+        this.findBarEl.setAttribute('id', 'findbar');
+        this.findBarEl.innerHTML = findBarTemplate;
+
+        this.findField = document.getElementById('findField');
+
+        // todo(@spramod) figure out how to get findField to not overflow when trying to find REALLY long text that would take up the entire find bar
+        this.findResultsCount = document.getElementById('findResultsCount');
+    }
+
+    initFindController() {
+        this.findController = new PDFFindController({
+            pdfViewer: this.pdfViewer,
+            integratedFind: false
+        });
+        this.pdfViewer.setFindController(this.findController);
+
+        this.findBar = new PDFFindBar(this.containerEl, {
+            bar: this.findBarEl,
+            findField: this.findField,
+            findResultsCount: this.findResultsCount,
+            findController: this.findController
+        });
+
+        this.findController.setFindBar(this.findBar);
     }
 
     /**
@@ -747,7 +797,13 @@ class DocBase extends Base {
                 event.stopPropagation();
                 event.preventDefault();
                 break;
-
+            case 'Meta+F':
+            case 'Control+F':
+            // case 'Meta+G':
+            // case 'Control+G':
+                // todo(@spramod) make sure to make this OS compatible so like CTRL+F for windows, etc
+                this.findBar.open();
+                break;
             default:
                 return;
         }

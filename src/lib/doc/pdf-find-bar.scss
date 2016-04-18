@@ -1,0 +1,67 @@
+.findbar {
+  top: 40px;
+  right: 20px;
+  z-index: 1000;
+  position: absolute;
+  background: white;
+  padding: 2px 5px;
+  padding-top: 0;
+  border-radius: 0 0 3px 3px;
+  border: 1px solid #dedede;
+  border-top: 0px;
+
+  .toolbarField {
+    padding: 3px 6px;
+    margin: 4px 0 4px 0;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    // border-radius: 2px 0 0 2px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 1px 0 hsla(0,0%,0%,.05) inset, 0 1px 0 hsla(0,0%,100%,.05);
+    font-size: 12px;
+    line-height: 14px;
+    outline-style: none;
+    transition-property: background-color, border-color, box-shadow;
+    transition-duration: 150ms;
+    transition-timing-function: ease;
+    width: 250px;
+  }
+
+  .toolbarField:focus, 
+  .toolbarField:hover {
+    background-color: hsla(0,0%,100%,.15);
+    border-color: hsla(204,100%,65%,.8) hsla(204,100%,65%,.85) hsla(204,100%,65%,.9);
+  }
+
+  .toolbarLabel {
+    min-width: 16px;
+    padding: 3px 6px 3px 2px;
+    margin: 4px 2px 4px 0;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: left;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    cursor: default;
+  }
+
+  .findFieldGroup button {
+    padding: 0px 6px;
+    padding-bottom: 3px;
+    margin: 0;
+    height: 22px;
+    width: 22px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .toolbarLabel#findResultsCount {
+    position: absolute;
+    right: 0px;
+    top: 0;
+    color: #dedede;
+    text-align: right;
+  }
+}
