@@ -34,7 +34,7 @@ class RepStatus {
      * @returns {void}
      */
     updateStatus() {
-        fetch(this.representation.links.info.url, {
+        return fetch(this.representation.links.info.url, {
             headers: this.headers
         })
         .then((response) => response.json())

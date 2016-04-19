@@ -102,12 +102,14 @@ class AssetLoader {
      *
      * @public
      * @param {Object} file box file
-     * @param {Object} [options] optional options
+     * @param {String} token auth token
+     * @param {Object} location asset location
+     * @param {String} sharedLink shared link
      * @returns {void}
      */
-    prefetch(file, options) {
+    prefetch(file, token, location, sharedLink) {
         // Create an asset path creator function
-        const assetUrlCreator = createAssetUrlCreator(options.location);
+        const assetUrlCreator = createAssetUrlCreator(location);
 
         // Determine the viewer to use
         const viewer = this.determineViewer(file);
@@ -121,12 +123,11 @@ class AssetLoader {
         // Prefetch the scripts needed for this preview
         prefetchAssets(viewer.SCRIPTS.map(assetUrlCreator));
 
-        const token = options.token(file.id)[file.id];
-        let sharedLink = options.sharedLink;
-
         if (sharedLink && file.shared_link) {
             // Prefer the file scoped shared link over the globally provided shared link
+            /* eslint-disable no-param-reassign */
             sharedLink = file.shared_link.url;
+            /* eslint-enable no-param-reassign */
         }
 
         if (viewer.PREFETCH === 'xhr') {
