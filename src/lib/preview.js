@@ -772,6 +772,8 @@ class Preview extends EventEmitter {
 
             // Iterate over all the files needed prefetch
             filesNeedingPrefetch.forEach((id) => {
+                const token = tokens[id];
+
                 // Cache an empty file object to prevent further prefetches
                 cache.set(id, {
                     id,
@@ -780,10 +782,12 @@ class Preview extends EventEmitter {
 
                 // Pre-fetch the file information
                 fetch(this.createUrl(id), {
-                    headers: this.getRequestHeaders(tokens[id])
+                    headers: this.getRequestHeaders(token)
                 })
                 .then((response) => response.json())
-                .then(this.handlePrefetchResponse)
+                .then((file) => {
+                    this.handlePrefetchResponse(file, token);
+                })
                 .catch(() => {});
             });
         })
@@ -797,7 +801,7 @@ class Preview extends EventEmitter {
      * @param {Object} file box file
      * @returns {void}
      */
-    handlePrefetchResponse(file) {
+    handlePrefetchResponse(file, token) {
         // Don't bother with non-files
         if (file.type === 'file') {
             // Save the returned file
@@ -807,7 +811,7 @@ class Preview extends EventEmitter {
             // Browser caches the content
             const loader = this.getLoader(file);
             if (loader && typeof loader.prefetch === 'function') {
-                loader.prefetch(file, this.options);
+                loader.prefetch(file, token, this.location, this.options.sharedLink);
             }
         }
     }
