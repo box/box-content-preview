@@ -27,6 +27,12 @@
     width: 250px;
   }
 
+  .toolbarField#findHighlightAll {
+    width: 12px;
+    padding: 0px;
+    margin: 0px;
+  }
+
   .toolbarField:focus, 
   .toolbarField:hover {
     background-color: hsla(0,0%,100%,.15);
@@ -34,11 +40,8 @@
   }
 
   .toolbarLabel {
-    min-width: 16px;
-    padding: 3px 6px 3px 2px;
-    margin: 4px 2px 4px 0;
-    border: 1px solid transparent;
-    border-radius: 2px;
+    padding: 3px 0px 3px 2px;
+    margin: 4px 0;
     font-size: 12px;
     line-height: 14px;
     text-align: left;
@@ -69,8 +72,8 @@
 
   .toolbarLabel#findResultsCount {
     position: absolute;
-    right: 37px;
-    top: 0;
+    right: 132px;
+    top: 1px;
     color: #dedede;
     text-align: right;
   }

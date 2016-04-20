@@ -23,6 +23,7 @@ class PDFFindBar {
         this.findStatusIcon = options.findStatusIcon || null;
         this.findPreviousButton = options.findPreviousButton || null;
         this.findNextButton = options.findNextButton || null;
+        this.highlightAll = options.highlightAllCheckbox || null;
         this.findController = options.findController || null;
 
         if (this.findController === null) {
@@ -39,8 +40,9 @@ class PDFFindBar {
         self.bar.addEventListener('keydown', this.barHandler);
 
         self.findPreviousButton.addEventListener('click', this.findPreviousHandler);
-
         self.findNextButton.addEventListener('click', this.findNextHandler);
+
+        this.highlightAll.addEventListener('click', this.highlightAllHandler);
     }
 
     /**
@@ -54,7 +56,6 @@ class PDFFindBar {
 
     findFieldHandler() {
         this.dispatchEvent('find');
-        this.dispatchEvent('highlightallchange');
     }
 
     barHandler(evt) {
@@ -82,13 +83,15 @@ class PDFFindBar {
         }
     }
 
+    highlightAllHandler() {
+        this.dispatchEvent('findhighlightallchange');
+    }
+
     dispatchEvent(type, findPrev) {
         const event = document.createEvent('CustomEvent');
         event.initCustomEvent(type, true, true, {
             query: this.findField.value,
-            // todo(@spramod) messes up on angled/curved text
-            // works on pdf.js so its something w/ us
-            highlightAll: false,
+            highlightAll: this.highlightAll.checked,
             findPrevious: findPrev
         });
 
