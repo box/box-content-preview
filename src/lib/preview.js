@@ -408,7 +408,7 @@ class Preview extends EventEmitter {
         // if it was is empty. If its not empty, then it is assumed
         // that current file is already inside files array.
         if (this.collection.length === 0) {
-            this.collection = [this.file];
+            this.collection = [this.file.id];
         }
 
         if (this.file.representations && Array.isArray(this.file.representations.entries)) { // @TODO we need a better check to validate file object
