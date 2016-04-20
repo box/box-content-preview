@@ -429,10 +429,26 @@ class DocBase extends Base {
      * @returns {void}
      */
     initAnnotations() {
-        const fileID = this.options.file.id;
-        this.annotator = new DocAnnotator(fileID);
-        this.annotator.setScale(this.pdfViewer.currentScale);
+        const fileVersionID = this.options.file.file_version.id;
+        this.annotator = new DocAnnotator({
+            annotatedElement: this.docEl,
+            fileVersionID
+        });
         this.annotator.init();
+        this.annotator.setScale(this.pdfViewer.currentScale);
+
+        // Disable controls during point annotation mode
+        this.annotator.on('pointannotationmodeenter', () => {
+            if (this.controls) {
+                this.controls.disable();
+            }
+        });
+
+        this.annotator.on('pointannotationmodeexit', () => {
+            if (this.controls) {
+                this.controls.enable();
+            }
+        });
     }
 
     /**

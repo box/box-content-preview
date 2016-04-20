@@ -1,8 +1,6 @@
 export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
 export const CLASS_ANNOTATION_DIALOG = 'box-preview-annotation-dialog';
-export const CLASS_ANNOTATION_DIALOG_CREATE = 'box-preview-create-annotation-dialog';
-export const CLASS_ANNOTATION_DIALOG_SHOW = 'box-preview-show-annotation-dialog';
 export const CLASS_ANNOTATION_POINT = 'box-preview-show-point-annotation-btn';
 export const CLASS_ANNOTATION_POINT_ICON = 'box-preview-point-annotation-icon';
 export const CLASS_ANNOTATION_POINT_MODE = 'box-preview-point-annotation-mode';
@@ -13,12 +11,11 @@ export const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
 export const CLASS_HIGHLIGHT_BUTTON_ADD = 'box-preview-add-highlight-btn';
 export const CLASS_HIGHLIGHT_BUTTON_REMOVE = 'box-preview-remove-highlight-btn';
 export const CLASS_REPLY_CONTAINER = 'reply-container';
+export const CLASS_REPLY_TEXTAREA = 'reply-textarea';
 
 export const SELECTOR_ANNOTATION_BUTTON_CANCEL = `.${CLASS_ANNOTATION_BUTTON_CANCEL}`;
 export const SELECTOR_ANNOTATION_BUTTON_POST = `.${CLASS_ANNOTATION_BUTTON_POST}`;
 export const SELECTOR_ANNOTATION_DIALOG = `.${CLASS_ANNOTATION_DIALOG}`;
-export const SELECTOR_ANNOTATION_DIALOG_CREATE = `.${CLASS_ANNOTATION_DIALOG_CREATE}`;
-export const SELECTOR_ANNOTATION_DIALOG_SHOW = `.${CLASS_ANNOTATION_DIALOG_SHOW}`;
 export const SELECTOR_ANNOTATION_POINT = `.${CLASS_ANNOTATION_POINT}`;
 export const SELECTOR_ANNOTATION_POINT_ICON = `.${CLASS_ANNOTATION_POINT_ICON}`;
 export const SELECTOR_ANNOTATION_POINT_PLACEHOLDER = `.${CLASS_ANNOTATION_POINT_PLACEHOLDER}`;
@@ -28,3 +25,4 @@ export const SELECTOR_COMMENTS_CONTAINER = `.${CLASS_COMMENTS_CONTAINER}`;
 export const SELECTOR_HIGHLIGHT_BUTTON_ADD = `.${CLASS_HIGHLIGHT_BUTTON_ADD}`;
 export const SELECTOR_HIGHLIGHT_BUTTON_REMOVE = `.${CLASS_HIGHLIGHT_BUTTON_REMOVE}`;
 export const SELECTOR_REPLY_CONTAINER = `.${CLASS_REPLY_CONTAINER}`;
+export const SELECTOR_REPLY_TEXTAREA = `.${CLASS_REPLY_TEXTAREA}`;

@@ -1,11 +1,19 @@
-import { SELECTOR_ANNOTATION_DIALOG } from '../annotation/constants';
+/**
+ * @fileoverview Annotation utility functions.
+ * @author tjin
+ */
+
+import { SELECTOR_ANNOTATION_DIALOG } from './annotation-constants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
 
-/* ---------- DOM Utils ---------- */
+//------------------------------------------------------------------------------
+// DOM Utils
+//------------------------------------------------------------------------------
+
 /**
  * Finds the closest ancestor DOM element with the specified class.
  *
@@ -24,15 +32,21 @@ export function findClosestElWithClass(element, className) {
 }
 
 /**
- * Finds the closest element with a data type and returns that data type.
+ * Finds the closest element with a data type and returns that data type. If
+ * an attributeName is provided, search for that data atttribute instead of
+ * data type.
  *
  * @param {HTMLElement} element Element to find closest data type for
+ * @param {String} [attributeName] Optional different data attribute to search
+ * for
  * @returns {string} Closest data type or empty string
  */
-export function findClosestDataType(element) {
+export function findClosestDataType(element, attributeName) {
+    const attributeToFind = attributeName || 'data-type';
+
     for (let el = element; el && el !== document; el = el.parentNode) {
-        if (el && el.getAttribute('data-type')) {
-            return el.getAttribute('data-type');
+        if (el && el.getAttribute(attributeToFind)) {
+            return el.getAttribute(attributeToFind);
         }
     }
 
@@ -109,7 +123,10 @@ export function resetTextarea(element) {
     textareaEl.classList.remove(CLASS_ACTIVE);
 }
 
-/* ---------- Highlight Utils ---------- */
+//------------------------------------------------------------------------------
+// Highlight Utils
+//------------------------------------------------------------------------------
+
 /**
  * Fast test if a given point is within a polygon. Taken from
  * http://jsperf.com/ispointinpath-boundary-test-speed/6
@@ -131,16 +148,13 @@ export function isPointInPolyOpt(poly, x, y) {
  * Returns the Rangy highlight object and highlight elements representing
  * the current selection on the given page element.
  *
- * @param {HTMLElement} pageEl Page element to get selection objects from
  * @param {Object} highlighter Rangy highlighter
  * @returns {Object} Rangy highlight object and highlight DOM elements
  */
-export function getHighlightAndHighlightEls(pageEl, highlighter) {
+export function getHighlightAndHighlightEls(highlighter) {
     // We use Rangy to turn the selection into a highlight, which creates
     // spans around the selection that we can then turn into quadpoints
-    const highlight = highlighter.highlightSelection('highlight', {
-        containerElementId: pageEl.id
-    })[0];
+    const highlight = highlighter.highlightSelection('highlight')[0];
     const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0).filter((element) => {
         return element.tagName && element.tagName === 'SPAN';
     });
@@ -189,7 +203,10 @@ export function isSelectionPresent() {
     return true;
 }
 
-/* ---------- Point Utils ---------- */
+//------------------------------------------------------------------------------
+// Point Utils
+//------------------------------------------------------------------------------
+
 /**
  * Returns whether or not there is a dialog open.
  *
@@ -220,7 +237,10 @@ export function isElementInViewport(element) {
     );
 }
 
-/* ---------- General Utils ---------- */
+//------------------------------------------------------------------------------
+// Coordinate Utils
+//------------------------------------------------------------------------------
+
 /**
  * Converts coordinates in PDF space to coordinates in DOM space.
  *
@@ -282,7 +302,32 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
         ];
     }
 
-    return pdfCoordinates.map((val) => val * CSS_PIXEL_TO_PDF_UNIT / scale);
+    return pdfCoordinates.map((val) => (val * CSS_PIXEL_TO_PDF_UNIT / scale).toFixed(4));
+}
+
+/**
+ * Returns zoom scale of annotated element.
+ *
+ * @param {HTMLElement} annotatedElement HTML element being annotated on
+ * @returns {Number} Zoom scale
+ */
+export function getScale(annotatedElement) {
+    return parseFloat(annotatedElement.getAttribute('data-scale')) || 1;
+}
+
+/**
+ * Returns browser coordinates given an annotation location object and
+ * the HTML element being annotated on.
+ *
+ * @param {Object} location Annotation location object
+ * @param {HTMLElement} annotatedElement HTML element being annotated on
+ * @returns {Number[]} [x,y] browser coordinates
+ */
+export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
+    const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
+    const pageHeight = pageEl.getBoundingClientRect().height;
+    const scale = getScale(annotatedElement);
+    return convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, scale);
 }
 
 /**
@@ -376,6 +421,10 @@ export function getUpperRightCorner(quadPoints) {
 
     return [x, y];
 }
+
+//------------------------------------------------------------------------------
+// General Utils
+//------------------------------------------------------------------------------
 
 /**
  * Escapes HTML.
