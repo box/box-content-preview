@@ -172,7 +172,7 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(pageEl, this.highlighter);
+        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this.highlighter);
         if (highlightEls.length === 0) {
             return;
         }
@@ -182,7 +182,7 @@ class DocAnnotator extends Annotator {
             addHighlightButtonEl = document.createElement('button');
             addHighlightButtonEl.classList.add(constants.CLASS_HIGHLIGHT_BUTTON_ADD);
             addHighlightButtonEl.innerHTML = ICON_HIGHLIGHT;
-            addHighlightButtonEl.addEventListener('click', this._addHighlightAnnotationHandler);
+            addHighlightButtonEl.addEventListener('click', this._addHighlightHandler);
         }
 
         // Calculate where to position button
@@ -224,7 +224,7 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      * @private
      */
-    _addHighlightAnnotationHandler(event) {
+    _addHighlightHandler(event) {
         event.stopPropagation();
 
 
@@ -239,7 +239,7 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(pageEl, this.highlighter);
+        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this.highlighter);
         if (highlightEls.length === 0) {
             return;
         }
@@ -300,7 +300,7 @@ class DocAnnotator extends Annotator {
         // since deleting 'cuts' out the highlight, which may have been
         // overlapping with another
         thread.addListener('threaddeleted', () => {
-            this._drawHighlightAnnotationsOnPage(thread.location.page);
+            this._showHighlightsOnPage(thread.location.page);
         });
     }
 
@@ -312,8 +312,13 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      * @private
      */
-    _drawHighlightAnnotationsOnPage(page) {
+    _showHighlightsOnPage(page) {
         // let time = new Date().getTime();
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${page}"]`);
+        const annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
+        const context = annotationLayerEl.getContext('2d');
+        context.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);
+
         this._getHighlightThreadsOnPage(page).forEach((thread) => {
             thread.show();
         });

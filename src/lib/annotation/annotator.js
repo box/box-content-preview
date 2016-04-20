@@ -17,7 +17,7 @@ import * as constants from './annotation-constants';
 import { CLASS_HIDDEN } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
-const MOUSEMOVE_THROTTLE = 15;
+const MOUSEMOVE_THROTTLE = 16;
 const POINT_ANNOTATION_ICON_WIDTH = 16;
 const POINT_ANNOTATION_TYPE = 'point';
 

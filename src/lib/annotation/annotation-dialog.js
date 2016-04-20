@@ -81,14 +81,9 @@ class AnnotationDialog extends EventEmitter {
         clearTimeout(this.timeoutHandler);
         this.timeoutHandler = null;
 
-        // If dialog hasn't been positioned before, position
-        if (!this.positioned) {
-            this._position();
-
-        // Otherwise, just show the dialog
-        } else {
-            annotatorUtil.showElement(this.element);
-        }
+        // Position and show - we need to reposition every time since the DOM
+        // could have changed from zooming
+        this._position();
 
         // Focus textarea if visible
         const textAreaEl = this._inCreateMode() ?
@@ -296,7 +291,6 @@ class AnnotationDialog extends EventEmitter {
         // Position the dialog
         this.element.style.left = `${dialogLeftX}px`;
         this.element.style.top = `${dialogTopY}px`;
-        this.positioned = true;
     }
 
     /**

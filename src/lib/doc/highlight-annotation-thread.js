@@ -126,12 +126,23 @@ class HighlightAnnotationThread extends AnnotationThread {
     }
 
     /**
-     * Show delete button.
+     * Position and show delete button.
      *
      * @returns {void}
      */
     showDeleteButton() {
+        // Position it above the upper right corner of the highlight - we need
+        // to reposition every time since the DOM could have changed from
+        // zooming
+        const pageEl = this._getPageEl();
+        const pageHeight = pageEl.getBoundingClientRect().height;
+        const coordinates = annotatorUtil.getUpperRightCorner(this.location.quadPoints, pageEl);
+        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, annotatorUtil.getScale(this.annotatedElement));
+
+        this.deleteButtonEl.style.left = `${browserX - 20}px`;
+        this.deleteButtonEl.style.top = `${browserY - 50}px`;
         annotatorUtil.showElement(this.deleteButtonEl);
+        pageEl.appendChild(this.deleteButtonEl);
     }
 
     /**
@@ -211,17 +222,6 @@ class HighlightAnnotationThread extends AnnotationThread {
         this.deleteButtonEl.classList.add(constants.CLASS_HIGHLIGHT_BUTTON_REMOVE);
         this.deleteButtonEl.innerHTML = ICON_DELETE;
         this.deleteButtonEl.addEventListener('click', this._deleteButtonHandler);
-
-        // Position it above the upper right corner of the highlight
-        const pageEl = this._getPageEl();
-        const pageHeight = pageEl.getBoundingClientRect().height;
-        const coordinates = annotatorUtil.getUpperRightCorner(this.location.quadPoints, pageEl);
-        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, annotatorUtil.getScale(this.annotatedElement));
-
-        this.deleteButtonEl.style.left = `${browserX - 20}px`;
-        this.deleteButtonEl.style.top = `${browserY - 50}px`;
-        annotatorUtil.hideElement(this.deleteButtonEl);
-        pageEl.appendChild(this.deleteButtonEl);
     }
 
     /**
