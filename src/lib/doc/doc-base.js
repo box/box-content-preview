@@ -134,6 +134,9 @@ class DocBase extends Base {
 
         // todo(@spramod) figure out how to get findField to not overflow when trying to find REALLY long text that would take up the entire find bar
         this.findResultsCount = document.getElementById('findResultsCount');
+
+        this.findPreviousButton = document.getElementById('findPrevious');
+        this.findNextButton = document.getElementById('findNext');
     }
 
     initFindController() {
@@ -147,6 +150,8 @@ class DocBase extends Base {
             bar: this.findBarEl,
             findField: this.findField,
             findResultsCount: this.findResultsCount,
+            findPreviousButton: this.findPreviousButton,
+            findNextButton: this.findNextButton,
             findController: this.findController
         });
 

@@ -33,9 +33,14 @@ class PDFFindBar {
         // Add event listeners to the DOM elements.
         const self = this;
         this.bar.classList.add('box-preview-is-invisible');
+
         self.findField.addEventListener('input', self.findFieldHandler);
 
         self.bar.addEventListener('keydown', this.barHandler);
+
+        self.findPreviousButton.addEventListener('click', this.findPreviousHandler);
+
+        self.findNextButton.addEventListener('click', this.findNextHandler);
     }
 
     /**
@@ -62,6 +67,18 @@ class PDFFindBar {
                 break;
             default:
                 break;
+        }
+    }
+
+    findPreviousHandler() {
+        if (this.findField.value) {
+            this.dispatchEvent('findagain', true);
+        }
+    }
+
+    findNextHandler() {
+        if (this.findField.value) {
+            this.dispatchEvent('findagain', false);
         }
     }
 

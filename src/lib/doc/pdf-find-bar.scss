@@ -1,6 +1,6 @@
 .findbar {
   top: 40px;
-  right: 20px;
+  right: 15px;
   z-index: 1000;
   position: absolute;
   background: white;
@@ -48,18 +48,28 @@
   }
 
   .findFieldGroup button {
-    padding: 0px 6px;
-    padding-bottom: 3px;
+    padding: 0px 3px;
+    padding-bottom: 5px;
     margin: 0;
     height: 22px;
-    width: 22px;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: none;
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: bolder;
+    border-radius: 2px;
+    border: none;
+    transition-property: color;
+    transition-duration: 150ms;
+    transition-timing-function: ease;
+  }
+
+  .findFieldGroup button:hover,
+  .findFieldGroup button:focus {
+    color: hsla(204,100%,65%,.9);
   }
 
   .toolbarLabel#findResultsCount {
     position: absolute;
-    right: 0px;
+    right: 37px;
     top: 0;
     color: #dedede;
     text-align: right;
