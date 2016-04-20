@@ -209,7 +209,7 @@ EVENTNAME can be one of the following
 
 * `viewer` event will be fired when we have the viewer instance 1st available. This will be the same object that is part of the `load` event also. This event will be fired before `load` so that clients can attach their listeners before the `load` event fires.
 
-* `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation is happening. The value argument will be an object contaianing
+* `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation is happening. The value argument will be an object containing:
 ```javascript
   {
       error: 'message', // Error message if any that happened while loading the preview
