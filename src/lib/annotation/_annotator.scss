@@ -26,6 +26,38 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
+.box-preview-annotation-caret {
+    left: 50%;
+    position: absolute;
+
+    // CSS arrow for caret above container
+    &::after,
+    &::before {
+        border: solid transparent;
+        content: ' ';
+        height: 0;
+        left: 50%;
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        transform: rotate(-225deg);
+        width: 0;
+    }
+
+    &::after {
+        border-color: transparent transparent $color-base $color-base;
+        border-width: 6px;
+        margin: -4px 0 0 -6px;
+    }
+
+    &::before {
+        border-color: transparent transparent $color-border $color-border;
+        border-width: 6px;
+        box-shadow: -2px 2px 4px -2px $color-shadow;
+        margin: -5px 0 0 -6px;
+    }
+}
+
 //------------------------------------------------------------------------------
 // CSS for points and dialogs
 //------------------------------------------------------------------------------
@@ -43,38 +75,6 @@ $color-text-lighter: rgba(68, 68, 68, .5);
         border-radius: 4px;
         box-shadow: 0 0 4px 0 $color-shadow;
         padding: 15px;
-    }
-
-    .annotation-container-caret {
-        left: 50%;
-        position: absolute;
-
-        // CSS arrow for caret above container
-        &::after,
-        &::before {
-            border: solid transparent;
-            content: ' ';
-            height: 0;
-            left: 50%;
-            pointer-events: none;
-            position: absolute;
-            top: 0;
-            transform: rotate(-225deg);
-            width: 0;
-        }
-
-        &::after {
-            border-color: transparent transparent $color-base $color-base;
-            border-width: 6px;
-            margin: -4px 0 0 -6px;
-        }
-
-        &::before {
-            border-color: transparent transparent $color-border $color-border;
-            border-width: 6px;
-            box-shadow: -2px 2px 4px -2px $color-shadow;
-            margin: -5px 0 0 -6px;
-        }
     }
 
     .annotation-textarea,
@@ -264,42 +264,19 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
+.box-preview-highlight-dialog {
+    position: absolute;
+    width: 38px; // hard-coded to solve layout issues
+    z-index: 9999;
+}
+
 .box-preview-add-highlight-btn,
-.box-preview-remove-highlight-btn {
+.box-preview-delete-highlight-btn {
     background-color: $color-base;
     border: 1px solid $color-border;
     border-radius: 2px;
     box-shadow: 0 2px 4px 0 $color-shadow;
     padding: 5px 6px;
-    position: absolute;
-
-    // CSS arrow for caret under remove highlight button
-    &::after,
-    &::before {
-        border: solid transparent;
-        content: ' ';
-        height: 0;
-        left: 50%;
-        pointer-events: none;
-        position: absolute;
-        top: 100%;
-        transform: rotate(-45deg);
-        transform-origin: 0 0;
-        width: 0;
-    }
-
-    &::after {
-        border-color: transparent transparent $color-base $color-base;
-        border-width: 6px;
-        margin: -1px 0 0 -8px;
-    }
-
-    &::before {
-        border-color: transparent transparent $color-border $color-border;
-        border-width: 6px;
-        box-shadow: -3px 3px 3px -1px $color-shadow;
-        margin-left: -8px;
-    }
 }
 
 // Quad point positioning - the helper divs are positioned relative to the

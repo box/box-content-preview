@@ -114,7 +114,8 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     showDialog() {
-        if (this.dialog) {
+        // Don't show dialog if there is a current selection
+        if (this.dialog && !annotatorUtil.isSelectionPresent()) {
             this.dialog.show();
         }
     }

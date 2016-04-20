@@ -163,7 +163,7 @@ class AnnotationDialog extends EventEmitter {
         this.element.setAttribute('data-type', 'annotation-dialog');
         this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
         this.element.innerHTML = `
-            <div class="annotation-container-caret"></div>
+            <div class="box-preview-annotation-caret"></div>
             <div class="annotation-container">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
                     <textarea class="annotation-textarea ${CLASS_ACTIVE}" placeholder="Add a comment here..."></textarea>
@@ -264,7 +264,7 @@ class AnnotationDialog extends EventEmitter {
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
         // else we can do
-        const annotationCaretEl = this.element.querySelector('.annotation-container-caret');
+        const annotationCaretEl = this.element.querySelector('.box-preview-annotation-caret');
         if (dialogPastLeft && !dialogPastRight) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
             const caretLeftX = Math.max(10, browserX);
