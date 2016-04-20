@@ -154,8 +154,8 @@ export function isPointInPolyOpt(poly, x, y) {
 export function getHighlightAndHighlightEls(highlighter) {
     // We use Rangy to turn the selection into a highlight, which creates
     // spans around the selection that we can then turn into quadpoints
-    const highlight = highlighter.highlightSelection('highlight')[0];
-    const highlightEls = [].slice.call(document.querySelectorAll('.highlight'), 0).filter((element) => {
+    const highlight = highlighter.highlightSelection('rangy-highlight')[0];
+    const highlightEls = [].slice.call(document.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
         return element.tagName && element.tagName === 'SPAN';
     });
 

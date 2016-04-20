@@ -43,7 +43,7 @@ class DocAnnotator extends Annotator {
 
         // Init rangy and rangy highlight
         this.highlighter = rangy.createHighlighter();
-        this.highlighter.addClassApplier(rangy.createClassApplier('highlight', {
+        this.highlighter.addClassApplier(rangy.createClassApplier('rangy-highlight', {
             ignoreWhiteSpace: true,
             tagNames: ['span', 'a']
         }));
