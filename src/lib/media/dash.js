@@ -230,6 +230,7 @@ class Dash extends VideoBase {
         this.loadUI();
         this.loadFilmStrip();
         this.resize();
+        this.showPlayButton();
 
         this.loaded = true;
         this.emit('load');
