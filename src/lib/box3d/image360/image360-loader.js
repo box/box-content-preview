@@ -5,7 +5,7 @@ const STATIC_URI = 'third-party/model3d/';
 const VIEWERS = [
     {
         REPRESENTATION: 'original',
-        EXTENSIONS: ['jpg', 'png'],
+        EXTENSIONS: ['jpg', 'jpeg', 'png'],
         SCRIPTS: [`${STATIC_URI}boxsdk.js`, `${STATIC_URI}box3d-resource-loader.js`,
             `${STATIC_URI}box3d-runtime.js`, 'image360.js'],
         STYLESHEETS: ['image360.css'],
