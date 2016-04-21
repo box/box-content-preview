@@ -1,6 +1,7 @@
 import './presentation.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
+import debounce from 'lodash.debounce';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 
 import { CLASS_INVISIBLE } from '../constants';
@@ -10,6 +11,8 @@ import {
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT
 } from '../icons/icons';
+
+const WHEEL_DEBOUNCE = 100;
 
 const Box = global.Box || {};
 
@@ -42,7 +45,7 @@ class Presentation extends DocBase {
      */
     destroy() {
         if (this.docEl) {
-            this.docEl.removeEventListener('mousewheel', this.mousewheelHandler);
+            this.docEl.removeEventListener('wheel', this.wheelHandler());
         }
 
         super.destroy();
@@ -135,31 +138,29 @@ class Presentation extends DocBase {
     addEventListenersForDocElement() {
         super.addEventListenersForDocElement();
 
-        this.docEl.addEventListener('mousewheel', this.mousewheelHandler);
+        this.docEl.addEventListener('wheel', this.wheelHandler());
     }
 
     /**
-     * Mousewheel handler, scroll presentations by page.
+     * Debounced mouse wheel handler, scroll presentations by page. This needs
+     * to be debounced because otherwise, the inertia scroll on Macbooks fires
+     * the 'wheel' event too many times.
      *
-     * @param {Event} event Mousewheel event
      * @private
-     * @returns {void}
+     * @returns {Function} Debounced mousewheel handler
      */
-    mousewheelHandler(event) {
-        // The mod 120 filters out track pad events. Mac inertia scrolling
-        // fires lots of scroll events so we've chosen to just disable it
-        const currentWheelDelta = event.wheelDelta || event.detail;
-        const isFromMouseWheel = (currentWheelDelta % 120 === 0);
-
-        if (isFromMouseWheel) {
-            // Wheeldata is used for IE8 support
-            // http://www.javascriptkit.com/javatutors/onmousewheel.shtml
-            if (currentWheelDelta < 0) {
-                this.nextPage();
-            } else {
-                this.previousPage();
-            }
+    wheelHandler() {
+        if (!this.debouncedWheelHandler) {
+            this.debouncedWheelHandler = debounce((event) => {
+                if (event.deltaY > 0) {
+                    this.nextPage();
+                } else {
+                    this.previousPage();
+                }
+            }, WHEEL_DEBOUNCE);
         }
+
+        return this.debouncedWheelHandler;
     }
 }
 
