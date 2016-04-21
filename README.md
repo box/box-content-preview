@@ -1,19 +1,19 @@
-Box Preview
+Box Javascript Preview SDK
 ===========
 -------------
 
 Overview
 ========
-The Box Preview library allows developers to preview their Box file(s) in an application. The library fetches representations through the Box Content API, chooses the appropriate viewer for the file type and finally renders the preview. The library also allows back and forth navigation for previewing of multiple files.
+The Box Javascript Preview SDK makes it easy for developers to preview Box files in a web application. The SDK fetches representations through the Box Content API, chooses the appropriate viewer for the file type, and finally renders the preview client-side. The library also allows navigation between previews of multiple files.
 
 Browser Support
 ===============
 * Chrome, Firefox, Safari and Edge.
 * Limited support on Internet Explorer 10+.
 
-The browser needs to have the Promise API implimented. If not, it can be polyfilled by including a promise library like bluebird before any other script includes: https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js
+The browser needs to have the Promise API implimented. If not, it can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js) before including any other script.
 
-Latest version hosted on CDN
+Latest version of the SDK hosted on Box's CDN
 ============================
 * Version: 0.52.0
 * Locale: en-US
