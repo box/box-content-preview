@@ -15,8 +15,8 @@ Latest version of the SDK hosted on Box's CDN
 * Version: 0.52.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.52.0/en-US/preview.js
-https://cdn01.boxcdn.net/content-experience/0.52.0/en-US/preview.css
+* https://cdn01.boxcdn.net/content-experience/0.52.0/en-US/preview.js
+* https://cdn01.boxcdn.net/content-experience/0.52.0/en-US/preview.css
 
 Usage
 =====
