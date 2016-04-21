@@ -229,8 +229,8 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     width: 16px;
 }
 
-.box-preview-point-annotation-icon,
-.box-preview-point-annotation-placeholder {
+// Clicks should go through icon
+.box-preview-point-annotation-icon {
     pointer-events: none;
 }
 
@@ -266,7 +266,6 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 
 .box-preview-highlight-dialog {
     position: absolute;
-    width: 38px; // hard-coded to solve layout issues
     z-index: 9999;
 }
 
@@ -276,6 +275,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     border: 1px solid $color-border;
     border-radius: 2px;
     box-shadow: 0 2px 4px 0 $color-shadow;
+    margin: 0;
     padding: 5px 6px;
 }
 

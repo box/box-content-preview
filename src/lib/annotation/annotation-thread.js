@@ -80,6 +80,8 @@ class AnnotationThread extends EventEmitter {
 
             this.element = null;
         }
+
+        this.emit('threaddeleted');
     }
 
     /**
@@ -136,18 +138,12 @@ class AnnotationThread extends EventEmitter {
      *
      * @param {String} type Type of annotation
      * @param {String} text Text of annotation to save
-     * @returns {void}
+     * @returns {Promise} Promise
      */
     saveAnnotation(type, text) {
         const annotationData = this._createAnnotationData(type, text);
-        this.annotationService.create(annotationData).then((savedAnnotation) => {
+        return this.annotationService.create(annotationData).then((savedAnnotation) => {
             this.annotations.push(savedAnnotation);
-
-            // If this is the first annotation in the thread
-            if (this.annotations.length === 1) {
-                // Broadcast that a thread was created
-                this.emit('threadcreated');
-            }
 
             // Add annotation element to dialog
             if (this.dialog) {
@@ -160,17 +156,16 @@ class AnnotationThread extends EventEmitter {
      * Deletes an annotation.
      *
      * @param {String} annotationID ID of annotation to delete
-     * @returns {void}
+     * @returns {Promise} Promise
      */
     deleteAnnotation(annotationID) {
-        this.annotationService.delete(annotationID).then(() => {
+        return this.annotationService.delete(annotationID).then(() => {
             this.annotations = this.annotations.filter((annotation) => annotation.annotationID !== annotationID);
 
             // If this annotation was the last one in the thread
             if (this.annotations.length === 0) {
-                // Destroy and broadcast that thread was deleted
+                // Destroy
                 this.destroy();
-                this.emit('threaddeleted');
 
             // Otherwise, remove deleted annotation from dialog
             } else {
@@ -196,8 +191,7 @@ class AnnotationThread extends EventEmitter {
         this.dialog = new AnnotationDialog({
             annotatedElement: this.annotatedElement,
             annotations: this.annotations,
-            location: this.location,
-            threadID: this.threadID
+            location: this.location
         });
         this._bindCustomListenersOnDialog();
 
@@ -215,7 +209,6 @@ class AnnotationThread extends EventEmitter {
         const indicatorEl = document.createElement('button');
         indicatorEl.classList.add('box-preview-point-annotation-btn');
         indicatorEl.setAttribute('data-type', 'annotation-thread');
-        indicatorEl.setAttribute('data-thread-id', this.threadID);
 
         return indicatorEl;
     }

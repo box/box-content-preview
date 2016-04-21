@@ -3,7 +3,6 @@
  * @author tjin
  */
 
-import { SELECTOR_ANNOTATION_DIALOG } from './annotation-constants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
@@ -182,20 +181,6 @@ export function isSelectionPresent() {
 //------------------------------------------------------------------------------
 // Point Utils
 //------------------------------------------------------------------------------
-
-/**
- * Returns whether or not there is a dialog open.
- *
- * @returns {Boolean} Whether a dialog is open or not
- */
-export function isDialogOpen() {
-    const annotationDialogEls = [].slice.call(document.querySelectorAll(SELECTOR_ANNOTATION_DIALOG), 0);
-    if (annotationDialogEls.some((dialogEl) => !dialogEl.classList.contains(CLASS_HIDDEN))) {
-        return true;
-    }
-
-    return false;
-}
 
 /**
  * Checks whether element is fully in viewport.

@@ -224,9 +224,7 @@ class Annotator extends EventEmitter {
                     const location = firstAnnotation.location;
 
                     const thread = this._createAnnotationThread(annotations, location, firstAnnotation.type);
-                    const page = location.page || 1;
-                    this.threads[page] = this.threads[page] || [];
-                    this.threads[page].push(thread);
+                    this._addThreadToMap(thread);
 
                     // Bind events on thread
                     this._bindCustomListenersOnThread(thread);
@@ -286,14 +284,7 @@ class Annotator extends EventEmitter {
      * @private
      */
     _bindCustomListenersOnThread(thread) {
-        // Thread was created, add to thread map
-        thread.addListener('threadcreated', () => {
-            const page = thread.location.page || 1;
-            this.threads[page] = this.threads[page] || [];
-            this.threads[page].push(thread);
-        });
-
-        // Thread was deleted, remove from thread map and destroy
+        // Thread was deleted, remove from thread map
         thread.addListener('threaddeleted', () => {
             const page = thread.location.page || 1;
 
@@ -313,7 +304,6 @@ class Annotator extends EventEmitter {
      * @private
      */
     _unbindCustomListenersOnThread(thread) {
-        thread.removeAllListeners(['threadcreated']);
         thread.removeAllListeners(['threaddeleted']);
     }
 
@@ -372,6 +362,9 @@ class Annotator extends EventEmitter {
 
         // Create new thread with no annotations, show indicator, and show dialog
         const thread = this._createAnnotationThread([], location, POINT_ANNOTATION_TYPE);
+        this._addThreadToMap(thread);
+
+        // Show point indicator and create annotation dialog
         thread.show();
         thread.showDialog();
 
@@ -413,36 +406,35 @@ class Annotator extends EventEmitter {
         const { x, y, page, dataType } = this._getMousePosition();
 
         // Get or create point annotation mode icon
-        let pointAnnotationIconEl = this.annotatedElement.querySelector(constants.SELECTOR_ANNOTATION_POINT_ICON);
-        if (!pointAnnotationIconEl) {
-            pointAnnotationIconEl = document.createElement('div');
-            pointAnnotationIconEl.classList.add(constants.CLASS_ANNOTATION_POINT_ICON);
-            pointAnnotationIconEl.classList.add(CLASS_HIDDEN);
+        if (!this.pointIconEl) {
+            this.pointIconEl = document.createElement('div');
+            this.pointIconEl.classList.add(constants.CLASS_ANNOTATION_POINT_ICON);
+            this.pointIconEl.classList.add(CLASS_HIDDEN);
         }
 
         // If we aren't on a page, short circuit the animation
         if (page === -1) {
-            annotatorUtil.hideElement(pointAnnotationIconEl);
+            annotatorUtil.hideElement(this.pointIconEl);
             this.pendingAnimation = false;
             return;
         }
 
         // Append point annotation icon to correct parent
         const pageEl = this.annotatedElement.querySelector(`[data-page-number="${page}"]`);
-        if (!pageEl.contains(pointAnnotationIconEl)) {
-            pageEl.appendChild(pointAnnotationIconEl);
+        if (!pageEl.contains(this.pointIconEl)) {
+            pageEl.appendChild(this.pointIconEl);
         }
 
         // If mouse is on a page and isn't on a dialog or thread, track with point icon
         if (dataType !== 'annotation-dialog' && dataType !== 'annotation-thread') {
             const pageDimensions = pageEl.getBoundingClientRect();
-            pointAnnotationIconEl.style.left = `${x - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-            pointAnnotationIconEl.style.top = `${y - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-            annotatorUtil.showElement(pointAnnotationIconEl);
+            this.pointIconEl.style.left = `${x - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+            this.pointIconEl.style.top = `${y - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+            annotatorUtil.showElement(this.pointIconEl);
 
         // Otherwise, hide the icon
         } else {
-            annotatorUtil.hideElement(pointAnnotationIconEl);
+            annotatorUtil.hideElement(this.pointIconEl);
         }
 
         // Animation is complete
@@ -480,6 +472,20 @@ class Annotator extends EventEmitter {
     }
 
     /**
+     * Adds thread to in-memory map.
+     *
+     * @param {AnnotationThread} thread Thread to add
+     * @returns {void}
+     * @private
+     */
+    _addThreadToMap(thread) {
+        // Add thread to in-memory map
+        const page = thread.location.page || 1;
+        this.threads[page] = this.threads[page] || [];
+        this.threads[page].push(thread);
+    }
+
+    /**
      * Creates a new AnnotationThread.
      *
      * @param {Annotation[]} annotations Annotations in thread
@@ -489,8 +495,7 @@ class Annotator extends EventEmitter {
      * @private
      */
     /* eslint-disable no-unused-vars */
-    _createAnnotationThread(annotations, location, type) {
-        // Type may be used by other annotators
+    _createAnnotationThread(annotations, location, type /* may be used by other annotators */) {
         return new AnnotationThread({
             annotatedElement: this.annotatedElement,
             annotations,
