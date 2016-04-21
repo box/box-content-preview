@@ -1,5 +1,37 @@
 # Change Log
 
+## [v0.52.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.52.0) (2016-04-21)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.51.0...v0.52.0)
+
+**Merged pull requests:**
+
+- Fix scrolling through powerpoints [\#310](https://gitenterprise.inside-box.net/Preview/Preview/pull/310) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Fixing assorted bugs [\#309](https://gitenterprise.inside-box.net/Preview/Preview/pull/309) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- PDFJS v1.4.258 [\#308](https://gitenterprise.inside-box.net/Preview/Preview/pull/308) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Changing rangy classapplier name [\#306](https://gitenterprise.inside-box.net/Preview/Preview/pull/306) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fat play icon [\#305](https://gitenterprise.inside-box.net/Preview/Preview/pull/305) ([phora](https://gitenterprise.inside-box.net/phora))
+- Rep status tests [\#304](https://gitenterprise.inside-box.net/Preview/Preview/pull/304) ([phora](https://gitenterprise.inside-box.net/phora))
+- Logger test [\#303](https://gitenterprise.inside-box.net/Preview/Preview/pull/303) ([phora](https://gitenterprise.inside-box.net/phora))
+- \[Annotations\] Decomposing annotator into classes [\#302](https://gitenterprise.inside-box.net/Preview/Preview/pull/302) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding ability to run a single test [\#301](https://gitenterprise.inside-box.net/Preview/Preview/pull/301) ([phora](https://gitenterprise.inside-box.net/phora))
+- cache test [\#300](https://gitenterprise.inside-box.net/Preview/Preview/pull/300) ([phora](https://gitenterprise.inside-box.net/phora))
+- Tweaking document zoom code [\#299](https://gitenterprise.inside-box.net/Preview/Preview/pull/299) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Firing a viewer event with the viewer object before load so that clie… [\#298](https://gitenterprise.inside-box.net/Preview/Preview/pull/298) ([phora](https://gitenterprise.inside-box.net/phora))
+- Document keyboard shortcuts & presentation mode [\#297](https://gitenterprise.inside-box.net/Preview/Preview/pull/297) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding resize\(\) function to preview for manual resizing [\#296](https://gitenterprise.inside-box.net/Preview/Preview/pull/296) ([phora](https://gitenterprise.inside-box.net/phora))
+- Fixing IE10 issue with media loading indicator not going away after seeking [\#295](https://gitenterprise.inside-box.net/Preview/Preview/pull/295) ([phora](https://gitenterprise.inside-box.net/phora))
+- \[Annotations\] Improving annotations animation performance [\#294](https://gitenterprise.inside-box.net/Preview/Preview/pull/294) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Fixing duplicate point annotations during high zoom [\#293](https://gitenterprise.inside-box.net/Preview/Preview/pull/293) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Toggle switch \(unused\) [\#292](https://gitenterprise.inside-box.net/Preview/Preview/pull/292) ([phora](https://gitenterprise.inside-box.net/phora))
+- Update box sdk with bug fixes [\#291](https://gitenterprise.inside-box.net/Preview/Preview/pull/291) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- \[Annotations\] Refactor classes & shuffle code [\#290](https://gitenterprise.inside-box.net/Preview/Preview/pull/290) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing up the behaviour of orbiting camera at min and max angles [\#289](https://gitenterprise.inside-box.net/Preview/Preview/pull/289) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Adding a longer timeout for 360 images to account for downloading ori… [\#288](https://gitenterprise.inside-box.net/Preview/Preview/pull/288) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- \[Annotations\] Bug fixes [\#287](https://gitenterprise.inside-box.net/Preview/Preview/pull/287) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Removing 360 toggles and adding support for opening previews with ext… [\#286](https://gitenterprise.inside-box.net/Preview/Preview/pull/286) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Fullscreen on canvas or wrapper, depending on VR context [\#285](https://gitenterprise.inside-box.net/Preview/Preview/pull/285) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Update changelog for v0.51.0 [\#284](https://gitenterprise.inside-box.net/Preview/Preview/pull/284) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
 ## [v0.51.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.51.0) (2016-04-05)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.50.0...v0.51.0)
 
