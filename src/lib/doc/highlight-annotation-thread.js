@@ -8,7 +8,6 @@ import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation/annotation-thread';
 
 import * as annotatorUtil from '../annotation/annotator-util';
-import * as constants from '../annotation/annotation-constants';
 import { ICON_DELETE } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
@@ -18,7 +17,7 @@ const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 255, 255, 1)';
 const HIGHLIGHT_STATE_ACTIVE = 'active';
 const HIGHLIGHT_STATE_HOVER = 'hover';
 const HIGHLIGHT_STATE_INACTIVE = 'inactive';
-
+const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
 
 @autobind
 class HighlightAnnotationThread extends AnnotationThread {
@@ -32,10 +31,11 @@ class HighlightAnnotationThread extends AnnotationThread {
         this.hide();
         this._unbindCustomListeners();
 
-        if (this.deleteButtonEl) {
-            this.deleteButtonEl.removeEventListener('click', this._deleteButtonHandler);
-            this.deleteButtonEl.parentNode.removeChild(this.deleteButtonEl);
-            this.deleteButtonEl = null;
+        if (this.deleteDialogEl) {
+            const deleteButtonEl = this.deleteDialogEl.querySelector('button');
+            deleteButtonEl.removeEventListener('click', this._deleteButtonHandler);
+            this.deleteDialogEl.parentNode.removeChild(this.deleteDialogEl);
+            this.deleteDialogEl = null;
         }
     }
 
@@ -131,18 +131,36 @@ class HighlightAnnotationThread extends AnnotationThread {
      * @returns {void}
      */
     showDeleteButton() {
-        // Position it above the upper right corner of the highlight - we need
+        // Position it below lower right corner of the highlight - we need
         // to reposition every time since the DOM could have changed from
         // zooming
         const pageEl = this._getPageEl();
-        const pageHeight = pageEl.getBoundingClientRect().height;
-        const coordinates = annotatorUtil.getUpperRightCorner(this.location.quadPoints, pageEl);
-        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, annotatorUtil.getScale(this.annotatedElement));
+        const pageDimensions = pageEl.getBoundingClientRect();
+        const pageWidth = pageDimensions.width;
+        const pageHeight = pageDimensions.height;
+        const scale = annotatorUtil.getScale(this.annotatedElement);
+        const coordinates = annotatorUtil.getLowerRightCornerOfLastQuadPoint(this.location.quadPoints);
+        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale);
 
-        this.deleteButtonEl.style.left = `${browserX - 20}px`;
-        this.deleteButtonEl.style.top = `${browserY - 50}px`;
-        annotatorUtil.showElement(this.deleteButtonEl);
-        pageEl.appendChild(this.deleteButtonEl);
+        // Make sure button dialog doesn't go off the page
+        let dialogX = browserX - 19;
+        let dialogY = browserY + 12;
+        if (dialogX < 0) {
+            dialogX = 0;
+        } else if (dialogX + HIGHLIGHT_DIALOG_DIMENSIONS > pageWidth) {
+            dialogX = pageWidth - HIGHLIGHT_DIALOG_DIMENSIONS;
+        }
+
+        if (dialogY < 0) {
+            dialogY = 0;
+        } else if (dialogY + HIGHLIGHT_DIALOG_DIMENSIONS > pageHeight) {
+            dialogY = pageHeight - HIGHLIGHT_DIALOG_DIMENSIONS;
+        }
+
+        this.deleteDialogEl.style.left = `${dialogX}px`;
+        this.deleteDialogEl.style.top = `${dialogY}px`;
+        annotatorUtil.showElement(this.deleteDialogEl);
+        pageEl.appendChild(this.deleteDialogEl);
     }
 
     /**
@@ -151,7 +169,7 @@ class HighlightAnnotationThread extends AnnotationThread {
      * @returns {void}
      */
     hideDeleteButton() {
-        annotatorUtil.hideElement(this.deleteButtonEl);
+        annotatorUtil.hideElement(this.deleteDialogEl);
     }
 
     /**
@@ -217,11 +235,14 @@ class HighlightAnnotationThread extends AnnotationThread {
             this.saveAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '');
         }
 
-        // Setup highlight 'dialog', which is just the delete button
-        this.deleteButtonEl = document.createElement('button');
-        this.deleteButtonEl.classList.add(constants.CLASS_HIGHLIGHT_BUTTON_REMOVE);
-        this.deleteButtonEl.innerHTML = ICON_DELETE;
-        this.deleteButtonEl.addEventListener('click', this._deleteButtonHandler);
+        // Setup delete button
+        this.deleteDialogEl = document.createElement('div');
+        this.deleteDialogEl.classList.add('box-preview-highlight-dialog');
+        this.deleteDialogEl.innerHTML = `
+            <div class="box-preview-annotation-caret"></div>
+            <button class="box-preview-delete-highlight-btn">${ICON_DELETE}</button>`.trim();
+        const deleteButtonEl = this.deleteDialogEl.querySelector('button');
+        deleteButtonEl.addEventListener('click', this._deleteButtonHandler);
     }
 
     /**

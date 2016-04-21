@@ -166,30 +166,6 @@ export function getHighlightAndHighlightEls(highlighter) {
 }
 
 /**
- * Returns whether or not the selection represented by the highlight elements
- * is reversed by detecting if the mouse cursor is closer to the top-most
- * or bottom-most element.
- *
- * @param {Event} event DOM Event
- * @param {HTMLElement[]} elements Elements representing selection
- * @returns {Boolean} Whether or not the selection is reversed
- */
-export function isSelectionReversed(event, elements) {
-    const topDimensions = elements[0].getBoundingClientRect();
-    const bottomDimensions = elements[elements.length - 1].getBoundingClientRect();
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-
-    // Calculate distance between mouse and top left corner of top selection
-    // line vs distance between mouse and bottom right corner of bottom
-    // selection line
-    const topLength = Math.sqrt(Math.pow(topDimensions.left - mouseX, 2) + Math.pow(topDimensions.top - mouseY, 2));
-    const bottomLength = Math.sqrt(Math.pow(bottomDimensions.right - mouseX, 2) + Math.pow(bottomDimensions.bottom - mouseY, 2));
-
-    return topLength < bottomLength;
-}
-
-/**
  * Returns whether or not there currently is a non-empty selection.
  *
  * @returns {Boolean} Whether there is a non-empty selection
@@ -394,32 +370,48 @@ export function getQuadPoints(element, pageEl, scale) {
 }
 
 /**
- * Gets coordinates representing upper right corner of the annotation
- * represented by the provided quad points. We define upper right corner
- * as the top right corner of the rectangle representing the top-most
+ * Gets coordinates representing lower right corner of the annotation
+ * represented by the provided quad points. We define lower right corner
+ * as the bottom right corner of the rectangle representing the bottom-most
  * annotation. Note that these coordinates are in PDF default user space, with
  * the origin at the bottom left corner of the document.
  *
- * @param {Number[]} quadPoints Quad points of annotation to get upper
+ * @param {Number[]} quadPoints Quad points of annotation to get lower
  * right corner for in PDF space in PDF units
- * @returns {Number[]} [x,y] of upper right corner of quad points in PDF
+ * @returns {Number[]} [x,y] of lower right corner of quad points in PDF
  * space in PDF units
  */
-export function getUpperRightCorner(quadPoints) {
-    let [x, y] = [0, 0];
+export function getLowerRightCorner(quadPoints) {
+    let [x, y] = [0, 99999];
     quadPoints.forEach((quadPoint) => {
         const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
 
-        // If this rectangle is higher than previously recorded highest,
+        // If this rectangle is lower than previously recorded lowest,
         // use the right edge of this rectangle
-        const tempY = Math.max(y, Math.max(y1, y2, y3, y4));
-        if (tempY > y) {
-            x = Math.max(x, Math.max(x1, x2, x3, x4));
+        const tempY = Math.min(y1, y2, y3, y4);
+        if (tempY <= y) {
+            x = Math.max(x1, x2, x3, x4);
             y = tempY;
         }
     });
 
     return [x, y];
+}
+
+/**
+ * Returns the lower right corner of the last quad point. This should provide
+ * the same location the add highlight button is shown at given that the
+ * quad points are stored in the correct order, ie left to right, top to bottom.
+ *
+ * @param {Number[]} quadPoints Quad points in PDF space in PDF units
+ * @returns {Number[]} [x,y] of lower right corner of last quad point
+ */
+export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
+    const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints[quadPoints.length - 1];
+    return [
+        Math.max(x1, x2, x3, x4),
+        Math.min(y1, y2, y3, y4)
+    ];
 }
 
 //------------------------------------------------------------------------------

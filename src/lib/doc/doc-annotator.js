@@ -18,7 +18,6 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 import throttle from 'lodash.throttle';
 
 import * as annotatorUtil from '../annotation/annotator-util';
-import * as constants from '../annotation/annotation-constants';
 import { ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
@@ -98,7 +97,7 @@ class DocAnnotator extends Annotator {
         }
 
         // Hide add highlight button
-        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        annotatorUtil.hideElement('.box-preview-highlight-dialog.add-highlight');
 
         // Do nothing if the click was outside a page or a dialog is open
         const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
@@ -160,7 +159,7 @@ class DocAnnotator extends Annotator {
         }
 
         // Hide remove highlight button
-        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_REMOVE);
+        annotatorUtil.hideElement('.box-preview-highlight-dialog.add-highlight');
 
         // Use Rangy to save the current selection because using the
         // highlight module can mess with the selection. We restore this
@@ -177,39 +176,29 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        let addHighlightButtonEl = this.annotatedElement.querySelector(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
-        if (!addHighlightButtonEl) {
-            addHighlightButtonEl = document.createElement('button');
-            addHighlightButtonEl.classList.add(constants.CLASS_HIGHLIGHT_BUTTON_ADD);
-            addHighlightButtonEl.innerHTML = ICON_HIGHLIGHT;
-            addHighlightButtonEl.addEventListener('click', this._addHighlightHandler);
+        let addDialogEl = this.annotatedElement.querySelector('.box-preview-highlight-dialog.add-highlight');
+        if (!addDialogEl) {
+            addDialogEl = document.createElement('div');
+            addDialogEl.classList.add('box-preview-highlight-dialog');
+            addDialogEl.classList.add('add-highlight');
+            addDialogEl.innerHTML = `
+                <div class="box-preview-annotation-caret"></div>
+                <button class="box-preview-add-highlight-btn">${ICON_HIGHLIGHT}</button>`.trim();
+            addDialogEl.querySelector('button').addEventListener('click', this._addHighlightHandler);
         }
 
         // Calculate where to position button
         const pageDimensions = pageEl.getBoundingClientRect();
-        let buttonX;
-        let buttonY;
-
-        // If selection is reversed, button should be placed before the first line of selection
-        if (annotatorUtil.isSelectionReversed(event, highlightEls)) {
-            const firstHighlightEl = highlightEls[0];
-            const dimensions = firstHighlightEl.getBoundingClientRect();
-            buttonX = dimensions.left - pageDimensions.left - 20;
-            buttonY = dimensions.top - pageDimensions.top - 50;
-
-        // Otherwise, button should be placed after bottom line of selection
-        } else {
-            const lastHighlightEl = highlightEls[highlightEls.length - 1];
-            const dimensions = lastHighlightEl.getBoundingClientRect();
-            buttonX = dimensions.right - pageDimensions.left - 20;
-            buttonY = dimensions.top - pageDimensions.top - 50;
-        }
+        const lastHighlightEl = highlightEls[highlightEls.length - 1];
+        const dimensions = lastHighlightEl.getBoundingClientRect();
+        const buttonX = dimensions.right - pageDimensions.left - 19;
+        const buttonY = dimensions.bottom - pageDimensions.top + 12;
 
         // Position button
-        addHighlightButtonEl.style.left = `${buttonX}px`;
-        addHighlightButtonEl.style.top = `${buttonY}px`;
-        annotatorUtil.showElement(addHighlightButtonEl);
-        pageEl.appendChild(addHighlightButtonEl);
+        addDialogEl.style.left = `${buttonX}px`;
+        addDialogEl.style.top = `${buttonY}px`;
+        annotatorUtil.showElement(addDialogEl);
+        pageEl.appendChild(addDialogEl);
 
         // Clean up rangy highlight and restore selection
         this._removeRangyHighlight(highlight);
@@ -226,7 +215,6 @@ class DocAnnotator extends Annotator {
      */
     _addHighlightHandler(event) {
         event.stopPropagation();
-
 
         // Do nothing if there is no selection
         if (!annotatorUtil.isSelectionPresent()) {
@@ -264,7 +252,7 @@ class DocAnnotator extends Annotator {
         this._bindCustomListenersOnThread(thread);
 
         // Hide add highlight button
-        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        annotatorUtil.hideElement('.box-preview-highlight-dialog.add-highlight');
     }
 
     /**
@@ -276,7 +264,7 @@ class DocAnnotator extends Annotator {
      */
     _contextmenuHandler() {
         // Hide add highlight button
-        annotatorUtil.hideElement(constants.SELECTOR_HIGHLIGHT_BUTTON_ADD);
+        annotatorUtil.hideElement('.box-preview-highlight-dialog.add-highlight');
 
         // Reset highlights
         Object.keys(this.threads).forEach((threadPage) => {
