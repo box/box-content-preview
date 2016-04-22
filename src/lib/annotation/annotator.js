@@ -13,7 +13,6 @@ import throttle from 'lodash.throttle';
 
 import * as annotatorUtil from './annotator-util';
 import * as constants from './annotation-constants';
-
 import { CLASS_HIDDEN } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
@@ -125,20 +124,20 @@ class Annotator extends EventEmitter {
      *
      * @returns {void}
      */
-    togglePointAnnotationModeHandler() {
+    togglePointModeHandler() {
         // If in annotation mode, turn it off
         if (this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)) {
-            this.emit('pointannotationmodeexit');
+            this.emit('pointmodeexit');
             this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
-            this._unbindPointModeListeners();
+            this._unbindPointModeListeners(); // Disable point mode
             this._bindDOMListeners(); // Re-enable other annotations
 
         // Otherwise, enable annotation mode
         } else {
-            this.emit('pointannotationmodeenter');
+            this.emit('pointmodeenter');
             this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
-            this._bindPointModeListeners();
             this._unbindDOMListeners(); // Disable other annotations
+            this._bindPointModeListeners();  // Enable point mode
         }
     }
 
@@ -162,11 +161,10 @@ class Annotator extends EventEmitter {
         const annotationButtonContainerEl = document.createElement('div');
         annotationButtonContainerEl.classList.add('box-preview-annotation-controls');
         annotationButtonContainerEl.innerHTML = `
-            <button class="btn box-preview-btn-annotate" data-type="point-annotation-mode-btn">${ICON_ANNOTATION}</button>`.trim();
+            <button class="btn box-preview-btn-annotate">${ICON_ANNOTATION}</button>`.trim();
         const pointAnnotationModeBtnEl = annotationButtonContainerEl.querySelector('.box-preview-btn-annotate');
-        pointAnnotationModeBtnEl.addEventListener('click', this.togglePointAnnotationModeHandler);
-        const docEl = document.querySelector('.box-preview-doc');
-        docEl.appendChild(annotationButtonContainerEl);
+        pointAnnotationModeBtnEl.addEventListener('click', this.togglePointModeHandler);
+        this.annotatedElement.appendChild(annotationButtonContainerEl);
     }
 
     /**
@@ -179,7 +177,7 @@ class Annotator extends EventEmitter {
         const annotationButtonContainerEl = document.querySelector('.box-preview-annotation-controls');
         if (annotationButtonContainerEl) {
             const pointAnnotationModeBtnEl = annotationButtonContainerEl.querySelector('.box-preview-btn-annotate');
-            pointAnnotationModeBtnEl.removeEventListener('click', this.togglePointAnnotationModeHandler);
+            pointAnnotationModeBtnEl.removeEventListener('click', this.togglePointModeHandler);
             annotationButtonContainerEl.parentNode.removeChild(annotationButtonContainerEl);
         }
     }

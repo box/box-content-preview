@@ -23,6 +23,7 @@ import {
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
+    SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     COLOR_HEADER_LIGHT,
@@ -578,6 +579,7 @@ class Preview extends EventEmitter {
         this.viewer.addListener('load', () => {
             // Show or hide annotate/print/download buttons
             this.showAnnotateButton();
+            this.showHighlightButton();
             this.showPrintButton();
             this.showDownloadButton();
 
@@ -696,17 +698,32 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Shows the annotate button if the viewers implement annotate
+     * Shows the point annotate button if the viewers implement annotations
      *
-     * @private
      * @returns {void}
+     * @private
      */
     showAnnotateButton() {
         // @TODO(tjin): Add permission checks here once we have annotation permissions
         if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable()) {
             this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
             this.annotateButton.classList.remove(CLASS_HIDDEN);
-            this.annotateButton.addEventListener('click', this.viewer.getPointAnnotationClickHandler());
+            this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
+        }
+    }
+
+    /**
+     * Shows the highlight annotate button if the viewers implement annotations
+     *
+     * @returns {void}
+     * @private
+     */
+    showHighlightButton() {
+        // @TODO(tjin): Add permission checks here once we have annotation permissions
+        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable()) {
+            this.highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
+            this.highlightButton.classList.remove(CLASS_HIDDEN);
+            this.highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
         }
     }
 

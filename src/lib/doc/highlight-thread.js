@@ -95,7 +95,7 @@ class HighlightThread extends AnnotationThread {
      * @returns {Promise} Promise
      */
     saveAnnotation(type, text) {
-        super.saveAnnotation(type, text).then(() => {
+        return super.saveAnnotation(type, text).then(() => {
             window.getSelection().removeAllRanges();
             this.reset();
         });

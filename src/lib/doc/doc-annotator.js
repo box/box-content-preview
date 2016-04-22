@@ -18,6 +18,8 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 import throttle from 'lodash.throttle';
 
 import * as annotatorUtil from '../annotation/annotator-util';
+import * as constants from '../annotation/annotation-constants';
+import { ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const HIGHLIGHT_STATE_PENDING = 'pending';
@@ -30,8 +32,61 @@ const MOUSEUP = IS_MOBILE ? 'touchend' : 'mouseup';
 class DocAnnotator extends Annotator {
 
     //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    /**
+     * Toggles highlight annotation mode on and off. When highlight mode is on,
+     * every selection becomes a highlight.
+     *
+     * @returns {void}
+     */
+    toggleHighlightModeHandler() {
+        // If in highlight mode, turn it off
+        if (this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE)) {
+            this.emit('highlightmodeexit');
+            this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+            this._unbindHighlightModeListeners(); // Disable highlight mode
+            this._bindDOMListeners(); // Re-enable other annotations
+
+        // Otherwise, enable highlight mode
+        } else {
+            this.emit('highlightmodeenter');
+            this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+            this._unbindDOMListeners(); // Disable other annotations
+            this._bindHighlightModeListeners(); // Enable highlight mode
+        }
+    }
+
+    //--------------------------------------------------------------------------
     // Private functions
     //--------------------------------------------------------------------------
+
+    /**
+     * Sets up annotation controls - this is needed if there is no Preview
+     * header, where the controls are normally. The doc annotator adds a
+     * highlight mode.
+     *
+     * @returns {void}
+     * @private
+     */
+    _setupControls() {
+        super._setupControls();
+
+        // No need to set up controls if Preview header exists
+        if (document.querySelector('.box-preview-header')) {
+            return;
+        }
+
+        // Add highlight mode button
+        const annotationButtonContainerEl = this.annotatedElement.querySelector('.box-preview-annotation-controls');
+        const highlightModeBtnEl = document.createElement('button');
+        highlightModeBtnEl.classList.add('btn');
+        highlightModeBtnEl.classList.add('box-preview-btn-highlight');
+        highlightModeBtnEl.innerHTML = ICON_HIGHLIGHT;
+        highlightModeBtnEl.addEventListener('click', this.toggleHighlightModeHandler);
+        annotationButtonContainerEl.appendChild(highlightModeBtnEl);
+    }
 
     /**
      * Annotations setup.
@@ -77,6 +132,26 @@ class DocAnnotator extends Annotator {
         this.annotatedElement.removeEventListener(MOUSEDOWN, this._highlightMousedownHandler);
         this.annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
         this.annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
+        this.annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
+    }
+
+    /**
+     * Binds point mode event listeners.
+     *
+     * @returns {void}
+     * @private
+     */
+    _bindHighlightModeListeners() {
+        this.annotatedElement.addEventListener(MOUSEUP, this._highlightMouseupHandler);
+    }
+
+    /**
+     * Unbinds point mode event listeners.
+     *
+     * @returns {void}
+     * @private
+     */
+    _unbindHighlightModeListeners() {
         this.annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
     }
 
@@ -163,7 +238,15 @@ class DocAnnotator extends Annotator {
             page,
             quadPoints
         }, HIGHLIGHT_ANNOTATION_TYPE);
-        thread.show();
+
+        // If in highlight mode, save highlight immediately
+        const highlightMode = this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+        if (highlightMode) {
+            // saveAnnotation() shows the annotation afterwards
+            thread.saveAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '');
+        } else {
+            thread.show();
+        }
 
         // Bind events on thread
         this._bindCustomListenersOnThread(thread);
