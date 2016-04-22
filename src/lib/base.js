@@ -3,12 +3,14 @@ import EventEmitter from 'events';
 import fullscreen from './fullscreen';
 import { createContentUrl, getHeaders } from './util';
 import debounce from 'lodash.debounce';
+import Browser from './browser';
 
 import {
     CLASS_FULLSCREEN,
     CLASS_FULLSCREEN_DISABLED,
     CLASS_BOX_PREVIEW_CONTAINER,
     CLASS_BOX_PREVIEW,
+    CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW
 } from './constants';
@@ -55,6 +57,11 @@ class Base extends EventEmitter {
 
         // Timeout for loading the preview
         this.loadTimeout = 15000;
+
+        // For mobile browsers add mobile class just in case viewers need it
+        if (Browser.isMobile()) {
+            this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
+        }
     }
 
     /**
