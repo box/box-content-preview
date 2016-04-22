@@ -7,7 +7,7 @@
 import autobind from 'autobind-decorator';
 import Annotator from '../annotation/annotator';
 import Browser from '../browser';
-import HighlightAnnotationThread from './highlight-annotation-thread';
+import HighlightThread from './highlight-thread';
 import rangy from 'rangy';
 /* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
@@ -18,11 +18,13 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 import throttle from 'lodash.throttle';
 
 import * as annotatorUtil from '../annotation/annotator-util';
-import { ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
+const HIGHLIGHT_STATE_PENDING = 'pending';
 const MOUSEMOVE_THROTTLE = 50;
-const TOUCH_END = Browser.isMobile() ? 'touchend' : 'mouseup';
+const IS_MOBILE = Browser.isMobile();
+const MOUSEDOWN = IS_MOBILE ? 'touchstart' : 'mousedown';
+const MOUSEUP = IS_MOBILE ? 'touchend' : 'mouseup';
 
 @autobind
 class DocAnnotator extends Annotator {
@@ -57,12 +59,10 @@ class DocAnnotator extends Annotator {
     _bindDOMListeners() {
         super._bindDOMListeners();
 
-        this.annotatedElement.addEventListener('click', this._highlightClickHandler);
+        this.annotatedElement.addEventListener(MOUSEDOWN, this._highlightMousedownHandler);
+        this.annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
         this.annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
-        this.annotatedElement.addEventListener(TOUCH_END, this._showAddHighlightButtonHandler);
-
-        // Hide annotation dialogs and buttons on right click
-        this.annotatedElement.addEventListener('contextmenu', this._contextmenuHandler);
+        this.annotatedElement.addEventListener(MOUSEUP, this._highlightMouseupHandler);
     }
 
     /**
@@ -74,40 +74,25 @@ class DocAnnotator extends Annotator {
     _unbindDOMListeners() {
         super._unbindDOMListeners();
 
-        this.annotatedElement.removeEventListener('click', this._highlightClickHandler);
+        this.annotatedElement.removeEventListener(MOUSEDOWN, this._highlightMousedownHandler);
+        this.annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
         this.annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
-        this.annotatedElement.removeEventListener(TOUCH_END, this._showAddHighlightButtonHandler);
-        this.annotatedElement.removeEventListener('contextmenu', this._contextmenuHandler);
+        this.annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
     }
 
     /**
-     * Click handler on annotated element. Delegates to click handlers of
-     * highlight threads over all pages since a click on one thread needs
+     * Mousedown handler on annotated element. Delegates to mousedown handlers
+     * of highlight threads over all pages since a mousedown on one thread needs
      * to deactivate other threads, which are potentially on other pages.
      *
      * @param {Event} event DOM event
      * @returns {void}
      * @private
      */
-    _highlightClickHandler(event) {
-        // Hide add highlight button if there is no current selection
-        // If there is a current selection, short-circuit
-        if (annotatorUtil.isSelectionPresent()) {
-            return;
-        }
-
-        // Hide add highlight button
-        annotatorUtil.hideElement('.box-preview-highlight-dialog.add-highlight');
-
-        // Do nothing if the click was outside a page or a dialog is open
-        const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
-        if (page === -1 || annotatorUtil.isDialogOpen()) {
-            return;
-        }
-
+    _highlightMousedownHandler(event) {
         Object.keys(this.threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
-                thread.clickHandler(event);
+                thread.mousedownHandler(event);
             });
         });
     }
@@ -135,98 +120,29 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Returns the highlight threads on the specified page.
+     * Mouseup handler. Creates a highlight thread from the current selection.
      *
-     * @param {Number} page Page to get highlight threads for
-     * @returns {HighlightAnnotationThread[]} Highlight annotation threads
+     * @param {Event} event DOM event
+     * @returns {Function} mousemove handler
      * @private
      */
-    _getHighlightThreadsOnPage(page) {
-        const threads = this.threads[page] || [];
-        return threads.filter((thread) => thread.annotations[0].type === HIGHLIGHT_ANNOTATION_TYPE);
-    }
-
-    /**
-     * Handler to show the add highlight button. Shown when mouse is
-     * released or touch is ended and there is a selection on screen.
-     *
-     * @returns {void}
-     * @private
-     */
-    _showAddHighlightButtonHandler(event) {
-        if (!annotatorUtil.isSelectionPresent() || annotatorUtil.isDialogOpen()) {
+    _highlightMouseupHandler(event) {
+        const selectionPresent = annotatorUtil.isSelectionPresent();
+        const highlightsPending = this._getPendingHighlightThreads().length > 0;
+        if (!selectionPresent || highlightsPending) {
             return;
         }
 
-        // Hide remove highlight button
-        annotatorUtil.hideElement('.box-preview-highlight-dialog.add-highlight');
+        let { pageEl, page } = annotatorUtil.getPageElAndPageNumber(event.target);
+        if (page === -1) {
+            // The ( .. ) around assignment is required syntax
+            ({ pageEl, page } = annotatorUtil.getPageElAndPageNumber(window.getSelection().anchorNode));
+        }
 
         // Use Rangy to save the current selection because using the
         // highlight module can mess with the selection. We restore this
         // selection after we clean up the highlight
         const savedSelection = rangy.saveSelection();
-
-        const pageEl = annotatorUtil.getPageElAndPageNumber(event.target).pageEl;
-        if (!pageEl) {
-            return;
-        }
-
-        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this.highlighter);
-        if (highlightEls.length === 0) {
-            return;
-        }
-
-        let addDialogEl = this.annotatedElement.querySelector('.box-preview-highlight-dialog.add-highlight');
-        if (!addDialogEl) {
-            addDialogEl = document.createElement('div');
-            addDialogEl.classList.add('box-preview-highlight-dialog');
-            addDialogEl.classList.add('add-highlight');
-            addDialogEl.innerHTML = `
-                <div class="box-preview-annotation-caret"></div>
-                <button class="box-preview-add-highlight-btn">${ICON_HIGHLIGHT}</button>`.trim();
-            addDialogEl.querySelector('button').addEventListener('click', this._addHighlightHandler);
-        }
-
-        // Calculate where to position button
-        const pageDimensions = pageEl.getBoundingClientRect();
-        const lastHighlightEl = highlightEls[highlightEls.length - 1];
-        const dimensions = lastHighlightEl.getBoundingClientRect();
-        const buttonX = dimensions.right - pageDimensions.left - 19;
-        const buttonY = dimensions.bottom - pageDimensions.top + 12;
-
-        // Position button
-        addDialogEl.style.left = `${buttonX}px`;
-        addDialogEl.style.top = `${buttonY}px`;
-        annotatorUtil.showElement(addDialogEl);
-        pageEl.appendChild(addDialogEl);
-
-        // Clean up rangy highlight and restore selection
-        this._removeRangyHighlight(highlight);
-        rangy.restoreSelection(savedSelection);
-    }
-
-    /**
-     * Event handler for adding a highlight annotation. Generates a highlight
-     * out of the current window selection and saves it.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     * @private
-     */
-    _addHighlightHandler(event) {
-        event.stopPropagation();
-
-        // Do nothing if there is no selection
-        if (!annotatorUtil.isSelectionPresent()) {
-            return;
-        }
-
-        const selection = window.getSelection();
-        const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(selection.anchorNode.parentNode);
-        if (!pageEl) {
-            return;
-        }
-
         const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this.highlighter);
         if (highlightEls.length === 0) {
             return;
@@ -235,43 +151,51 @@ class DocAnnotator extends Annotator {
         // Get quad points for each highlight element
         const quadPoints = [];
         highlightEls.forEach((element) => {
-            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, this.getScale()));
+            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, annotatorUtil.getScale(this.annotatedElement)));
         });
 
-        // Unselect text and remove rangy highlight
-        selection.removeAllRanges();
+        // Remove rangy highlight and restore selection
         this._removeRangyHighlight(highlight);
+        rangy.restoreSelection(savedSelection);
 
-        // Create annotation
+        // Create and show pending annotation thread
         const thread = this._createAnnotationThread([], {
             page,
             quadPoints
         }, HIGHLIGHT_ANNOTATION_TYPE);
+        thread.show();
 
         // Bind events on thread
         this._bindCustomListenersOnThread(thread);
-
-        // Hide add highlight button
-        annotatorUtil.hideElement('.box-preview-highlight-dialog.add-highlight');
     }
 
     /**
-     * Right click handler - hide add highlight button and reset highlights.
+     * Returns the highlight threads on the specified page.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Number} page Page to get highlight threads for
+     * @returns {HighlightThread[]} Highlight annotation threads
      * @private
      */
-    _contextmenuHandler() {
-        // Hide add highlight button
-        annotatorUtil.hideElement('.box-preview-highlight-dialog.add-highlight');
+    _getHighlightThreadsOnPage(page) {
+        const threads = this.threads[page] || [];
+        return threads.filter((thread) => thread instanceof HighlightThread);
+    }
 
-        // Reset highlights
-        Object.keys(this.threads).forEach((threadPage) => {
-            this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
-                thread.reset();
-            });
+    /**
+     * Returns pending highlight threads.
+     *
+     * @param {Number} page Page to get highlight threads for
+     * @returns {HighlightThread[]} Pending highlight threads.
+     * @private
+     */
+    _getPendingHighlightThreads() {
+        const pendingThreads = [];
+
+        Object.keys(this.threads).forEach((page) => {
+            [].push.apply(pendingThreads, this._getHighlightThreadsOnPage(page).filter((thread) => thread.getState() === HIGHLIGHT_STATE_PENDING));
         });
+
+        return pendingThreads;
     }
 
     /**
@@ -302,19 +226,25 @@ class DocAnnotator extends Annotator {
      */
     _showHighlightsOnPage(page) {
         // let time = new Date().getTime();
+
+        // Clear context if needed
         const pageEl = this.annotatedElement.querySelector(`[data-page-number="${page}"]`);
         const annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
-        const context = annotationLayerEl.getContext('2d');
-        context.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);
+        if (annotationLayerEl) {
+            const context = annotationLayerEl.getContext('2d');
+            context.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);
+        }
 
         this._getHighlightThreadsOnPage(page).forEach((thread) => {
             thread.show();
         });
+
         // console.log(`Drawing annotations for page ${page} took ${new Date().getTime() - time}ms`);
     }
 
     /**
-     * Creates a new HighlightAnnotationThread.
+     * Creates the proper type of thread, adds it to in-memory map, and returns
+     * it.
      *
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
@@ -324,7 +254,7 @@ class DocAnnotator extends Annotator {
      */
     _createAnnotationThread(annotations, location, type) {
         if (type === HIGHLIGHT_ANNOTATION_TYPE) {
-            return new HighlightAnnotationThread({
+            const highlightThread = new HighlightThread({
                 annotatedElement: this.annotatedElement,
                 annotations,
                 annotationService: this.annotationService,
@@ -332,6 +262,8 @@ class DocAnnotator extends Annotator {
                 location,
                 user: this.user
             });
+            this._addThreadToMap(highlightThread);
+            return highlightThread;
         }
 
         return super._createAnnotationThread(annotations, location, type);

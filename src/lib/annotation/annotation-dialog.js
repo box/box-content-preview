@@ -31,7 +31,6 @@ class AnnotationDialog extends EventEmitter {
      * @property {Annotation[]} annotations Annotations in dialog, can be an
      * empty array for a new thread
      * @property {Object} location Location object
-     * @property {String} threadID Thread ID
      */
 
     //--------------------------------------------------------------------------
@@ -49,7 +48,6 @@ class AnnotationDialog extends EventEmitter {
 
         this.annotatedElement = data.annotatedElement;
         this.location = data.location;
-        this.threadID = data.threadID;
 
         this._setup(data.annotations);
     }
@@ -420,6 +418,7 @@ class AnnotationDialog extends EventEmitter {
                 this._deleteAnnotation(annotationID);
                 break;
             }
+
             default:
                 break;
         }
