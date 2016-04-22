@@ -4,6 +4,7 @@ export const CLASS_HIDDEN = 'box-preview-is-hidden';
 export const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 export const CLASS_BOX_PREVIEW_CONTAINER = 'box-preview-container';
 export const CLASS_BOX_PREVIEW = 'box-preview';
+export const CLASS_BOX_PREVIEW_MOBILE = 'box-preview-is-mobile';
 export const CLASS_BOX_PREVIEW_HEADER = 'box-preview-header';
 export const CLASS_BOX_PREVIEW_HEADER_BTNS = 'box-preview-header-btns';
 export const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';

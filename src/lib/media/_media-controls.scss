@@ -1,5 +1,6 @@
 @import 'scrubber';
 @import 'settings';
+@import '../variables';
 
 .box-preview-media-controls-is-visible .box-preview-media-controls-wrapper,
 .box-preview-media-controls-wrapper:active,
@@ -18,7 +19,7 @@
     left: 0;
     right: 0;
     opacity: 0;
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
+    background-image: linear-gradient(to top, rgba($black, .4) 0%, rgba($black, 0) 100%);
 }
 
 .box-preview-media-volume-scrubber-container {
@@ -26,6 +27,17 @@
     width: 80px;
     vertical-align: top;
     margin-top: 10px;
+
+    .box-preview-media-scrubber-handle {
+        transform: scale(1);
+    }
+
+    .box-preview-media-scrubber-converted,
+    .box-preview-media-scrubber-buffered,
+    .box-preview-media-scrubber-played,
+    .box-preview-media-scrubber-underlay {
+        transform: scaleY(1) !important;
+    }
 }
 
 .box-preview-media-controls-container {
@@ -50,7 +62,7 @@
     background-color: transparent;
     display: inline-block;
     vertical-align: top;
-    color: #fff;
+    color: $white;
 }
 
 .box-preview-media-controls-volume-control .box-preview-media-controls-btn {
@@ -74,6 +86,10 @@
     display: inline-block;
     vertical-align: top;
     transition: width 0.2s ease-in-out;
+
+    .box-preview-is-mobile & {
+        display: none;
+    }
 }
 
 .box-preview-media-controls-volume-wrapper:hover,
@@ -90,20 +106,9 @@
     float: right;
 }
 
-.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-handle {
-    transform: scale(1);
-}
-
-.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-converted,
-.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-buffered,
-.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-played,
-.box-preview-media-volume-scrubber-container .box-preview-media-scrubber-underlay {
-    transform: scaleY(1) !important;
-}
-
 .box-preview-media-controls-hd {
     font-size: 7px;
-    background: red;
+    background: $box-blue;
     padding: 1px 2px;
     border-radius: 3px;
     position: relative;
