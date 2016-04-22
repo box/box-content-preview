@@ -17,6 +17,7 @@ export const SELECTOR_BOX_PREVIEW_HEADER_BTNS = `.${CLASS_BOX_PREVIEW_HEADER_BTN
 export const SELECTOR_NAVIGATION_LEFT = '.box-preview-navigate-left';
 export const SELECTOR_NAVIGATION_RIGHT = '.box-preview-navigate-right';
 export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE = '.box-preview-btn-annotate';
+export const SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT = '.box-preview-btn-highlight';
 export const SELECTOR_BOX_PREVIEW_BTN_PRINT = '.box-preview-btn-print';
 export const SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD = '.box-preview-btn-download';
 

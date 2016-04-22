@@ -326,15 +326,27 @@ class DocBase extends Base {
     /**
      * Returns click handler for toggling point annotation mode.
      *
-     * @public
      * @returns {Function|null} Click handler
      */
-    getPointAnnotationClickHandler() {
+    getPointModeClickHandler() {
         if (!this.isAnnotatable()) {
             return null;
         }
 
-        return this.annotator.togglePointAnnotationModeHandler;
+        return this.annotator.togglePointModeHandler;
+    }
+
+    /**
+     * Returns click handler for toggling highlight annotation mode.
+     *
+     * @returns {Function|null} Click handler
+     */
+    getHighlightModeClickHandler() {
+        if (!this.isAnnotatable()) {
+            return null;
+        }
+
+        return this.annotator.toggleHighlightModeHandler;
     }
 
     /* ----- Private Helpers ----- */
@@ -438,13 +450,13 @@ class DocBase extends Base {
         this.annotator.setScale(this.pdfViewer.currentScale);
 
         // Disable controls during point annotation mode
-        this.annotator.on('pointannotationmodeenter', () => {
+        this.annotator.on('pointmodeenter', () => {
             if (this.controls) {
                 this.controls.disable();
             }
         });
 
-        this.annotator.on('pointannotationmodeexit', () => {
+        this.annotator.on('pointmodeexit', () => {
             if (this.controls) {
                 this.controls.enable();
             }
