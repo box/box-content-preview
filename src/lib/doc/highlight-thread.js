@@ -1,12 +1,12 @@
 /**
- * @fileoverview Highlight annotation thread. This implements a simplified
- * annotation thread that represents a highlight.
+ * @fileoverview Highlight thread. This implements an annotation thread that
+ * contains a single highlight annotation.
  * @author tjin
  */
 
 import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation/annotation-thread';
-import HighlightAnnotationDialog from './highlight-annotation-dialog';
+import HighlightDialog from './highlight-dialog';
 
 import * as annotatorUtil from '../annotation/annotator-util';
 
@@ -20,7 +20,7 @@ const HIGHLIGHT_STATE_INACTIVE = 'inactive';
 const HIGHLIGHT_STATE_PENDING = 'pending';
 
 @autobind
-class HighlightAnnotationThread extends AnnotationThread {
+class HighlightThread extends AnnotationThread {
 
     /**
      * [destructor]
@@ -30,53 +30,40 @@ class HighlightAnnotationThread extends AnnotationThread {
     destroy() {
         super.destroy();
 
-        if (this.state !== HIGHLIGHT_STATE_PENDING) {
+        if (this.state === HIGHLIGHT_STATE_PENDING) {
+            window.getSelection().removeAllRanges();
+        } else {
             this.hide();
         }
     }
 
     /**
-     * Draws the highlight on canvas.
+     * Shows the highlight thread, which means different things based on the
+     * state of the thread. If the thread is pending, we show the 'add' button.
+     * If it is inactive, we draw the highlight. If it is active, we draw
+     * the highlight in active state and show the 'delete' button.
      *
      * @returns {void}
      */
     show() {
-        const context = this._getContext();
-        const quadPoints = this.location.quadPoints;
-        const pageHeight = this._getPageEl().getBoundingClientRect().height;
-        quadPoints.forEach((quadPoint) => {
-            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this.annotatedElement));
-            const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
-
-            // If annotation being drawn is the annotation the mouse is over or
-            // the annotation is 'active' or clicked, draw the highlight with
-            // a different, darker color
-            if (this.state === HIGHLIGHT_STATE_ACTIVE ||
-                this.state === HIGHLIGHT_STATE_HOVER) {
-                context.fillStyle = HIGHLIGHT_ACTIVE_FILL_STYLE;
-            } else {
-                context.fillStyle = HIGHLIGHT_NORMAL_FILL_STYLE;
-            }
-
-            context.beginPath();
-            context.moveTo(x1, y1);
-            context.lineTo(x2, y2);
-            context.lineTo(x3, y3);
-            context.lineTo(x4, y4);
-            context.closePath();
-
-            // We 'cut out'/erase the highlight rectangle before drawing
-            // the actual highlight rectangle to prevent overlapping
-            // transparency
-            context.save();
-            context.globalCompositeOperation = 'destination-out';
-            context.fillStyle = HIGHLIGHT_ERASE_FILL_STYLE;
-            context.fill();
-            context.restore();
-
-            // Draw actual highlight rectangle
-            context.fill();
-        });
+        switch (this.state) {
+            case HIGHLIGHT_STATE_PENDING:
+                this.dialog.show();
+                break;
+            case HIGHLIGHT_STATE_INACTIVE:
+                this.dialog.hide();
+                this._draw(HIGHLIGHT_NORMAL_FILL_STYLE);
+                break;
+            case HIGHLIGHT_STATE_HOVER:
+                this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
+                break;
+            case HIGHLIGHT_STATE_ACTIVE:
+                this.dialog.show();
+                this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -87,27 +74,7 @@ class HighlightAnnotationThread extends AnnotationThread {
      * @returns {void}
      */
     hide() {
-        const context = this._getContext();
-        const quadPoints = this.location.quadPoints;
-        const pageHeight = this._getPageEl().getBoundingClientRect().height;
-        quadPoints.forEach((quadPoint) => {
-            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this.annotatedElement));
-            const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
-
-            context.beginPath();
-            context.moveTo(x1, y1);
-            context.lineTo(x2, y2);
-            context.lineTo(x3, y3);
-            context.lineTo(x4, y4);
-            context.closePath();
-
-            // We erase the highlight rectangle
-            context.save();
-            context.globalCompositeOperation = 'destination-out';
-            context.fillStyle = HIGHLIGHT_ERASE_FILL_STYLE;
-            context.fill();
-            context.restore();
-        });
+        this._draw(HIGHLIGHT_ERASE_FILL_STYLE);
     }
 
     /**
@@ -117,19 +84,7 @@ class HighlightAnnotationThread extends AnnotationThread {
      */
     reset() {
         this.state = HIGHLIGHT_STATE_INACTIVE;
-        this.dialog.hide();
         this.show();
-    }
-
-    /**
-     * Shows the appropriate annotation dialog for this thread.
-     *
-     * @returns {void}
-     */
-    showDialog() {
-        if (this.dialog) {
-            this.dialog.show();
-        }
     }
 
     /**
@@ -224,7 +179,7 @@ class HighlightAnnotationThread extends AnnotationThread {
             this.state = HIGHLIGHT_STATE_INACTIVE;
         }
 
-        this.dialog = new HighlightAnnotationDialog({
+        this.dialog = new HighlightDialog({
             annotatedElement: this.annotatedElement,
             annotations: this.annotations,
             location: this.location
@@ -259,6 +214,49 @@ class HighlightAnnotationThread extends AnnotationThread {
     _unbindCustomListenersOnDialog() {
         this.removeAllListeners(['annotationcreate']);
         this.removeAllListeners(['annotationdelete']);
+    }
+
+    /**
+     * Draws the highlight with the specified fill style.
+     *
+     * @param {String} fillStyle RGBA fill style
+     * @returns {void}
+     * @private
+     */
+    _draw(fillStyle) {
+        const context = this._getContext();
+        if (!context) {
+            return;
+        }
+
+        const quadPoints = this.location.quadPoints;
+        const pageHeight = this._getPageEl().getBoundingClientRect().height;
+        quadPoints.forEach((quadPoint) => {
+            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this.annotatedElement));
+            const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
+
+            context.fillStyle = fillStyle;
+            context.beginPath();
+            context.moveTo(x1, y1);
+            context.lineTo(x2, y2);
+            context.lineTo(x3, y3);
+            context.lineTo(x4, y4);
+            context.closePath();
+
+            // We 'cut out'/erase the highlight rectangle before drawing
+            // the actual highlight rectangle to prevent overlapping
+            // transparency
+            context.save();
+            context.globalCompositeOperation = 'destination-out';
+            context.fillStyle = HIGHLIGHT_ERASE_FILL_STYLE;
+            context.fill();
+            context.restore();
+
+            // Draw actual highlight rectangle if needed
+            if (fillStyle !== HIGHLIGHT_ERASE_FILL_STYLE) {
+                context.fill();
+            }
+        });
     }
 
     /**
@@ -301,12 +299,16 @@ class HighlightAnnotationThread extends AnnotationThread {
     /**
      * Gets the context this highlight should be drawn on.
      *
-     * @returns {RenderingContext} Context
+     * @returns {RenderingContext|null} Context
      * @private
      */
     _getContext() {
         // Create annotation layer if one does not exist (e.g. first load or page resize)
         const pageEl = this._getPageEl();
+        if (!pageEl) {
+            return null;
+        }
+
         let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
         if (!annotationLayerEl) {
             annotationLayerEl = document.createElement('canvas');
@@ -323,4 +325,4 @@ class HighlightAnnotationThread extends AnnotationThread {
     }
 }
 
-export default HighlightAnnotationThread;
+export default HighlightThread;

@@ -7,7 +7,7 @@
 import autobind from 'autobind-decorator';
 import Annotator from '../annotation/annotator';
 import Browser from '../browser';
-import HighlightAnnotationThread from './highlight-annotation-thread';
+import HighlightThread from './highlight-thread';
 import rangy from 'rangy';
 /* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
@@ -90,12 +90,6 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMousedownHandler(event) {
-        // Do nothing if the mousedown was outside a page or a dialog is open
-        const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
-        if (page === -1) {
-            return;
-        }
-
         Object.keys(this.threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
                 thread.mousedownHandler(event);
@@ -133,19 +127,16 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMouseupHandler(event) {
-        // Do nothing if there is no selection
-        if (!annotatorUtil.isSelectionPresent()) {
+        const selectionPresent = annotatorUtil.isSelectionPresent();
+        const highlightsPending = this._getPendingHighlightThreads().length > 0;
+        if (!selectionPresent || highlightsPending) {
             return;
         }
 
-        const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(event.target);
-        if (!pageEl) {
-            return;
-        }
-
-        // Do nothing if there is another pending highlight
-        if (this._getPendingHighlightThreads().length > 0) {
-            return;
+        let { pageEl, page } = annotatorUtil.getPageElAndPageNumber(event.target);
+        if (page === -1) {
+            // The ( .. ) around assignment is required syntax
+            ({ pageEl, page } = annotatorUtil.getPageElAndPageNumber(window.getSelection().anchorNode));
         }
 
         // Use Rangy to save the current selection because using the
@@ -160,22 +151,19 @@ class DocAnnotator extends Annotator {
         // Get quad points for each highlight element
         const quadPoints = [];
         highlightEls.forEach((element) => {
-            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, this.getScale()));
+            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, annotatorUtil.getScale(this.annotatedElement)));
         });
 
-        // Restore selection and remove rangy highlight
+        // Remove rangy highlight and restore selection
         this._removeRangyHighlight(highlight);
         rangy.restoreSelection(savedSelection);
 
-        // Create annotation thread
+        // Create and show pending annotation thread
         const thread = this._createAnnotationThread([], {
             page,
             quadPoints
         }, HIGHLIGHT_ANNOTATION_TYPE);
-        this._addThreadToMap(thread);
-
-        // Show 'add' button
-        thread.showDialog();
+        thread.show();
 
         // Bind events on thread
         this._bindCustomListenersOnThread(thread);
@@ -185,19 +173,19 @@ class DocAnnotator extends Annotator {
      * Returns the highlight threads on the specified page.
      *
      * @param {Number} page Page to get highlight threads for
-     * @returns {HighlightAnnotationThread[]} Highlight annotation threads
+     * @returns {HighlightThread[]} Highlight annotation threads
      * @private
      */
     _getHighlightThreadsOnPage(page) {
         const threads = this.threads[page] || [];
-        return threads.filter((thread) => thread instanceof HighlightAnnotationThread);
+        return threads.filter((thread) => thread instanceof HighlightThread);
     }
 
     /**
      * Returns pending highlight threads.
      *
      * @param {Number} page Page to get highlight threads for
-     * @returns {HighlightAnnotationThread[]} Pending highlight threads.
+     * @returns {HighlightThread[]} Pending highlight threads.
      * @private
      */
     _getPendingHighlightThreads() {
@@ -255,7 +243,8 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Creates a new HighlightAnnotationThread.
+     * Creates the proper type of thread, adds it to in-memory map, and returns
+     * it.
      *
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
@@ -265,7 +254,7 @@ class DocAnnotator extends Annotator {
      */
     _createAnnotationThread(annotations, location, type) {
         if (type === HIGHLIGHT_ANNOTATION_TYPE) {
-            return new HighlightAnnotationThread({
+            const highlightThread = new HighlightThread({
                 annotatedElement: this.annotatedElement,
                 annotations,
                 annotationService: this.annotationService,
@@ -273,6 +262,8 @@ class DocAnnotator extends Annotator {
                 location,
                 user: this.user
             });
+            this._addThreadToMap(highlightThread);
+            return highlightThread;
         }
 
         return super._createAnnotationThread(annotations, location, type);

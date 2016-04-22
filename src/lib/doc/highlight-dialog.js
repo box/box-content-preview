@@ -1,6 +1,6 @@
 /**
- * @fileoverview The highlight annotation dialog class manages a simple dialog
- * for highlight threads that contains either an add or delete button and
+ * @fileoverview The highlight dialog class manages a simple dialog for
+ * highlight threads that contains either an add or delete button and
  * broadcasts events.
  * @author tjin
  */
@@ -19,7 +19,7 @@ const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
 const MOUSEDOWN = Browser.isMobile() ? 'touchstart' : 'mousedown';
 
 @autobind
-class HighlightAnnotationDialog extends AnnotationDialog {
+class HighlightDialog extends AnnotationDialog {
 
     //--------------------------------------------------------------------------
     // Public
@@ -215,4 +215,4 @@ class HighlightAnnotationDialog extends AnnotationDialog {
     }
 }
 
-export default HighlightAnnotationDialog;
+export default HighlightDialog;

@@ -120,15 +120,6 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Gets the zoom scale.
-     *
-     * @returns {Number} Scale
-     */
-    getScale() {
-        return parseFloat(this.annotatedElement.getAttribute('data-scale')) || 1;
-    }
-
-    /**
      * Toggles point annotation mode on and off. When point annotation mode is
      * on, clicking an area will create a point annotation at that location.
      *
@@ -222,9 +213,7 @@ class Annotator extends EventEmitter {
                     const annotations = threadMap[threadID];
                     const firstAnnotation = annotations[0];
                     const location = firstAnnotation.location;
-
                     const thread = this._createAnnotationThread(annotations, location, firstAnnotation.type);
-                    this._addThreadToMap(thread);
 
                     // Bind events on thread
                     this._bindCustomListenersOnThread(thread);
@@ -356,13 +345,12 @@ class Annotator extends EventEmitter {
         // Store coordinates at 100% scale in PDF space in PDF units
         const pageDimensions = pageEl.getBoundingClientRect();
         const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageDimensions.top];
-        const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, this.getScale());
+        const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, annotatorUtil.getScale(this.annotatedElement));
         const [x, y] = pdfCoordinates;
         const location = { x, y, page };
 
         // Create new thread with no annotations, show indicator, and show dialog
         const thread = this._createAnnotationThread([], location, POINT_ANNOTATION_TYPE);
-        this._addThreadToMap(thread);
 
         // Show point indicator and create annotation dialog
         thread.show();
@@ -472,6 +460,29 @@ class Annotator extends EventEmitter {
     }
 
     /**
+     * Creates a new AnnotationThread, adds it to in-memory map, and returns it.
+     *
+     * @param {Annotation[]} annotations Annotations in thread
+     * @param {Object} location Location object
+     * @param {String} type Annotation type
+     * @returns {AnnotationThread} Created annotation thread
+     * @private
+     */
+    /* eslint-disable no-unused-vars */
+    _createAnnotationThread(annotations, location, type /* may be used by other annotators */) {
+        const thread = new AnnotationThread({
+            annotatedElement: this.annotatedElement,
+            annotations,
+            annotationService: this.annotationService,
+            fileVersionID: this.fileVersionID,
+            location,
+            user: this.user
+        });
+        this._addThreadToMap(thread);
+        return thread;
+    }
+
+    /**
      * Adds thread to in-memory map.
      *
      * @param {AnnotationThread} thread Thread to add
@@ -483,27 +494,6 @@ class Annotator extends EventEmitter {
         const page = thread.location.page || 1;
         this.threads[page] = this.threads[page] || [];
         this.threads[page].push(thread);
-    }
-
-    /**
-     * Creates a new AnnotationThread.
-     *
-     * @param {Annotation[]} annotations Annotations in thread
-     * @param {Object} location Location object
-     * @param {String} type Annotation type
-     * @returns {AnnotationThread} Created annotation thread
-     * @private
-     */
-    /* eslint-disable no-unused-vars */
-    _createAnnotationThread(annotations, location, type /* may be used by other annotators */) {
-        return new AnnotationThread({
-            annotatedElement: this.annotatedElement,
-            annotations,
-            annotationService: this.annotationService,
-            fileVersionID: this.fileVersionID,
-            location,
-            user: this.user
-        });
     }
 }
 

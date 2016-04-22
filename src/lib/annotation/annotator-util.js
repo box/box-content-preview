@@ -155,7 +155,7 @@ export function getHighlightAndHighlightEls(highlighter) {
     // spans around the selection that we can then turn into quadpoints
     const highlight = highlighter.highlightSelection('rangy-highlight')[0];
     const highlightEls = [].slice.call(document.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
-        return element.tagName && element.tagName === 'SPAN';
+        return element.tagName && element.tagName === 'SPAN' && element.textContent.trim() !== '';
     });
 
     return {
