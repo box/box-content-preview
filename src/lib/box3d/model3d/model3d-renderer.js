@@ -120,6 +120,10 @@ class Model3dRenderer extends Box3DRenderer {
         this.registerMissingEvents(this.box3d.resourceLoader);
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
 
+        // Set MatCap texture for the 'Shape' render mode
+        const renderModes = this.box3d.getApplication().componentRegistry.getFirstByScriptId('render_modes');
+        renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
+
         return new Promise((resolve, reject) => {
             loader
                 .loadFromUrl(fileUrl, { withCredentials: false })

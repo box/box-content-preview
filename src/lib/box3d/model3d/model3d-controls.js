@@ -27,6 +27,12 @@ const RENDER_MODES = {
         baseClass: 'normals',
         el: null
     },
+    shape: {
+        name: 'Shape',
+        key: 'shape',
+        baseClass: 'normals',
+        el: null
+    },
     wireframe: {
         name: 'Wireframe',
         key: 'wireframe',

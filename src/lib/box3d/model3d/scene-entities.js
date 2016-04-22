@@ -100,6 +100,28 @@ function sceneEntities(prefix) {
             }
         }
     }, {
+        id: 'MAT_CAP_TEX',
+        name: 'Mat Cap Texture',
+        type: 'texture2D',
+        properties: {
+            isLocal: true,
+            originalWidth: 256,
+            originalHeight: 256,
+            stream: false,
+            uMapping: 'clamp',
+            vMapping: 'clamp'
+        },
+        resources: [{
+            path: `${prefix}third-party/model3d/matcap.png`,
+            contentType: 'image/png',
+            contentEncoding: 'identity',
+            properties: {
+                width: 256,
+                height: 256,
+                compression: 'none'
+            }
+        }]
+    }, {
         id: 'HDR_ENV_MAP_0',
         name: 'HDR Env Map 0',
         type: 'texture2D',
