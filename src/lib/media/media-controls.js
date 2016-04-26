@@ -9,10 +9,10 @@ const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
 const PLAYING_CLASS = 'box-preview-media-is-playing';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 const VOLUME_LEVEL_CLASS_NAMES = [
-    'box-preview-media-volume-icon-mute',
-    'box-preview-media-volume-icon-low',
-    'box-preview-media-volume-icon-medium',
-    'box-preview-media-volume-icon-high'
+    'box-preview-media-volume-icon-is-mute',
+    'box-preview-media-volume-icon-is-low',
+    'box-preview-media-volume-icon-is-medium',
+    'box-preview-media-volume-icon-is-high'
 ];
 const CRAWLER = '<div class="box-preview-media-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
 
@@ -38,15 +38,15 @@ class MediaControls extends EventEmitter {
         this.timeScrubberEl = this.wrapperEl.querySelector('.box-preview-media-time-scrubber-container');
         this.volScrubberEl = this.wrapperEl.querySelector('.box-preview-media-volume-scrubber-container');
 
-        this.playButtonEl = this.wrapperEl.querySelector('.box-preview-media-play-icon');
+        this.playButtonEl = this.wrapperEl.querySelector('.box-preview-media-playpause-icon');
 
         this.volButtonEl = this.wrapperEl.querySelector('.box-preview-media-controls-volume-control');
-        this.volLevelButtonEl = this.wrapperEl.querySelector('.box-preview-media-volume-level-icon');
+        this.volLevelButtonEl = this.wrapperEl.querySelector('.box-preview-media-volume-icon');
 
         this.timecodeEl = this.wrapperEl.querySelector('.box-preview-media-controls-timecode');
         this.durationEl = this.wrapperEl.querySelector('.box-preview-media-controls-duration');
 
-        this.fullscreenButtonEl = this.wrapperEl.querySelector('.box-preview-media-expand-icon');
+        this.fullscreenButtonEl = this.wrapperEl.querySelector('.box-preview-media-fullscreen-icon');
         this.settingsButtonEl = this.wrapperEl.querySelector('.box-preview-media-gear-icon');
 
         this.setupSettings();
@@ -110,7 +110,6 @@ class MediaControls extends EventEmitter {
         this.volScrubberEl = undefined;
         this.playButtonEl = undefined;
         this.volButtonEl = undefined;
-        this.volLevelButtonEl = undefined;
         this.timecodeEl = undefined;
         this.durationEl = undefined;
         this.fullscreenButtonEl = undefined;

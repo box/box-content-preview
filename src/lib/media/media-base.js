@@ -91,6 +91,7 @@ class MediaBase extends Base {
         if (this.destroyed) {
             return;
         }
+        this.handleVolume();
         this.loaded = true;
         this.emit('load');
 

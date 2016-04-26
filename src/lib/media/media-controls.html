@@ -1,18 +1,66 @@
 <div class="box-preview-media-controls-wrapper">
     <div class="box-preview-media-time-scrubber-container"></div>
     <div class="box-preview-media-controls-container">
-        <button class="box-preview-media-controls-btn box-preview-media-play-icon"><span class="accessibility-hidden">Play</span></button>
+        <button class="box-preview-media-controls-btn box-preview-media-playpause-icon">
+            <svg class="box-preview-media-play-icon" fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" aria-labelledby="title">
+                <title>Play</title>
+                <path d="M8 5v14l11-7z"/>
+                <path d="M0 0h24v24H0z" fill="none"/>
+            </svg>
+            <svg class="box-preview-media-pause-icon" fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" aria-labelledby="title">
+                <title>Pause</title>
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                <path d="M0 0h24v24H0z" fill="none"/>
+            </svg>
+        </button>
         <div class="box-preview-media-controls-volume-wrapper">
             <div class="box-preview-media-controls-volume-control">
-                <button class="box-preview-media-controls-btn box-preview-media-volume-icon"><span class="accessibility-hidden">Volume Rocker</span></button>
-                <button class="box-preview-media-controls-btn box-preview-media-volume-level-icon box-preview-media-volume-icon-medium"><span class="accessibility-hidden">Volume Rocker Level</span></button>
+                <button class="box-preview-media-controls-btn box-preview-media-volume-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 5 24 24" width="24" height="24">
+                        <path fill="#FFF" d="M0 14v6h4l5 5V9l-5 5H0z" />
+                        <path fill="none" d="M-3 5h24v24H-3V5z" />
+                    </svg>
+                    <svg class="box-preview-media-volume-icon-mute" xmlns="http://www.w3.org/2000/svg" viewBox="-3 5 24 24" width="24" height="24">
+                        <path fill="none" d="M-3 5h24v24H-3V5z" />
+                        <path fill="#fff" d="M15.5 20.2l-2-2-2 2-1.2-1.2 2-2-2-2 1.2-1.2 2 2 2-2 1.2 1.2-2 2 2 2" />
+                    </svg>
+                    <svg class="box-preview-media-volume-icon-medium" xmlns="http://www.w3.org/2000/svg" viewBox="-3 5 24 24" width="24" height="24">
+                        <path fill="#FFF" d="M13.5 17c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4z" />
+                        <path fill="none" d="M-3 5h24v24H-3V5z" />
+                    </svg>
+                    <svg class="box-preview-media-volume-icon-high" xmlns="http://www.w3.org/2000/svg" viewBox="-3 5 24 24" width="24" height="24">
+                        <path fill="#FFF" d="M13.5 17c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM11 8.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.9-5 6.7v2.1c4-.9 7-4.5 7-8.8s-3-7.9-7-8.8z" />
+                        <path fill="none" d="M-3 5h24v24H-3V5z" />
+                    </svg>
+                </button>
             </div>
             <div class="box-preview-media-volume-scrubber-container"></div>
         </div>
         <label class="box-preview-media-controls-label box-preview-media-controls-timecode">00:00</label>
         <span class="box-preview-media-controls-label">&nbsp;&#47;&nbsp;</span>
         <label class="box-preview-media-controls-label box-preview-media-controls-duration">00:00</label>
-        <button class="box-preview-media-controls-btn box-preview-media-expand-icon"><span class="accessibility-hidden">Fullscreen</span></button>
-        <button class="box-preview-media-controls-btn box-preview-media-gear-icon"><span class="box-preview-media-controls-hd">HD</span></button>
+        <button class="box-preview-media-controls-btn box-preview-media-fullscreen-icon">
+            <svg class="box-preview-enter-fullscreen-icon" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-labelledby="title">
+                <title>Enter Full Screen</title>
+                <g fill="none" fill-rule="evenodd">
+                    <path d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3h-6zM3 3v6l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3zm11.41 12.83l2.89 2.87L15 21h6v-6l-2.3 2.3-2.87-2.89-1.42 1.42zM5.3 17.3L3 15v6h6l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3z" fill="#fff" />
+                    <path d="M0 0h24v24H0z" />
+                </g>
+            </svg>
+            <svg class="box-preview-exit-fullscreen-icon" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-labelledby="title">
+                <title>Exit Full Screen</title>
+                <g fill="none" fill-rule="evenodd">
+                    <path d="M0 0h24v24H0z" />
+                    <path d="M19.58 3l-2.87 2.89-2.3-2.3v6h6l-2.3-2.3L21 4.42 19.58 3zM4.42 3L3 4.42l2.89 2.87-2.3 2.3h6v-6l-2.3 2.3L4.42 3zm9.99 11.41v6l2.3-2.3L19.58 21 21 19.58l-2.89-2.87 2.3-2.3h-6zm-10.82 0l2.3 2.3L3 19.58 4.42 21l2.87-2.89 2.3 2.3v-6h-6z" fill="#fff" />
+                </g>
+            </svg>
+        </button>
+        <button class="box-preview-media-controls-btn box-preview-media-gear-icon">
+            <svg version="1.1" width="24" height="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve" aria-labelledby="title">
+                <title>Settings icon</title>
+                <path fill="#fff" d="M19.4,13c0-0.3,0.1-0.6,0.1-1s0-0.7-0.1-1l2.1-1.6c0.2-0.1,0.2-0.4,0.1-0.6l-2-3.5c-0.1-0.2-0.4-0.3-0.6-0.2l-2.5,1 c-0.5-0.4-1.1-0.7-1.7-1l-0.4-2.7C14.5,2.2,14.2,2,14,2h-4C9.8,2,9.5,2.2,9.5,2.4L9.1,5.1C8.5,5.3,8,5.7,7.4,6.1l-2.5-1 C4.7,5,4.5,5.1,4.3,5.3l-2,3.5C2.2,8.9,2.3,9.2,2.5,9.4L4.6,11c0,0.3-0.1,0.6-0.1,1s0,0.7,0.1,1l-2.1,1.6c-0.2,0.1-0.2,0.4-0.1,0.6 l2,3.5C4.5,18.9,4.7,19,5,18.9l2.5-1c0.5,0.4,1.1,0.7,1.7,1l0.4,2.6c0,0.2,0.2,0.4,0.5,0.4h4c0.2,0,0.5-0.2,0.5-0.4l0.4-2.6 c0.6-0.2,1.2-0.6,1.7-1l2.5,1c0.2,0.1,0.5,0,0.6-0.2l2-3.5c0.1-0.2,0.1-0.5-0.1-0.6L19.4,13z M12,15.5c-1.9,0-3.5-1.6-3.5-3.5 s1.6-3.5,3.5-3.5s3.5,1.6,3.5,3.5S13.9,15.5,12,15.5z"></path>
+            </svg>
+            <span class="box-preview-media-controls-hd">HD</span>
+        </button>
     </div>
 </div>

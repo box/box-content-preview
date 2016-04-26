@@ -19,15 +19,15 @@ class VideoBase extends MediaBase {
     constructor(container, options) {
         super(container, options);
 
+        // Video element
+        this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
+        this.mediaEl.setAttribute('preload', 'auto');
+
         // Play button
         this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('div'));
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
         this.playButtonEl.innerHTML = PLAY_ENTITY;
-
-        // Video element
-        this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
-        this.mediaEl.setAttribute('preload', 'auto');
     }
 
     /**
