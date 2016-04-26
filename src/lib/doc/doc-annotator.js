@@ -203,11 +203,22 @@ class DocAnnotator extends Annotator {
         // mousedown activated some highlight, and then informs the other
         // keydown handlers to not activate
         let consumed = false;
+        const activeThreads = [];
 
         Object.keys(this.threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
-                consumed = thread.mousedownHandler(event, consumed) || consumed;
+                const threadActive = thread.onMousedown(event, consumed);
+                if (threadActive) {
+                    activeThreads.push(thread);
+                }
+
+                consumed = consumed || threadActive;
             });
+        });
+
+        // Show active threads last
+        activeThreads.forEach((thread) => {
+            thread.show();
         });
     }
 
@@ -221,12 +232,22 @@ class DocAnnotator extends Annotator {
     _highlightMousemoveHandler() {
         if (!this.throttledHighlightMousemoveHandler) {
             this.throttledHighlightMousemoveHandler = throttle((event) => {
+                const hoverThreads = [];
                 const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
                 if (page !== -1) {
                     this._getHighlightThreadsOnPage(page).forEach((thread) => {
-                        thread.mousemoveHandler(event);
+                        if (thread.onMousemove(event)) {
+                            hoverThreads.push(thread);
+                        }
                     });
                 }
+
+                // We delay drawing hover threads with a darker color until the
+                // end so no overlapping inactive thread draws the overlapped
+                // portion as 'inactive'
+                hoverThreads.forEach((thread) => {
+                    thread.show();
+                });
             }, MOUSEMOVE_THROTTLE);
         }
 

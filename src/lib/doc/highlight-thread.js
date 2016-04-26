@@ -110,31 +110,31 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Mousedown handler for thread. If click is inside this highlight, set the
-     * state to be active, rerender, and show the delete highlight button. If
-     * not, hide the delete highlight button, set state to inactive, and
-     * rerender. The 'consumed' param tracks whether or not some other mousedown
-     * handler activated a highlight. If not, normal behavior occurs. If true,
-     * don't activate the highlight when normally it should be activated.
+     * state to be active, and return true. If not, hide the delete highlight
+     * button, set state to inactive, and reset. The 'consumed' param tracks
+     * whether or not some other mousedown handler activated a highlight. If
+     * not, normal behavior occurs. If true, don't set the highlight to active
+     * when normally it should be activated. We don't draw active highlights
+     * in this method since we want to delay that drawing until all inactive
+     * threads have been reset.
      *
      * @param {Event} event Mouse event
      * @param {Boolena} consumed Whether event previously activated another
      * highlight
-     * @returns {Boolean} Whether handler activates a highlight
+     * @returns {Boolean} Whether mousedown was in a non-pending highlight
      */
-    mousedownHandler(event, consumed) {
-        // Pending check should be first - if we clicked and highlight is still
-        // pending, destroy it
+    onMousedown(event, consumed) {
+        // Pending check should be first - destroy pending highlights on click
         if (this.state === HIGHLIGHT_STATE_PENDING) {
             this.destroy();
 
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
         } else if (this.state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event)) {
-            // If check is moved inside the block since we don't want to
-            // unnecessarily reset highlights
+            // Consumed check is moved inside the if block since we don't want
+            // to unnecessarily reset highlights
             if (!consumed) {
                 this.state = HIGHLIGHT_STATE_ACTIVE;
-                this.show();
                 return true;
             }
         // If this highlight was previously active and we clicked out of it, reset
@@ -147,25 +147,28 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Mousemove handler for thread. If mouse is inside this highlight, set
-     * state to be hover and rerender. If not, set state to be inactive and
-     * rerender.
+     * state to be hover and return true. If not, set state to be inactive,
+     * and reset. We don't draw hovered highlights in this method since we want
+     * to delay that drawing until all inactive threads have been reset.
      *
      * @param {Event} event Mouse event
-     * @returns {void}
+     * @returns {Boolean} Whether mousemove was in a non-pending highlight
      */
-    mousemoveHandler(event) {
+    onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
         if (this.state === HIGHLIGHT_STATE_PENDING) {
-            return;
+            return false;
         }
 
         // If state is active, do not override
         if (this.state !== HIGHLIGHT_STATE_ACTIVE && this._isInHighlight(event)) {
             this.state = HIGHLIGHT_STATE_HOVER;
-            this.show();
+            return true;
         } else if (this.state === HIGHLIGHT_STATE_HOVER) {
             this.reset();
         }
+
+        return false;
     }
 
     //--------------------------------------------------------------------------
