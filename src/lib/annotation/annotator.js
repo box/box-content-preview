@@ -6,7 +6,7 @@
  */
 
 import autobind from 'autobind-decorator';
-import AnnotationService from './annotation-service';
+import LocalStorageAnnotationService from './localstorage-annotation-service';
 import AnnotationThread from './annotation-thread';
 import EventEmitter from 'events';
 import throttle from 'lodash.throttle';
@@ -37,7 +37,7 @@ class Annotator extends EventEmitter {
      *
      * @typedef {Object} AnnotatorData
      * @property {HTMLElement} annotatedElement HTML element to annotate on
-     * @property {AnnotationService} [annotationService] Annotations CRUD service
+     * @property {AnnotationService|LocalStorageAnnotationService} [annotationService] Annotations CRUD service
      * @property {String} fileVersionID File version ID
      * @property {Object} [user] User creating the thread
      */
@@ -55,7 +55,7 @@ class Annotator extends EventEmitter {
     constructor(data) {
         super();
         this.annotatedElement = data.annotatedElement;
-        this.annotationService = data.annotationService || new AnnotationService();
+        this.annotationService = data.annotationService || new LocalStorageAnnotationService();
         this.fileVersionID = data.fileVersionID;
         this.user = data.user || ANONYMOUS_USER;
     }
@@ -204,14 +204,13 @@ class Annotator extends EventEmitter {
     _fetchAnnotations() {
         // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
 
-        return this.annotationService.getThreadMapForFileVersionID(this.fileVersionID)
+        return this.annotationService.getThreadMap(this.fileVersionID)
             .then((threadMap) => {
                 // Generate map of page to threads
                 Object.keys(threadMap).forEach((threadID) => {
                     const annotations = threadMap[threadID];
                     const firstAnnotation = annotations[0];
-                    const location = firstAnnotation.location;
-                    const thread = this._createAnnotationThread(annotations, location, firstAnnotation.type);
+                    const thread = this._createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
 
                     // Bind events on thread
                     this._bindCustomListenersOnThread(thread);

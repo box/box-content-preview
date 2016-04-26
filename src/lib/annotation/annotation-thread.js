@@ -29,7 +29,7 @@ class AnnotationThread extends EventEmitter {
      * @property {HTMLElement} annotatedElement HTML element being annotated on
      * @property {Annotation[]} [annotations] Annotations in thread - none if
      * this is a new thread
-     * @property {AnnotationService} annotationService Annotations CRUD service
+     * @property {LocalStorageAnnotationService} annotationService Annotations CRUD service
      * @property {String} fileVersionID File version ID
      * @property {Object} location Location object
      * @property {String} threadID Thread ID

@@ -199,8 +199,10 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      * @private
      */
-    _highlightMousedownHandler() {
+    _highlightMousedownHandler(event) {
         this.didMouseMove = false;
+        this.mouseX = event.clientX;
+        this.mouseY = event.clientY;
 
         Object.keys(this.threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
@@ -219,7 +221,12 @@ class DocAnnotator extends Annotator {
     _highlightMousemoveHandler() {
         if (!this.throttledHighlightMousemoveHandler) {
             this.throttledHighlightMousemoveHandler = throttle((event) => {
-                this.didMouseMove = true;
+                // Ignore small mouse movements when figuring out if a mousedown
+                // and mouseup was a click
+                if (Math.abs(event.clientX - this.mouseX) > 5 ||
+                    Math.abs(event.clientY - this.mouseY) > 5) {
+                    this.didMouseMove = true;
+                }
 
                 const delayThreads = [];
                 const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
@@ -251,7 +258,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMouseupHandler(event) {
-        if (this.didMouseMove) {
+        if (this.didMouseMove || this._isInHighlightMode()) {
             this._highlightCreateHandler(event);
         } else {
             this._highlightClickHandler(event);
