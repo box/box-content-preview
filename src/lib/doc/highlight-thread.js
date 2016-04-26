@@ -109,39 +109,43 @@ class HighlightThread extends AnnotationThread {
     }
 
     /**
-     * Mousedown handler for thread. If click is inside this highlight, set the
+     * Mousedown handler for thread. Deletes this thread if it is still pending.
+     *
+     * @returns {void}
+     */
+    onMousedown() {
+        // Destroy pending highlights on mousedown
+        if (this.state === HIGHLIGHT_STATE_PENDING) {
+            this.destroy();
+        }
+    }
+
+    /**
+     * Click handler for thread. If click is inside this highlight, set the
      * state to be active, and return true. If not, hide the delete highlight
      * button, set state to inactive, and reset. The 'consumed' param tracks
-     * whether or not some other mousedown handler activated a highlight. If
+     * whether or not some other click handler activated a highlight. If
      * not, normal behavior occurs. If true, don't set the highlight to active
      * when normally it should be activated. We don't draw active highlights
      * in this method since we want to delay that drawing until all inactive
      * threads have been reset.
      *
      * @param {Event} event Mouse event
-     * @param {Boolena} consumed Whether event previously activated another
+     * @param {Boolean} consumed Whether event previously activated another
      * highlight
-     * @returns {Boolean} Whether mousedown was in a non-pending highlight
+     * @returns {Boolean} Whether click was in a non-pending highlight
      */
-    onMousedown(event, consumed) {
-        // Pending check should be first - destroy pending highlights on click
-        if (this.state === HIGHLIGHT_STATE_PENDING) {
-            this.destroy();
-
+    onClick(event, consumed) {
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
-        } else if (this.state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event)) {
-            // Consumed check is moved inside the if block since we don't want
-            // to unnecessarily reset highlights
-            if (!consumed) {
-                this.state = HIGHLIGHT_STATE_ACTIVE;
-                return true;
-            }
-        // If this highlight was previously active and we clicked out of it, reset
-        } else if (this.state === HIGHLIGHT_STATE_ACTIVE) {
-            this.reset();
+        if (!consumed && (this.state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event))) {
+            this.state = HIGHLIGHT_STATE_ACTIVE;
+            return true;
         }
 
+        // If this highlight was previously active and we clicked out of it or
+        // a previous event already activated a highlight, reset
+        this.reset();
         return false;
     }
 
@@ -152,7 +156,7 @@ class HighlightThread extends AnnotationThread {
      * to delay that drawing until all inactive threads have been reset.
      *
      * @param {Event} event Mouse event
-     * @returns {Boolean} Whether mousemove was in a non-pending highlight
+     * @returns {Boolean} Whether we should delay drawing highlight
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
@@ -160,15 +164,21 @@ class HighlightThread extends AnnotationThread {
             return false;
         }
 
+        // Should delay if highlight is active or hovered
+        let delay = false;
+
         // If state is active, do not override
-        if (this.state !== HIGHLIGHT_STATE_ACTIVE && this._isInHighlight(event)) {
+        if (this.state === HIGHLIGHT_STATE_ACTIVE) {
+            delay = true;
+        // If mouse is over a non-active highlight, change state to hover
+        } else if (this._isInHighlight(event)) {
             this.state = HIGHLIGHT_STATE_HOVER;
-            return true;
-        } else if (this.state === HIGHLIGHT_STATE_HOVER) {
+            delay = true;
+        } else {
             this.reset();
         }
 
-        return false;
+        return delay;
     }
 
     //--------------------------------------------------------------------------
