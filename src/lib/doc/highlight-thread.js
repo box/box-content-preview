@@ -32,8 +32,6 @@ class HighlightThread extends AnnotationThread {
 
         if (this.state === HIGHLIGHT_STATE_PENDING) {
             window.getSelection().removeAllRanges();
-        } else {
-            this.hide();
         }
     }
 
@@ -114,13 +112,16 @@ class HighlightThread extends AnnotationThread {
      * Mousedown handler for thread. If click is inside this highlight, set the
      * state to be active, rerender, and show the delete highlight button. If
      * not, hide the delete highlight button, set state to inactive, and
-     * rerender.
-     *
+     * rerender. The 'consumed' param tracks whether or not some other mousedown
+     * handler activated a highlight. If not, normal behavior occurs. If true,
+     * don't activate the highlight when normally it should be activated.
      *
      * @param {Event} event Mouse event
-     * @returns {void}
+     * @param {Boolena} consumed Whether event previously activated another
+     * highlight
+     * @returns {Boolean} Whether handler activates a highlight
      */
-    mousedownHandler(event) {
+    mousedownHandler(event, consumed) {
         // Pending check should be first - if we clicked and highlight is still
         // pending, destroy it
         if (this.state === HIGHLIGHT_STATE_PENDING) {
@@ -129,13 +130,19 @@ class HighlightThread extends AnnotationThread {
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
         } else if (this.state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event)) {
-            this.state = HIGHLIGHT_STATE_ACTIVE;
-            this.show();
-            this.dialog.show();
+            // If check is moved inside the block since we don't want to
+            // unnecessarily reset highlights
+            if (!consumed) {
+                this.state = HIGHLIGHT_STATE_ACTIVE;
+                this.show();
+                return true;
+            }
         // If this highlight was previously active and we clicked out of it, reset
         } else if (this.state === HIGHLIGHT_STATE_ACTIVE) {
             this.reset();
         }
+
+        return false;
     }
 
     /**

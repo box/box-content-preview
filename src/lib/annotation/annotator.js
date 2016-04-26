@@ -126,7 +126,7 @@ class Annotator extends EventEmitter {
      */
     togglePointModeHandler() {
         // If in annotation mode, turn it off
-        if (this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)) {
+        if (this._isInPointMode()) {
             this.emit('pointmodeexit');
             this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             this._unbindPointModeListeners(); // Disable point mode
@@ -492,6 +492,16 @@ class Annotator extends EventEmitter {
         const page = thread.location.page || 1;
         this.threads[page] = this.threads[page] || [];
         this.threads[page].push(thread);
+    }
+
+    /**
+     * Returns whether or not annotator is in point mode.
+     *
+     * @returns {Boolean} Whether or not in point mode
+     * @private
+     */
+    _isInPointMode() {
+        return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
     }
 }
 

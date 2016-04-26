@@ -36,6 +36,39 @@ class DocAnnotator extends Annotator {
     //--------------------------------------------------------------------------
 
     /**
+     * [destructor]
+     *
+     * @returns {void}
+     */
+    destroy() {
+        super.destroy();
+        this.removeAllListeners('pointmodeenter');
+    }
+
+    /**
+     * Initializes annotator.
+     *
+     * @returns {void}
+     */
+    init() {
+        super.init();
+
+        // If in highlight mode and we enter point mode, turn off highlight mode
+        this.addListener('pointmodeenter', () => {
+            if (this._isInHighlightMode()) {
+                this.toggleHighlightModeHandler();
+            }
+        });
+
+        // If in point mode and we enter highlight mode, turn off point mode
+        this.addListener('highlightmodeenter', () => {
+            if (this._isInPointMode()) {
+                this.togglePointModeHandler();
+            }
+        });
+    }
+
+    /**
      * Toggles highlight annotation mode on and off. When highlight mode is on,
      * every selection becomes a highlight.
      *
@@ -43,7 +76,7 @@ class DocAnnotator extends Annotator {
      */
     toggleHighlightModeHandler() {
         // If in highlight mode, turn it off
-        if (this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE)) {
+        if (this._isInHighlightMode()) {
             this.emit('highlightmodeexit');
             this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
             this._unbindHighlightModeListeners(); // Disable highlight mode
@@ -165,9 +198,15 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMousedownHandler(event) {
+        // We use this to prevent a mousedown from activating two different
+        // highlights at the same time - this tracks whether a delegated
+        // mousedown activated some highlight, and then informs the other
+        // keydown handlers to not activate
+        let consumed = false;
+
         Object.keys(this.threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
-                thread.mousedownHandler(event);
+                consumed = thread.mousedownHandler(event, consumed) || consumed;
             });
         });
     }
@@ -350,6 +389,16 @@ class DocAnnotator extends Annotator {
         }
 
         return super._createAnnotationThread(annotations, location, type);
+    }
+
+    /**
+     * Returns whether or not annotator is in highlight mode.
+     *
+     * @returns {Boolean} Whether or not in highlight mode
+     * @private
+     */
+    _isInHighlightMode() {
+        return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
     }
 
     /**

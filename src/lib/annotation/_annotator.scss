@@ -213,6 +213,11 @@ $color-text-lighter: rgba(68, 68, 68, .5);
         position: absolute;
         right: 0;
         top: 0;
+
+        svg {
+            height: 18px;
+            width: 18px;
+        }
     }
 }
 
@@ -250,6 +255,10 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 //------------------------------------------------------------------------------
 // CSS for highlights
 //------------------------------------------------------------------------------
+.box-preview-highlight-annotation-mode .page {
+    cursor: text;
+}
+
 .box-preview-annotation-layer {
     bottom: 0;
     cursor: text;
