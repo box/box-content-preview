@@ -137,8 +137,7 @@ class DocBase extends Base {
 
         this.findPreviousButton = document.getElementById('findPrevious');
         this.findNextButton = document.getElementById('findNext');
-
-        this.findHighlightAll = document.getElementById('findHighlightAll');
+        this.findCloseButton = document.getElementById('findClose');
     }
 
     initFindController() {
@@ -154,7 +153,7 @@ class DocBase extends Base {
             findResultsCount: this.findResultsCount,
             findPreviousButton: this.findPreviousButton,
             findNextButton: this.findNextButton,
-            highlightAllCheckbox: this.findHighlightAll,
+            findCloseButton: this.findCloseButton,
             findController: this.findController
         });
 

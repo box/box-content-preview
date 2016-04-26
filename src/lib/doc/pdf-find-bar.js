@@ -6,6 +6,7 @@ const FindStates = {
     FIND_WRAPPED: 2,
     FIND_PENDING: 3
 };
+const matchSeparator = ' of ';
 
 @autobind
 class PDFFindBar {
@@ -23,7 +24,7 @@ class PDFFindBar {
         this.findStatusIcon = options.findStatusIcon || null;
         this.findPreviousButton = options.findPreviousButton || null;
         this.findNextButton = options.findNextButton || null;
-        this.highlightAll = options.highlightAllCheckbox || null;
+        this.findCloseButton = options.findCloseButton || null;
         this.findController = options.findController || null;
 
         if (this.findController === null) {
@@ -41,8 +42,7 @@ class PDFFindBar {
 
         self.findPreviousButton.addEventListener('click', this.findPreviousHandler);
         self.findNextButton.addEventListener('click', this.findNextHandler);
-
-        this.highlightAll.addEventListener('click', this.highlightAllHandler);
+        self.findCloseButton.addEventListener('click', this.close);
     }
 
     /**
@@ -83,15 +83,11 @@ class PDFFindBar {
         }
     }
 
-    highlightAllHandler() {
-        this.dispatchEvent('findhighlightallchange');
-    }
-
     dispatchEvent(type, findPrev) {
         const event = document.createEvent('CustomEvent');
         event.initCustomEvent(type, true, true, {
             query: this.findField.value,
-            highlightAll: this.highlightAll.checked,
+            highlightAll: true, // true by default
             findPrevious: findPrev
         });
 
@@ -137,11 +133,12 @@ class PDFFindBar {
             this.findResultsCount.classList.add('box-preview-is-invisible');
             return;
         }
+        this.currentMatch = 1;
 
         // Create the match counter
-        this.findResultsCount.textContent = matchCount.toLocaleString();
+        this.findResultsCount.textContent = this.currentMatch + matchSeparator + matchCount.toLocaleString();
 
-        // // Show the counter
+        // Show the counter
         this.findResultsCount.classList.remove('box-preview-is-invisible');
     }
 
