@@ -39,6 +39,7 @@ class Box3DRenderer extends EventEmitter {
         this.assets = [];
         this.vrEnabled = false;
         this.vrDevice = null;
+        this.box3d = null;
         this.boxSdk = boxSdk;
         this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
         this.on(EVENT_TRIGGER_RESIZE, this.handleOnResize);
@@ -118,6 +119,13 @@ class Box3DRenderer extends EventEmitter {
         return this.box3d ? this.box3d.assetRegistry.getAssetById('SCENE_ID') : null;
     }
 
+    /**
+     * Accessor for the runtime
+     * @returns {Object} The Box3DRuntime that belongs to this component
+     */
+    getBox3D() {
+        return this.box3d;
+    }
 
     /**
      * Initialize the Box3D engine.

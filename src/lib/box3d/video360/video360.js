@@ -34,7 +34,6 @@ class Video360 extends Dash {
 
         this.renderer = null;
         this.controls = null;
-        this.box3d = null;
         this.destroyed = false;
 
         this.mediaEl.style.display = 'none';
@@ -63,8 +62,8 @@ class Video360 extends Dash {
         this.destroyControls();
         if (this.renderer) {
             // Remove event listeners from box3d, if any on it
-            this.box3d.off('mouseDown', this.onCanvasMouseDown);
-            this.detachPlayToggleEvents();
+            this.renderer.getBox3D().off('mouseDown', this.onCanvasMouseDown);
+            this.renderer.getBox3D().off('mouseUp', this.onCanvasMouseUp);
 
             this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.destroy();
@@ -121,11 +120,10 @@ class Video360 extends Dash {
      * @returns {void}
      */
     create360Environment() {
-        this.box3d = this.renderer.box3d;
-        const scene = this.box3d.getEntityById('SCENE_ID');
+        const scene = this.renderer.getBox3D().getEntityById('SCENE_ID');
         const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
-        this.textureAsset = this.box3d.assetRegistry.createAsset({
+        this.textureAsset = this.renderer.getBox3D().assetRegistry.createAsset({
             id: 'VIDEO_TEX_ID',
             type: 'textureVideo',
             properties: {
@@ -144,7 +142,7 @@ class Video360 extends Dash {
             this.textureAsset.load(() => {
                 skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                 skybox.enable();
-                this.box3d.on('mouseDown', this.onCanvasMouseDown);
+                this.renderer.getBox3D().on('mouseDown', this.onCanvasMouseDown);
                 resolve();
             });
         });
@@ -196,8 +194,7 @@ class Video360 extends Dash {
      */
     @autobind
     onCanvasMouseDown() {
-        this.box3d.on('mouseUp', this.onCanvasMouseUp);
-        this.box3d.on('mouseMove', this.detachPlayToggleEvents);
+        this.renderer.getBox3D().once('mouseUp', this.onCanvasMouseUp);
     }
 
     /**
@@ -206,19 +203,12 @@ class Video360 extends Dash {
      */
     @autobind
     onCanvasMouseUp() {
-        this.detachPlayToggleEvents();
-        // We successfully clicked and can toggle video
-        this.togglePlay();
-    }
-
-    /**
-     * Detaches all events that handle togglePlay
-     * @returns {void}
-     */
-    @autobind
-    detachPlayToggleEvents() {
-        this.box3d.off('mouseUp', this.onCanvasMouseUp);
-        this.box3d.off('mouseMove', this.detachPlayToggleEvents);
+        const input = this.renderer.getInputController();
+        // Make sure the mouse hasn't moved (within mouse/touch buffer drag allowance)
+        if (!input.getPreviousMouseDragState() &&
+            !input.getPreviousTouchDragState()) {
+            this.togglePlay();
+        }
     }
 }
 

@@ -53,12 +53,7 @@ class Video360Loader extends Base360Loader {
 
         // Check to see if we support playback in this browser
         // https://bugs.webkit.org/show_bug.cgi?id=135379
-        let isSupportedBrowser = false;
-        BROWSERS_SUPPORTED.forEach((browserName) => {
-            if (browserName === name) {
-                isSupportedBrowser = true;
-            }
-        });
+        const isSupportedBrowser = BROWSERS_SUPPORTED.some((browserName) => browserName === name);
 
         // If a 360 viewer but isn't a valid browser
         if (!isSupportedBrowser && !!viewer) {
