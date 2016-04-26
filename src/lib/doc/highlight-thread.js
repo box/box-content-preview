@@ -32,8 +32,6 @@ class HighlightThread extends AnnotationThread {
 
         if (this.state === HIGHLIGHT_STATE_PENDING) {
             window.getSelection().removeAllRanges();
-        } else {
-            this.hide();
         }
     }
 
@@ -111,54 +109,76 @@ class HighlightThread extends AnnotationThread {
     }
 
     /**
-     * Mousedown handler for thread. If click is inside this highlight, set the
-     * state to be active, rerender, and show the delete highlight button. If
-     * not, hide the delete highlight button, set state to inactive, and
-     * rerender.
+     * Mousedown handler for thread. Deletes this thread if it is still pending.
      *
-     *
-     * @param {Event} event Mouse event
      * @returns {void}
      */
-    mousedownHandler(event) {
-        // Pending check should be first - if we clicked and highlight is still
-        // pending, destroy it
+    onMousedown() {
+        // Destroy pending highlights on mousedown
         if (this.state === HIGHLIGHT_STATE_PENDING) {
             this.destroy();
-
-        // If state is in hover, it means mouse is already over this highlight
-        // so we can skip the is in highlight calculation
-        } else if (this.state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event)) {
-            this.state = HIGHLIGHT_STATE_ACTIVE;
-            this.show();
-            this.dialog.show();
-        // If this highlight was previously active and we clicked out of it, reset
-        } else if (this.state === HIGHLIGHT_STATE_ACTIVE) {
-            this.reset();
         }
     }
 
     /**
-     * Mousemove handler for thread. If mouse is inside this highlight, set
-     * state to be hover and rerender. If not, set state to be inactive and
-     * rerender.
+     * Click handler for thread. If click is inside this highlight, set the
+     * state to be active, and return true. If not, hide the delete highlight
+     * button, set state to inactive, and reset. The 'consumed' param tracks
+     * whether or not some other click handler activated a highlight. If
+     * not, normal behavior occurs. If true, don't set the highlight to active
+     * when normally it should be activated. We don't draw active highlights
+     * in this method since we want to delay that drawing until all inactive
+     * threads have been reset.
      *
      * @param {Event} event Mouse event
-     * @returns {void}
+     * @param {Boolean} consumed Whether event previously activated another
+     * highlight
+     * @returns {Boolean} Whether click was in a non-pending highlight
      */
-    mousemoveHandler(event) {
-        // Pending check should be first - do nothing if highlight is pending
-        if (this.state === HIGHLIGHT_STATE_PENDING) {
-            return;
+    onClick(event, consumed) {
+        // If state is in hover, it means mouse is already over this highlight
+        // so we can skip the is in highlight calculation
+        if (!consumed && (this.state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event))) {
+            this.state = HIGHLIGHT_STATE_ACTIVE;
+            return true;
         }
 
+        // If this highlight was previously active and we clicked out of it or
+        // a previous event already activated a highlight, reset
+        this.reset();
+        return false;
+    }
+
+    /**
+     * Mousemove handler for thread. If mouse is inside this highlight, set
+     * state to be hover and return true. If not, set state to be inactive,
+     * and reset. We don't draw hovered highlights in this method since we want
+     * to delay that drawing until all inactive threads have been reset.
+     *
+     * @param {Event} event Mouse event
+     * @returns {Boolean} Whether we should delay drawing highlight
+     */
+    onMousemove(event) {
+        // Pending check should be first - do nothing if highlight is pending
+        if (this.state === HIGHLIGHT_STATE_PENDING) {
+            return false;
+        }
+
+        // Should delay if highlight is active or hovered
+        let delay = false;
+
         // If state is active, do not override
-        if (this.state !== HIGHLIGHT_STATE_ACTIVE && this._isInHighlight(event)) {
+        if (this.state === HIGHLIGHT_STATE_ACTIVE) {
+            delay = true;
+        // If mouse is over a non-active highlight, change state to hover
+        } else if (this._isInHighlight(event)) {
             this.state = HIGHLIGHT_STATE_HOVER;
-            this.show();
-        } else if (this.state === HIGHLIGHT_STATE_HOVER) {
+            delay = true;
+        } else {
             this.reset();
         }
+
+        return delay;
     }
 
     //--------------------------------------------------------------------------

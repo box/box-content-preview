@@ -12,7 +12,7 @@ import * as constants from './annotation-constants';
 import { decodeKeydown } from '../util.js';
 
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
-import { ICON_DELETE_SMALL } from '../icons/icons';
+import { ICON_DELETE } from '../icons/icons';
 
 const DIALOG_HIDE_TIMEOUT = 500;
 
@@ -217,7 +217,7 @@ class AnnotationDialog extends EventEmitter {
                 <div class="comment-date">${created}</div>
             </div>
             <div class="comment-text">${text}</div>
-            <button class="btn-plain delete-comment-btn" data-type="delete-btn">${ICON_DELETE_SMALL}</button>
+            <button class="btn-plain delete-comment-btn" data-type="delete-btn">${ICON_DELETE}</button>
             <div class="delete-confirmation ${CLASS_HIDDEN}">
                 <div class="delete-confirmation-message">Delete this annotation?</div>
                 <div class="button-container">

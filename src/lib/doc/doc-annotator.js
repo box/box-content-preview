@@ -36,6 +36,39 @@ class DocAnnotator extends Annotator {
     //--------------------------------------------------------------------------
 
     /**
+     * [destructor]
+     *
+     * @returns {void}
+     */
+    destroy() {
+        super.destroy();
+        this.removeAllListeners('pointmodeenter');
+    }
+
+    /**
+     * Initializes annotator.
+     *
+     * @returns {void}
+     */
+    init() {
+        super.init();
+
+        // If in highlight mode and we enter point mode, turn off highlight mode
+        this.addListener('pointmodeenter', () => {
+            if (this._isInHighlightMode()) {
+                this.toggleHighlightModeHandler();
+            }
+        });
+
+        // If in point mode and we enter highlight mode, turn off point mode
+        this.addListener('highlightmodeenter', () => {
+            if (this._isInPointMode()) {
+                this.togglePointModeHandler();
+            }
+        });
+    }
+
+    /**
      * Toggles highlight annotation mode on and off. When highlight mode is on,
      * every selection becomes a highlight.
      *
@@ -43,7 +76,7 @@ class DocAnnotator extends Annotator {
      */
     toggleHighlightModeHandler() {
         // If in highlight mode, turn it off
-        if (this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE)) {
+        if (this._isInHighlightMode()) {
             this.emit('highlightmodeexit');
             this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
             this._unbindHighlightModeListeners(); // Disable highlight mode
@@ -156,25 +189,29 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Mousedown handler on annotated element. Delegates to mousedown handlers
-     * of highlight threads over all pages since a mousedown on one thread needs
-     * to deactivate other threads, which are potentially on other pages.
+     * Mousedown handler on annotated element. Initializes didDrag to false -
+     * this way, on the mouseup handler, we can check if didDrag was set to
+     * true by the mousemove handler, and if not, delegate to click handlers
+     * for highlight threads. Also delegates to mousedown handler for each
+     * thread.
      *
      * @param {Event} event DOM event
      * @returns {void}
      * @private
      */
-    _highlightMousedownHandler(event) {
+    _highlightMousedownHandler() {
+        this.didMouseMove = false;
+
         Object.keys(this.threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
-                thread.mousedownHandler(event);
+                thread.onMousedown();
             });
         });
     }
 
     /**
      * Throttled mousemove handler over annotated element. Delegates to
-     * mousemove handler of highlight threads on the appropriate page.
+     * mousemove handler of highlight threads on the page.
      *
      * @returns {Function} mousemove handler
      * @private
@@ -182,12 +219,23 @@ class DocAnnotator extends Annotator {
     _highlightMousemoveHandler() {
         if (!this.throttledHighlightMousemoveHandler) {
             this.throttledHighlightMousemoveHandler = throttle((event) => {
+                this.didMouseMove = true;
+
+                const delayThreads = [];
                 const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
                 if (page !== -1) {
                     this._getHighlightThreadsOnPage(page).forEach((thread) => {
-                        thread.mousemoveHandler(event);
+                        if (thread.onMousemove(event)) {
+                            delayThreads.push(thread);
+                        }
                     });
                 }
+
+                // Delayed threads (threads that should be in active or hover
+                // state) should be drawn last
+                delayThreads.forEach((thread) => {
+                    thread.show();
+                });
             }, MOUSEMOVE_THROTTLE);
         }
 
@@ -195,13 +243,29 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Mouseup handler. Creates a highlight thread from the current selection.
+     * Mouseup handler. Switches between creating a highlight and delegating
+     * to highlight click handlers depending on whether mouse moved since
+     * mousedown.
      *
      * @param {Event} event DOM event
-     * @returns {Function} mousemove handler
      * @private
      */
     _highlightMouseupHandler(event) {
+        if (this.didMouseMove) {
+            this._highlightCreateHandler(event);
+        } else {
+            this._highlightClickHandler(event);
+        }
+    }
+
+    /**
+     * Handler for creating a pending highlight thread from the current
+     * selection.
+     *
+     * @param {Event} event DOM event
+     * @private
+     */
+    _highlightCreateHandler(event) {
         const selectionPresent = annotatorUtil.isSelectionPresent();
         const highlightsPending = this._getPendingHighlightThreads().length > 0;
         if (!selectionPresent || highlightsPending) {
@@ -240,8 +304,7 @@ class DocAnnotator extends Annotator {
         }, HIGHLIGHT_ANNOTATION_TYPE);
 
         // If in highlight mode, save highlight immediately
-        const highlightMode = this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
-        if (highlightMode) {
+        if (this._isInHighlightMode()) {
             // saveAnnotation() shows the annotation afterwards
             thread.saveAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '');
         } else {
@@ -250,6 +313,38 @@ class DocAnnotator extends Annotator {
 
         // Bind events on thread
         this._bindCustomListenersOnThread(thread);
+    }
+
+    /**
+     * Highlight click handler. Delegates click event to click handlers for
+     * threads on the page.
+     *
+     * @param {Event} event DOM event
+     * @private
+     */
+    _highlightClickHandler(event) {
+        // We use this to prevent a mousedown from activating two different
+        // highlights at the same time - this tracks whether a delegated
+        // mousedown activated some highlight, and then informs the other
+        // keydown handlers to not activate
+        let consumed = false;
+        let activeThread = null;
+
+        Object.keys(this.threads).forEach((threadPage) => {
+            this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
+                const threadActive = thread.onClick(event, consumed);
+                if (threadActive) {
+                    activeThread = thread;
+                }
+
+                consumed = consumed || threadActive;
+            });
+        });
+
+        // Show active threads last
+        if (activeThread) {
+            activeThread.show();
+        }
     }
 
     /**
@@ -350,6 +445,16 @@ class DocAnnotator extends Annotator {
         }
 
         return super._createAnnotationThread(annotations, location, type);
+    }
+
+    /**
+     * Returns whether or not annotator is in highlight mode.
+     *
+     * @returns {Boolean} Whether or not in highlight mode
+     * @private
+     */
+    _isInHighlightMode() {
+        return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
     }
 
     /**
