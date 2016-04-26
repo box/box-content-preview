@@ -47,7 +47,7 @@ class Model3d extends Box3D {
 
         if (!Browser.supportsModel3D()) {
             this.wrapperEl.parentElement.removeChild(this.wrapperEl);
-            this.emit(EVENT_ERROR, new Error('Your Browser Does Not Support Model Preview'));
+            this.emit(EVENT_ERROR, new Error(__('error_no_box3d_preview_support')));
         }
 
         this.wrapperEl.classList.add(CSS_CLASS_INVISIBLE);

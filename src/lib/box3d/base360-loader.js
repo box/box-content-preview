@@ -17,7 +17,7 @@ class Base360Loader extends AssetLoader {
             const subExt = basename.slice(basename.lastIndexOf('.') + 1);
             if (subExt === '360') {
                 if (!Browser.hasWebGL()) {
-                    throw new Error('Your Browser Doesn\'t support WebGL. Upgrade your browser to view in 360° mode.');
+                    throw new Error(__('error_no_webgl'));
                 }
                 return viewer;
             }

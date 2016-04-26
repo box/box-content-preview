@@ -57,7 +57,7 @@ class Video360Loader extends Base360Loader {
 
         // If a 360 viewer but isn't a valid browser
         if (!isSupportedBrowser && !!viewer) {
-            throw new Error('Your browser does not support 360 video playback');
+            throw new Error(__('error_no_360_playback_support'));
         }
 
         return viewer;
