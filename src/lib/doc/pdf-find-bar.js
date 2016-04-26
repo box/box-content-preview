@@ -7,6 +7,8 @@ const FindStates = {
     FIND_PENDING: 3
 };
 const matchSeparator = ' of ';
+const matchOffset = 5;
+const pixelSuffix = 'px';
 
 @autobind
 class PDFFindBar {
@@ -26,6 +28,8 @@ class PDFFindBar {
         this.findNextButton = options.findNextButton || null;
         this.findCloseButton = options.findCloseButton || null;
         this.findController = options.findController || null;
+        this.currentMatch = 0;
+        this.matchResultCount = 0;
 
         if (this.findController === null) {
             throw new Error('PDFFindBar cannot be used without a ' +
@@ -52,10 +56,13 @@ class PDFFindBar {
      * @returns {void}
      */
     destroy() {
+        this.currentMatch = 0;
+        this.matchResultCount = 0;
     }
 
     findFieldHandler() {
         this.dispatchEvent('find');
+        this.currentMatch = 1;
     }
 
     barHandler(evt) {
@@ -74,12 +81,22 @@ class PDFFindBar {
     findPreviousHandler() {
         if (this.findField.value) {
             this.dispatchEvent('findagain', true);
+            this.currentMatch = this.currentMatch - 1;
+
+            if (this.currentMatch <= 0) {
+                this.currentMatch = this.matchResultCount;
+            }
         }
     }
 
     findNextHandler() {
         if (this.findField.value) {
             this.dispatchEvent('findagain', false);
+            this.currentMatch = this.currentMatch + 1;
+
+            if (this.currentMatch >= this.matchResultCount) {
+                this.currentMatch = 1;
+            }
         }
     }
 
@@ -97,6 +114,7 @@ class PDFFindBar {
     updateUIState(state, previous, matchCount) {
         this.notFound = false;
         this.statusText = '';
+        this.matchResultCount = matchCount;
 
         switch (state) {
             case FindStates.FIND_FOUND:
@@ -133,7 +151,8 @@ class PDFFindBar {
             this.findResultsCount.classList.add('box-preview-is-invisible');
             return;
         }
-        this.currentMatch = 1;
+
+        this.findField.style.paddingRight = this.findResultsCount.getBoundingClientRect().width + matchOffset + pixelSuffix;
 
         // Create the match counter
         this.findResultsCount.textContent = this.currentMatch + matchSeparator + matchCount.toLocaleString();
