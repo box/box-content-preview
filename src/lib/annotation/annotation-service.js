@@ -1,8 +1,6 @@
 /**
- * @fileoverview Box annotations service that fetches, persists, and updates
- * annotations. Annotations will be saved to local storage for now. Applications
- * that want to self-host annotations should implement their own versions of
- * this service.
+ * @fileoverview Annotations service that performs annotations CRUD using the
+ * Box content API.
  * @author tjin
  */
 
@@ -36,47 +34,57 @@ class AnnotationService {
     //--------------------------------------------------------------------------
 
     /**
-     * Gets a map of thread ID to annotations in that thread.
+     * [constructor]
      *
-     * @param {string} fileVersionID File version ID to fetch annotations for
-     * @returns {Promise} Promise that resolves with thread map
+     * @param {String} endpoint API endpoint
+     * @param {String} token API token
+     * @returns {AnnotationService} AnnotationService instance
      */
-    getThreadMapForFileVersionID(fileVersionID) {
-        return this.getAnnotationsForFileVersionID(fileVersionID).then(this._createThreadMapFromAnnotations);
-    }
-
-    /**
-     * Gets annotations on the specified file.
-     *
-     * @param {string} fileVersionID File version ID to fetch annotations for
-     * @returns {Promise} Promise that resolves with fetched annotations
-     */
-    getAnnotationsForFileVersionID(fileVersionID) {
-        return new Promise((resolve) => {
-            const annotations = this.localAnnotations;
-            resolve(annotations.filter((annotation) => annotation.fileVersionID === fileVersionID));
-        });
+    constructor(endpoint, token) {
+        this.endpoint = endpoint;
+        this.token = token;
     }
 
     /**
      * Create an annotation.
      *
      * @param {Annotation} annotation Annotation to save
-     * @returns {Promise} Promise to create annotation
+     * @returns {Promise} Promise that resolves with created annotation
      */
     create(annotation) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const annotationData = annotation;
             annotationData.annotationID = AnnotationService.generateID();
             annotationData.created = (new Date()).getTime();
             annotationData.modified = annotationData.created;
+
+            // @TODO(tjin): Call to annotations create API with annotationData
+
             const createdAnnotation = new Annotation(annotationData);
+            if (createdAnnotation) {
+                resolve(createdAnnotation);
+            } else {
+                reject('Could not create annotation');
+            }
+        });
+    }
 
-            const annotations = this.localAnnotations;
-            annotations.push(createdAnnotation);
-            this.localAnnotations = annotations;
+    /**
+     * Reads annotations from file version ID.
+     *
+     * @param {string} fileVersionID File version ID to fetch annotations for
+     * @returns {Promise} Promise that resolves with fetched annotations
+     */
+    read(fileVersionID) {
+        return new Promise((resolve, reject) => {
+            // @TODO(tjin): Call to annotations read API with fileVersionID
 
-            resolve(createdAnnotation);
+            const annotations = [];
+            if (annotations) {
+                resolve(annotations);
+            } else {
+                reject(`Could not read annotations from file version with ID ${fileVersionID}`);
+            }
         });
     }
 
@@ -84,24 +92,16 @@ class AnnotationService {
      * Update an annotation.
      *
      * @param {Annotation} annotation Annotation to update
-     * @returns {Promise} Promise to update annotation
+     * @returns {Promise} Promise that resolves with updated annotation
      */
     update(annotation) {
-        const annot = annotation;
+        const annotationData = annotation;
+        const annotationID = annotationData.annotationID;
 
         return new Promise((resolve, reject) => {
-            const annotationID = annot.annotationID;
-            const annotations = this.localAnnotations;
-            const index = annotations.findIndex((storedAnnotation) => storedAnnotation.annotationID === annotationID);
+            // @TODO(tjin): Call to annotations update API with annotationData
 
-            if (index !== -1) {
-                annot.updated = new Date(); // @TODO(tjin): not sure if updated belongs here or higher up
-                annotations[index] = annot;
-                this.localAnnotations = annotations;
-                resolve(annot);
-            } else {
-                reject(`Could not update annotation with ID ${annotationID}`);
-            }
+            reject(`Could not update annotation with ID ${annotationID}`);
         });
     }
 
@@ -113,16 +113,20 @@ class AnnotationService {
      */
     delete(annotationID) {
         return new Promise((resolve, reject) => {
-            const annotations = this.localAnnotations;
-            const result = annotations.filter((annotation) => annotation.annotationID !== annotationID);
+            // @TODO(tjin): Call to annotations delete API with annotationID
 
-            if (result.length !== annotations.length) {
-                this.localAnnotations = result;
-                resolve();
-            } else {
-                reject(`Could not delete annotation with ID ${annotationID}`);
-            }
+            reject(`Could not delete annotation with ID ${annotationID}`);
         });
+    }
+
+    /**
+     * Gets a map of thread ID to annotations in that thread.
+     *
+     * @param {string} fileVersionID File version ID to fetch annotations for
+     * @returns {Promise} Promise that resolves with thread map
+     */
+    getThreadMap(fileVersionID) {
+        return this.read(fileVersionID).then(this._createThreadMap);
     }
 
     //--------------------------------------------------------------------------
@@ -133,10 +137,10 @@ class AnnotationService {
      * Generates a map of thread ID to annotations in thread.
      *
      * @param {Annotation[]} annotations Annotations to generate map from
-     * @returns {Promise} Promise that resolves with thread map
+     * @returns {Object} Map of thread ID to annotations in that thread
      * @private
      */
-    _createThreadMapFromAnnotations(annotations) {
+    _createThreadMap(annotations) {
         const threadMap = {};
 
         // Construct map of thread ID to annotations
@@ -154,30 +158,6 @@ class AnnotationService {
         });
 
         return threadMap;
-    }
-
-    //--------------------------------------------------------------------------
-    // Getters and setters
-    //--------------------------------------------------------------------------
-
-    /**
-     * Gets annotations saved in local storage
-     *
-     * @returns {Annotations[]} Annotations stored in local storage
-     */
-    get localAnnotations() {
-        const annotationsString = localStorage.getItem('annotationsLocalStorage');
-        return (annotationsString === null) ? [] : JSON.parse(annotationsString);
-    }
-
-    /**
-     * Saves annotations in local storage
-     *
-     * @param {Annotation[]} annotations Annotations to save
-     * @returns {void}
-     */
-    set localAnnotations(annotations) {
-        localStorage.setItem('annotationsLocalStorage', JSON.stringify(annotations));
     }
 }
 
