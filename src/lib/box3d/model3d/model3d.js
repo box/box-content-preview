@@ -225,7 +225,8 @@ class Model3d extends Box3D {
                 this.renderMode = defaults.defaultRenderMode;
                 this.projection = defaults.cameraProjection;
 
-                this.settings.addUi();
+                const permissions = this.options.file.permissions || {};
+                this.settings.addUi(permissions.can_upload && permissions.can_delete);
 
                 this.handleRotationAxisSet(defaults.upAxis, defaults.forwardAxis, false);
 
