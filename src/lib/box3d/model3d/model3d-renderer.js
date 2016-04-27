@@ -264,7 +264,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     onUnsupportedRepresentation() {
-        this.emit('error', new Error('Out of date model preview format'));
+        this.emit('error', new Error(__('error_out_of_date_3d_format')));
     }
 
     /**

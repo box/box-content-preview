@@ -1,8 +1,10 @@
 import Base360Loader from '../base360-loader';
+import Browser from '../../browser';
 import autobind from 'autobind-decorator';
 
 const STATIC_URI = 'third-party/';
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
+const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera'];
 
 const VIEWERS = [
     {
@@ -40,6 +42,25 @@ class Video360Loader extends Base360Loader {
     constructor() {
         super();
         this.viewers = VIEWERS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    determineViewer(file, disabledViewers = []) {
+        const viewer = super.determineViewer(file, disabledViewers);
+        const name = Browser.getName();
+
+        // Check to see if we support playback in this browser
+        // https://bugs.webkit.org/show_bug.cgi?id=135379
+        const isSupportedBrowser = BROWSERS_SUPPORTED.some((browserName) => browserName === name);
+
+        // If a 360 viewer but isn't a valid browser
+        if (!isSupportedBrowser && !!viewer) {
+            throw new Error(__('error_no_360_playback_support'));
+        }
+
+        return viewer;
     }
 }
 

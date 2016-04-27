@@ -4,6 +4,15 @@ import Box3DRenderer from '../box3d-renderer';
 class Video360Renderer extends Box3DRenderer {
 
     /**
+     * @inheritdoc
+     */
+    constructor(containerEl, boxSdk) {
+        super(containerEl, boxSdk);
+
+        this.inputController = null;
+    }
+
+    /**
      * Enable the VR system (HMD)
      * @returns {void}
      */
@@ -94,6 +103,24 @@ class Video360Renderer extends Box3DRenderer {
                 cameraControls.disable();
             }
         }
+    }
+
+    /**
+     * Get the input controller attached to the runtime
+     * @returns {Object} The input controller, if any
+     */
+    getInputController() {
+        if (!this.inputController) {
+            const app = this.box3d.getApplication();
+
+            if (!app) {
+                return null;
+            }
+
+            this.inputController = app.componentRegistry.getFirstByScriptName('Input Controller');
+        }
+
+        return this.inputController;
     }
 }
 

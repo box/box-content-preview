@@ -61,6 +61,10 @@ class Video360 extends Dash {
         this.textureAsset.destroy();
         this.destroyControls();
         if (this.renderer) {
+            // Remove event listeners from box3d, if any on it
+            this.renderer.getBox3D().off('mouseDown', this.onCanvasMouseDown);
+            this.renderer.getBox3D().off('mouseUp', this.onCanvasMouseUp);
+
             this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.destroy();
         }
@@ -116,11 +120,10 @@ class Video360 extends Dash {
      * @returns {void}
      */
     create360Environment() {
-        const box3d = this.renderer.box3d;
-        const scene = box3d.getEntityById('SCENE_ID');
+        const scene = this.renderer.getBox3D().getEntityById('SCENE_ID');
         const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
-        this.textureAsset = box3d.assetRegistry.createAsset({
+        this.textureAsset = this.renderer.getBox3D().assetRegistry.createAsset({
             id: 'VIDEO_TEX_ID',
             type: 'textureVideo',
             properties: {
@@ -139,6 +142,7 @@ class Video360 extends Dash {
             this.textureAsset.load(() => {
                 skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                 skybox.enable();
+                this.renderer.getBox3D().on('mouseDown', this.onCanvasMouseDown);
                 resolve();
             });
         });
@@ -182,6 +186,29 @@ class Video360 extends Dash {
     @autobind
     handleShowVrButton() {
         this.controls.showVrButton();
+    }
+
+    /**
+     * Handle mouseDown on the canvas, for playing video
+     * @returns {void}
+     */
+    @autobind
+    onCanvasMouseDown() {
+        this.renderer.getBox3D().once('mouseUp', this.onCanvasMouseUp);
+    }
+
+    /**
+     * Handle mouseUp on the canvas, for playing video
+     * @returns {void}
+     */
+    @autobind
+    onCanvasMouseUp() {
+        const input = this.renderer.getInputController();
+        // Make sure the mouse hasn't moved (within mouse/touch buffer drag allowance)
+        if (!input.getPreviousMouseDragState() &&
+            !input.getPreviousTouchDragState()) {
+            this.togglePlay();
+        }
     }
 }
 
