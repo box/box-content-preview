@@ -23,8 +23,8 @@ import { ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const HIGHLIGHT_STATE_PENDING = 'pending';
-const MOUSEMOVE_THROTTLE = 50;
 const IS_MOBILE = Browser.isMobile();
+const MOUSEMOVE_THROTTLE = 50;
 const MOUSEDOWN = IS_MOBILE ? 'touchstart' : 'mousedown';
 const MOUSEUP = IS_MOBILE ? 'touchend' : 'mouseup';
 
@@ -78,14 +78,14 @@ class DocAnnotator extends Annotator {
         // If in highlight mode, turn it off
         if (this._isInHighlightMode()) {
             this.emit('highlightmodeexit');
-            this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+            this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
             this._unbindHighlightModeListeners(); // Disable highlight mode
             this._bindDOMListeners(); // Re-enable other annotations
 
         // Otherwise, enable highlight mode
         } else {
             this.emit('highlightmodeenter');
-            this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+            this._annotatedElement.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
             this._unbindDOMListeners(); // Disable other annotations
             this._bindHighlightModeListeners(); // Enable highlight mode
         }
@@ -112,7 +112,7 @@ class DocAnnotator extends Annotator {
         }
 
         // Add highlight mode button
-        const annotationButtonContainerEl = this.annotatedElement.querySelector('.box-preview-annotation-controls');
+        const annotationButtonContainerEl = this._annotatedElement.querySelector('.box-preview-annotation-controls');
         const highlightModeBtnEl = document.createElement('button');
         highlightModeBtnEl.classList.add('btn');
         highlightModeBtnEl.classList.add('box-preview-btn-highlight');
@@ -131,8 +131,8 @@ class DocAnnotator extends Annotator {
         super._setupAnnotations();
 
         // Init rangy and rangy highlight
-        this.highlighter = rangy.createHighlighter();
-        this.highlighter.addClassApplier(rangy.createClassApplier('rangy-highlight', {
+        this._highlighter = rangy.createHighlighter();
+        this._highlighter.addClassApplier(rangy.createClassApplier('rangy-highlight', {
             ignoreWhiteSpace: true,
             tagNames: ['span', 'a']
         }));
@@ -147,10 +147,10 @@ class DocAnnotator extends Annotator {
     _bindDOMListeners() {
         super._bindDOMListeners();
 
-        this.annotatedElement.addEventListener(MOUSEDOWN, this._highlightMousedownHandler);
-        this.annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
-        this.annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
-        this.annotatedElement.addEventListener(MOUSEUP, this._highlightMouseupHandler);
+        this._annotatedElement.addEventListener(MOUSEDOWN, this._highlightMousedownHandler);
+        this._annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
+        this._annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
+        this._annotatedElement.addEventListener(MOUSEUP, this._highlightMouseupHandler);
     }
 
     /**
@@ -162,10 +162,10 @@ class DocAnnotator extends Annotator {
     _unbindDOMListeners() {
         super._unbindDOMListeners();
 
-        this.annotatedElement.removeEventListener(MOUSEDOWN, this._highlightMousedownHandler);
-        this.annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
-        this.annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
-        this.annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
+        this._annotatedElement.removeEventListener(MOUSEDOWN, this._highlightMousedownHandler);
+        this._annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
+        this._annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
+        this._annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
     }
 
     /**
@@ -175,7 +175,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _bindHighlightModeListeners() {
-        this.annotatedElement.addEventListener(MOUSEUP, this._highlightMouseupHandler);
+        this._annotatedElement.addEventListener(MOUSEUP, this._highlightMouseupHandler);
     }
 
     /**
@@ -185,7 +185,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _unbindHighlightModeListeners() {
-        this.annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
+        this._annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
     }
 
     /**
@@ -200,11 +200,11 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMousedownHandler(event) {
-        this.didMouseMove = false;
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
+        this._didMouseMove = false;
+        this._mouseX = event.clientX;
+        this._mouseY = event.clientY;
 
-        Object.keys(this.threads).forEach((threadPage) => {
+        Object.keys(this._threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
                 thread.onMousedown();
             });
@@ -219,13 +219,13 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMousemoveHandler() {
-        if (!this.throttledHighlightMousemoveHandler) {
-            this.throttledHighlightMousemoveHandler = throttle((event) => {
+        if (!this._throttledHighlightMousemoveHandler) {
+            this._throttledHighlightMousemoveHandler = throttle((event) => {
                 // Ignore small mouse movements when figuring out if a mousedown
                 // and mouseup was a click
-                if (Math.abs(event.clientX - this.mouseX) > 5 ||
-                    Math.abs(event.clientY - this.mouseY) > 5) {
-                    this.didMouseMove = true;
+                if (Math.abs(event.clientX - this._mouseX) > 5 ||
+                    Math.abs(event.clientY - this._mouseY) > 5) {
+                    this._didMouseMove = true;
                 }
 
                 const delayThreads = [];
@@ -246,7 +246,7 @@ class DocAnnotator extends Annotator {
             }, MOUSEMOVE_THROTTLE);
         }
 
-        return this.throttledHighlightMousemoveHandler;
+        return this._throttledHighlightMousemoveHandler;
     }
 
     /**
@@ -258,7 +258,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMouseupHandler(event) {
-        if (this.didMouseMove || this._isInHighlightMode()) {
+        if (this._didMouseMove || this._isInHighlightMode()) {
             this._highlightCreateHandler(event);
         } else {
             this._highlightClickHandler(event);
@@ -289,7 +289,7 @@ class DocAnnotator extends Annotator {
         // highlight module can mess with the selection. We restore this
         // selection after we clean up the highlight
         const savedSelection = rangy.saveSelection();
-        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this.highlighter);
+        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter);
         if (highlightEls.length === 0) {
             return;
         }
@@ -297,7 +297,7 @@ class DocAnnotator extends Annotator {
         // Get quad points for each highlight element
         const quadPoints = [];
         highlightEls.forEach((element) => {
-            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, annotatorUtil.getScale(this.annotatedElement)));
+            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, annotatorUtil.getScale(this._annotatedElement)));
         });
 
         // Remove rangy highlight and restore selection
@@ -337,7 +337,7 @@ class DocAnnotator extends Annotator {
         let consumed = false;
         let activeThread = null;
 
-        Object.keys(this.threads).forEach((threadPage) => {
+        Object.keys(this._threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
                 const threadActive = thread.onClick(event, consumed);
                 if (threadActive) {
@@ -362,8 +362,8 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _getHighlightThreadsOnPage(page) {
-        const threads = this.threads[page] || [];
-        return threads.filter((thread) => thread.getType() === HIGHLIGHT_ANNOTATION_TYPE);
+        const threads = this._threads[page] || [];
+        return threads.filter((thread) => thread.type === HIGHLIGHT_ANNOTATION_TYPE);
     }
 
     /**
@@ -375,11 +375,11 @@ class DocAnnotator extends Annotator {
     _getPendingHighlightThreads() {
         const pendingThreads = [];
 
-        Object.keys(this.threads).forEach((page) => {
+        Object.keys(this._threads).forEach((page) => {
             // Append pending highlight threads on page to array of pending threads
-            [].push.apply(pendingThreads, this.threads[page].filter((thread) => {
-                return thread.getState() === HIGHLIGHT_STATE_PENDING &&
-                    thread.getType() === HIGHLIGHT_ANNOTATION_TYPE;
+            [].push.apply(pendingThreads, this._threads[page].filter((thread) => {
+                return thread.state === HIGHLIGHT_STATE_PENDING &&
+                    thread.type === HIGHLIGHT_ANNOTATION_TYPE;
             }));
         });
 
@@ -416,7 +416,7 @@ class DocAnnotator extends Annotator {
         // let time = new Date().getTime();
 
         // Clear context if needed
-        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${page}"]`);
+        const pageEl = this._annotatedElement.querySelector(`[data-page-number="${page}"]`);
         const annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
         if (annotationLayerEl) {
             const context = annotationLayerEl.getContext('2d');
@@ -443,12 +443,12 @@ class DocAnnotator extends Annotator {
     _createAnnotationThread(annotations, location, type) {
         if (type === HIGHLIGHT_ANNOTATION_TYPE) {
             const highlightThread = new HighlightThread({
-                annotatedElement: this.annotatedElement,
+                annotatedElement: this._annotatedElement,
                 annotations,
-                annotationService: this.annotationService,
-                fileVersionID: this.fileVersionID,
+                annotationService: this._annotationService,
+                fileVersionID: this._fileVersionID,
                 location,
-                user: this.user,
+                user: this._user,
                 type
             });
             this._addThreadToMap(highlightThread);
@@ -465,7 +465,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _isInHighlightMode() {
-        return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+        return this._annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
     }
 
     /**
@@ -479,7 +479,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _removeRangyHighlight(highlight) {
-        const highlights = this.highlighter.highlights;
+        const highlights = this._highlighter.highlights;
         if (!Array.isArray(highlights)) {
             return;
         }
@@ -488,7 +488,7 @@ class DocAnnotator extends Annotator {
             return internalHighlight.id === highlight.id;
         });
 
-        this.highlighter.removeHighlights(matchingHighlights);
+        this._highlighter.removeHighlights(matchingHighlights);
     }
 }
 

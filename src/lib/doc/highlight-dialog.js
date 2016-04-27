@@ -34,7 +34,7 @@ class HighlightDialog extends AnnotationDialog {
         // Position and show - we need to reposition every time since the DOM
         // could have changed from zooming
         this._position();
-        annotatorUtil.showElement(this.element);
+        annotatorUtil.showElement(this._element);
     }
 
     /**
@@ -43,7 +43,7 @@ class HighlightDialog extends AnnotationDialog {
      * @returns {void}
      */
     hide() {
-        annotatorUtil.hideElement(this.element);
+        annotatorUtil.hideElement(this._element);
     }
 
     /**
@@ -53,8 +53,8 @@ class HighlightDialog extends AnnotationDialog {
      */
     addAnnotation() {
         // Switch add button to delete button
-        const addButtonEl = this.element.querySelector('.box-preview-add-highlight-btn');
-        const deleteButtonEl = this.element.querySelector('.box-preview-delete-highlight-btn');
+        const addButtonEl = this._element.querySelector('.box-preview-add-highlight-btn');
+        const deleteButtonEl = this._element.querySelector('.box-preview-delete-highlight-btn');
         annotatorUtil.hideElement(addButtonEl);
         annotatorUtil.showElement(deleteButtonEl);
     }
@@ -77,9 +77,9 @@ class HighlightDialog extends AnnotationDialog {
      * @private
      */
     _setup(annotations) {
-        this.element = document.createElement('div');
-        this.element.classList.add('box-preview-highlight-dialog');
-        this.element.innerHTML = `
+        this._element = document.createElement('div');
+        this._element.classList.add('box-preview-highlight-dialog');
+        this._element.innerHTML = `
             <div class="box-preview-annotation-caret"></div>
             <button class="box-preview-add-highlight-btn ${annotations.length ? CLASS_HIDDEN : ''}"
                 data-type="add-highlight-btn">
@@ -103,12 +103,12 @@ class HighlightDialog extends AnnotationDialog {
         // Position it below lower right corner of the highlight - we need
         // to reposition every time since the DOM could have changed from
         // zooming
-        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+        const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`);
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageWidth = pageDimensions.width;
         const pageHeight = pageDimensions.height;
-        const scale = annotatorUtil.getScale(this.annotatedElement);
-        const coordinates = annotatorUtil.getLowerRightCornerOfLastQuadPoint(this.location.quadPoints);
+        const scale = annotatorUtil.getScale(this._annotatedElement);
+        const coordinates = annotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
         const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale);
 
         // Make sure button dialog doesn't go off the page
@@ -126,9 +126,9 @@ class HighlightDialog extends AnnotationDialog {
             dialogY = pageHeight - HIGHLIGHT_DIALOG_DIMENSIONS;
         }
 
-        this.element.style.left = `${dialogX}px`;
-        this.element.style.top = `${dialogY}px`;
-        pageEl.appendChild(this.element);
+        this._element.style.left = `${dialogX}px`;
+        this._element.style.top = `${dialogY}px`;
+        pageEl.appendChild(this._element);
     }
 
     /**
@@ -138,8 +138,8 @@ class HighlightDialog extends AnnotationDialog {
      * @private
      */
     _bindDOMListeners() {
-        this.element.addEventListener(MOUSEDOWN, this._mousedownHandler);
-        this.element.addEventListener('keydown', this._mousedownHandler);
+        this._element.addEventListener(MOUSEDOWN, this._mousedownHandler);
+        this._element.addEventListener('keydown', this._mousedownHandler);
     }
 
     /**
@@ -149,8 +149,8 @@ class HighlightDialog extends AnnotationDialog {
      * @private
      */
     _unbindDOMListeners() {
-        this.element.removeEventListener(MOUSEDOWN, this._mousedownHandler);
-        this.element.removeEventListener('keydown', this._mousedownHandler);
+        this._element.removeEventListener(MOUSEDOWN, this._mousedownHandler);
+        this._element.removeEventListener('keydown', this._mousedownHandler);
     }
 
     /**

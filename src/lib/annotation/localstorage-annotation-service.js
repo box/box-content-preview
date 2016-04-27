@@ -113,7 +113,7 @@ class LocalStorageAnnotationService extends AnnotationService {
     }
 
     //--------------------------------------------------------------------------
-    // Getters and setters into localStorage
+    // Getters and Setters
     //--------------------------------------------------------------------------
 
     /**
@@ -123,7 +123,25 @@ class LocalStorageAnnotationService extends AnnotationService {
      */
     get localAnnotations() {
         const annotationsString = localStorage.getItem('annotationsLocalStorage');
-        return (annotationsString === null) ? [] : JSON.parse(annotationsString);
+        const annotations = (annotationsString === null) ? [] : JSON.parse(annotationsString);
+
+        // @NOTE(tjin): Temporary hack to generate Annotation value objects from
+        // deserialized annotations objects
+        annotations.forEach((annotation, index) => {
+            annotations[index] = new Annotation({
+                annotationID: annotation._annotationID,
+                fileVersionID: annotation._fileVersionID,
+                threadID: annotation._threadID,
+                type: annotation._type,
+                text: annotation._text,
+                location: annotation._location,
+                user: annotation._user,
+                created: annotation._created,
+                modified: annotation._modified
+            });
+        });
+
+        return annotations;
     }
 
     /**

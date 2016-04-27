@@ -6,9 +6,9 @@
  */
 
 import autobind from 'autobind-decorator';
-import LocalStorageAnnotationService from './localstorage-annotation-service';
 import AnnotationThread from './annotation-thread';
 import EventEmitter from 'events';
+import LocalStorageAnnotationService from './localstorage-annotation-service';
 import throttle from 'lodash.throttle';
 
 import * as annotatorUtil from './annotator-util';
@@ -16,15 +16,14 @@ import * as constants from './annotation-constants';
 import { CLASS_HIDDEN } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
-const MOUSEMOVE_THROTTLE = 16;
-const POINT_ANNOTATION_ICON_WIDTH = 16;
-const POINT_ANNOTATION_TYPE = 'point';
-const POINT_STATE_PENDING = 'pending';
-
 const ANONYMOUS_USER = {
     name: 'Kylo Ren',
     avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
 };
+const MOUSEMOVE_THROTTLE = 16;
+const POINT_ANNOTATION_ICON_WIDTH = 16;
+const POINT_ANNOTATION_TYPE = 'point';
+const POINT_STATE_PENDING = 'pending';
 
 @autobind
 class Annotator extends EventEmitter {
@@ -55,10 +54,11 @@ class Annotator extends EventEmitter {
      */
     constructor(data) {
         super();
-        this.annotatedElement = data.annotatedElement;
-        this.annotationService = data.annotationService || new LocalStorageAnnotationService();
-        this.fileVersionID = data.fileVersionID;
-        this.user = data.user || ANONYMOUS_USER;
+
+        this._annotatedElement = data.annotatedElement;
+        this._annotationService = data.annotationService || new LocalStorageAnnotationService();
+        this._fileVersionID = data.fileVersionID;
+        this._user = data.user || ANONYMOUS_USER;
     }
 
     /**
@@ -69,8 +69,8 @@ class Annotator extends EventEmitter {
     destroy() {
         this._destroyControls();
 
-        Object.keys(this.threads).forEach((page) => {
-            this.threads[page].forEach((thread) => {
+        Object.keys(this._threads).forEach((page) => {
+            this._threads[page].forEach((thread) => {
                 this._unbindCustomListenersOnThread(thread);
             });
         });
@@ -116,7 +116,7 @@ class Annotator extends EventEmitter {
      * @returns {void}
      */
     setScale(scale) {
-        this.annotatedElement.setAttribute('data-scale', scale);
+        this._annotatedElement.setAttribute('data-scale', scale);
     }
 
     /**
@@ -129,14 +129,14 @@ class Annotator extends EventEmitter {
         // If in annotation mode, turn it off
         if (this._isInPointMode()) {
             this.emit('pointmodeexit');
-            this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
+            this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             this._unbindPointModeListeners(); // Disable point mode
             this._bindDOMListeners(); // Re-enable other annotations
 
         // Otherwise, enable annotation mode
         } else {
             this.emit('pointmodeenter');
-            this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
+            this._annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
             this._unbindDOMListeners(); // Disable other annotations
             this._bindPointModeListeners();  // Enable point mode
         }
@@ -165,7 +165,7 @@ class Annotator extends EventEmitter {
             <button class="btn box-preview-btn-annotate">${ICON_ANNOTATION}</button>`.trim();
         const pointAnnotationModeBtnEl = annotationButtonContainerEl.querySelector('.box-preview-btn-annotate');
         pointAnnotationModeBtnEl.addEventListener('click', this.togglePointModeHandler);
-        this.annotatedElement.appendChild(annotationButtonContainerEl);
+        this._annotatedElement.appendChild(annotationButtonContainerEl);
     }
 
     /**
@@ -191,7 +191,7 @@ class Annotator extends EventEmitter {
      */
     _setupAnnotations() {
         // Map of page => [threads on page]
-        this.threads = {};
+        this._threads = {};
         this._bindDOMListeners();
     }
 
@@ -205,7 +205,7 @@ class Annotator extends EventEmitter {
     _fetchAnnotations() {
         // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
 
-        return this.annotationService.getThreadMap(this.fileVersionID)
+        return this._annotationService.getThreadMap(this._fileVersionID)
             .then((threadMap) => {
                 // Generate map of page to threads
                 Object.keys(threadMap).forEach((threadID) => {
@@ -226,8 +226,8 @@ class Annotator extends EventEmitter {
      * @private
      */
     _clearAnnotations() {
-        Object.keys(this.threads).forEach((page) => {
-            this.threads[page].forEach((thread) => {
+        Object.keys(this._threads).forEach((page) => {
+            this._threads[page].forEach((thread) => {
                 thread.hide();
             });
         });
@@ -240,8 +240,8 @@ class Annotator extends EventEmitter {
      * @private
      */
     _showAnnotations() {
-        Object.keys(this.threads).forEach((page) => {
-            this.threads[page].forEach((thread) => {
+        Object.keys(this._threads).forEach((page) => {
+            this._threads[page].forEach((thread) => {
                 thread.show();
             });
         });
@@ -276,7 +276,7 @@ class Annotator extends EventEmitter {
             const page = thread.location.page || 1;
 
             // Remove from map
-            this.threads[page] = this.threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
+            this._threads[page] = this._threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
 
             // Unbind listeners
             this._unbindCustomListenersOnThread(thread);
@@ -301,8 +301,8 @@ class Annotator extends EventEmitter {
      * @private
      */
     _bindPointModeListeners() {
-        this.annotatedElement.addEventListener('click', this._pointClickHandler);
-        this.annotatedElement.addEventListener('mousemove', this._pointMousemoveHandler());
+        this._annotatedElement.addEventListener('click', this._pointClickHandler);
+        this._annotatedElement.addEventListener('mousemove', this._pointMousemoveHandler());
     }
 
     /**
@@ -312,8 +312,8 @@ class Annotator extends EventEmitter {
      * @private
      */
     _unbindPointModeListeners() {
-        this.annotatedElement.removeEventListener('click', this._pointClickHandler);
-        this.annotatedElement.removeEventListener('mousemove', this._pointMousemoveHandler());
+        this._annotatedElement.removeEventListener('click', this._pointClickHandler);
+        this._annotatedElement.removeEventListener('mousemove', this._pointMousemoveHandler());
     }
 
     /**
@@ -348,7 +348,7 @@ class Annotator extends EventEmitter {
         // Store coordinates at 100% scale in PDF space in PDF units
         const pageDimensions = pageEl.getBoundingClientRect();
         const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageDimensions.top];
-        const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, annotatorUtil.getScale(this.annotatedElement));
+        const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, annotatorUtil.getScale(this._annotatedElement));
         const [x, y] = pdfCoordinates;
         const location = { x, y, page };
 
@@ -368,19 +368,19 @@ class Annotator extends EventEmitter {
      * @private
      */
     _pointMousemoveHandler() {
-        if (!this.throttledPointMousemoveHandler) {
-            this.throttledPointMousemoveHandler = throttle((event) => {
+        if (!this._throttledPointMousemoveHandler) {
+            this._throttledPointMousemoveHandler = throttle((event) => {
                 // Saves mouse position in memory
                 this._setMousePosition(event);
 
-                if (!this.pendingAnimation) {
-                    this.pendingAnimation = true;
+                if (!this._pendingAnimation) {
+                    this._pendingAnimation = true;
                     window.requestAnimationFrame(this._doPointAnimation);
                 }
             }, MOUSEMOVE_THROTTLE);
         }
 
-        return this.throttledPointMousemoveHandler;
+        return this._throttledPointMousemoveHandler;
     }
 
     /**
@@ -394,39 +394,39 @@ class Annotator extends EventEmitter {
         const { x, y, page, dataType } = this._getMousePosition();
 
         // Get or create point annotation mode icon
-        if (!this.pointIconEl) {
-            this.pointIconEl = document.createElement('div');
-            this.pointIconEl.classList.add(constants.CLASS_ANNOTATION_POINT_ICON);
-            this.pointIconEl.classList.add(CLASS_HIDDEN);
+        if (!this._pointIconEl) {
+            this._pointIconEl = document.createElement('div');
+            this._pointIconEl.classList.add(constants.CLASS_ANNOTATION_POINT_ICON);
+            this._pointIconEl.classList.add(CLASS_HIDDEN);
         }
 
         // If we aren't on a page, short circuit the animation
         if (page === -1) {
-            annotatorUtil.hideElement(this.pointIconEl);
-            this.pendingAnimation = false;
+            annotatorUtil.hideElement(this._pointIconEl);
+            this._pendingAnimation = false;
             return;
         }
 
         // Append point annotation icon to correct parent
-        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${page}"]`);
-        if (!pageEl.contains(this.pointIconEl)) {
-            pageEl.appendChild(this.pointIconEl);
+        const pageEl = this._annotatedElement.querySelector(`[data-page-number="${page}"]`);
+        if (!pageEl.contains(this._pointIconEl)) {
+            pageEl.appendChild(this._pointIconEl);
         }
 
         // If mouse is on a page and isn't on a dialog or thread, track with point icon
         if (dataType !== 'annotation-dialog' && dataType !== 'annotation-thread') {
             const pageDimensions = pageEl.getBoundingClientRect();
-            this.pointIconEl.style.left = `${x - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-            this.pointIconEl.style.top = `${y - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-            annotatorUtil.showElement(this.pointIconEl);
+            this._pointIconEl.style.left = `${x - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+            this._pointIconEl.style.top = `${y - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+            annotatorUtil.showElement(this._pointIconEl);
 
         // Otherwise, hide the icon
         } else {
-            annotatorUtil.hideElement(this.pointIconEl);
+            annotatorUtil.hideElement(this._pointIconEl);
         }
 
         // Animation is complete
-        this.pendingAnimation = false;
+        this._pendingAnimation = false;
     }
 
     /**
@@ -437,10 +437,10 @@ class Annotator extends EventEmitter {
      */
     _setMousePosition(event) {
         const eventTarget = event.target;
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
-        this.mousePage = annotatorUtil.getPageElAndPageNumber(eventTarget).page;
-        this.mouseDataType = annotatorUtil.findClosestDataType(eventTarget);
+        this._mouseX = event.clientX;
+        this._mouseY = event.clientY;
+        this._mousePage = annotatorUtil.getPageElAndPageNumber(eventTarget).page;
+        this._mouseDataType = annotatorUtil.findClosestDataType(eventTarget);
     }
 
     /**
@@ -452,10 +452,10 @@ class Annotator extends EventEmitter {
      */
     _getMousePosition() {
         return {
-            x: this.mouseX || 0,
-            y: this.mouseY || 0,
-            page: this.mousePage || 1,
-            dataType: this.mouseDataType || ''
+            x: this._mouseX || 0,
+            y: this._mouseY || 0,
+            page: this._mousePage || 1,
+            dataType: this._mouseDataType || ''
         };
     }
 
@@ -470,12 +470,12 @@ class Annotator extends EventEmitter {
      */
     _createAnnotationThread(annotations, location, type) {
         const thread = new AnnotationThread({
-            annotatedElement: this.annotatedElement,
+            annotatedElement: this._annotatedElement,
             annotations,
-            annotationService: this.annotationService,
-            fileVersionID: this.fileVersionID,
+            annotationService: this._annotationService,
+            fileVersionID: this._fileVersionID,
             location,
-            user: this.user,
+            user: this._user,
             type
         });
         this._addThreadToMap(thread);
@@ -492,8 +492,8 @@ class Annotator extends EventEmitter {
     _addThreadToMap(thread) {
         // Add thread to in-memory map
         const page = thread.location.page || 1;
-        this.threads[page] = this.threads[page] || [];
-        this.threads[page].push(thread);
+        this._threads[page] = this._threads[page] || [];
+        this._threads[page].push(thread);
     }
 
     /**
@@ -503,7 +503,7 @@ class Annotator extends EventEmitter {
      * @private
      */
     _isInPointMode() {
-        return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
+        return this._annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
     }
 
     /**
@@ -515,11 +515,11 @@ class Annotator extends EventEmitter {
     _getPendingPointThreads() {
         const pendingThreads = [];
 
-        Object.keys(this.threads).forEach((page) => {
+        Object.keys(this._threads).forEach((page) => {
             // Append pending point threads on page to array of pending threads
-            [].push.apply(pendingThreads, this.threads[page].filter((thread) => {
-                return thread.getState() === POINT_STATE_PENDING &&
-                    thread.getType() === POINT_ANNOTATION_TYPE;
+            [].push.apply(pendingThreads, this._threads[page].filter((thread) => {
+                return thread.state === POINT_STATE_PENDING &&
+                    thread.type === POINT_ANNOTATION_TYPE;
             }));
         });
         return pendingThreads;

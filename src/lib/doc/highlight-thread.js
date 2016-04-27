@@ -30,7 +30,7 @@ class HighlightThread extends AnnotationThread {
     destroy() {
         super.destroy();
 
-        if (this.state === HIGHLIGHT_STATE_PENDING) {
+        if (this._state === HIGHLIGHT_STATE_PENDING) {
             window.getSelection().removeAllRanges();
         }
     }
@@ -44,19 +44,19 @@ class HighlightThread extends AnnotationThread {
      * @returns {void}
      */
     show() {
-        switch (this.state) {
+        switch (this._state) {
             case HIGHLIGHT_STATE_PENDING:
-                this.dialog.show();
+                this._dialog.show();
                 break;
             case HIGHLIGHT_STATE_INACTIVE:
-                this.dialog.hide();
+                this._dialog.hide();
                 this._draw(HIGHLIGHT_NORMAL_FILL_STYLE);
                 break;
             case HIGHLIGHT_STATE_HOVER:
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
             case HIGHLIGHT_STATE_ACTIVE:
-                this.dialog.show();
+                this._dialog.show();
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
             default:
@@ -81,7 +81,7 @@ class HighlightThread extends AnnotationThread {
      * @returns {void}
      */
     reset() {
-        this.state = HIGHLIGHT_STATE_INACTIVE;
+        this._state = HIGHLIGHT_STATE_INACTIVE;
         this.show();
     }
 
@@ -105,7 +105,7 @@ class HighlightThread extends AnnotationThread {
      */
     onMousedown() {
         // Destroy pending highlights on mousedown
-        if (this.state === HIGHLIGHT_STATE_PENDING) {
+        if (this._state === HIGHLIGHT_STATE_PENDING) {
             this.destroy();
         }
     }
@@ -128,8 +128,8 @@ class HighlightThread extends AnnotationThread {
     onClick(event, consumed) {
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
-        if (!consumed && (this.state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event))) {
-            this.state = HIGHLIGHT_STATE_ACTIVE;
+        if (!consumed && (this._state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event))) {
+            this._state = HIGHLIGHT_STATE_ACTIVE;
             return true;
         }
 
@@ -150,7 +150,7 @@ class HighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
-        if (this.state === HIGHLIGHT_STATE_PENDING) {
+        if (this._state === HIGHLIGHT_STATE_PENDING) {
             return false;
         }
 
@@ -158,11 +158,11 @@ class HighlightThread extends AnnotationThread {
         let delay = false;
 
         // If state is active, do not override
-        if (this.state === HIGHLIGHT_STATE_ACTIVE) {
+        if (this._state === HIGHLIGHT_STATE_ACTIVE) {
             delay = true;
         // If mouse is over a non-active highlight, change state to hover
         } else if (this._isInHighlight(event)) {
-            this.state = HIGHLIGHT_STATE_HOVER;
+            this._state = HIGHLIGHT_STATE_HOVER;
             delay = true;
         } else {
             this.reset();
@@ -183,16 +183,16 @@ class HighlightThread extends AnnotationThread {
      * @private
      */
     _setup() {
-        if (this.annotations.length === 0) {
-            this.state = HIGHLIGHT_STATE_PENDING;
+        if (this._annotations.length === 0) {
+            this._state = HIGHLIGHT_STATE_PENDING;
         } else {
-            this.state = HIGHLIGHT_STATE_INACTIVE;
+            this._state = HIGHLIGHT_STATE_INACTIVE;
         }
 
-        this.dialog = new HighlightDialog({
-            annotatedElement: this.annotatedElement,
-            annotations: this.annotations,
-            location: this.location
+        this._dialog = new HighlightDialog({
+            annotatedElement: this._annotatedElement,
+            annotations: this._annotations,
+            location: this._location
         });
         this._bindCustomListenersOnDialog();
     }
@@ -205,13 +205,13 @@ class HighlightThread extends AnnotationThread {
      */
     _bindCustomListenersOnDialog() {
         // Annotation created
-        this.dialog.addListener('annotationcreate', () => {
+        this._dialog.addListener('annotationcreate', () => {
             this.saveAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '');
         });
 
         // Annotation deleted
-        this.dialog.addListener('annotationdelete', () => {
-            this.deleteAnnotation(this.annotations[0].annotationID);
+        this._dialog.addListener('annotationdelete', () => {
+            this.deleteAnnotation(this._annotations[0].annotationID);
         });
     }
 
@@ -239,10 +239,10 @@ class HighlightThread extends AnnotationThread {
             return;
         }
 
-        const quadPoints = this.location.quadPoints;
+        const quadPoints = this._location.quadPoints;
         const pageHeight = this._getPageEl().getBoundingClientRect().height;
         quadPoints.forEach((quadPoint) => {
-            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this.annotatedElement));
+            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
             context.fillStyle = fillStyle;
@@ -283,8 +283,8 @@ class HighlightThread extends AnnotationThread {
         const x = event.clientX - dimensions.left;
         const y = event.clientY - dimensions.top;
 
-        return this.location.quadPoints.some((quadPoint) => {
-            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, dimensions.height, annotatorUtil.getScale(this.annotatedElement));
+        return this._location.quadPoints.some((quadPoint) => {
+            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, dimensions.height, annotatorUtil.getScale(this._annotatedElement));
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
             return annotatorUtil.isPointInPolyOpt([
@@ -303,7 +303,7 @@ class HighlightThread extends AnnotationThread {
      * @private
      */
     _getPageEl() {
-        return this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+        return this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`);
     }
 
     /**
