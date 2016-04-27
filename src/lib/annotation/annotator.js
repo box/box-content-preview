@@ -19,6 +19,7 @@ import { ICON_ANNOTATION } from '../icons/icons';
 const MOUSEMOVE_THROTTLE = 16;
 const POINT_ANNOTATION_ICON_WIDTH = 16;
 const POINT_ANNOTATION_TYPE = 'point';
+const POINT_STATE_PENDING = 'pending';
 
 const ANONYMOUS_USER = {
     name: 'Kylo Ren',
@@ -339,6 +340,11 @@ class Annotator extends EventEmitter {
             return;
         }
 
+        // Destroy any pending point threads
+        this._getPendingPointThreads().forEach((pendingThread) => {
+            pendingThread.destroy();
+        });
+
         // Store coordinates at 100% scale in PDF space in PDF units
         const pageDimensions = pageEl.getBoundingClientRect();
         const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageDimensions.top];
@@ -348,10 +354,7 @@ class Annotator extends EventEmitter {
 
         // Create new thread with no annotations, show indicator, and show dialog
         const thread = this._createAnnotationThread([], location, POINT_ANNOTATION_TYPE);
-
-        // Show point indicator and create annotation dialog
         thread.show();
-        thread.showDialog();
 
         // Bind events on thread
         this._bindCustomListenersOnThread(thread);
@@ -465,15 +468,15 @@ class Annotator extends EventEmitter {
      * @returns {AnnotationThread} Created annotation thread
      * @private
      */
-    /* eslint-disable no-unused-vars */
-    _createAnnotationThread(annotations, location, type /* may be used by other annotators */) {
+    _createAnnotationThread(annotations, location, type) {
         const thread = new AnnotationThread({
             annotatedElement: this.annotatedElement,
             annotations,
             annotationService: this.annotationService,
             fileVersionID: this.fileVersionID,
             location,
-            user: this.user
+            user: this.user,
+            type
         });
         this._addThreadToMap(thread);
         return thread;
@@ -501,6 +504,25 @@ class Annotator extends EventEmitter {
      */
     _isInPointMode() {
         return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
+    }
+
+    /**
+     * Returns pending point threads.
+     *
+     * @returns {AnnotationThread[]} Pending point threads.
+     * @private
+     */
+    _getPendingPointThreads() {
+        const pendingThreads = [];
+
+        Object.keys(this.threads).forEach((page) => {
+            // Append pending point threads on page to array of pending threads
+            [].push.apply(pendingThreads, this.threads[page].filter((thread) => {
+                return thread.getState() === POINT_STATE_PENDING &&
+                    thread.getType() === POINT_ANNOTATION_TYPE;
+            }));
+        });
+        return pendingThreads;
     }
 }
 

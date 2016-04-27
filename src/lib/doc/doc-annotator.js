@@ -363,13 +363,12 @@ class DocAnnotator extends Annotator {
      */
     _getHighlightThreadsOnPage(page) {
         const threads = this.threads[page] || [];
-        return threads.filter((thread) => thread instanceof HighlightThread);
+        return threads.filter((thread) => thread.getType() === HIGHLIGHT_ANNOTATION_TYPE);
     }
 
     /**
      * Returns pending highlight threads.
      *
-     * @param {Number} page Page to get highlight threads for
      * @returns {HighlightThread[]} Pending highlight threads.
      * @private
      */
@@ -377,7 +376,11 @@ class DocAnnotator extends Annotator {
         const pendingThreads = [];
 
         Object.keys(this.threads).forEach((page) => {
-            [].push.apply(pendingThreads, this._getHighlightThreadsOnPage(page).filter((thread) => thread.getState() === HIGHLIGHT_STATE_PENDING));
+            // Append pending highlight threads on page to array of pending threads
+            [].push.apply(pendingThreads, this.threads[page].filter((thread) => {
+                return thread.getState() === HIGHLIGHT_STATE_PENDING &&
+                    thread.getType() === HIGHLIGHT_ANNOTATION_TYPE;
+            }));
         });
 
         return pendingThreads;
@@ -445,7 +448,8 @@ class DocAnnotator extends Annotator {
                 annotationService: this.annotationService,
                 fileVersionID: this.fileVersionID,
                 location,
-                user: this.user
+                user: this.user,
+                type
             });
             this._addThreadToMap(highlightThread);
             return highlightThread;
