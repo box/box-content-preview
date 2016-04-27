@@ -14,6 +14,8 @@ import * as annotatorUtil from './annotator-util';
 
 const POINT_ANNOTATION_ICON_WIDTH = 16;
 const POINT_ANNOTATION_TYPE = 'point';
+const POINT_STATE_INACTIVE = 'inactive';
+const POINT_STATE_PENDING = 'pending';
 
 @autobind
 class AnnotationThread extends EventEmitter {
@@ -34,6 +36,7 @@ class AnnotationThread extends EventEmitter {
      * @property {Object} location Location object
      * @property {String} threadID Thread ID
      * @property {Object} user User creating the thread
+     * @property {String} type Type of thread
      */
 
     //--------------------------------------------------------------------------
@@ -56,6 +59,7 @@ class AnnotationThread extends EventEmitter {
         this.location = data.location;
         this.threadID = data.threadID || AnnotationService.generateID();
         this.user = data.user;
+        this.type = data.type;
 
         this._setup();
     }
@@ -99,6 +103,10 @@ class AnnotationThread extends EventEmitter {
         pageEl.appendChild(this.element);
 
         annotatorUtil.showElement(this.element);
+
+        if (this.state === POINT_STATE_PENDING) {
+            this._showDialog();
+        }
     }
 
     /**
@@ -111,26 +119,12 @@ class AnnotationThread extends EventEmitter {
     }
 
     /**
-     * Shows the appropriate annotation dialog for this thread.
+     * Reset state to inactive.
      *
      * @returns {void}
      */
-    showDialog() {
-        // Don't show dialog if there is a current selection
-        if (this.dialog && !annotatorUtil.isSelectionPresent()) {
-            this.dialog.show();
-        }
-    }
-
-    /**
-     * Hides the appropriate annotation dialog for this thread.
-     *
-     * @returns {void}
-     */
-    hideDialog() {
-        if (this.dialog) {
-            this.dialog.hide();
-        }
+    reset() {
+        this.state = POINT_STATE_INACTIVE;
     }
 
     /**
@@ -149,6 +143,8 @@ class AnnotationThread extends EventEmitter {
             if (this.dialog) {
                 this.dialog.addAnnotation(savedAnnotation);
             }
+
+            this.reset();
         }).catch(() => {/* No-op */});
     }
 
@@ -176,6 +172,24 @@ class AnnotationThread extends EventEmitter {
         });
     }
 
+    /**
+     * Gets thread state.
+     *
+     * @returns {String} Thread state
+     */
+    getState() {
+        return this.state;
+    }
+
+    /**
+     * Gets thread type.
+     *
+     * @returns {String} Thread type
+     */
+    getType() {
+        return this.type;
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -188,6 +202,12 @@ class AnnotationThread extends EventEmitter {
      * @private
      */
     _setup() {
+        if (this.annotations.length === 0) {
+            this.state = POINT_STATE_PENDING;
+        } else {
+            this.state = POINT_STATE_INACTIVE;
+        }
+
         this.dialog = new AnnotationDialog({
             annotatedElement: this.annotatedElement,
             annotations: this.annotations,
@@ -220,8 +240,8 @@ class AnnotationThread extends EventEmitter {
      * @private
      */
     _bindDOMListeners() {
-        this.element.addEventListener('click', this.showDialog);
-        this.element.addEventListener('mouseover', this.showDialog);
+        this.element.addEventListener('click', this._showDialog);
+        this.element.addEventListener('mouseover', this._showDialog);
         this.element.addEventListener('mouseout', this._mouseoutHandler);
     }
 
@@ -232,8 +252,8 @@ class AnnotationThread extends EventEmitter {
      * @private
      */
     _unbindDOMListeners() {
-        this.element.removeEventListener('click', this.showDialog);
-        this.element.removeEventListener('mouseover', this.showDialog);
+        this.element.removeEventListener('click', this._showDialog);
+        this.element.removeEventListener('mouseover', this._showDialog);
         this.element.removeEventListener('mouseout', this._mouseoutHandler);
     }
 
@@ -282,6 +302,31 @@ class AnnotationThread extends EventEmitter {
         this.removeAllListeners(['annotationcreate']);
         this.removeAllListeners(['annotationcancel']);
         this.removeAllListeners(['annotationdelete']);
+    }
+
+    /**
+     * Shows the appropriate annotation dialog for this thread.
+     *
+     * @returns {void}
+     * @private
+     */
+    _showDialog() {
+        // Don't show dialog if there is a current selection
+        if (this.dialog && !annotatorUtil.isSelectionPresent()) {
+            this.dialog.show();
+        }
+    }
+
+    /**
+     * Hides the appropriate annotation dialog for this thread.
+     *
+     * @returns {void}
+     * @private
+     */
+    _hideDialog() {
+        if (this.dialog) {
+            this.dialog.hide();
+        }
     }
 
     /**

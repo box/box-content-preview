@@ -95,17 +95,7 @@ class HighlightThread extends AnnotationThread {
     saveAnnotation(type, text) {
         return super.saveAnnotation(type, text).then(() => {
             window.getSelection().removeAllRanges();
-            this.reset();
         });
-    }
-
-    /**
-     * Gets highlight state.
-     *
-     * @returns {String} Thread states
-     */
-    getState() {
-        return this.state;
     }
 
     /**
