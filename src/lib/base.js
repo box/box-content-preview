@@ -15,6 +15,7 @@ import {
     SELECTOR_BOX_PREVIEW
 } from './constants';
 
+const LOAD_TIMEOUT_MS = 30000; // 30s
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 const OPTIONS = {
     ui: true
@@ -56,7 +57,7 @@ class Base extends EventEmitter {
         this.addCommonListeners();
 
         // Timeout for loading the preview
-        this.loadTimeout = 15000;
+        this.loadTimeout = LOAD_TIMEOUT_MS;
 
         // For mobile browsers add mobile class just in case viewers need it
         if (Browser.isMobile()) {
