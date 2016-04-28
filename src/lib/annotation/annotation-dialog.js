@@ -46,8 +46,8 @@ class AnnotationDialog extends EventEmitter {
     constructor(data) {
         super();
 
-        this.annotatedElement = data.annotatedElement;
-        this.location = data.location;
+        this._annotatedElement = data.annotatedElement;
+        this._location = data.location;
 
         this._setup(data.annotations);
     }
@@ -58,14 +58,14 @@ class AnnotationDialog extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        if (this.element) {
+        if (this._element) {
             this._unbindDOMListeners();
 
-            if (this.element.parentNode) {
-                this.element.parentNode.removeChild(this.element);
+            if (this._element.parentNode) {
+                this._element.parentNode.removeChild(this._element);
             }
 
-            this.element = null;
+            this._element = null;
         }
     }
 
@@ -76,8 +76,8 @@ class AnnotationDialog extends EventEmitter {
      */
     show() {
         // Reset hide timeout handler
-        clearTimeout(this.timeoutHandler);
-        this.timeoutHandler = null;
+        clearTimeout(this._timeoutHandler);
+        this._timeoutHandler = null;
 
         // Position and show - we need to reposition every time since the DOM
         // could have changed from zooming
@@ -85,8 +85,8 @@ class AnnotationDialog extends EventEmitter {
 
         // Focus textarea if visible
         const textAreaEl = this._inCreateMode() ?
-            this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA) :
-            this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA) :
+            this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         if (annotatorUtil.isElementInViewport(textAreaEl)) {
             textAreaEl.focus();
         }
@@ -100,13 +100,13 @@ class AnnotationDialog extends EventEmitter {
      */
     hide(noDelay = false) {
         if (noDelay) {
-            annotatorUtil.hideElement(this.element);
-            clearTimeout(this.timeoutHandler);
-            this.timeoutHandler = null;
-        } else if (!this.timeoutHandler) {
-            this.timeoutHandler = setTimeout(() => {
-                annotatorUtil.hideElement(this.element);
-                this.timeoutHandler = null;
+            annotatorUtil.hideElement(this._element);
+            clearTimeout(this._timeoutHandler);
+            this._timeoutHandler = null;
+        } else if (!this._timeoutHandler) {
+            this._timeoutHandler = setTimeout(() => {
+                annotatorUtil.hideElement(this._element);
+                this._timeoutHandler = null;
             }, DIALOG_HIDE_TIMEOUT);
         }
     }
@@ -120,8 +120,8 @@ class AnnotationDialog extends EventEmitter {
     addAnnotation(annotation) {
         // If in create mode, switch to show mode
         if (this._inCreateMode()) {
-            const createSectionEl = this.element.querySelector('[data-section="create"]');
-            const showSectionEl = this.element.querySelector('[data-section="show"]');
+            const createSectionEl = this._element.querySelector('[data-section="create"]');
+            const showSectionEl = this._element.querySelector('[data-section="show"]');
             annotatorUtil.hideElement(createSectionEl);
             annotatorUtil.showElement(showSectionEl);
         }
@@ -137,7 +137,7 @@ class AnnotationDialog extends EventEmitter {
      * @returns {void}
      */
     removeAnnotation(annotationID) {
-        const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
+        const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         if (annotationEl) {
             annotationEl.parentNode.removeChild(annotationEl);
         }
@@ -157,10 +157,10 @@ class AnnotationDialog extends EventEmitter {
      */
     _setup(annotations) {
         // Generate HTML of dialog
-        this.element = document.createElement('div');
-        this.element.setAttribute('data-type', 'annotation-dialog');
-        this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
-        this.element.innerHTML = `
+        this._element = document.createElement('div');
+        this._element.setAttribute('data-type', 'annotation-dialog');
+        this._element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+        this._element.innerHTML = `
             <div class="box-preview-annotation-caret"></div>
             <div class="annotation-container">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
@@ -226,7 +226,7 @@ class AnnotationDialog extends EventEmitter {
                 </div>
             </div>`.trim();
 
-        const annotationContainerEl = this.element.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
+        const annotationContainerEl = this._element.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
         annotationContainerEl.appendChild(annotationEl);
     }
 
@@ -237,13 +237,13 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _position() {
-        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`) || this.annotatedElement;
-        const [browserX, browserY] = annotatorUtil.getBrowserCoordinatesFromLocation(this.location, this.annotatedElement);
+        const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;
+        const [browserX, browserY] = annotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
 
         // Show dialog so we can get width
-        pageEl.appendChild(this.element);
-        annotatorUtil.showElement(this.element);
-        const dialogDimensions = this.element.getBoundingClientRect();
+        pageEl.appendChild(this._element);
+        annotatorUtil.showElement(this._element);
+        const dialogDimensions = this._element.getBoundingClientRect();
         const dialogWidth = dialogDimensions.width;
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageWidth = pageDimensions.width;
@@ -262,7 +262,7 @@ class AnnotationDialog extends EventEmitter {
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
         // else we can do
-        const annotationCaretEl = this.element.querySelector('.box-preview-annotation-caret');
+        const annotationCaretEl = this._element.querySelector('.box-preview-annotation-caret');
         if (dialogPastLeft && !dialogPastRight) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
             const caretLeftX = Math.max(10, browserX);
@@ -287,8 +287,8 @@ class AnnotationDialog extends EventEmitter {
         }
 
         // Position the dialog
-        this.element.style.left = `${dialogLeftX}px`;
-        this.element.style.top = `${dialogTopY}px`;
+        this._element.style.left = `${dialogLeftX}px`;
+        this._element.style.top = `${dialogTopY}px`;
     }
 
     /**
@@ -298,10 +298,10 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _bindDOMListeners() {
-        this.element.addEventListener('keydown', this._keydownHandler);
-        this.element.addEventListener('click', this._clickHandler);
-        this.element.addEventListener('mouseenter', this._mouseenterHandler);
-        this.element.addEventListener('mouseleave', this._mouseleaveHandler);
+        this._element.addEventListener('keydown', this._keydownHandler);
+        this._element.addEventListener('click', this._clickHandler);
+        this._element.addEventListener('mouseenter', this._mouseenterHandler);
+        this._element.addEventListener('mouseleave', this._mouseleaveHandler);
     }
 
     /**
@@ -311,10 +311,10 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _unbindDOMListeners() {
-        this.element.removeEventListener('keydown', this._keydownHandler);
-        this.element.removeEventListener('click', this._clickHandler);
-        this.element.removeEventListener('mouseenter', this._mouseenterHandler);
-        this.element.removeEventListener('mouseleave', this._mouseleaveHandler);
+        this._element.removeEventListener('keydown', this._keydownHandler);
+        this._element.removeEventListener('click', this._clickHandler);
+        this._element.removeEventListener('mouseenter', this._mouseenterHandler);
+        this._element.removeEventListener('mouseleave', this._mouseleaveHandler);
     }
 
     /**
@@ -325,8 +325,8 @@ class AnnotationDialog extends EventEmitter {
      */
     _mouseenterHandler() {
         // Reset hide timeout handler
-        clearTimeout(this.timeoutHandler);
-        this.timeoutHandler = null;
+        clearTimeout(this._timeoutHandler);
+        this._timeoutHandler = null;
     }
 
     /**
@@ -431,7 +431,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _postAnnotation() {
-        const annotationTextEl = this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        const annotationTextEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
         const text = annotationTextEl.value;
         if (text.trim() === '') {
             return;
@@ -458,7 +458,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _activateReply() {
-        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         replyTextEl.classList.add(CLASS_ACTIVE);
         annotatorUtil.showElement(replyButtonEls);
@@ -471,7 +471,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _deactivateReply() {
-        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl);
         annotatorUtil.hideElement(replyButtonEls);
@@ -485,7 +485,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _postReply() {
-        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const text = replyTextEl.value;
         if (text.trim() === '') {
             return;
@@ -503,7 +503,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _showDeleteConfirmation(annotationID) {
-        const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
+        const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const cancelDeleteButtonEl = annotationEl.querySelector('.cancel-delete-btn');
         annotatorUtil.showElement(deleteConfirmationEl);
@@ -518,7 +518,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _hideDeleteConfirmation(annotationID) {
-        const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
+        const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
         annotatorUtil.hideElement(deleteConfirmationEl);
@@ -543,7 +543,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _inCreateMode() {
-        const createSectionEl = this.element.querySelector('[data-section="create"]');
+        const createSectionEl = this._element.querySelector('[data-section="create"]');
         return !createSectionEl.classList.contains(CLASS_HIDDEN);
     }
 }

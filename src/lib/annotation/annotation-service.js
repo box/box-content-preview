@@ -41,8 +41,8 @@ class AnnotationService {
      * @returns {AnnotationService} AnnotationService instance
      */
     constructor(endpoint, token) {
-        this.endpoint = endpoint;
-        this.token = token;
+        this._endpoint = endpoint;
+        this._token = token;
     }
 
     /**

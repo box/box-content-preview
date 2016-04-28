@@ -146,7 +146,7 @@ class DocBase extends Base {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(this.pdfViewer.currentScale);
-            this.annotator.needToReRender = true;
+            this._reRenderAnnotations = true;
         }
     }
 
@@ -270,7 +270,7 @@ class DocBase extends Base {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(scale);
-            this.annotator.needToReRender = true;
+            this._reRenderAnnotations = true;
         }
 
         this.pdfViewer.currentScaleValue = scale;
@@ -623,9 +623,9 @@ class DocBase extends Base {
      * @returns {void}
      */
     pagerenderedHandler() {
-        if (this.annotator && this.annotator.needToReRender) {
+        if (this.annotator && this._reRenderAnnotations) {
             this.annotator.renderAnnotations();
-            this.annotator.needToReRender = false;
+            this._reRenderAnnotations = false;
         }
 
         if (this.loaded) {
