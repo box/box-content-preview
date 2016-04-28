@@ -30,6 +30,9 @@ class Model3dRenderer extends Box3DRenderer {
 
         this.axisUp = null;
         this.axisForward = null;
+        this.instance = null;
+
+        this.isRotating = false;
     }
 
     /**
@@ -220,12 +223,10 @@ class Model3dRenderer extends Box3DRenderer {
             // Attach PreviewAxisRotation component to the instance
             instance.componentRegistry.add('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
 
-            instance.on('axis_transition_complete', () => {
-                instance.alignToPosition({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 });
-            });
-
             // Add the instance to the scene.
             scene.addChild(instance);
+
+            this.instance = instance;
         }
     }
 
@@ -280,6 +281,7 @@ class Model3dRenderer extends Box3DRenderer {
             asset.destroy();
         });
 
+        this.instance = null;
         this.instances.length = 0;
         this.assets.length = 0;
     }
@@ -364,8 +366,22 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     rotateOnAxis(axis) {
-        if (this.box3d) {
+        if (this.instance && this.box3d && !this.isRotating) {
+            this.isRotating = true;
+            const postUpdate = () => {
+                this.instance.alignToPosition({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 });
+            };
+
+            // Kick off rotation
             this.box3d.trigger('rotate_on_axis', axis, true);
+            // Start listening to post update, to centre the object
+            this.box3d.on('postUpdate', postUpdate);
+            // Once transition complete, start updating and allow for another rotation
+            this.instance.once('axis_transition_complete', () => {
+                postUpdate();
+                this.box3d.off('postUpdate', postUpdate);
+                this.isRotating = false;
+            });
         }
     }
 
