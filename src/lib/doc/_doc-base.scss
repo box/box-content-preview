@@ -59,7 +59,7 @@
         font-size: 14px;
         margin: 0 auto;
         text-align: center;
-        width: auto;
+        width: 44px; // hard-coded to solve layout issues
     }
 
     &.show-page-number-input {
