@@ -14,9 +14,10 @@ const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';
 const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 233, 23, 0.5)';
 const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 255, 255, 1)';
-const HIGHLIGHT_STATE_ACTIVE = 'active';
-const HIGHLIGHT_STATE_HOVER = 'hover';
-const HIGHLIGHT_STATE_INACTIVE = 'inactive';
+const HIGHLIGHT_STATE_ACTIVE = 'active'; // clicked
+const HIGHLIGHT_STATE_ACTIVE_HOVER = 'active-hover'; // clicked and mouse is over
+const HIGHLIGHT_STATE_HOVER = 'hover'; // mouse is over
+const HIGHLIGHT_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
 const HIGHLIGHT_STATE_PENDING = 'pending';
 
 @autobind
@@ -56,6 +57,7 @@ class HighlightThread extends AnnotationThread {
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
             case HIGHLIGHT_STATE_ACTIVE:
+            case HIGHLIGHT_STATE_ACTIVE_HOVER:
                 this._dialog.show();
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
@@ -128,7 +130,9 @@ class HighlightThread extends AnnotationThread {
     onClick(event, consumed) {
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
-        if (!consumed && (this._state === HIGHLIGHT_STATE_HOVER || this._isInHighlight(event))) {
+        if (!consumed && (this._state === HIGHLIGHT_STATE_HOVER ||
+            this._state === HIGHLIGHT_STATE_ACTIVE_HOVER ||
+            this._isInHighlight(event))) {
             this._state = HIGHLIGHT_STATE_ACTIVE;
             return true;
         }
@@ -154,21 +158,31 @@ class HighlightThread extends AnnotationThread {
             return false;
         }
 
-        // Should delay if highlight is active or hovered
-        let delay = false;
+        // If mouse is in highlight, change state to hover or active-hover
+        if (this._isInHighlight(event)) {
+            if (this._state === HIGHLIGHT_STATE_ACTIVE ||
+                this._state === HIGHLIGHT_STATE_ACTIVE_HOVER) {
+                this._state = HIGHLIGHT_STATE_ACTIVE_HOVER;
+            } else {
+                this._state = HIGHLIGHT_STATE_HOVER;
+            }
 
-        // If state is active, do not override
-        if (this._state === HIGHLIGHT_STATE_ACTIVE) {
-            delay = true;
-        // If mouse is over a non-active highlight, change state to hover
-        } else if (this._isInHighlight(event)) {
-            this._state = HIGHLIGHT_STATE_HOVER;
-            delay = true;
+        // If mouse is not in highlight, and state was previously active-hover,
+        // change state back to active
+        } else if (this._state === HIGHLIGHT_STATE_ACTIVE_HOVER) {
+            this._state = HIGHLIGHT_STATE_ACTIVE;
+
+        // If mouse is not in highlight, and state is active, do not override
+        } else if (this._state === HIGHLIGHT_STATE_ACTIVE) {
+            // No-op
+
+        // If mouse is not in highlight and state is not active, reset
         } else {
             this.reset();
+            return false; // Do not delay reset draws
         }
 
-        return delay;
+        return true;
     }
 
     //--------------------------------------------------------------------------

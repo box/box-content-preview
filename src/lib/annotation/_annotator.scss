@@ -58,6 +58,16 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
+.box-preview-use-hand-cursor {
+    cursor: pointer;
+
+    // Overrides pdf_viewer.css
+    // scss-lint:disable SelectorFormat
+    .textLayer > div {
+        cursor: pointer;
+    }
+}
+
 //------------------------------------------------------------------------------
 // CSS for points and dialogs
 //------------------------------------------------------------------------------
@@ -284,6 +294,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     border: 1px solid $color-border;
     border-radius: 2px;
     box-shadow: 0 2px 4px 0 $color-shadow;
+    cursor: pointer;
     margin: 0;
     padding: 5px 6px;
 }

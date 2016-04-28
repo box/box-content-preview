@@ -22,7 +22,9 @@ import * as constants from '../annotation/annotation-constants';
 import { ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
-const HIGHLIGHT_STATE_PENDING = 'pending';
+const HIGHLIGHT_STATE_ACTIVE = 'active';
+const HIGHLIGHT_STATE_ACTIVE_HOVER = 'active-hover';
+const HIGHLIGHT_STATE_HOVER = 'hover';
 const IS_MOBILE = Browser.isMobile();
 const MOUSEMOVE_THROTTLE = 50;
 const MOUSEDOWN = IS_MOBILE ? 'touchstart' : 'mousedown';
@@ -238,6 +240,16 @@ class DocAnnotator extends Annotator {
                     });
                 }
 
+                // If we are hovering over a highlight, we should use a hand cursor
+                if (delayThreads.some((thread) => {
+                    return thread.state === HIGHLIGHT_STATE_HOVER ||
+                        thread.state === HIGHLIGHT_STATE_ACTIVE_HOVER;
+                })) {
+                    this._useHandCursor();
+                } else {
+                    this._removeHandCursor();
+                }
+
                 // Delayed threads (threads that should be in active or hover
                 // state) should be drawn last
                 delayThreads.forEach((thread) => {
@@ -258,6 +270,12 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMouseupHandler(event) {
+        // If mouseup is inside a point dialog or indicator, ignore
+        const dataType = annotatorUtil.findClosestDataType(event.target);
+        if (dataType === 'annotation-dialog' || dataType === 'annotation-thread') {
+            return;
+        }
+
         if (this._didMouseMove || this._isInHighlightMode()) {
             this._highlightCreateHandler(event);
         } else {
@@ -273,12 +291,17 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightCreateHandler(event) {
-        const selectionPresent = annotatorUtil.isSelectionPresent();
-        const highlightsPending = this._getPendingHighlightThreads().length > 0;
-        if (!selectionPresent || highlightsPending) {
+        if (!annotatorUtil.isSelectionPresent()) {
             return;
         }
 
+        // Reset any active highlight threads before creating a new highlight
+        const activeThreads = this._getHighlightThreadsWithStates(HIGHLIGHT_STATE_ACTIVE, HIGHLIGHT_STATE_ACTIVE_HOVER);
+        activeThreads.forEach((thread) => {
+            thread.reset();
+        });
+
+        // Get correct page
         let { pageEl, page } = annotatorUtil.getPageElAndPageNumber(event.target);
         if (page === -1) {
             // The ( .. ) around assignment is required syntax
@@ -289,12 +312,9 @@ class DocAnnotator extends Annotator {
         // highlight module can mess with the selection. We restore this
         // selection after we clean up the highlight
         const savedSelection = rangy.saveSelection();
-        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter);
-        if (highlightEls.length === 0) {
-            return;
-        }
 
-        // Get quad points for each highlight element
+        // Use highlight module to calculate quad points
+        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter);
         const quadPoints = [];
         highlightEls.forEach((element) => {
             quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, annotatorUtil.getScale(this._annotatedElement)));
@@ -348,10 +368,30 @@ class DocAnnotator extends Annotator {
             });
         });
 
-        // Show active threads last
+        // Show active thread last
         if (activeThread) {
             activeThread.show();
         }
+    }
+
+    /**
+     * Show hand cursor instead of normal cursor.
+     *
+     * @returns {void}
+     * @private
+     */
+    _useHandCursor() {
+        this._annotatedElement.classList.add('box-preview-use-hand-cursor');
+    }
+
+    /**
+     * Use normal cursor.
+     *
+     * @returns {void}
+     * @private
+     */
+    _removeHandCursor() {
+        this._annotatedElement.classList.remove('box-preview-use-hand-cursor');
     }
 
     /**
@@ -367,23 +407,28 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Returns pending highlight threads.
+     * Returns highlight threads with a state in the specified states.
      *
+     * @param {...String} states States of highlight threads to find
      * @returns {HighlightThread[]} Pending highlight threads.
      * @private
      */
-    _getPendingHighlightThreads() {
-        const pendingThreads = [];
+    _getHighlightThreadsWithStates(...states) {
+        const threads = [];
 
         Object.keys(this._threads).forEach((page) => {
             // Append pending highlight threads on page to array of pending threads
-            [].push.apply(pendingThreads, this._threads[page].filter((thread) => {
-                return thread.state === HIGHLIGHT_STATE_PENDING &&
-                    thread.type === HIGHLIGHT_ANNOTATION_TYPE;
+            [].push.apply(threads, this._threads[page].filter((thread) => {
+                let matchedState = false;
+                states.forEach((state) => {
+                    matchedState = matchedState || (thread.state === state);
+                });
+
+                return matchedState && thread.type === HIGHLIGHT_ANNOTATION_TYPE;
             }));
         });
 
-        return pendingThreads;
+        return threads;
     }
 
     /**
