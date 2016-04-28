@@ -4,35 +4,57 @@ $padding: 8px;
 $item-height: 26px;
 
 .box-preview-media-settings {
-    padding: $padding;
+    background-color: rgba($white, .9);
     border: 1px solid $sf-fog;
     border-radius: 2px;
-    margin: 0;
-    color: $fours;
-    width: 158px;
-    height: 2 * ($item-height + $padding + 1px);
-    font-size: 10px;
-    overflow: hidden;
-    position: absolute;
-    background-color: rgba($white, .9);
-    transition: width .2s, height .2s;
     bottom: 60px;
-    right: 16px;
+    color: $fours;
     display: none;
+    font-size: 10px;
+    height: 2 * ($item-height + $padding + 1px);
     line-height: $item-height - $padding;
+    margin: 0;
+    overflow: hidden;
+    padding: $padding;
+    position: absolute;
+    right: 16px;
+    transition: width .2s, height .2s;
+    width: 148px;
 
     .box-preview-media-settings-is-open & {
         display: block;
     }
+
+    // For MP3 and MP4 we only have speed option
+    .box-preview-media-mp4 &,
+    .box-preview-media-mp3 & {
+        height: $item-height + (2 * ($padding + 1px));
+    }
+
+    .box-preview-media-mp3 & {
+        bottom: 65px;
+        right: 0;
+    }
+
+    &.box-preview-media-settings-show-speed,
+    &.box-preview-media-settings-show-quality {
+        height: ((4 * $item-height) + (2 * $padding)) !important;
+        width: (88px + (2 * $padding)) !important;
+    }
+
+    &.box-preview-media-settings-show-speed {
+        height: ((7 * $item-height) + (2 * $padding)) !important;
+    }
+
 }
 
 .box-preview-media-settings-item,
 .box-preview-media-settings-sub-item {
-    padding: $padding / 2;
-    height: $item-height;
     cursor: pointer;
-    white-space: nowrap;
+    height: $item-height;
     overflow: hidden;
+    padding: $padding / 2;
+    white-space: nowrap;
 }
 
 .box-preview-media-settings-item:hover,
@@ -58,20 +80,22 @@ $item-height: 26px;
 }
 
 .box-preview-media-settings-item .box-preview-media-settings-label {
-    width: 65px;
-    padding-left: $padding / 2;
     color: $downtown-grey;
-    text-transform: uppercase;
-    text-align: left;
     font-weight: 400;
+    padding-left: $padding / 2;
+    text-align: left;
+    text-transform: uppercase;
+    width: 55px;
 }
 
 .box-preview-media-settings-value {
 
+    text-align: right;
+
     .box-preview-media-settings-item & {
-        width: 48px;
         color: $sunset-grey;
         font-weight: 400;
+        width: 48px;
     }
 
     .box-preview-media-settings-sub-item & {
@@ -84,28 +108,15 @@ $item-height: 26px;
 }
 
 .box-preview-media-settings-sub-item .box-preview-media-settings-label {
-    width: 48px;
     color: $downtown-grey;
-    text-transform: uppercase;
     font-weight: 400;
     text-align: center;
+    text-transform: uppercase;
+    width: 48px;
 }
 
 .box-preview-media-settings-options-quality,
-.box-preview-media-settings-options-speed {
-    display: none;
-}
-
-.box-preview-media-settings-show-speed.box-preview-media-settings,
-.box-preview-media-settings-show-quality.box-preview-media-settings {
-    width: (88px + (2 * $padding)) !important;
-    height: ((4 * $item-height) + (2 * $padding)) !important;
-}
-
-.box-preview-media-settings-show-speed.box-preview-media-settings {
-    height: ((7 * $item-height) + (2 * $padding)) !important;
-}
-
+.box-preview-media-settings-options-speed,
 .box-preview-media-settings-show-speed .box-preview-media-settings-item,
 .box-preview-media-settings-show-quality .box-preview-media-settings-item {
     display: none;
@@ -117,28 +128,28 @@ $item-height: 26px;
 }
 
 .box-preview-media-settings-arrow {
-    width: 18px;
-    height: 18px;
     display: inline-block;
+    height: 18px;
     vertical-align: middle;
+    width: 18px;
 
     svg {
-        width: 18px;
         height: 18px;
+        width: 18px;
     }
 }
 
 .box-preview-media-settings-icon {
     display: inline-block;
-    visibility: hidden;
     height: 16px;
-    width: 30px;
-    vertical-align: middle;
     text-align: center;
+    vertical-align: middle;
+    visibility: hidden;
+    width: 30px;
 
     svg {
-        width: 16px;
         height: 16px;
+        width: 16px;
     }
 
     .box-preview-media-settings-selected & {

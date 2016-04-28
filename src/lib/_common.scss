@@ -1,5 +1,4 @@
-$header-border-color: #dedede;
-$preview-background-color: rgba(90, 90, 90, .9);
+@import 'variables';
 
 .box-preview-is-hidden {
     // scss-lint:disable ImportantRule
@@ -27,13 +26,13 @@ $preview-background-color: rgba(90, 90, 90, .9);
     width: 100%;
 
     a {
-        color: $header-border-color;
+        color: $alto;
     }
 }
 
 .box-preview-header {
     align-items: center;
-    border-bottom: 1px solid $header-border-color;
+    border-bottom: 1px solid $alto;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-align: center;
@@ -61,7 +60,7 @@ $preview-background-color: rgba(90, 90, 90, .9);
 
 .box-preview {
     align-items: center;
-    background-color: $preview-background-color;
+    background-color: rgba($sunset-grey, .9);
     border: 0 none;
     bottom: 0;
     display: -ms-flexbox;

@@ -245,15 +245,22 @@ class MediaControls extends EventEmitter {
 
     /**
      * Toggles settings menu
-     * @emits toggleSettings
      * @returns {void}
      */
     toggleSettings() {
-        if (this.settings.isVisible()) {
+        if (this.isSettingsVisible()) {
             this.settings.hide();
         } else {
             this.settings.show();
         }
+    }
+
+    /**
+     * Tells if settings menu is open
+     * @returns {Boolean} true or false
+     */
+    isSettingsVisible() {
+        return !!this.settings && this.settings.isVisible();
     }
 
     /**
@@ -350,7 +357,7 @@ class MediaControls extends EventEmitter {
     hide() {
         // Do not hide the controls if the settings menu was open
         // Also do not hide, till the mouse has left the controls
-        if (this.preventHiding || (this.settings && this.settings.isVisible())) {
+        if (this.preventHiding || this.isSettingsVisible()) {
             this.show();
             return;
         }
@@ -479,7 +486,7 @@ class MediaControls extends EventEmitter {
      */
     filmstripShowHandler(event) {
         // Don't show the filstrip when settings menu is open
-        if (this.settings.isVisible()) {
+        if (this.isSettingsVisible()) {
             return;
         }
 

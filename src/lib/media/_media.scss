@@ -39,8 +39,7 @@
     font-size: 40px;
     height: 80px;
     left: 50%;
-    line-height: 70px;
-    padding-left: 7px;
+    padding-top: 12px;
     position: absolute;
     text-align: center;
     top: 50%;
@@ -50,6 +49,9 @@
 
     &:hover {
         background: $black;
-        color: $box-blue;
+
+        svg {
+            fill: $box-blue;
+        }
     }
 }
