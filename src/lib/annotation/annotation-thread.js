@@ -203,6 +203,15 @@ class AnnotationThread extends EventEmitter {
         return this._type;
     }
 
+    /**
+     * Gets state.
+     *
+     * @returns {String} state
+     */
+    get state() {
+        return this._state;
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
