@@ -74,7 +74,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 .box-preview-annotation-dialog {
     // Transparent border for hover detection
     border-top: 20px solid transparent;
-    cursor: auto; // Overrides cursor: none from annotation mode
+    cursor: default; // Overrides cursor: none from annotation mode
     position: absolute;
     width: 282px; // Hard-coded width to solve layout issues
     z-index: 9999; // Annotation dialog should be above other content
@@ -246,17 +246,20 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 
 // Clicks should go through icon
 .box-preview-point-annotation-icon {
+    cursor: none;
     pointer-events: none;
 }
 
+// scss-lint:disable SelectorFormat
 .box-preview-point-annotation-mode {
-    // Don't show a cursor on pages since we show a point annotation indicator
-    .page {
+    // Don't show a cursor since we use a point annotation icon
+    .page,
+    .box-preview-annotation-layer,
+    .textLayer > div {
         cursor: none;
     }
 
     // Disable text selection when point annotation mode is active
-    // scss-lint:disable SelectorFormat
     .textLayer {
         pointer-events: none;
     }
