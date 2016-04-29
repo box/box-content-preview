@@ -25,7 +25,7 @@
     transition-property: opacity;
 
     &:hover {
-        background-color: rgba($black, .5);
+        background-color: rgba($gainsboro, .8);
         opacity: 1;
     }
 }
