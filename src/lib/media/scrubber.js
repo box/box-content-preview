@@ -48,6 +48,7 @@ class Scrubber extends EventEmitter {
         this.setBufferedValue(bufferedValue);
         this.setValue(value);
 
+        this.playedEl.addEventListener('mousedown', this.mouseDownHandler);
         this.convertedEl.addEventListener('mousedown', this.mouseDownHandler);
         this.handleEl.addEventListener('mousedown', this.mouseDownHandler);
     }
@@ -59,6 +60,7 @@ class Scrubber extends EventEmitter {
     destroy() {
         this.removeAllListeners();
         this.destroyDocumentHandlers();
+        this.playedEl.removeEventListener('mousedown', this.mouseDownHandler);
         this.convertedEl.removeEventListener('mousedown', this.mouseDownHandler);
         this.handleEl.removeEventListener('mousedown', this.mouseDownHandler);
         this.scrubberContainerEl = undefined;

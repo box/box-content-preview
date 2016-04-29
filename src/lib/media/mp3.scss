@@ -9,20 +9,13 @@
         overflow: visible; /* to show settings popup */
     }
 
-    .box-preview-media-expand-icon {
+    .box-preview-media-fullscreen-icon {
         display: none;
     }
 
     .box-preview-media-controls-wrapper {
         background: $black;
         opacity: 1;
-    }
-
-    .box-preview-media-settings {
-        background-color: rgba($twos, .8);
-        bottom: 65px;
-        right: 0;
-        height: 23px;
     }
 
     .box-preview-media-settings-item-quality,

@@ -8,6 +8,9 @@ import HIGHLIGHT from 'raw!./highlight_24px.svg';
 import ROTATE_LEFT from 'raw!./rotate_left_24px.svg';
 import ZOOM_IN from 'raw!./zoom_in_24px.svg';
 import ZOOM_OUT from 'raw!./zoom_out_24px.svg';
+import ARROW_LEFT from 'raw!./arrow_left_24px.svg';
+import ARROW_RIGHT from 'raw!./arrow_right_24px.svg';
+import CHECK_MARK from 'raw!./checkmark_24px.svg';
 
 export const ICON_ANNOTATION = ANNOTATION;
 export const ICON_DROP_DOWN = DROP_DOWN;
@@ -19,3 +22,6 @@ export const ICON_HIGHLIGHT = HIGHLIGHT;
 export const ICON_ROTATE_LEFT = ROTATE_LEFT;
 export const ICON_ZOOM_IN = ZOOM_IN;
 export const ICON_ZOOM_OUT = ZOOM_OUT;
+export const ICON_ARROW_LEFT = ARROW_LEFT;
+export const ICON_ARROW_RIGHT = ARROW_RIGHT;
+export const ICON_CHECK_MARK = CHECK_MARK;

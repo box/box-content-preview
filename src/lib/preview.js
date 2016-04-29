@@ -36,7 +36,6 @@ const PREFETCH_COUNT = 3;
 const MOUSEMOVE_THROTTLE = 1500;
 const RETRY_TIMEOUT = 500;
 const RETRY_COUNT = 5;
-const PERMISSIONS_ERROR = 'Missing permissions to preview';
 const API = 'https://api.box.com';
 const Box = global.Box || {};
 
@@ -82,22 +81,6 @@ class Preview extends EventEmitter {
         // Determine the location of preview.js since all
         // other files are relative to it.
         this.determinePreviewLocation();
-
-        // Call preload of loaders
-        this.preloadLoaders();
-
-        // Throttled mousemove for navigation visibility
-        this.throttledMousemoveHandler = throttle(() => {
-            clearTimeout(this.timeoutHandler);
-            if (this.container) {
-                this.container.classList.add(CLASS_NAVIGATION_VISIBILITY);
-            }
-            this.timeoutHandler = setTimeout(() => {
-                if (this.container) {
-                    this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
-                }
-            }, MOUSEMOVE_THROTTLE);
-        }, MOUSEMOVE_THROTTLE - 500, true);
     }
 
     /**
@@ -517,7 +500,7 @@ class Preview extends EventEmitter {
 
         // Check if preview permissions exist
         if (!this.file.permissions.can_preview) {
-            throw new Error(PERMISSIONS_ERROR);
+            throw new Error(__('error_permissions'));
         }
 
         // Determine the asset loader to use
@@ -834,6 +817,48 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Mouse move handler for navigation
+     *
+     * @private
+     * @returns {Function} throttled mousemove handler
+     */
+    getGlobalMousemoveHandler() {
+        if (this.throttledMousemoveHandler) {
+            return this.throttledMousemoveHandler;
+        }
+
+        this.throttledMousemoveHandler = throttle(() => {
+            clearTimeout(this.timeoutHandler);
+
+            if (!this.container) {
+                return;
+            }
+
+            // If a viewer is showing then we are previewing
+            const isPreviewing = !!this.viewer;
+
+            // Always assume that navigation arrows will be hidden
+            this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
+
+            // Only show it if either we aren't previewing or if we are then the viewer
+            // is not blocking the show. If we are previewing then the viewer may choose
+            // to not allow navigation arrows. This is mostly useful for videos since the
+            // navigation arrows may interfere with the settings menu inside video player.
+            if (!isPreviewing || this.viewer.allowNavigationArrows()) {
+                this.container.classList.add(CLASS_NAVIGATION_VISIBILITY);
+            }
+
+            this.timeoutHandler = setTimeout(() => {
+                if (this.container) {
+                    this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
+                }
+            }, MOUSEMOVE_THROTTLE);
+        }, MOUSEMOVE_THROTTLE - 500, true);
+
+        return this.throttledMousemoveHandler;
+    }
+
+    /**
      * Shows navigation arrows if there is a need
      *
      * @private
@@ -850,13 +875,18 @@ class Preview extends EventEmitter {
         const leftNavigation = this.container.querySelector(SELECTOR_NAVIGATION_LEFT);
         const rightNavigation = this.container.querySelector(SELECTOR_NAVIGATION_RIGHT);
 
+        // If show navigation was called when shell is not ready then return
+        if (!leftNavigation || !rightNavigation) {
+            return;
+        }
+
         // Hide the arrows by default
         leftNavigation.classList.add(CLASS_HIDDEN);
         rightNavigation.classList.add(CLASS_HIDDEN);
 
         leftNavigation.removeEventListener('click', this.navigateLeft);
         rightNavigation.removeEventListener('click', this.navigateRight);
-        this.contentContainer.removeEventListener('mousemove', this.throttledMousemoveHandler);
+        this.contentContainer.removeEventListener('mousemove', this.getGlobalMousemoveHandler());
 
         // Don't show navigation when there is no need
         if (this.collection.length < 2) {
@@ -865,7 +895,7 @@ class Preview extends EventEmitter {
 
         leftNavigation.addEventListener('click', this.navigateLeft);
         rightNavigation.addEventListener('click', this.navigateRight);
-        this.contentContainer.addEventListener('mousemove', this.throttledMousemoveHandler);
+        this.contentContainer.addEventListener('mousemove', this.getGlobalMousemoveHandler());
 
         // Selectively show or hide the navigation arrows
         const index = this.collection.indexOf(this.file.id);
@@ -919,21 +949,6 @@ class Preview extends EventEmitter {
         if (newIndex !== currentIndex) {
             this.navigateToIndex(newIndex);
         }
-    }
-
-    /**
-     * Initializes the loaders which may have
-     * an optional init method.
-     *
-     * @private
-     * @returns {void}
-     */
-    preloadLoaders() {
-        this.loaders.forEach((loader) => {
-            if (typeof loader.preload === 'function') {
-                loader.preload(this.location);
-            }
-        });
     }
 
     /**
@@ -1039,7 +1054,7 @@ class Preview extends EventEmitter {
         this.destroy();
 
         if (this.contentContainer) {
-            this.contentContainer.removeEventListener('mousemove', this.throttledMousemoveHandler);
+            this.contentContainer.removeEventListener('mousemove', this.getGlobalMousemoveHandler());
         }
 
         if (this.container) {

@@ -19,14 +19,13 @@
     left: 0;
     right: 0;
     opacity: 0;
-    background-image: linear-gradient(to top, rgba($black, .4) 0%, rgba($black, 0) 100%);
+    background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
 }
 
 .box-preview-media-volume-scrubber-container {
     display: inline-block;
     width: 80px;
-    vertical-align: top;
-    margin-top: 10px;
+    margin-top: 8px;
 
     .box-preview-media-scrubber-handle {
         transform: scale(1);
@@ -63,10 +62,16 @@
     display: inline-block;
     vertical-align: top;
     color: $white;
+    opacity: .7;
+
+    &:hover {
+        opacity: 1;
+    }
 }
 
 .box-preview-media-controls-volume-control .box-preview-media-controls-btn {
-    width: 20px;
+    width: 36px;
+    position: relative;
 }
 
 .box-preview-media-controls-label {
@@ -98,25 +103,67 @@
     width: 150px;
 }
 
-.box-preview-media-expand-icon,
+.box-preview-media-gear-icon {
+    position: relative;
+
+    svg path {
+        transition: all 0.3s;
+        transform-origin: 50%;
+    }
+
+    .box-preview-media-settings-is-open & svg path {
+        transform: rotateZ(60deg);
+    }
+}
+
+.box-preview-media-fullscreen-icon,
 .box-preview-media-gear-icon,
-.box-preview-image-switch-360-icon,
-.box-preview-media-controls-2d,
 .box-preview-controls-vr {
     float: right;
 }
 
 .box-preview-media-controls-hd {
-    font-size: 7px;
+    font-size: 8px;
     background: $box-blue;
     padding: 1px 2px;
     border-radius: 3px;
-    position: relative;
-    top: -6px;
-    left: -8px;
+    position: absolute;
+    left: 22px;
     display: none;
+
+    .box-preview-media-controls-is-hd & {
+        display: inline;
+    }
 }
 
-.box-preview-media-controls-is-hd .box-preview-media-controls-hd {
+.box-preview-media-play-icon {
+    display: inline;
+
+    .box-preview-media-is-playing & {
+        display: none;
+    }
+}
+
+.box-preview-media-pause-icon {
+    display: none;
+
+    .box-preview-media-is-playing & {
+        display: inline;
+    }
+}
+
+.box-preview-media-volume-icon-mute,
+.box-preview-media-volume-icon-low,
+.box-preview-media-volume-icon-medium,
+.box-preview-media-volume-icon-high, {
+    display: none;
+    position: absolute;
+    left: 6px;
+}
+
+.box-preview-media-volume-icon-is-mute .box-preview-media-volume-icon-mute,
+.box-preview-media-volume-icon-is-low .box-preview-media-volume-icon-low,
+.box-preview-media-volume-icon-is-medium .box-preview-media-volume-icon-medium,
+.box-preview-media-volume-icon-is-high .box-preview-media-volume-icon-high {
     display: inline;
 }

@@ -1,3 +1,5 @@
+@import '../variables';
+
 .box-preview-media-scrubber-container {
     position: relative;
     width: 100%;
@@ -31,17 +33,18 @@
 
 .box-preview-media-scrubber-converted {
     cursor: pointer;
-    background-color: rgba(25, 146, 212, 0.2); /* #1992D4 also in box_theme_custom_css.tmpl */
+    background-color: rgba($white, .5); /* #1992D4 also in box_theme_custom_css.tmpl */
 }
 
 .box-preview-media-scrubber-buffered {
     position: absolute;
     height: 3px;
-    background-color: rgba(25, 146, 212, 0.3); /* #1992D4 also in box_theme_custom_css.tmpl */
+    background-color: $white; /* #1992D4 also in box_theme_custom_css.tmpl */
 }
 
 .box-preview-media-scrubber-played {
-    background-color: #1992D4; /* also in box_theme_custom_css.tmpl */
+    cursor: pointer;
+    background-color: $box-blue; /* also in box_theme_custom_css.tmpl */
 }
 
 .box-preview-media-scrubber-underlay {
@@ -55,7 +58,7 @@
     width: 16px;
     height: 16px;
     border-radius: 8px;
-    background-color: #1992D4;
+    background-color: $box-blue;
     cursor: pointer;
     transform: scale(0);
     transition: transform 0.05s ease-in-out; /* timing is half of bar timing since handle scales to 1 instead of 2 */

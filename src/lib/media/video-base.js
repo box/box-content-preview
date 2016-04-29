@@ -4,7 +4,7 @@ import throttle from 'lodash.throttle';
 import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../constants';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
-const PLAY_ENTITY = '&#9658;';
+const PLAY_ICON = '<svg fill="#FFF" height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
 const CLASS_PLAY_BUTTON = 'box-preview-media-play-button';
 
 @autobind
@@ -19,15 +19,15 @@ class VideoBase extends MediaBase {
     constructor(container, options) {
         super(container, options);
 
+        // Video element
+        this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
+        this.mediaEl.setAttribute('preload', 'auto');
+
         // Play button
         this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('div'));
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
-        this.playButtonEl.innerHTML = PLAY_ENTITY;
-
-        // Video element
-        this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
-        this.mediaEl.setAttribute('preload', 'auto');
+        this.playButtonEl.innerHTML = PLAY_ICON;
     }
 
     /**
@@ -160,6 +160,17 @@ class VideoBase extends MediaBase {
         if (this.mediaControls) {
             this.mediaControls.resizeTimeScrubber();
         }
+    }
+
+    /**
+     * Function to tell preview if navigation arrows
+     * should be shown and won't intefere with viewer
+     *
+     * @protected
+     * @returns {Boolean} true
+     */
+    allowNavigationArrows() {
+        return !this.mediaControls || !this.mediaControls.isSettingsVisible();
     }
 }
 

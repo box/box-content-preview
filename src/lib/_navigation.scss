@@ -1,3 +1,5 @@
+@import 'variables';
+
 .box-preview-is-fullscreen .box-preview-navigate {
     display: none;
 }
@@ -6,71 +8,38 @@
     position: absolute;
     white-space: nowrap;
     top: 50%;
-    width: 40px;
-    line-height: 50px;
-    height: 50px;
+    width: 50px;
+    height: 64px;
     overflow: hidden;
     display: block;
     border: 0 none;
-    margin: -25px 0 0 0;
-    padding: 0;
+    margin: 0 -10px;
+    padding: 7px 0 0;
     cursor: pointer;
     opacity: 0;
-    color: #fff;
     text-decoration: none;
     background-repeat: no-repeat;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    transform: translateY(-50%);
 
-    /* Override default animations to only animate opacity since width animation to auto doesn't work */
+    // Override default animations to only animate opacity since width animation to auto doesn't work
     transition-property: opacity;
+
+    &:hover {
+        background-color: rgba($black, .5);
+        opacity: 1;
+    }
 }
 
 .box-preview-is-navigation-visible .box-preview-navigate {
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
-    opacity: 0.6;
-}
-
-.box-preview-navigate:hover {
-    width: auto;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
-    text-decoration: none;
-    background-color: #333;
-    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .box-preview-navigate-left {
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 2px 2px 0;
     left: 0;
 }
 
 .box-preview-navigate-right {
-    direction: rtl;
-    border-radius: 3px 0 0 3px;
+    border-radius: 2px 0 0 2px;
     right: 0;
-}
-
-.box-preview-left-arrow:before,
-.box-preview-right-arrow:before {
-    content: "";
-    width: 40px;
-    height: 40px;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.box-preview-right-arrow:before {
-    -shalam-sprite: '../img/rightarrow.png' dest-size(40px 40px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -160px -320px;
-    background: url(../img/sprite.png) -82px -164px/128px 436px;
-    /* end shalam */
-}
-
-.box-preview-left-arrow:before {
-    -shalam-sprite: '../img/leftarrow.png' dest-size(40px 40px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -200px -320px;
-    background: url(../img/sprite.png) 0 -248px/128px 436px;
-    /* end shalam */
 }

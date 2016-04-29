@@ -1,5 +1,4 @@
 import AssetLoader from '../asset-loader';
-import { createAssetUrlCreator, prefetchAssets } from '../util';
 
 const STATIC_URI = 'third-party/doc/';
 const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'document.js'];
@@ -43,23 +42,6 @@ class DocLoader extends AssetLoader {
     constructor() {
         super();
         this.viewers = VIEWERS;
-    }
-
-    /**
-     * Some pre loading stuff for documents
-     *
-     * @override
-     * @param {Object} location assets locations
-     * @returns {void}
-     */
-    preload(location) {
-        // Since the pdf worker is pretty big, lets prefetch it
-        const assetUrlCreator = createAssetUrlCreator(location);
-        const assets = [];
-        SCRIPTS_DOCUMENT.forEach((script) => {
-            assets.push(assetUrlCreator(script));
-        });
-        prefetchAssets(assets);
     }
 }
 

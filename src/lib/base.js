@@ -165,7 +165,7 @@ class Base extends EventEmitter {
 
     /**
      * Enters or exits fullscreen
-     * @private
+     * @protected
      * @returns {void}
      */
     toggleFullscreen() {
@@ -175,7 +175,7 @@ class Base extends EventEmitter {
     /**
      * Resizing logic
      *
-     * @private
+     * @protected
      * @returns {void}
      */
     resize() {
@@ -183,9 +183,20 @@ class Base extends EventEmitter {
     }
 
     /**
+     * Function to tell preview if navigation arrows
+     * should be shown and won't intefere with viewer
+     *
+     * @protected
+     * @returns {Boolean} true
+     */
+    allowNavigationArrows() {
+        return true;
+    }
+
+    /**
      * Destroys the viewer
      *
-     * @private
+     * @protected
      * @returns {void}
      */
     destroy() {
