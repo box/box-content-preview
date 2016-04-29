@@ -9,12 +9,12 @@
     white-space: nowrap;
     top: 50%;
     width: 50px;
-    height: 54px;
+    height: 64px;
     overflow: hidden;
     display: block;
     border: 0 none;
     margin: 0 -10px;
-    padding: 0;
+    padding: 7px 0 0;
     cursor: pointer;
     opacity: 0;
     text-decoration: none;
@@ -25,7 +25,7 @@
     transition-property: opacity;
 
     &:hover {
-        background-color: rgba($black, .3);
+        background-color: rgba($black, .5);
         opacity: 1;
     }
 }
@@ -35,11 +35,11 @@
 }
 
 .box-preview-navigate-left {
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 2px 2px 0;
     left: 0;
 }
 
 .box-preview-navigate-right {
-    border-radius: 3px 0 0 3px;
+    border-radius: 2px 0 0 2px;
     right: 0;
 }

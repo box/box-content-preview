@@ -23,4 +23,13 @@
         display: none;
     }
 
+    .box-preview-media-controls-label,
+    .box-preview-media-controls-btn  {
+        opacity: .9;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
 }
