@@ -63360,7 +63360,7 @@
 	            "type": "f",
 	            "default": 12,
 	            "name": "Drag Buffer Distance",
-	            "description": "The distance from intial click that you need to move your mouse before a drag event is fired, in pixels"
+	            "description": "The distance from initial click that you need to move your mouse before a drag event is fired, in pixels"
 	          },
 	          "eventHandler": {
 	            "type": "b",
@@ -70710,7 +70710,7 @@
 	    'leave' : { type: 'b', default: true, description: 'Listen to mouse leave event' },
 	    'contextMenu' : { type: 'b', default: true, description: 'Listen for the context menu event? (ie, right click)' },
 	    'contextMenu_preventDefault' : { type: 'b', default: true, description: 'Prevent context menu default behaviour (ie, the context menu popping open)' },
-	    'dragBufferDistance' : { type: 'float', default: 12, name: 'Drag Buffer Distance', description: 'The distance from intial click that you need to move your mouse before a drag event is fired, in pixels' },
+	    'dragBufferDistance' : { type: 'float', default: 12, name: 'Drag Buffer Distance', description: 'The distance from initial click that you need to move your mouse before a drag event is fired, in pixels' },
 	    'eventHandler' : { type: 'b', default: true, description: 'Events fired from the mouse are picked up by the Event Handler'  }
 	  }
 	}
@@ -70825,9 +70825,12 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	function Box3DMouseVector(x, y) {
-	  this.x = x || 0;
-	  this.y = y || 0;
+	function Box3DMouseVector() {
+	  var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	  var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+	  this.x = x;
+	  this.y = y;
 	}
 
 	function Box3DInputEvent(event, name) {
@@ -70971,7 +70974,7 @@
 
 	    _this.mouseDragState = new Array(3);
 	    _this.mouseDragStatePrevious = new Array(3);
-	    _this.mouseDragDistance = [{}, {}, {}];
+	    _this.mouseDragDistance = [new Box3DMouseVector(), new Box3DMouseVector(), new Box3DMouseVector()];
 
 	    _this.touchPosition = new Box3DMouseVector();
 	    _this.touchPositionPercent = new Box3DMouseVector();
@@ -71208,7 +71211,6 @@
 	    value: function onMouseDown(e) {
 	      this.getScenePercent(e, e);
 
-	      this.mouseDragDistance[e.button] = new Box3DMouseVector();
 	      if (!this.mouseUpBound) {
 	        this.mouseUpBound = true;
 	        document.addEventListener('mouseup', this.onMouseUp);
@@ -75144,6 +75146,7 @@
 
 	    _this.time = 0;
 	    _this.target = new _three2.default.Quaternion();
+	    _this.tempQuat = new _three2.default.Quaternion();
 
 	    _this.axes = {
 	      '+X': new _three2.default.Vector3(1, 0, 0),
@@ -75156,21 +75159,50 @@
 	    return _this;
 	  }
 
+	  /**
+	   * Get the right vector from a matrix
+	   * @param {Matrix4} matrix The matrix to extract a right vector from
+	   * @returns {Vector3} A right vector extracted from the matrix
+	   */
+
+
 	  _createClass(PreviewAxisRotation, [{
 	    key: 'getRightVector',
 	    value: function getRightVector(matrix) {
 	      return new _three2.default.Vector3(matrix.elements[0], matrix.elements[1], matrix.elements[2]);
 	    }
+
+	    /**
+	     * Extract the up vector from a matrix
+	     * @param {Matrix4} matrix The matrix to extract from
+	     * @returns {Vector3} The extracted up vector
+	     */
+
 	  }, {
 	    key: 'getUpVector',
 	    value: function getUpVector(matrix) {
 	      return new _three2.default.Vector3(matrix.elements[4], matrix.elements[5], matrix.elements[6]);
 	    }
+
+	    /**
+	     * Extract the forward vector from a matrix
+	     * @param {Matrix4} matrix The matrix to extract from
+	     * @returns {Vector3} The extracted forward vector
+	     */
+
 	  }, {
 	    key: 'getForwardVector',
 	    value: function getForwardVector(matrix) {
 	      return new _three2.default.Vector3(matrix.elements[8], matrix.elements[9], matrix.elements[10]);
 	    }
+
+	    /**
+	     * Set the right vector of a Matrix
+	     * @param {Matrix4} matrix The matrix who's right vector we want to set
+	     * @param {Vector3} vector The vector to set the matrix to
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'setRightVector',
 	    value: function setRightVector(matrix, vector) {
@@ -75178,6 +75210,14 @@
 	      matrix.elements[1] = vector.y;
 	      matrix.elements[2] = vector.z;
 	    }
+
+	    /**
+	     * Set the up vector of a Matrix
+	     * @param {Matrix4} matrix The matrix who's up vector we want to set
+	     * @param {Vector3} vector The vector to set the matrix to
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'setUpVector',
 	    value: function setUpVector(matrix, vector) {
@@ -75185,6 +75225,14 @@
 	      matrix.elements[5] = vector.y;
 	      matrix.elements[6] = vector.z;
 	    }
+
+	    /**
+	     * Set the forward vector of a Matrix
+	     * @param {Matrix4} matrix The matrix who's forward vector we want to set
+	     * @param {Vector3} vector The vector to set the matrix to
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'setForwardVector',
 	    value: function setForwardVector(matrix, vector) {
@@ -75213,6 +75261,7 @@
 	    * @param string up The up axis key
 	    * @param string forward The forward axis key
 	    * @param bool transition Whether or not to trigger a smooth transition
+	    * @returns {void}
 	    */
 
 	  }, {
@@ -75220,7 +75269,8 @@
 	    value: function setAxes(up, forward, transition) {
 	      var upAxis = this.axes[up];
 	      var forwardAxis = this.axes[forward];
-	      var rightVec, rotationMatrix;
+	      var rightVec = void 0,
+	          rotationMatrix = void 0;
 
 	      if (!upAxis) {
 	        return _log2.default.error('No Up Axis available For ', up);
@@ -75248,7 +75298,7 @@
 
 	    /**
 	    * Make the passed in rotation object useful
-	    * @param Object rotation
+	    * @param {Object} rotation Create an Euler from an object with x/y/z components
 	    * @return THREE.Euler
 	    */
 
@@ -75279,13 +75329,13 @@
 	        return;
 	      }
 
-	      //set at origin with origin scale
-	      var runtimeData = this.getRuntimeData(),
-	          position = new _three2.default.Vector3(),
-	          scale = new _three2.default.Vector3(),
-	          x,
-	          y,
-	          z;
+	      // set at origin with origin scale
+	      var runtimeData = this.getRuntimeData();
+	      var position = new _three2.default.Vector3();
+	      var scale = new _three2.default.Vector3();
+	      var x = void 0,
+	          y = void 0,
+	          z = void 0;
 
 	      position.copy(runtimeData.position);
 	      scale.copy(runtimeData.scale);
@@ -75293,28 +75343,30 @@
 	      runtimeData.scale.set(1, 1, 1);
 	      runtimeData.updateMatrix();
 
-	      //setup rotation matrices
+	      // setup rotation matrices
 	      x = new _three2.default.Matrix4().makeRotationX((axis.x || 0) * degToRad);
 	      y = new _three2.default.Matrix4().makeRotationY((axis.y || 0) * degToRad);
 	      z = new _three2.default.Matrix4().makeRotationZ((axis.z || 0) * degToRad);
-	      //add matrices
+
+	      // add matrices
 	      z.multiply(y);
 	      z.multiply(x);
-	      //additive to the current matrix?
+
+	      // additive to the current matrix?
 	      if (additive) {
 	        z.multiply(runtimeData.matrix);
 	      }
 
 	      this.target.setFromRotationMatrix(z);
-	      //do it now
+	      // Do it now...
 	      if (force) {
 	        this.setRotation(this.target);
 	        this.getRuntime().needsRender = true;
 	      } else {
-	        //otherwise transition nicely
+	        // ...otherwise transition nicely
 	        this.time = this.speed;
 	      }
-	      //reset back to position
+	      // Reset back to position
 	      runtimeData.position.copy(position);
 	      runtimeData.scale.copy(scale);
 	    }
@@ -75339,10 +75391,10 @@
 	  }, {
 	    key: 'setLocalRotation',
 	    value: function setLocalRotation(rotation) {
-	      //interrupt if transitioning
+	      // interrupt if transitioning
 	      this.time = 0;
 
-	      //just reusing target here, not going to interpolate to it
+	      // just reusing target here, not going to interpolate to it
 	      this.target.setFromEuler(this.eulerFromObject(rotation));
 	      this.setRotation(this.target);
 	    }
@@ -75356,7 +75408,7 @@
 	    value: function setRotation(target) {
 	      this.getEntity().setQuaternion(target.x, target.y, target.z, target.w);
 
-	      //alternative instead of forcing a change event on the entity
+	      // alternative instead of forcing a change event on the entity
 	      if (this.hasThreeData() && !this.getRuntimeData().quaternion.equals(target)) {
 	        this.getRuntimeData().quaternion.copy(target);
 	      }
@@ -75371,6 +75423,7 @@
 	    /**
 	    * Get the up and forward axes, useable by preview
 	    * @param Function callback Recieves the up and forward axes
+	    * @returns {Object} An object with an up and forward component. Used for Box Preview
 	    */
 
 	  }, {
@@ -75408,13 +75461,21 @@
 
 	      return axes;
 	    }
+
+	    /**
+	     * @inheritdoc
+	     */
+
 	  }, {
 	    key: 'update',
 	    value: function update(dt) {
 	      if (this.time >= 0 && this.hasThreeData()) {
 	        this.time -= dt;
 
-	        this.getRuntimeData().quaternion.slerp(this.target, Math.min(1, Math.max(0, 1 - 1 / (this.speed / this.time))));
+	        this.tempQuat.copy(this.getRuntimeData().quaternion);
+	        this.tempQuat.slerp(this.target, Math.min(1, Math.max(0, 1 - 1 / (this.speed / this.time))));
+
+	        this.getEntity().setQuaternion(this.tempQuat.x, this.tempQuat.y, this.tempQuat.z, this.tempQuat.w);
 
 	        //force render
 	        this.getRuntime().needsRender = true;
