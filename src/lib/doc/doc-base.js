@@ -179,7 +179,6 @@ class DocBase extends Base {
      */
     setPage(pageNum) {
         this.pdfViewer.currentPageNumber = pageNum;
-        this.checkPaginationButtons();
     }
 
     /**
@@ -199,10 +198,12 @@ class DocBase extends Base {
         const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen();
 
         // Disable page number selector if there is only one page or less
-        if (pagesCount <= 1 || isSafariFullscreen) {
-            pageNumButtonEl.disabled = true;
-        } else {
-            pageNumButtonEl.disabled = false;
+        if (pageNumButtonEl) {
+            if (pagesCount <= 1 || isSafariFullscreen) {
+                pageNumButtonEl.disabled = true;
+            } else {
+                pageNumButtonEl.disabled = false;
+            }
         }
 
         // Disable previous page if on first page, otherwise enable
@@ -558,6 +559,8 @@ class DocBase extends Base {
         if (this.currentPageEl) {
             this.currentPageEl.textContent = truePageNum;
         }
+
+        this.checkPaginationButtons();
     }
 
     /* ----- Event Handlers ----- */
@@ -694,14 +697,20 @@ class DocBase extends Base {
 
         switch (key) {
             case 'Enter':
-                this.pageNumInputBlurHandler(event);
+                // Focusing the document should blur the input field, which
+                // triggers pageNumInputBlurHandler
+                this.docEl.focus();
+
+                event.stopPropagation();
+                event.preventDefault();
                 break;
 
             case 'Esc':
                 this.hidePageNumInput();
+                this.docEl.focus();
 
-                event.preventDefault();
                 event.stopPropagation();
+                event.preventDefault();
                 break;
 
             default:
