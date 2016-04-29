@@ -579,7 +579,14 @@ class Preview extends EventEmitter {
         this.viewer.addListener('load', () => {
             // Show or hide annotate/print/download buttons
             this.showAnnotateButton();
-            this.showHighlightButton();
+
+            // We don't support creating highlights on mobile for now since the
+            // event we would listen to, selectionchange, fires continuously and
+            // is unreliable
+            if (!Browser.isMobile()) {
+                this.showHighlightButton();
+            }
+
             this.showPrintButton();
             this.showDownloadButton();
 

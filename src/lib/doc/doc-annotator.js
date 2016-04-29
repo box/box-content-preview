@@ -26,9 +26,7 @@ const HIGHLIGHT_STATE_ACTIVE = 'active';
 const HIGHLIGHT_STATE_ACTIVE_HOVER = 'active-hover';
 const HIGHLIGHT_STATE_HOVER = 'hover';
 const IS_MOBILE = Browser.isMobile();
-const MOUSEMOVE_THROTTLE = 50;
-const MOUSEDOWN = IS_MOBILE ? 'touchstart' : 'mousedown';
-const MOUSEUP = IS_MOBILE ? 'touchend' : 'mouseup';
+const MOUSEMOVE_THROTTLE_MS = 50;
 
 @autobind
 class DocAnnotator extends Annotator {
@@ -54,6 +52,17 @@ class DocAnnotator extends Annotator {
      */
     init() {
         super.init();
+
+        // On mobile, we want to disable user-scaling since we want users to use
+        // the document zoom controls
+        /* Unclear whether we want this behavior or not
+        if (IS_MOBILE) {
+            const metaEl = document.createElement('meta');
+            metaEl.setAttribute('name', 'viewport');
+            metaEl.setAttribute('content', 'user-scalable=no');
+            document.getElementsByTagName('head')[0].appendChild(metaEl);
+        }
+        */
 
         // If in highlight mode and we enter point mode, turn off highlight mode
         this.addListener('pointmodeenter', () => {
@@ -108,8 +117,9 @@ class DocAnnotator extends Annotator {
     _setupControls() {
         super._setupControls();
 
-        // No need to set up controls if Preview header exists
-        if (document.querySelector('.box-preview-header')) {
+        // No need to set up controls if Preview header exists or on mobile
+        // since we don't support creating highlights on mobile
+        if (document.querySelector('.box-preview-header') || IS_MOBILE) {
             return;
         }
 
@@ -149,10 +159,10 @@ class DocAnnotator extends Annotator {
     _bindDOMListeners() {
         super._bindDOMListeners();
 
-        this._annotatedElement.addEventListener(MOUSEDOWN, this._highlightMousedownHandler);
+        this._annotatedElement.addEventListener('mousedown', this._highlightMousedownHandler);
         this._annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
         this._annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
-        this._annotatedElement.addEventListener(MOUSEUP, this._highlightMouseupHandler);
+        this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
     }
 
     /**
@@ -164,10 +174,10 @@ class DocAnnotator extends Annotator {
     _unbindDOMListeners() {
         super._unbindDOMListeners();
 
-        this._annotatedElement.removeEventListener(MOUSEDOWN, this._highlightMousedownHandler);
+        this._annotatedElement.removeEventListener('mousedown', this._highlightMousedownHandler);
         this._annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
         this._annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
-        this._annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
+        this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
     }
 
     /**
@@ -177,7 +187,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _bindHighlightModeListeners() {
-        this._annotatedElement.addEventListener(MOUSEUP, this._highlightMouseupHandler);
+        this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
     }
 
     /**
@@ -187,7 +197,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _unbindHighlightModeListeners() {
-        this._annotatedElement.removeEventListener(MOUSEUP, this._highlightMouseupHandler);
+        this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
     }
 
     /**
@@ -255,7 +265,7 @@ class DocAnnotator extends Annotator {
                 delayThreads.forEach((thread) => {
                     thread.show();
                 });
-            }, MOUSEMOVE_THROTTLE);
+            }, MOUSEMOVE_THROTTLE_MS);
         }
 
         return this._throttledHighlightMousemoveHandler;
@@ -276,7 +286,10 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        if (this._didMouseMove || this._isInHighlightMode()) {
+        // Creating highlights is disabled on mobile for now since the
+        // event we would listen to, selectionchange, fires continuously and
+        // is unreliable
+        if (!IS_MOBILE && (this._didMouseMove || this._isInHighlightMode())) {
             this._highlightCreateHandler(event);
         } else {
             this._highlightClickHandler(event);
@@ -295,9 +308,9 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        // Reset any active highlight threads before creating a new highlight
-        const activeThreads = this._getHighlightThreadsWithStates(HIGHLIGHT_STATE_ACTIVE, HIGHLIGHT_STATE_ACTIVE_HOVER);
-        activeThreads.forEach((thread) => {
+        // Reset active highlight threads and delete pending threads before creating a new highlight
+        const threads = this._getHighlightThreadsWithStates(HIGHLIGHT_STATE_ACTIVE, HIGHLIGHT_STATE_ACTIVE_HOVER);
+        threads.forEach((thread) => {
             thread.reset();
         });
 
@@ -534,6 +547,31 @@ class DocAnnotator extends Annotator {
         });
 
         this._highlighter.removeHighlights(matchingHighlights);
+    }
+
+    /**
+     * Manually add a stylesheet for custom cursors in IE10/IE11 since they
+     * don't correctly resolve relative URLs, see:
+     * http://stackoverflow.com/questions/7419314/custom-cursor-image-doesnt-work-in-all-ies
+     * We hard-code the cursor URL to the cursor on our CDNs. Note this is a
+     * hack and should be removed if we decide that we don't need custom
+     * cursors for IE10 or IE11.
+     *
+     * @returns {void}
+     * @private
+     */
+    _addIEAnnotationStylesheet() {
+        super._addIEAnnotationStylesheet();
+
+        const styleEl = document.createElement('style');
+        styleEl.setAttribute('type', 'text/css');
+        styleEl.innerHTML = `
+            .box-preview-highlight-annotation-mode .page,
+            .box-preview-highlight-annotation-mode .box-preview-annotation-layer,
+            .box-preview-highlight-annotation-mode .textLayer > div {
+                cursor: url('https://cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/highlight-annotation.cur'), text;
+            }`.trim();
+        document.getElementsByTagName('head')[0].appendChild(styleEl);
     }
 }
 

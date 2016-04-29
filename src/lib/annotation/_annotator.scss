@@ -58,16 +58,6 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
-.box-preview-use-hand-cursor {
-    cursor: pointer;
-
-    // Overrides pdf_viewer.css
-    // scss-lint:disable SelectorFormat
-    .textLayer > div {
-        cursor: pointer;
-    }
-}
-
 //------------------------------------------------------------------------------
 // CSS for points and dialogs
 //------------------------------------------------------------------------------
@@ -231,8 +221,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
-.box-preview-point-annotation-btn,
-.box-preview-point-annotation-icon {
+.box-preview-point-annotation-btn {
     background-color: $color-button-background-primary-light;
     border-radius: 50%; // Circle
     border-style: none;
@@ -244,34 +233,9 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     width: 16px;
 }
 
-// Clicks should go through icon
-.box-preview-point-annotation-icon {
-    cursor: none;
-    pointer-events: none;
-}
-
-// scss-lint:disable SelectorFormat
-.box-preview-point-annotation-mode {
-    // Don't show a cursor since we use a point annotation icon
-    .page,
-    .box-preview-annotation-layer,
-    .textLayer > div {
-        cursor: none;
-    }
-
-    // Disable text selection when point annotation mode is active
-    .textLayer {
-        pointer-events: none;
-    }
-}
-
 //------------------------------------------------------------------------------
 // CSS for highlights
 //------------------------------------------------------------------------------
-.box-preview-highlight-annotation-mode .page {
-    cursor: text;
-}
-
 .box-preview-annotation-layer {
     bottom: 0;
     cursor: text;
@@ -342,4 +306,32 @@ $color-text-lighter: rgba(68, 68, 68, .5);
         left: 0;
         top: 0;
     }
+}
+
+.box-preview-use-hand-cursor {
+    cursor: pointer;
+
+    // Overrides pdf_viewer.css
+    // scss-lint:disable SelectorFormat
+    .textLayer > div {
+        cursor: pointer;
+    }
+}
+
+//------------------------------------------------------------------------------
+// Annotation mode
+//------------------------------------------------------------------------------
+// scss-lint:disable SelectorFormat
+.box-preview-point-annotation-mode .page,
+.box-preview-point-annotation-mode .box-preview-annotation-layer,
+.box-preview-point-annotation-mode .textLayer > div {
+    // We use a .cur file since they embed click origin information
+    cursor: url('../../img/cursors/point-annotation.cur'), crosshair;
+}
+
+.box-preview-highlight-annotation-mode .page,
+.box-preview-highlight-annotation-mode .box-preview-annotation-layer,
+.box-preview-highlight-annotation-mode .textLayer > div {
+    // We use a .cur file since they embed click origin information
+    cursor: url('../../img/cursors/highlight-annotation.cur'), text;
 }

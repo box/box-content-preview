@@ -8,6 +8,10 @@
     position: absolute;
     right: 0;
     top: 0;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
     width: 100%;
 
     // Fullscreen CSS
@@ -40,6 +44,14 @@
         .box-preview-loaded & .loadingIcon {
             background: url('../../img/loading-icon.gif') center no-repeat;
         }
+    }
+
+    // Only allow text divs to be selected
+    .textLayer > div {
+        -moz-user-select: text;
+        -ms-user-select: text;
+        -webkit-user-select: text;
+        user-select: text;
     }
 
     .textLayer .highlight {
