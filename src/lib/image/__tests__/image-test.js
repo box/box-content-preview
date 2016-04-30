@@ -65,8 +65,8 @@ describe('image.js', () => {
     });
 
     it('should not load an image and fire error event', function errorTest(done) {
-        // Give a timeout larger than 15s
-        this.timeout(16000);
+        // Give a timeout larger than 30s
+        this.timeout(31000);
 
         // Return 404 from fetch
         fetchMock.mock('foo', 404);
