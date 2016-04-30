@@ -335,3 +335,22 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     // We use a .cur file since they embed click origin information
     cursor: url('../../img/cursors/highlight-annotation.cur'), text;
 }
+
+// IE10 and IE11 don't implement custom cursors correctly, see:
+// http://stackoverflow.com/questions/7419314/custom-cursor-image-doesnt-work-in-all-ies
+// To get around this, we use absolute URLs to the cursor hosted on Box's CDN
+// scss-lint:disable SelectorFormat, UrlFormat
+.ie.box-preview-point-annotation-mode .page,
+.ie.box-preview-point-annotation-mode .box-preview-annotation-layer,
+.ie.box-preview-point-annotation-mode .textLayer > div {
+    // We use a .cur file since they embed click origin information
+    cursor: url('//cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/point-annotation.cur'), crosshair;
+}
+
+// scss-lint:disable UrlFormat
+.ie.box-preview-highlight-annotation-mode .page,
+.ie.box-preview-highlight-annotation-mode .box-preview-annotation-layer,
+.ie.box-preview-highlight-annotation-mode .textLayer > div {
+    // We use a .cur file since they embed click origin information
+    cursor: url('//cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/highlight-annotation.cur'), text;
+}
