@@ -7,7 +7,6 @@
 
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../annotation/annotation-dialog';
-import Browser from '../browser';
 
 import * as annotatorUtil from '../annotation/annotator-util';
 import { decodeKeydown } from '../util.js';
@@ -16,7 +15,6 @@ import { CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
-const MOUSEDOWN = Browser.isMobile() ? 'touchstart' : 'mousedown';
 
 @autobind
 class HighlightDialog extends AnnotationDialog {
@@ -138,7 +136,7 @@ class HighlightDialog extends AnnotationDialog {
      * @private
      */
     _bindDOMListeners() {
-        this._element.addEventListener(MOUSEDOWN, this._mousedownHandler);
+        this._element.addEventListener('mousedown', this._mousedownHandler);
         this._element.addEventListener('keydown', this._mousedownHandler);
     }
 
@@ -149,7 +147,7 @@ class HighlightDialog extends AnnotationDialog {
      * @private
      */
     _unbindDOMListeners() {
-        this._element.removeEventListener(MOUSEDOWN, this._mousedownHandler);
+        this._element.removeEventListener('mousedown', this._mousedownHandler);
         this._element.removeEventListener('keydown', this._mousedownHandler);
     }
 

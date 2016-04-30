@@ -7,21 +7,18 @@
 
 import autobind from 'autobind-decorator';
 import AnnotationThread from './annotation-thread';
+import Browser from '../browser';
 import EventEmitter from 'events';
 import LocalStorageAnnotationService from './localstorage-annotation-service';
-import throttle from 'lodash.throttle';
 
 import * as annotatorUtil from './annotator-util';
 import * as constants from './annotation-constants';
-import { CLASS_HIDDEN } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
 const ANONYMOUS_USER = {
     name: 'Kylo Ren',
     avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
 };
-const MOUSEMOVE_THROTTLE = 16;
-const POINT_ANNOTATION_ICON_WIDTH = 16;
 const POINT_ANNOTATION_TYPE = 'point';
 const POINT_STATE_PENDING = 'pending';
 
@@ -86,6 +83,10 @@ class Annotator extends EventEmitter {
         this.setScale(1);
         this._setupControls();
         this._setupAnnotations();
+
+        if (Browser.getName() === 'Explorer') {
+            this._addIEAnnotationStylesheet();
+        }
     }
 
     /**
@@ -130,6 +131,7 @@ class Annotator extends EventEmitter {
         if (this._isInPointMode()) {
             this.emit('pointmodeexit');
             this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
+
             this._unbindPointModeListeners(); // Disable point mode
             this._bindDOMListeners(); // Re-enable other annotations
 
@@ -137,6 +139,7 @@ class Annotator extends EventEmitter {
         } else {
             this.emit('pointmodeenter');
             this._annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
+
             this._unbindDOMListeners(); // Disable other annotations
             this._bindPointModeListeners();  // Enable point mode
         }
@@ -302,7 +305,6 @@ class Annotator extends EventEmitter {
      */
     _bindPointModeListeners() {
         this._annotatedElement.addEventListener('click', this._pointClickHandler);
-        this._annotatedElement.addEventListener('mousemove', this._pointMousemoveHandler());
     }
 
     /**
@@ -313,7 +315,6 @@ class Annotator extends EventEmitter {
      */
     _unbindPointModeListeners() {
         this._annotatedElement.removeEventListener('click', this._pointClickHandler);
-        this._annotatedElement.removeEventListener('mousemove', this._pointMousemoveHandler());
     }
 
     /**
@@ -358,105 +359,6 @@ class Annotator extends EventEmitter {
 
         // Bind events on thread
         this._bindCustomListenersOnThread(thread);
-    }
-
-    /**
-     * Handler for point mousemove behavior over the annotated element. Tracks
-     * the mouse with a point icon.
-     *
-     * @returns {Function} mousemove handler
-     * @private
-     */
-    _pointMousemoveHandler() {
-        if (!this._throttledPointMousemoveHandler) {
-            this._throttledPointMousemoveHandler = throttle((event) => {
-                // Saves mouse position in memory
-                this._setMousePosition(event);
-
-                if (!this._pendingAnimation) {
-                    this._pendingAnimation = true;
-                    window.requestAnimationFrame(this._doPointAnimation);
-                }
-            }, MOUSEMOVE_THROTTLE);
-        }
-
-        return this._throttledPointMousemoveHandler;
-    }
-
-    /**
-     * Performs annotation animation based on mouse position in memory. This
-     * tracks the point annotation icon with the mouse.
-     *
-     * @returns {void}
-     * @private
-     */
-    _doPointAnimation() {
-        const { x, y, page, dataType } = this._getMousePosition();
-
-        // Get or create point annotation mode icon
-        if (!this._pointIconEl) {
-            this._pointIconEl = document.createElement('div');
-            this._pointIconEl.classList.add(constants.CLASS_ANNOTATION_POINT_ICON);
-            this._pointIconEl.classList.add(CLASS_HIDDEN);
-        }
-
-        // If we aren't on a page, short circuit the animation
-        if (page === -1) {
-            annotatorUtil.hideElement(this._pointIconEl);
-            this._pendingAnimation = false;
-            return;
-        }
-
-        // Append point annotation icon to correct parent
-        const pageEl = this._annotatedElement.querySelector(`[data-page-number="${page}"]`);
-        if (!pageEl.contains(this._pointIconEl)) {
-            pageEl.appendChild(this._pointIconEl);
-        }
-
-        // If mouse is on a page and isn't on a dialog or thread, track with point icon
-        if (dataType !== 'annotation-dialog' && dataType !== 'annotation-thread') {
-            const pageDimensions = pageEl.getBoundingClientRect();
-            this._pointIconEl.style.left = `${x - pageDimensions.left - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-            this._pointIconEl.style.top = `${y - pageDimensions.top - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-            annotatorUtil.showElement(this._pointIconEl);
-
-        // Otherwise, hide the icon
-        } else {
-            annotatorUtil.hideElement(this._pointIconEl);
-        }
-
-        // Animation is complete
-        this._pendingAnimation = false;
-    }
-
-    /**
-     * Saves mouse position from event in memory.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     */
-    _setMousePosition(event) {
-        const eventTarget = event.target;
-        this._mouseX = event.clientX;
-        this._mouseY = event.clientY;
-        this._mousePage = annotatorUtil.getPageElAndPageNumber(eventTarget).page;
-        this._mouseDataType = annotatorUtil.findClosestDataType(eventTarget);
-    }
-
-    /**
-     * Gets mouse position from memory.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     * @private
-     */
-    _getMousePosition() {
-        return {
-            x: this._mouseX || 0,
-            y: this._mouseY || 0,
-            page: this._mousePage || 1,
-            dataType: this._mouseDataType || ''
-        };
     }
 
     /**
@@ -523,6 +425,29 @@ class Annotator extends EventEmitter {
             }));
         });
         return pendingThreads;
+    }
+
+    /**
+     * Manually add a stylesheet for custom cursors in IE10/IE11 since they
+     * don't correctly resolve relative URLs, see:
+     * http://stackoverflow.com/questions/7419314/custom-cursor-image-doesnt-work-in-all-ies
+     * We hard-code the cursor URL to the cursor on our CDNs. Note this is a
+     * hack and should be removed if we decide that we don't need custom
+     * cursors for IE10 or IE11.
+     *
+     * @returns {void}
+     * @private
+     */
+    _addIEAnnotationStylesheet() {
+        const styleEl = document.createElement('style');
+        styleEl.setAttribute('type', 'text/css');
+        styleEl.innerHTML = `
+            .box-preview-point-annotation-mode .page,
+            .box-preview-point-annotation-mode .box-preview-annotation-layer,
+            .box-preview-point-annotation-mode .textLayer > div {
+                cursor: url('https://cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/point-annotation.cur'), crosshair;
+            }`.trim();
+        document.getElementsByTagName('head')[0].appendChild(styleEl);
     }
 }
 
