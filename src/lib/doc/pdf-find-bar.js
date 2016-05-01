@@ -68,7 +68,7 @@ class PDFFindBar {
     barHandler(evt) {
         switch (evt.keyCode) {
             case 13: // Enter
-                this.dispatchEvent('findagain', evt.shiftKey);
+                this.findNextHandler();
                 break;
             case 27: // Escape
                 this.close();

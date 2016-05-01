@@ -122,6 +122,11 @@ class DocBase extends Base {
         super.load();
     }
 
+    /**
+     * [createFindBar description]
+     * @param  {[type]} container [description]
+     * @returns {void}
+     */
     createFindBar(container) {
         this.headerEl = container.firstChild;
 
@@ -129,17 +134,12 @@ class DocBase extends Base {
         this.findBarEl.classList.add('findbar');
         this.findBarEl.setAttribute('id', 'findbar');
         this.findBarEl.innerHTML = findBarTemplate;
-
-        this.findField = document.getElementById('findField');
-
-        // todo(@spramod) figure out how to get findField to not overflow when trying to find REALLY long text that would take up the entire find bar
-        this.findResultsCount = document.getElementById('findResultsCount');
-
-        this.findPreviousButton = document.getElementById('findPrevious');
-        this.findNextButton = document.getElementById('findNext');
-        this.findCloseButton = document.getElementById('findClose');
     }
 
+    /**
+     * [initFindController description]
+     * @returns {void}
+     */
     initFindController() {
         this.findController = new PDFFindController({
             pdfViewer: this.pdfViewer,
@@ -149,11 +149,11 @@ class DocBase extends Base {
 
         this.findBar = new PDFFindBar(this.containerEl, {
             bar: this.findBarEl,
-            findField: this.findField,
-            findResultsCount: this.findResultsCount,
-            findPreviousButton: this.findPreviousButton,
-            findNextButton: this.findNextButton,
-            findCloseButton: this.findCloseButton,
+            findField: document.getElementById('findField'),
+            findResultsCount: document.getElementById('findResultsCount'),
+            findPreviousButton: document.getElementById('findPrevious'),
+            findNextButton: document.getElementById('findNext'),
+            findCloseButton: document.getElementById('findClose'),
             findController: this.findController
         });
 
@@ -806,8 +806,8 @@ class DocBase extends Base {
                 break;
             case 'Meta+F':
             case 'Control+F':
-            // case 'Meta+G':
-            // case 'Control+G':
+            case 'Meta+G':
+            case 'Control+G':
                 // todo(@spramod) make sure to make this OS compatible so like CTRL+F for windows, etc
                 this.findBar.open();
                 break;
