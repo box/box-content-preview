@@ -52,6 +52,7 @@ class ImageBase extends Base {
      */
     resize() {
         this.zoom();
+        super.resize();
     }
 
     /**

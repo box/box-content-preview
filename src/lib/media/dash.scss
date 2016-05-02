@@ -2,6 +2,9 @@
 @import '../variables';
 
 .box-preview-media-dash {
+
+    background: $black;
+
     video {
         display: block;
         max-width: 100%;

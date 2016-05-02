@@ -7,7 +7,6 @@ import Browser from './browser';
 
 import {
     CLASS_FULLSCREEN,
-    CLASS_FULLSCREEN_DISABLED,
     CLASS_BOX_PREVIEW_CONTAINER,
     CLASS_BOX_PREVIEW,
     CLASS_BOX_PREVIEW_MOBILE,
@@ -74,7 +73,6 @@ class Base extends EventEmitter {
         if (!this.resizeHandler) {
             this.resizeHandler = debounce(() => {
                 this.resize();
-                this.emit('resize');
             }, RESIZE_WAIT_TIME_IN_MILLIS);
         }
         return this.resizeHandler;
@@ -144,20 +142,15 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     addCommonListeners() {
-        if (fullscreen.isSupported()) {
-            // Attach common full screen event listeners
-            fullscreen.on('enter', () => {
-                this.containerEl.classList.add(CLASS_FULLSCREEN);
-                this.emit('enterfullscreen');
-            });
-
-            fullscreen.on('exit', () => {
-                this.containerEl.classList.remove(CLASS_FULLSCREEN);
-                this.emit('exitfullscreen');
-            });
-        } else {
-            this.containerEl.classList.add(CLASS_FULLSCREEN_DISABLED);
-        }
+        // Attach common full screen event listeners
+        fullscreen.addListener('enter', () => {
+            this.containerEl.classList.add(CLASS_FULLSCREEN);
+            this.resize();
+        });
+        fullscreen.addListener('exit', () => {
+            this.containerEl.classList.remove(CLASS_FULLSCREEN);
+            this.resize();
+        });
 
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler());
@@ -179,7 +172,7 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     resize() {
-        // overriden
+        this.emit('resize');
     }
 
     /**

@@ -8,7 +8,6 @@ export const CLASS_BOX_PREVIEW_MOBILE = 'box-preview-is-mobile';
 export const CLASS_BOX_PREVIEW_HEADER = 'box-preview-header';
 export const CLASS_BOX_PREVIEW_HEADER_BTNS = 'box-preview-header-btns';
 export const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
-export const CLASS_FULLSCREEN_DISABLED = 'box-preview-fullscreen-disabled';
 export const CLASS_INVISIBLE = 'box-preview-is-invisible';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;

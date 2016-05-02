@@ -90,6 +90,7 @@ class CSV extends TextBase {
      */
     resize() {
         this.renderCSV();
+        super.resize();
     }
 
     /**
