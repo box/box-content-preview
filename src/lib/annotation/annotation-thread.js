@@ -145,7 +145,9 @@ class AnnotationThread extends EventEmitter {
             }
 
             this.reset();
-        }).catch(() => {/* No-op */});
+        }).catch(() => {
+            // no-op
+        });
     }
 
     /**

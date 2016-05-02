@@ -75,7 +75,7 @@ class Flash extends Base {
 
         const itemContextDataToLoad = [{
             identifier: this.options.file.id,
-            xml: flashXML.replace(/\>\s*\</g, '><')
+            xml: flashXML.replace(/>\s*</g, '><')
         }];
 
         flashEl.updateFiles(itemContextDataToLoad, this.options.file.id);

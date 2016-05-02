@@ -199,6 +199,7 @@ class Model3dControls extends Box3DControls {
     getModeByName(renderModeName) {
         let renderMode;
 
+        /* eslint-disable no-restricted-syntax */
         for (const renderModeKey in RENDER_MODES) {
             if (RENDER_MODES.hasOwnProperty(renderModeKey)) {
                 const renderModeDesc = RENDER_MODES[renderModeKey];
@@ -208,6 +209,7 @@ class Model3dControls extends Box3DControls {
                 }
             }
         }
+        /* eslint-enable no-restricted-syntax */
 
         return renderMode;
     }
