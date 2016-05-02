@@ -697,9 +697,15 @@ class DocBase extends Base {
 
         switch (key) {
             case 'Enter':
-                // Focusing the document should blur the input field, which
-                // triggers pageNumInputBlurHandler
-                this.docEl.focus();
+                // We normally trigger the blur handler by blurring the input
+                // field, but this doesn't work for IE in fullscreen. For IE,
+                // we blur the page behind the controls - this unfortunately
+                // is an IE-only solution that doesn't work with other browsers
+                if (Browser.getName() === 'Explorer') {
+                    this.docEl.focus();
+                } else {
+                    event.target.blur();
+                }
 
                 event.stopPropagation();
                 event.preventDefault();
