@@ -548,31 +548,6 @@ class DocAnnotator extends Annotator {
 
         this._highlighter.removeHighlights(matchingHighlights);
     }
-
-    /**
-     * Manually add a stylesheet for custom cursors in IE10/IE11 since they
-     * don't correctly resolve relative URLs, see:
-     * http://stackoverflow.com/questions/7419314/custom-cursor-image-doesnt-work-in-all-ies
-     * We hard-code the cursor URL to the cursor on our CDNs. Note this is a
-     * hack and should be removed if we decide that we don't need custom
-     * cursors for IE10 or IE11.
-     *
-     * @returns {void}
-     * @private
-     */
-    _addIEAnnotationStylesheet() {
-        super._addIEAnnotationStylesheet();
-
-        const styleEl = document.createElement('style');
-        styleEl.setAttribute('type', 'text/css');
-        styleEl.innerHTML = `
-            .box-preview-highlight-annotation-mode .page,
-            .box-preview-highlight-annotation-mode .box-preview-annotation-layer,
-            .box-preview-highlight-annotation-mode .textLayer > div {
-                cursor: url('https://cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/highlight-annotation.cur'), text;
-            }`.trim();
-        document.getElementsByTagName('head')[0].appendChild(styleEl);
-    }
 }
 
 export default DocAnnotator;
