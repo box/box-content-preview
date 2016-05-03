@@ -25,7 +25,7 @@ class Scrubber extends EventEmitter {
 
         this.containerEl = containerEl;
 
-        this.containerEl.innerHTML = scrubberTemplate.replace('{{accessibilityText}}', accessibilityText).replace(/\>\s*\</g, '><'); // removing new lines
+        this.containerEl.innerHTML = scrubberTemplate.replace('{{accessibilityText}}', accessibilityText).replace(/>\s*</g, '><'); // removing new lines
 
         // This container provides relative positioning. It also helps with adding hover states.
         this.scrubberContainerEl = this.containerEl.querySelector('.box-preview-media-scrubber-container');

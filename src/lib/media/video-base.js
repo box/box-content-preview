@@ -160,6 +160,8 @@ class VideoBase extends MediaBase {
         if (this.mediaControls) {
             this.mediaControls.resizeTimeScrubber();
         }
+
+        super.resize();
     }
 
     /**

@@ -321,7 +321,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 .box-preview-point-annotation-mode .box-preview-annotation-layer,
 .box-preview-point-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('../../img/cursors/point-annotation.cur'), crosshair;
+    cursor: url('point-annotation.cur'), crosshair;
 }
 
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
@@ -335,7 +335,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 .box-preview-highlight-annotation-mode .box-preview-annotation-layer,
 .box-preview-highlight-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('../../img/cursors/highlight-annotation.cur'), text;
+    cursor: url('highlight-annotation.cur'), text;
 }
 
 // IE10 and IE11 don't implement custom cursors correctly, see:

@@ -83,7 +83,7 @@ export function deduceBoxUrl(api) {
 export function createFragment(node, template) {
     const range = document.createRange();
     range.selectNode(node);
-    return range.createContextualFragment(template.replace(/\>\s*\</g, '><')); // remove new lines
+    return range.createContextualFragment(template.replace(/>\s*</g, '><')); // remove new lines
 }
 
 /**

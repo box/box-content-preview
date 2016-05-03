@@ -90,6 +90,7 @@ class CSV extends TextBase {
      */
     resize() {
         this.renderCSV();
+        super.resize();
     }
 
     /**
@@ -100,7 +101,7 @@ class CSV extends TextBase {
      * @returns {function} Cell renderer function
      */
     renderCell(cellIndex) {
-        return ({ rowIndex }) => <Cell>{ this.data[rowIndex][cellIndex]}</Cell>;
+        return ({ rowIndex }) => <Cell>{this.data[rowIndex][cellIndex]}</Cell>;
     }
 
     /**
@@ -110,7 +111,7 @@ class CSV extends TextBase {
      * @returns {Array} columns
      */
     renderColumn() {
-        return this.data[0].map((val, cellIndex) => <Column width={150} allowCellsRecycling cell={ this.renderCell(cellIndex) } />);
+        return this.data[0].map((val, cellIndex) => <Column width={150} allowCellsRecycling cell={this.renderCell(cellIndex)} />);
     }
 
     /**
@@ -122,7 +123,7 @@ class CSV extends TextBase {
     renderCSV() {
         ReactDOM.render(
             <Table rowHeight={50} rowsCount={this.data.length} width={this.csvEl.clientWidth} maxHeight={this.csvEl.clientHeight} headerHeight={0}>
-                { this.renderColumn() }
+                {this.renderColumn()}
             </Table>,
             this.csvEl
         );

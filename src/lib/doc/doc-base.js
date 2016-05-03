@@ -148,6 +148,8 @@ class DocBase extends Base {
             this.annotator.setScale(this.pdfViewer.currentScale);
             this._reRenderAnnotations = true;
         }
+
+        super.resize();
     }
 
     /**

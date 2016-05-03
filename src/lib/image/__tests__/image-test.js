@@ -64,25 +64,6 @@ describe('image.js', () => {
         image.load(imageUrl);
     });
 
-    it('should not load an image and fire error event', function errorTest(done) {
-        // Give a timeout larger than 30s
-        this.timeout(31000);
-
-        // Return 404 from fetch
-        fetchMock.mock('foo', 404);
-
-        // Detect error event due to timeout
-        image.on('error', () => {
-            /* eslint-disable no-unused-expressions */
-            expect(fetchMock.called('foo')).to.be.true;
-            /* eslint-enable no-unused-expressions */
-            done();
-        });
-
-        // load garbage
-        image.load('foo');
-    });
-
     it('should zoom in', (done) => {
         // Mock out fetch and return a blobed image
         fetchMock.mock(imageUrl, {
@@ -125,5 +106,24 @@ describe('image.js', () => {
 
         // load the image
         image.load(imageUrl);
+    });
+
+    it('should not load an image and fire error event', function errorTest(done) {
+        // Give a timeout larger than 30s
+        this.timeout(32000);
+
+        // Return 404 from fetch
+        fetchMock.mock('foo', 404);
+
+        // Detect error event due to timeout
+        image.on('error', () => {
+            /* eslint-disable no-unused-expressions */
+            expect(fetchMock.called('foo')).to.be.true;
+            /* eslint-enable no-unused-expressions */
+            done();
+        });
+
+        // load garbage
+        image.load('foo');
     });
 });

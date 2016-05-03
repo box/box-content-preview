@@ -46,19 +46,8 @@ module.exports = function(language) {
                 },
 
                 {
-                    test: /\.(jpe?g|png|gif|woff2|woff)$/,
-                    loader: 'url-loader?limit=10000',
-                    exclude: [
-                        /third\-party/,
-                        path.resolve('node_modules')
-                    ]
-                },
-
-                // .cur custom cursors need to be loaded as regular files since
-                // some browsers don't support loading them via data-urls
-                {
-                    test: /\.cur$/,
-                    loader: 'file-loader',
+                    test: /\.(jpe?g|cur|png|gif|woff2|woff)$/,
+                    loader: 'file?name=[name].[ext]',
                     exclude: [
                         /third\-party/,
                         path.resolve('node_modules')
@@ -76,6 +65,6 @@ module.exports = function(language) {
             colors: true
         },
 
-        devtool: 'source-map'
+        devtool: 'cheap-module-source-map'
     };
 };

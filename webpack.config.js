@@ -37,10 +37,10 @@ var languages = isRelease ? [
     "zh-TW"
 ] : [ 'en-US' ]; // Only 1 language needed for dev
 
-module.exports = languages.map(function(language) {
+module.exports = languages.map(function(language, index) {
 
     // Static output path
-    var static = path.join(__dirname, 'dist', version);
+    var staticFolder = path.join(__dirname, 'dist', version);
 
     // Get the common config
     var config = commonConfig(language);
@@ -52,8 +52,10 @@ module.exports = languages.map(function(language) {
     };
 
     // Copy over image and 3rd party
-    config.plugins.push(new RsyncPlugin(thirdParty, static));
-    config.plugins.push(new RsyncPlugin(img, static));
+    if (index === 0) {
+        config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
+        config.plugins.push(new RsyncPlugin(img, staticFolder));
+    }
 
     // If this is not a release build
     //      add the Rsync plugin for local development where copying to dev VM is needed.
