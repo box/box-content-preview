@@ -85,7 +85,7 @@
     "coverage": "COVERAGE=1 karma start karma.dev.conf.js",
     "sync": "./build/push_to_dev.sh",
     "dev": "./node_modules/.bin/webpack --progress --colors",
-    "prod": "BUILD_PROD=1 node --max_old_space_size=8192 ./node_modules/webpack/bin/webpack.js -p",
+    "prod": "BUILD_PROD=1 node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js -p",
     "watch": "npm run watch-rb & ./node_modules/.bin/webpack --watch",
     "clean": "rm -rf dist && rm -rf reports && rm -rf src/i18n/json",
     "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
