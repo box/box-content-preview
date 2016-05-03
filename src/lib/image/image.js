@@ -160,9 +160,10 @@ class Image extends Base {
      * @returns {void}
      */
     updatePannability() {
-        const imageDimensions = this.imageEl.getBoundingClientRect();
-        const containerDimensions = this.wrapperEl.getBoundingClientRect();
-        this.isPannable = imageDimensions.width > containerDimensions.width || imageDimensions.height > containerDimensions.height;
+        if (!this.imageEl) {
+            return;
+        }
+        this.isPannable = this.imageEl.clientWidth > this.wrapperEl.clientWidth || this.imageEl.clientHeight > this.wrapperEl.clientHeight;
         this.didPan = false;
         this.updateCursor();
     }
