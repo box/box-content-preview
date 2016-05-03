@@ -240,14 +240,9 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     bottom: 0;
     cursor: text;
     left: 0;
-    pointer-events: none;
     position: absolute;
     right: 0;
     top: 0;
-
-    .box-preview-doc-mousedown & {
-        pointer-events: none;
-    }
 }
 
 .box-preview-highlight-dialog {
@@ -264,6 +259,16 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     cursor: pointer;
     margin: 0;
     padding: 5px 6px;
+}
+
+.box-preview-use-hand-cursor {
+    cursor: pointer;
+
+    // Overrides pdf_viewer.css
+    // scss-lint:disable SelectorFormat
+    .textLayer > div {
+        cursor: pointer;
+    }
 }
 
 // Quad point positioning - the helper divs are positioned relative to the
@@ -308,16 +313,6 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
-.box-preview-use-hand-cursor {
-    cursor: pointer;
-
-    // Overrides pdf_viewer.css
-    // scss-lint:disable SelectorFormat
-    .textLayer > div {
-        cursor: pointer;
-    }
-}
-
 //------------------------------------------------------------------------------
 // Annotation mode
 //------------------------------------------------------------------------------
@@ -327,6 +322,13 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 .box-preview-point-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
     cursor: url('../../img/cursors/point-annotation.cur'), crosshair;
+}
+
+// Needed to allow point annotations since PDF.js adds a funky mousedown handler
+// that helps with text selection - we need to disable this since it interacts
+// badly with point annotations on non-text divs in non-Chrome browsers
+.box-preview-point-annotation-mode .textLayer .endOfContent {
+    pointer-events: none;
 }
 
 .box-preview-highlight-annotation-mode .page,
