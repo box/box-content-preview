@@ -13,119 +13,71 @@
 .box-preview-reset-icon:before {
     width: 19px;
     height: 16px;
-    -shalam-sprite: 'controls/reset.png' dest-size(19px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -120px -500px;
     background: url(../img/sprite.png) -74px -358px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-vr-toggle-icon:before {
     width: 24px;
     height: 16px;
-    -shalam-sprite: 'controls/controls-vr.png' dest-size(24px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) 0 -480px;
     background: url(../img/sprite.png) -43.826086956521735px -264.5333333333333px/133.56521739130434px 465.06666666666666px;
-    /* end shalam */
 }
 
 .box-preview-rendermodes-icon:before {
     width: 16px;
     height: 16px;
-    -shalam-sprite: 'controls/rendermodes.png' dest-size(16px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) 0 -520px;
     background: url(../img/sprite.png) -93px -390px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-icon-rm-lit {
     width: 16px;
     height: 16px;
-    -shalam-sprite: 'controls/rendermode-lit.png' dest-size(16px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -235px -500px;
     background: url(../img/sprite.png) -75px -390px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-icon-rm-unlit {
     width: 16px;
     height: 16px;
-    -shalam-sprite: 'controls/rendermode-unlit.png' dest-size(16px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -16px -520px;
     background: url(../img/sprite.png) -111px -390px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-icon-rm-normals {
     width: 16px;
     height: 16px;
-    -shalam-sprite: 'controls/rendermode-normals.png' dest-size(16px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -219px -500px;
     background: url(../img/sprite.png) -95px -358px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-icon-rm-wireframe {
     width: 16px;
     height: 16px;
-    -shalam-sprite: 'controls/rendermode-wireframe.png' dest-size(16px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -139px -500px;
     background: url(../img/sprite.png) -57px -390px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-icon-rm-untexturedwireframe {
     width: 16px;
     height: 16px;
-    -shalam-sprite: 'controls/rendermode-untexturedwireframe.png' dest-size(16px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -155px -500px;
     background: url(../img/sprite.png) 0 -390px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-icon-rm-uvoverlay {
     width: 16px;
     height: 16px;
-    -shalam-sprite: 'controls/rendermode-uvoverlay.png' dest-size(16px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -171px -500px;
     background: url(../img/sprite.png) -18px -390px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-icon-cog {
     width: 20px;
     height: 20px;
-    -shalam-sprite: 'controls/settings-cog.png' dest-size(20px 20px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -80px -500px;
     background: url(../img/sprite.png) -42.5px -447.5px/160px 545px;
-    /* end shalam */
 }
 
 .box-preview-icon-setting-arrow-left {
     width: 6px;
     height: 10px;
-    -shalam-sprite: 'controls/settings-arrowleft.png' dest-size(6px 10px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -38px -520px;
     background: url(../img/sprite.png) -8px -422px/128px 436px;
-    /* end shalam */
 }
 
 .box-preview-icon-setting-arrow-right {
     width: 6px;
     height: 10px;
-    -shalam-sprite: 'controls/settings-arrowright.png' dest-size(6px 10px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -32px -520px;
     background: url(../img/sprite.png) 0 -422px/128px 436px;
-    /* end shalam */
 }

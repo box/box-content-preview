@@ -47,7 +47,7 @@ module.exports = function(language) {
 
                 {
                     test: /\.(jpe?g|cur|png|gif|woff2|woff)$/,
-                    loader: 'file-loader',
+                    loader: 'file?name=[name].[ext]',
                     exclude: [
                         /third\-party/,
                         path.resolve('node_modules')
