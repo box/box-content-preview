@@ -152,6 +152,10 @@ class Presentation extends DocBase {
     wheelHandler() {
         if (!this.debouncedWheelHandler) {
             this.debouncedWheelHandler = debounce((event) => {
+                // This is used to detect whether a pagechange came from
+                // scrolling or not
+                this._isScrolling = true;
+
                 if (event.deltaY > 0) {
                     this.nextPage();
                 } else {

@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator';
 import Base from '../base';
 import Browser from '../browser';
+import cache from '../cache';
 import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
@@ -181,6 +182,40 @@ class DocBase extends Base {
      */
     setPage(pageNum) {
         this.pdfViewer.currentPageNumber = pageNum;
+        this.setCurrentPage(this.pdfViewer.currentPageNumber);
+    }
+
+    /**
+     * Gets the cached current page.
+     *
+     * @returns {Number} Current page
+     */
+    getCurrentPage() {
+        let page = 1;
+
+        if (cache.has('box-preview-current-page-map')) {
+            const currentPageMap = cache.get('box-preview-current-page-map');
+            page = currentPageMap[this.options.file.sha1] || page;
+        }
+
+        return page;
+    }
+
+    /**
+     * Sets the current page into localstorage if available. Otherwise saves
+     * it in-memory as a property on the document viewer.
+     *
+     * @param {Number} page Current page
+     * @returns {void}
+     */
+    setCurrentPage(page) {
+        let currentPageMap = {};
+        if (cache.has('box-preview-current-page-map')) {
+            currentPageMap = cache.get('box-preview-current-page-map');
+        }
+
+        currentPageMap[this.options.file.sha1] = page;
+        cache.set('box-preview-current-page-map', currentPageMap, true /* useLocalStorage */);
     }
 
     /**
@@ -306,10 +341,6 @@ class DocBase extends Base {
      * @returns {void}
      */
     toggleFullscreen() {
-        // Need to save current page number and restore once fullscreen
-        // animation is complete
-        this.currentPageNum = this.pdfViewer.currentPageNumber;
-
         super.toggleFullscreen();
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
@@ -537,7 +568,7 @@ class DocBase extends Base {
     }
 
     /**
-     * Update page number in page control widget
+     * Update page number in page control widget.
      *
      * @param {number} pageNum Nubmer of page to update to
      * @private
@@ -619,6 +650,9 @@ class DocBase extends Base {
         }
 
         this.checkPaginationButtons();
+
+        // Set current page to previously opened page or first page
+        this.setPage(this.getCurrentPage());
     }
 
     /**
@@ -667,6 +701,15 @@ class DocBase extends Base {
     pagechangeHandler(event) {
         const pageNum = event.pageNumber;
         this.updateCurrentPage(pageNum);
+
+        // We only set cache the current page if 'pagechange' was fired from a
+        // scrolling event - this filters out 'pagechange' events fired from
+        // viewer init or when exiting fullscreen
+        if (this._isScrolling) {
+            this.setCurrentPage(pageNum);
+        }
+
+        this._isScrolling = false;
     }
 
     /**
@@ -737,10 +780,8 @@ class DocBase extends Base {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.FULLSCREEN;
         this.pdfViewer.currentScaleValue = 'page-fit';
 
-        // Restore current page if needed
-        if (this.currentPageNum) {
-            this.setPage(this.currentPageNum);
-        }
+        // Restore current page
+        this.setPage(this.getCurrentPage());
     }
 
     /**
@@ -754,10 +795,8 @@ class DocBase extends Base {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.NORMAL;
         this.pdfViewer.currentScaleValue = 'auto';
 
-        // Restore current page if needed
-        if (this.currentPageNum) {
-            this.setPage(this.currentPageNum);
-        }
+        // Restore current page
+        this.setPage(this.getCurrentPage());
     }
 }
 

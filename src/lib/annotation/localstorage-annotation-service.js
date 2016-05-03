@@ -7,6 +7,7 @@
 import autobind from 'autobind-decorator';
 import Annotation from './annotation';
 import AnnotationService from './annotation-service';
+import cache from '../cache';
 
 @autobind
 class LocalStorageAnnotationService extends AnnotationService {
@@ -122,8 +123,7 @@ class LocalStorageAnnotationService extends AnnotationService {
      * @returns {Annotations[]} Annotations stored in local storage
      */
     get localAnnotations() {
-        const annotationsString = localStorage.getItem('annotationsLocalStorage');
-        const annotations = (annotationsString === null) ? [] : JSON.parse(annotationsString);
+        const annotations = cache.get('box-preview-annotations') || [];
 
         // @NOTE(tjin): Temporary hack to generate Annotation value objects from
         // deserialized annotations objects
@@ -151,7 +151,7 @@ class LocalStorageAnnotationService extends AnnotationService {
      * @returns {void}
      */
     set localAnnotations(annotations) {
-        localStorage.setItem('annotationsLocalStorage', JSON.stringify(annotations));
+        cache.set('box-preview-annotations', annotations, true /* useLocalStorage */);
     }
 }
 
