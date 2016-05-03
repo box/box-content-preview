@@ -76,6 +76,6 @@ module.exports = function(language) {
             colors: true
         },
 
-        devtool: 'source-map'
+        devtool: 'cheap-module-source-map'
     };
 };
