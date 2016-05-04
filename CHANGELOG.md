@@ -1,5 +1,50 @@
 # Change Log
 
+## [v0.54.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.54.0) (2016-05-04)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.53.0...v0.54.0)
+
+**Merged pull requests:**
+
+- Adding back sprite compat [\#345](https://gitenterprise.inside-box.net/Preview/Preview/pull/345) ([phora](https://gitenterprise.inside-box.net/phora))
+- Adding new file icons [\#344](https://gitenterprise.inside-box.net/Preview/Preview/pull/344) ([phora](https://gitenterprise.inside-box.net/phora))
+- Caching document viewer pagination + extending cache.js with localStorage [\#342](https://gitenterprise.inside-box.net/Preview/Preview/pull/342) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Updating package.json [\#341](https://gitenterprise.inside-box.net/Preview/Preview/pull/341) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- PDFJS v1.5.228 [\#340](https://gitenterprise.inside-box.net/Preview/Preview/pull/340) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Fixing point annotation bug [\#339](https://gitenterprise.inside-box.net/Preview/Preview/pull/339) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing some document viewer bugs [\#337](https://gitenterprise.inside-box.net/Preview/Preview/pull/337) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Updating packages [\#336](https://gitenterprise.inside-box.net/Preview/Preview/pull/336) ([phora](https://gitenterprise.inside-box.net/phora))
+- Fixing error color [\#335](https://gitenterprise.inside-box.net/Preview/Preview/pull/335) ([phora](https://gitenterprise.inside-box.net/phora))
+- \[Annotations\] Change implementation of IE custom cursors [\#334](https://gitenterprise.inside-box.net/Preview/Preview/pull/334) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing image test [\#333](https://gitenterprise.inside-box.net/Preview/Preview/pull/333) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding permissions check to see if viewer can edit metadata [\#321](https://gitenterprise.inside-box.net/Preview/Preview/pull/321) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+
+## [v0.53.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.53.0) (2016-04-30)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.52.0...v0.53.0)
+
+**Merged pull requests:**
+
+- \[Annotations\] Mobile browser support [\#332](https://gitenterprise.inside-box.net/Preview/Preview/pull/332) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Some color tweaks [\#331](https://gitenterprise.inside-box.net/Preview/Preview/pull/331) ([phora](https://gitenterprise.inside-box.net/phora))
+- Rotation axis origin fix [\#329](https://gitenterprise.inside-box.net/Preview/Preview/pull/329) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- UI Tweaks [\#328](https://gitenterprise.inside-box.net/Preview/Preview/pull/328) ([phora](https://gitenterprise.inside-box.net/phora))
+- \[Annotations\] Fixing bugs in IE [\#327](https://gitenterprise.inside-box.net/Preview/Preview/pull/327) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing document viewer bugs - COXP-1579, COXP-1441, COXP-1491, COXP-1262 [\#326](https://gitenterprise.inside-box.net/Preview/Preview/pull/326) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Fixing some annotations bugs/interactions [\#325](https://gitenterprise.inside-box.net/Preview/Preview/pull/325) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Use getters instead of accessing properties directly [\#324](https://gitenterprise.inside-box.net/Preview/Preview/pull/324) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Increasing base timeout to 30s [\#323](https://gitenterprise.inside-box.net/Preview/Preview/pull/323) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Close pending point annotations [\#322](https://gitenterprise.inside-box.net/Preview/Preview/pull/322) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Refactoring annotations service into base and localstorage [\#320](https://gitenterprise.inside-box.net/Preview/Preview/pull/320) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Fixing highlight mode bugs [\#319](https://gitenterprise.inside-box.net/Preview/Preview/pull/319) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding youtube style play/pause to 360 video. Excluding all browsers … [\#318](https://gitenterprise.inside-box.net/Preview/Preview/pull/318) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- \[Annotations\] Highlight mode [\#317](https://gitenterprise.inside-box.net/Preview/Preview/pull/317) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding Shape render mode [\#316](https://gitenterprise.inside-box.net/Preview/Preview/pull/316) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- \[Annotations\] Highlight mode preparation [\#315](https://gitenterprise.inside-box.net/Preview/Preview/pull/315) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Removing volume controls from mobile since users should be using the … [\#314](https://gitenterprise.inside-box.net/Preview/Preview/pull/314) ([phora](https://gitenterprise.inside-box.net/phora))
+- Minor UI tweaks for mp3 player [\#313](https://gitenterprise.inside-box.net/Preview/Preview/pull/313) ([phora](https://gitenterprise.inside-box.net/phora))
+- Adding jpeg to list of extensions for image360 [\#312](https://gitenterprise.inside-box.net/Preview/Preview/pull/312) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Update changelog for v0.52.0 [\#311](https://gitenterprise.inside-box.net/Preview/Preview/pull/311) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing doc highlight margins [\#307](https://gitenterprise.inside-box.net/Preview/Preview/pull/307) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.52.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.52.0) (2016-04-21)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.51.0...v0.52.0)
 
