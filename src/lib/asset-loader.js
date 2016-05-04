@@ -116,6 +116,9 @@ class AssetLoader {
 
         // Determine the representation to use
         const representation = this.determineRepresentation(file, viewer);
+        if (representation.status !== 'success') {
+            return;
+        }
 
         // Prefetch the stylesheets needed for this preview
         prefetchAssets(viewer.STYLESHEETS.map(assetUrlCreator));
