@@ -13,8 +13,8 @@ import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
-import findBarTemplate from 'raw!./pdf-find-bar.html';
-import PDFFindBar from './pdf-find-bar';
+import findBarTemplate from 'raw!./doc-find-bar.html';
+import DocFindBar from './doc-find-bar';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -147,7 +147,7 @@ class DocBase extends Base {
         });
         this.pdfViewer.setFindController(this.findController);
 
-        this.findBar = new PDFFindBar(this.containerEl, {
+        this.findBar = new DocFindBar(this.containerEl, {
             bar: this.findBarEl,
             findField: document.getElementById('findField'),
             findResultsCount: document.getElementById('findResultsCount'),

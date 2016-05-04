@@ -11,7 +11,7 @@ const matchOffset = 5;
 const pixelSuffix = 'px';
 
 @autobind
-class PDFFindBar {
+class DocFindBar {
     /**
      * @constructor
      * @param {String|HTMLElement} container Container node
@@ -32,7 +32,7 @@ class PDFFindBar {
         this.matchResultCount = 0;
 
         if (this.findController === null) {
-            throw new Error('PDFFindBar cannot be used without a ' +
+            throw new Error('DocFindBar cannot be used without a ' +
                           'PDFFindController instance.');
         }
 
@@ -184,4 +184,4 @@ class PDFFindBar {
     }
 }
 
-export default PDFFindBar;
+export default DocFindBar;
