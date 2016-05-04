@@ -25,7 +25,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * [destructor]
-     *
      * @returns {void}
      */
     destroy() {
@@ -41,7 +40,6 @@ class HighlightThread extends AnnotationThread {
      * state of the thread. If the thread is pending, we show the 'add' button.
      * If it is inactive, we draw the highlight. If it is active, we draw
      * the highlight in active state and show the 'delete' button.
-     *
      * @returns {void}
      */
     show() {
@@ -70,7 +68,6 @@ class HighlightThread extends AnnotationThread {
      * Hides the highlight by cutting out the annotation from context. Note
      * that if there are any overlapping highlights, this will cut out
      * the overlapping portion.
-     *
      * @returns {void}
      */
     hide() {
@@ -79,7 +76,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Reset state to inactive and redraw.
-     *
      * @returns {void}
      */
     reset() {
@@ -89,7 +85,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Saves an annotation.
-     *
      * @param {String} type Type of annotation
      * @param {String} text Text of annotation to save
      * @returns {Promise} Promise
@@ -102,7 +97,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Mousedown handler for thread. Deletes this thread if it is still pending.
-     *
      * @returns {void}
      */
     onMousedown() {
@@ -121,7 +115,6 @@ class HighlightThread extends AnnotationThread {
      * when normally it should be activated. We don't draw active highlights
      * in this method since we want to delay that drawing until all inactive
      * threads have been reset.
-     *
      * @param {Event} event Mouse event
      * @param {Boolean} consumed Whether event previously activated another
      * highlight
@@ -148,7 +141,6 @@ class HighlightThread extends AnnotationThread {
      * state to be hover and return true. If not, set state to be inactive,
      * and reset. We don't draw hovered highlights in this method since we want
      * to delay that drawing until all inactive threads have been reset.
-     *
      * @param {Event} event Mouse event
      * @returns {Boolean} Whether we should delay drawing highlight
      */
@@ -192,7 +184,6 @@ class HighlightThread extends AnnotationThread {
     /**
      * Sets up the thread. Highlight threads have no HTML element since they
      * are drawn onto the canvas, but do have a dialog for adding/deleting.
-     *
      * @returns {void}
      * @private
      */
@@ -213,7 +204,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Binds custom event listeners for the dialog.
-     *
      * @returns {void}
      * @private
      */
@@ -231,7 +221,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Unbinds custom event listeners for the dialog.
-     *
      * @returns {void}
      * @private
      */
@@ -242,7 +231,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Draws the highlight with the specified fill style.
-     *
      * @param {String} fillStyle RGBA fill style
      * @returns {void}
      * @private
@@ -285,7 +273,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Checks whether mouse is inside the highlight represented by this thread.
-     *
      * @param {Event} event Mouse event
      * @returns {Boolean} Whether or not mouse is inside highlight
      * @private
@@ -312,7 +299,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Gets the page element this thread is on.
-     *
      * @returns {HTMLElement} Page element
      * @private
      */
@@ -322,7 +308,6 @@ class HighlightThread extends AnnotationThread {
 
     /**
      * Gets the context this highlight should be drawn on.
-     *
      * @returns {RenderingContext|null} Context
      * @private
      */

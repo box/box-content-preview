@@ -347,12 +347,18 @@ class DocBase extends Base {
     }
 
     /**
-     * Returns whether or not viewer is annotatable.
+     * Returns whether or not viewer is annotatable with the provided annotation
+     * type.
      *
      * @public
+     * @param {String} type Type of annotation
      * @returns {Boolean} Whether or not viewer is annotatable
      */
-    isAnnotatable() {
+    isAnnotatable(type) {
+        if (type !== 'point' && type !== 'highlight') {
+            return false;
+        }
+
         const viewerName = this.options.viewerName;
         return this.options.viewers && this.options.viewers[viewerName] &&
             this.options.viewers[viewerName].annotations;
@@ -364,7 +370,7 @@ class DocBase extends Base {
      * @returns {Function|null} Click handler
      */
     getPointModeClickHandler() {
-        if (!this.isAnnotatable()) {
+        if (!this.isAnnotatable('point')) {
             return null;
         }
 
@@ -377,7 +383,7 @@ class DocBase extends Base {
      * @returns {Function|null} Click handler
      */
     getHighlightModeClickHandler() {
-        if (!this.isAnnotatable()) {
+        if (!this.isAnnotatable('highlight')) {
             return null;
         }
 
@@ -638,8 +644,7 @@ class DocBase extends Base {
         // page
         this.pdfViewer._setScale('auto', true);
 
-        // Initialize annotations before loading controls since there are
-        // annotations controls
+        // Initialize annotations before other UI
         // @TODO maybe this should move out to individual viewers
         if ((this.options.viewers.Document && this.options.viewers.Document.annotations) ||
             (this.options.viewers.Presentation && this.options.viewers.Presentation.annotations)) {

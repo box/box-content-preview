@@ -26,7 +26,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * The data object for constructing a thread.
-     *
      * @typedef {Object} AnnotationThreadData
      * @property {HTMLElement} annotatedElement HTML element being annotated on
      * @property {Annotation[]} [annotations] Annotations in thread - none if
@@ -45,7 +44,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * [constructor]
-     *
      * @param {AnnotationThreadData} data Data for constructing thread
      * @returns {AnnotationThread} Annotation thread instance
      */
@@ -66,7 +64,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * [destructor]
-     *
      * @returns {void}
      */
     destroy() {
@@ -90,7 +87,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Shows the annotation indicator.
-     *
      * @returns {void}
      */
     show() {
@@ -111,7 +107,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Hides the annotation indicator.
-     *
      * @returns {void}
      */
     hide() {
@@ -120,7 +115,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Reset state to inactive.
-     *
      * @returns {void}
      */
     reset() {
@@ -129,7 +123,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Saves an annotation.
-     *
      * @param {String} type Type of annotation
      * @param {String} text Text of annotation to save
      * @returns {Promise} Promise
@@ -152,7 +145,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Deletes an annotation.
-     *
      * @param {String} annotationID ID of annotation to delete
      * @returns {Promise} Promise
      */
@@ -180,7 +172,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Gets location.
-     *
      * @returns {Object} Location
      */
     get location() {
@@ -189,7 +180,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Gets threadID.
-     *
      * @returns {String} threadID
      */
     get threadID() {
@@ -198,7 +188,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Gets type.
-     *
      * @returns {String} type
      */
     get type() {
@@ -207,7 +196,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Gets state.
-     *
      * @returns {String} state
      */
     get state() {
@@ -221,7 +209,6 @@ class AnnotationThread extends EventEmitter {
     /**
      * Sets up the thread. Creates HTML for annotation indicator, sets
      * appropriate dialog, and binds event listeners.
-     *
      * @returns {void}
      * @private
      */
@@ -245,20 +232,18 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Creates the HTML for the annotation indicator.
-     *
      * @returns {HTMLElement} HTML element
      * @private
      */
     _createElement() {
         const indicatorEl = document.createElement('button');
         indicatorEl.classList.add('box-preview-point-annotation-btn');
-        indicatorEl.setAttribute('data-type', 'annotation-thread');
+        indicatorEl.setAttribute('data-type', 'annotation-indicator');
         return indicatorEl;
     }
 
     /**
      * Binds DOM event listeners for the thread.
-     *
      * @returns {void}
      * @private
      */
@@ -270,7 +255,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Unbinds DOM event listeners for the thread.
-     *
      * @returns {void}
      * @private
      */
@@ -281,20 +265,7 @@ class AnnotationThread extends EventEmitter {
     }
 
     /**
-     * Mouseout handler. Hides dialog if we aren't creating the first one.
-     *
-     * @returns {void}
-     * @private
-     */
-    _mouseoutHandler() {
-        if (this._annotations.length !== 0) {
-            this._hideDialog();
-        }
-    }
-
-    /**
      * Binds custom event listeners for the dialog.
-     *
      * @returns {void}
      * @private
      */
@@ -317,7 +288,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Unbinds custom event listeners for the dialog.
-     *
      * @returns {void}
      * @private
      */
@@ -329,7 +299,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Shows the appropriate annotation dialog for this thread.
-     *
      * @returns {void}
      * @private
      */
@@ -342,7 +311,6 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Hides the appropriate annotation dialog for this thread.
-     *
      * @returns {void}
      * @private
      */
@@ -353,11 +321,22 @@ class AnnotationThread extends EventEmitter {
     }
 
     /**
+     * Mouseout handler. Hides dialog if we aren't creating the first one.
+     * @returns {void}
+     * @private
+     */
+    _mouseoutHandler() {
+        if (this._annotations.length !== 0) {
+            this._hideDialog();
+        }
+    }
+
+    /**
      * Create an annotation data object to pass to annotation service.
-     *
      * @param {String} type Type of annotation
      * @param {String} text Annotation text
      * @returns {Object} Annotation data
+     * @private
      */
     _createAnnotationData(type, text) {
         return {

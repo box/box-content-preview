@@ -695,7 +695,7 @@ class Preview extends EventEmitter {
      */
     showAnnotateButton() {
         // @TODO(tjin): Add permission checks here once we have annotation permissions
-        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable()) {
+        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable('point')) {
             this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
             this.annotateButton.classList.remove(CLASS_HIDDEN);
             this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
@@ -710,7 +710,7 @@ class Preview extends EventEmitter {
      */
     showHighlightButton() {
         // @TODO(tjin): Add permission checks here once we have annotation permissions
-        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable()) {
+        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable('highlight')) {
             this.highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
             this.highlightButton.classList.remove(CLASS_HIDDEN);
             this.highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
