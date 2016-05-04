@@ -92,15 +92,22 @@ class Cache {
      * @private
      */
     _localStorageAvailable() {
+        if (typeof this._localStorageAvailable !== undefined) {
+            return this._localStorageAvailable;
+        }
+
+        // Need to feature detect for localStorage, see https://goo.gl/XE10Gu
         try {
             const storage = window.localStorage;
             const x = '__storage_test__';
             storage.setItem(x, x);
             storage.removeItem(x);
-            return true;
+            this._localStorageAvailable = true;
         } catch (e) {
-            return false;
+            this._localStorageAvailable = false;
         }
+
+        return this._localStorageAvailable;
     }
 }
 
