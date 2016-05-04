@@ -1,21 +1,23 @@
 import autobind from 'autobind-decorator';
 import Base from '../base';
 import Browser from '../browser';
+import cache from '../cache';
 import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
 
-const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
+const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
+const DEFAULT_SCALE_DELTA = 1.1;
+const MAX_SCALE = 10.0;
+const MIN_SCALE = 0.1;
 const PRESENTATION_MODE_STATE = {
     UNKNOWN: 0,
     NORMAL: 1,
     CHANGING: 2,
     FULLSCREEN: 3
 };
-const DEFAULT_SCALE_DELTA = 1.1;
-const MAX_SCALE = 10.0;
-const MIN_SCALE = 0.1;
+const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 
 @autobind
 class DocBase extends Base {
@@ -181,6 +183,40 @@ class DocBase extends Base {
      */
     setPage(pageNum) {
         this.pdfViewer.currentPageNumber = pageNum;
+        this.setCurrentPage(this.pdfViewer.currentPageNumber);
+    }
+
+    /**
+     * Gets the cached current page.
+     *
+     * @returns {Number} Current page
+     */
+    getCurrentPage() {
+        let page = 1;
+
+        if (cache.has(CURRENT_PAGE_MAP_KEY)) {
+            const currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
+            page = currentPageMap[this.options.file.sha1] || page;
+        }
+
+        return page;
+    }
+
+    /**
+     * Sets the current page into localstorage if available. Otherwise saves
+     * it in-memory as a property on the document viewer.
+     *
+     * @param {Number} page Current page
+     * @returns {void}
+     */
+    setCurrentPage(page) {
+        let currentPageMap = {};
+        if (cache.has(CURRENT_PAGE_MAP_KEY)) {
+            currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
+        }
+
+        currentPageMap[this.options.file.sha1] = page;
+        cache.set(CURRENT_PAGE_MAP_KEY, currentPageMap, true /* useLocalStorage */);
     }
 
     /**
@@ -306,10 +342,6 @@ class DocBase extends Base {
      * @returns {void}
      */
     toggleFullscreen() {
-        // Need to save current page number and restore once fullscreen
-        // animation is complete
-        this.currentPageNum = this.pdfViewer.currentPageNumber;
-
         super.toggleFullscreen();
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
@@ -537,7 +569,7 @@ class DocBase extends Base {
     }
 
     /**
-     * Update page number in page control widget
+     * Update page number in page control widget.
      *
      * @param {number} pageNum Nubmer of page to update to
      * @private
@@ -619,6 +651,9 @@ class DocBase extends Base {
         }
 
         this.checkPaginationButtons();
+
+        // Set current page to previously opened page or first page
+        this.setPage(this.getCurrentPage());
     }
 
     /**
@@ -667,6 +702,15 @@ class DocBase extends Base {
     pagechangeHandler(event) {
         const pageNum = event.pageNumber;
         this.updateCurrentPage(pageNum);
+
+        // We only set cache the current page if 'pagechange' was fired from a
+        // scrolling event - this filters out 'pagechange' events fired from
+        // viewer init or when exiting fullscreen
+        if (this._isScrolling) {
+            this.setCurrentPage(pageNum);
+        }
+
+        this._isScrolling = false;
     }
 
     /**
@@ -737,10 +781,8 @@ class DocBase extends Base {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.FULLSCREEN;
         this.pdfViewer.currentScaleValue = 'page-fit';
 
-        // Restore current page if needed
-        if (this.currentPageNum) {
-            this.setPage(this.currentPageNum);
-        }
+        // Restore current page
+        this.setPage(this.getCurrentPage());
     }
 
     /**
@@ -754,10 +796,8 @@ class DocBase extends Base {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.NORMAL;
         this.pdfViewer.currentScaleValue = 'auto';
 
-        // Restore current page if needed
-        if (this.currentPageNum) {
-            this.setPage(this.currentPageNum);
-        }
+        // Restore current page
+        this.setPage(this.getCurrentPage());
     }
 }
 

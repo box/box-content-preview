@@ -1,6 +1,8 @@
 import './document.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
+import debounce from 'lodash.debounce';
+import fullscreen from '../fullscreen';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 import {
     ICON_DROP_DOWN,
@@ -10,6 +12,8 @@ import {
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT
 } from '../icons/icons';
+
+const WHEEL_DEBOUNCE = 100;
 
 const Box = global.Box || {};
 
@@ -42,7 +46,7 @@ class Document extends DocBase {
      */
     destroy() {
         if (this.docEl) {
-            this.docEl.removeEventListener('mousewheel', this.mousewheelHandler);
+            this.docEl.removeEventListener('wheel', this.wheelHandler());
         }
 
         super.destroy();
@@ -79,7 +83,7 @@ class Document extends DocBase {
     addEventListenersForDocElement() {
         super.addEventListenersForDocElement();
 
-        this.docEl.addEventListener('mousewheel', this.mousewheelHandler);
+        this.docEl.addEventListener('wheel', this.wheelHandler());
     }
 
     /**
@@ -102,31 +106,32 @@ class Document extends DocBase {
     }
 
     /**
-     * Mousewheel handler, scroll documents by page when in full screen mode.
+     * Debounced mouse wheel handler, scroll documents by page when in full
+     * screen mode, and regularly when not in full screen. This needs
+     * to be debounced because otherwise, the inertia scroll on Macbooks fires
+     * the 'wheel' event too many times.
      *
-     * @param {Event} event Mousewheel event
      * @returns {void}
      */
-    mousewheelHandler(event) {
-        // Use default mouse scroll behavior while full screen
-        if (!this.pdfViewer.isInPresentationMode) {
-            return;
+    wheelHandler() {
+        if (!this.debouncedWheelHandler) {
+            this.debouncedWheelHandler = debounce((event) => {
+                // This is used to detect whether a pagechange came from
+                // scrolling or not
+                this._isScrolling = true;
+
+                // If fullscreen, scroll by page
+                if (fullscreen.isFullscreen()) {
+                    if (event.deltaY > 0) {
+                        this.nextPage();
+                    } else {
+                        this.previousPage();
+                    }
+                }
+            }, WHEEL_DEBOUNCE);
         }
 
-        // The mod 120 filters out track pad events. Mac inertia scrolling
-        // fires lots of scroll events so we've chosen to just disable it
-        const currentWheelDelta = event.wheelDelta || event.detail;
-        const isFromMouseWheel = (currentWheelDelta % 120 === 0);
-
-        if (isFromMouseWheel) {
-            // Wheeldata is used for IE8 support
-            // http://www.javascriptkit.com/javatutors/onmousewheel.shtml
-            if (currentWheelDelta < 0) {
-                this.nextPage();
-            } else {
-                this.previousPage();
-            }
-        }
+        return this.debouncedWheelHandler;
     }
 }
 
