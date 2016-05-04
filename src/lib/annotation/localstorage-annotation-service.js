@@ -123,7 +123,7 @@ class LocalStorageAnnotationService extends AnnotationService {
      * @returns {Annotations[]} Annotations stored in local storage
      */
     get localAnnotations() {
-        const annotations = cache.get('box-preview-annotations') || [];
+        const annotations = cache.get('saved-annotations') || [];
 
         // @NOTE(tjin): Temporary hack to generate Annotation value objects from
         // deserialized annotations objects
@@ -151,7 +151,7 @@ class LocalStorageAnnotationService extends AnnotationService {
      * @returns {void}
      */
     set localAnnotations(annotations) {
-        cache.set('box-preview-annotations', annotations, true /* useLocalStorage */);
+        cache.set('saved-annotations', annotations, true /* useLocalStorage */);
     }
 }
 

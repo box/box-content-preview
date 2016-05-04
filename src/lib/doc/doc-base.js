@@ -7,16 +7,17 @@ import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
 
-const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
+const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
+const DEFAULT_SCALE_DELTA = 1.1;
+const MAX_SCALE = 10.0;
+const MIN_SCALE = 0.1;
 const PRESENTATION_MODE_STATE = {
     UNKNOWN: 0,
     NORMAL: 1,
     CHANGING: 2,
     FULLSCREEN: 3
 };
-const DEFAULT_SCALE_DELTA = 1.1;
-const MAX_SCALE = 10.0;
-const MIN_SCALE = 0.1;
+const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 
 @autobind
 class DocBase extends Base {
@@ -193,8 +194,8 @@ class DocBase extends Base {
     getCurrentPage() {
         let page = 1;
 
-        if (cache.has('box-preview-current-page-map')) {
-            const currentPageMap = cache.get('box-preview-current-page-map');
+        if (cache.has(CURRENT_PAGE_MAP_KEY)) {
+            const currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
             page = currentPageMap[this.options.file.sha1] || page;
         }
 
@@ -210,12 +211,12 @@ class DocBase extends Base {
      */
     setCurrentPage(page) {
         let currentPageMap = {};
-        if (cache.has('box-preview-current-page-map')) {
-            currentPageMap = cache.get('box-preview-current-page-map');
+        if (cache.has(CURRENT_PAGE_MAP_KEY)) {
+            currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
         }
 
         currentPageMap[this.options.file.sha1] = page;
-        cache.set('box-preview-current-page-map', currentPageMap, true /* useLocalStorage */);
+        cache.set(CURRENT_PAGE_MAP_KEY, currentPageMap, true /* useLocalStorage */);
     }
 
     /**
