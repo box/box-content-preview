@@ -52,7 +52,7 @@ class DocBase extends Base {
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = 60000;
 
-        this.createFindBar(container);
+        this.createFindBar();
     }
 
     /**
@@ -124,13 +124,10 @@ class DocBase extends Base {
 
     /**
      * [createFindBar description]
-     * @param  {[type]} container [description]
      * @returns {void}
      */
-    createFindBar(container) {
-        this.headerEl = container.firstChild;
-
-        this.findBarEl = this.headerEl.appendChild(document.createElement('div'));
+    createFindBar() {
+        this.findBarEl = this.docEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add('findbar');
         this.findBarEl.setAttribute('id', 'findbar');
         this.findBarEl.innerHTML = findBarTemplate;
