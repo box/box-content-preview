@@ -13,6 +13,7 @@ export const CLASS_BOX_PREVIEW_MENU = 'box-preview-menu';
 export const CLASS_BOX_PREVIEW_OVERLAY = 'box-preview-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'box-preview-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'box-preview-toggle-overlay';
+export const CLASS_BOX_PREVIEW_FIND_BAR = 'box-preview-find-bar';
 export const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 export const CLASS_INVISIBLE = 'box-preview-is-invisible';
 

@@ -1,52 +1,94 @@
 import autobind from 'autobind-decorator';
+import { decodeKeydown } from '../util.js';
+import { CLASS_INVISIBLE } from '../constants';
+import {
+    ICON_FIND_DROP_DOWN,
+    ICON_FIND_DROP_UP,
+    ICON_CLOSE,
+    ICON_SEARCH
+} from '../icons/icons';
 
-const FindStates = {
-    FIND_FOUND: 0,
-    FIND_NOTFOUND: 1,
-    FIND_WRAPPED: 2,
-    FIND_PENDING: 3
-};
-const matchSeparator = ' of ';
-const matchOffset = 5;
-const pixelSuffix = 'px';
+const FIND_MATCH_FOUND = 0;
+const FIND_MATCH_NOT_FOUND = 1;
+const MATCH_SEPARATOR = ' of ';
+const MATCH_OFFSET = 13;
+const CLASS_FIND_MATCH_NOT_FOUND = 'box-preview-find-match-not-found';
 
 @autobind
 class DocFindBar {
+
     /**
      * @constructor
-     * @param {String|HTMLElement} container Container node
-     * @param {Object} [options] Configuration options
+     * @param  {string|HTML Element} findBar Find Bar node
+     * @param  {Object} findController
+     * @returns {void}
      */
-    constructor(container, options) {
+    constructor(findBar, findController) {
         this.opened = false;
-        this.bar = options.bar || null;
-        this.findField = options.findField || null;
-        this.findMsg = options.findMsg || null;
-        this.findResultsCount = options.findResultsCount || null;
-        this.findStatusIcon = options.findStatusIcon || null;
-        this.findPreviousButton = options.findPreviousButton || null;
-        this.findNextButton = options.findNextButton || null;
-        this.findCloseButton = options.findCloseButton || null;
-        this.findController = options.findController || null;
+        this.bar = findBar;
+        this.findController = findController;
         this.currentMatch = 0;
         this.matchResultCount = 0;
 
         if (this.findController === null) {
-            throw new Error('DocFindBar cannot be used without a ' +
-                          'PDFFindController instance.');
+            throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
         }
 
+        // Default hides find bar on load
+        this.bar.classList.add(CLASS_INVISIBLE);
+
+        this.createFindField();
+        this.createFindButtons();
+
+        this.findPreviousButtonEl = this.bar.querySelector('.box-preview-doc-find-prev');
+        this.findNextButtonEl = this.bar.querySelector('.box-preview-doc-find-next');
+        this.findCloseButtonEl = this.bar.querySelector('.box-preview-doc-find-close');
+
         // Add event listeners to the DOM elements.
-        const self = this;
-        this.bar.classList.add('box-preview-is-invisible');
+        this.bar.addEventListener('keydown', this.barKeyDownHandler);
+        this.findFieldEl.addEventListener('input', this.findFieldHandler);
+        this.findPreviousButtonEl.addEventListener('click', this.findPreviousHandler);
+        this.findNextButtonEl.addEventListener('click', this.findNextHandler);
+        this.findCloseButtonEl.addEventListener('click', this.close);
+    }
 
-        self.findField.addEventListener('input', self.findFieldHandler);
+    /**
+     * Creates find input field, search icon and results count elements
+     * @returns {void}
+     */
+    createFindField() {
+        // Search Icon
+        const findSearchButtonEL = document.createElement('span');
+        findSearchButtonEL.classList.add('box-preview-doc-find-search');
+        findSearchButtonEL.innerHTML = `${ICON_SEARCH}`.trim();
+        this.bar.appendChild(findSearchButtonEL);
 
-        self.bar.addEventListener('keydown', this.barHandler);
+        // Find input field
+        this.findFieldEl = document.createElement('input');
+        this.findFieldEl.classList.add('box-preview-doc-find-field');
+        this.bar.appendChild(this.findFieldEl);
 
-        self.findPreviousButton.addEventListener('click', this.findPreviousHandler);
-        self.findNextButton.addEventListener('click', this.findNextHandler);
-        self.findCloseButton.addEventListener('click', this.close);
+        // Match Results Count
+        this.findResultsCountEl = document.createElement('span');
+        this.findResultsCountEl.classList.add('box-preview-doc-find-results-count');
+        this.findResultsCountEl.classList.add(CLASS_INVISIBLE);
+        this.bar.appendChild(this.findResultsCountEl);
+    }
+
+    /**
+     * Creates previous, next, and close buttons for find bar
+     * @returns {void}
+     */
+    createFindButtons() {
+        const findPreviousButton = `<button class="box-preview-doc-find-prev">${ICON_FIND_DROP_DOWN}</button>`.trim();
+        const findNextButton = `<button class="box-preview-doc-find-next">${ICON_FIND_DROP_UP}</button>`.trim();
+        const findCloseButton = `<button class="box-preview-doc-find-close">${ICON_CLOSE}</button>`.trim();
+
+        this.findButtonContainerEl = document.createElement('span');
+        this.findButtonContainerEl.classList.add('box-preview-doc-find-controls');
+        this.findButtonContainerEl.innerHTML = findPreviousButton + findNextButton + findCloseButton;
+
+        this.bar.appendChild(this.findButtonContainerEl);
     }
 
     /**
@@ -58,56 +100,34 @@ class DocFindBar {
     destroy() {
         this.currentMatch = 0;
         this.matchResultCount = 0;
+
+        // Remove DOM event listeners
+        this.bar.removeListener('keydown', this.barKeyDownHandler);
+        this.findFieldEl.removeListener('input', this.findFieldHandler);
+        this.findPreviousButtonEl.removeListener('click', this.findPreviousHandler);
+        this.findNextButtonEl.removeListener('click', this.findNextHandler);
+        this.findCloseButtonEl.removeListener('click', this.close);
+
+        // Destroy the find buttons
+        this.findPreviousButtonEl.empty();
+        this.findNextButtonEl.empty();
+        this.findCloseButtonEl.empty();
+        this.findButtonContainerEl.empty();
+
+        // Clean up find bar and controller object
+        this.bar.empty();
     }
 
-    findFieldHandler() {
-        this.dispatchEvent('find');
-        this.currentMatch = 1;
-    }
-
-    barHandler(evt) {
-        switch (evt.keyCode) {
-            case 13: // Enter
-                if (evt.shiftKey) {
-                    this.findPreviousHandler();
-                } else {
-                    this.findNextHandler();
-                }
-                break;
-            case 27: // Escape
-                this.close();
-                break;
-            default:
-                break;
-        }
-    }
-
-    findPreviousHandler() {
-        if (this.findField.value) {
-            this.dispatchEvent('findagain', true);
-            this.currentMatch = this.currentMatch - 1;
-
-            if (this.currentMatch <= 0) {
-                this.currentMatch = this.matchResultCount;
-            }
-        }
-    }
-
-    findNextHandler() {
-        if (this.findField.value) {
-            this.dispatchEvent('findagain', false);
-            this.currentMatch = this.currentMatch + 1;
-
-            if (this.currentMatch >= this.matchResultCount) {
-                this.currentMatch = 1;
-            }
-        }
-    }
-
-    dispatchEvent(type, findPrev) {
+    /**
+     * Dispatch custom find event based specified type
+     * @param  {string} type
+     * @param  {Boolean} findPrev
+     * @returns {Boolean} whether the default action of the event was not canceled
+     */
+    dispatchFindEvent(type, findPrev) {
         const event = document.createEvent('CustomEvent');
         event.initCustomEvent(type, true, true, {
-            query: this.findField.value,
+            query: this.findFieldEl.value,
             highlightAll: true, // true by default
             findPrevious: findPrev
         });
@@ -115,71 +135,153 @@ class DocFindBar {
         return window.dispatchEvent(event);
     }
 
+    /**
+     * Update Find Bar UI to current match state
+     * @param  {Number} state FindState from PDFFindController
+     * @param  {Number} previous Previous FindState from PDFFindController
+     * @param  {Number} matchCount
+     * @returns {void}
+     */
     updateUIState(state, previous, matchCount) {
         this.notFound = false;
-        this.statusText = '';
         this.matchResultCount = matchCount;
 
         switch (state) {
-            case FindStates.FIND_FOUND:
+            case FIND_MATCH_FOUND:
                 break;
 
-            case FindStates.FIND_PENDING:
-                this.statusText = 'pending';
-                break;
-
-            case FindStates.FIND_NOTFOUND:
+            case FIND_MATCH_NOT_FOUND:
                 this.notFound = true;
                 break;
+
             default:
                 break;
         }
 
         if (this.notFound) {
-            this.findField.classList.add('notFound');
+            this.findFieldEl.classList.add(CLASS_FIND_MATCH_NOT_FOUND);
         } else {
-            this.findField.classList.remove('notFound');
+            this.findFieldEl.classList.remove(CLASS_FIND_MATCH_NOT_FOUND);
         }
-        this.findField.setAttribute('data-status', this.statusText);
 
         this.updateResultsCount(matchCount);
     }
 
+    /**
+     * Update results count to current match count
+     * @param  {Number} matchCount
+     * @returns {void}
+     */
     updateResultsCount(matchCount) {
-        if (!this.findResultsCount) {
+        if (!this.findResultsCountEl) {
             return; // no UI control is provided
         }
 
         // If there are no matches, hide the counter
         if (!matchCount) {
-            this.findResultsCount.classList.add('box-preview-is-invisible');
+            this.findResultsCountEl.classList.add(CLASS_INVISIBLE);
             return;
         }
 
-        this.findField.style.paddingRight = this.findResultsCount.getBoundingClientRect().width + matchOffset + pixelSuffix;
+        const paddingRight = this.findResultsCountEl.getBoundingClientRect().width + MATCH_OFFSET;
+        this.findFieldEl.style.paddingRight = `${paddingRight}px`;
 
         // Create the match counter
-        this.findResultsCount.textContent = this.currentMatch + matchSeparator + matchCount.toLocaleString();
+        this.findResultsCountEl.textContent = this.currentMatch + MATCH_SEPARATOR + matchCount;
 
         // Show the counter
-        this.findResultsCount.classList.remove('box-preview-is-invisible');
+        this.findResultsCountEl.classList.remove(CLASS_INVISIBLE);
     }
 
+    /* ----- Event Handlers ----- */
+    /**
+     * Handler to dispatch find event on input
+     * @returns {void}
+     */
+    findFieldHandler() {
+        this.dispatchFindEvent('find');
+        this.currentMatch = 1;
+    }
+
+    /**
+     * Handler for find keyboard short cuts
+     * @param  {Event} event
+     * @returns {void}
+     */
+    barKeyDownHandler(event) {
+        const key = decodeKeydown(event);
+        switch (key) {
+            case 'Enter':
+                this.findNextHandler();
+                break;
+            case 'Shift+Enter':
+                this.findPreviousHandler();
+                break;
+            case 'Escape': // Escape
+                this.close();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Handler to find previous match and update match count accordingly
+     *
+     * @returns {void}
+     */
+    findPreviousHandler() {
+        if (this.findFieldEl.value) {
+            this.dispatchFindEvent('findagain', true);
+            this.currentMatch = this.currentMatch - 1;
+
+            // Loops search to last match in document
+            if (this.currentMatch <= 0) {
+                this.currentMatch = this.matchResultCount;
+            }
+        }
+    }
+
+    /**
+     * Handler to find next match count and update match count accordingly
+     *
+     * @returns {void}
+     */
+    findNextHandler() {
+        if (this.findFieldEl.value) {
+            this.dispatchFindEvent('findagain', false);
+            this.currentMatch = this.currentMatch + 1;
+
+            // Loops search to first match in document
+            if (this.currentMatch >= this.matchResultCount) {
+                this.currentMatch = 1;
+            }
+        }
+    }
+
+    /**
+     * Unhide Find Bar
+     * @returns {void}
+     */
     open() {
         if (!this.opened) {
             this.opened = true;
-            this.bar.classList.remove('box-preview-is-invisible');
+            this.bar.classList.remove(CLASS_INVISIBLE);
         }
-        this.findField.select();
-        this.findField.focus();
+        this.findFieldEl.select();
+        this.findFieldEl.focus();
     }
 
+    /**
+     * Hide Find Bar
+     * @returns {void}
+     */
     close() {
         if (!this.opened) {
             return;
         }
         this.opened = false;
-        this.bar.classList.add('box-preview-is-invisible');
+        this.bar.classList.add(CLASS_INVISIBLE);
         this.findController.active = false;
     }
 }

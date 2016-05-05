@@ -13,8 +13,8 @@ import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import fullscreen from '../fullscreen';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
-import findBarTemplate from 'raw!./doc-find-bar.html';
 import DocFindBar from './doc-find-bar';
+import { CLASS_BOX_PREVIEW_FIND_BAR } from '../constants';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -52,7 +52,8 @@ class DocBase extends Base {
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = 60000;
 
-        this.createFindBar();
+        this.findBarEl = this.docEl.appendChild(document.createElement('div'));
+        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
     }
 
     /**
@@ -123,36 +124,16 @@ class DocBase extends Base {
     }
 
     /**
-     * [createFindBar description]
-     * @returns {void}
-     */
-    createFindBar() {
-        this.findBarEl = this.docEl.appendChild(document.createElement('div'));
-        this.findBarEl.classList.add('findbar');
-        this.findBarEl.setAttribute('id', 'findbar');
-        this.findBarEl.innerHTML = findBarTemplate;
-    }
-
-    /**
-     * [initFindController description]
+     * Initializes the Find Bar and Find Controller
      * @returns {void}
      */
     initFindController() {
         this.findController = new PDFFindController({
-            pdfViewer: this.pdfViewer,
-            integratedFind: false
+            pdfViewer: this.pdfViewer
         });
         this.pdfViewer.setFindController(this.findController);
 
-        this.findBar = new DocFindBar(this.containerEl, {
-            bar: this.findBarEl,
-            findField: document.getElementById('findField'),
-            findResultsCount: document.getElementById('findResultsCount'),
-            findPreviousButton: document.getElementById('findPrevious'),
-            findNextButton: document.getElementById('findNext'),
-            findCloseButton: document.getElementById('findClose'),
-            findController: this.findController
-        });
+        this.findBar = new DocFindBar(this.findBarEl, this.findController);
 
         this.findController.setFindBar(this.findBar);
     }
