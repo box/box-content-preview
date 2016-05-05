@@ -44,6 +44,9 @@ class DocFindBar {
         this.findNextButtonEl = this.bar.querySelector('.box-preview-doc-find-next');
         this.findCloseButtonEl = this.bar.querySelector('.box-preview-doc-find-close');
 
+        // KeyDown handler to show/hide find bar
+        window.addEventListener('keydown', this.displayFindBarHandler);
+
         // Add event listeners to the DOM elements.
         this.bar.addEventListener('keydown', this.barKeyDownHandler);
         this.findFieldEl.addEventListener('input', this.findFieldHandler);
@@ -101,21 +104,26 @@ class DocFindBar {
         this.currentMatch = 0;
         this.matchResultCount = 0;
 
-        // Remove DOM event listeners
-        this.bar.removeListener('keydown', this.barKeyDownHandler);
-        this.findFieldEl.removeListener('input', this.findFieldHandler);
-        this.findPreviousButtonEl.removeListener('click', this.findPreviousHandler);
-        this.findNextButtonEl.removeListener('click', this.findNextHandler);
-        this.findCloseButtonEl.removeListener('click', this.close);
+        // Remove KeyDown handler to show/hide find bar
+        window.removeEventListener('keydown', this.displayFindBarHandler);
 
-        // Destroy the find buttons
-        this.findPreviousButtonEl.empty();
-        this.findNextButtonEl.empty();
-        this.findCloseButtonEl.empty();
-        this.findButtonContainerEl.empty();
+        // Remove DOM event listeners
+        this.bar.removeEventListener('keydown', this.barKeyDownHandler);
+        this.findFieldEl.removeEventListener('input', this.findFieldHandler);
+        this.findPreviousButtonEl.removeEventListener('click', this.findPreviousHandler);
+        this.findNextButtonEl.removeEventListener('click', this.findNextHandler);
+        this.findCloseButtonEl.removeEventListener('click', this.close);
+
+        // Clean up the find buttons
+        this.findPreviousButtonEl.remove();
+        this.findNextButtonEl.remove();
+        this.findCloseButtonEl.remove();
+        this.findButtonContainerEl.remove();
 
         // Clean up find bar and controller object
-        this.bar.empty();
+        this.findResultsCountEl.remove();
+        this.findFieldEl.remove();
+        this.bar.remove();
     }
 
     /**
@@ -195,6 +203,27 @@ class DocFindBar {
 
     /* ----- Event Handlers ----- */
     /**
+     * Handler to show/hide find bar
+     * @param  {Event} event
+     * @returns {void}
+     */
+    displayFindBarHandler(event) {
+        const key = decodeKeydown(event).toLowerCase();
+        switch (key) {
+            case 'meta+f':
+            case 'control+f':
+            case 'meta+g':
+            case 'control+g':
+                this.open();
+                event.preventDefault();
+                return;
+
+            default:
+                return;
+        }
+    }
+
+    /**
      * Handler to dispatch find event on input
      * @returns {void}
      */
@@ -217,7 +246,7 @@ class DocFindBar {
             case 'Shift+Enter':
                 this.findPreviousHandler();
                 break;
-            case 'Escape': // Escape
+            case 'Escape':
                 this.close();
                 break;
             default:
@@ -232,6 +261,7 @@ class DocFindBar {
      */
     findPreviousHandler() {
         if (this.findFieldEl.value) {
+            this.findPreviousButtonEl.focus();
             this.dispatchFindEvent('findagain', true);
             this.currentMatch = this.currentMatch - 1;
 
@@ -249,6 +279,7 @@ class DocFindBar {
      */
     findNextHandler() {
         if (this.findFieldEl.value) {
+            this.findNextButtonEl.focus();
             this.dispatchFindEvent('findagain', false);
             this.currentMatch = this.currentMatch + 1;
 

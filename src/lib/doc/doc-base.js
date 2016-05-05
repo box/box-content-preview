@@ -71,13 +71,9 @@ class DocBase extends Base {
             this.controls.destroy();
         }
 
-        // Destroy the find bar and controller
-        if (this.findBar) {
+        // Destroy the find bar
+        if (this.findBar && typeof this.findBar.destroy === 'function') {
             this.findBar.destroy();
-        }
-
-        if (this.findController.findBar) {
-            this.findController.findBar.destroy();
         }
 
         // Destroy the annotator
@@ -93,10 +89,6 @@ class DocBase extends Base {
 
             if (this.pdfViewer.pdfDocument) {
                 this.pdfViewer.pdfDocument.destroy();
-            }
-
-            if (this.pdfViewer.findController.findBar) {
-                this.pdfViewer.findController.findBar.destroy();
             }
         }
 
@@ -781,13 +773,6 @@ class DocBase extends Base {
 
                 event.stopPropagation();
                 event.preventDefault();
-                break;
-            case 'Meta+F':
-            case 'Control+F':
-            case 'Meta+G':
-            case 'Control+G':
-                // todo(@spramod) make sure to make this OS compatible so like CTRL+F for windows, etc
-                this.findBar.open();
                 break;
             default:
                 return;
