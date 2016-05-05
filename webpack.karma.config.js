@@ -9,7 +9,7 @@ module.exports = merge(commonConfig('en-US'), {
         noAutoWrap: true
     },
 
-    devtool: 'inline-source-map',
+    devtool: '#inline-source-map',
 
     resolve: {
         alias: {
