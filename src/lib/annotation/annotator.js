@@ -13,6 +13,7 @@ import LocalStorageAnnotationService from './localstorage-annotation-service';
 
 import * as annotatorUtil from './annotator-util';
 import * as constants from './annotation-constants';
+import { CLASS_ACTIVE } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
 const ANONYMOUS_USER = {
@@ -129,13 +130,25 @@ class Annotator extends EventEmitter {
     /**
      * Toggles point annotation mode on and off. When point annotation mode is
      * on, clicking an area will create a point annotation at that location.
+     * @param {HTMLEvent} event DOM event
      * @returns {void}
      */
-    togglePointModeHandler() {
+    togglePointModeHandler(event = {}) {
+        // This unfortunately breaks encapsulation since we're modifying the header buttons
+        let buttonEl = event.target;
+        if (!buttonEl) {
+            const containerEl = document.querySelector('.box-preview-header') ||
+                this._annotatedElement.querySelector('.box-preview-annotation-controls');
+            buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-annotate') : null;
+        }
+
         // If in annotation mode, turn it off
         if (this._isInPointMode()) {
             this.emit('pointmodeexit');
             this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
+            if (buttonEl) {
+                buttonEl.classList.remove(CLASS_ACTIVE);
+            }
 
             this._unbindPointModeListeners(); // Disable point mode
             this._bindDOMListeners(); // Re-enable other annotations
@@ -144,6 +157,9 @@ class Annotator extends EventEmitter {
         } else {
             this.emit('pointmodeenter');
             this._annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
+            if (buttonEl) {
+                buttonEl.classList.add(CLASS_ACTIVE);
+            }
 
             this._unbindDOMListeners(); // Disable other annotations
             this._bindPointModeListeners();  // Enable point mode
@@ -169,7 +185,7 @@ class Annotator extends EventEmitter {
         const annotationButtonContainerEl = document.createElement('div');
         annotationButtonContainerEl.classList.add('box-preview-annotation-controls');
         annotationButtonContainerEl.innerHTML = `
-            <button class="btn box-preview-btn-annotate">${ICON_ANNOTATION}</button>`.trim();
+            <button class="box-preview-btn-plain box-preview-btn-annotate">${ICON_ANNOTATION}</button>`.trim();
         const pointAnnotationModeBtnEl = annotationButtonContainerEl.querySelector('.box-preview-btn-annotate');
         pointAnnotationModeBtnEl.addEventListener('click', this.togglePointModeHandler);
         this._annotatedElement.appendChild(annotationButtonContainerEl);
@@ -321,6 +337,11 @@ class Annotator extends EventEmitter {
         // If click is inside an annotation dialog, ignore
         const dataType = annotatorUtil.findClosestDataType(eventTarget);
         if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
+            return;
+        }
+
+        // If there is a selection, ignore
+        if (annotatorUtil.isSelectionPresent()) {
             return;
         }
 

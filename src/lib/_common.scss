@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'boxui';
 
 $header-height: 48px;
 
@@ -15,7 +16,6 @@ $header-height: 48px;
 
 .box-preview-container {
     border: 0 none;
-    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px;
     -moz-font-smoothing: subpixel-antialiased;
     -webkit-font-smoothing: subpixel-antialiased;
@@ -43,20 +43,24 @@ $header-height: 48px;
     justify-content: space-between;
     padding: 0 20px;
 
-    .box-preview-btn {
-        background: transparent;
-        border: 0 none;
-        cursor: pointer;
-        margin: 0;
-        opacity: .7;
-
-        &:hover {
-            opacity: 1;
-        }
-    }
-
     + .box-preview:not(.box-preview-is-fullscreen) {
         top: $header-height;
+    }
+}
+
+.box-preview-header-btns button {
+    padding: 0 10px;
+
+    svg {
+        fill: lighten($better-black, 15%);
+    }
+
+    &:hover {
+        padding: 0 10px; // Override btn-plain
+
+        svg {
+            fill: $better-black;
+        }
     }
 }
 
@@ -93,4 +97,13 @@ $header-height: 48px;
 
 .box-preview-is-invisible {
     visibility: hidden;
+}
+
+.box-preview-btn-divider {
+    border-right: 1px solid $alto;
+    display: inline-block;
+    height: 24px;
+    margin-right: 10px;
+    padding-left: 10px;
+    vertical-align: middle;
 }

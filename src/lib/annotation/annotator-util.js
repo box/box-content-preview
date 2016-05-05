@@ -148,13 +148,19 @@ export function isPointInPolyOpt(poly, x, y) {
  * the current selection on the given page element.
  *
  * @param {Object} highlighter Rangy highlighter
+ * @param {HTMLElement} pageEl Page element highlight is over
  * @returns {Object} Rangy highlight object and highlight DOM elements
  */
-export function getHighlightAndHighlightEls(highlighter) {
+export function getHighlightAndHighlightEls(highlighter, pageEl) {
     // We use Rangy to turn the selection into a highlight, which creates
     // spans around the selection that we can then turn into quadpoints
-    const highlight = highlighter.highlightSelection('rangy-highlight')[0];
-    const highlightEls = [].slice.call(document.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
+    const highlight = highlighter.highlightSelection('rangy-highlight', {
+        containerElementId: pageEl.id
+    })[0];
+
+    // Only grab highlights on the text layer
+    const textLayer = pageEl.querySelector('.textLayer');
+    const highlightEls = [].slice.call(textLayer.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
         return element.tagName && element.tagName === 'SPAN' && element.textContent.trim() !== '';
     });
 

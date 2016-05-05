@@ -639,10 +639,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     pagesinitHandler() {
-        // Directly call _setScale so we can choose to set the second param,
-        // noScroll to true - this keeps the padding at the top of the first
-        // page
-        this.pdfViewer._setScale('auto', true);
+        this.pdfViewer.currentScaleValue = 'auto';
 
         // Initialize annotations before other UI
         // @TODO maybe this should move out to individual viewers

@@ -23,6 +23,7 @@ import {
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
+    SELECTOR_BOX_PREVIEW_BTN_DIVIDER,
     SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
@@ -707,6 +708,9 @@ class Preview extends EventEmitter {
             this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
             this.annotateButton.classList.remove(CLASS_HIDDEN);
             this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
+
+            const dividerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DIVIDER);
+            dividerEl.classList.remove(CLASS_HIDDEN);
         }
     }
 
