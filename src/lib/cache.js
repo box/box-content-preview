@@ -29,7 +29,7 @@ class Cache {
         this.cache[key] = value;
 
         if (useLocalStorage && this.localStorageAvailable()) {
-            window.localStorage.setItem(this.generateKey(key), JSON.stringify(value));
+            localStorage.setItem(this.generateKey(key), JSON.stringify(value));
         }
     }
 
@@ -40,8 +40,8 @@ class Cache {
      * @returns {void}
      */
     unset(key) {
-        if (this.localStorageAvailable()) {
-            window.localStorage.removeItem(this.generateKey(key));
+        if (localStorage && typeof localStorage.removeItem === 'function') {
+            localStorage.removeItem(this.generateKey(key));
         }
 
         delete this.cache[key];
@@ -54,7 +54,7 @@ class Cache {
      * @returns {Boolean} Whether the cache has key
      */
     has(key) {
-        return !!this.get(key);
+        return this.inCache(key) || this.inLocalStorage(key);
     }
 
     /**
@@ -66,27 +66,53 @@ class Cache {
      * @returns {*} Cached object
      */
     get(key) {
-        let value = this.cache[key];
-        if (value) {
-            return value;
+        if (this.inCache(key)) {
+            return this.cache[key];
         }
 
         // If localStorage is available, try to fetch from there and set it
         // in in-memory cache if found
-        if (this.localStorageAvailable()) {
-            value = window.localStorage.getItem(this.generateKey(key));
+        if (this.inLocalStorage(key)) {
+            let value = localStorage.getItem(this.generateKey(key));
             if (value) {
                 value = JSON.parse(value);
                 this.cache[key] = value;
+                return value;
             }
         }
 
-        return value;
+        return undefined;
     }
 
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * Checks if memory cache has provided key.
+     *
+     * @param {string} key The cache key
+     * @returns {Boolean} Whether the cache has key
+     */
+    inCache(key) {
+        return this.cache.hasOwnProperty(key);
+    }
+
+    /**
+     * Checks if memory cache has provided key.
+     *
+     * @param {string} key The cache key
+     * @returns {Boolean} Whether the cache has key
+     */
+    inLocalStorage(key) {
+        if (localStorage && typeof localStorage.getItem === 'function') {
+            const value = localStorage.getItem(this.generateKey(key));
+            if (value) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Checks whether localStorage is available or not, derived from
@@ -96,21 +122,14 @@ class Cache {
      * @private
      */
     localStorageAvailable() {
-        if (typeof this.localStorageAvailable !== undefined) {
-            return this.localStorageAvailable;
-        }
-
         try {
-            const storage = window.localStorage;
             const x = '__storage_test__';
-            storage.setItem(x, x);
-            storage.removeItem(x);
-            this.localStorageAvailable = true;
+            localStorage.setItem(x, x);
+            localStorage.removeItem(x);
+            return true;
         } catch (e) {
-            this.localStorageAvailable = false;
+            return false;
         }
-
-        return this.localStorageAvailable;
     }
 
     /**

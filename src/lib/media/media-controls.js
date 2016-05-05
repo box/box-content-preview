@@ -302,7 +302,7 @@ class MediaControls extends EventEmitter {
         this.wrapperEl.addEventListener('mouseenter', this.mouseenterHandler);
         this.wrapperEl.addEventListener('mouseleave', this.mouseleaveHandler);
         this.playButtonEl.addEventListener('click', this.togglePlay);
-        this.volButtonEl.addEventListener('click', this.toggleMute);
+        this.volLevelButtonEl.addEventListener('click', this.toggleMute);
         this.fullscreenButtonEl.addEventListener('click', this.toggleFullscreen);
         this.settingsButtonEl.addEventListener('click', this.toggleSettings);
     }
