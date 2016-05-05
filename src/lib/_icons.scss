@@ -1,45 +1,4 @@
-/*----- Common ------*/
-.box-preview-vr-toggle-icon:before,
-.box-preview-reset-icon:before,
-.box-preview-rendermodes-icon:before {
-    content: "";
-    width: 20px;
-    height: 20px;
-    display: inline-block;
-    vertical-align: middle;
-}
-
 /*----- Model3D ------*/
-.box-preview-reset-icon:before {
-    width: 19px;
-    height: 16px;
-    -shalam-sprite: 'controls/reset.png' dest-size(19px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) -120px -500px;
-    background: url(../img/sprite.png) -74px -358px/128px 436px;
-    /* end shalam */
-}
-
-.box-preview-vr-toggle-icon:before {
-    width: 24px;
-    height: 16px;
-    -shalam-sprite: 'controls/controls-vr.png' dest-size(24px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) 0 -480px;
-    background: url(../img/sprite.png) -43.826086956521735px -264.5333333333333px/133.56521739130434px 465.06666666666666px;
-    /* end shalam */
-}
-
-.box-preview-rendermodes-icon:before {
-    width: 16px;
-    height: 16px;
-    -shalam-sprite: 'controls/rendermodes.png' dest-size(16px 16px);
-    /* shalam! */;
-    background: url(../img/sprite.compat.png) 0 -520px;
-    background: url(../img/sprite.png) -93px -390px/128px 436px;
-    /* end shalam */
-}
-
 .box-preview-icon-rm-lit {
     width: 16px;
     height: 16px;

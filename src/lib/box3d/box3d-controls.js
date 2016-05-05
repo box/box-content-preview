@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import Controls from '../controls';
 import autobind from 'autobind-decorator';
+
 import {
     EVENT_ENABLE_VR,
     EVENT_DISABLE_VR,
@@ -8,12 +9,14 @@ import {
     EVENT_SCENE_LOADED,
     EVENT_TOGGLE_FULLSCREEN
 } from './box3d-constants';
+
 import {
     ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
+    ICON_FULLSCREEN_OUT,
+    ICON_3D_VR
 } from '../icons/icons';
 
-const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
+import { CLASS_HIDDEN } from '../constants';
 
 @autobind
 class Box3DControls extends EventEmitter {
@@ -34,12 +37,8 @@ class Box3DControls extends EventEmitter {
         // List of registered elements and their events
         this.eventRegistry = {};
 
-
         this.el = containerEl;
-
-        this.controls = null;
-        this.resetButtonEl = null;
-        this.vrButtonEl = null;
+        this.controls = new Controls(this.el);
     }
 
     /**
@@ -47,13 +46,26 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     addUi() {
-        this.controls = new Controls(this.el);
-        this.resetButtonEl = this.controls.add(__('reset_camera'), this.handleReset, 'box-preview-reset-icon');
-        this.vrButtonEl = this.controls.add(__('vr'), this.handleToggleVr, 'box-preview-vr-toggle-icon');
+        this.addVRButton();
+        this.addFullscreenButton();
+        this.hideVrButton();
+    }
+
+    /**
+     * Adds full screen button
+     * @returns {void}
+     */
+    addFullscreenButton() {
         this.controls.add(__('enter_fullscreen'), this.handleToggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.handleToggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+    }
 
-        this.hideVrButton();
+    /**
+     * Adds vr toggle button
+     * @returns {void}
+     */
+    addVRButton() {
+        this.vrButtonEl = this.controls.add(__('box3d_toggle_vr'), this.handleToggleVr, '', ICON_3D_VR);
     }
 
     /**
@@ -152,13 +164,14 @@ class Box3DControls extends EventEmitter {
         this.emit(EVENT_RESET);
     }
 
-
     /**
      * Enables the VR button
      * @returns {void}
      */
     showVrButton() {
-        this.vrButtonEl.classList.remove(CSS_CLASS_HIDDEN);
+        if (this.vrButtonEl) {
+            this.vrButtonEl.classList.remove(CLASS_HIDDEN);
+        }
     }
 
     /**
@@ -166,7 +179,9 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     hideVrButton() {
-        this.vrButtonEl.classList.add(CSS_CLASS_HIDDEN);
+        if (this.vrButtonEl) {
+            this.vrButtonEl.classList.add(CLASS_HIDDEN);
+        }
     }
 
     /**
@@ -177,9 +192,9 @@ class Box3DControls extends EventEmitter {
      */
     setElementVisibility(element, visible) {
         if (visible) {
-            element.classList.remove(CSS_CLASS_HIDDEN);
+            element.classList.remove(CLASS_HIDDEN);
         } else {
-            element.classList.add(CSS_CLASS_HIDDEN);
+            element.classList.add(CLASS_HIDDEN);
         }
     }
 
@@ -189,7 +204,7 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     toggleElementVisibility(element) {
-        element.classList.toggle(CSS_CLASS_HIDDEN);
+        element.classList.toggle(CLASS_HIDDEN);
     }
 
     /**
