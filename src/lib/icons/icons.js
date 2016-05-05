@@ -17,6 +17,10 @@ import FILE_ZIP from 'raw!./file_zip.svg';
 import FILE_MEDIA from 'raw!./file_media.svg';
 import VR from 'raw!./3D_vr_24px.svg';
 import RESET from 'raw!./3D_reset_24px.svg';
+import FIND_DROP_DOWN from 'raw!./arrow_drop_down.svg';
+import FIND_DROP_UP from 'raw!./arrow_drop_up.svg';
+import CLOSE from 'raw!./close.svg';
+import SEARCH from 'raw!./search.svg';
 
 export const ICON_ANNOTATION = ANNOTATION;
 export const ICON_DROP_DOWN = DROP_DOWN;
@@ -37,3 +41,7 @@ export const ICON_FILE_ZIP = FILE_ZIP;
 export const ICON_FILE_MEDIA = FILE_MEDIA;
 export const ICON_3D_VR = VR;
 export const ICON_3D_RESET = RESET;
+export const ICON_FIND_DROP_DOWN = FIND_DROP_DOWN;
+export const ICON_FIND_DROP_UP = FIND_DROP_UP;
+export const ICON_CLOSE = CLOSE;
+export const ICON_SEARCH = SEARCH;
