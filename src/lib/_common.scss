@@ -1,5 +1,7 @@
 @import 'variables';
 
+$header-height: 48px;
+
 .box-preview-is-hidden {
     // scss-lint:disable ImportantRule
     display: none !important;
@@ -37,9 +39,9 @@
     display: flex;
     -ms-flex-align: center;
     -ms-flex-pack: justify;
-    height: 44px;
+    height: $header-height;
     justify-content: space-between;
-    padding: 0 10px;
+    padding: 0 20px;
 
     .box-preview-btn {
         background: transparent;
@@ -54,7 +56,7 @@
     }
 
     + .box-preview:not(.box-preview-is-fullscreen) {
-        top: 40px;
+        top: $header-height;
     }
 }
 
