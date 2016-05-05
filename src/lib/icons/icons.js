@@ -15,6 +15,9 @@ import GEAR from 'raw!./gear_24px.svg';
 import FILE_DEFAULT from 'raw!./file_default.svg';
 import FILE_ZIP from 'raw!./file_zip.svg';
 import FILE_MEDIA from 'raw!./file_media.svg';
+import VR from 'raw!./3D_vr_24px.svg';
+import RENDER_MODES from 'raw!./3D_render_modes_24px.svg';
+import RESET from 'raw!./3D_reset_24px.svg';
 
 export const ICON_ANNOTATION = ANNOTATION;
 export const ICON_DROP_DOWN = DROP_DOWN;
@@ -33,3 +36,6 @@ export const ICON_GEAR = GEAR;
 export const ICON_FILE_DEFAULT = FILE_DEFAULT;
 export const ICON_FILE_ZIP = FILE_ZIP;
 export const ICON_FILE_MEDIA = FILE_MEDIA;
+export const ICON_3D_VR = VR;
+export const ICON_3D_RENDER_MODES = RENDER_MODES;
+export const ICON_3D_RESET = RESET;

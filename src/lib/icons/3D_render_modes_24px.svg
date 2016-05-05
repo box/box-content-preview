@@ -1,0 +1,10 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <title>3D-render-modes</title>
+    <g fill="none" fill-rule="evenodd">
+        <path d="M0 0h24v24H0V0z" />
+        <g transform="translate(3 1)">
+            <ellipse fill="#FFF" transform="rotate(-30 10.808 9.92)" cx="10.808" cy="9.921" rx="6" ry="7.898" />
+            <circle stroke="#FFF" stroke-width="2" cx="9" cy="11" r="9" />
+        </g>
+    </g>
+</svg>

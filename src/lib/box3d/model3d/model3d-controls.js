@@ -5,7 +5,9 @@ import {
     EVENT_CLOSE_SETTINGS_UI,
     EVENT_SET_RENDER_MODE
 } from './model3d-constants';
-const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
+
+import { CLASS_HIDDEN } from '../../constants';
+
 const CSS_CLASS_CURRENT_RENDER_MODE = 'box-preview-current-render-mode';
 
 const RENDER_MODES = {
@@ -53,6 +55,12 @@ const RENDER_MODES = {
     }
 };
 
+import {
+    ICON_3D_RENDER_MODES,
+    ICON_3D_RESET,
+    ICON_GEAR
+} from '../../icons/icons';
+
 
 /**
  * Model3dControls
@@ -77,21 +85,27 @@ class Model3dControls extends Box3DControls {
      * @inheritdoc
      */
     addUi() {
-        super.addUi();
-
         this.renderModesSelectorEl = document.createElement('ul');
         this.renderModesSelectorEl.classList.add('box-preview-overlay');
         this.renderModesSelectorEl.classList.add('box-preview-pullup');
         this.renderModesSelectorEl.classList.add('box-preview-render-mode-selector');
-        this.renderModesSelectorEl.classList.add(CSS_CLASS_HIDDEN);
+        this.renderModesSelectorEl.classList.add(CLASS_HIDDEN);
 
         Object.keys(RENDER_MODES).forEach((mode) => {
             const renderModeEl = this.createRenderModeItem(RENDER_MODES[mode]);
             this.renderModesSelectorEl.appendChild(renderModeEl);
         });
 
-        const renderModesEl = this.controls.add(__('render_mode'), this.handleToggleRenderModes, 'box-preview-rendermodes-icon');
+        this.resetButtonEl = this.controls.add(__('box3d_reset_camera'), this.handleReset, '', ICON_3D_RESET);
+
+        this.addVRButton();
+        this.hideVrButton();
+
+        const renderModesEl = this.controls.add(__('box3d_render_modes'), this.handleToggleRenderModes, '', ICON_3D_RENDER_MODES);
         renderModesEl.parentElement.appendChild(this.renderModesSelectorEl);
+
+        this.settingsButtonEl = this.controls.add(__('box3d_settings'), this.fixme, '', ICON_GEAR);
+        this.addFullscreenButton();
 
         // Set default to lit!
         this.handleSetRenderMode(RENDER_MODES.lit);
