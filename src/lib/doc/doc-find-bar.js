@@ -295,6 +295,12 @@ class DocFindBar {
      * @returns {void}
      */
     open() {
+        // Repopulate and re-highlight find field with last search
+        if (this.prevSearchQuery) {
+            this.findFieldEl.value = this.prevSearchQuery;
+            this.findFieldHandler();
+        }
+
         if (!this.opened) {
             this.opened = true;
             this.bar.classList.remove(CLASS_INVISIBLE);
@@ -314,6 +320,11 @@ class DocFindBar {
         this.opened = false;
         this.bar.classList.add(CLASS_INVISIBLE);
         this.findController.active = false;
+
+        // Save and clear current search to hide highlights
+        this.prevSearchQuery = this.findFieldEl.value;
+        this.findFieldEl.value = '';
+        this.findFieldHandler();
     }
 }
 
