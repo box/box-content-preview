@@ -63,8 +63,6 @@ module.exports = function(language) {
 
         stats: {
             colors: true
-        },
-
-        devtool: 'cheap-module-source-map'
+        }
     };
 };
