@@ -3,4 +3,8 @@
 .box-preview-error {
     color: $twos;
     text-align: center;
+
+    .box-preview-error-download {
+        padding-top: 20px;
+    }
 }
