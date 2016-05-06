@@ -550,6 +550,9 @@ class Preview extends EventEmitter {
      * @returns {Promise} Promise to load a viewer
      */
     attachViewerListeners() {
+        // Add listeners for viewer download event
+        this.viewer.addListener('download', this.download);
+
         // Add listeners for viewer load / error event
         this.viewer.addListener('error', this.triggerError);
 

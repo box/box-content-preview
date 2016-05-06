@@ -36,12 +36,13 @@ class PreviewError extends Base {
      * @returns {void}
      */
     load(url, reason) {
+        const file = this.options.file;
         let icon = ICON_FILE_DEFAULT;
         const message = reason || __('error_default');
 
         // Generic errors will not have the file object
-        if (this.options.file) {
-            switch (this.options.file.extension) {
+        if (file) {
+            switch (file.extension) {
                 case 'zip':
                 case 'tgz':
                     icon = ICON_FILE_ZIP;
@@ -55,10 +56,32 @@ class PreviewError extends Base {
         }
 
         this.iconEl.innerHTML = icon;
-        this.messageEl.innerHTML = message;
+        this.messageEl.textContent = message;
+
+        // Add optional download button
+        if (file && file.permissions && file.permissions.can_download) {
+            this.addDownloadButton();
+        }
 
         this.loaded = true;
         this.emit('load');
+    }
+
+    /**
+     * Adds optional download button
+     * @private
+     * @returns {void}
+     */
+    addDownloadButton() {
+        this.downloadEl = this.infoEl.appendChild(document.createElement('div'));
+        this.downloadEl.classList.add('box-preview-error-download');
+        this.downloadBtnEl = this.infoEl.appendChild(document.createElement('button'));
+        this.downloadBtnEl.classList.add('box-preview-btn');
+        this.downloadBtnEl.classList.add('box-preview-btn-primary');
+        this.downloadBtnEl.textContent = __('download');
+        this.downloadBtnEl.addEventListener('click', () => {
+            this.emit('download');
+        });
     }
 }
 
