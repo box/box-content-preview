@@ -25,7 +25,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * The data object for constructing a dialog.
-     *
      * @typedef {Object} AnnotationDialogData
      * @property {HTMLElement} annotatedElement HTML element being annotated on
      * @property {Annotation[]} annotations Annotations in dialog, can be an
@@ -39,7 +38,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * [constructor]
-     *
      * @param {AnnotationDialogData} data Data for constructing thread
      * @returns {AnnotationDialog} Annotation dialog instance
      */
@@ -48,13 +46,13 @@ class AnnotationDialog extends EventEmitter {
 
         this._annotatedElement = data.annotatedElement;
         this._location = data.location;
+        this._hasAnnotations = data.annotations.length > 0;
 
         this._setup(data.annotations);
     }
 
     /**
      * [destructor]
-     *
      * @returns {void}
      */
     destroy() {
@@ -71,7 +69,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Positions and shows the dialog.
-     *
      * @returns {void}
      */
     show() {
@@ -84,9 +81,9 @@ class AnnotationDialog extends EventEmitter {
         this._position();
 
         // Focus textarea if visible
-        const textAreaEl = this._inCreateMode() ?
-            this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA) :
-            this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const textAreaEl = this._hasAnnotations ?
+            this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA) :
+            this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
         if (annotatorUtil.isElementInViewport(textAreaEl)) {
             textAreaEl.focus();
         }
@@ -94,7 +91,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Hides the dialog.
-     *
      * @param {Boolean} [noDelay] Whether or not to have a timeout delay
      * @returns {void}
      */
@@ -113,17 +109,17 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Adds an annotation to the dialog.
-     *
      * @param {Annotation} annotation Annotation to add
      * @returns {void}
      */
     addAnnotation(annotation) {
-        // If in create mode, switch to show mode
-        if (this._inCreateMode()) {
+        // Show new section if needed
+        if (!this._hasAnnotations) {
             const createSectionEl = this._element.querySelector('[data-section="create"]');
             const showSectionEl = this._element.querySelector('[data-section="show"]');
             annotatorUtil.hideElement(createSectionEl);
             annotatorUtil.showElement(showSectionEl);
+            this._hasAnnotations = true;
         }
 
         this._addAnnotationElement(annotation);
@@ -132,7 +128,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Removes an annotation from the dialog.
-     *
      * @param {String} annotationID ID of annotation to remove
      * @returns {void}
      */
@@ -150,7 +145,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Sets up the dialog element.
-     *
      * @param {Annotation[]} Annotations to show in the dialog
      * @returns {void}
      * @private
@@ -180,8 +174,7 @@ class AnnotationDialog extends EventEmitter {
                         </div>
                     </div>
                 </section>
-            </section>
-            `.trim();
+            </section>`.trim();
 
         // Add annotation elements
         annotations.forEach((annotation) => {
@@ -193,7 +186,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Adds an annotation to the dialog.
-     *
      * @param {Annotation} annotation Annotation to add
      * @returns {void}
      * @private
@@ -232,7 +224,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Positions the dialog.
-     *
      * @returns {void}
      * @private
      */
@@ -266,7 +257,6 @@ class AnnotationDialog extends EventEmitter {
         if (dialogPastLeft && !dialogPastRight) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
             const caretLeftX = Math.max(10, browserX);
-            annotationCaretEl.style.right = 'initial';
             annotationCaretEl.style.left = `${caretLeftX}px`;
 
             dialogLeftX = 0;
@@ -275,14 +265,14 @@ class AnnotationDialog extends EventEmitter {
         } else if (dialogPastRight && !dialogPastLeft) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
             const caretRightX = Math.max(10, pageWidth - browserX);
-            annotationCaretEl.style.right = `${caretRightX}px`;
-            annotationCaretEl.style.left = 'initial';
+
+            // We set the 'left' property even when we have caretRightX for IE10/11
+            annotationCaretEl.style.left = `${dialogWidth - caretRightX}px`;
 
             dialogLeftX = pageWidth - dialogWidth;
 
         // Reset caret to center
         } else {
-            annotationCaretEl.style.right = 'initial';
             annotationCaretEl.style.left = '50%';
         }
 
@@ -293,7 +283,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Binds DOM event listeners.
-     *
      * @returns {void}
      * @private
      */
@@ -306,7 +295,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Unbinds DOM event listeners.
-     *
      * @returns {void}
      * @private
      */
@@ -319,7 +307,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Mouseenter handler. Clears hide timeout.
-     *
      * @returns {void}
      * @private
      */
@@ -331,19 +318,17 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Mouseleave handler. Hides dialog if we aren't creating the first one.
-     *
      * @returns {void}
      * @private
      */
     _mouseleaveHandler() {
-        if (!this._inCreateMode()) {
+        if (this._hasAnnotations) {
             this.hide();
         }
     }
 
     /**
      * Keydown handler for dialog.
-     *
      * @param {Event} event DOM event
      * @returns {void}
      * @private
@@ -365,7 +350,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Click handler on dialog.
-     *
      * @param {Event} event DOM event
      * @returns {void}
      * @private
@@ -426,7 +410,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Posts an annotation in the dialog.
-     *
      * @returns {void}
      * @private
      */
@@ -443,7 +426,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Cancels posting an annotation.
-     *
      * @returns {void}
      * @private
      */
@@ -453,7 +435,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Activates reply textarea.
-     *
      * @returns {void}
      * @private
      */
@@ -466,7 +447,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Deactivate reply textarea.
-     *
      * @returns {void}
      * @private
      */
@@ -480,7 +460,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Posts a reply in the dialog.
-     *
      * @returns {void}
      * @private
      */
@@ -497,7 +476,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Shows delete confirmation.
-     *
      * @param {String} annotationID ID of annotation to delete
      * @returns {void}
      * @private
@@ -512,7 +490,6 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Hides delete confirmation.
-     *
      * @param {String} annotationID ID of annotation to delete
      * @returns {void}
      * @private
@@ -527,24 +504,12 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Broadcasts message to delete an annotation.
-     *
      * @param {String} annotationID ID of annotation to delete
      * @returns {void}
      * @private
      */
     _deleteAnnotation(annotationID) {
         this.emit('annotationdelete', { annotationID });
-    }
-
-    /**
-     * Returns whether the dialog is in create mode.
-     *
-     * @returns {Boolean} Whether dialog is in 'create' mode or not
-     * @private
-     */
-    _inCreateMode() {
-        const createSectionEl = this._element.querySelector('[data-section="create"]');
-        return !createSectionEl.classList.contains(CLASS_HIDDEN);
     }
 }
 

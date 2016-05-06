@@ -31,7 +31,6 @@ class Annotator extends EventEmitter {
 
     /**
      * The data object for constructing an Annotator.
-     *
      * @typedef {Object} AnnotatorData
      * @property {HTMLElement} annotatedElement HTML element to annotate on
      * @property {AnnotationService|LocalStorageAnnotationService} [annotationService] Annotations CRUD service
@@ -45,7 +44,6 @@ class Annotator extends EventEmitter {
 
     /**
      * [constructor]
-     *
      * @param {AnnotatorData} data Data for constructing an Annotator
      * @returns {Annotator} Annotator instance
      */
@@ -60,7 +58,6 @@ class Annotator extends EventEmitter {
 
     /**
      * [destructor]
-     *
      * @returns {void}
      */
     destroy() {
@@ -76,7 +73,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Initializes annotator.
-     *
      * @returns {void}
      */
     init() {
@@ -92,7 +88,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Fetches and shows saved annotations.
-     *
      * @returns {void}
      */
     showAnnotations() {
@@ -101,19 +96,29 @@ class Annotator extends EventEmitter {
     }
 
     /**
+     * Hides annotations.
+     * @returns {void}
+     */
+    hideAnnotations() {
+        Object.keys(this._threads).forEach((page) => {
+            this._threads[page].forEach((thread) => {
+                thread.hide();
+            });
+        });
+    }
+
+    /**
      * Renders annotations from memory.
-     *
      * @returns {void}
      * @private
      */
     renderAnnotations() {
-        this._clearAnnotations();
+        this.hideAnnotations();
         this._showAnnotations();
     }
 
     /**
      * Sets the zoom scale.
-     *
      * @param {Number} scale
      * @returns {void}
      */
@@ -124,7 +129,6 @@ class Annotator extends EventEmitter {
     /**
      * Toggles point annotation mode on and off. When point annotation mode is
      * on, clicking an area will create a point annotation at that location.
-     *
      * @returns {void}
      */
     togglePointModeHandler() {
@@ -153,7 +157,6 @@ class Annotator extends EventEmitter {
     /**
      * Sets up annotation controls - this is needed if there is no Preview
      * header, where the controls are normally.
-     *
      * @returns {void}
      * @private
      */
@@ -174,7 +177,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Destroys annotation controls if there are any.
-     *
      * @returns {void}
      * @private
      */
@@ -189,7 +191,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Annotations setup.
-     *
      * @returns {void}
      * @private
      */
@@ -200,9 +201,8 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Fetches persisted annotations, create threads as appropriate, and
-     * generate an in-memory map of page to threads.
-     *
+     * Fetches persisted annotations, creates threads as needed, and generates
+     * an in-memory map of page to threads.
      * @returns {Promise} Promise for fetching saved annotations
      * @private
      */
@@ -224,22 +224,7 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Clears annotations.
-     *
-     * @returns {void}
-     * @private
-     */
-    _clearAnnotations() {
-        Object.keys(this._threads).forEach((page) => {
-            this._threads[page].forEach((thread) => {
-                thread.hide();
-            });
-        });
-    }
-
-    /**
      * Shows annotations.
-     *
      * @returns {void}
      * @private
      */
@@ -252,16 +237,18 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Binds DOM event listeners.
-     *
+     * Binds DOM event listeners. No-op here, but should be overridden by any
+     * annotator that needs to bind event listeners to the DOM in the normal
+     * state (ie not in any annotation mode).
      * @returns {void}
      * @private
      */
     _bindDOMListeners() {}
 
     /**
-     * Unbinds DOM event listeners.
-     *
+     * Unbinds DOM event listeners. No-op here, but should be overridden by any
+     * annotator that needs to bind event listeners to the DOM in the normal
+     * state (ie not in any annotation mode).
      * @returns {void}
      * @private
      */
@@ -269,7 +256,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Binds custom event listeners for a thread.
-     *
      * @param {AnnotationThread} thread Thread to bind events to
      * @returns {void}
      * @private
@@ -289,7 +275,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Unbinds custom event listeners for the thread.
-     *
      * @param {AnnotationThread} thread Thread to bind events to
      * @returns {void}
      * @private
@@ -299,8 +284,7 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Binds point mode event listeners.
-     *
+     * Binds event listeners for point annotation mode.
      * @returns {void}
      * @private
      */
@@ -309,8 +293,7 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Unbinds point mode event listeners.
-     *
+     * Unbinds event listeners for point annotation mode.
      * @returns {void}
      * @private
      */
@@ -321,7 +304,6 @@ class Annotator extends EventEmitter {
     /**
      * Event handler for adding a point annotation. Creates a point annotation
      * thread at the clicked location.
-     *
      * @param {Event} event DOM event
      * @returns {void}
      * @private
@@ -338,7 +320,7 @@ class Annotator extends EventEmitter {
 
         // If click is inside an annotation dialog, ignore
         const dataType = annotatorUtil.findClosestDataType(eventTarget);
-        if (dataType === 'annotation-dialog' || dataType === 'annotation-thread') {
+        if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
             return;
         }
 
@@ -364,7 +346,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Creates a new AnnotationThread, adds it to in-memory map, and returns it.
-     *
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
      * @param {String} type Annotation type
@@ -387,7 +368,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Adds thread to in-memory map.
-     *
      * @param {AnnotationThread} thread Thread to add
      * @returns {void}
      * @private
@@ -401,7 +381,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Returns whether or not annotator is in point mode.
-     *
      * @returns {Boolean} Whether or not in point mode
      * @private
      */
@@ -411,7 +390,6 @@ class Annotator extends EventEmitter {
 
     /**
      * Returns pending point threads.
-     *
      * @returns {AnnotationThread[]} Pending point threads.
      * @private
      */

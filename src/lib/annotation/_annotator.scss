@@ -61,9 +61,9 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 //------------------------------------------------------------------------------
 // CSS for points and dialogs
 //------------------------------------------------------------------------------
+
 .box-preview-annotation-dialog {
-    // Transparent border for hover detection
-    border-top: 20px solid transparent;
+    border-top: 20px solid transparent; // Transparent border for hover detection
     cursor: default; // Overrides cursor: none from annotation mode
     position: absolute;
     width: 282px; // Hard-coded width to solve layout issues
@@ -236,6 +236,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 //------------------------------------------------------------------------------
 // CSS for highlights
 //------------------------------------------------------------------------------
+
 .box-preview-annotation-layer {
     bottom: 0;
     cursor: text;
@@ -271,8 +272,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 }
 
-// Quad point positioning - the helper divs are positioned relative to the
-// Rangy-created element
+// Quad point positioning - the helper divs are positioned relative to the Rangy-created element
 .box-preview-doc .rangy-highlight {
     position: relative;
 }
@@ -316,12 +316,13 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 //------------------------------------------------------------------------------
 // Annotation mode
 //------------------------------------------------------------------------------
+
 // scss-lint:disable SelectorFormat
 .box-preview-point-annotation-mode .page,
 .box-preview-point-annotation-mode .box-preview-annotation-layer,
 .box-preview-point-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('point-annotation.cur'), crosshair;
+    cursor: url('../annotation/point-annotation.cur'), crosshair;
 }
 
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
@@ -335,7 +336,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 .box-preview-highlight-annotation-mode .box-preview-annotation-layer,
 .box-preview-highlight-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('highlight-annotation.cur'), text;
+    cursor: url('../annotation/highlight-annotation.cur'), text;
 }
 
 // IE10 and IE11 don't implement custom cursors correctly, see:
@@ -347,6 +348,9 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 .ie.box-preview-point-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
     cursor: url('//cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/point-annotation.cur'), crosshair;
+
+    // Uncomment before v0.55.0 release
+    // cursor: url('//cdn01.boxcdn.net/content-experience/0.55.0/third-party/doc/cursors/point-annotation.cur'), crosshair;
 }
 
 // scss-lint:disable UrlFormat
@@ -355,4 +359,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 .ie.box-preview-highlight-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
     cursor: url('//cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/highlight-annotation.cur'), text;
+
+    // Uncomment before v0.55.0 release
+    // cursor: url('//cdn01.boxcdn.net/content-experience/0.55.0/third-party/doc/cursors/highlight-annotation.cur'), text;
 }

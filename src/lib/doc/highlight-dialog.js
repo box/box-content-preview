@@ -25,7 +25,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Positions and shows the dialog.
-     *
      * @returns {void}
      */
     show() {
@@ -37,7 +36,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Hides the dialog.
-     *
      * @returns {void}
      */
     hide() {
@@ -46,7 +44,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Hides the dialog after the highlight is saved.
-     *
      * @returns {void}
      */
     addAnnotation() {
@@ -58,8 +55,7 @@ class HighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * No-op.
-     *
+     * No-op. Overrides base dialog removeAnnotation().
      * @returns {void}
      */
     removeAnnotation() {}
@@ -70,7 +66,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Sets up the dialog element.
-     *
      * @returns {void}
      * @private
      */
@@ -93,7 +88,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Positions the dialog.
-     *
      * @returns {void}
      * @private
      */
@@ -131,7 +125,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Binds DOM event listeners.
-     *
      * @returns {void}
      * @private
      */
@@ -142,7 +135,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Unbinds DOM event listeners.
-     *
      * @returns {void}
      * @private
      */
@@ -153,7 +145,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Mousedown handler on dialog.
-     *
      * @param {Event} event DOM event
      * @returns {void}
      * @private
@@ -181,7 +172,6 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * Keydown handler on dialog. Needed since we are binding to 'mousedown'
      * instead of 'click'.
-     *
      * @returns {void}
      * @private
      */
@@ -194,7 +184,6 @@ class HighlightDialog extends AnnotationDialog {
 
     /**
      * Saves the highlight.
-     *
      * @returns {void}
      * @private
      */
@@ -203,8 +192,7 @@ class HighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * Cancels posting an annotation.
-     *
+     * Deletes the highlight.
      * @returns {void}
      * @private
      */
