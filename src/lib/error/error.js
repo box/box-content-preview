@@ -79,9 +79,27 @@ class PreviewError extends Base {
         this.downloadBtnEl.classList.add('box-preview-btn');
         this.downloadBtnEl.classList.add('box-preview-btn-primary');
         this.downloadBtnEl.textContent = __('download');
-        this.downloadBtnEl.addEventListener('click', () => {
-            this.emit('download');
-        });
+        this.downloadBtnEl.addEventListener('click', this.download);
+    }
+
+    /**
+     * Emits download event
+     * @private
+     * @returns {void}
+     */
+    download() {
+        this.emit('download');
+    }
+
+    /**
+     * Destroy
+     * @private
+     * @returns {void}
+     */
+    destroy() {
+        if (this.downloadBtnEl) {
+            this.downloadBtnEl.removeEventListener('click', this.download);
+        }
     }
 }
 

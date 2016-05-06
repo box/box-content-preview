@@ -655,9 +655,14 @@ class Preview extends EventEmitter {
         const viewer = ErrorLoader.determineViewer();
 
         ErrorLoader.load(viewer, this.options.location).then(() => {
-            this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, this.options);
+            this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
+                file: this.file
+            }));
             this.viewer.load('', reason);
             this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+
+            // Show the download button
+            this.showDownloadButton();
 
             // Bump up preview count
             this.count.error++;
@@ -727,9 +732,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showPrintButton() {
-        if (this.file && this.file.permissions &&
-            this.file.permissions.can_download &&
-            this.viewer && typeof this.viewer.print === 'function') {
+        if (this.file && this.file.permissions && this.file.permissions.can_download && this.viewer && typeof this.viewer.print === 'function') {
             this.printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
             this.printButton.classList.remove(CLASS_HIDDEN);
             this.printButton.addEventListener('click', this.print);
@@ -743,8 +746,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showDownloadButton() {
-        if (this.file && this.file.permissions &&
-            this.file.permissions.can_download) {
+        if (this.file && this.file.permissions && this.file.permissions.can_download) {
             this.downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
             this.downloadButton.classList.remove(CLASS_HIDDEN);
             this.downloadButton.addEventListener('click', this.download);
