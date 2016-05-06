@@ -144,6 +144,7 @@ class Controls {
 
         const button = document.createElement('button');
         button.setAttribute('aria-label', text);
+        button.setAttribute('title', text);
         button.className = `box-preview-controls-btn ${classList}`;
         button.addEventListener('click', handler);
 
