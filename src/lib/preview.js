@@ -732,8 +732,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showPrintButton() {
-        if (this.file && this.file.permissions && this.file.permissions.can_download &&
-            this.viewer && typeof this.viewer.print === 'function') {
+        if (this.file && this.file.permissions && this.file.permissions.can_download && this.viewer && typeof this.viewer.print === 'function') {
             this.printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
             this.printButton.classList.remove(CLASS_HIDDEN);
             this.printButton.addEventListener('click', this.print);
