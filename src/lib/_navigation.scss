@@ -13,7 +13,7 @@
     overflow: hidden;
     display: block;
     border: 0 none;
-    margin: 0 -10px;
+    margin: 0;
     padding: 7px 0 0;
     cursor: pointer;
     opacity: 0;
@@ -25,13 +25,16 @@
     transition-property: opacity;
 
     &:hover {
-        background-color: rgba($gainsboro, .8);
         opacity: 1;
     }
 }
 
 .box-preview-is-navigation-visible .box-preview-navigate {
-    opacity: 1;
+    opacity: .8;
+
+    &:hover {
+        opacity: 1;
+    }
 }
 
 .box-preview-navigate-left {

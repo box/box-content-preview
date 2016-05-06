@@ -9,6 +9,7 @@ const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_IMAGE = 'box-preview-image';
+const IMAGE_PADDING = 15;
 
 const Box = global.Box || {};
 
@@ -244,10 +245,13 @@ class Image extends Base {
         let newHeight;
         const isRotated = Math.abs(this.currentRotationAngle) % 180 === 90;
         const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
-        const viewport = this.wrapperEl.getBoundingClientRect();
         const width = imageCurrentDimensions.width;
         const height = imageCurrentDimensions.height;
         const aspect = width / height;
+        const viewport = {
+            width: this.wrapperEl.clientWidth - IMAGE_PADDING,
+            height: this.wrapperEl.clientHeight - IMAGE_PADDING
+        };
 
         // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
         // For images that are wider than taller we use width. For images that are taller than wider, we use height.

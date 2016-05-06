@@ -54,10 +54,10 @@
 
 .box-preview-media-scrubber-handle {
     position: absolute;
-    top: -7px; /* bar is 6px high when scaled 2x. handle is 16px high. (16 - 6 + (6 / 2)) */
-    width: 16px;
-    height: 16px;
-    border-radius: 8px;
+    top: -4.25px;
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
     background-color: $box-blue;
     cursor: pointer;
     transform: scale(0);
