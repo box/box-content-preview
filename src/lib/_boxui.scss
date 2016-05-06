@@ -1,0 +1,155 @@
+// Include only necessary parts from Box UI
+
+//------------------------------------------------------------------------------
+// Typography
+//------------------------------------------------------------------------------
+html,
+a {
+    -webkit-font-smoothing: antialiased;
+    text-shadow: 1px 1px 1px transparentize($white, .996);
+}
+
+body {
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+//------------------------------------------------------------------------------
+// Buttons
+//------------------------------------------------------------------------------
+.box-preview-btn {
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 11px;
+    line-height: 12px;
+    margin: 5px;
+    padding: 10px 16px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: top;
+    white-space: nowrap;
+    zoom: 1;
+
+    &.is-disabled {
+        cursor: default;
+        top: 0; // prevents disabled button from being depressed on click
+    }
+
+    svg {
+        pointer-events: none;
+    }
+}
+
+.box-preview-btn-plain,
+.box-preview-btn-plain:hover,
+.box-preview-btn-plain:active {
+    border: 0;
+    cursor: pointer;
+    font-weight: normal;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+
+    svg {
+        pointer-events: none;
+    }
+}
+
+// scss-lint:disable MergeableSelector
+.box-preview-btn {
+    -webkit-appearance: none;
+    background-color: $white;
+    border: 1px solid $sf-fog;
+    border-radius: 2px;
+    color: $sunset-grey;
+    cursor: pointer;
+    font-size: 80%;
+    -webkit-font-smoothing: antialiased;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: none;
+    text-transform: uppercase;
+    -webkit-transition: border-color linear .15s, box-shadow linear .15s, background-color linear .15s;
+    transition: background-color .05s ease-in-out, border-color .05s ease-in-out;
+
+    &:hover {
+        background-color: darken($white, 3%);
+        text-decoration: none;
+    }
+
+    &:active,
+    &:active:focus {
+        background-color: darken($white, 8%);
+        border-color: $sf-fog;
+        outline: 0;
+    }
+
+    &:focus {
+        border-color: darken($sf-fog, 14%);
+        box-shadow: 0 1px 2px fade-out($black, .9);
+        outline: 0;
+        text-decoration: none;
+    }
+}
+
+.box-preview-btn-primary {
+    background-color: $box-blue;
+    border-color: $box-blue;
+    color: $white;
+    -webkit-font-smoothing: antialiased;
+
+    &:focus:hover,
+    &:focus {
+        border-color: $box-blue;
+        box-shadow: inset 0 0 0 1px fade-out($white, .2), 0 1px 2px fade-out($black, .9);
+        outline: 0;
+    }
+
+    &:hover {
+        background-color: lighten($box-blue, 8%);
+        border-color: lighten($box-blue, 8%);
+    }
+
+    &:active:hover,
+    &:active {
+        background-color: darken($box-blue, 8%);
+        border-color: darken($box-blue, 8%);
+        box-shadow: none;
+    }
+}
+
+.box-preview-btn-plain,
+.box-preview-btn-plain:hover,
+.box-preview-btn-plain:active,
+.box-preview-btn-plain:focus {
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+}
+
+//------------------------------------------------------------------------------
+// Forms
+//------------------------------------------------------------------------------
+.box-preview-textarea {
+    border: 1px solid $sf-fog;
+    border-radius: 2px;
+    box-shadow: inset 0 1px 1px lighten($black, 90%);
+    color: $sunset-grey;
+    -webkit-font-smoothing: antialiased;
+    -webkit-transition: border-color linear .15s, box-shadow linear .1s;
+    transition: border-color linear .15s, box-shadow linear .1s;
+}
+
+.box-preview-textarea:hover {
+    box-shadow: inset 0 1px 1px lighten($black, 85%);
+}
+
+.box-preview-textarea:focus {
+    border: 1px solid $box-blue;
+    box-shadow: none;
+    outline: 0;
+}

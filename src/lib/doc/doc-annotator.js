@@ -19,6 +19,7 @@ import throttle from 'lodash.throttle';
 
 import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/annotation-constants';
+import { CLASS_ACTIVE } from '../constants';
 import { ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
@@ -80,13 +81,26 @@ class DocAnnotator extends Annotator {
     /**
      * Toggles highlight annotation mode on and off. When highlight mode is on,
      * every selection becomes a highlight.
+     * @param {Event} event DOM event
      * @returns {void}
      */
-    toggleHighlightModeHandler() {
+    toggleHighlightModeHandler(event = {}) {
+        // This unfortunately breaks encapsulation since we're modifying the header buttons
+        let buttonEl = event.target;
+        if (!buttonEl) {
+            const containerEl = document.querySelector('.box-preview-header') ||
+                this._annotatedElement.querySelector('.box-preview-annotation-controls');
+            buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-highlight') : null;
+        }
+
         // If in highlight mode, turn it off
         if (this._isInHighlightMode()) {
             this.emit('highlightmodeexit');
             this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+            if (buttonEl) {
+                buttonEl.classList.remove(CLASS_ACTIVE);
+            }
+
             this._unbindHighlightModeListeners(); // Disable highlight mode
             this._bindDOMListeners(); // Re-enable other annotations
 
@@ -94,6 +108,10 @@ class DocAnnotator extends Annotator {
         } else {
             this.emit('highlightmodeenter');
             this._annotatedElement.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+            if (buttonEl) {
+                buttonEl.classList.add(CLASS_ACTIVE);
+            }
+
             this._unbindDOMListeners(); // Disable other annotations
             this._bindHighlightModeListeners(); // Enable highlight mode
         }
@@ -122,11 +140,11 @@ class DocAnnotator extends Annotator {
         // Add highlight mode button
         const annotationButtonContainerEl = this._annotatedElement.querySelector('.box-preview-annotation-controls');
         const highlightModeBtnEl = document.createElement('button');
-        highlightModeBtnEl.classList.add('btn');
+        highlightModeBtnEl.classList.add('box-preview-btn-plain');
         highlightModeBtnEl.classList.add('box-preview-btn-highlight');
         highlightModeBtnEl.innerHTML = ICON_HIGHLIGHT;
         highlightModeBtnEl.addEventListener('click', this.toggleHighlightModeHandler);
-        annotationButtonContainerEl.appendChild(highlightModeBtnEl);
+        annotationButtonContainerEl.insertBefore(highlightModeBtnEl, annotationButtonContainerEl.firstChild);
     }
 
     /**
@@ -269,12 +287,6 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMouseupHandler(event) {
-        // If mouseup is inside a point dialog or indicator, ignore
-        const dataType = annotatorUtil.findClosestDataType(event.target);
-        if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
-            return;
-        }
-
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we're in highlight mode,
@@ -316,7 +328,7 @@ class DocAnnotator extends Annotator {
         const savedSelection = rangy.saveSelection();
 
         // Use highlight module to calculate quad points
-        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter);
+        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter, pageEl);
         const quadPoints = [];
         highlightEls.forEach((element) => {
             quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, annotatorUtil.getScale(this._annotatedElement)));

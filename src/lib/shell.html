@@ -6,33 +6,30 @@
             <path fill="#22A7F0" d="M95.34 44.7c1.1 1.53.8 3.66-.75 4.8-1.56 1.13-3.74.84-4.93-.64l-7.8-10.23-7.82 10.23c-1.2 1.48-3.36 1.77-4.9.63-1.55-1.15-1.87-3.28-.75-4.8l9.06-11.86L68.4 21c-1.1-1.54-.8-3.67.75-4.8 1.55-1.14 3.72-.85 4.9.63l7.82 10.23 7.8-10.23c1.2-1.48 3.38-1.77 4.92-.63 1.52 1.13 1.84 3.26.73 4.8L86.3 32.84l9.04 11.85zM53.9 43.22c-5.86 0-10.6-4.65-10.6-10.4 0-5.72 4.74-10.37 10.6-10.37 5.85 0 10.6 4.65 10.6 10.38 0 5.74-4.75 10.4-10.6 10.4zm-31.23 0c-5.85 0-10.6-4.65-10.6-10.4 0-5.72 4.75-10.37 10.6-10.37 5.86 0 10.6 4.65 10.6 10.38 0 5.74-4.74 10.4-10.6 10.4zm31.22-27.7c-6.78 0-12.66 3.73-15.63 9.2-2.97-5.47-8.84-9.2-15.6-9.2-4 0-7.66 1.3-10.6 3.46V4.38C12.02 2.52 10.45 1 8.53 1 6.6 1 5.03 2.5 5 4.4v28.7c.16 9.43 8 17.03 17.67 17.03 6.77 0 12.64-3.73 15.6-9.2 2.98 5.47 8.86 9.2 15.62 9.2 9.74 0 17.66-7.75 17.66-17.32 0-9.55-7.92-17.3-17.68-17.3z"></path>
         </svg>
         <div class='box-preview-header-btns'>
-            <button class='box-preview-btn box-preview-btn-annotate box-preview-is-hidden'>
+            <button class='box-preview-btn-plain box-preview-btn-highlight box-preview-is-hidden'>
                 <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 9.854c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4" fill="{COLOR_HEADER_BTN}" />
-                    <g transform="translate(2 1)">
-                        <path d="M5 14l-2 1.854V4.256C3 4.038 3.184 4 3.402 4h13.196c.217 0 .402.038.402.256v2.677c.892.19 1.247.316 2 .717V4.256C19 2.93 17.922 2 16.598 2H3.402C2.078 2 1 2.932 1 4.256v16.89L6.01 16h4.89c-.24-.393-.53-.817-.8-2H5z" fill="{COLOR_HEADER_BTN}" />
+                    <g fill-rule="evenodd">
+                        <path d="M1 23h11.875v-3H1v3zm9.19-9.854l4.103 4.102.694.694.707-.68 7-6.742.306-.295V.07l-1.673 1.524L10.224 11.7l-.775.705.74.74z"/>
+                        <path d="M11.023 12.17L6.33 16.58C5.28 17.62 5.9 19 7.32 19h3.95c.82 0 1.826-.413 2.406-.995l1.544-1.383.768-.69-.713-.745-2.844-2.976-.683-.717-.723.68v-.003zm-.038 1.42l2.844 2.977.053-1.435-1.584 1.42c-.244.243-.74.446-1.03.446l-2.454-.008 3.577-3.36-1.408-.04z"/>
                     </g>
                 </svg>
             </button>
-            <button class='box-preview-btn box-preview-btn-highlight box-preview-is-hidden'>
+            <button class='box-preview-btn-plain box-preview-btn-annotate box-preview-is-hidden'>
                 <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <g fill="none" fill-rule="evenodd">
-                    <path d="M1 23h11.875v-3H1v3z" fill="#000"/>
-                    <g stroke="#000" stroke-width="2">
-                      <path d="M10.897 12.44L15 16.54l7-6.74V2.333L10.897 12.44z"/>
-                      <path d="M11.708 12.9l-4.692 4.41c-.384.38-.24.688.304.688h3.95c.55 0 1.303-.305 1.698-.7l1.584-1.422-2.844-2.976z"/>
+                    <g fill-rule="evenodd">
+                        <path d="M18 8.833c1.09 0 2.11.285 3 .78V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v17l4-4h6.614c-.496-.888-.78-1.91-.78-3 0-3.406 2.76-6.167 6.166-6.167z"/>
+                        <path d="M18 11c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4"/>
                     </g>
-                    <path d="M0 0h24v24H0z"/>
-                  </g>
                 </svg>
             </button>
-            <button class='box-preview-btn box-preview-btn-print box-preview-is-hidden'>
+            <div class="box-preview-btn-divider box-preview-is-hidden"></div>
+            <button class='box-preview-btn-plain box-preview-btn-print box-preview-is-hidden'>
                 <svg fill="{COLOR_HEADER_BTN}" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
                     <path d="M0 0h24v24H0z" fill="none"/>
                 </svg>
             </button>
-            <button class='box-preview-btn box-preview-btn-download box-preview-is-hidden'>
+            <button class='box-preview-btn-plain box-preview-btn-download box-preview-is-hidden'>
                 <svg fill="{COLOR_HEADER_BTN}" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                     <path d="M0 0h24v24H0z" fill="none"/>

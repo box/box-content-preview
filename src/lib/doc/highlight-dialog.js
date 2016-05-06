@@ -74,11 +74,11 @@ class HighlightDialog extends AnnotationDialog {
         this._element.classList.add('box-preview-highlight-dialog');
         this._element.innerHTML = `
             <div class="box-preview-annotation-caret"></div>
-            <button class="box-preview-add-highlight-btn ${annotations.length ? CLASS_HIDDEN : ''}"
+            <button class="box-preview-btn-plain box-preview-add-highlight-btn ${annotations.length ? CLASS_HIDDEN : ''}"
                 data-type="add-highlight-btn">
                 ${ICON_HIGHLIGHT}
             </button>
-            <button class="box-preview-delete-highlight-btn ${annotations.length ? '' : CLASS_HIDDEN}"
+            <button class="box-preview-btn-plain box-preview-delete-highlight-btn ${annotations.length ? '' : CLASS_HIDDEN}"
                 data-type="delete-highlight-btn">
                 ${ICON_DELETE}
             </button>`.trim();

@@ -1,28 +1,22 @@
-$color-base: rgb(250, 250, 250);
-$color-base-translucent: rgba(250, 250, 250, .95);
-$color-border: rgb(223, 223, 223);
-$color-button-background-primary: rgb(34, 167, 240);
-$color-button-background-primary-light: rgba(34, 167, 240, .7);
-$color-button-text-primary: rgb(255, 255, 255);
-$color-button-text-primary-light: rgba(255, 255, 255, .8);
-$color-shadow: rgba(0, 0, 0, .25);
-$color-text: rgb(68, 68, 68);
-$color-text-light: rgba(68, 68, 68, .8);
-$color-text-lighter: rgba(68, 68, 68, .5);
+@import '../variables';
+
+$highlight-yellow: #ffc900;
 
 .box-preview-annotation-controls {
-    background-color: $color-base;
+    background-color: $white;
     border-bottom-left-radius: 4px;
     overflow: hidden;
     position: fixed;
     right: 15px;
     top: 0;
 
-    .btn {
-        background-color: transparent;
-        border-style: none;
-        cursor: pointer;
-        padding: 3px 5px;
+    .box-preview-btn-plain,
+    .box-preview-btn-plain:hover {
+        padding: 5px 10px;
+
+        svg {
+            fill: lighten($better-black, 15%);
+        }
     }
 }
 
@@ -45,16 +39,28 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 
     &::after {
-        border-color: transparent transparent $color-base $color-base;
+        border-color: transparent transparent $white $white;
         border-width: 6px;
         margin: -4px 0 0 -6px;
     }
 
     &::before {
-        border-color: transparent transparent $color-border $color-border;
+        border-color: transparent transparent $sf-fog $sf-fog;
         border-width: 6px;
-        box-shadow: -2px 2px 4px -2px $color-shadow;
         margin: -5px 0 0 -6px;
+    }
+}
+
+// Icon buttons
+.box-preview-btn-plain {
+    &.box-preview-btn-annotate:hover svg,
+    &.box-preview-btn-annotate.box-preview-is-active svg {
+        fill: $box-blue;
+    }
+
+    &.box-preview-btn-highlight:hover svg,
+    &.box-preview-btn-highlight.box-preview-is-active svg {
+        fill: $highlight-yellow;
     }
 }
 
@@ -70,17 +76,14 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     z-index: 9999; // Annotation dialog should be above other content
 
     .annotation-container {
-        background-color: $color-base;
-        border: 1px solid $color-border;
+        background-color: $white;
+        border: 1px solid $sf-fog;
         border-radius: 4px;
-        box-shadow: 0 0 4px 0 $color-shadow;
         padding: 15px;
     }
 
     .annotation-textarea,
     .reply-textarea {
-        border: 1px solid $color-border;
-        border-radius: 3px;
         display: block;
         font-size: 13px;
         height: 34px;
@@ -94,7 +97,7 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 
     .annotation-comment {
-        border-bottom: 1px solid $color-border;
+        border-bottom: 1px solid $sf-fog;
         margin-top: 15px;
         padding-bottom: 15px;
         position: relative;
@@ -123,27 +126,27 @@ $color-text-lighter: rgba(68, 68, 68, .5);
         display: inline-block;
 
         .user-name {
-            color: $color-text;
+            color: $fours;
             font-size: 13px;
             font-weight: bold;
         }
 
         .comment-date {
-            color: $color-text-lighter;
+            color: lighten($fours, 20%);
             font-size: 11px;
             padding-top: 2px;
         }
     }
 
     .comment-text {
-        color: $color-text;
+        color: $fours;
         font-size: 12px;
         padding-top: 10px;
         width: 250px;
     }
 
     .delete-confirmation {
-        background-color: $color-base-translucent;
+        background-color: transparentize($white, .05);
         height: 100%;
         left: 0;
         position: absolute;
@@ -158,55 +161,21 @@ $color-text-lighter: rgba(68, 68, 68, .5);
     }
 
     .delete-confirmation-message {
-        color: $color-text;
+        color: $fours;
         font-size: 12px;
         padding: 5px 0 3px;
         text-align: center;
     }
 
     .button-container {
-        height: 35px;
         margin-top: 15px;
         position: relative;
         text-align: right;
         width: 100%;
-    }
 
-    .btn {
-        background-color: transparent;
-        border: 1px solid $color-border;
-        border-radius: 2px;
-        color: $color-text-light;
-        cursor: pointer;
-        font-size: 10px;
-        font-weight: bold;
-        margin-left: 12px;
-        padding: 10px 20px;
-
-        &:hover {
-            color: $color-text;
+        .box-preview-btn:last-child {
+            margin-right: 0;
         }
-
-        &:first-child {
-            margin-left: 0;
-        }
-    }
-
-    .btn-primary {
-        background-color: $color-button-background-primary;
-        color: $color-button-text-primary-light;
-
-        &:hover {
-            color: $color-button-text-primary;
-        }
-    }
-
-    .btn-plain {
-        background-color: transparent;
-        border-style: none;
-        color: $color-text;
-        cursor: pointer;
-        padding: 0;
     }
 
     .delete-comment-btn {
@@ -218,19 +187,30 @@ $color-text-lighter: rgba(68, 68, 68, .5);
             height: 18px;
             width: 18px;
         }
+
+        &:focus {
+            box-shadow: 0 0 2px 1px transparentize($black, .8);
+            // box-shadow: 0 1px 2px fade-out($black, .9);
+            // outline: 1px solid darken($sf-fog, 14%);
+        }
     }
 }
 
 .box-preview-point-annotation-btn {
-    background-color: $color-button-background-primary-light;
+    background-color: transparentize($box-blue, .3);
     border-radius: 50%; // Circle
     border-style: none;
-    box-shadow: 0 0 4px 0 $color-shadow;
     cursor: pointer;
     height: 16px;
     padding: 0;
     position: absolute;
+    -webkit-transition: background-color .5s;
+    transition: background-color .5s;
     width: 16px;
+
+    &:hover {
+        background-color: $box-blue;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -252,13 +232,12 @@ $color-text-lighter: rgba(68, 68, 68, .5);
 }
 
 .box-preview-add-highlight-btn,
-.box-preview-delete-highlight-btn {
-    background-color: $color-base;
-    border: 1px solid $color-border;
+.box-preview-add-highlight-btn:hover,
+.box-preview-delete-highlight-btn,
+.box-preview-delete-highlight-btn:hover {
+    background-color: $white;
+    border: 1px solid $sf-fog;
     border-radius: 2px;
-    box-shadow: 0 2px 4px 0 $color-shadow;
-    cursor: pointer;
-    margin: 0;
     padding: 5px 6px;
 }
 

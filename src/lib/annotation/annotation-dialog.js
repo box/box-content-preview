@@ -158,19 +158,19 @@ class AnnotationDialog extends EventEmitter {
             <div class="box-preview-annotation-caret"></div>
             <div class="annotation-container">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
-                    <textarea class="annotation-textarea ${CLASS_ACTIVE}" placeholder="Add a comment here..."></textarea>
+                    <textarea class="box-preview-textarea annotation-textarea ${CLASS_ACTIVE}" placeholder="Add a comment here..."></textarea>
                     <div class="button-container">
-                        <button class="btn cancel-annotation-btn" data-type="cancel-annotation-btn">CANCEL</button>
-                        <button class="btn btn-primary post-annotation-btn" data-type="post-annotation-btn">POST</button>
+                        <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-annotation-btn">CANCEL</button>
+                        <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-annotation-btn">POST</button>
                     </div>
                 </section>
                 <section class="${annotations.length ? '' : CLASS_HIDDEN}" data-section="show">
                     <div class="annotation-comments"></div>
                     <div class="reply-container">
-                        <textarea class="reply-textarea" placeholder="Post a reply..." data-type="reply-textarea"></textarea>
+                        <textarea class="box-preview-textarea reply-textarea" placeholder="Post a reply..." data-type="reply-textarea"></textarea>
                         <div class="button-container ${CLASS_HIDDEN}">
-                            <button class="btn cancel-annotation-btn" data-type="cancel-reply-btn">CANCEL</button>
-                            <button class="btn btn-primary post-annotation-btn" data-type="post-reply-btn">POST</button>
+                            <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-reply-btn">CANCEL</button>
+                            <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-reply-btn">POST</button>
                         </div>
                     </div>
                 </section>
@@ -209,12 +209,12 @@ class AnnotationDialog extends EventEmitter {
                 <div class="comment-date">${created}</div>
             </div>
             <div class="comment-text">${text}</div>
-            <button class="btn-plain delete-comment-btn" data-type="delete-btn">${ICON_DELETE}</button>
+            <button class="box-preview-btn-plain delete-comment-btn" data-type="delete-btn">${ICON_DELETE}</button>
             <div class="delete-confirmation ${CLASS_HIDDEN}">
                 <div class="delete-confirmation-message">Delete this annotation?</div>
                 <div class="button-container">
-                    <button class="btn cancel-delete-btn" data-type="cancel-delete-btn">CANCEL</button>
-                    <button class="btn btn-primary confirm-delete-btn" data-type="confirm-delete-btn">DELETE</button>
+                    <button class="box-preview-btn cancel-delete-btn" data-type="cancel-delete-btn">CANCEL</button>
+                    <button class="box-preview-btn box-preview-btn-primary confirm-delete-btn" data-type="confirm-delete-btn">DELETE</button>
                 </div>
             </div>`.trim();
 
@@ -289,6 +289,7 @@ class AnnotationDialog extends EventEmitter {
     _bindDOMListeners() {
         this._element.addEventListener('keydown', this._keydownHandler);
         this._element.addEventListener('click', this._clickHandler);
+        this._element.addEventListener('mouseup', this._mouseupHandler);
         this._element.addEventListener('mouseenter', this._mouseenterHandler);
         this._element.addEventListener('mouseleave', this._mouseleaveHandler);
     }
@@ -301,8 +302,21 @@ class AnnotationDialog extends EventEmitter {
     _unbindDOMListeners() {
         this._element.removeEventListener('keydown', this._keydownHandler);
         this._element.removeEventListener('click', this._clickHandler);
+        this._element.removeEventListener('mouseup', this._mouseupHandler);
         this._element.removeEventListener('mouseenter', this._mouseenterHandler);
         this._element.removeEventListener('mouseleave', this._mouseleaveHandler);
+    }
+
+    /**
+     * Mouseup handler. Stops propagation of mouseup, which may be used by
+     * other annotation classes.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     * @private
+     */
+    _mouseupHandler(event) {
+        event.stopPropagation();
     }
 
     /**
@@ -339,12 +353,11 @@ class AnnotationDialog extends EventEmitter {
         const key = decodeKeydown(event);
         if (key === 'Escape') {
             this.hide(true); // hide without delay
-            return;
-        }
-
-        const dataType = annotatorUtil.findClosestDataType(event.target);
-        if (dataType === 'reply-textarea') {
-            this._activateReply();
+        } else {
+            const dataType = annotatorUtil.findClosestDataType(event.target);
+            if (dataType === 'reply-textarea') {
+                this._activateReply();
+            }
         }
     }
 
