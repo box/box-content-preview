@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import { decodeKeydown } from '../util.js';
-import { CLASS_INVISIBLE } from '../constants';
+import { CLASS_HIDDEN } from '../constants';
 import {
     ICON_FIND_DROP_DOWN,
     ICON_FIND_DROP_UP,
@@ -8,7 +8,6 @@ import {
     ICON_SEARCH
 } from '../icons/icons';
 
-const FIND_MATCH_FOUND = 0;
 const FIND_MATCH_NOT_FOUND = 1;
 const MATCH_SEPARATOR = ' of ';
 const MATCH_OFFSET = 13;
@@ -35,7 +34,7 @@ class DocFindBar {
         }
 
         // Default hides find bar on load
-        this.bar.classList.add(CLASS_INVISIBLE);
+        this.bar.classList.add(CLASS_HIDDEN);
 
         this.createFindField();
         this.createFindButtons();
@@ -45,14 +44,9 @@ class DocFindBar {
         this.findCloseButtonEl = this.bar.querySelector('.box-preview-doc-find-close');
 
         // KeyDown handler to show/hide find bar
-        window.addEventListener('keydown', this.displayFindBarHandler);
+        document.addEventListener('keydown', this.displayFindBarHandler);
 
-        // Add event listeners to the DOM elements.
-        this.bar.addEventListener('keydown', this.barKeyDownHandler);
-        this.findFieldEl.addEventListener('input', this.findFieldHandler);
-        this.findPreviousButtonEl.addEventListener('click', this.findPreviousHandler);
-        this.findNextButtonEl.addEventListener('click', this.findNextHandler);
-        this.findCloseButtonEl.addEventListener('click', this.close);
+        this.bindDOMListeners();
     }
 
     /**
@@ -63,7 +57,7 @@ class DocFindBar {
         // Search Icon
         const findSearchButtonEL = document.createElement('span');
         findSearchButtonEL.classList.add('box-preview-doc-find-search');
-        findSearchButtonEL.innerHTML = `${ICON_SEARCH}`.trim();
+        findSearchButtonEL.innerHTML = ICON_SEARCH.trim();
         this.bar.appendChild(findSearchButtonEL);
 
         // Find input field
@@ -74,7 +68,7 @@ class DocFindBar {
         // Match Results Count
         this.findResultsCountEl = document.createElement('span');
         this.findResultsCountEl.classList.add('box-preview-doc-find-results-count');
-        this.findResultsCountEl.classList.add(CLASS_INVISIBLE);
+        this.findResultsCountEl.classList.add(CLASS_HIDDEN);
         this.bar.appendChild(this.findResultsCountEl);
     }
 
@@ -95,7 +89,7 @@ class DocFindBar {
     }
 
     /**
-     * Destructor
+     * [destructor]
      *
      * @public
      * @returns {void}
@@ -105,14 +99,9 @@ class DocFindBar {
         this.matchResultCount = 0;
 
         // Remove KeyDown handler to show/hide find bar
-        window.removeEventListener('keydown', this.displayFindBarHandler);
+        document.removeEventListener('keydown', this.displayFindBarHandler);
 
-        // Remove DOM event listeners
-        this.bar.removeEventListener('keydown', this.barKeyDownHandler);
-        this.findFieldEl.removeEventListener('input', this.findFieldHandler);
-        this.findPreviousButtonEl.removeEventListener('click', this.findPreviousHandler);
-        this.findNextButtonEl.removeEventListener('click', this.findNextHandler);
-        this.findCloseButtonEl.removeEventListener('click', this.close);
+        this.unbindDOMListeners();
 
         // Clean up the find buttons
         this.findPreviousButtonEl.remove();
@@ -151,22 +140,9 @@ class DocFindBar {
      * @returns {void}
      */
     updateUIState(state, previous, matchCount) {
-        this.notFound = false;
         this.matchResultCount = matchCount;
 
-        switch (state) {
-            case FIND_MATCH_FOUND:
-                break;
-
-            case FIND_MATCH_NOT_FOUND:
-                this.notFound = true;
-                break;
-
-            default:
-                break;
-        }
-
-        if (this.notFound) {
+        if (state === FIND_MATCH_NOT_FOUND) {
             this.findFieldEl.classList.add(CLASS_FIND_MATCH_NOT_FOUND);
         } else {
             this.findFieldEl.classList.remove(CLASS_FIND_MATCH_NOT_FOUND);
@@ -187,10 +163,11 @@ class DocFindBar {
 
         // If there are no matches, hide the counter
         if (!matchCount) {
-            this.findResultsCountEl.classList.add(CLASS_INVISIBLE);
+            this.findResultsCountEl.classList.add(CLASS_HIDDEN);
             return;
         }
 
+        // Adjust find field padding to not overflow over match results counter
         const paddingRight = this.findResultsCountEl.getBoundingClientRect().width + MATCH_OFFSET;
         this.findFieldEl.style.paddingRight = `${paddingRight}px`;
 
@@ -198,10 +175,12 @@ class DocFindBar {
         this.findResultsCountEl.textContent = this.currentMatch + MATCH_SEPARATOR + matchCount;
 
         // Show the counter
-        this.findResultsCountEl.classList.remove(CLASS_INVISIBLE);
+        this.findResultsCountEl.classList.remove(CLASS_HIDDEN);
     }
 
-    /* ----- Event Handlers ----- */
+    //--------------------------------------------------------------------------
+    // Event Handlers
+    //--------------------------------------------------------------------------
     /**
      * Handler to show/hide find bar
      * @param  {Event} event
@@ -214,6 +193,7 @@ class DocFindBar {
             case 'control+f':
             case 'meta+g':
             case 'control+g':
+            case 'f3':
                 this.open();
                 event.preventDefault();
                 return;
@@ -241,10 +221,10 @@ class DocFindBar {
         const key = decodeKeydown(event);
         switch (key) {
             case 'Enter':
-                this.findNextHandler();
+                this.findNextHandler(false);
                 break;
             case 'Shift+Enter':
-                this.findPreviousHandler();
+                this.findPreviousHandler(false);
                 break;
             case 'Escape':
                 this.close();
@@ -256,36 +236,42 @@ class DocFindBar {
 
     /**
      * Handler to find previous match and update match count accordingly
-     *
+     * @param  {Boolean} clicked False when triggered through keyboard shortcut
      * @returns {void}
      */
-    findPreviousHandler() {
+    findPreviousHandler(clicked) {
         if (this.findFieldEl.value) {
-            this.findPreviousButtonEl.focus();
-            this.dispatchFindEvent('findagain', true);
-            this.currentMatch = this.currentMatch - 1;
+            if (!clicked) {
+                this.findPreviousButtonEl.focus();
+            } else {
+                this.dispatchFindEvent('findagain', true);
+                this.currentMatch = this.currentMatch - 1;
 
-            // Loops search to last match in document
-            if (this.currentMatch <= 0) {
-                this.currentMatch = this.matchResultCount;
+                // Loops search to last match in document
+                if (this.currentMatch <= 0) {
+                    this.currentMatch = this.matchResultCount;
+                }
             }
         }
     }
 
     /**
      * Handler to find next match count and update match count accordingly
-     *
+     * @param  {Boolean} clicked False when triggered through keyboard shortcut
      * @returns {void}
      */
-    findNextHandler() {
+    findNextHandler(clicked) {
         if (this.findFieldEl.value) {
-            this.findNextButtonEl.focus();
-            this.dispatchFindEvent('findagain', false);
-            this.currentMatch = this.currentMatch + 1;
+            if (!clicked) {
+                this.findNextButtonEl.focus();
+            } else {
+                this.dispatchFindEvent('findagain', false);
+                this.currentMatch = this.currentMatch + 1;
 
-            // Loops search to first match in document
-            if (this.currentMatch >= this.matchResultCount) {
-                this.currentMatch = 1;
+                // Loops search to first match in document
+                if (this.currentMatch >= this.matchResultCount) {
+                    this.currentMatch = 1;
+                }
             }
         }
     }
@@ -303,7 +289,7 @@ class DocFindBar {
 
         if (!this.opened) {
             this.opened = true;
-            this.bar.classList.remove(CLASS_INVISIBLE);
+            this.bar.classList.remove(CLASS_HIDDEN);
         }
         this.findFieldEl.select();
         this.findFieldEl.focus();
@@ -314,17 +300,46 @@ class DocFindBar {
      * @returns {void}
      */
     close() {
-        if (!this.opened) {
-            return;
-        }
-        this.opened = false;
-        this.bar.classList.add(CLASS_INVISIBLE);
-        this.findController.active = false;
-
         // Save and clear current search to hide highlights
         this.prevSearchQuery = this.findFieldEl.value;
         this.findFieldEl.value = '';
         this.findFieldHandler();
+
+        if (!this.opened) {
+            return;
+        }
+        this.opened = false;
+        this.bar.classList.add(CLASS_HIDDEN);
+        this.findController.active = false;
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+    /**
+     * Add event listeners to the DOM elements
+     * @return {void}
+     * @private
+     */
+    bindDOMListeners() {
+        this.bar.addEventListener('keydown', this.barKeyDownHandler);
+        this.findFieldEl.addEventListener('input', this.findFieldHandler);
+        this.findPreviousButtonEl.addEventListener('click', this.findPreviousHandler);
+        this.findNextButtonEl.addEventListener('click', this.findNextHandler);
+        this.findCloseButtonEl.addEventListener('click', this.close);
+    }
+
+    /**
+     * Remove event listeners from the DOM elements
+     * @return {void}
+     * @private
+     */
+    unbindDOMListeners() {
+        this.bar.removeEventListener('keydown', this.barKeyDownHandler);
+        this.findFieldEl.removeEventListener('input', this.findFieldHandler);
+        this.findPreviousButtonEl.removeEventListener('click', this.findPreviousHandler);
+        this.findNextButtonEl.removeEventListener('click', this.findNextHandler);
+        this.findCloseButtonEl.removeEventListener('click', this.close);
     }
 }
 

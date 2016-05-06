@@ -19,7 +19,7 @@ const VIEWERS = [
         REPRESENTATION: 'pdf',
         EXTENSIONS: ['ppt', 'pptx'],
         SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, `${STATIC_URI}pdf_find_controller.js`, 'presentation.js'],
-        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, '`${STATIC_URI}presentation.css'],
+        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
         CONSTRUCTOR: 'Presentation',
         PREFETCH: 'xhr'
     },

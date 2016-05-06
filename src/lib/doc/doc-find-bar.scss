@@ -1,20 +1,24 @@
+@import '../variables';
+
+$medium-aquamarine:   #5AEDA8 !default;
+$moon-yellow:         #FFBA1A !default;
+
 .box-preview-find-bar {
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, .05);
-    box-shadow: 0 1px 0 hsla(0, 0%, 0%, .05) inset, 0 1px 0 hsla(0, 0%, 100%, .05);
-    font-family: Lato-Regular;
+    background: $white;
+    border: 1px solid transparentize($black, .95);
+    box-shadow: 0 1px 0 transparentize($white, .95) transparentize($black, .95);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 12px;
     padding: 6px;
     position: fixed;
     right: 15px;
-    top: 40px;
-    z-index: 1000;
+    top: 48px;
 
     .box-preview-doc-find-field {
-        border: 1px solid rgba(0, 0, 0, .25);
+        border: 1px solid transparentize($black, .95);
         border-radius: 2px 0 0 2px;
-        box-shadow: 0 1px 0 hsla(0, 0%, 0%, .05) inset, 0 1px 0 hsla(0, 0%, 100%, .05);
-        color: #494949;
+        box-shadow: 0 1px 0 transparentize($white, .95) transparentize($black, .95);
+        color: $better-black;
         line-height: 20px;
         outline-style: none;
         padding: 6px 6px 6px 25px;
@@ -22,15 +26,15 @@
         transition-property: background-color, border-color, box-shadow;
         transition-timing-function: ease;
         width: 200px;
-    }
 
-    .box-preview-doc-find-field:focus,
-    .box-preview-doc-find-field:hover {
-        border-color: #22a7f0;
+        &:focus,
+        &:hover {
+            border-color: $box-blue;
+        }
     }
 
     .box-preview-doc-find-results-count {
-        color: rgba(73, 73, 73, .25);
+        color: transparentize($better-black, .75);
         cursor: default;
         line-height: 1;
         margin: 4px 0;
@@ -48,20 +52,20 @@
     .box-preview-doc-find-next,
     .box-preview-doc-find-close {
         background: none;
-        border: 1px solid #eee;
-        color: rgba(0, 0, 0, .65);
-        content: '';
+        border: 1px solid $off-white;
         display: inline-block;
-        font-weight: bolder;
         height: 34px;
         margin-top: -1px;
         vertical-align: middle;
         width: 34px;
+
+        svg path.icon {
+            fill: transparentize($better-black, .25);
+        }
     }
 
     .box-preview-doc-find-search {
         border: 0;
-        color: rgba(73, 73, 73, .25);
         left: 5px;
         line-height: 1;
         margin-top: 0;
@@ -73,15 +77,16 @@
     .box-preview-doc-find-close {
         border: 0;
         padding: 6px;
+
+        &:hover svg path.icon {
+            fill: $better-black;
+        }
     }
 
-    .box-preview-find-match-not-found {
-        border-color: rgb(255, 102, 102);
-    }
-
-    button:hover,
-    button:focus {
-        color: hsla(204, 100%, 65%, .9);
+    .box-preview-find-match-not-found,
+    .box-preview-find-match-not-found:hover,
+    .box-preview-find-match-not-found:focus {
+        border-color: transparentize($great-balls-of-fire, .5);
     }
 }
 
@@ -89,20 +94,19 @@
     opacity: 1;
 
     .highlight {
-        background-color: rgba(255, 221, 88, .5);
+        background-color: transparentize($moon-yellow, .5);
         border-radius: 0;
-    }
 
-    .highlight.selected {
-        background-color: rgba(255, 152, 31, .5);
+        &.selected {
+            background-color: transparentize($medium-aquamarine, .5);
+        }
     }
 
     ::selection {
-        background: rgba(0, 0, 255, .2);
+        background-color: transparentize(blue, .7);
     }
-}
 
-.box-preview-find-close:hover,
-.box-preview-find-close:active {
-    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOC4xLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9Ii0xMSAxMyAyNCAyNCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAtMTEgMTMgMjQgMjQiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZmlsbD0iIzQ5NDk0OSIgZD0iTTYsMjFsLTEtMWwtNCw0bC00LTRsLTEsMWw0LDRsLTQsNGwxLDFsNC00bDQsNGwxLTFsLTQtNEw2LDIxeiIvPg0KPHBhdGggZmlsbD0ibm9uZSIgZD0iTS0xMSwxM2gyNHYyNGgtMjRWMTN6Ii8+DQo8L3N2Zz4NCg==) !important;
+    *::-moz-selection {
+        background-color: transparentize(blue, .7);
+    }
 }

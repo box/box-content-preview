@@ -120,13 +120,15 @@ class DocBase extends Base {
      * @returns {void}
      */
     initFindController() {
+        if (!this.findBarEl) { // doesn't initialize find controller if find bar doesn't exists
+            return;
+        }
+
         this.findController = new PDFFindController({
             pdfViewer: this.pdfViewer
         });
         this.pdfViewer.setFindController(this.findController);
-
         this.findBar = new DocFindBar(this.findBarEl, this.findController);
-
         this.findController.setFindBar(this.findBar);
     }
 
