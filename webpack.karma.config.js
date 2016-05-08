@@ -31,8 +31,8 @@ module.exports = merge(commonConfig('en-US'), {
             }
         ],
         noParse: [
-            /\/sinon\.js/,
-        ],
+            /\/sinon\.js/
+        ]
     },
 
     externals: {
