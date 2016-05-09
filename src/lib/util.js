@@ -295,7 +295,7 @@ export function decodeKeydown(event) {
     // KeyboardEvent.key is the new spec supported in Firefox and IE.
     // KeyboardEvent.keyIdentifier is the old spec supported in Chrome and Safari.
     // Priority is given to the new spec.
-    let key = event.key || event.keyIdentifier;
+    let key = event.key || event.keyIdentifier || '';
 
     // Get the modifiers on their own
     if (event.ctrlKey) {
