@@ -52,6 +52,22 @@ $highlight-yellow: #ffc900;
 }
 
 // Icon buttons
+.box-preview-add-highlight-btn,
+.box-preview-delete-highlight-btn,
+.delete-comment-btn {
+    svg {
+        fill: lighten($better-black, 15%);
+    }
+
+    &:hover svg {
+        fill: $better-black;
+    }
+}
+
+.box-preview-add-highlight-btn:hover svg {
+    fill: $highlight-yellow;
+}
+
 .box-preview-btn-plain {
     &.box-preview-btn-annotate:hover svg,
     &.box-preview-btn-annotate.box-preview-is-active svg {
@@ -77,18 +93,20 @@ $highlight-yellow: #ffc900;
 
     .annotation-container {
         background-color: $white;
-        border: 1px solid $sf-fog;
+        border: 1px solid $alto;
         border-radius: 4px;
         padding: 15px;
     }
 
-    .annotation-textarea,
-    .reply-textarea {
+    .box-preview-textarea {
         display: block;
         font-size: 13px;
         height: 34px;
         max-width: 250px;
+        min-height: 34px;
         padding: 7px;
+        -webkit-transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
+        transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
         width: 250px;
 
         &.box-preview-is-active {
@@ -97,7 +115,7 @@ $highlight-yellow: #ffc900;
     }
 
     .annotation-comment {
-        border-bottom: 1px solid $sf-fog;
+        border-bottom: 1px solid $alto;
         margin-top: 15px;
         padding-bottom: 15px;
         position: relative;
@@ -146,7 +164,7 @@ $highlight-yellow: #ffc900;
     }
 
     .delete-confirmation {
-        background-color: transparentize($white, .05);
+        background-color: fade-out($white, .05);
         height: 100%;
         left: 0;
         position: absolute;
@@ -189,15 +207,13 @@ $highlight-yellow: #ffc900;
         }
 
         &:focus {
-            box-shadow: 0 0 2px 1px transparentize($black, .8);
-            // box-shadow: 0 1px 2px fade-out($black, .9);
-            // outline: 1px solid darken($sf-fog, 14%);
+            box-shadow: 0 0 2px 1px fade-out($black, .8);
         }
     }
 }
 
 .box-preview-point-annotation-btn {
-    background-color: transparentize($box-blue, .3);
+    background-color: fade-out($box-blue, .3);
     border-radius: 50%; // Circle
     border-style: none;
     cursor: pointer;

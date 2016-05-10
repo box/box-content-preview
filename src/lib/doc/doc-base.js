@@ -1,4 +1,5 @@
 import autobind from 'autobind-decorator';
+import LocalStorageAnnotationService from '../annotation/localstorage-annotation-service';
 import Base from '../base';
 import Browser from '../browser';
 import cache from '../cache';
@@ -64,6 +65,8 @@ class DocBase extends Base {
 
         // Destroy the annotator
         if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners('pointmodeenter');
+            this.annotator.removeAllListeners('pointmodeexit');
             this.annotator.destroy();
         }
 
@@ -483,21 +486,28 @@ class DocBase extends Base {
      */
     initAnnotations() {
         const fileVersionID = this.options.file.file_version.id;
+        const annotationService = new LocalStorageAnnotationService({
+            api: this.options.api,
+            token: this.options.token
+        });
+
+        // Construct and init annotator
         this.annotator = new DocAnnotator({
             annotatedElement: this.docEl,
+            annotationService,
             fileVersionID
         });
         this.annotator.init();
         this.annotator.setScale(this.pdfViewer.currentScale);
 
         // Disable controls during point annotation mode
-        this.annotator.on('pointmodeenter', () => {
+        this.annotator.addListener('pointmodeenter', () => {
             if (this.controls) {
                 this.controls.disable();
             }
         });
 
-        this.annotator.on('pointmodeexit', () => {
+        this.annotator.addListener('pointmodeexit', () => {
             if (this.controls) {
                 this.controls.enable();
             }
