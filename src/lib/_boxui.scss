@@ -6,7 +6,7 @@
 html,
 a {
     -webkit-font-smoothing: antialiased;
-    text-shadow: 1px 1px 1px transparentize($white, .996);
+    text-shadow: 1px 1px 1px fade-out($white, .996);
 }
 
 body {
