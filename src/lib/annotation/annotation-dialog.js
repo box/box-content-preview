@@ -494,6 +494,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _showDeleteConfirmation(annotationID) {
+        this._deactivateReply();
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const cancelDeleteButtonEl = annotationEl.querySelector('.cancel-delete-btn');
