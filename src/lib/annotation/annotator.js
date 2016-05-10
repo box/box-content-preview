@@ -20,6 +20,8 @@ const ANONYMOUS_USER = {
     name: 'Kylo Ren',
     avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
 };
+const PAGE_PADDING_BOTTOM = 15;
+const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_TYPE = 'point';
 const POINT_STATE_PENDING = 'pending';
 
@@ -352,8 +354,10 @@ class Annotator extends EventEmitter {
 
         // Store coordinates at 100% scale in PDF space in PDF units
         const pageDimensions = pageEl.getBoundingClientRect();
-        const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageDimensions.top];
-        const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageDimensions.height, annotatorUtil.getScale(this._annotatedElement));
+        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
+        const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageTop];
+        const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, annotatorUtil.getScale(this._annotatedElement));
         const [x, y] = pdfCoordinates;
         const location = { x, y, page };
 

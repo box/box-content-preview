@@ -15,6 +15,7 @@ import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE } from '../icons/icons';
 
 const DIALOG_HIDE_TIMEOUT = 500;
+const PAGE_PADDING_TOP = 15;
 
 @autobind
 class AnnotationDialog extends EventEmitter {
@@ -278,7 +279,7 @@ class AnnotationDialog extends EventEmitter {
 
         // Position the dialog
         this._element.style.left = `${dialogLeftX}px`;
-        this._element.style.top = `${dialogTopY}px`;
+        this._element.style.top = `${dialogTopY + PAGE_PADDING_TOP}px`;
     }
 
     /**

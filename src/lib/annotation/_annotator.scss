@@ -234,12 +234,10 @@ $highlight-yellow: #ffc900;
 //------------------------------------------------------------------------------
 
 .box-preview-annotation-layer {
-    bottom: 0;
     cursor: text;
     left: 0;
     position: absolute;
-    right: 0;
-    top: 0;
+    top: 15px; // Match 15px padding top on page
 }
 
 .box-preview-highlight-dialog {

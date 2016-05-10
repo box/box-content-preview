@@ -32,8 +32,10 @@
         border-image: none;
         // scss-lint:disable ImportantRule
         box-sizing: content-box !important;
-        margin: 10px auto;
-        padding: 0;
+        margin: 0 auto;
+        // We use padding instead of margin to push down since we want to
+        // include this padding when PDF.js jumps to pages
+        padding: 15px 0;
         position: relative;
 
         // scss-lint:disable SelectorDepth
@@ -47,16 +49,21 @@
         }
     }
 
-    // Only allow text divs to be selected
-    .textLayer > div {
-        -moz-user-select: text;
-        -ms-user-select: text;
-        -webkit-user-select: text;
-        user-select: text;
-    }
+    .textLayer {
+        bottom: auto;
+        top: 15px; // Match 15px padding top on page
 
-    .textLayer .highlight {
-        display: inline-block;
+        // Only allow text divs to be selected
+        > div {
+            -moz-user-select: text;
+            -ms-user-select: text;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .highlight {
+            display: inline-block;
+        }
     }
 }
 
