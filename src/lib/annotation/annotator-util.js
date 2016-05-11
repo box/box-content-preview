@@ -5,6 +5,8 @@
 
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 
+const PAGE_PADDING_BOTTOM = 15;
+const PAGE_PADDING_TOP = 15;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
@@ -292,7 +294,7 @@ export function getScale(annotatedElement) {
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
-    const pageHeight = pageEl.getBoundingClientRect().height;
+    const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
     const scale = getScale(annotatedElement);
     return convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, scale);
 }
@@ -338,8 +340,9 @@ export function getQuadPoints(element, pageEl, scale) {
     const corner3Dimensions = quadCorner3El.getBoundingClientRect();
     const corner4Dimensions = quadCorner4El.getBoundingClientRect();
     const pageDimensions = pageEl.getBoundingClientRect();
+    const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
     const pageLeft = pageDimensions.left;
-    const pageBottom = pageDimensions.top;
+    const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
 
     // Cleanup helper container
     element.removeChild(quadCornerContainerEl);
@@ -347,17 +350,17 @@ export function getQuadPoints(element, pageEl, scale) {
     // Calculate coordinates of these 4 corners
     const quadPoints = [
         corner1Dimensions.left - pageLeft,
-        corner1Dimensions.top - pageBottom,
+        corner1Dimensions.top - pageTop,
         corner2Dimensions.left - pageLeft,
-        corner2Dimensions.top - pageBottom,
+        corner2Dimensions.top - pageTop,
         corner3Dimensions.left - pageLeft,
-        corner3Dimensions.top - pageBottom,
+        corner3Dimensions.top - pageTop,
         corner4Dimensions.left - pageLeft,
-        corner4Dimensions.top - pageBottom
+        corner4Dimensions.top - pageTop
     ];
 
     // Return quad points at 100% scale in PDF units
-    return convertDOMSpaceToPDFSpace(quadPoints, pageDimensions.height, scale);
+    return convertDOMSpaceToPDFSpace(quadPoints, pageHeight, scale);
 }
 
 /**

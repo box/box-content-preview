@@ -19,6 +19,8 @@ const HIGHLIGHT_STATE_ACTIVE_HOVER = 'active-hover'; // clicked and mouse is ove
 const HIGHLIGHT_STATE_HOVER = 'hover'; // mouse is over
 const HIGHLIGHT_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
 const HIGHLIGHT_STATE_PENDING = 'pending';
+const PAGE_PADDING_BOTTOM = 15;
+const PAGE_PADDING_TOP = 15;
 
 @autobind
 class HighlightThread extends AnnotationThread {
@@ -242,7 +244,7 @@ class HighlightThread extends AnnotationThread {
         }
 
         const quadPoints = this._location.quadPoints;
-        const pageHeight = this._getPageEl().getBoundingClientRect().height;
+        const pageHeight = this._getPageEl().getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         quadPoints.forEach((quadPoint) => {
             const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
@@ -279,13 +281,15 @@ class HighlightThread extends AnnotationThread {
      */
     _isInHighlight(event) {
         const dimensions = this._getPageEl().getBoundingClientRect();
+        const pageHeight = dimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const pageTop = dimensions.top + PAGE_PADDING_TOP;
 
         // DOM coordinates with respect to the page
         const x = event.clientX - dimensions.left;
-        const y = event.clientY - dimensions.top;
+        const y = event.clientY - pageTop;
 
         return this._location.quadPoints.some((quadPoint) => {
-            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, dimensions.height, annotatorUtil.getScale(this._annotatedElement));
+            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
             return annotatorUtil.isPointInPolyOpt([
@@ -324,7 +328,7 @@ class HighlightThread extends AnnotationThread {
             annotationLayerEl.classList.add('box-preview-annotation-layer');
             const pageDimensions = pageEl.getBoundingClientRect();
             annotationLayerEl.width = pageDimensions.width;
-            annotationLayerEl.height = pageDimensions.height;
+            annotationLayerEl.height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
 
             const textLayerEl = pageEl.querySelector('.textLayer');
             pageEl.insertBefore(annotationLayerEl, textLayerEl);
