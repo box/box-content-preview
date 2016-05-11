@@ -17,6 +17,7 @@ import { CLASS_ACTIVE } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
 const ANONYMOUS_USER = {
+    id: 231345,
     name: 'Kylo Ren',
     avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
 };

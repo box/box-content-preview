@@ -2,6 +2,17 @@
 
 $highlight-yellow: #ffc900;
 
+// Taken from Box React UI avatar
+$avatar-color-1: #18bbf7;
+$avatar-color-2: #0d67c7;
+$avatar-color-3: #052e5c;
+$avatar-color-4: #747679;
+$avatar-color-5: #fda308;
+$avatar-color-6: #98c332;
+$avatar-color-7: #159f45;
+$avatar-color-8: #b800b2;
+$avatar-color-9: #f22c44;
+
 .box-preview-annotation-controls {
     background-color: $white;
     border-bottom-left-radius: 4px;
@@ -135,8 +146,9 @@ $highlight-yellow: #ffc900;
         vertical-align: top;
 
         img {
-            height: 30px;
-            width: 30px;
+            border-radius: 16px;
+            height: 32px;
+            width: 32px;
         }
     }
 
@@ -226,6 +238,53 @@ $highlight-yellow: #ffc900;
 
     &:hover {
         background-color: $box-blue;
+    }
+}
+
+.box-preview-annotation-profile {
+    background-color: $sixes;
+    border-radius: 16px; // Circle
+    color: $white;
+    font-size: 12px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    width: 32px;
+
+    &.avatar-color-0 {
+        background-color: $avatar-color-1;
+    }
+
+    &.avatar-color-1 {
+        background-color: $avatar-color-2;
+    }
+
+    &.avatar-color-2 {
+        background-color: $avatar-color-3;
+    }
+
+    &.avatar-color-3 {
+        background-color: $avatar-color-4;
+    }
+
+    &.avatar-color-4 {
+        background-color: $avatar-color-5;
+    }
+
+    &.avatar-color-5 {
+        background-color: $avatar-color-6;
+    }
+
+    &.avatar-color-6 {
+        background-color: $avatar-color-7;
+    }
+
+    &.avatar-color-7 {
+        background-color: $avatar-color-8;
+    }
+
+    &.avatar-color-8 {
+        background-color: $avatar-color-9;
     }
 }
 
