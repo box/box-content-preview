@@ -6,7 +6,6 @@
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 
 const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
-const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
@@ -303,7 +302,7 @@ export function getScale(annotatedElement) {
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
-    const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+    const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP;
     const scale = getScale(annotatedElement);
     return convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, scale);
 }
@@ -348,7 +347,7 @@ export function getQuadPoints(element, pageEl, scale) {
     const corner3Dimensions = quadCorner3El.getBoundingClientRect();
     const corner4Dimensions = quadCorner4El.getBoundingClientRect();
     const pageDimensions = pageEl.getBoundingClientRect();
-    const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+    const pageHeight = pageDimensions.height - PAGE_PADDING_TOP;
     const pageLeft = pageDimensions.left;
     const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
 
