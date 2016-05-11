@@ -173,7 +173,7 @@ $highlight-yellow: #ffc900;
         z-index: 2; // Above the delete button
 
         .button-container {
-            margin-top: 5px;
+            margin-top: 0;
             text-align: center;
         }
     }
@@ -181,7 +181,7 @@ $highlight-yellow: #ffc900;
     .delete-confirmation-message {
         color: $fours;
         font-size: 12px;
-        padding: 5px 0 3px;
+        padding: 0 0 5px;
         text-align: center;
     }
 
@@ -252,7 +252,7 @@ $highlight-yellow: #ffc900;
 .box-preview-delete-highlight-btn,
 .box-preview-delete-highlight-btn:hover {
     background-color: $white;
-    border: 1px solid $sf-fog;
+    border: 1px solid $alto;
     border-radius: 2px;
     padding: 5px 6px;
 }
@@ -317,7 +317,7 @@ $highlight-yellow: #ffc900;
 .box-preview-point-annotation-mode .box-preview-annotation-layer,
 .box-preview-point-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('../annotation/point-annotation.cur'), crosshair;
+    cursor: url('../annotation/point.cur'), crosshair;
 }
 
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
@@ -331,7 +331,7 @@ $highlight-yellow: #ffc900;
 .box-preview-highlight-annotation-mode .box-preview-annotation-layer,
 .box-preview-highlight-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('../annotation/highlight-annotation.cur'), text;
+    cursor: url('../annotation/highlight.cur'), text;
 }
 
 // IE10 and IE11 don't implement custom cursors correctly, see:
@@ -344,8 +344,8 @@ $highlight-yellow: #ffc900;
     // We use a .cur file since they embed click origin information
     cursor: url('//cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/point-annotation.cur'), crosshair;
 
-    // Uncomment before v0.55.0 release
-    // cursor: url('//cdn01.boxcdn.net/content-experience/0.55.0/third-party/doc/cursors/point-annotation.cur'), crosshair;
+    // Uncomment before v0.56.0 release
+    // cursor: url('//cdn01.boxcdn.net/content-experience/0.56.0/third-party/doc/cursors/point.cur'), crosshair;
 }
 
 // scss-lint:disable UrlFormat
@@ -355,6 +355,6 @@ $highlight-yellow: #ffc900;
     // We use a .cur file since they embed click origin information
     cursor: url('//cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/highlight-annotation.cur'), text;
 
-    // Uncomment before v0.55.0 release
-    // cursor: url('//cdn01.boxcdn.net/content-experience/0.55.0/third-party/doc/cursors/highlight-annotation.cur'), text;
+    // Uncomment before v0.56.0 release
+    // cursor: url('//cdn01.boxcdn.net/content-experience/0.56.0/third-party/doc/cursors/highlight.cur'), text;
 }
