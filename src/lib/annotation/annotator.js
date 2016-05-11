@@ -18,8 +18,8 @@ import { ICON_ANNOTATION } from '../icons/icons';
 
 const ANONYMOUS_USER = {
     id: 231345,
-    name: 'Kylo Ren',
-    avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
+    name: 'Kylo Ren'
+    // avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
 };
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_TYPE = 'point';

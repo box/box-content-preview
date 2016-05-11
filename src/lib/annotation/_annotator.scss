@@ -146,7 +146,7 @@ $avatar-color-9: #f22c44;
         vertical-align: top;
 
         img {
-            border-radius: 16px;
+            border-radius: 50%;
             height: 32px;
             width: 32px;
         }
@@ -229,12 +229,12 @@ $avatar-color-9: #f22c44;
     border-radius: 50%; // Circle
     border-style: none;
     cursor: pointer;
-    height: 16px;
+    height: 18px;
     padding: 0;
     position: absolute;
     -webkit-transition: background-color .5s;
     transition: background-color .5s;
-    width: 16px;
+    width: 18px;
 
     &:hover {
         background-color: $box-blue;

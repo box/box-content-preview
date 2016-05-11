@@ -83,7 +83,8 @@
 .box-preview-controls {
     // Page num input CSS
     .box-preview-doc-page-num {
-        width: auto;
+        min-width: 48px;
+        width: auto; // Let page num expand as needed
 
         span {
             display: inline;
