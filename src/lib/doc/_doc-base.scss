@@ -65,13 +65,24 @@
             display: inline-block;
         }
     }
+
+    // This is so hover and click targets for links inside the document show
+    // up correctly. We add 15px top margin since PDF.js sets the top for these
+    // manually assuming there is no vertical padding on the page
+    .annotationLayer section {
+        margin-top: 15px;
+    }
 }
 
 .box-preview-controls {
     // Page num input CSS
-    .box-preview-doc-page-num span {
-        display: inline;
-        font-size: 14px;
+    .box-preview-doc-page-num {
+        width: auto;
+
+        span {
+            display: inline;
+            font-size: 14px;
+        }
     }
 
     .box-preview-doc-page-num-input {
