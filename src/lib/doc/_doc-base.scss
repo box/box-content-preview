@@ -35,8 +35,14 @@
         margin: 0 auto;
         // We use padding instead of margin to push down since we want to
         // include this padding when PDF.js jumps to pages
-        padding: 15px 0;
+        padding: 15px 0 0;
         position: relative;
+
+        // Use margin to create padding for last page so we don't have to
+        // modify page height calculations
+        &:last-child {
+            margin-bottom: 15px;
+        }
 
         // scss-lint:disable SelectorDepth
         .loadingIcon {
