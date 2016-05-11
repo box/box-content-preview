@@ -1,4 +1,5 @@
 import autobind from 'autobind-decorator';
+import EventEmitter from 'events';
 import { decodeKeydown } from '../util.js';
 import { CLASS_HIDDEN } from '../constants';
 import {
@@ -8,21 +9,28 @@ import {
     ICON_SEARCH
 } from '../icons/icons';
 
-const FIND_MATCH_NOT_FOUND = 1;
 const MATCH_SEPARATOR = ' of ';
 const MATCH_OFFSET = 13;
 const CLASS_FIND_MATCH_NOT_FOUND = 'box-preview-find-match-not-found';
 
+// Values match FindStates in PDFFindController
+const FIND_MATCH_FOUND = 0;
+const FIND_MATCH_NOT_FOUND = 1;
+const FIND_MATCH_PENDING = 3;
+
 @autobind
-class DocFindBar {
+class DocFindBar extends EventEmitter {
 
     /**
      * @constructor
      * @param  {string|HTML Element} findBar Find Bar node
      * @param  {Object} findController
+     * @param  {Boolean} isPresentation
      * @returns {void}
      */
-    constructor(findBar, findController) {
+    constructor(findBar, findController, isPresentation) {
+        super();
+
         this.opened = false;
         this.bar = findBar;
         this.findController = findController;
@@ -31,6 +39,13 @@ class DocFindBar {
 
         if (this.findController === null) {
             throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
+        }
+
+        // overwrites scrollIntoView method for presentation documents
+        if (isPresentation) {
+            this.findController.scrollIntoView = () => {
+                this.emit('setpage');
+            };
         }
 
         // Default hides find bar on load
@@ -42,9 +57,6 @@ class DocFindBar {
         this.findPreviousButtonEl = this.bar.querySelector('.box-preview-doc-find-prev');
         this.findNextButtonEl = this.bar.querySelector('.box-preview-doc-find-next');
         this.findCloseButtonEl = this.bar.querySelector('.box-preview-doc-find-close');
-
-        // KeyDown handler to show/hide find bar
-        document.addEventListener('keydown', this.displayFindBarHandler);
 
         this.bindDOMListeners();
     }
@@ -98,9 +110,6 @@ class DocFindBar {
         this.currentMatch = 0;
         this.matchResultCount = 0;
 
-        // Remove KeyDown handler to show/hide find bar
-        document.removeEventListener('keydown', this.displayFindBarHandler);
-
         this.unbindDOMListeners();
 
         // Clean up the find buttons
@@ -141,13 +150,26 @@ class DocFindBar {
      */
     updateUIState(state, previous, matchCount) {
         this.matchResultCount = matchCount;
+        this.status = '';
 
-        if (state === FIND_MATCH_NOT_FOUND) {
-            this.findFieldEl.classList.add(CLASS_FIND_MATCH_NOT_FOUND);
-        } else {
-            this.findFieldEl.classList.remove(CLASS_FIND_MATCH_NOT_FOUND);
+        switch (state) {
+            case FIND_MATCH_NOT_FOUND:
+                this.findFieldEl.classList.add(CLASS_FIND_MATCH_NOT_FOUND);
+                break;
+
+            case FIND_MATCH_PENDING:
+                this.status = 'pending';
+                break;
+
+            case FIND_MATCH_FOUND:
+                this.findFieldEl.classList.remove(CLASS_FIND_MATCH_NOT_FOUND);
+                break;
+
+            default:
+                break;
         }
 
+        this.findFieldEl.setAttribute('data-status', this.status);
         this.updateResultsCount(matchCount);
     }
 
@@ -327,6 +349,9 @@ class DocFindBar {
         this.findPreviousButtonEl.addEventListener('click', this.findPreviousHandler);
         this.findNextButtonEl.addEventListener('click', this.findNextHandler);
         this.findCloseButtonEl.addEventListener('click', this.close);
+
+        // KeyDown handler to show/hide find bar
+        document.addEventListener('keydown', this.displayFindBarHandler);
     }
 
     /**
@@ -340,6 +365,9 @@ class DocFindBar {
         this.findPreviousButtonEl.removeEventListener('click', this.findPreviousHandler);
         this.findNextButtonEl.removeEventListener('click', this.findNextHandler);
         this.findCloseButtonEl.removeEventListener('click', this.close);
+
+        // Remove KeyDown handler to show/hide find bar
+        document.removeEventListener('keydown', this.displayFindBarHandler);
     }
 }
 

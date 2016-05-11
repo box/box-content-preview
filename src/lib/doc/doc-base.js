@@ -54,6 +54,8 @@ class DocBase extends Base {
 
         this.findBarEl = this.docEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
+
+        this.isPresentation = (this.options.viewerName === 'Presentation');
     }
 
     /**
@@ -71,16 +73,16 @@ class DocBase extends Base {
             this.controls.destroy();
         }
 
-        // Destroy the find bar
-        if (this.findBar && typeof this.findBar.destroy === 'function') {
-            this.findBar.destroy();
-        }
-
         // Destroy the annotator
         if (this.annotator && typeof this.annotator.destroy === 'function') {
             this.annotator.removeAllListeners('pointmodeenter');
             this.annotator.removeAllListeners('pointmodeexit');
             this.annotator.destroy();
+        }
+
+        // Clean up the find bar and controller
+        if (this.findBar && this.findController) {
+            this.destroyFind();
         }
 
         // Clean up viewer and PDF document object
@@ -110,7 +112,7 @@ class DocBase extends Base {
         this.setupPdfjs();
         this.initViewer(pdfUrl);
         this.initPrint(pdfUrl);
-        this.initFindController();
+        this.initFind();
 
         super.load();
     }
@@ -119,7 +121,7 @@ class DocBase extends Base {
      * Initializes the Find Bar and Find Controller
      * @returns {void}
      */
-    initFindController() {
+    initFind() {
         if (!this.findBarEl) { // doesn't initialize find controller if find bar doesn't exists
             return;
         }
@@ -128,8 +130,39 @@ class DocBase extends Base {
             pdfViewer: this.pdfViewer
         });
         this.pdfViewer.setFindController(this.findController);
-        this.findBar = new DocFindBar(this.findBarEl, this.findController);
+        this.findBar = new DocFindBar(this.findBarEl, this.findController, this.isPresentation);
         this.findController.setFindBar(this.findBar);
+
+        // Add listener to presentations update page number
+        if (this.isPresentation) {
+            this.findBar.addListener('setpage', this.scrollToFindMatchPageHandler);
+        }
+    }
+
+    /**
+     * Clean up find controller and find bar
+     * @returns {void}
+     */
+    destroyFind() {
+        // Remove findBar EventListeners
+        if (this.isPresentation) {
+            this.findBar.removeListener('setpage', this.scrollToFindMatchPageHandler);
+        }
+
+        // Remove find controller events
+        const events = [
+            'find',
+            'findagain',
+            'findhighlightallchange',
+            'findcasesensitivitychange'
+        ];
+
+        for (const event of events) {
+            window.removeEventListener(event, this.findController.handleEvent);
+        }
+
+        // Cleanup find bar
+        this.findBar.destroy();
     }
 
     /**
@@ -916,6 +949,14 @@ class DocBase extends Base {
                 this.previousPage();
             }
         }
+    }
+
+    /**
+     * Sets current page to page which includes the selected find match
+     * @returns {void}
+     */
+    scrollToFindMatchPageHandler() {
+        this.setPage(this.findController.selected.pageIdx + 1);
     }
 }
 

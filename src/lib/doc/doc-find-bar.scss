@@ -1,7 +1,8 @@
-@import '../variables';
+@import 'node_modules/box-ui/src/common/variables';
 
-$medium-aquamarine:   #5AEDA8 !default;
-$moon-yellow:         #FFBA1A !default;
+$medium-aquamarine:   #5aeda8 !default;
+$moon-yellow:         #ffba1a !default;
+$blue:                #00f !default;
 
 .box-preview-find-bar {
     background: $white;
@@ -37,12 +38,12 @@ $moon-yellow:         #FFBA1A !default;
         color: transparentize($better-black, .75);
         cursor: default;
         line-height: 1;
-        margin: 4px 0;
-        padding: 3px 0 3px 2px;
-        padding-top: 8px;
+        margin: 0;
+        padding: 0;
         position: absolute;
         right: 120px;
         text-align: right;
+        top: 37%;
         -moz-user-select: none;
         -webkit-user-select: none;
     }
@@ -59,7 +60,7 @@ $moon-yellow:         #FFBA1A !default;
         vertical-align: middle;
         width: 34px;
 
-        svg path.icon {
+        .icon {
             fill: transparentize($better-black, .25);
         }
     }
@@ -68,17 +69,18 @@ $moon-yellow:         #FFBA1A !default;
         border: 0;
         left: 5px;
         line-height: 1;
-        margin-top: 0;
+        margin: 0;
         padding: 6px;
         position: absolute;
         text-align: left;
+        top: 15%;
     }
 
     .box-preview-doc-find-close {
         border: 0;
         padding: 6px;
 
-        &:hover svg path.icon {
+        &:hover .icon {
             fill: $better-black;
         }
     }
@@ -103,10 +105,10 @@ $moon-yellow:         #FFBA1A !default;
     }
 
     ::selection {
-        background-color: transparentize(blue, .7);
+        background-color: transparentize($blue, .7);
     }
 
     *::-moz-selection {
-        background-color: transparentize(blue, .7);
+        background-color: transparentize($blue, .7);
     }
 }
