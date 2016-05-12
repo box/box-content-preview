@@ -89,16 +89,17 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Convert the callback property of a config callback to a valid callback function
-     * @param {[type]} configEntry [description]
-     * @returns {[type]} [description]
+     * @param {Object} configEntry A descriptor for the callback.
+     * @param {Function} configEntry.callback The callback function to search for and assign back to the entry
+     * @param {Array} configEntry.args Arguments to be bound to the function callback
+     * @returns {void}
      */
     @autobind
     convertToValidCallback(configEntry) {
-        const callback = configEntry.callback;
+        const entry = configEntry;
+        const callback = entry.callback;
         if (typeof callback === 'string' && this[callback]) {
-            /*eslint-disable*/
-            configEntry.callback = this[callback].bind(this, ...configEntry.args);
-            /*eslint-enable*/
+            entry.callback = this[callback].bind(this, ...entry.args);
         }
     }
 
@@ -211,13 +212,14 @@ class Model3DSettingsPullup extends EventEmitter {
      * @param {string} mode The render mode to emit a message about
      * @returns {void}
      */
-    @autobind
     onRenderModeSelected(mode) {
         this.emit(EVENT_SET_RENDER_MODE, mode);
     }
 
     /**
-     * [onAxisRotationSelected description]
+     * Emit an axis rotation event with the axis of rotation and direction to rotate
+     * @param {string} rotationAxis The axis to rotate on
+     * @param {Int} direction The direction to rotate. IE) 1 is positive rotation while -1 is negative rotation
      * @returns {void}
      */
     onAxisRotationSelected(rotationAxis, direction) {
@@ -232,7 +234,6 @@ class Model3DSettingsPullup extends EventEmitter {
      * @param {string} mode The projection mode to use
      * @returns {void}
      */
-    @autobind
     onProjectionSelected(mode) {
         this.emit(EVENT_SET_CAMERA_PROJECTION, mode);
     }

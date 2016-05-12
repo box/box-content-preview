@@ -70,7 +70,7 @@ export default class Model3DRenderModePullup extends EventEmitter {
     }
 
     /**
-     * Creare the UI Necessary to run the render mode pullup
+     * Creaee the UI necessary to run the render mode pullup
      * @returns {HTMLElement} The pullup with the render mode items
      */
     createUi() {
@@ -95,7 +95,9 @@ export default class Model3DRenderModePullup extends EventEmitter {
      * @returns {HTMLElement} The built render mode item to add to render modes list UI
      */
     createRenderModeItem(renderModeDescriptor) {
-        const className = renderModeDescriptor.baseClass;
+        // Allowing assignment of properties
+        const descriptor = renderModeDescriptor;
+        const className = descriptor.baseClass;
 
         const renderModeItem = document.createElement('li');
         renderModeItem.classList.add(`box-preview-rm-${className}`);
@@ -107,17 +109,16 @@ export default class Model3DRenderModePullup extends EventEmitter {
 
         renderModeItem.appendChild(renderModeIcon);
 
-        /*eslint-disable*/
-        renderModeDescriptor.el = renderModeItem;
-        /*eslint-enable*/
+        descriptor.el = renderModeItem;
+
         const onRenderModeChange = () => {
             this.renderModesSelectorEl.classList.add(CLASS_HIDDEN);
-            this.setRenderMode(renderModeDescriptor);
+            this.setRenderMode(descriptor);
         };
 
         this.uiRegistry.registerUiItem(className, renderModeItem, 'click', onRenderModeChange);
 
-        renderModeItem.innerHTML += renderModeDescriptor.name;
+        renderModeItem.innerHTML += descriptor.name;
 
         return renderModeItem;
     }
@@ -152,21 +153,12 @@ export default class Model3DRenderModePullup extends EventEmitter {
      * @returns {Object} Render mode descriptor
      */
     getModeByName(renderModeName) {
-        let renderMode;
+        const renderKey = Object.keys(RENDER_MODES).find((key) => {
+            const renderMode = RENDER_MODES[key];
+            return renderMode.name === renderModeName;
+        });
 
-        /* eslint-disable no-restricted-syntax */
-        for (const renderModeKey in RENDER_MODES) {
-            if (RENDER_MODES.hasOwnProperty(renderModeKey)) {
-                const renderModeDesc = RENDER_MODES[renderModeKey];
-                if (renderModeDesc.name === renderModeName) {
-                    renderMode = renderModeDesc;
-                    break;
-                }
-            }
-        }
-        /* eslint-enable no-restricted-syntax */
-
-        return renderMode;
+        return RENDER_MODES[renderKey];
     }
 
     /**

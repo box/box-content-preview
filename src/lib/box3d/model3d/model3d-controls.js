@@ -3,6 +3,7 @@ import Model3DRenderModePullup from './model3d-render-mode-pullup';
 import Model3DSettingsPullup from './model3d-settings-pullup';
 import autobind from 'autobind-decorator';
 import {
+    EVENT_CLOSE_UI,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_SET_CAMERA_PROJECTION,
@@ -15,6 +16,7 @@ import {
     ICON_3D_RESET
 } from '../../icons/icons';
 
+const DEFAULT_RENDER_MODE = 'Lit';
 
 /**
  * Model3dControls
@@ -43,6 +45,8 @@ class Model3dControls extends Box3DControls {
      * @param {bool} showSaveButton Whether or not we allow the user to attempt saving to metadata
      */
     addUi(showSaveButton = false) {
+        this.addListener(EVENT_CLOSE_UI, this.handleCloseUi);
+
         this.renderModesSelectorEl = this.renderModePullup.pullupEl;
         this.renderModePullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
 
@@ -68,8 +72,7 @@ class Model3dControls extends Box3DControls {
 
         this.addFullscreenButton();
 
-        // Default render mode is LIT, so don't need to pass in an argument
-        this.setCurrentRenderMode('Lit');
+        this.setCurrentRenderMode(DEFAULT_RENDER_MODE);
     }
 
     /**
@@ -129,25 +132,6 @@ class Model3dControls extends Box3DControls {
     }
 
     /**
-     * Set the current render mode being used by the render mode pullup
-     * @param {string} renderMode The render mode to set on the pullup
-     * @returns {void}
-     */
-    setCurrentRenderMode(renderMode) {
-        this.renderModePullup.setRenderMode(renderMode);
-    }
-
-    /**
-     * Set the current projection mode being used by the settings pullup
-     * @param {string} renderMode The projection mode to set on the pullup
-     * @returns {void}
-     */
-    setCurrentProjectionMode(mode) {
-        this.settingsPullup.onProjectionSelected(mode);
-        this.settingsPullup.setCurrentProjectionMode(mode);
-    }
-
-    /**
      * Close the render mode ui
      * @returns {void}
      */
@@ -175,6 +159,33 @@ class Model3dControls extends Box3DControls {
     }
 
     /**
+     * @inheritdoc
+     */
+    handleToggleFullscreen() {
+        super.handleToggleFullscreen();
+        this.handleCloseUi();
+    }
+
+    /**
+     * Set the current render mode being used by the render mode pullup
+     * @param {string} renderMode The render mode to set on the pullup
+     * @returns {void}
+     */
+    setCurrentRenderMode(renderMode) {
+        this.renderModePullup.setRenderMode(renderMode);
+    }
+
+    /**
+     * Set the current projection mode being used by the settings pullup
+     * @param {string} renderMode The projection mode to set on the pullup
+     * @returns {void}
+     */
+    setCurrentProjectionMode(mode) {
+        this.settingsPullup.onProjectionSelected(mode);
+        this.settingsPullup.setCurrentProjectionMode(mode);
+    }
+
+    /**
      * Set a the render mode, from a key in the Render Modes dictionary
      * @param {string} modeIcon The key in the RENDER_MODES dictionary to use to
      * get the icon class that we'll change the render mode button to
@@ -192,6 +203,8 @@ class Model3dControls extends Box3DControls {
         if (this.controls) {
             this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
         }
+
+        this.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
 
         this.renderModePullup.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.renderModePullup.destroy();

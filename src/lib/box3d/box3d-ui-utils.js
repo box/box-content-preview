@@ -13,7 +13,7 @@ import {
 /**
  * Create a label
  * @param {string} text The text to put in the label
- * @returns {HtmlElement} The newly create label element
+ * @returns {HtmlElement} The newly created label element
  */
 function createLabel(text = '') {
     const label = document.createElement('div');
@@ -64,10 +64,13 @@ function createRow(labelText) {
 }
 
 /**
- * Create a dropdown for the settings panel,
- * @param {[type]} labelText [description]
- * @param {[type]} listText [description]
- * @param {} listContent [desc] { text, callback, args }
+ * Create a dropdown for the settings panel
+ * @param {string} labelText A label to display above the dropdown
+ * @param {string} listText The default text to display inside of the dropdown, when closed and
+ * no other options yet selected
+ * @param {Object[]} [listContent] A list of descriptors to fill the dropdown with text and actions. { text, callback }
+ * entry.text {string} Text content displayed as the dropdown item
+ * entry.callback {Function} A function to be called on the 'click' event of the dropdown
  * @returns {HtmlElement} The settings dropdown that can be added to the settings panel
  */
 function createDropdown(labelText = '', listText = '', listContent = []) {
@@ -87,9 +90,8 @@ function createDropdown(labelText = '', listText = '', listContent = []) {
     dropdownEl.classList.add(CSS_CLASS_HIDDEN);
     dropdownWrapperEl.appendChild(dropdownEl);
 
-    const length = listContent.length;
-    for (let i = 0; i < length; ++i) {
-        const text = listContent[i].text || '';
+    listContent.forEach((entry) => {
+        const text = entry.text || '';
         const listItemEl = document.createElement('li');
         listItemEl.textContent = text;
 
@@ -98,14 +100,14 @@ function createDropdown(labelText = '', listText = '', listContent = []) {
             dropdownEl.classList.toggle(CSS_CLASS_HIDDEN);
         });
 
-        const callback = listContent[i].callback;
+        const callback = entry.callback;
         // Callbacks come as a string OR a function
         if (callback && typeof callback === 'function') {
             listItemEl.addEventListener('click', callback);
         }
 
         dropdownEl.appendChild(listItemEl);
-    }
+    });
 
     listLabelEl.addEventListener('click', () => {
         dropdownEl.classList.toggle(CSS_CLASS_HIDDEN);
@@ -155,30 +157,31 @@ class UIRegistry {
     }
 
     /**
-     * Unregistrer and remove the UI item
+     * Unregister and remove the UI item
      * @param {Object} item The ui item created in registerUiItem()
      * @returns {void}
      */
     unregisterUiItem(item) {
-        if (!this.eventRegistry[item.uuid]) {
+        // Assignment for modification of properties
+        const uiItem = item;
+
+        if (!this.eventRegistry[uiItem.uuid]) {
             return;
         }
 
-        if (item.el.parentElement) {
-            item.el.parentElement.removeChild(item.el);
+        if (uiItem.el.parentElement) {
+            uiItem.el.parentElement.removeChild(uiItem.el);
         }
 
-        Object.keys(item.events).forEach((eventName) => {
-            item.events[eventName].forEach((callback) => {
-                item.el.removeEventListener(eventName, callback);
+        Object.keys(uiItem.events).forEach((eventName) => {
+            uiItem.events[eventName].forEach((callback) => {
+                uiItem.el.removeEventListener(eventName, callback);
             });
-            /*eslint-disable*/
-            delete item.events[eventName];
-            delete item.el;
-            /*eslint-enable*/
+            delete uiItem.events[eventName];
+            delete uiItem.el;
         });
 
-        delete this.eventRegistry[item.uuid];
+        delete this.eventRegistry[uiItem.uuid];
     }
 
     /**

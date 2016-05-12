@@ -5,13 +5,14 @@ import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';
 import Model3dRenderer from './model3d-renderer';
 import {
+    EVENT_CLOSE_UI,
+    EVENT_METADATA_UPDATE_FAILURE,
+    EVENT_METADATA_UPDATE_SUCCESS,
     EVENT_MISSING_ASSET,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_CAMERA_PROJECTION,
-    EVENT_SAVE_SCENE_DEFAULTS,
-    EVENT_METADATA_UPDATE_SUCCESS,
-    EVENT_METADATA_UPDATE_FAILURE
+    EVENT_SAVE_SCENE_DEFAULTS
 } from './model3d-constants';
 import {
     CSS_CLASS_INVISIBLE,
@@ -81,6 +82,7 @@ class Model3d extends Box3D {
             this.controls.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         }
         this.renderer.on(EVENT_MISSING_ASSET, this.handleMissingAsset);
+        this.renderer.on(EVENT_CLOSE_UI, this.handleCloseUi);
     }
 
     /**
@@ -96,6 +98,7 @@ class Model3d extends Box3D {
             this.controls.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         }
         this.renderer.removeListener(EVENT_MISSING_ASSET, this.handleMissingAsset);
+        this.renderer.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
     }
 
     /**
@@ -207,6 +210,19 @@ class Model3d extends Box3D {
             });
     }
 
+    /**
+     * Notify the control module to close all ui, if open
+     * @returns {void}
+     */
+    @autobind
+    handleCloseUi() {
+        this.controls.emit(EVENT_CLOSE_UI);
+    }
+
+    /**
+     * [showWrapper description]
+     * @returns {[type]} [description]
+     */
     showWrapper() {
         this.wrapperEl.classList.remove(CSS_CLASS_INVISIBLE);
         this.renderer.emit(EVENT_TRIGGER_RESIZE);
