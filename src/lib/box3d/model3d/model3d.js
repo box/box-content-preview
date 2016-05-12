@@ -220,8 +220,8 @@ class Model3d extends Box3D {
     }
 
     /**
-     * [showWrapper description]
-     * @returns {[type]} [description]
+     * Show the preview wrapper container element
+     * @returns {void}
      */
     showWrapper() {
         this.wrapperEl.classList.remove(CSS_CLASS_INVISIBLE);
