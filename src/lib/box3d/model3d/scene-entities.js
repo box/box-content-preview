@@ -83,7 +83,8 @@ function sceneEntities(prefix) {
         components: {
             rendererComponent: {
                 componentData: {
-                    antialias: true
+                    antialias: true,
+                    renderOnDemand: true
                 },
                 scriptId: 'box3d_renderer',
                 isBuiltIn: true,
@@ -101,109 +102,131 @@ function sceneEntities(prefix) {
         }
     }, {
         id: 'MAT_CAP_TEX',
-        name: 'Mat Cap Texture',
         type: 'texture2D',
         properties: {
-            isLocal: true,
-            originalWidth: 256,
-            originalHeight: 256,
-            stream: false,
+            name: 'Mat Cap Texture',
+            imageId: 'MAT_CAP_IMG',
             uMapping: 'clamp',
             vMapping: 'clamp'
+        }
+    }, {
+        id: 'MAT_CAP_IMG',
+        type: 'image',
+        properties: {
+            name: 'Mat Cap Image',
+            width: 256,
+            height: 256,
+            stream: false
         },
-        resources: [{
-            path: `${prefix}third-party/model3d/matcap.png`,
+        representations: [{
+            src: `${prefix}third-party/model3d/matcap.png`,
             contentType: 'image/png',
             contentEncoding: 'identity',
-            properties: {
-                width: 256,
-                height: 256,
-                compression: 'none'
-            }
+            width: 256,
+            height: 256,
+            compression: 'zip'
+        }]
+    }, {
+        id: 'HDR_ENV_IMG_0',
+        type: 'image',
+        properties: {
+            name: 'HDR Env Image 0',
+            isHdr: true,
+            width: 1024,
+            height: 512,
+            stream: false
+        },
+        representations: [{
+            src: `${prefix}third-party/model3d/HDR_Env0.png`,
+            contentType: 'image/png',
+            contentEncoding: 'identity',
+            width: 1024,
+            height: 512,
+            compression: 'zip',
+            channels: 'rgbe'
+        }]
+    }, {
+        id: 'HDR_ENV_IMG_1',
+        type: 'image',
+        properties: {
+            name: 'HDR Env Image 1',
+            isHdr: true,
+            width: 512,
+            height: 256,
+            stream: false
+        },
+        representations: [{
+            src: `${prefix}third-party/model3d/HDR_Env1.png`,
+            contentType: 'image/png',
+            contentEncoding: 'identity',
+            width: 512,
+            height: 256,
+            compression: 'zip',
+            channels: 'rgbe'
+        }]
+    }, {
+        id: 'HDR_ENV_IMG_2',
+        type: 'image',
+        properties: {
+            name: 'HDR Env Image 2',
+            isHdr: true,
+            width: 256,
+            height: 128,
+            stream: false
+        },
+        representations: [{
+            src: `${prefix}third-party/model3d/HDR_Env2.png`,
+            contentType: 'image/png',
+            contentEncoding: 'identity',
+            width: 256,
+            height: 128,
+            compression: 'zip',
+            channels: 'rgbe'
         }]
     }, {
         id: 'HDR_ENV_MAP_0',
-        name: 'HDR Env Map 0',
         type: 'texture2D',
         properties: {
-            isLocal: true,
+            imageId: 'HDR_ENV_IMG_0',
+            name: 'HDR Env Map 0',
+            type: 'float',
             isHdr: true,
-            originalWidth: 1024,
-            originalHeight: 512,
-            stream: false,
-            generateMipmaps: false,
             minFilter: 'linear',
             magFilter: 'linear',
-            vMapping: 'clamp'
-        },
-        resources: [{
-            path: `${prefix}third-party/model3d/HDR_Env0.png`,
-            contentType: 'image/png',
-            contentEncoding: 'identity',
-            properties: {
-                width: 1024,
-                height: 512,
-                compression: 'none',
-                packingFormat: 'rgbe'
-            }
-        }]
+            vMapping: 'clamp',
+            generateMipmaps: false
+        }
     }, {
         id: 'HDR_ENV_MAP_1',
-        name: 'HDR Env Map 1',
         type: 'texture2D',
         properties: {
-            isLocal: true,
+            imageId: 'HDR_ENV_IMG_1',
+            name: 'HDR Env Map 1',
+            type: 'float',
             isHdr: true,
-            originalWidth: 512,
-            originalHeight: 256,
-            stream: false,
-            generateMipmaps: false,
             minFilter: 'linear',
             magFilter: 'linear',
-            vMapping: 'clamp'
-        },
-        resources: [{
-            path: `${prefix}third-party/model3d/HDR_Env1.png`,
-            contentType: 'image/png',
-            contentEncoding: 'identity',
-            properties: {
-                width: 512,
-                height: 256,
-                compression: 'none',
-                packingFormat: 'rgbe'
-            }
-        }]
+            vMapping: 'clamp',
+            generateMipmaps: false
+        }
     }, {
         id: 'HDR_ENV_MAP_2',
-        name: 'HDR Env Map 2',
         type: 'texture2D',
         properties: {
-            isLocal: true,
+            imageId: 'HDR_ENV_IMG_2',
+            name: 'HDR Env Map 2',
+            type: 'float',
             isHdr: true,
-            originalWidth: 256,
-            originalHeight: 128,
-            stream: false,
-            generateMipmaps: false,
             minFilter: 'linear',
             magFilter: 'linear',
-            vMapping: 'clamp'
-        },
-        resources: [{
-            path: `${prefix}third-party/model3d/HDR_Env2.png`,
-            contentType: 'image/png',
-            contentEncoding: 'identity',
-            properties: {
-                width: 256,
-                height: 128,
-                compression: 'none',
-                packingFormat: 'rgbe'
-            }
-        }]
+            vMapping: 'clamp',
+            generateMipmaps: false
+        }
     }, {
         id: 'HDR_ENV_MAP_CUBE_0',
-        name: 'HDR Cube Env Map 0',
         type: 'renderTextureCube',
         properties: {
+            name: 'HDR Cube Env Map 0',
             isHdr: true,
             type: 'float',
             width: 512,
@@ -224,9 +247,9 @@ function sceneEntities(prefix) {
         }
     }, {
         id: 'HDR_ENV_MAP_CUBE_1',
-        name: 'HDR Cube Env Map 1',
         type: 'renderTextureCube',
         properties: {
+            name: 'HDR Cube Env Map 1',
             isHdr: true,
             type: 'float',
             width: 256,
@@ -247,9 +270,9 @@ function sceneEntities(prefix) {
         }
     }, {
         id: 'HDR_ENV_MAP_CUBE_2',
-        name: 'HDR Cube Env Map 2',
         type: 'renderTextureCube',
         properties: {
+            name: 'HDR Cube Env Map 2',
             isHdr: true,
             type: 'float',
             width: 128,

@@ -80,151 +80,155 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _EffectComposer = __webpack_require__(62);
+	var _EffectComposer = __webpack_require__(63);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(63);
+	var _BloomPass = __webpack_require__(64);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(64);
+	var _BokehPass = __webpack_require__(65);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(65);
+	var _DotScreenPass = __webpack_require__(66);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(66);
+	var _FilmPass = __webpack_require__(67);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(67);
+	var _MaskPass = __webpack_require__(68);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(68);
+	var _RenderPass = __webpack_require__(69);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(69);
+	var _SavePass = __webpack_require__(70);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(70);
+	var _ShaderPass = __webpack_require__(71);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(109);
+	var _TexturePass = __webpack_require__(110);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(110);
+	var _AdaptiveToneMappingPass = __webpack_require__(111);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(111);
+	var _AnimationAsset = __webpack_require__(112);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(112);
+	var _ApplicationAsset = __webpack_require__(113);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(113);
+	var _AudioAsset = __webpack_require__(114);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _DocumentAsset = __webpack_require__(114);
+	var _DocumentAsset = __webpack_require__(115);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
+
+	var _ImageAsset = __webpack_require__(121);
+
+	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
+
+	var _VideoAsset = __webpack_require__(122);
+
+	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
 	var _MaterialAsset = __webpack_require__(17);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(120);
+	var _MeshGeometryAsset = __webpack_require__(123);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(122);
+	var _PrimitiveGeometryAsset = __webpack_require__(125);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(123);
+	var _PrefabAsset = __webpack_require__(126);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(124);
+	var _RenderTexture2DAsset = __webpack_require__(127);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(125);
+	var _RenderTextureCubeAsset = __webpack_require__(129);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _SceneAsset = __webpack_require__(126);
+	var _SceneAsset = __webpack_require__(130);
 
 	var _SceneAsset2 = _interopRequireDefault(_SceneAsset);
 
-	var _ShaderAsset = __webpack_require__(127);
+	var _ShaderAsset = __webpack_require__(131);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _ScriptAsset = __webpack_require__(133);
+	var _ScriptAsset = __webpack_require__(137);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _Texture2DAsset = __webpack_require__(135);
+	var _Texture2DAsset = __webpack_require__(139);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(136);
+	var _TextureCubeAsset = __webpack_require__(140);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _TextureVideoAsset = __webpack_require__(137);
-
-	var _TextureVideoAsset2 = _interopRequireDefault(_TextureVideoAsset);
-
-	var _Box3DObject = __webpack_require__(138);
+	var _Box3DObject = __webpack_require__(141);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(139);
+	var _CameraObject = __webpack_require__(142);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(140);
+	var _LightObject = __webpack_require__(143);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _SkinnedMeshObject = __webpack_require__(141);
+	var _SkinnedMeshObject = __webpack_require__(144);
 
 	var _SkinnedMeshObject2 = _interopRequireDefault(_SkinnedMeshObject);
 
-	var _StaticMeshObject = __webpack_require__(143);
+	var _StaticMeshObject = __webpack_require__(146);
 
 	var _StaticMeshObject2 = _interopRequireDefault(_StaticMeshObject);
 
-	var _ModelObject = __webpack_require__(144);
+	var _ModelObject = __webpack_require__(147);
 
 	var _ModelObject2 = _interopRequireDefault(_ModelObject);
 
-	var _APIUtilities = __webpack_require__(134);
+	var _APIUtilities = __webpack_require__(138);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(145);
+	var _DOMUtilities = __webpack_require__(148);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(115);
+	var _JSONLoader = __webpack_require__(116);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(146);
+	var _DevResourceLoader = __webpack_require__(149);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
 
@@ -379,12 +383,9 @@
 
 	// Assets
 
-
 	// Objects
 
-
 	// Utilities
-
 
 	Box3D.Engine = _Engine2.default;
 
@@ -404,6 +405,8 @@
 	Box3D.ApplicationAsset = _ApplicationAsset2.default;
 	Box3D.AudioAsset = _AudioAsset2.default;
 	Box3D.DocumentAsset = _DocumentAsset2.default;
+	Box3D.ImageAsset = _ImageAsset2.default;
+	Box3D.VideoAsset = _VideoAsset2.default;
 	Box3D.MaterialAsset = _MaterialAsset2.default;
 	Box3D.MeshGeometryAsset = _MeshGeometryAsset2.default;
 	Box3D.PrimitiveGeometryAsset = _PrimitiveGeometryAsset2.default;
@@ -415,7 +418,6 @@
 	Box3D.ScriptAsset = _ScriptAsset2.default;
 	Box3D.Texture2DAsset = _Texture2DAsset2.default;
 	Box3D.TextureCubeAsset = _TextureCubeAsset2.default;
-	Box3D.TextureVideoAsset = _TextureVideoAsset2.default;
 
 	Box3D.Box3DObject = _Box3DObject2.default;
 	Box3D.CameraObject = _CameraObject2.default;
@@ -12811,13 +12813,13 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -12840,7 +12842,6 @@
 	   * @param  {Function} callback The function to call when the event occurs.
 	   * @param  {Object}   context  The context in which the callback will be called.
 	   */
-
 
 	  _createClass(RuntimeEvents, [{
 	    key: 'on',
@@ -13044,11 +13045,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -13078,7 +13079,7 @@
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(59);
+	var _raf = __webpack_require__(60);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -13092,9 +13093,8 @@
 	// requstAnimationFrame polyfill only used in cases where native version is not
 	// available.
 
-
 	function getElement(obj) {
-	  var els = void 0;
+	  var els = undefined;
 	  if (obj && obj.jquery) {
 	    return obj.get(0);
 	  } else if (_lodash2.default.isString(obj)) {
@@ -13183,7 +13183,6 @@
 	   * listen to global events.
 	   * @param {Function} [callback] Called when initialization is complete.
 	   */
-
 
 	  _createClass(Engine, [{
 	    key: 'initialize',
@@ -53875,11 +53874,11 @@
 	* @module Box3D
 	*/
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -53932,7 +53931,6 @@
 	   * @param {Object} newEngine A reference to the engine to register.
 	   */
 
-
 	  _createClass(EntityDispatcher, [{
 	    key: 'addEngine',
 	    value: function addEngine(newEngine) {
@@ -53955,7 +53953,7 @@
 	  }, {
 	    key: 'removeEngine',
 	    value: function removeEngine(engine) {
-	      var index = void 0;
+	      var index = undefined;
 	      if (!engine) {
 	        return;
 	      }
@@ -54154,7 +54152,7 @@
 	  }, {
 	    key: 'dispatchCreatedAsset',
 	    value: function dispatchCreatedAsset(jsonDescriptor) {
-	      var json = void 0;
+	      var json = undefined;
 
 	      if (this.entities[jsonDescriptor.id]) {
 	        json = this.entities[jsonDescriptor.id];
@@ -54177,6 +54175,9 @@
 	          components: jsonDescriptor.components || [],
 	          previousComponents: []
 	        };
+	        if (jsonDescriptor.representations) {
+	          json.representations = jsonDescriptor.representations;
+	        }
 	        if (jsonDescriptor.originalType) {
 	          json.originalType = jsonDescriptor.originalType;
 	        }
@@ -54208,7 +54209,7 @@
 	  }, {
 	    key: 'dispatchCreatedObject',
 	    value: function dispatchCreatedObject(jsonDescriptor) {
-	      var json = void 0;
+	      var json = undefined;
 
 	      if (this.entities[jsonDescriptor.id]) {
 	        json = this.entities[jsonDescriptor.id];
@@ -54463,7 +54464,7 @@
 	  }, {
 	    key: 'onRemoteEntityUpdate',
 	    value: function onRemoteEntityUpdate(entityDesc) {
-	      var box3dEntity = void 0;
+	      var box3dEntity = undefined;
 	      var assets = this.engines[0].assetRegistry.assets;
 	      //If the entity is an asset.
 	      if (entityDesc.id === entityDesc.parentAssetId || !entityDesc.parentAssetId) {
@@ -54531,11 +54532,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -54607,6 +54608,7 @@
 	    _this.Shaders = new _BaseRegistry2.default(Box3D.ShaderAsset);
 	    _this.Materials = new _MaterialRegistry2.default();
 	    _this.Textures = new _TextureRegistry2.default();
+	    _this.Images = new _BaseRegistry2.default(Box3D.BaseImageAsset);
 	    _this.Animations = new _BaseRegistry2.default(Box3D.AnimationAsset);
 	    _this.Audio = new _BaseRegistry2.default(Box3D.AudioAsset);
 	    _this.initTimeoutId = undefined;
@@ -54620,6 +54622,7 @@
 	      this.box3DRuntime = box3DRuntime;
 
 	      this.Scripts.initialize(box3DRuntime);
+	      this.Images.initialize(box3DRuntime);
 	      this.Textures.initialize(box3DRuntime);
 	      this.Shaders.initialize(box3DRuntime);
 	      this.Materials.initialize(box3DRuntime);
@@ -54660,6 +54663,8 @@
 	      this.Shaders = undefined;
 	      this.Textures.uninitialize();
 	      this.Textures = undefined;
+	      this.Images.uninitialize();
+	      this.Images = undefined;
 	      this.Animations.uninitialize();
 	      this.Animations = undefined;
 	      this.Audio.uninitialize();
@@ -54920,16 +54925,18 @@
 	          return Box3D.MeshGeometryAsset;
 	        case 'primitiveGeometry':
 	          return Box3D.PrimitiveGeometryAsset;
+	        case 'video':
+	          return Box3D.VideoAsset;
+	        case 'image':
+	          return Box3D.ImageAsset;
 	        case 'texture2D':
 	          return Box3D.Texture2DAsset;
-	        case 'renderTexture2D':
-	          return Box3D.RenderTexture2DAsset;
 	        case 'textureCube':
 	          return Box3D.TextureCubeAsset;
+	        case 'renderTexture2D':
+	          return Box3D.RenderTexture2DAsset;
 	        case 'renderTextureCube':
 	          return Box3D.RenderTextureCubeAsset;
-	        case 'textureVideo':
-	          return Box3D.TextureVideoAsset;
 	        case 'script':
 	          return Box3D.ScriptAsset;
 	        case 'model':
@@ -54977,8 +54984,11 @@
 	        case 'renderTexture2D':
 	        case 'textureCube':
 	        case 'renderTextureCube':
-	        case 'textureVideo':
 	          return this.Textures;
+
+	        case 'image':
+	        case 'video':
+	          return this.Images;
 
 	        case 'animation':
 	          return this.Animations;
@@ -55051,13 +55061,13 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -55699,7 +55709,6 @@
 	  }
 	};
 
-
 	window.Box3D.Box3DAsset = Box3DAsset;
 	exports.default = Box3DAsset;
 
@@ -55709,13 +55718,13 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -56317,7 +56326,7 @@
 	      // Verify property value against schema.
 	      if (this.constructor.schema[propertyName]) {
 	        var value = valueObj.value;
-	        var newValue = void 0;
+	        var newValue = undefined;
 	        switch (this.constructor.schema[propertyName].type) {
 	          case 'string':
 	          case 'id':
@@ -56411,7 +56420,6 @@
 	    }
 	  }, {
 	    key: 'setProperty',
-
 
 	    /**
 	     * Set a new or existing property for this object.
@@ -56785,7 +56793,7 @@
 	  }, {
 	    key: 'getDefaultProperty',
 	    value: function getDefaultProperty(propertyName) {
-	      var value = void 0;
+	      var value = undefined;
 	      var schemaDef = this.constructor.schema[propertyName];
 	      value = schemaDef ? schemaDef.default : undefined;
 
@@ -57703,7 +57711,6 @@
 	  }, {
 	    key: 'isUnloaded',
 
-
 	    /**
 	     * Returns true iff the entity is completely unloaded.
 	     * @method isUnloaded
@@ -57917,7 +57924,7 @@
 	      var isLoaded = true;
 	      for (var id in dependencies) {
 	        asset = this.box3DRuntime.getEntityById(id);
-	        if (asset && !asset.isBaseLoaded()) {
+	        if (asset && !asset.isLoaded()) {
 	          isLoaded = false;
 	          break;
 	        }
@@ -58000,6 +58007,8 @@
 
 	      newObjectJSON.id = options.id;
 	      newObjectJSON.sid = options.sid !== undefined ? options.sid : this.get('sid');
+
+	      newObjectJSON.representations = options.representations !== undefined ? options.representations : this.get('representations');
 
 	      //Only copy the prefab links if the top-level of the instance is being copied
 	      //If the top-level is copied, set the flag so that recursive calls will copy links.
@@ -58584,10 +58593,14 @@
 	    type: 'string',
 	    description: '',
 	    default: 'unnamed'
+	  },
+	  userData: {
+	    type: 'object',
+	    description: '',
+	    default: {}
 	  }
 	};
 	Box3DEntity._setValueObj = { value: null };
-
 
 	window.Box3D.Box3DEntity = Box3DEntity;
 
@@ -59124,8 +59137,8 @@
 	        });
 	      }
 	      // Call awake() on each component that was just added
-	      for (var _i = 0; _i < addedComponentIds.length; _i++) {
-	        var component = this.getById(addedComponentIds[_i]);
+	      for (var i = 0; i < addedComponentIds.length; i++) {
+	        var component = this.getById(addedComponentIds[i]);
 	        if (typeof component.awake === 'function') {
 	          component.awake();
 	        }
@@ -59133,8 +59146,8 @@
 	      //If the object is already loaded when the component is created,
 	      //explicitly load the component
 	      if (!this.box3DEntity.isComponentsUnloaded()) {
-	        for (var _i2 = 0; _i2 < addedComponentIds.length; _i2++) {
-	          this.loadComponent(addedComponentIds[_i2]);
+	        for (var i = 0; i < addedComponentIds.length; i++) {
+	          this.loadComponent(addedComponentIds[i]);
 	        }
 	      }
 	    }
@@ -59297,9 +59310,9 @@
 	    value: function createComponentObject(componentId, componentDesc, fn) {
 	      var _this9 = this;
 
-	      var classConstructor = void 0,
-	          scriptName = void 0,
-	          component = void 0;
+	      var classConstructor = undefined,
+	          scriptName = undefined,
+	          component = undefined;
 
 	      var scriptId = componentDesc.scriptId;
 	      var enabled = !!componentDesc.enabled;
@@ -59495,11 +59508,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -59679,13 +59692,13 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -59942,7 +59955,6 @@
 	  }
 	};
 
-
 	Box3D.MaterialRegistry = MaterialRegistry;
 	exports.default = MaterialRegistry;
 
@@ -60002,16 +60014,10 @@
 	   * @type {String}
 	   */
 
-
 	  _createClass(MaterialAsset, [{
 	    key: 'registerDependencies',
 
-
-	    /**
-	     * Rebuild dependencies for this material.
-	     * @method registerDependencies
-	     * @private
-	     */
+	    /** @inheritdoc */
 	    value: function registerDependencies() {
 	      var textures = this.getReferencedAssetsList(true);
 	      // Register fresh list of dependencies
@@ -60047,7 +60053,7 @@
 	      if (shaderParams[propertyName]) {
 	        var type = shaderParams[propertyName].type;
 	        var value = valueObj.value;
-	        var newValue = void 0;
+	        var newValue = undefined;
 	        // Handle scalar values
 	        if (type === 't' && (_lodash2.default.isString(value) || value === null) || type === 'f' && _lodash2.default.isNumber(value) || type === 'b' && _lodash2.default.isBoolean(value) || type === 'i' && _lodash2.default.isNumber(value) && Math.round(value) === value || type === 'opt' && shaderParams[propertyName].options.hasOwnProperty(value)) {
 
@@ -60536,8 +60542,8 @@
 	        this._updateDerivatives();
 	        this.box3DRuntime.needsRender = true;
 	      } else {
-	        var _shaderAsset = this.getShader();
-	        var shaderParams = _shaderAsset.getProperty('parameters');
+	        var shaderAsset = this.getShader();
+	        var shaderParams = shaderAsset.getProperty('parameters');
 	        var transparencyNeedsUpdate = false;
 	        var derivativesNeedsUpdate = false;
 	        var definesNeedUpdate = false;
@@ -60554,7 +60560,7 @@
 	              // If there are any parameters that are dependent on the value
 	              // of this one, we'll need to break out and rebuild preprocessor
 	              // defines.
-	              if (_shaderAsset.getDependentParameters(p).length || shaderParams[p].forceUpdate) {
+	              if (shaderAsset.getDependentParameters(p).length || shaderParams[p].forceUpdate) {
 	                definesNeedUpdate = true;
 	                break;
 	              }
@@ -60813,7 +60819,7 @@
 	                if (!tex.isLoaded()) {
 	                  //Assign the missing texture so that this material can render cleanly until
 	                  //the real texture loads.
-	                  var standinTex = void 0;
+	                  var standinTex = undefined;
 	                  if (!shaderParams[key].textureUsage) {
 	                    if (!shaderParams[key].textureType) {
 	                      standinTex = MaterialAsset.STANDIN_TEXTURE_WHITE;
@@ -61053,7 +61059,6 @@
 	  }
 	});
 
-
 	window.Box3D.MaterialAsset = MaterialAsset;
 	// export default MaterialAsset;
 	module.exports = MaterialAsset;
@@ -61064,11 +61069,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -61225,13 +61230,13 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -61257,8 +61262,6 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var Box3D = window.Box3D = window.Box3D || {};
-
 	var BaseTextureAsset = function (_Box3DAsset) {
 	  _inherits(BaseTextureAsset, _Box3DAsset);
 
@@ -61278,11 +61281,52 @@
 
 	      this.loadComponents = true;
 	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      var _this2 = this;
+
+	      var imageAsset = this.getImage();
+	      if (imageAsset) {
+	        imageAsset.when('load', function () {
+	          _this2.createTextureData(imageAsset.runtimeData);
+	          if (typeof callback === 'function') {
+	            callback.call(_this2);
+	          }
+	        });
+	        if (imageAsset.isUnloaded()) {
+	          imageAsset.load();
+	        }
+	      }
+	    }
+
+	    /**
+	     * Create the three.js texture object using the loaded image
+	     * @private
+	     * @param  {Object} image The runtime data from the image asset
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'createTextureData',
+	    value: function createTextureData() /*image*/{}
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'registerDependencies',
+	    value: function registerDependencies() {
+	      var image = this.getImage();
+	      if (image) {
+	        this.registerDependency(image.id);
+	      }
+	    }
 	  }, {
 	    key: 'unload',
 	    value: function unload(options) {
-	      // abort any xhr request associated with this
-	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
 
 	      if (this.runtimeData) {
 	        this.box3DRuntime.trigger('textureUnloaded', this.id);
@@ -61322,13 +61366,8 @@
 	        texture.anisotropy = this.getProperty('anisotropy');
 	      }
 
-	      if (changes.hasOwnProperty('premultiplyAlpha')) {
-	        texture.premultiplyAlpha = this.getProperty('premultiplyAlpha');
-	      }
-
 	      if (changes.hasOwnProperty('generateMipmaps')) {
-	        var generateMipmaps = this.getProperty('generateMipmaps');
-	        texture.generateMipmaps = generateMipmaps && this.isPowerOfTwo() && !this.isCompressed();
+	        texture.generateMipmaps = this.getProperty('generateMipmaps');
 	      }
 
 	      if (changes.hasOwnProperty('minFilter')) {
@@ -61337,196 +61376,73 @@
 	      if (changes.hasOwnProperty('magFilter')) {
 	        texture.magFilter = BaseTextureAsset.FILTER[this.getProperty('magFilter')];
 	      }
-
-	      if (this.isHdr() && this.packingFormat) {
-	        this._unpackToHdr();
+	      // If we were using linear filtering but our hardware doesn't support it,
+	      // we'll turn it off. This would only happen for floating point textures.
+	      if (this.isHdr() && !this.getHdrLinearFilter()) {
+	        texture.minFilter = _three2.default.NearestFilter;
+	        texture.magFilter = _three2.default.NearestFilter;
 	      }
-
 	      this.box3DRuntime.needsRender = true;
 	    }
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded(changes) {
-	      if (changes.useHardwareCompression !== undefined) {
-	        this.defaultResource = undefined;
-	        this.defaultResources = undefined;
-	      }
 	      this.box3DRuntime.trigger('textureChanged', this.id, changes);
 	    }
-	  }, {
-	    key: '_unpackToHdr',
-	    value: function _unpackToHdr() {
-	      _log2.default.warn('Must implement _unpackToHdr for this texture type.');
-	      return;
-	    }
 
 	    /**
-	     * Returns the byte size of the data that has already been loaded by this asset and its
-	     * hierarchy.
-	     * @public
-	     * @method getDataSizeLoaded
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @return {Integer} The number of bytes of data.
+	     * Return the layout type of the texture. The different possibilities
+	     * are defined in BaseImageAsset.LAYOUT. This value comes from the image
+	     * asset used by this texture or, in the case of renderTextures, is a
+	     * property of the texture.
+	     * @return {Integer} The layout enum.
 	     */
 
 	  }, {
-	    key: 'getDataSizeLoaded',
-	    value: function getDataSizeLoaded(dependencyType) {
-	      if (!dependencyType || dependencyType === 'textures') {
-	        return this.loadedBytes;
+	    key: 'getLayout',
+	    value: function getLayout() {
+	      var imageAsset = this.getImage();
+	      if (imageAsset) {
+	        return imageAsset.getProperty('layout');
 	      } else {
-	        return 0;
+	        throw new Error('Texture doesn\'t reference an Image asset');
 	      }
 	    }
 
 	    /**
-	     * Returns the download size of this texture. Specify filters to query the
-	     * desired texture. If no filters are specified, the default texture for the
-	     * current device will be queried.
-	     * @method getDataSizeDownload
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} params Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
+	     * Returns the width of the texture.
+	     * @return {Integer} The texture width.
 	     */
 
 	  }, {
-	    key: 'getDataSizeDownload',
-	    value: function getDataSizeDownload(dependencyType) {
-	      if (!dependencyType || dependencyType === 'textures') {
-	        return this.get('bufferSize') || 1024;
+	    key: 'getWidth',
+	    value: function getWidth() {
+	      var imageAsset = this.getImage();
+	      if (imageAsset) {
+	        return imageAsset.getWidth();
 	      } else {
-	        return 0;
+	        throw new Error('Texture doesn\'t reference an Image asset');
 	      }
 	    }
 
 	    /**
-	     * Returns the total amount of GPU memory occupied by this texture. Specify
-	     * filters to query the desired texture. If no filters are specified, the
-	     * default texture for the current device will be queried.
-	     * @method getDataSizeTextureInMemory
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @param {Object} overrideParams Specify parameters to narrow down the type of asset to
-	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
-	     * @return {Integer} The number of bytes of data.
+	     * Returns the height of the texture.
+	     * @return {Integer} The texture height.
 	     */
 
 	  }, {
-	    key: 'getDataSizeInMemory',
-	    value: function getDataSizeInMemory(dependencyType, overrideParams) {
-	      var width;
-	      var height;
-	      var compression;
-	      var numChannels;
-	      var channelSize;
-	      var dataType;
-
-	      if (dependencyType && dependencyType !== 'textures') {
-	        return 0;
-	      }
-
-	      width = this.getWidth();
-	      height = this.getHeight();
-	      overrideParams = overrideParams || {};
-	      compression = overrideParams.compression || this.getCompressionFormat();
-
-	      if (compression !== 'none') {
-	        return this.getDataSizeDownload();
-	      }
-
-	      numChannels = this.getNumChannels(overrideParams.format);
-	      dataType = overrideParams.type || this.getDataType();
-
-	      switch (dataType) {
-	        case 'float':
-	        case 'uInt':
-	        case 'int':
-	          channelSize = 4;
-	          break;
-
-	        case 'short':
-	        case 'uShort':
-	          channelSize = 2;
-	          break;
-
-	        case 'uByte':
-	        case 'byte':
-	          channelSize = 1;
-	          break;
-
-	        // The following types dictate the bpp directly.
-	        case 'uShort4444':
-	        case 'uShort5551':
-	        case 'uShort565':
-	          return width * height * 2;
-	      }
-	      return width * height * channelSize * numChannels;
-	    }
-
-	    /** Returns the maximum texture size supported by the device.
-	     * @return {Integer} The maximum texture size.
-	     */
-
-	  }, {
-	    key: 'getMaxTextureSize',
-	    value: function getMaxTextureSize() {
-	      return Box3D.isMobile() ? 1024 : this.box3DRuntime.getGPUCapability('MAX_TEXTURE_SIZE');
-	    }
-
-	    /**
-	     * Returns the pixel format of the texture. e.g. THREE.RGBAFormat, THREE.LuminanceFormat, etc.
-	     * @return {String} The texture pixel format.
-	     */
-
-	  }, {
-	    key: 'getFormat',
-	    value: function getFormat() {
-	      var format = this.getProperty('format');
-	      return format;
-	    }
-
-	    /**
-	     * Returns the data type of the texture. e.g. THREE.UnsignedByteType, THREE.FloatType, etc.
-	     * @return {Number} The texture pixel type.
-	     */
-
-	  }, {
-	    key: 'getDataType',
-	    value: function getDataType() {
-	      var dataType = this.getProperty('type');
-	      return dataType;
-	    }
-
-	    /**
-	     * Return the number of color or luminance channels in the texture. An optional override lets
-	     * you query the value for a different pixel format.
-	     * @method getNumChannels
-	     * @public
-	     * @param {Number} overrideFormat Query the number of channels for a different pixel format
-	     * by specifying a format here.
-	     * @return {Number} Returns the number of color or luminance channels in the texture.
-	     */
-
-	  }, {
-	    key: 'getNumChannels',
-	    value: function getNumChannels(overrideFormat) {
-	      var format = overrideFormat || this.getFormat();
-	      switch (format) {
-	        case 'alpha':
-	        case 'luminance':
-	          return 1;
-	        case 'luminanceAlpha':
-	          return 2;
-	        case 'rgb':
-	          return 3;
-	        case 'rgba':
-	          return 4;
-	        default:
-	          return 0;
+	    key: 'getHeight',
+	    value: function getHeight() {
+	      var imageAsset = this.getImage();
+	      if (imageAsset) {
+	        return imageAsset.getHeight();
+	      } else {
+	        throw new Error('Texture doesn\'t reference an Image asset');
 	      }
 	    }
 
 	    /**
+	     * @method getNumMips
 	     * @public
 	     * @return {Number} Returns the total number of mip levels used by this texture.
 	     */
@@ -61534,11 +61450,12 @@
 	  }, {
 	    key: 'getNumMips',
 	    value: function getNumMips() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-	      var max = Math.max(width, height);
-	      max = Math.max(max, 1);
-	      return Math.floor(Math.log2(max));
+	      var imageAsset = this.getImage();
+	      if (imageAsset) {
+	        return imageAsset.getNumMips();
+	      } else {
+	        throw new Error('Texture doesn\'t reference an Image asset');
+	      }
 	    }
 
 	    /**
@@ -61551,102 +61468,42 @@
 	    value: function isHdr() {
 	      return !!this.getProperty('isHdr');
 	    }
-
-	    /**
-	     * @public
-	     * @return {Boolean} True iff the texture is using a hardware compression format.
-	     */
-
 	  }, {
-	    key: 'isCompressed',
-	    value: function isCompressed() {
-	      if (this.runtimeData) {
-	        return this.runtimeData instanceof _three2.default.CompressedTexture;
+	    key: 'getImage',
+	    value: function getImage() {
+	      return this.box3DRuntime.assetRegistry.getAssetById(this.getProperty('imageId'));
+	    }
+	  }, {
+	    key: 'getHdrTargetType',
+	    value: function getHdrTargetType() {
+	      var renderer = this.box3DRuntime.getThreeRenderer();
+	      var extensions = renderer.extensions;
+	      if (extensions.get('OES_texture_half_float')) {
+	        return _three2.default.HalfFloatType;
+	      } else if (extensions.get('OES_texture_float')) {
+	        return _three2.default.FloatType;
 	      } else {
-	        return this.getProperty('useHardwareCompression');
+	        return _three2.default.UnsignedIntType;
 	      }
 	    }
-
-	    /**
-	     * @public
-	     * @return {Boolean} True iff both dimensions of the texture are a power of two.
-	     */
-
 	  }, {
-	    key: 'isPowerOfTwo',
-	    value: function isPowerOfTwo() {
-	      var width = this.getWidth();
-	      var height = this.getHeight();
-	      return _three2.default.Math.isPowerOfTwo(width) && _three2.default.Math.isPowerOfTwo(height);
-	    }
-
-	    /**
-	    * Returns the preferred texture compression format for the device.
-	    * @return {String} 'atc', 'dxt', 'pvrtc' or 'none'
-	    */
-
-	  }, {
-	    key: 'getCompressionFormat',
-	    value: function getCompressionFormat() {
-	      var compression = 'none';
-
-	      // If a compressed format is preferred, get one based on the device caps.
-	      if (this.getProperty('useHardwareCompression')) {
-	        if (this.box3DRuntime.supportsCompressedTextureS3TC()) {
-	          compression = 'dxt';
-	        } else if (this.box3DRuntime.supportsCompressedTexturePVRTC()) {
-	          compression = 'pvrtc';
-	        } else if (this.box3DRuntime.supportsCompressedTextureATC()) {
-	          compression = 'atc';
-	        }
+	    key: 'getHdrLinearFilter',
+	    value: function getHdrLinearFilter() {
+	      var renderer = this.box3DRuntime.getThreeRenderer();
+	      var extensions = renderer.extensions;
+	      var targetType = this.getHdrTargetType();
+	      switch (targetType) {
+	        case _three2.default.HalfFloatType:
+	          return !!extensions.get('OES_texture_half_float_linear');
+	        case _three2.default.FloatType:
+	          return !!extensions.get('OES_texture_float_linear');
+	        default:
+	          return true;
 	      }
-	      return compression;
-	    }
-
-	    /**
-	     * Returns the width of the texture.
-	     * @return {Integer} The texture width.
-	     */
-
-	  }, {
-	    key: 'getWidth',
-	    value: function getWidth() {
-	      var width = this.getProperty('width');
-	      if (_lodash2.default.isUndefined(width)) {
-	        width = this.getProperty('originalWidth');
-	        if (_lodash2.default.isUndefined(width) && this.runtimeData) {
-	          width = this.runtimeData.width;
-	        }
-	        if (width > this.getMaxTextureSize()) {
-	          width = this.getMaxTextureSize();
-	        }
-	      }
-	      return width || 1;
-	    }
-
-	    /**
-	     * Returns the height of the texture.
-	     * @return {Integer} The texture height.
-	     */
-
-	  }, {
-	    key: 'getHeight',
-	    value: function getHeight() {
-	      var height = this.getProperty('height');
-	      if (_lodash2.default.isUndefined(height)) {
-	        height = this.getProperty('originalHeight');
-	        if (_lodash2.default.isUndefined(height) && this.runtimeData) {
-	          height = this.runtimeData.height;
-	        }
-	        if (height > this.getMaxTextureSize()) {
-	          height = this.getMaxTextureSize();
-	        }
-	      }
-	      return height || 1;
 	    }
 	  }, {
-	    key: 'createCompressedTextureData',
-	    value: function createCompressedTextureData(buffer) {
+	    key: 'createDxtTextureData',
+	    value: function createDxtTextureData(buffer) {
 	      var texture = new _three2.default.CompressedTexture(),
 	          dds = this._parseDDS(buffer, true),
 	          iFace,
@@ -61655,7 +61512,6 @@
 
 	      texture.format = dds.format;
 	      texture.generateMipmaps = false;
-	      texture.needsUpdate = true;
 
 	      if (dds.isCubemap) {
 	        texture.flipY = false;
@@ -61732,7 +61588,6 @@
 	      }
 
 	      var DDS_MAGIC = 0x20534444,
-
 
 	      //DDSD_CAPS = 0x1,
 	      //DDSD_HEIGHT = 0x2,
@@ -61913,21 +61768,6 @@
 	  return BaseTextureAsset;
 	}(_Box3DAsset3.default);
 
-	BaseTextureAsset.LAYOUT = {
-	  normal: 101,
-	  stereo2dOverUnder: 102, // ABOVE-BELOW
-	  stereo2dLeftRight: 103, // PARALLEL-EYED
-	  stereo2dRightLeft: 104, // CROSS-EYED
-	  stereoCubeHorizontal: 105
-	};
-	BaseTextureAsset.FORMAT = {
-	  alpha: _three2.default.AlphaFormat,
-	  rgb: _three2.default.RGBFormat,
-	  rgba: _three2.default.RGBAFormat,
-	  rgbe: _three2.default.RGBEFormat,
-	  luminance: _three2.default.LuminanceFormat,
-	  luminanceAlpha: _three2.default.LuminanceAlphaFormat
-	};
 	BaseTextureAsset.ADDRESS_MODE = {
 	  wrap: _three2.default.RepeatWrapping,
 	  clamp: _three2.default.ClampToEdgeWrapping,
@@ -61941,30 +61781,7 @@
 	  linearWithNearestMipmap: _three2.default.LinearMipMapNearestFilter,
 	  linearWithLinearMipmap: _three2.default.LinearMipMapLinearFilter
 	};
-	BaseTextureAsset.TYPE = {
-	  uByte: _three2.default.UnsignedByteType,
-	  byte: _three2.default.ByteType,
-	  short: _three2.default.ShortType,
-	  uShort: _three2.default.UnsignedShortType,
-	  int: _three2.default.IntType,
-	  uInt: _three2.default.UnsignedIntType,
-	  float: _three2.default.FloatType,
-	  halfFloat: _three2.default.HalfFloatType,
-	  uShort4444: _three2.default.UnsignedShort4444Type,
-	  uShort5551: _three2.default.UnsignedShort5551Type,
-	  uShort565: _three2.default.UnsignedShort565Type
-	};
 	BaseTextureAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
-	  format: {
-	    type: 'string',
-	    description: '',
-	    default: 'rgba'
-	  },
-	  type: {
-	    type: 'string',
-	    description: '',
-	    default: 'uByte'
-	  },
 	  uMapping: {
 	    type: 'string',
 	    description: '',
@@ -61995,48 +61812,15 @@
 	    description: '',
 	    default: true
 	  },
-	  premultiplyAlpha: {
-	    type: 'boolean',
-	    description: '',
-	    default: false
-	  },
-	  layout: {
-	    type: 'string',
-	    description: '',
-	    default: 'normal'
-	  },
-	  stream: {
-	    type: 'boolean',
-	    description: '',
-	    default: true
-	  },
 	  isHdr: {
 	    type: 'boolean',
 	    default: false
 	  },
-	  originalWidth: {
-	    type: 'integer',
-	    description: 'The width, in pixels, of the original image file.',
-	    default: undefined
-	  },
-	  originalHeight: {
-	    type: 'integer',
-	    description: 'The height, in pixels, of the original image file.',
-	    default: undefined
-	  },
-	  // Properties for defining where the data is loaded from
-	  // TODO - Clean this up. Perhaps a single 'location' property that
-	  // contains the necessary info inside.
-	  isLocal: {
-	    type: 'boolean',
-	    default: false
-	  },
-	  filename: {
+	  imageId: {
 	    type: 'string',
-	    default: ''
+	    default: null
 	  }
 	});
-
 
 	window.Box3D.BaseTextureAsset = BaseTextureAsset;
 	exports.default = BaseTextureAsset;
@@ -62076,13 +61860,13 @@
 	*/
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -62131,7 +61915,6 @@
 	   * @param  {Object} componentDef    The component definition
 	   * @param  {Function} constructor   The constructor function
 	   */
-
 
 	  _createClass(ScriptRegistry, [{
 	    key: 'initialize',
@@ -62209,7 +61992,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(24),__webpack_require__(41),__webpack_require__(25),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(22),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58) 
+	  __webpack_require__(24),__webpack_require__(41),__webpack_require__(25),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(22),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(58),__webpack_require__(59) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
 	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
@@ -62286,7 +62069,7 @@
 	        "default": null,
 	        "filter": {
 	          "audio": true,
-	          "textureVideo": true
+	          "video": true
 	        }
 	      }
 	    },
@@ -66351,11 +66134,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -66899,11 +66682,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -66949,7 +66732,6 @@
 	   * @method getId
 	   * @return {String} the key for this component
 	   */
-
 
 	  _createClass(Box3DComponent, [{
 	    key: 'getId',
@@ -67557,11 +67339,11 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -67681,11 +67463,11 @@
 	 */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -68109,11 +67891,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -68492,11 +68274,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _Box3DComponent2 = __webpack_require__(23);
 
@@ -68592,11 +68374,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -68756,7 +68538,6 @@
 	        case 'textureCube':
 	        case 'texture2D':
 	        case 'renderTexture2D':
-	        case 'textureVideo':
 	          this.textureRegistryById[texture.id] = texture;
 	      }
 	    }
@@ -68784,7 +68565,6 @@
 
 	          case 'texture2D':
 	          case 'renderTexture2D':
-	          case 'textureVideo':
 	            this.material2D.uniforms.tDiffuse.value = this.currentTexture.runtimeData;
 	            break;
 	        }
@@ -68824,7 +68604,7 @@
 	  }, {
 	    key: 'updateViewport',
 	    value: function updateViewport() {
-	      var percent = void 0;
+	      var percent = undefined;
 	      var cWidth = this.getRuntime().getRenderer().getWidth();
 	      var cHeight = this.getRuntime().getRenderer().getHeight();
 
@@ -68924,7 +68704,6 @@
 	        switch (this.currentTexture.type) {
 	          case 'texture2D':
 	          case 'renderTexture2D':
-	          case 'textureVideo':
 	            renderer.setViewport(this._x, this._y, this._width, this._height);
 	            renderer.render(this.scene2D, this.camera2D);
 	            break;
@@ -69078,11 +68857,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -69223,11 +69002,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -69320,11 +69099,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -69380,7 +69159,6 @@
 	  /**
 	   * Called immediately after after component creation
 	   */
-
 
 	  _createClass(EventHandler, [{
 	    key: 'init',
@@ -69496,11 +69274,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -69757,11 +69535,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -69834,7 +69612,6 @@
 	  /**
 	   * Called immediately after after component creation
 	   */
-
 
 	  _createClass(FreeCamera, [{
 	    key: 'init',
@@ -70313,11 +70090,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _Box3DComponent2 = __webpack_require__(23);
 
@@ -70435,11 +70212,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -70799,11 +70576,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -71875,11 +71652,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _Box3DComponent2 = __webpack_require__(23);
 
@@ -72488,11 +72265,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -72653,11 +72430,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -72915,11 +72692,11 @@
 	/* eslint-enable*/
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -72957,7 +72734,6 @@
 	  /**
 	   * Called immediately after after component creation
 	   */
-
 
 	  _createClass(ObjectAnimator, [{
 	    key: 'init',
@@ -73525,7 +73301,7 @@
 	 *  'description': 'Audio or video asset',
 	 *  'default': null,
 	 *  'type': 'asset',
-	 *  'filter': { 'audio': true, 'textureVideo': true }
+	 *  'filter': { 'audio': true, 'video': true }
 	 * }
 	 * @vevent local playAudio {'scope': 'local', 'action': true, 'category': 'Audio', 'parameters': [
 	 *   {'name': 'offset', 'type': 'f', 'description': 'Defined in seconds', 'default': 0}
@@ -73540,11 +73316,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -73651,7 +73427,7 @@
 	      }
 
 	      // Always stream video assets.
-	      this.isVideo = this.asset instanceof Box3D.TextureVideoAsset;
+	      this.isVideo = this.asset instanceof Box3D.VideoAsset;
 	      if (this.isVideo) {
 	        this.stream = true;
 	      }
@@ -74026,11 +73802,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -74916,11 +74692,11 @@
 	*/
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -75108,11 +74884,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -75146,7 +74922,6 @@
 
 	    _this.time = 0;
 	    _this.target = new _three2.default.Quaternion();
-	    _this.tempQuat = new _three2.default.Quaternion();
 
 	    _this.axes = {
 	      '+X': new _three2.default.Vector3(1, 0, 0),
@@ -75159,50 +74934,21 @@
 	    return _this;
 	  }
 
-	  /**
-	   * Get the right vector from a matrix
-	   * @param {Matrix4} matrix The matrix to extract a right vector from
-	   * @returns {Vector3} A right vector extracted from the matrix
-	   */
-
-
 	  _createClass(PreviewAxisRotation, [{
 	    key: 'getRightVector',
 	    value: function getRightVector(matrix) {
 	      return new _three2.default.Vector3(matrix.elements[0], matrix.elements[1], matrix.elements[2]);
 	    }
-
-	    /**
-	     * Extract the up vector from a matrix
-	     * @param {Matrix4} matrix The matrix to extract from
-	     * @returns {Vector3} The extracted up vector
-	     */
-
 	  }, {
 	    key: 'getUpVector',
 	    value: function getUpVector(matrix) {
 	      return new _three2.default.Vector3(matrix.elements[4], matrix.elements[5], matrix.elements[6]);
 	    }
-
-	    /**
-	     * Extract the forward vector from a matrix
-	     * @param {Matrix4} matrix The matrix to extract from
-	     * @returns {Vector3} The extracted forward vector
-	     */
-
 	  }, {
 	    key: 'getForwardVector',
 	    value: function getForwardVector(matrix) {
 	      return new _three2.default.Vector3(matrix.elements[8], matrix.elements[9], matrix.elements[10]);
 	    }
-
-	    /**
-	     * Set the right vector of a Matrix
-	     * @param {Matrix4} matrix The matrix who's right vector we want to set
-	     * @param {Vector3} vector The vector to set the matrix to
-	     * @returns {void}
-	     */
-
 	  }, {
 	    key: 'setRightVector',
 	    value: function setRightVector(matrix, vector) {
@@ -75210,14 +74956,6 @@
 	      matrix.elements[1] = vector.y;
 	      matrix.elements[2] = vector.z;
 	    }
-
-	    /**
-	     * Set the up vector of a Matrix
-	     * @param {Matrix4} matrix The matrix who's up vector we want to set
-	     * @param {Vector3} vector The vector to set the matrix to
-	     * @returns {void}
-	     */
-
 	  }, {
 	    key: 'setUpVector',
 	    value: function setUpVector(matrix, vector) {
@@ -75225,14 +74963,6 @@
 	      matrix.elements[5] = vector.y;
 	      matrix.elements[6] = vector.z;
 	    }
-
-	    /**
-	     * Set the forward vector of a Matrix
-	     * @param {Matrix4} matrix The matrix who's forward vector we want to set
-	     * @param {Vector3} vector The vector to set the matrix to
-	     * @returns {void}
-	     */
-
 	  }, {
 	    key: 'setForwardVector',
 	    value: function setForwardVector(matrix, vector) {
@@ -75261,7 +74991,6 @@
 	    * @param string up The up axis key
 	    * @param string forward The forward axis key
 	    * @param bool transition Whether or not to trigger a smooth transition
-	    * @returns {void}
 	    */
 
 	  }, {
@@ -75269,8 +74998,7 @@
 	    value: function setAxes(up, forward, transition) {
 	      var upAxis = this.axes[up];
 	      var forwardAxis = this.axes[forward];
-	      var rightVec = void 0,
-	          rotationMatrix = void 0;
+	      var rightVec, rotationMatrix;
 
 	      if (!upAxis) {
 	        return _log2.default.error('No Up Axis available For ', up);
@@ -75298,7 +75026,7 @@
 
 	    /**
 	    * Make the passed in rotation object useful
-	    * @param {Object} rotation Create an Euler from an object with x/y/z components
+	    * @param Object rotation
 	    * @return THREE.Euler
 	    */
 
@@ -75329,13 +75057,13 @@
 	        return;
 	      }
 
-	      // set at origin with origin scale
-	      var runtimeData = this.getRuntimeData();
-	      var position = new _three2.default.Vector3();
-	      var scale = new _three2.default.Vector3();
-	      var x = void 0,
-	          y = void 0,
-	          z = void 0;
+	      //set at origin with origin scale
+	      var runtimeData = this.getRuntimeData(),
+	          position = new _three2.default.Vector3(),
+	          scale = new _three2.default.Vector3(),
+	          x,
+	          y,
+	          z;
 
 	      position.copy(runtimeData.position);
 	      scale.copy(runtimeData.scale);
@@ -75343,30 +75071,28 @@
 	      runtimeData.scale.set(1, 1, 1);
 	      runtimeData.updateMatrix();
 
-	      // setup rotation matrices
+	      //setup rotation matrices
 	      x = new _three2.default.Matrix4().makeRotationX((axis.x || 0) * degToRad);
 	      y = new _three2.default.Matrix4().makeRotationY((axis.y || 0) * degToRad);
 	      z = new _three2.default.Matrix4().makeRotationZ((axis.z || 0) * degToRad);
-
-	      // add matrices
+	      //add matrices
 	      z.multiply(y);
 	      z.multiply(x);
-
-	      // additive to the current matrix?
+	      //additive to the current matrix?
 	      if (additive) {
 	        z.multiply(runtimeData.matrix);
 	      }
 
 	      this.target.setFromRotationMatrix(z);
-	      // Do it now...
+	      //do it now
 	      if (force) {
 	        this.setRotation(this.target);
 	        this.getRuntime().needsRender = true;
 	      } else {
-	        // ...otherwise transition nicely
+	        //otherwise transition nicely
 	        this.time = this.speed;
 	      }
-	      // Reset back to position
+	      //reset back to position
 	      runtimeData.position.copy(position);
 	      runtimeData.scale.copy(scale);
 	    }
@@ -75391,10 +75117,10 @@
 	  }, {
 	    key: 'setLocalRotation',
 	    value: function setLocalRotation(rotation) {
-	      // interrupt if transitioning
+	      //interrupt if transitioning
 	      this.time = 0;
 
-	      // just reusing target here, not going to interpolate to it
+	      //just reusing target here, not going to interpolate to it
 	      this.target.setFromEuler(this.eulerFromObject(rotation));
 	      this.setRotation(this.target);
 	    }
@@ -75408,7 +75134,7 @@
 	    value: function setRotation(target) {
 	      this.getEntity().setQuaternion(target.x, target.y, target.z, target.w);
 
-	      // alternative instead of forcing a change event on the entity
+	      //alternative instead of forcing a change event on the entity
 	      if (this.hasThreeData() && !this.getRuntimeData().quaternion.equals(target)) {
 	        this.getRuntimeData().quaternion.copy(target);
 	      }
@@ -75423,7 +75149,6 @@
 	    /**
 	    * Get the up and forward axes, useable by preview
 	    * @param Function callback Recieves the up and forward axes
-	    * @returns {Object} An object with an up and forward component. Used for Box Preview
 	    */
 
 	  }, {
@@ -75461,21 +75186,13 @@
 
 	      return axes;
 	    }
-
-	    /**
-	     * @inheritdoc
-	     */
-
 	  }, {
 	    key: 'update',
 	    value: function update(dt) {
 	      if (this.time >= 0 && this.hasThreeData()) {
 	        this.time -= dt;
 
-	        this.tempQuat.copy(this.getRuntimeData().quaternion);
-	        this.tempQuat.slerp(this.target, Math.min(1, Math.max(0, 1 - 1 / (this.speed / this.time))));
-
-	        this.getEntity().setQuaternion(this.tempQuat.x, this.tempQuat.y, this.tempQuat.z, this.tempQuat.w);
+	        this.getRuntimeData().quaternion.slerp(this.target, Math.min(1, Math.max(0, 1 - 1 / (this.speed / this.time))));
 
 	        //force render
 	        this.getRuntime().needsRender = true;
@@ -75619,11 +75336,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -76515,11 +76232,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -76783,11 +76500,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _Box3DComponent2 = __webpack_require__(23);
 
@@ -76898,11 +76615,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -77374,11 +77091,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -77859,11 +77576,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -78094,7 +77811,6 @@
 	  /**
 	   * Called immediately after after RenderModes creation
 	   */
-
 
 	  _createClass(RenderModes, [{
 	    key: 'init',
@@ -78532,11 +78248,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -78931,11 +78647,11 @@
 	/* global Box3D */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -79563,11 +79279,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -79740,11 +79456,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(6);
 
@@ -79861,11 +79577,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -80105,11 +79821,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -80123,9 +79839,9 @@
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _BaseTextureAsset = __webpack_require__(19);
+	var _BaseImageAsset = __webpack_require__(57);
 
-	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
+	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -80242,7 +79958,7 @@
 	      }
 	      if (changed.indexOf('leftEye') !== -1 && this.skyboxTexture) {
 	        this.currentMaterial.defines.STEREO_EYE = this.leftEye ? 'STEREO_EYE_LEFT' : 'STEREO_EYE_RIGHT';
-	        this.currentMaterial.defines.LAYOUT = _BaseTextureAsset2.default.LAYOUT[this.skyboxTexture.getProperty('layout')];
+	        this.currentMaterial.defines.LAYOUT = _BaseImageAsset2.default.LAYOUT[this.skyboxTexture.getProperty('layout')];
 	        this.currentMaterial.needsUpdate = true;
 	      }
 	    }
@@ -80309,7 +80025,7 @@
 	          // Based on the layout being used and the eye that this skybox represents, use only the
 	          // appropriate part of the texture.
 	          this.currentMaterial.defines.STEREO_EYE = this.leftEye ? 'STEREO_EYE_LEFT' : 'STEREO_EYE_RIGHT';
-	          this.currentMaterial.defines.LAYOUT = _BaseTextureAsset2.default.LAYOUT[this.skyboxTexture.getProperty('layout')];
+	          this.currentMaterial.defines.LAYOUT = _BaseImageAsset2.default.LAYOUT[this.skyboxTexture.getProperty('layout')];
 	          this.currentMaterial.needsUpdate = true;
 	        }
 
@@ -80397,7 +80113,7 @@
 	        }
 	      });
 
-	      _lodash2.default.each(_BaseTextureAsset2.default.LAYOUT, function (value, name) {
+	      _lodash2.default.each(_BaseImageAsset2.default.LAYOUT, function (value, name) {
 	        _this3.skyboxMaterialCube.defines['LAYOUT_' + name.toUpperCase()] = value;
 	        _this3.skyboxMaterial2D.defines['LAYOUT_' + name.toUpperCase()] = value;
 	      }, this);
@@ -80433,6 +80149,299 @@
 /* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Box3D = window.Box3D = window.Box3D || {};
+
+	var BaseImageAsset = function (_Box3DAsset) {
+	  _inherits(BaseImageAsset, _Box3DAsset);
+
+	  function BaseImageAsset(json) {
+	    _classCallCheck(this, BaseImageAsset);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseImageAsset).call(this, json));
+
+	    _this.loadedBytes = 0;
+	    return _this;
+	  }
+
+	  _createClass(BaseImageAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(BaseImageAsset.prototype), 'initialize', this).call(this, properties);
+
+	      this.loadComponents = true;
+	    }
+	  }, {
+	    key: '_applyPropertiesUnloaded',
+	    value: function _applyPropertiesUnloaded(changes) {
+	      this.box3DRuntime.trigger('imageChanged', this.id, changes);
+	    }
+
+	    /** Returns the maximum texture size supported by the device.
+	     * @return {Integer} The maximum texture size.
+	     */
+
+	  }, {
+	    key: 'getMaxTextureSize',
+	    value: function getMaxTextureSize() {
+	      var mobile = Box3D.isMobile();
+	      if (this.isCubeImage()) {
+	        return mobile ? 512 : this.box3DRuntime.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE');
+	      } else {
+	        return mobile ? 1024 : this.box3DRuntime.getGPUCapability('MAX_TEXTURE_SIZE');
+	      }
+	    }
+
+	    /**
+	     * Returns the pixel format of the texture. e.g. THREE.RGBAFormat, THREE.LuminanceFormat, etc.
+	     * @return {String} The texture pixel format.
+	     */
+
+	  }, {
+	    key: 'getFormat',
+	    value: function getFormat() {
+	      var format = this.getProperty('format');
+	      return format;
+	    }
+
+	    /**
+	     * Returns the data type of the texture. e.g. THREE.UnsignedByteType, THREE.FloatType, etc.
+	     * @return {Number} The texture pixel type.
+	     */
+
+	  }, {
+	    key: 'getDataType',
+	    value: function getDataType() {
+	      var dataType = this.getProperty('type');
+	      return dataType;
+	    }
+	  }, {
+	    key: 'isCubeImage',
+	    value: function isCubeImage() {
+	      // TODO - implement me!
+	      return false;
+	    }
+
+	    /**
+	     * Return the number of color or luminance channels in the texture. An optional override lets
+	     * you query the value for a different pixel format.
+	     * @method getNumChannels
+	     * @public
+	     * @param {Number} overrideFormat Query the number of channels for a different pixel format
+	     * by specifying a format here.
+	     * @return {Number} Returns the number of color or luminance channels in the texture.
+	     */
+
+	  }, {
+	    key: 'getNumChannels',
+	    value: function getNumChannels(overrideFormat) {
+	      var format = overrideFormat || this.getFormat();
+	      switch (format) {
+	        case 'alpha':
+	        case 'luminance':
+	          return 1;
+	        case 'luminanceAlpha':
+	          return 2;
+	        case 'rgb':
+	          return 3;
+	        case 'rgba':
+	          return 4;
+	        default:
+	          return 0;
+	      }
+	    }
+
+	    /**
+	     * @public
+	     * @return {Number} Returns the total number of mip levels used by this texture.
+	     */
+
+	  }, {
+	    key: 'getNumMips',
+	    value: function getNumMips() {
+	      var width = this.getWidth();
+	      var height = this.getHeight();
+	      var max = Math.max(width, height);
+	      max = Math.max(max, 1);
+	      return Math.floor(Math.log2(max)) + 1;
+	    }
+
+	    /**
+	     * @public
+	     * @return {Boolean} True iff the texture contains high dynamic range, floating point data
+	     */
+
+	  }, {
+	    key: 'isHdr',
+	    value: function isHdr() {
+	      return !!this.getProperty('isHdr');
+	    }
+
+	    /**
+	     * @public
+	     * @return {Boolean} True iff both dimensions of the texture are a power of two.
+	     */
+
+	  }, {
+	    key: 'isPowerOfTwo',
+	    value: function isPowerOfTwo() {
+	      var width = this.getWidth();
+	      var height = this.getHeight();
+	      return _three2.default.Math.isPowerOfTwo(width) && _three2.default.Math.isPowerOfTwo(height);
+	    }
+
+	    /**
+	     * Returns the width of the image.
+	     * @return {Integer} The texture width.
+	     */
+
+	  }, {
+	    key: 'getWidth',
+	    value: function getWidth() {
+	      if (this.isLoaded()) {
+	        return this.runtimeData.width;
+	      } else {
+	        var width = this.getProperty('width');
+	        if (width > this.getMaxTextureSize()) {
+	          width = this.getMaxTextureSize();
+	        }
+	        return width || 1;
+	      }
+	    }
+
+	    /**
+	     * Returns the height of the image.
+	     * @return {Integer} The texture height.
+	     */
+
+	  }, {
+	    key: 'getHeight',
+	    value: function getHeight() {
+	      if (this.isLoaded()) {
+	        return this.runtimeData.height;
+	      } else {
+	        var height = this.getProperty('height');
+	        if (height > this.getMaxTextureSize()) {
+	          height = this.getMaxTextureSize();
+	        }
+	        return height || 1;
+	      }
+	    }
+	  }]);
+
+	  return BaseImageAsset;
+	}(_Box3DAsset3.default);
+
+	BaseImageAsset.LAYOUT = {
+	  normal: 101,
+	  stereo2dOverUnder: 102, // ABOVE-BELOW
+	  stereo2dLeftRight: 103, // PARALLEL-EYED
+	  stereo2dRightLeft: 104, // CROSS-EYED
+	  stereoCubeHorizontal: 105
+	};
+	BaseImageAsset.FORMAT = {
+	  alpha: _three2.default.AlphaFormat,
+	  rgb: _three2.default.RGBFormat,
+	  rgba: _three2.default.RGBAFormat,
+	  rgbe: _three2.default.RGBEFormat,
+	  luminance: _three2.default.LuminanceFormat,
+	  luminanceAlpha: _three2.default.LuminanceAlphaFormat
+	};
+	BaseImageAsset.TYPE = {
+	  uByte: _three2.default.UnsignedByteType,
+	  byte: _three2.default.ByteType,
+	  short: _three2.default.ShortType,
+	  uShort: _three2.default.UnsignedShortType,
+	  int: _three2.default.IntType,
+	  uInt: _three2.default.UnsignedIntType,
+	  float: _three2.default.FloatType,
+	  halfFloat: _three2.default.HalfFloatType,
+	  uShort4444: _three2.default.UnsignedShort4444Type,
+	  uShort5551: _three2.default.UnsignedShort5551Type,
+	  uShort565: _three2.default.UnsignedShort565Type
+	};
+	BaseImageAsset.schema = _lodash2.default.extend({}, _Box3DAsset3.default.schema, {
+	  format: {
+	    type: 'string',
+	    description: '',
+	    default: 'rgba'
+	  },
+	  type: {
+	    type: 'string',
+	    description: '',
+	    default: 'uByte'
+	  },
+	  premultiplyAlpha: {
+	    type: 'boolean',
+	    description: '',
+	    default: false
+	  },
+	  layout: {
+	    type: 'string',
+	    description: '',
+	    default: 'normal'
+	  },
+	  stream: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  },
+	  isHdr: {
+	    type: 'boolean',
+	    default: false
+	  },
+	  width: {
+	    type: 'integer',
+	    description: 'The width, in pixels, of the original image file.',
+	    default: undefined
+	  },
+	  height: {
+	    type: 'integer',
+	    description: 'The height, in pixels, of the original image file.',
+	    default: undefined
+	  },
+	  filename: {
+	    type: 'string',
+	    default: ''
+	  }
+	});
+
+	window.Box3D.BaseImageAsset = BaseImageAsset;
+	exports.default = BaseImageAsset;
+
+/***/ },
+/* 58 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/* eslint-disable */
 	/*
 	@vid text_renderer_component
@@ -80448,11 +80457,11 @@
 	/* eslint-enable */
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -80633,7 +80642,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -80650,11 +80659,11 @@
 	*/
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _three = __webpack_require__(8);
 
@@ -80664,9 +80673,9 @@
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _BaseTextureAsset = __webpack_require__(19);
+	var _BaseImageAsset = __webpack_require__(57);
 
-	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
+	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -80742,9 +80751,9 @@
 	        this.skyboxMesh.material.dispose();
 
 	        // Setup appropriate material for transforming 2D texture to cube map
-	        var shader = void 0;
-	        var layout = this.inputTexture.getProperty('layout');
-	        if (layout === _BaseTextureAsset2.default.LAYOUT.normal) {
+	        var shader = undefined;
+	        var layout = this.inputTexture.getLayout();
+	        if (layout === _BaseImageAsset2.default.LAYOUT.normal) {
 	          shader = _three2.default.ShaderLib['equirect'];
 	          shader.uniforms.tFlip.value = 1.0;
 	          var transformMaterial = new _three2.default.ShaderMaterial({
@@ -80755,7 +80764,7 @@
 	            side: _three2.default.BackSide
 	          });
 	          this.skyboxMesh.material = transformMaterial;
-	        } else if (layout === _BaseTextureAsset2.default.LAYOUT.stereoCubeHorizontal) {
+	        } else if (layout === _BaseImageAsset2.default.LAYOUT.stereoCubeHorizontal) {
 	          shader = this.stereoCubeShader;
 	          var materials = new Array(6);
 	          for (var i = 0; i < 6; i++) {
@@ -80875,20 +80884,20 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(60)
-	  , root = typeof window === 'undefined' ? global : window
+	var now = __webpack_require__(61)
+	  , global = typeof window === 'undefined' ? {} : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
-	  , raf = root['request' + suffix]
-	  , caf = root['cancel' + suffix] || root['cancelRequest' + suffix]
+	  , raf = global['request' + suffix]
+	  , caf = global['cancel' + suffix] || global['cancelRequest' + suffix]
 
-	for(var i = 0; !raf && i < vendors.length; i++) {
-	  raf = root[vendors[i] + 'Request' + suffix]
-	  caf = root[vendors[i] + 'Cancel' + suffix]
-	      || root[vendors[i] + 'CancelRequest' + suffix]
+	for(var i = 0; i < vendors.length && !raf; i++) {
+	  raf = global[vendors[i] + 'Request' + suffix]
+	  caf = global[vendors[i] + 'Cancel' + suffix]
+	      || global[vendors[i] + 'CancelRequest' + suffix]
 	}
 
 	// Some versions of FF have rAF but not cAF
@@ -80941,20 +80950,15 @@
 	  // Wrap in a new function to prevent
 	  // `cancel` potentially being assigned
 	  // to the native rAF function
-	  return raf.call(root, fn)
+	  return raf.call(global, fn)
 	}
 	module.exports.cancel = function() {
-	  caf.apply(root, arguments)
-	}
-	module.exports.polyfill = function() {
-	  root.requestAnimationFrame = raf
-	  root.cancelAnimationFrame = caf
+	  caf.apply(global, arguments)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -80990,10 +80994,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(61)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(62)))
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -81090,7 +81094,7 @@
 
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81256,7 +81260,7 @@
 
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81438,7 +81442,7 @@
 
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81545,7 +81549,7 @@
 
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81613,7 +81617,7 @@
 
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81692,7 +81696,7 @@
 
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81786,7 +81790,7 @@
 
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81852,7 +81856,7 @@
 
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81922,12 +81926,11 @@
 
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)
-		, __webpack_require__(90)
-		, __webpack_require__(72)
+		, __webpack_require__(91)
 		, __webpack_require__(73)
 		, __webpack_require__(74)
 		, __webpack_require__(75)
@@ -81945,8 +81948,8 @@
 		, __webpack_require__(87)
 		, __webpack_require__(88)
 		, __webpack_require__(89)
-		, __webpack_require__(71)
-		, __webpack_require__(91)
+		, __webpack_require__(90)
+		, __webpack_require__(72)
 		, __webpack_require__(92)
 		, __webpack_require__(93)
 		, __webpack_require__(94)
@@ -81963,7 +81966,8 @@
 		, __webpack_require__(105)
 		, __webpack_require__(106)
 		, __webpack_require__(107)
-		, __webpack_require__(108)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(108)
+		, __webpack_require__(109)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -82059,7 +82063,7 @@
 
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82165,7 +82169,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82238,7 +82242,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82309,7 +82313,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82367,7 +82371,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82499,7 +82503,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82885,7 +82889,7 @@
 
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82950,7 +82954,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83005,7 +83009,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83061,7 +83065,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83169,7 +83173,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83222,7 +83226,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83276,7 +83280,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83341,7 +83345,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83416,7 +83420,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83517,7 +83521,7 @@
 
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83610,7 +83614,7 @@
 
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83721,7 +83725,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83819,7 +83823,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83901,7 +83905,7 @@
 
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83939,7 +83943,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84024,7 +84028,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84093,7 +84097,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84165,7 +84169,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84241,7 +84245,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84309,7 +84313,7 @@
 
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84390,7 +84394,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84456,7 +84460,7 @@
 
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84516,7 +84520,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84580,7 +84584,7 @@
 
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84643,7 +84647,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84940,7 +84944,7 @@
 
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85025,7 +85029,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85178,7 +85182,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85242,7 +85246,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85342,7 +85346,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85411,7 +85415,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85483,7 +85487,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85554,7 +85558,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85609,7 +85613,7 @@
 
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86237,18 +86241,18 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -86813,18 +86817,18 @@
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -86887,23 +86891,22 @@
 	  }
 	});
 
-
 	window.Box3D.ApplicationAsset = ApplicationAsset;
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _Box3DAsset2 = __webpack_require__(12);
 
@@ -86976,16 +86979,16 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -86999,7 +87002,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(115);
+	var _JSONLoader = __webpack_require__(116);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -87029,7 +87032,6 @@
 
 	  _createClass(DocumentAsset, [{
 	    key: 'createRuntimeData',
-
 
 	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
@@ -87096,12 +87098,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2), __webpack_require__(116)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(2), __webpack_require__(117)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -87215,14 +87217,14 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(117),
-	  v1 = __webpack_require__(118),
-	  v2 = __webpack_require__(119);
+	var _ = __webpack_require__(118),
+	  v1 = __webpack_require__(119),
+	  v2 = __webpack_require__(120);
 
 
 	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
@@ -87527,7 +87529,7 @@
 
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -88876,12 +88878,12 @@
 
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(117);
+	var _ = __webpack_require__(118);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -88944,12 +88946,12 @@
 
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(117);
+	var _ = __webpack_require__(118);
 
 	/**
 	 * Maps v2 entities to v3
@@ -88988,16 +88990,594 @@
 
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _Box3DEntity = __webpack_require__(13);
+
+	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
+
+	var _BaseImageAsset2 = __webpack_require__(57);
+
+	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ImageAsset = function (_BaseImageAsset) {
+	  _inherits(ImageAsset, _BaseImageAsset);
+
+	  function ImageAsset(json) {
+	    _classCallCheck(this, ImageAsset);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ImageAsset).call(this, json));
+
+	    _this.loadedBytes = 0;
+	    return _this;
+	  }
+
+	  _createClass(ImageAsset, [{
+	    key: 'unload',
+	    value: function unload(options) {
+	      _get(Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
+
+	      // TODO: Have BaseTextureAsset listen to this event and unload
+	      // any textures using this image.
+	      if (this.runtimeData) {
+	        this.box3DRuntime.trigger('imageUnloaded', this.id);
+
+	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading image, ' + this.getName());
+	      }
+
+	      this.loadedBytes = 0;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      var _this2 = this;
+
+	      var onImageLoaded = function onImageLoaded(data) {
+	        _this2.onImageLoad(data);
+	        callback();
+	      };
+
+	      var onImageLoadError = function onImageLoadError(err) {
+	        _log2.default.debug('There was an error loading the texture, ' + _this2.getName(), err);
+	        // Only set the missing texture if there isn't loaded data already present.
+	        // This allows streamed textures to continue to be used, even if a higher-res
+	        // mip failed to load.
+	        if (!_this2.runtimeData) {
+	          _this2.runtimeData = _this2.registry.getMissingTexture();
+	          _this2.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
+	        }
+	        _this2.loadedBytes = _this2.getDataSizeDownload();
+	        _this2.trigger('loadProgress', _this2);
+	        callback();
+	      };
+
+	      var onImageLoadProgress = function onImageLoadProgress(progressObj) {
+	        _this2.loadedBytes = progressObj.loaded;
+	        if (!_this2.get('bufferSize')) {
+	          _this2.set('bufferSize', progressObj.total);
+	        }
+	        _this2.trigger('loadProgress', _this2);
+	      };
+
+	      // Disabling this temporarily as we only have the "2048" representation in Preview SDK.
+	      // const width = this.getProperty('originalWidth');
+	      // const height = this.getProperty('originalHeight');
+	      // const stream = this.getProperty('stream');
+
+	      // if (!stream || (width < 1024 && height < 1024)) {
+	      this._directLoad(onImageLoaded, onImageLoadError, onImageLoadProgress);
+	      // } else {
+	      //   this._streamingLoad(onImage2DLoaded, onImage2DLoadError, onImage2DLoadProgress);
+	      // }
+	    }
+
+	    /**
+	     * [_directLoad description]
+	     * @private
+	     * @param  {[type]} onSuccess  [description]
+	     * @param  {[type]} onFailure  [description]
+	     * @param  {[type]} onProgress [description]
+	     * @return {[type]}            [description]
+	     */
+
+	  }, {
+	    key: '_directLoad',
+	    value: function _directLoad(onSuccess, onFailure, onProgress) {
+	      var width = this.getProperty('width');
+	      var height = this.getProperty('height');
+
+	      this.box3DRuntime.resourceLoader.load(this, {
+	        width: width > this.getMaxTextureSize() ? this.getMaxTextureSize() : width,
+	        height: height > this.getMaxTextureSize() ? this.getMaxTextureSize() : height,
+	        channels: this.isHdr() ? 'rgbe' : undefined,
+	        compression: this.getCompressionFormat(),
+	        xhrKey: this.id
+	      }, onProgress).then(function onFinalTextureLoad(data) {
+	        onSuccess.call(this, data);
+	      }.bind(this)).catch(function (err) {
+	        onFailure.call(this, err);
+	      }.bind(this));
+	    }
+	  }, {
+	    key: '_streamingLoad',
+	    value: function _streamingLoad(onSuccess, onFailure, onProgress) {
+	      this.box3DRuntime.resourceLoader.load(this, {
+	        width: 64,
+	        height: 64,
+	        channels: this.isHdr() ? 'rgbe' : undefined,
+	        compression: this.getCompressionFormat(),
+	        xhrKey: this.id
+	      }).then(function onLowMipLoad(data) {
+	        this.onImageLoad(data);
+	        this._directLoad(onSuccess, onFailure, onProgress);
+	      }.bind(this)).catch(function onLowMipFailure() {
+	        this._directLoad(onSuccess, onFailure);
+	      }.bind(this));
+	    }
+
+	    /**
+	     * [onImageLoad description]
+	     * @private
+	     * @param  {[type]} data [description]
+	     * @return {[type]}      [description]
+	     */
+
+	  }, {
+	    key: 'onImageLoad',
+	    value: function onImageLoad(data) {
+
+	      if (!this.runtimeData) {
+	        this.runtimeData = {};
+	      }
+
+	      this.runtimeData.compression = data.properties.compression;
+	      this.runtimeData.imageData = data.data;
+	      this.runtimeData.channels = data.properties.channels;
+	      this.runtimeData.width = data.properties.width;
+	      this.runtimeData.height = data.properties.height;
+	      this.loadedBytes = this.getDataSizeDownload();
+	      this.trigger('loadProgress', this);
+	    }
+
+	    /**
+	     * Returns the byte size of the data that has already been loaded by this asset and its
+	     * hierarchy.
+	     * @public
+	     * @method getDataSizeLoaded
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeLoaded',
+	    value: function getDataSizeLoaded(dependencyType) {
+	      if (!dependencyType || dependencyType === 'textures') {
+	        return this.loadedBytes;
+	      } else {
+	        return 0;
+	      }
+	    }
+
+	    /**
+	     * Returns the download size of this texture. Specify filters to query the
+	     * desired texture. If no filters are specified, the default texture for the
+	     * current device will be queried.
+	     * @method getDataSizeDownload
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @param {Object} params Specify parameters to narrow down the type of asset to
+	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeDownload',
+	    value: function getDataSizeDownload(dependencyType) {
+	      if (!dependencyType || dependencyType === 'textures') {
+	        return this.get('bufferSize') || 1024;
+	      } else {
+	        return 0;
+	      }
+	    }
+
+	    /**
+	     * Returns the total amount of GPU memory occupied by this texture. Specify
+	     * filters to query the desired texture. If no filters are specified, the
+	     * default texture for the current device will be queried.
+	     * @method getDataSizeTextureInMemory
+	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
+	     * @param {Object} overrideParams Specify parameters to narrow down the type of asset to
+	     * return values for. e.g. for textures, you might specify {compression: 'dxt'}.
+	     * @return {Integer} The number of bytes of data.
+	     */
+
+	  }, {
+	    key: 'getDataSizeInMemory',
+	    value: function getDataSizeInMemory(dependencyType, overrideParams) {
+	      var width;
+	      var height;
+	      var compression;
+	      var numChannels;
+	      var channelSize;
+	      var dataType;
+
+	      if (dependencyType && dependencyType !== 'textures') {
+	        return 0;
+	      }
+
+	      width = this.getWidth();
+	      height = this.getHeight();
+	      overrideParams = overrideParams || {};
+	      compression = overrideParams.compression || this.getCompressionFormat();
+
+	      if (compression !== 'none') {
+	        return this.getDataSizeDownload();
+	      }
+
+	      numChannels = this.getNumChannels(overrideParams.format);
+	      dataType = overrideParams.type || this.getDataType();
+
+	      switch (dataType) {
+	        case 'float':
+	        case 'uInt':
+	        case 'int':
+	          channelSize = 4;
+	          break;
+
+	        case 'short':
+	        case 'uShort':
+	          channelSize = 2;
+	          break;
+
+	        case 'uByte':
+	        case 'byte':
+	          channelSize = 1;
+	          break;
+
+	        // The following types dictate the bpp directly.
+	        case 'uShort4444':
+	        case 'uShort5551':
+	        case 'uShort565':
+	          return width * height * 2;
+	      }
+	      return width * height * channelSize * numChannels;
+	    }
+
+	    /**
+	     * @public
+	     * @return {Boolean} True iff the texture is using a hardware compression format.
+	     */
+
+	  }, {
+	    key: 'isCompressed',
+	    value: function isCompressed() {
+	      if (this.runtimeData) {
+	        return this.runtimeData.compression !== 'jpeg' && this.runtimeData.compression !== 'zip';
+	      } else {
+	        return this.getProperty('useCompression');
+	      }
+	    }
+
+	    /**
+	    * Returns the preferred texture compression format for the device.
+	    * @return {String} 'atc', 'dxt', 'pvrtc' or 'none'
+	    */
+
+	  }, {
+	    key: 'getCompressionFormat',
+	    value: function getCompressionFormat() {
+	      var compression = this.format === 'rgb' ? 'jpeg' : 'zip';
+
+	      // If a compressed format is preferred, get one based on the device caps.
+	      if (this.getProperty('useCompression')) {
+	        if (this.box3DRuntime.supportsCompressedTextureS3TC()) {
+	          compression = 'dxt';
+	        } else if (this.box3DRuntime.supportsCompressedTexturePVRTC()) {
+	          compression = 'pvrtc';
+	        } else if (this.box3DRuntime.supportsCompressedTextureATC()) {
+	          compression = 'atc';
+	        }
+	      }
+	      return compression;
+	    }
+	  }]);
+
+	  return ImageAsset;
+	}(_BaseImageAsset3.default);
+
+	ImageAsset.schema = _lodash2.default.extend({}, _BaseImageAsset3.default.schema, {
+	  useCompression: {
+	    type: 'boolean',
+	    description: 'True if we will try to use a hardware-compressed version of the image ' + 'instead of a regular one. This depends on the hardware capabilities of the user and ' + 'the data formats available.',
+	    default: false
+	  }
+	});
+
+	window.Box3D.ImageAsset = ImageAsset;
+	exports.default = ImageAsset;
+
+/***/ },
+/* 122 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _BaseImageAsset2 = __webpack_require__(57);
+
+	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class VideoAsset
+	 * @constructor
+	 */
+
+	var VideoAsset = function (_BaseImageAsset) {
+	  _inherits(VideoAsset, _BaseImageAsset);
+
+	  function VideoAsset(json) {
+	    _classCallCheck(this, VideoAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(VideoAsset).call(this, json));
+	  }
+
+	  _createClass(VideoAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
+	      this.box3DRuntime.on('update', this.onUpdate, this);
+	      this.on('pause', this.pause, this);
+	      this.on('play', this.play, this);
+	      this.on('stop', this.stop, this);
+	      this.on('toggle', this.toggle, this);
+	    }
+	  }, {
+	    key: 'uninitialize',
+	    value: function uninitialize() {
+	      this.box3DRuntime.off('update', this.onUpdate, this);
+	      this.off('pause', this.pause, this);
+	      this.off('play', this.play, this);
+	      this.off('stop', this.stop, this);
+	      this.off('toggle', this.toggle, this);
+
+	      if (this.runtimeData && this.runtimeData.image) {
+	        // TODO: should we be doing more here?
+	        this.runtimeData.image.pause();
+	      }
+
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      var _this2 = this;
+
+	      var onVideoReady = function onVideoReady(videoEl) {
+	        if (videoEl) {
+	          videoEl.style.display = 'none';
+	          videoEl.loop = _this2.getProperty('loop');
+	          videoEl.autoplay = _this2.getProperty('autoPlay');
+	          if (!_this2.runtimeData) {
+	            _this2.runtimeData = {};
+	          }
+
+	          _this2.runtimeData.imageData = videoEl;
+	          _this2.runtimeData.width = videoEl.width;
+	          _this2.runtimeData.height = videoEl.height;
+	          _this2.trigger('loadProgress', _this2);
+	        }
+	        callback();
+	      };
+
+	      var onVideoFail = function onVideoFail(err) {
+	        _log2.default.debug('There was an error loading the video, ' + _this2.getName(), err);
+	        _this2.failure = true;
+	        callback();
+	      };
+
+	      var parentEl = this.box3DRuntime.getRenderer().getCanvas().parentElement;
+	      var cssSelector = this.getProperty('querySelector');
+	      if (cssSelector) {
+	        var videoEl = parentEl.querySelector(cssSelector);
+	        onVideoReady(videoEl);
+	      } else {
+	        this.box3DRuntime.resourceLoader.load(this, { xhrKey: this.id }).then(function (data) {
+	          parentEl.appendChild(data.data);
+	          onVideoReady(data.data);
+	        }).catch(onVideoFail);
+	      }
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      var videoEl = this.runtimeData.imageData;
+	      if (videoEl) {
+
+	        if (changes.hasOwnProperty('loop')) {
+	          videoEl.loop = this.getProperty('loop');
+	        }
+
+	        if (changes.hasOwnProperty('autoPlay')) {
+	          videoEl.autoplay = this.getProperty('autoPlay');
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'onUpdate',
+	    value: function onUpdate() {
+	      if (this.runtimeData) {
+	        var videoEl = this.runtimeData.imageData;
+
+	        if (videoEl && !videoEl.paused && !videoEl.error && videoEl.readyState >= videoEl.HAVE_CURRENT_DATA) {
+	          this.box3DRuntime.needsRender = true;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'pause',
+	    value: function pause() {
+	      if (this.runtimeData) {
+	        this.runtimeData.image.pause();
+	      }
+	    }
+	  }, {
+	    key: 'play',
+	    value: function play(seek, seekTime) {
+	      if (this.runtimeData) {
+	        if (seek) {
+	          this.runtimeData.imageData.currentTime = seekTime;
+	        }
+
+	        this.runtimeData.imageData.play();
+	      }
+	    }
+	  }, {
+	    key: 'stop',
+	    value: function stop() {
+	      if (this.runtimeData) {
+	        this.runtimeData.imageData.pause();
+	        this.runtimeData.imageData.currentTime = 0;
+	      }
+	    }
+	  }, {
+	    key: 'toggle',
+	    value: function toggle() {
+	      if (this.runtimeData) {
+	        if (this.runtimeData.imageData.paused) {
+	          this.play();
+	        } else {
+	          this.pause();
+	        }
+	      }
+	    }
+	  }]);
+
+	  return VideoAsset;
+	}(_BaseImageAsset3.default);
+
+	VideoAsset.schema = _lodash2.default.extend({}, _BaseImageAsset3.default.schema, {
+	  autoPlay: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  },
+	  state: {
+	    type: 'string',
+	    description: '',
+	    default: 'play'
+	  },
+	  loop: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  }
+	});
+	VideoAsset.events = {
+	  pause: {
+	    params: [],
+	    action: true,
+	    category: ''
+	  },
+	  play: {
+	    params: [{
+	      name: 'seek',
+	      type: 'b',
+	      description: '',
+	      default: false
+	    }, {
+	      name: 'seekTime',
+	      type: 'f',
+	      description: '',
+	      default: 0
+	    }],
+	    action: true,
+	    category: ''
+	  },
+	  stop: {
+	    params: [],
+	    action: true,
+	    category: ''
+	  },
+	  toggle: {
+	    params: [],
+	    action: true,
+	    category: ''
+	  }
+	};
+
+	window.Box3D.VideoAsset = VideoAsset;
+	exports.default = VideoAsset;
+
+/***/ },
+/* 123 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -89011,7 +89591,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(121);
+	var _BaseGeometryAsset2 = __webpack_require__(124);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -89043,7 +89623,6 @@
 
 	  _createClass(MeshGeometryAsset, [{
 	    key: 'createRuntimeData',
-
 
 	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
@@ -89436,23 +90015,22 @@
 	  float64: 8
 	};
 
-
 	window.Box3D.MeshGeometryAsset = MeshGeometryAsset;
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 121 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -89620,7 +90198,7 @@
 	    value: function computeMaxMaterialIndex(geometry) {
 	      var maxMaterialIndex = -1;
 	      var missingMaterial = false;
-	      var geoGroups = void 0;
+	      var geoGroups = undefined;
 	      if (!geometry) {
 	        return maxMaterialIndex;
 	      }
@@ -89685,23 +90263,22 @@
 	  }
 	});
 
-
 	window.Box3D.BaseGeometryAsset = BaseGeometryAsset;
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 122 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -89715,7 +90292,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(121);
+	var _BaseGeometryAsset2 = __webpack_require__(124);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -89749,7 +90326,6 @@
 	    }
 	  }, {
 	    key: 'createRuntimeData',
-
 
 	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
@@ -89909,23 +90485,22 @@
 	  }
 	});
 
-
 	window.Box3D.PrimitiveGeometryAsset = PrimitiveGeometryAsset;
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 123 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -89991,7 +90566,7 @@
 	    value: function getDefaultProperty(propertyName) {
 	      var originalType = this.get('originalType') || 'node';
 	      var objectClass = this.getObjectClass(originalType);
-	      var value = void 0;
+	      var value = undefined;
 	      var schemaDef = objectClass.schema[propertyName];
 	      value = schemaDef ? schemaDef.default : undefined;
 
@@ -90010,30 +90585,32 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 124 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(19);
+	var _ImageAsset = __webpack_require__(121);
 
-	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
+	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
+
+	var _BaseTextureAsset = __webpack_require__(19);
+
+	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
+
+	var _BaseRenderTextureAsset = __webpack_require__(128);
+
+	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -90045,12 +90622,12 @@
 
 	/**
 	 * An asset that holds geometry.
-	 * @class BaseGeometryAsset
+	 * @class RenderTexture2DAsset
 	 * @constructor
 	 */
 
-	var RenderTexture2DAsset = function (_BaseTextureAsset) {
-	  _inherits(RenderTexture2DAsset, _BaseTextureAsset);
+	var RenderTexture2DAsset = function (_BaseRenderTextureAss) {
+	  _inherits(RenderTexture2DAsset, _BaseRenderTextureAss);
 
 	  function RenderTexture2DAsset(json) {
 	    _classCallCheck(this, RenderTexture2DAsset);
@@ -90058,30 +90635,86 @@
 	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTexture2DAsset).call(this, json));
 	  }
 
+	  /** @inheritdoc */
+
 	  _createClass(RenderTexture2DAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), 'initialize', this).call(this, properties);
-	    }
-	  }, {
-	    key: 'createRTTextureData',
-	    value: function createRTTextureData() {
+	    key: 'createRTImageData',
+	    value: function createRTImageData() {
 	      var width = this.getWidth();
 	      var height = this.getHeight();
-
 	      this.runtimeData = new _three2.default.WebGLRenderTarget(width, height, {
-	        wrapS: _BaseTextureAsset3.default.ADDRESS_MODE[this.getProperty('uMapping')],
-	        wrapT: _BaseTextureAsset3.default.ADDRESS_MODE[this.getProperty('vMapping')],
+	        wrapS: _BaseTextureAsset2.default.ADDRESS_MODE[this.getProperty('uMapping')],
+	        wrapT: _BaseTextureAsset2.default.ADDRESS_MODE[this.getProperty('vMapping')],
 	        minFilter: _three2.default.LinearFilter,
 	        magFilter: _three2.default.LinearFilter,
-	        format: _BaseTextureAsset3.default.FORMAT[this.getProperty('format')],
-	        type: _BaseTextureAsset3.default.TYPE[this.getProperty('type')],
+	        format: _ImageAsset2.default.FORMAT[this.getProperty('format')],
+	        type: _ImageAsset2.default.TYPE[this.getProperty('type')],
 	        stencilBuffer: this.getProperty('stencilBuffer')
 	      });
+	    }
+	  }]);
 
-	      this.runtimeData.name = this.getName();
-	      this.runtimeData.flipY = false;
+	  return RenderTexture2DAsset;
+	}(_BaseRenderTextureAsset2.default);
+
+	window.Box3D.RenderTexture2DAsset = RenderTexture2DAsset;
+	exports.default = RenderTexture2DAsset;
+
+/***/ },
+/* 128 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _BaseTextureAsset2 = __webpack_require__(19);
+
+	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
+
+	var _ImageAsset = __webpack_require__(121);
+
+	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * An asset that holds geometry.
+	 * @class BaseRenderTextureAsset
+	 * @constructor
+	 */
+
+	var BaseRenderTextureAsset = function (_BaseTextureAsset) {
+	  _inherits(BaseRenderTextureAsset, _BaseTextureAsset);
+
+	  function BaseRenderTextureAsset(json) {
+	    _classCallCheck(this, BaseRenderTextureAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(BaseRenderTextureAsset).call(this, json));
+	  }
+
+	  _createClass(BaseRenderTextureAsset, [{
+	    key: 'initialize',
+	    // import from Images
+	    value: function initialize(properties) {
+	      this.loadComponents = true;
+	      _get(Object.getPrototypeOf(BaseRenderTextureAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -90089,7 +90722,7 @@
 	  }, {
 	    key: 'createRuntimeData',
 	    value: function createRuntimeData(callback) {
-	      this.createRTTextureData();
+	      this.createRTImageData();
 	      this.trigger('loadProgress', this); // TODO: do we need this?
 	      callback();
 	    }
@@ -90097,9 +90730,41 @@
 	    /** @inheritdoc */
 
 	  }, {
+	    key: 'getLayout',
+	    value: function getLayout() {
+	      this.getProperty('layout');
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'getWidth',
+	    value: function getWidth() {
+	      return this.getProperty('width');
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'getHeight',
+	    value: function getHeight() {
+	      return this.getProperty('height');
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'getNumMips',
+	    value: function getNumMips() {
+	      return _ImageAsset2.default.prototype.getNumMips.call(this);
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(RenderTexture2DAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(BaseRenderTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If something changed that necessitates the texture being recreated, do so.
 	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
@@ -90108,54 +90773,18 @@
 	          delete this.runtimeData.__webglFramebuffer;
 	        }
 
-	        this.runtimeData.texture.format = _BaseTextureAsset3.default.FORMAT[this.getProperty('format')];
-	        this.runtimeData.texture.type = _BaseTextureAsset3.default.TYPE[this.getProperty('type')];
+	        this.runtimeData.texture.format = _ImageAsset2.default.FORMAT[this.getProperty('format')];
+	        this.runtimeData.texture.type = _ImageAsset2.default.TYPE[this.getProperty('type')];
 	        this.runtimeData.texture.height = this.getHeight();
 	        this.runtimeData.texture.width = this.getWidth();
 	      }
 	    }
-	  }, {
-	    key: 'setUserData',
-	    value: function setUserData(width, height, color) {
-	      var size = width * height,
-	          textureData = new Uint8Array(3 * size),
-	          r = Math.floor(color.r * 255),
-	          g = Math.floor(color.g * 255),
-	          b = Math.floor(color.b * 255),
-	          idx;
-
-	      for (idx = 0; idx < size; idx += 1) {
-	        textureData[idx * 3] = r;
-	        textureData[idx * 3 + 1] = g;
-	        textureData[idx * 3 + 2] = b;
-	      }
-
-	      if (this.runtimeData) {
-	        this.runtimeData.image = {
-	          data: textureData,
-	          width: width,
-	          height: height
-	        };
-
-	        this.runtimeData.needsUpdate = true;
-	      }
-	    }
 	  }]);
 
-	  return RenderTexture2DAsset;
+	  return BaseRenderTextureAsset;
 	}(_BaseTextureAsset3.default);
 
-	RenderTexture2DAsset.schema = _lodash2.default.extend({}, _BaseTextureAsset3.default.schema, {
-	  width: {
-	    type: 'integer',
-	    description: '',
-	    default: 256
-	  },
-	  height: {
-	    type: 'integer',
-	    description: '',
-	    default: 256
-	  },
+	BaseRenderTextureAsset.schema = _lodash2.default.extend({}, _BaseTextureAsset3.default.schema, {
 	  stencilBuffer: {
 	    type: 'boolean',
 	    description: '',
@@ -90168,42 +90797,47 @@
 	  },
 	  generateMipmaps: {
 	    type: 'boolean',
-	    description: _BaseTextureAsset3.default.schema.generateMipmaps.description,
+	    description: '',
 	    default: false
-	  }
-	});
+	  },
+	  width: _ImageAsset2.default.schema.width, // import from Images
+	  height: _ImageAsset2.default.schema.height, // import from Images
+	  format: _ImageAsset2.default.schema.format, // import from Images
+	  type: _ImageAsset2.default.schema.type, // import from Images
+	  layout: _ImageAsset2.default.schema.layout });
 
-
-	window.Box3D.RenderTexture2DAsset = RenderTexture2DAsset;
-	exports.default = RenderTexture2DAsset;
+	window.Box3D.BaseRenderTextureAsset = BaseRenderTextureAsset;
+	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 125 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// TODO: this class and RenderTexture2D contain duplicate code that should be
-	// refactored.
 	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(19);
+	var _ImageAsset = __webpack_require__(121);
 
-	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
+	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
+
+	var _BaseTextureAsset = __webpack_require__(19);
+
+	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
+
+	var _BaseRenderTextureAsset = __webpack_require__(128);
+
+	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -90218,8 +90852,8 @@
 	 * @constructor
 	 */
 
-	var RenderTextureCubeAsset = function (_BaseTextureAsset) {
-	  _inherits(RenderTextureCubeAsset, _BaseTextureAsset);
+	var RenderTextureCubeAsset = function (_BaseRenderTextureAss) {
+	  _inherits(RenderTextureCubeAsset, _BaseRenderTextureAss);
 
 	  function RenderTextureCubeAsset(json) {
 	    _classCallCheck(this, RenderTextureCubeAsset);
@@ -90227,60 +90861,23 @@
 	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTextureCubeAsset).call(this, json));
 	  }
 
+	  /** @inheritdoc */
+
 	  _createClass(RenderTextureCubeAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'initialize', this).call(this, properties);
-	    }
-	  }, {
-	    key: '_createRTTexture',
-	    value: function _createRTTexture() {
+	    key: 'createRTImageData',
+	    value: function createRTImageData() {
 	      var width = this.getWidth();
 	      var height = this.getHeight();
 
 	      this.runtimeData = new _three2.default.WebGLRenderTargetCube(width, height, {
-	        wrapS: _BaseTextureAsset3.default.ADDRESS_MODE[this.getProperty('uMapping')],
-	        wrapT: _BaseTextureAsset3.default.ADDRESS_MODE[this.getProperty('vMapping')],
+	        wrapS: _BaseTextureAsset2.default.ADDRESS_MODE[this.getProperty('uMapping')],
+	        wrapT: _BaseTextureAsset2.default.ADDRESS_MODE[this.getProperty('vMapping')],
 	        minFilter: _three2.default.LinearFilter,
 	        magFilter: _three2.default.LinearFilter,
-	        format: _BaseTextureAsset3.default.FORMAT[this.getProperty('format')],
-	        type: _BaseTextureAsset3.default.TYPE[this.getProperty('type')],
+	        format: _ImageAsset2.default.FORMAT[this.getProperty('format')],
+	        type: _ImageAsset2.default.TYPE[this.getProperty('type')],
 	        stencilBuffer: this.getProperty('stencilBuffer')
 	      });
-
-	      this.runtimeData.name = this.getName();
-	      this.runtimeData.flipY = false;
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this._createRTTexture();
-	      callback();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      // If something changed that necessitates the texture being recreated, do so.
-	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
-	        if (this.runtimeData.__webglFramebuffer) {
-	          this.runtimeData.dispose();
-	          delete this.runtimeData.__webglFramebuffer;
-	        }
-
-	        this.runtimeData.texture.format = _BaseTextureAsset3.default.FORMAT[this.getProperty('format')];
-	        this.runtimeData.texture.type = _BaseTextureAsset3.default.TYPE[this.getProperty('type')];
-	        this.runtimeData.texture.width = this.getWidth();
-	        this.runtimeData.texture.height = this.runtimeData.width;
-	      }
 	    }
 
 	    /**
@@ -90295,98 +90892,27 @@
 	      var oneFaceSize = _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
 	      return oneFaceSize * 6;
 	    }
-
-	    /**
-	     * Returns the width of the texture. Specify filters to query the desired
-	     * texture. If no filters are specified, the default texture for the current
-	     * device will be queried.
-	     * @param {Object} filters Filters for selecting a texture
-	     * @return {Integer} The texture width.
-	     */
-
-	  }, {
-	    key: 'getWidth',
-	    value: function getWidth() {
-	      var maxTextureSize = this.box3DRuntime.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'),
-	          width = this.getProperty('width');
-
-	      if (width > maxTextureSize) {
-	        width = maxTextureSize;
-	      }
-
-	      return width;
-	    }
-
-	    /**
-	     * Returns the height of the texture. Specify filters to query the desired
-	     * texture. If no filters are specified, the default texture for the current
-	     * device will be queried.
-	     * @param {Object} filters Filters for selecting a texture
-	     * @return {Integer} The texture height.
-	     */
-
-	  }, {
-	    key: 'getHeight',
-	    value: function getHeight() {
-	      var maxTextureSize = this.box3DRuntime.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'),
-	          height = this.getProperty('height');
-
-	      if (height > maxTextureSize) {
-	        height = maxTextureSize;
-	      }
-
-	      return height;
-	    }
 	  }]);
 
 	  return RenderTextureCubeAsset;
-	}(_BaseTextureAsset3.default);
-
-	RenderTextureCubeAsset.schema = _lodash2.default.extend({}, _BaseTextureAsset3.default.schema, {
-	  width: {
-	    type: 'integer',
-	    description: '',
-	    default: 256
-	  },
-	  height: {
-	    type: 'integer',
-	    description: '',
-	    default: 256
-	  },
-	  stencilBuffer: {
-	    type: 'boolean',
-	    description: '',
-	    default: false
-	  },
-	  depthBuffer: {
-	    type: 'boolean',
-	    description: '',
-	    default: false
-	  },
-	  generateMipmaps: {
-	    type: 'boolean',
-	    description: _BaseTextureAsset3.default.schema.generateMipmaps.description,
-	    default: false
-	  }
-	});
-
+	}(_BaseRenderTextureAsset2.default);
 
 	window.Box3D.RenderTextureCubeAsset = RenderTextureCubeAsset;
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 126 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -90677,23 +91203,22 @@
 	  }
 	});
 
-
 	window.Box3D.SceneAsset = SceneAsset;
 	exports.default = SceneAsset;
 
 /***/ },
-/* 127 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -90707,11 +91232,11 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(128);
+	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(132);
 
 	var _Box3DShaderPBR_MetalRoughness2 = _interopRequireDefault(_Box3DShaderPBR_MetalRoughness);
 
-	var _Box3DShaderPBR_SpecGloss = __webpack_require__(132);
+	var _Box3DShaderPBR_SpecGloss = __webpack_require__(136);
 
 	var _Box3DShaderPBR_SpecGloss2 = _interopRequireDefault(_Box3DShaderPBR_SpecGloss);
 
@@ -90945,12 +91470,12 @@
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 128 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(129), __webpack_require__(130), __webpack_require__(131)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(133), __webpack_require__(134), __webpack_require__(135)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -91010,7 +91535,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 129 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -92145,24 +92670,24 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 130 */
+/* 134 */
 /***/ function(module, exports) {
 
 	module.exports = "\r\n/**\r\n * Shader used as a Box3D material type\r\n *\r\n * Written by Mike Bond\r\n */\r\n#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\tattribute vec4 tangent;\r\n#endif\r\n\r\nattribute vec2 uv2;\r\n\r\nuniform float time;\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n\tuniform float logDepthBufFC;\r\n#endif\r\n\r\n#ifdef DISPLACEMENT_MAP_RGBA\r\n\tuniform float displacementMag;\r\n\tuniform float displacementBias;\r\n\tuniform sampler2D displacementTexture;\r\n\tuniform int displacementUVChannel;\r\n\tuniform vec2 displacementTextureOffset;\r\n\tuniform vec2 displacementTextureScale;\r\n\tuniform vec2 displacementTexturePan;\r\n#endif\r\n\r\nvarying vec4 vNormal_VS;\r\n\r\n#if ( defined(NORMAL_MAP) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\nvarying vec4 vTangent_VS;\r\nvarying vec4 vBinormal_VS;\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(ROUGHNESS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR ) && defined( ALBEDO )\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#if defined( USE_SHADOWMAP ) && defined( USE_SCENE_LIGHTS )\r\n\t\t#if NUM_SHADOWS > 0\r\n\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\tuniform mat4 shadowMatrix[ NUM_SHADOWS ];\r\n\t\t#endif\r\n\t#endif\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tuniform mat4 bindMatrix;\r\n\tuniform mat4 bindMatrixInverse;\r\n\r\n\t#ifdef BONE_TEXTURE\r\n\r\n\t\tuniform sampler2D boneTexture;\r\n\t\tuniform int boneTextureWidth;\r\n\t\tuniform int boneTextureHeight;\r\n\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tfloat j = i * 4.0;\r\n\t\t\tfloat x = mod( j, float( boneTextureWidth ) );\r\n\t\t\tfloat y = floor( j / float( boneTextureHeight ) );\r\n\r\n\t\t\tfloat dx = 1.0 / float( boneTextureWidth );\r\n\t\t\tfloat dy = 1.0 / float( boneTextureHeight );\r\n\r\n\t\t\ty = dy * ( y + 0.5 );\r\n\r\n\t\t\tvec4 v1 = texture2D( boneTexture, vec2( dx * ( x + 0.5 ), y ) );\r\n\t\t\tvec4 v2 = texture2D( boneTexture, vec2( dx * ( x + 1.5 ), y ) );\r\n\t\t\tvec4 v3 = texture2D( boneTexture, vec2( dx * ( x + 2.5 ), y ) );\r\n\t\t\tvec4 v4 = texture2D( boneTexture, vec2( dx * ( x + 3.5 ), y ) );\r\n\r\n\t\t\tmat4 bone = mat4( v1, v2, v3, v4 );\r\n\r\n\t\t\treturn bone;\r\n\t\t}\r\n\t#else\r\n\r\n\t\tuniform mat4 boneGlobalMatrices[ NUM_BONES ];\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tmat4 bone = boneGlobalMatrices[ int(i) ];\r\n\t\t\treturn bone;\r\n\t\t}\r\n\r\n\t#endif\r\n#endif\r\n\r\n//Only for m * v (not v * m!)\r\nvec3 mulVectorByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn (v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] ) )).xyz;\r\n}\r\n\r\n//Only for m * p (not p * m!)\r\nvec4 mulPointByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] + m[3] ) );\r\n}\r\n\r\n\r\n\r\nvoid main() {\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvUv.xy = uv;\r\n\tvUv.y = 1.0 - vUv.y;\r\n\tvUv.zw = uv2;\r\n\tvUv.w = 1.0 - vUv.w;\r\n#endif\r\n\r\n#if defined( DISPLACEMENT_MAP_RGBA )\r\n\tfloat texDisplacement = 0.0;\r\n\t#if ( DISPLACEMENT_MAP_RGBA == 0 )\r\n\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\t\ttexDisplacement = displacementMag * displacementMap.x + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\r\n\t#elif ( DISPLACEMENT_MAP_RGBA == 1 )\r\n\t\t#define DISPLACEMENT_WITH_NORMAL\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\r\n\t\ttexDisplacement = displacementMag * displacementMap.a + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\t#endif\r\n\tvec4 displacedPosition = vec4( (normal * texDisplacement ) + position.xyz, 1.0 );\r\n#else\r\n\tvec4 displacedPosition = vec4( position, 1.0 );\r\n\r\n#endif\r\n\r\n\r\nhighp vec3 vNormal = normal;\r\n#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\thighp vec3 vTangent = tangent.xyz;\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tmat4 boneMatX = getBoneMatrix( skinIndex.x );\r\n\tmat4 boneMatY = getBoneMatrix( skinIndex.y );\r\n\tmat4 boneMatZ = getBoneMatrix( skinIndex.z );\r\n\tmat4 boneMatW = getBoneMatrix( skinIndex.w );\r\n\r\n\tmat4 skinMatrix = mat4( 0.0 );\r\n        skinMatrix += skinWeight.x * boneMatX;\r\n\tskinMatrix += skinWeight.y * boneMatY;\r\n\tskinMatrix += skinWeight.z * boneMatZ;\r\n\tskinMatrix += skinWeight.w * boneMatW;\r\n        skinMatrix  = bindMatrixInverse * skinMatrix * bindMatrix;\r\n\r\n\tvNormal = (skinMatrix * vec4( vNormal, 0.0 )).xyz;\r\n\t#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\t\tvTangent = (skinMatrix * vec4( vTangent, 0.0 )).xyz;\r\n\t#endif\r\n\r\n\tvec4 skinVertex    = bindMatrix * displacedPosition;\r\n\tdisplacedPosition  = boneMatX * skinVertex * skinWeight.x;\r\n\tdisplacedPosition += boneMatY * skinVertex * skinWeight.y;\r\n\tdisplacedPosition += boneMatZ * skinVertex * skinWeight.z;\r\n\tdisplacedPosition += boneMatW * skinVertex * skinWeight.w;\r\n\tdisplacedPosition  = bindMatrixInverse * displacedPosition;\r\n#endif\r\n\r\nvPosition_VS = modelViewMatrix * displacedPosition;\r\n\r\n#ifdef USE_BILLBOARDING\r\n\tgl_Position = projectionMatrix * (viewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + modelViewMatrix * displacedPosition );\r\n#else\r\n\tgl_Position = projectionMatrix * modelViewMatrix * displacedPosition;\r\n#endif\r\n\r\n#if defined( USE_LOGDEPTHBUF ) && !defined(DEPTH_PASS)\r\n\tgl_Position.z = log2(max(1e-6, gl_Position.w + 1.0)) * logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvFragDepth = 1.0 + gl_Position.w;\r\n\t#else\r\n\t\tgl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;\r\n\t#endif\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR )\r\n\t\t#if defined( ALBEDO )\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t\tvColor = color * color;\r\n\t\t\t#else\r\n\t\t\t\tvColor = color;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#endif\r\n\r\n\tvNormal_VS.xyz = normalMatrix * vNormal;\r\n\r\n\t#ifdef FLIP_SIDED\r\n\t\tvNormal_VS = -vNormal_VS;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\r\n\t\t#if defined( NORMAL_MAP ) && defined(USE_TANGENTS)\r\n\t\t\tvTangent_VS.xyz = normalMatrix * vTangent.xyz;\r\n\t\t\tvBinormal_VS.xyz = cross( vNormal_VS.xyz, vTangent_VS.xyz ) * tangent.w;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t \t#if NUM_SHADOWS > 0\r\n\r\n\t\t\t\tfor( int i = 0; i < NUM_SHADOWS; i ++ ) {\r\n\r\n\t\t\t\t\t#ifdef USE_MORPHTARGETS\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * vec4( morphed, 1.0 );\r\n\r\n\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\tvShadowCoord[ i ] = shadowMatrix[ i ] * modelMatrix * displacedPosition;\r\n\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z = log2(max(1e-6, 1.0 + vShadowCoord[ i ].w)) * logDepthBufFC - 1.0;\r\n\t\t\t\t\t\t// vShadowCoord[ i ].z *= vShadowCoord[ i ].w;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t}\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t#endif\r\n#endif\r\n}"
 
 /***/ },
-/* 131 */
+/* 135 */
 /***/ function(module, exports) {
 
 	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\tuniform float reflectionFresnel;\r\n\t\t#ifdef ENVIRONMENT_MAP_CUBE_0\r\n\t\t\tuniform samplerCube environmentMapCube_0;\r\n\t\t\tuniform samplerCube environmentMapCube_1;\r\n\t\t\tuniform samplerCube environmentMapCube_2;\r\n\t\t#elif defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\tuniform sampler2D environmentMap2D_0;\r\n\t\t\tuniform sampler2D environmentMap2D_1;\r\n\t\t\tuniform sampler2D environmentMap2D_2;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(ROUGHNESS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t#if NUM_SHADOWS > 0\r\n\t\t\t\tuniform sampler2D shadowMap[ NUM_SHADOWS ];\r\n\t\t\t\tuniform vec2 shadowMapSize[ NUM_SHADOWS ];\r\n\t\t\t\tuniform float shadowBias[ NUM_SHADOWS ];\r\n\t\t\t\tvarying vec4 vShadowCoord[ NUM_SHADOWS ];\r\n\t\t\t#endif\r\n\r\n\t\t\tfloat unpackDepth( const in vec4 rgba_depth ) {\r\n\t\t\t\tconst vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\r\n\t\t\t\tfloat depth = dot( rgba_depth, bit_shift );\r\n\t\t\t\treturn depth;\r\n\t\t\t}\r\n\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\n#ifdef USE_ENVIRONMENT_MAP\r\nvec3 getReflectionFromRoughness(in vec3 ref0, in vec3 ref1, in vec3 ref2, in float roughness) {\r\n\tvec3 colour1, colour2;\r\n\tfloat interp = roughness * 2.0;\r\n\tif (roughness <= 0.5) {\r\n\t\tcolour1 = ref0;\r\n\t\tcolour2 = ref1;\r\n\t} else {\r\n\t\tinterp -= 1.0;\r\n\t\tcolour1 = ref1;\r\n\t\tcolour2 = ref2;\r\n\t}\r\n\treturn mix(colour1, colour2, interp);\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t#ifdef GAMMA_INPUT\r\n\t\t  albedoTex.xyz *= albedoTex.xyz;\r\n\t\t#endif\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  emissiveTex *= emissiveTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t  sssTex *= sssTex;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 envMapReflectedColor;\r\n\t\t\tvec3 envMapDiffuseColor;\r\n\r\n\t\t\t#if defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\t\tvec3 reflectedColor0 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor1 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor2 = vec3(0.0);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 sampleUV;\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tmipBias = roughnessValue * 6.0;\r\n\t\t\t\t\treflectedColor0 = textureCube( environmentMapCube_0, sampleUV, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 3.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = textureCube( environmentMapCube_1, sampleUV, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 sampleUV;\r\n\t\t\t\t\t//Sphere map reflection\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t\t\t\t\t//Planar reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tmipBias = roughnessValue * 10.0;\r\n\t\t\t\t\treflectedColor0 = texture2D( environmentMap2D_0, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 5.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = texture2D( environmentMap2D_1, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\tenvMapReflectedColor = getReflectionFromRoughness(reflectedColor0, reflectedColor1, reflectedColor2, roughnessValue);\r\n\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\tenvMapDiffuseColor = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tenvMapDiffuseColor = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t#ifdef USE_SHADOWMAP\r\n\t\t\t\t#if NUM_SHADOWS > 0 && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\t\t\t\t\tfloat shadowValues[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\tfloat shadowValuesScatter[ NUM_DIR_LIGHTS ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\t\t\t\t\t\tvec3 shadowColour = vec3(1.0);\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_DIR_LIGHTS; s ++ ) {\r\n\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\tvec3 frustumColors[3];\r\n\t\t\t\t\t\tfrustumColors[0] = vec3( 1.0, 0.5, 0.0 );\r\n\t\t\t\t\t\tfrustumColors[1] = vec3( 0.0, 1.0, 0.8 );\r\n\t\t\t\t\t\tfrustumColors[2] = vec3( 0.0, 0.5, 1.0 );\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\tint inFrustumCount = 0;\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat fDepth;\r\n\t\t\t\t\t//int lightIndex = 0;\r\n\t\t\t\t\tint frustumIndex = 0;\r\n\r\n\t\t\t\t\tfor( int s = 0; s < NUM_SHADOWS; s ++ ) {\r\n\r\n\t\t\t\t\t\tvec3 shadowCoord = vShadowCoord[ s ].xyz / vShadowCoord[ s ].w;\r\n\t\t\t\t\t\t// \"if ( something && something )\" \t\t breaks ATI OpenGL shader compiler\r\n\t\t\t\t\t\t// \"if ( all( something, something ) )\"  using this instead\r\n\r\n\t\t\t\t\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\r\n\t\t\t\t\t\tbool inFrustum = all( inFrustumVec );\r\n\r\n\t\t\t\t\t\t// don't shadow pixels outside of light frustum\r\n\t\t\t\t\t\t// use just first frustum (for cascades)\r\n\t\t\t\t\t\t// don't shadow pixels behind far plane of light frustum\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\tinFrustumCount += int( inFrustum );\r\n\t\t\t\t\t\t\tbvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\r\n\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\tbool frustumTest = all( frustumTestVec );\r\n\r\n\t\t\t\t\t\tif ( frustumTest ) {\r\n\r\n\t\t\t\t\t\t\tshadowCoord.z += shadowBias[ s ];\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_TYPE_PCF_SOFT\r\n\r\n\t\t\t\t\t\t\t\t// Percentage-close filtering\r\n\t\t\t\t\t\t\t\t// (9 pixel kernel)\r\n\t\t\t\t\t\t\t\t// http://fabiensanglard.net/shadowmappingPCF/\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\r\n\r\n\t\t\t\t\t\t\t\t//const float shadowDelta = 1.0 / 9.0;\r\n\t\t\t\t\t\t\t\t//const float kernelCornerWeight = 1.0 / 16.0;\r\n\t\t\t\t\t\t\t\t//const float kernelEdgeWeight = 1.0 / 8.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.0 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.0 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.0 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tmat3 shadowKernel;\r\n\t\t\t\t\t\t\t\tmat3 depthKernel;\r\n\r\n\t\t\t\t\t\t\t\tdepthKernel[0][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[0][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[1][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][0] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][1] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tdepthKernel[2][2] = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\r\n\t\t\t\t\t\t\t\tvec3 shadowZ = vec3( shadowCoord.z );\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[0] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[1] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\r\n\t\t\t\t\t\t\t\tshadowKernel[2] *= vec3(0.25);\r\n\r\n\t\t\t\t\t\t\t\tvec2 fractionalCoord = 1.0 - fract(shadowCoord.xy * shadowMapSize[s].xy );\r\n\r\n\r\n\t\t\t\t\t\t\t\tshadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\tshadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\tvec4 shadowValueVector;\r\n\t\t\t\t\t\t\t\tshadowValueVector.x = mix(shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.y = mix(shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.z = mix(shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\tshadowValueVector.w = mix(shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\r\n\r\n\t\t\t\t\t\t\t\tshadow = dot(shadowValueVector, vec4(1.0));\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\t\tdepthKernel[0] = mix( depthKernel[1], depthKernel[0], fractionalCoord.x );\r\n\t\t\t\t\t\t\t\t\tdepthKernel[1] = mix( depthKernel[2], depthKernel[1], fractionalCoord.x );\r\n\r\n\t\t\t\t\t\t\t\t\tvec4 depthValues;\r\n\t\t\t\t\t\t\t\t\tdepthValues.x = mix(depthKernel[0][1], depthKernel[0][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.y = mix(depthKernel[0][2], depthKernel[0][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.z = mix(depthKernel[1][1], depthKernel[1][0], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tdepthValues.w = mix(depthKernel[1][2], depthKernel[1][1], fractionalCoord.y );\r\n\t\t\t\t\t\t\t\t\tfloat totalDepth = dot(depthValues, vec4(1.0));// + dot(depthKernel[1], vec3(1.0)) + dot(depthKernel[2], vec3(1.0));\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 4.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 100.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 1000.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#elif defined( SHADOWMAP_TYPE_PCF )\r\n\r\n\t\t\t\t\t\t\t\tfloat shadow = 0.0;\r\n\t\t\t\t\t\t\t\tconst float shadowDelta = 1.0 / 9.0;\r\n\r\n\t\t\t\t\t\t\t\tfloat xPixelOffset = 1.0 / shadowMapSize[ s ].x;\r\n\t\t\t\t\t\t\t\tfloat yPixelOffset = 1.0 / shadowMapSize[ s ].y;\r\n\r\n\t\t\t\t\t\t\t\tfloat dx0 = -1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy0 = -1.25 * yPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dx1 = 1.25 * xPixelOffset;\r\n\t\t\t\t\t\t\t\tfloat dy1 = 1.25 * yPixelOffset;\r\n\r\n\t\t\t\t\t\t\t\tfloat totalDepth = 0.0;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy, 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, 0.0 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( 0.0, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\tfDepth = unpackDepth( texture2DProj( shadowMap[ s ], vec4( shadowCoord.xy + vShadowCoord[ s ].w * vec2( dx1, dy1 ), 0.05, vShadowCoord[ s ].w ) ) );\r\n\t\t\t\t\t\t\t\t// fDepth = unpackDepth( texture2D( shadowMap[ s ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) shadow += shadowDelta;\r\n\t\t\t\t\t\t\t\ttotalDepth += fDepth;\r\n\r\n\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = (1.0 - shadow);\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat depthAvg = totalDepth / 9.0;\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - depthAvg ) * shadow;\r\n\t\t\t\t\t\t\t\t\t// exponent = clamp(exponent, 0.0, 10000.0);\r\n\t\t\t\t\t\t\t\t\t// exponent = -pow(exponent * (1.0 - scatterScale) * 100.0, 2.0);\r\n\t\t\t\t\t\t\t\t\t// shadowValuesScatter[ s ] = exp2( exponent );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tvec4 rgbaDepth = texture2DProj( shadowMap[ s ], vec4( vShadowCoord[ s ].w * ( shadowCoord.xy ), 0.05, vShadowCoord[ s ].w ) );\r\n\t\t\t\t\t\t\t\t// vec4 rgbaDepth = texture2D( shadowMap[ s ], shadowCoord.xy );\r\n\t\t\t\t\t\t\t\tfloat fDepth = unpackDepth( rgbaDepth );\r\n\r\n\t\t\t\t\t\t\t\tif ( fDepth < shadowCoord.z ) {\r\n\r\n\t\t\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ 0 ] *= 0.0;\r\n\t\t\t\t\t\t\t\t\t#else\r\n\t\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 0.0;\r\n\t\t\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\r\n\t\t\t\t\t\t\t\t\tfloat exponent = (shadowCoord.z - fDepth );\r\n\t\t\t\t\t\t\t\t\texponent = clamp(exponent, 0.0, 1000.0) * 1000.0;\r\n\t\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = exp( (scatterScale - 1.0) * exponent );\r\n\r\n\t\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\telse {\r\n\t\t\t\t\t\t\tshadowValues[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\t\tshadowValuesScatter[ s ] = 1.0;\r\n\t\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t}\r\n\r\n\t\t\t\t\t\t#ifdef SHADOWMAP_DEBUG\r\n\r\n\t\t\t\t\t\t\t#ifdef SHADOWMAP_CASCADE\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum && inFrustumCount == 1 ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#else\r\n\r\n\t\t\t\t\t\t\t\tif ( inFrustum ) shadowColour = frustumColors[ s ];\r\n\r\n\t\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t//frustumIndex ++;\r\n\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\t\t\t\t\tfloat shadowValue = 1.0;\r\n\t\t\t\t\tfloat shadowValueScatter = 1.0;\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0) && ( defined(ALBEDO) || defined(SPECULAR) )\r\n\r\n\t\t\t\t\t\tshadowValue = shadowValues[ i ];\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && (NUM_SHADOWS > 0)\r\n\t\t\t\t\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\t\t\t\t\t\tshadowValueScatter = shadowValuesScatter[ i ];\r\n\t\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * (specWeight * shadowValue) + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * shadowValue * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( USE_SHADOWMAP ) && defined( SHADOWMAP_DEBUG )\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\ttotalDiffuse *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t\t#ifdef SPECULAR_COLOR\r\n\t\t\t\t\t\t\ttotalSpecular *= shadowColour;\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && (defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0))\r\n\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\t\tvec3 reflectance_term = envMapReflectedColor.xyz * fresnel;\r\n\t\t\t\t#if !defined(METALNESS)\r\n\t\t\t\t\treflectance_term *= (1.0 - roughnessValue);\r\n\t\t\t\t#endif\r\n\t\t\t\ttotalSpecular += reflectance_term * specularColorValue;\r\n\r\n\t\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\ttotalDiffuse += envMapDiffuseColor;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t#ifdef GAMMA_OUTPUT\r\n\t\t\tfinalColor = sqrt( finalColor );\r\n\t\t#endif\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
 
 /***/ },
-/* 132 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(129), __webpack_require__(130), __webpack_require__(131)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(133), __webpack_require__(134), __webpack_require__(135)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -92222,19 +92747,19 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 133 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -92248,7 +92773,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _APIUtilities = __webpack_require__(134);
+	var _APIUtilities = __webpack_require__(138);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
@@ -92382,12 +92907,11 @@
 	  }
 	});
 
-
 	window.Box3D.ScriptAsset = ScriptAsset;
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 134 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -92461,18 +92985,18 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 135 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -92482,13 +93006,13 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DEntity = __webpack_require__(13);
-
-	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
-
 	var _BaseTextureAsset2 = __webpack_require__(19);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
+
+	var _VideoAsset = __webpack_require__(122);
+
+	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -92521,128 +93045,32 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      var _this2 = this;
-
-	      var onTexture2DLoaded = function onTexture2DLoaded(data) {
-	        _this2.onTexture2DLoad(data);
-	        callback();
-	      };
-
-	      var onTexture2DLoadError = function onTexture2DLoadError(err) {
-	        _log2.default.debug('There was an error loading the texture, ' + _this2.getName(), err);
-	        // Only set the missing texture if there isn't loaded data already present.
-	        // This allows streamed textures to continue to be used, even if a higher-res
-	        // mip failed to load.
-	        if (!_this2.runtimeData) {
-	          _this2.runtimeData = _this2.registry.getMissingTexture();
-	          _this2.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
-	        }
-	        _this2.loadedBytes = _this2.getDataSizeDownload();
-	        _this2.trigger('loadProgress', _this2);
-	        callback();
-	      };
-
-	      var onTexture2DLoadProgress = function onTexture2DLoadProgress(progressObj) {
-	        _this2.loadedBytes = progressObj.loaded;
-	        if (!_this2.get('bufferSize')) {
-	          _this2.set('bufferSize', progressObj.total);
-	        }
-	        _this2.trigger('loadProgress', _this2);
-	      };
-
-	      // Disabling this temporarily as we only have the "2048" representation in Preview SDK.
-	      // const width = this.getProperty('originalWidth');
-	      // const height = this.getProperty('originalHeight');
-	      // const stream = this.getProperty('stream');
-
-	      // if (!stream || (width < 1024 && height < 1024)) {
-	      this._directLoad(onTexture2DLoaded, onTexture2DLoadError, onTexture2DLoadProgress);
-	      // } else {
-	      //   this._streamingLoad(onTexture2DLoaded, onTexture2DLoadError, onTexture2DLoadProgress);
-	      // }
-	    }
-	  }, {
 	    key: 'createTextureData',
 	    value: function createTextureData(image) {
-	      var texture = new _three2.default.Texture(undefined);
-	      texture.image = image;
-	      texture.needsUpdate = true;
-	      texture.sourceFile = image.src;
-	      return texture;
-	    }
-	  }, {
-	    key: '_directLoad',
-	    value: function _directLoad(onSuccess, onFailure, onProgress) {
-	      var width = this.getProperty('originalWidth');
-	      var height = this.getProperty('originalHeight');
-
-	      this.box3DRuntime.resourceLoader.load(this, {
-	        width: width > this.getMaxTextureSize() ? this.getMaxTextureSize() : width,
-	        height: height > this.getMaxTextureSize() ? this.getMaxTextureSize() : height,
-	        maxWidth: this.getMaxTextureSize(),
-	        maxHeight: this.getMaxTextureSize(),
-	        packingFormat: this.isHdr() ? 'rgbe' : 'none',
-	        compression: this.getCompressionFormat(),
-	        xhrKey: this.id
-	      }, onProgress).then(function onFinalTextureLoad(data) {
-	        onSuccess.call(this, data);
-	      }.bind(this)).catch(function (err) {
-	        onFailure.call(this, err);
-	      }.bind(this));
-	    }
-	  }, {
-	    key: '_streamingLoad',
-	    value: function _streamingLoad(onSuccess, onFailure, onProgress) {
-	      this.box3DRuntime.resourceLoader.load(this, {
-	        width: 32,
-	        height: 32,
-	        packingFormat: this.isHdr() ? 'rgbe' : 'none',
-	        compression: 'none',
-	        xhrKey: this.id
-	      }).then(function onLowMipLoad(data) {
-	        this.onTexture2DLoad(data);
-	        this._directLoad(onSuccess, onFailure, onProgress);
-	      }.bind(this)).catch(function onLowMipFailure() {
-	        this._directLoad(onSuccess, onFailure);
-	      }.bind(this));
-	    }
-	  }, {
-	    key: 'onTexture2DLoad',
-	    value: function onTexture2DLoad(data) {
 	      // If there was a previous texture loaded, dispose of it.
 	      if (this.runtimeData) {
 	        this.runtimeData.dispose();
 	      }
-	      // Depending on the data returned, handle as an image tag or a compressed texture
-	      if (data.properties.compression === 'none') {
-	        this.runtimeData = this.createTextureData(data.data);
+	      // TODO - what about animated GIFs? Can they share logic with videos?
+	      if (this.getImage() instanceof _VideoAsset2.default) {
+	        this.runtimeData = new _three2.default.VideoTexture(image.imageData);
 	      } else {
-	        this.runtimeData = this.createCompressedTextureData(data.data, data.properties.compression);
-	      }
-
-	      if (this.isHdr() && data.properties.packingFormat) {
-	        //Store the packing format on this asset because it specific to this downloaded
-	        //representation. Other runtime instances and applications may download a different
-	        //representation of the image.
-	        this.packingFormat = data.properties.packingFormat;
-	        if (this.hdrSource) {
-	          this.hdrSource.dispose();
+	        // Depending on the data returned, handle as an image tag or a compressed texture
+	        switch (image.compression) {
+	          case 'dxt':
+	            this.runtimeData = this.createDxtTextureData(image.imageData, image.compression);
+	            break;
+	          default:
+	            this.runtimeData = new _three2.default.Texture(image.imageData);
 	        }
-	        this.hdrSource = this.runtimeData;
-	        this.hdrSourceFormat = data.properties.packingFormat;
-	        this.runtimeData = new _three2.default.WebGLRenderTarget(data.properties.width, data.properties.height, {
-	          minFilter: _three2.default.LinearFilter,
-	          magFilter: _three2.default.LinearFilter,
-	          format: _three2.default.RGBAFormat,
-	          type: _three2.default.FloatType,
-	          stencilBuffer: false
-	        });
+
+	        this.runtimeData.needsUpdate = true;
+	        if (this.isHdr() && image.channels) {
+	          this.createHdrTextureData(image);
+	        }
 	      }
 
 	      this.runtimeData.name = this.getName();
-	      this.runtimeData.box3DEntityId = this.id;
 	      this.loadedBytes = this.getDataSizeDownload();
 	      this.trigger('loadProgress', this);
 	    }
@@ -92653,13 +93081,25 @@
 	     */
 
 	  }, {
-	    key: '_unpackToHdr',
-	    value: function _unpackToHdr() {
-	      var renderer;
-	      var extensions;
-	      var packingDefines = {};
+	    key: 'createHdrTextureData',
+	    value: function createHdrTextureData(imageData) {
+	      if (this.hdrSource) {
+	        this.hdrSource.dispose();
+	      }
+	      this.hdrSource = this.runtimeData;
+	      // this.hdrSourceFormat = imageData.channels;
+	      this.runtimeData = new _three2.default.WebGLRenderTarget(imageData.width, imageData.height, {
+	        // The filter settings will be overridden later by the usual method
+	        minFilter: _three2.default.LinearFilter,
+	        magFilter: _three2.default.LinearFilter,
+	        format: _three2.default.RGBAFormat,
+	        type: this.getHdrTargetType(),
+	        depthBuffer: false,
+	        stencilBuffer: false
+	      });
 
-	      switch (this.hdrSourceFormat) {
+	      var packingDefines = {};
+	      switch (imageData.channels) {
 	        case 'rgbe':
 	          packingDefines.HDR_RGBE = 0;
 	          packingDefines.FLIP_Y = 0;
@@ -92669,27 +93109,19 @@
 	          packingDefines.FLIP_Y = 0;
 	      }
 
-	      renderer = this.box3DRuntime.getThreeRenderer();
-	      extensions = renderer.extensions;
+	      var renderer = this.box3DRuntime.getThreeRenderer();
 
-	      // Only unpack the HDR data if we can create a float texture on this
-	      // hardware AND we actually have valid source data (it may have failed to
-	      // download).
-	      if (extensions.get('OES_texture_float')) {
-	        if (!this.hdrSource) {
-	          _log2.default.warn('Unable to unpack HDR texture because the source data is missing.');
-	          return;
-	        }
-	        this.hdrSource.minFilter = _three2.default.NearestFilter;
-	        this.hdrSource.maxFilter = _three2.default.NearestFilter;
-	        if (!this.unpackHdrPass) {
-	          this.unpackHdrPass = new _three2.default.ShaderPass(_three2.default.UnpackHDRShader);
-	        }
-	        this.unpackHdrPass.material.defines = packingDefines;
-	        this.unpackHdrPass.render(renderer, this.runtimeData, this.hdrSource);
-	      } else {
-	        _log2.default.warn('Unable to unpack HDR texture due to lack of FP texture support.');
+	      if (!this.hdrSource) {
+	        _log2.default.warn('Unable to unpack HDR texture because the source data is missing.');
+	        return;
 	      }
+	      this.hdrSource.minFilter = _three2.default.NearestFilter;
+	      this.hdrSource.maxFilter = _three2.default.NearestFilter;
+	      if (!this.unpackHdrPass) {
+	        this.unpackHdrPass = new _three2.default.ShaderPass(_three2.default.UnpackHDRShader);
+	      }
+	      this.unpackHdrPass.material.defines = packingDefines;
+	      this.unpackHdrPass.render(renderer, this.runtimeData, this.hdrSource);
 	    }
 	  }, {
 	    key: 'unload',
@@ -92709,18 +93141,16 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 136 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _log = __webpack_require__(6);
 
@@ -92758,70 +93188,41 @@
 
 	  /** @inheritdoc */
 
-
 	  _createClass(TextureCubeAsset, [{
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      var _this2 = this;
-
-	      var width = this.getProperty('originalWidth');
-	      var height = this.getProperty('originalHeight');
-
-	      this.box3DRuntime.resourceLoader.load(this, {
-	        width: width > this.getMaxTextureSize() ? this.getMaxTextureSize() : width,
-	        height: height > this.getMaxTextureSize() ? this.getMaxTextureSize() : height,
-	        pixelFormat: this.getPixelFormat(),
-	        compression: this.getCompressionFormat(),
-	        xhrKey: this.id
-	      }).then(function (data) {
-	        // Depending on the data returned, handle as an image tag or a compressed texture.
-	        if (data.properties.compression === 'none') {
-	          _this2.runtimeData = _this2.createTextureData(data.data);
-	        } else {
-	          _this2.runtimeData = _this2.createCompressedTextureData(data.data, data.properties.compression);
-	        }
-
-	        _this2.runtimeData.name = _this2.getName();
-	        _this2.runtimeData.box3DEntityId = _this2.id;
-	        _this2.loadedBytes = _this2.getDataSizeDownload();
-	        _this2.trigger('loadProgress', _this2);
-	        callback();
-	      }).catch(function (err) {
-	        _log2.default.debug('There was an error loading the texture, ' + _this2.getName(), err);
-	        _this2.runtimeData = _this2.registry.getMissingTextureCube();
-	        _this2.failure = true;
-	        _this2.trigger('loadProgress', _this2);
-	        callback();
-	      });
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(TextureCubeAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      // TODO: handle reloading the texture here.
-	      // if (changes.hasOwnProperty('useHardwareCompression')) {
-	      // }
-	    }
-	  }, {
 	    key: 'createTextureData',
-	    value: function createTextureData(images) {
-	      var texture = new _three2.default.CubeTexture(images, _three2.default.CubeReflectionMapping);
-	      texture.needsUpdate = true;
-	      return texture;
+	    value: function createTextureData(image) {
+	      // If there was a previous texture loaded, dispose of it.
+	      if (this.runtimeData) {
+	        this.runtimeData.dispose();
+	      }
+	      // Depending on the data returned, handle as an image tag or a compressed texture
+	      switch (image.compression) {
+	        case 'dxt':
+	          this.runtimeData = this.createDxtTextureData(image.imageData, image.compression);
+	          break;
+	        default:
+	          this.runtimeData = new _three2.default.CubeTexture(image.imageData, _three2.default.CubeReflectionMapping);
+	      }
+
+	      if (this.isHdr() && image.channels) {
+	        this.createHdrTextureData(image);
+	      }
+
+	      this.runtimeData.name = this.getName();
+	      // this.runtimeData.box3DEntityId = this.id;
+	      this.loadedBytes = this.getDataSizeDownload();
+	      this.trigger('loadProgress', this);
 	    }
 
-	    /** Returns the maximum texture size supported by the device.
-	     * @return {Integer} The maximum texture size.
+	    /**
+	     * Unpack this texture into a 16-bit floating point colour texture.
+	     * @return {[type]} [description]
 	     */
 
 	  }, {
-	    key: 'getMaxTextureSize',
-	    value: function getMaxTextureSize() {
-	      return this.box3DRuntime.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE');
+	    key: 'createHdrTextureData',
+	    value: function createHdrTextureData() {
+	      _log2.default.warn('Implement Me!!');
 	    }
 	  }]);
 
@@ -92832,273 +93233,18 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 137 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _lodash = __webpack_require__(2);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _BaseTextureAsset2 = __webpack_require__(19);
-
-	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class TextureVideoAsset
-	 * @constructor
-	 */
-
-	var TextureVideoAsset = function (_BaseTextureAsset) {
-	  _inherits(TextureVideoAsset, _BaseTextureAsset);
-
-	  function TextureVideoAsset(json) {
-	    _classCallCheck(this, TextureVideoAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(TextureVideoAsset).call(this, json));
-	  }
-
-	  _createClass(TextureVideoAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(TextureVideoAsset.prototype), 'initialize', this).call(this, properties);
-	      this.box3DRuntime.on('update', this.onUpdate, this);
-	      this.on('pause', this.pause, this);
-	      this.on('play', this.play, this);
-	      this.on('stop', this.stop, this);
-	      this.on('toggle', this.toggle, this);
-	    }
-	  }, {
-	    key: 'uninitialize',
-	    value: function uninitialize() {
-	      this.box3DRuntime.off('update', this.onUpdate, this);
-	      this.off('pause', this.pause, this);
-	      this.off('play', this.play, this);
-	      this.off('stop', this.stop, this);
-	      this.off('toggle', this.toggle, this);
-
-	      if (this.runtimeData && this.runtimeData.image) {
-	        // TODO: should we be doing more here?
-	        this.runtimeData.image.pause();
-	      }
-
-	      _get(Object.getPrototypeOf(TextureVideoAsset.prototype), 'uninitialize', this).call(this);
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      var _this2 = this;
-
-	      var onVideoReady = function onVideoReady(videoEl) {
-	        if (videoEl) {
-	          _this2.runtimeData = new _three2.default.VideoTexture(videoEl);
-	          videoEl.style.display = 'none';
-	          videoEl.loop = _this2.getProperty('loop');
-	          videoEl.autoplay = _this2.getProperty('autoPlay');
-	        }
-	        callback();
-	      };
-
-	      var onVideoFail = function onVideoFail(err) {
-	        _log2.default.debug('There was an error loading the video, ' + _this2.getName(), err);
-	        _this2.failure = true;
-	        callback();
-	      };
-
-	      var parentEl = this.box3DRuntime.getRenderer().getCanvas().parentElement;
-	      var cssSelector = this.getProperty('querySelector');
-	      if (cssSelector) {
-	        var videoEl = parentEl.querySelector(cssSelector);
-	        onVideoReady(videoEl);
-	      } else {
-	        this.box3DRuntime.resourceLoader.load(this, { xhrKey: this.id }).then(function (data) {
-	          parentEl.appendChild(data.data);
-	          onVideoReady(data.data);
-	        }).catch(onVideoFail);
-	      }
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(TextureVideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      if (this.runtimeData.image) {
-
-	        if (changes.hasOwnProperty('loop')) {
-	          this.runtimeData.image.loop = this.getProperty('loop');
-	        }
-
-	        if (changes.hasOwnProperty('autoPlay')) {
-	          this.runtimeData.image.autoplay = this.getProperty('autoPlay');
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'onUpdate',
-	    value: function onUpdate() {
-	      if (this.runtimeData) {
-	        var video = this.runtimeData.image;
-
-	        if (video && !video.paused && !video.error && video.readyState >= video.HAVE_CURRENT_DATA) {
-	          this.box3DRuntime.needsRender = true;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'pause',
-	    value: function pause() {
-	      if (this.runtimeData) {
-	        this.runtimeData.image.pause();
-	      }
-	    }
-	  }, {
-	    key: 'play',
-	    value: function play(seek, seekTime) {
-	      if (this.runtimeData) {
-	        if (seek) {
-	          this.runtimeData.image.currentTime = seekTime;
-	        }
-
-	        this.runtimeData.image.play();
-	      }
-	    }
-	  }, {
-	    key: 'stop',
-	    value: function stop() {
-	      if (this.runtimeData) {
-	        this.runtimeData.image.pause();
-	        this.runtimeData.image.currentTime = 0;
-	      }
-	    }
-	  }, {
-	    key: 'toggle',
-	    value: function toggle() {
-	      if (this.runtimeData) {
-	        if (this.runtimeData.image.paused) {
-	          this.play();
-	        } else {
-	          this.pause();
-	        }
-	      }
-	    }
-	  }]);
-
-	  return TextureVideoAsset;
-	}(_BaseTextureAsset3.default);
-
-	TextureVideoAsset.schema = _lodash2.default.extend({}, _BaseTextureAsset3.default.schema, {
-	  uMapping: {
-	    type: 'string',
-	    description: _BaseTextureAsset3.default.schema.uMapping.description,
-	    default: 'clamp'
-	  },
-	  vMapping: {
-	    type: 'string',
-	    description: _BaseTextureAsset3.default.schema.vMapping.description,
-	    default: 'clamp'
-	  },
-	  generateMipmaps: {
-	    type: 'boolean',
-	    description: _BaseTextureAsset3.default.schema.generateMipmaps.description,
-	    default: false
-	  },
-	  autoPlay: {
-	    type: 'boolean',
-	    description: '',
-	    default: true
-	  },
-	  state: {
-	    type: 'string',
-	    description: '',
-	    default: 'play'
-	  },
-	  loop: {
-	    type: 'boolean',
-	    description: '',
-	    default: true
-	  }
-	});
-	TextureVideoAsset.events = {
-	  pause: {
-	    params: [],
-	    action: true,
-	    category: ''
-	  },
-	  play: {
-	    params: [{
-	      name: 'seek',
-	      type: 'b',
-	      description: '',
-	      default: false
-	    }, {
-	      name: 'seekTime',
-	      type: 'f',
-	      description: '',
-	      default: 0
-	    }],
-	    action: true,
-	    category: ''
-	  },
-	  stop: {
-	    params: [],
-	    action: true,
-	    category: ''
-	  },
-	  toggle: {
-	    params: [],
-	    action: true,
-	    category: ''
-	  }
-	};
-
-
-	window.Box3D.TextureVideoAsset = TextureVideoAsset;
-	exports.default = TextureVideoAsset;
-
-/***/ },
-/* 138 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _log = __webpack_require__(6);
 
@@ -93821,23 +93967,22 @@
 	  }
 	};
 
-
 	window.Box3D.Box3DObject = Box3DObject;
 	exports.default = Box3DObject;
 
 /***/ },
-/* 139 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _lodash = __webpack_require__(2);
 
@@ -93847,7 +93992,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(138);
+	var _Box3DObject2 = __webpack_require__(141);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -93875,7 +94020,6 @@
 
 	  _createClass(CameraObject, [{
 	    key: 'createRuntimeData',
-
 
 	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
@@ -93985,23 +94129,22 @@
 	});
 	CameraObject.events = {};
 
-
 	window.Box3D.CameraObject = CameraObject;
 	exports.default = CameraObject;
 
 /***/ },
-/* 140 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -94015,7 +94158,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(138);
+	var _Box3DObject2 = __webpack_require__(141);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -94377,16 +94520,16 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 141 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lodash = __webpack_require__(2);
 
@@ -94396,7 +94539,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(142);
+	var _BaseMeshObject2 = __webpack_require__(145);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -94545,23 +94688,22 @@
 	  }
 	});
 
-
 	window.Box3D.SkinnedMeshObject = SkinnedMeshObject;
 	exports.default = SkinnedMeshObject;
 
 /***/ },
-/* 142 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _log = __webpack_require__(6);
 
@@ -94575,7 +94717,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(138);
+	var _Box3DObject2 = __webpack_require__(141);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -95497,27 +95639,26 @@
 	  }
 	};
 
-
 	window.Box3D.BaseMeshObject = BaseMeshObject;
 	exports.default = BaseMeshObject;
 
 /***/ },
-/* 143 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(142);
+	var _BaseMeshObject2 = __webpack_require__(145);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -95567,20 +95708,20 @@
 	exports.default = StaticMeshObject;
 
 /***/ },
-/* 144 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DObject2 = __webpack_require__(138);
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Box3DObject2 = __webpack_require__(141);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -95610,7 +95751,6 @@
 	  }
 
 	  /** @inheritdoc */
-
 
 	  _createClass(ModelObject, [{
 	    key: '_applyPropertiesLoaded',
@@ -95657,7 +95797,7 @@
 	exports.default = ModelObject;
 
 /***/ },
-/* 145 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -95683,7 +95823,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 146 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';

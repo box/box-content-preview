@@ -54,15 +54,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _v2Loader = __webpack_require__(2);
 
@@ -76,7 +68,15 @@
 
 	var _events2 = _interopRequireDefault(_events);
 
-	var Box3DResourceLoader = (function (_EventEmitter) {
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Box3DResourceLoader = function (_EventEmitter) {
 	  _inherits(Box3DResourceLoader, _EventEmitter);
 
 	  /**
@@ -94,25 +94,27 @@
 
 	    _classCallCheck(this, Box3DResourceLoader);
 
-	    _get(Object.getPrototypeOf(Box3DResourceLoader.prototype), 'constructor', this).call(this);
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DResourceLoader).call(this));
 
 	    if (opts.hasOwnProperty('boxSdk') && opts.boxSdk) {
-	      this.boxSdk = opts.boxSdk;
+	      _this.boxSdk = opts.boxSdk;
 	    } else {
-	      opts.boxSdk = this.boxSdk = new BoxSDK(opts);
+	      opts.boxSdk = _this.boxSdk = new BoxSDK(opts);
 	    }
 
-	    this.loader = null;
+	    _this.loader = null;
 
 	    if (opts.hasOwnProperty('token')) {
-	      this.loader = new _v2Loader2['default'](fileId, fileVersionId, opts);
+	      _this.loader = new _v2Loader2.default(fileId, fileVersionId, opts);
 	    } else {
 	      // create runmode loader
-	      this.loader = new _runmodeLoader2['default'](fileId, fileVersionId, opts);
+	      _this.loader = new _runmodeLoader2.default(fileId, fileVersionId, opts);
 	    }
 
 	    // delegate all notifcations to the external application
-	    this.loader.on('missingAsset', this.onMissingAsset.bind(this));
+	    _this.loader.on('missingAsset', _this.onMissingAsset.bind(_this));
+
+	    return _this;
 	  }
 
 	  /**
@@ -124,15 +126,28 @@
 	   * @returns {Promise} a promise that resolves the asset data
 	   */
 
+
 	  _createClass(Box3DResourceLoader, [{
 	    key: 'load',
-	    value: function load(asset, params, progress) {
-	      if (params === undefined) params = {};
+	    value: function load(asset) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progress = arguments[2];
 
-	      if (asset.getProperty('isLocal')) {
-	        return this.loader.loadLocalAsset(asset, params, progress);
+
+	      var isLocal = false;
+	      var representations = asset.get('representations');
+	      if (representations && representations.length) {
+	        // Assume that if the first representation has a path, they all do.
+	        var src = representations[0].src;
+	        if (src) {
+	          isLocal = representations[0].src.substr(0, 4).toLowerCase() === 'http';
+	        }
+	      }
+
+	      if (isLocal) {
+	        return this.loader.loadAssetFromPath(asset, params, progress);
 	      } else {
-	        return this.loader.loadRemoteAsset(asset, params, progress);
+	        return this.loader.loadAssetFromPackage(asset, params, progress);
 	      }
 	    }
 
@@ -142,6 +157,7 @@
 	    * @param {string} key The key of the XHR that we want to abort
 	    * @returns {void}
 	    */
+
 	  }, {
 	    key: 'abortRequest',
 	    value: function abortRequest(key) {
@@ -154,6 +170,7 @@
 	    * @method abortRequests
 	    * @returns {void}
 	    */
+
 	  }, {
 	    key: 'abortRequests',
 	    value: function abortRequests() {
@@ -167,6 +184,7 @@
 	     * See base-loader.js onAssetNotFound()
 	     * @returns {void}
 	     */
+
 	  }, {
 	    key: 'onMissingAsset',
 	    value: function onMissingAsset(assetDescription) {
@@ -187,7 +205,7 @@
 	  }]);
 
 	  return Box3DResourceLoader;
-	})(_events2['default']);
+	}(_events2.default);
 
 	global.Box3DResourceLoader = Box3DResourceLoader;
 	module.exports = Box3DResourceLoader;
@@ -197,24 +215,15 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	* V2 API Resource Loader for Box3D
-	**/
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _lie = __webpack_require__(3);
 
@@ -224,9 +233,18 @@
 
 	var _baseLoader2 = _interopRequireDefault(_baseLoader);
 
-	var DEFAULT_IMAGE_SIZE = '2048x2048';
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var V2Loader = (function (_BaseLoader) {
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * V2 API Resource Loader for Box3D
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               **/
+
+
+	var V2Loader = function (_BaseLoader) {
 	  _inherits(V2Loader, _BaseLoader);
 
 	  /**
@@ -248,16 +266,12 @@
 	      throw new Error('No Token Provided for V2 Loader!');
 	    }
 
-	    /* eslint-disable */
-	    if (!opts.parentId) {
-	      console.warn('No parent id provided. Be careful, this can cause long requests for file ids, via Search API');
-	    }
-	    /* eslint-enable */
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(V2Loader).call(this, fileId, fileVersionId, opts));
 
-	    _get(Object.getPrototypeOf(V2Loader.prototype), 'constructor', this).call(this, fileId, fileVersionId, opts);
+	    _this.token = opts.token;
+	    _this.parentId = opts.parentId;
 
-	    this.token = opts.token;
-	    this.parentId = opts.parentId;
+	    return _this;
 	  }
 
 	  /**
@@ -266,6 +280,7 @@
 	   * @param {string} url The key to store the total size at
 	   * @returns {int} The byte size of the asset, with applied compression factor
 	   */
+
 
 	  _createClass(V2Loader, [{
 	    key: 'getGzippedLength',
@@ -277,6 +292,7 @@
 	    /**
 	     * @inheritdoc
 	     */
+
 	  }, {
 	    key: 'getAssetIdPromise',
 	    value: function getAssetIdPromise(box3dAsset) {
@@ -285,10 +301,10 @@
 	      var fileName = box3dAsset.getProperty('filename');
 	      var fileId = box3dAsset.getProperty('fileId');
 	      var fileVersionId = box3dAsset.getProperty('fileVersionId');
-	      var idPromise = undefined;
+	      var idPromise = void 0;
 
 	      if (fileId) {
-	        idPromise = _lie2['default'].resolve({
+	        idPromise = _lie2.default.resolve({
 	          fileId: fileId,
 	          fileVersionId: fileVersionId
 	        });
@@ -301,63 +317,49 @@
 	    }
 
 	    /**
-	     * Load an image representation.
-	     * @method loadRemoteImage
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @param {Function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the image data
+	     * @inheritdoc
 	     */
+
 	  }, {
-	    key: 'loadRemoteImage',
-	    value: function loadRemoteImage(fileId, fileVersionId, params, progress) {
-	      var _this = this;
+	    key: 'loadImageFromPackage',
+	    value: function loadImageFromPackage(fileId, fileVersionId) {
+	      var _this2 = this;
 
-	      if (params === undefined) params = {};
+	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	      var progress = arguments[3];
 
-	      return new _lie2['default'](function (resolve, reject) {
-
-	        // if no size provided, try and use width and height, or defaults
-	        var size = params.size || (params.width && params.height ? params.width + 'x' + params.height : DEFAULT_IMAGE_SIZE);
+	      return new _lie2.default(function (resolve, reject) {
+	        var resource = params.resource;
+	        if (!resource) {
+	          return reject(new Error('No valid representation found.'));
+	        }
+	        var responseType = void 0;
+	        switch (resource.compression) {
+	          case 'dxt1':
+	          case 'dxt5':
+	            responseType = 'arraybuffer';
+	            break;
+	          default:
+	            responseType = 'blob';
+	        }
 
 	        // Check to see if we are grabbing the correct representation
 	        var validator = function validator(entry) {
-	          return entry.representation === params.extension && entry.properties.dimensions === size || entry.representation === params.representation;
+	          return entry.representation === '3d';
 	        };
 
-	        _this.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
-
+	        _this2.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
 	          //#TODO @jholdstock: Generalize this loading & progress behaviour
 	          if (!url) {
 	            reject(new Error('No representation available for: ' + fileId));
 	          }
 
-	          if (progress) {
-	            _this.addProgressListener(url, progress);
-	          }
+	          url += '/' + resource.src;
 
-	          if (!_this.cache[url]) {
-
-	            _this.cache[url] = new _lie2['default'](function (resolve, reject) {
-	              _this.sdkLoader.getRepresentation(url, _this.onAssetLoadProgress.bind(_this), { responseType: 'blob', info: { url: url } }).then(function (response) {
-	                return _this.parseImage(response, {
-	                  size: 2048,
-	                  pixelFormat: params.extension === 'png' ? 'rgba' : 'rgb',
-	                  compression: 'none'
-	                });
-	              }).then(function (imgData) {
-	                _this.removeProgressListeners(url);
-	                resolve(imgData);
-	              })['catch'](function (err) {
-	                _this.removeProgressListeners(url);
-	                reject(err);
-	              });
-	            });
-	          }
-
-	          resolve(_this.cache[url]);
-	        })['catch'](reject);
+	          resolve(_this2.loadResourceFromUrl(url, { responseType: responseType }, function (response) {
+	            return _this2.parseImage(response, resource);
+	          }, progress));
+	        });
 	      });
 	    }
 
@@ -368,42 +370,40 @@
 	     * @param {Object} params The criteria for determining which representation to load
 	     * @returns {Promise} a promise that resolves in video data usable by the Box3DRuntime
 	     */
-	  }, {
-	    key: 'loadRemoteVideo',
-	    value: function loadRemoteVideo(fileId /*, fileVersionId, params = {}*/) {
-	      var _this2 = this;
 
-	      return new _lie2['default'](function (resolve, reject) {
+	  }, {
+	    key: 'loadVideoFromPackage',
+	    value: function loadVideoFromPackage(fileId /*, fileVersionId, params = {}*/) {
+	      var _this3 = this;
+
+	      return new _lie2.default(function (resolve, reject) {
 
 	        var validator = function validator(entry) {
 	          return entry.representation === 'mp4';
 	        };
 
-	        _this2.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
+	        _this3.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
 	          if (!url) {
 	            return reject(new Error('No representation available for: ' + fileId));
 	          }
 
-	          _this2.parseVideo(url).then(resolve)['catch'](reject);
-	        })['catch'](reject);
+	          _this3.parseVideo(url).then(resolve).catch(reject);
+	        }).catch(reject);
 	      });
 	    }
 
 	    /**
-	     * Load a binary file and return an array buffer.
-	     * @method loadArrayBuffer
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {object} params The criteria for determining which representation to load.
-	     * @param {function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the array buffer
+	     * @inheritDoc
 	     */
-	  }, {
-	    key: 'loadArrayBuffer',
-	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
-	      var _this3 = this;
 
-	      if (params === undefined) params = {};
+	  }, {
+	    key: 'loadGeometry',
+	    value: function loadGeometry(fileId, fileVersionId) {
+	      var _this4 = this;
+
+	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	      var progress = arguments[3];
+
 
 	      var validator = function validator(entry) {
 	        return entry.representation === '3d';
@@ -416,29 +416,12 @@
 	        // and add geometry.bin
 	        url = url.replace('entities.json', 'geometry.bin');
 
-	        if (progress) {
-	          _this3.addProgressListener(url, progress);
-	        }
-
-	        // If the representation is cached, return the cached data; otherwise,
-	        // get the representation.
-	        if (!_this3.cache.hasOwnProperty(url)) {
-
-	          _this3.cache[url] = new _lie2['default'](function (resolve, reject) {
-	            _this3.sdkLoader.getRepresentation(url, _this3.onAssetLoadProgress.bind(_this3), { responseType: 'arraybuffer', info: { url: url } }).then(function (response) {
-	              _this3.removeProgressListeners(url);
-	              resolve({
-	                data: response.response,
-	                properties: {}
-	              });
-	            })['catch'](function (err) {
-	              _this3.removeProgressListeners(url);
-	              reject(err);
-	            });
+	        return _this4.loadResourceFromUrl(url, { responseType: 'arraybuffer' }, function (response) {
+	          return _lie2.default.resolve({
+	            data: response.response,
+	            properties: {}
 	          });
-	        }
-
-	        return _this3.cache[url];
+	        }, progress);
 	      });
 	    }
 
@@ -451,12 +434,15 @@
 	     * @param {Function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the JSON data
 	     */
+
 	  }, {
 	    key: 'loadJson',
-	    value: function loadJson(fileId, fileVersionId, params, progress) {
-	      var _this4 = this;
+	    value: function loadJson(fileId, fileVersionId) {
+	      var _this5 = this;
 
-	      if (params === undefined) params = {};
+	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	      var progress = arguments[3];
+
 
 	      var validator = function validator(entry) {
 	        return entry.representation === '3d';
@@ -464,40 +450,20 @@
 	      // Get the representation URL.
 	      return this.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
 
-	        if (progress) {
-	          _this4.addProgressListener(url, progress);
-	        }
-
-	        // If the representation is cached, return the cached data; otherwise,
-	        // get the representation.
-	        if (!_this4.cache.hasOwnProperty(url)) {
-	          _this4.cache[url] = new _lie2['default'](function (resolve, reject) {
-	            _this4.sdkLoader.getRepresentation(url, _this4.onAssetLoadProgress.bind(_this4), {
-	              responseType: 'json',
-	              info: { url: url }
-	            }).then(function (response) {
-	              _this4.removeProgressListeners(url);
-	              resolve({
-	                data: response.response,
-	                properties: {}
-	              });
-	            })['catch'](function (err) {
-	              _this4.removeProgressListeners(url);
-	              reject(err);
-	            });
+	        return _this5.loadResourceFromUrl(url, { responseType: 'json' }, function (response) {
+	          return _lie2.default.resolve({
+	            data: response.response,
+	            properties: {}
 	          });
-	        }
-
-	        return _this4.cache[url];
+	        }, progress);
 	      });
 	    }
 	  }]);
 
 	  return V2Loader;
-	})(_baseLoader2['default']);
+	}(_baseLoader2.default);
 
-	exports['default'] = V2Loader;
-	module.exports = exports['default'];
+	exports.default = V2Loader;
 
 /***/ },
 /* 3 */
@@ -549,7 +515,7 @@
 	  var promise = new this.constructor(INTERNAL);
 	  /* istanbul ignore else */
 	  if (!process.browser) {
-	    if (typeof onRejected === 'function' && this.handled === UNHANDLED) {
+	    if (this.handled === UNHANDLED) {
 	      this.handled = null;
 	    }
 	  }
@@ -967,19 +933,11 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _lie = __webpack_require__(3);
 
@@ -989,11 +947,19 @@
 
 	var _events2 = _interopRequireDefault(_events);
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 	var CompressionFactors = {
 	  'application/vnd.box.box3d+bin': 1.0
 	};
 
-	var BaseLoader = (function (_EventEmitter) {
+	var BaseLoader = function (_EventEmitter) {
 	  _inherits(BaseLoader, _EventEmitter);
 
 	  /**
@@ -1011,66 +977,70 @@
 
 	    _classCallCheck(this, BaseLoader);
 
-	    _get(Object.getPrototypeOf(BaseLoader.prototype), 'constructor', this).call(this);
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseLoader).call(this));
 
 	    if (opts.boxSdk) {
-	      this.boxSdk = opts.boxSdk;
+	      _this.boxSdk = opts.boxSdk;
 	    } else {
 	      throw new Error('No Box SDK Provided to Loader!');
 	    }
 
-	    this.sdkLoader = this.boxSdk.representationLoader;
+	    _this.sdkLoader = _this.boxSdk.representationLoader;
 
-	    this.fileId = fileId;
-	    this.fileVersionId = fileVersionId;
+	    _this.fileId = fileId;
+	    _this.fileVersionId = fileVersionId;
 
-	    this.cache = {};
+	    _this.cache = {};
 	    //for tracking progress callbacks
-	    this.progressListeners = {};
+	    _this.progressListeners = {};
 	    //for caching gzipped asset sizes
-	    this.gzipSizes = {};
+	    _this.gzipSizes = {};
 
-	    this.apiBase = opts.apiBase !== undefined ? opts.apiBase : undefined;
+	    _this.apiBase = opts.apiBase !== undefined ? opts.apiBase : undefined;
+
+	    return _this;
 	  }
 
 	  /**
 	   * Load a "remote" (dynamically resolved) Box3DAsset.
-	   * @method loadRemoteAsset
+	   * @method loadAssetFromPackage
 	   * @param {Box3DAsset} asset The asset that is being loaded
 	   * @param {Object} params The criteria for determining which representation to load
 	   * @param {Function} progress The progress callback
 	   * @returns {Promise} a promise that resolves the asset data
 	   */
 
-	  _createClass(BaseLoader, [{
-	    key: 'loadRemoteAsset',
-	    value: function loadRemoteAsset(asset, params, progress) {
-	      var _this = this;
 
-	      if (params === undefined) params = {};
+	  _createClass(BaseLoader, [{
+	    key: 'loadAssetFromPackage',
+	    value: function loadAssetFromPackage(asset) {
+	      var _this2 = this;
+
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progress = arguments[2];
+
 
 	      var loadFunc = this.getAssetLoadingMethod(asset);
 
 	      if (!loadFunc) {
-	        return _lie2['default'].reject('Asset not supported for loading: ' + asset.type);
+	        return _lie2.default.reject('Asset not supported for loading: ' + asset.type);
 	      }
 
 	      loadFunc = loadFunc.bind(this);
 
 	      var idPromise = this.getAssetIdPromise(asset, params);
 
-	      // Check to see if any representation types are passed on asset
-	      var representation = asset.getProperty('representation');
-	      if (representation) {
-	        params.representation = representation;
-	      }
-
 	      switch (asset.type) {
-	        case 'texture2D':
+
+	        case 'image':
 	          {
-	            var fileName = asset.getProperty('filename');
-	            // Check the file extension to know which representation we need.
-	            params.extension = fileName.match(/(\.jpg|\.jpeg|\.gif|\.bmp)$/i) ? 'jpg' : 'png';
+	            var resource = void 0;
+	            try {
+	              resource = this.findImageResource(asset, params);
+	            } catch (err) {
+	              return _lie2.default.reject(err);
+	            }
+	            params.resource = resource;
 	          }
 	          break;
 
@@ -1083,7 +1053,7 @@
 	            // so we use the same fileVersionId to fetch them.
 	            // #TODO @jholdstock: Need to fix this for external meshes. I believe @dweis
 	            // already had a fix for this, but it was never merged.
-	            idPromise = _lie2['default'].resolve({
+	            idPromise = _lie2.default.resolve({
 	              fileId: fileId || this.fileId,
 	              fileVersionId: fileVersionId || this.fileVersionId
 	            });
@@ -1092,11 +1062,11 @@
 	      }
 
 	      // First, resolve the fileVersionId, then load the representation.
-	      return new _lie2['default'](function (resolve, reject) {
+	      return new _lie2.default(function (resolve, reject) {
 	        idPromise.then(function (fileIds) {
 	          return loadFunc(fileIds.fileId, fileIds.fileVersionId, params, progress);
-	        }).then(resolve)['catch'](function (err) {
-	          _this.onAssetNotFound(asset);
+	        }).then(resolve).catch(function (err) {
+	          _this2.onAssetNotFound(asset);
 	          reject(err);
 	        });
 	      });
@@ -1107,22 +1077,23 @@
 	     * @param {Object} box3dAsset The Box3DAsset to load
 	     * @returns {Function} The loading function needed to load the asset
 	     */
+
 	  }, {
 	    key: 'getAssetLoadingMethod',
 	    value: function getAssetLoadingMethod(box3dAsset) {
-	      var loadFunc = undefined;
+	      var loadFunc = void 0;
 
 	      switch (box3dAsset.type) {
-	        case 'texture2D':
-	          loadFunc = this.loadRemoteImage;
+	        case 'image':
+	          loadFunc = this.loadImageFromPackage;
 	          break;
-	        case 'textureVideo':
-	          loadFunc = this.loadRemoteVideo;
+	        case 'video':
+	          loadFunc = this.loadVideoFromPackage;
 	          break;
 	        case 'animation':
 	        /*fall-through*/
 	        case 'meshGeometry':
-	          loadFunc = this.loadArrayBuffer;
+	          loadFunc = this.loadGeometry;
 	          break;
 	        case 'document':
 	          loadFunc = this.loadJson;
@@ -1138,6 +1109,7 @@
 	     * @param {Object} params Additional params to be passed to the SDK search method
 	     * @returns {Promise} A promise that resolves in FileID and FileVersionID
 	     */
+
 	  }, {
 	    key: 'getAssetIdPromise',
 	    value: function getAssetIdPromise() /*box3dAsset, params = {}*/{
@@ -1145,27 +1117,28 @@
 	    }
 
 	    /**
-	     * Load a "local" (statically resolved) Box3DAsset.
-	     * @method loadLocalAsset
+	     * Load a statically-resolved Box3DAsset.
+	     * @method loadAssetFromPath
 	     * @param {Box3DAsset} asset The asset that is being loaded
 	     * @param {Object} params The criteria for determining which representation to load
 	     * @param {Function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the asset data
 	     */
-	  }, {
-	    key: 'loadLocalAsset',
-	    value: function loadLocalAsset(asset, params, progress) {
-	      if (params === undefined) params = {};
 
-	      var loadFunc = undefined;
+	  }, {
+	    key: 'loadAssetFromPath',
+	    value: function loadAssetFromPath(asset) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progress = arguments[2];
+
+	      var loadFunc = void 0;
 
 	      switch (asset.type) {
-	        case 'texture2D':
-	        case 'textureCube':
-	          loadFunc = this.loadLocalImage.bind(this);
+	        case 'image':
+	          loadFunc = this.loadImageFromPath.bind(this);
 	          break;
 	        default:
-	          return _lie2['default'].reject(new Error('Asset type not supported for local loading: ' + asset.type));
+	          return _lie2.default.reject(new Error('Asset type not supported for local loading: ' + asset.type));
 	      }
 
 	      return loadFunc(asset, params, progress);
@@ -1177,6 +1150,7 @@
 	     * @param {Box3DAsset} asset The asset that failed to resolve
 	     * @returns {void}
 	     */
+
 	  }, {
 	    key: 'onAssetNotFound',
 	    value: function onAssetNotFound(asset) {
@@ -1184,11 +1158,10 @@
 	      var filename = '';
 
 	      switch (asset.type) {
-	        case 'texture2D':
+	        case 'image':
 	          filename = asset.getProperty('filename');
 	          break;
 	      }
-
 	      // Broadcast that the asset is missing.
 	      this.emit('missingAsset', {
 	        assetName: asset.getName(),
@@ -1205,6 +1178,7 @@
 	    * @param {object} status The status object to propogate to listeners
 	    * @returns {void}
 	    */
+
 	  }, {
 	    key: 'updateLoadProgress',
 	    value: function updateLoadProgress(url, status) {
@@ -1223,21 +1197,22 @@
 	    * @param {object} params Additional parameters to configure the XHR request
 	    * @returns {int} The byte size of the asset, with applied compression factor
 	    */
+
 	  }, {
 	    key: 'getGzippedLength',
 	    value: function getGzippedLength(xhr, url, params) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      if (!this.gzipSizes[url]) {
-	        this.gzipSizes[url] = new _lie2['default'](function (resolve, reject) {
+	        this.gzipSizes[url] = new _lie2.default(function (resolve, reject) {
 	          // Check type to see if we need to apply a compression factor
 	          var factor = CompressionFactors[xhr.getResponseHeader('Content-Type')] || 1;
 
 	          // make the HEAD request for content length
-	          _this2.sdkLoader.xhr.makeRequest(xhr.responseURL, 'HEAD', null, null, params).then(function (resp) {
+	          _this3.sdkLoader.xhr.makeRequest(xhr.responseURL, 'HEAD', null, null, params).then(function (resp) {
 	            var total = resp.getResponseHeader('Content-Length');
 	            resolve(total ? total * factor : 0);
-	          })['catch'](reject);
+	          }).catch(reject);
 	        });
 	      }
 
@@ -1252,10 +1227,11 @@
 	    * of the XHR request
 	    * @returns {void}
 	    */
+
 	  }, {
 	    key: 'onAssetLoadProgress',
 	    value: function onAssetLoadProgress(status) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      var target = status.xhr.target || status.xhr.srcElement;
 	      var info = target.info;
@@ -1270,7 +1246,7 @@
 	      if (encoding && encoding.indexOf('gzip') > -1) {
 	        this.getGzippedLength(target, url).then(function (total) {
 	          status.total = total;
-	          _this3.updateLoadProgress(url, status);
+	          _this4.updateLoadProgress(url, status);
 	        });
 	      } else {
 	        this.updateLoadProgress(url, status);
@@ -1286,6 +1262,7 @@
 	    * @param {function} progress The callback to call when recieving updates
 	    * @returns {void}
 	    */
+
 	  }, {
 	    key: 'addProgressListener',
 	    value: function addProgressListener(url, progress) {
@@ -1304,6 +1281,7 @@
 	    * @param {string} url The url that the listeners are registered with
 	    * @returns {void}
 	    */
+
 	  }, {
 	    key: 'removeProgressListeners',
 	    value: function removeProgressListeners(url) {
@@ -1321,6 +1299,7 @@
 	     * @param {Function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the JSON data
 	     */
+
 	  }, {
 	    key: 'loadJson',
 	    value: function loadJson() /*fileId, fileVersionId, params = {}, progress*/{
@@ -1328,87 +1307,147 @@
 	    }
 
 	    /**
-	     * Load an image representation.
-	     * @method loadRemoteImage
+	     * Load an image representation from a Box3D package.
+	     * @method loadImageFromPackage
 	     * @param {string} fileId The ID of the file we are going to load
 	     * @param {string} fileVersionId The file version ID of the file to load
 	     * @param {object} params The criteria for determining which representation to load
 	     * @param {function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the image data
 	     */
+
 	  }, {
-	    key: 'loadRemoteImage',
-	    value: function loadRemoteImage() /*fileId, fileVersionId, params, progress*/{
-	      throw new Error('loadRemoteImage() Not Implemented');
+	    key: 'loadImageFromPackage',
+	    value: function loadImageFromPackage() /*fileId, fileVersionId, params, progress*/{
+	      throw new Error('loadImageFromPackage() Not Implemented');
 	    }
 
 	    /**
 	     * Load a video representation.
-	     * @method loadRemoteVideo
+	     * @method loadVideoFromPackage
 	     * @param {string} fileId The ID of the file we are going to load
 	     * @param {string} fileVersionId The file version ID of the file to load
 	     * @param {object} params The criteria for determining which representation to load
 	     * @param {function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the video data
 	     */
+
 	  }, {
-	    key: 'loadRemoteVideo',
-	    value: function loadRemoteVideo() /*fileId, fileVersionId, params, progress*/{
-	      throw new Error('loadRemoteVideo() Not Implemented');
+	    key: 'loadVideoFromPackage',
+	    value: function loadVideoFromPackage() /*fileId, fileVersionId, params, progress*/{
+	      throw new Error('loadVideoFromPackage() Not Implemented');
 	    }
 
 	    /**
-	     * Load a binary file and return an array buffer.
-	     * @method loadArrayBuffer
+	     * Load the binary file that contains the geometry and return an array buffer.
+	     * @method loadGeometry
 	     * @param {string} fileId The ID of the file we are going to load
 	     * @param {string} fileVersionId The file version ID of the file to load
 	     * @param {object} params The criteria for determining which representation to load.
 	     * @param {function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the array buffer
 	     */
+
 	  }, {
-	    key: 'loadArrayBuffer',
-	    value: function loadArrayBuffer() /*fileId, fileVersionId, params = {}, progress*/{
-	      throw new Error('loadArrayBuffer() not implemented');
+	    key: 'loadGeometry',
+	    value: function loadGeometry() /*fileId, fileVersionId, params = {}, progress*/{
+	      throw new Error('loadGeometry() not implemented');
 	    }
 
 	    /**
 	     * Load a "local" image. Local images are statically resolved using the asset's "resources".
-	     * @method loadLocalImage
+	     * @method loadImageFromPath
 	     * @param {Box3DAsset} asset The asset being loaded
 	     * @param {object} params The criteria for deciding which resource to load
 	     * @param {function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the image data
 	     */
+
 	  }, {
-	    key: 'loadLocalImage',
-	    value: function loadLocalImage(asset, params, progress) {
-	      var _this4 = this;
+	    key: 'loadImageFromPath',
+	    value: function loadImageFromPath(asset) {
+	      var _this5 = this;
 
-	      var resource = undefined;
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progress = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
+
+	      var resource = void 0;
 	      try {
 	        resource = this.findImageResource(asset, params);
 	      } catch (err) {
-	        return _lie2['default'].reject(err);
+	        return _lie2.default.reject(err);
 	      }
-
-	      var url = resource.path;
-
+	      var url = resource.src;
 	      if (progress) {
 	        this.addProgressListener(url, progress);
 	      }
 
-	      return new _lie2['default'](function (resolve, reject) {
-	        _this4.sdkLoader.get(url, { responseType: 'blob', sendToken: false, withCredentials: false,
-	          info: { url: url } }, _this4.onAssetLoadProgress.bind(_this4)).then(function (response) {
-	          _this4.removeProgressListeners(url);
-	          return _this4.parseImage(response, resource.properties);
-	        }).then(resolve)['catch'](function (err) {
-	          _this4.removeProgressListeners(url);
+	      var responseType = void 0;
+	      switch (resource.compression) {
+	        case 'dxt1':
+	        case 'dxt5':
+	          responseType = 'arraybuffer';
+	          break;
+	        default:
+	          responseType = 'blob';
+	      }
+
+	      return new _lie2.default(function (resolve, reject) {
+	        _this5.sdkLoader.get(url, { responseType: responseType, sendToken: false,
+	          withCredentials: false, info: { url: url } }, _this5.onAssetLoadProgress.bind(_this5)).then(function (response) {
+	          _this5.removeProgressListeners(url);
+	          return _this5.parseImage(response, resource);
+	        }).then(resolve).catch(function (err) {
+	          _this5.removeProgressListeners(url);
 	          reject(err);
 	        });
 	      });
+	    }
+
+	    /**
+	     * Returns a promise that loads a file from a given URL.
+	     * @param  {String} url        The file to load.
+	     * @param  {Object} params     Optional parameters to pass when loading representation.
+	     * @param  {Function} processResponse Optional function to do something with the reponse before
+	     * completion.
+	     * @param  {Function} onProgress Optional progress function.
+	     * @returns {Promise}            The promise for loading the file.
+	     */
+
+	  }, {
+	    key: 'loadResourceFromUrl',
+	    value: function loadResourceFromUrl(url) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var _this6 = this;
+
+	      var processResponse = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+	      var onProgress = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+
+	      if (onProgress) {
+	        this.addProgressListener(url, onProgress);
+	      }
+	      params.info = { url: url };
+	      // If the representation is cached, return the cached data; otherwise,
+	      // get the representation.
+	      if (!this.cache.hasOwnProperty(url)) {
+	        this.cache[url] = new _lie2.default(function (resolve, reject) {
+	          _this6.sdkLoader.getRepresentation(url, _this6.onAssetLoadProgress.bind(_this6), params).then(function (response) {
+	            if (processResponse) {
+	              return processResponse(response);
+	            }
+	            return _lie2.default.resolve(response);
+	          }).then(function (data) {
+	            _this6.removeProgressListeners(url);
+	            resolve(data);
+	          }).catch(function (err) {
+	            _this6.removeProgressListeners(url);
+	            reject(err);
+	          });
+	        });
+	      }
+	      return this.cache[url];
 	    }
 
 	    /**
@@ -1418,31 +1457,105 @@
 	     * @param {object} params The criteria for determining which representation to load
 	     * @returns {object} the resource that best matches the search criteria
 	     */
+
 	  }, {
 	    key: 'findImageResource',
-	    value: function findImageResource(asset /*, params*/) {
+	    value: function findImageResource(asset) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
 
 	      // TODO: intelligently find a resource based on params.
-	      var resources = asset.get('resources');
-
-	      if (!resources || resources.length === 0) {
+	      var representations = asset.get('representations');
+	      if (!representations || representations.length === 0) {
 	        throw new Error('Box3DAsset has no resources: ' + asset.getName());
 	      }
 
-	      return resources[0];
+	      var match = this.findBestMatchImage(representations, params);
+	      if (!match) {
+	        throw new Error('Unable to find match for given image description');
+	      }
+	      return match;
 	    }
 
 	    /**
-	     * Finds an image representation based on the specified criteria.
-	     * @method findImageRepresentation
+	     * Finds an image from a list that best matches the specified criteria.
+	     * @method findBestMatchImage
+	     * @param {array} representations The list of representations to search through.
 	     * @param {object} params The criteria for determining which representation to load
 	     * @returns {object} the representation that best matches the search criteria
 	     */
-	  }, {
-	    key: 'findImageRepresentation',
-	    value: function findImageRepresentation() /*params*/{
 
-	      throw new Error('findImageRepresentation() Not Implemented');
+	  }, {
+	    key: 'findBestMatchImage',
+	    value: function findBestMatchImage(representations) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      params.channels = params.channels || 'rgb';
+	      params.maxResolution = params.maxResolution || 16384;
+
+	      if (!representations || !(representations instanceof Array)) {
+	        throw new Error('Invalid sourceFiles list for image. Must specify a "regular" image.');
+	      }
+	      var hasFormat = false;
+	      // let hasCompression = true;
+	      var closestMatch = void 0;
+	      var closestResDiff = 20000;
+	      // Compare the resolution of the image with what was requested and
+	      // keep track of the closest match.
+	      var findResolutionMatch = function findResolutionMatch(image) {
+	        image.width = image.width || 1;
+	        image.height = image.height || 1;
+	        var width = image.width;
+	        var height = image.height;
+	        var maxRes = Math.max(width, height);
+	        var resDiff = params.maxResolution - maxRes;
+	        if (resDiff >= 0 && resDiff < closestResDiff) {
+	          closestResDiff = resDiff;
+	          closestMatch = image;
+	        }
+	      };
+
+	      // Get closest match for compression param. Compression will either match exactly or
+	      // fall back to 'none'
+	      var compressionMatches = representations.filter(function (image) {
+	        if (image.compression === params.compression) {
+	          return true;
+	        }
+	        switch (image.compression) {
+	          case 'zip':
+	          case 'jpeg':
+	            return !params.compression;
+	          case 'dxt1':
+	          case 'dxt5':
+	            return params.compression === 'dxt';
+	        }
+	        return false;
+	      });
+	      // If no matches for the supplied compression exist, try to find the regular images (png or jpg)
+	      if (compressionMatches.length === 0) {
+	        compressionMatches = representations.filter(function (image) {
+	          return image.compression === 'zip' || image.compression === 'jpeg';
+	        });
+	      }
+	      // Go through the list and look for the closest match.
+	      compressionMatches.forEach(function (image) {
+	        image.channels = image.channels || 'rgb';
+	        var channels = image.channels;
+	        // Filter by channels first, then match by closest resolution.
+	        if (channels === params.channels) {
+	          hasFormat = true;
+	          findResolutionMatch(image);
+	        } else {
+	          if (!hasFormat) {
+	            findResolutionMatch(image);
+	          }
+	        }
+	      });
+	      // if (closestMatch) {
+	      //   closestMatch.compression = hasCompression ? params.compression : 'none';
+	      // }
+
+	      return closestMatch;
 	    }
 
 	    /**
@@ -1452,32 +1565,41 @@
 	     * @param {object} representation The descriptor for the representation that was loaded
 	     * @returns {Promise} a promise that resolves the image data
 	     */
+
 	  }, {
 	    key: 'parseImage',
 	    value: function parseImage(response, representation) {
-
-	      return new _lie2['default'](function (resolve, reject) {
+	      return new _lie2.default(function (resolve, reject) {
 	        try {
 	          (function () {
-	            var url = URL.createObjectURL(response.response),
-	                img = new Image();
-
-	            img.onload = function () {
-	              var data = {
-	                data: img,
-	                properties: {
-	                  width: img.width,
-	                  height: img.height,
-	                  compression: representation.compression || 'none',
-	                  pixelFormat: representation.pixelFormat || 'rgb',
-	                  packingFormat: representation.packingFormat
-	                }
-	              };
-
-	              resolve(data);
+	            var data = {
+	              properties: {
+	                compression: representation.compression,
+	                channels: representation.channels || 'rgb'
+	              }
 	            };
 
-	            img.src = url;
+	            if (response.response instanceof ArrayBuffer) {
+	              data.data = response.response;
+	              data.properties.width = representation.width;
+	              data.properties.height = representation.height;
+	              resolve(data);
+	            } else {
+	              (function () {
+	                var url = URL.createObjectURL(response.response),
+	                    img = new Image();
+
+	                img.onload = function () {
+	                  data.data = img;
+	                  data.properties.width = img.width;
+	                  data.properties.height = img.height;
+
+	                  resolve(data);
+	                };
+
+	                img.src = url;
+	              })();
+	            }
 	          })();
 	        } catch (err) {
 	          reject(err);
@@ -1491,13 +1613,14 @@
 	     * @param {Object} representation  The descriptor for the representation that was loaded
 	     * @returns {Promise} A promise that resolves with video data usable by Box3DRuntime
 	     */
+
 	  }, {
 	    key: 'parseVideo',
 	    value: function parseVideo(videoUrl /*, representation = {}*/) {
 	      var videoTag = document.createElement('video');
 	      videoTag.src = videoUrl;
 
-	      return _lie2['default'].resolve({
+	      return _lie2.default.resolve({
 	        data: videoTag
 	      });
 	    }
@@ -1508,6 +1631,7 @@
 	    * @param {string} key The key of the XHR that we want to abort
 	    * @returns {void}
 	    */
+
 	  }, {
 	    key: 'abortRequest',
 	    value: function abortRequest(key) {
@@ -1524,14 +1648,15 @@
 	    * @method abortRequests
 	    * @returns {void}
 	    */
+
 	  }, {
 	    key: 'abortRequests',
 	    value: function abortRequests() {
-	      var _this5 = this;
+	      var _this7 = this;
 
 	      // clear all progress listeners
 	      Object.keys(this.progressListeners).forEach(function (key) {
-	        _this5.removeProgressListeners(key);
+	        _this7.removeProgressListeners(key);
 	      });
 	      this.sdkLoader.xhr.abortRequests();
 	    }
@@ -1552,10 +1677,9 @@
 	  }]);
 
 	  return BaseLoader;
-	})(_events2['default']);
+	}(_events2.default);
 
-	exports['default'] = BaseLoader;
-	module.exports = exports['default'];
+	exports.default = BaseLoader;
 
 /***/ },
 /* 7 */
@@ -1865,24 +1989,15 @@
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	* Runode Resource Loader for Box3D
-	**/
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _lie = __webpack_require__(3);
 
@@ -1892,34 +2007,18 @@
 
 	var _baseLoader2 = _interopRequireDefault(_baseLoader);
 
-	// Available image representations
-	var ImageRepresentations = [{
-	  extension: 'jpg',
-	  size: 32,
-	  pixelFormat: 'rgb',
-	  compression: 'none',
-	  path: 'thumb_32_jpg/1.jpg'
-	}, {
-	  extension: 'jpg',
-	  size: 2048,
-	  pixelFormat: 'rgb',
-	  compression: 'none',
-	  path: 'image_2048_jpg/1.jpg'
-	}, {
-	  extension: 'png', //need to use a 32 jpg here bc a png representation does not exist
-	  size: 32,
-	  pixelFormat: 'rgb',
-	  compression: 'none',
-	  path: 'thumb_32_jpg/1.jpg'
-	}, {
-	  extension: 'png',
-	  size: 2048,
-	  pixelFormat: 'rgba',
-	  compression: 'none',
-	  path: 'image_2048/1.png'
-	}];
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var RunmodeLoader = (function (_BaseLoader) {
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Runode Resource Loader for Box3D
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               **/
+
+
+	var RunmodeLoader = function (_BaseLoader) {
 	  _inherits(RunmodeLoader, _BaseLoader);
 
 	  /**
@@ -1936,9 +2035,8 @@
 
 	    _classCallCheck(this, RunmodeLoader);
 
-	    _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'constructor', this).call(this, fileId, fileVersionId, opts);
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RunmodeLoader).call(this, fileId, fileVersionId, opts));
 	  }
-
 	  /**
 	  * See base-loader.js for base functionality.
 	  * @param {object} asset The verold asset to load
@@ -1948,29 +2046,33 @@
 	  * @returns {Promise} a promise that resolves in the loaded and parsed data for Box3D
 	  */
 
+
 	  _createClass(RunmodeLoader, [{
-	    key: 'loadRemoteAsset',
-	    value: function loadRemoteAsset(asset, params, progress) {
-	      if (params === undefined) params = {};
+	    key: 'loadAssetFromPackage',
+	    value: function loadAssetFromPackage(asset) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progress = arguments[2];
+
 
 	      params.looseMatch = true;
 
-	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'loadRemoteAsset', this).call(this, asset, params, progress);
+	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'loadAssetFromPackage', this).call(this, asset, params, progress);
 	    }
 
 	    /**
 	     * @inheritdoc
 	     */
+
 	  }, {
 	    key: 'getAssetIdPromise',
 	    value: function getAssetIdPromise(box3dAsset) {
 	      var fileName = box3dAsset.getProperty('filename');
 	      var fileId = box3dAsset.getProperty('fileId');
 	      var fileVersionId = box3dAsset.getProperty('fileVersionId');
-	      var idPromise = undefined;
+	      var idPromise = void 0;
 
 	      if (fileId) {
-	        idPromise = _lie2['default'].resolve({
+	        idPromise = _lie2.default.resolve({
 	          fileId: fileId,
 	          fileVersionId: fileVersionId
 	        });
@@ -1991,113 +2093,77 @@
 	     * @param {Function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the image data
 	     */
+
 	  }, {
-	    key: 'loadRemoteImage',
-	    value: function loadRemoteImage(fileId, fileVersionId, params, progress) {
-	      var _this = this;
+	    key: 'loadImageFromPackage',
+	    value: function loadImageFromPackage(fileId, fileVersionId, params, progress) {
+	      var _this2 = this;
 
-	      var representation = undefined;
-
-	      // Find a suitable representation.
-	      try {
-	        representation = this.findImageRepresentation(params);
-	      } catch (err) {
-	        return _lie2['default'].reject(err);
+	      var resource = params.resource;
+	      if (!resource) {
+	        return _lie2.default.reject(new Error('No valid representation found.'));
+	      }
+	      var responseType = void 0;
+	      switch (resource.compression) {
+	        case 'dxt1':
+	        case 'dxt5':
+	          responseType = 'arraybuffer';
+	          break;
+	        default:
+	          responseType = 'blob';
 	      }
 
 	      // Get the representation URL.
-	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, representation.path).then(function (url) {
+	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, resource.src).then(function (url) {
 
-	        if (progress) {
-	          _this.addProgressListener(url, progress);
-	        }
-
-	        // If the representation is cached, return the cached data; otherwise,
-	        // get the representation.
-	        if (!_this.cache.hasOwnProperty(url)) {
-	          _this.cache[url] = new _lie2['default'](function (resolve, reject) {
-	            _this.sdkLoader.getRepresentation(url, _this.onAssetLoadProgress.bind(_this), { responseType: 'blob', info: { url: url } }).then(function (response) {
-	              return _this.parseImage(response, representation);
-	            }).then(function (imgData) {
-	              if (params.width && imgData.properties.width > params.width || params.height && imgData.properties.height > params.height) {
-	                // 2048 representation dimensions are larger than that of the width/height
-	                // that has been requested. Fallback to the 32 representation
-	                params.size = 32;
-	                resolve(_this.loadRemoteImage(fileId, fileVersionId, params));
-	              } else {
-	                _this.removeProgressListeners(url);
-	                resolve(imgData);
-	              }
-	            })['catch'](function (err) {
-	              _this.removeProgressListeners(url);
-	              reject(err);
-	            });
-	          });
-	        }
-
-	        return _this.cache[url];
+	        return _this2.loadResourceFromUrl(url, { responseType: responseType }, function (response) {
+	          return _this2.parseImage(response, resource);
+	        }, progress);
 	      });
 	    }
 	  }, {
-	    key: 'loadRemoteVideo',
-	    value: function loadRemoteVideo(fileId, fileVersionId) /*, progress*/{
-	      var _this2 = this;
+	    key: 'loadVideoFromPackage',
+	    value: function loadVideoFromPackage(fileId, fileVersionId) /*, progress*/{
+	      var _this3 = this;
 
 	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
 
 	      params.repParams = 'video_480.mp4';
 
 	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
-	        if (!_this2.cache.hasOwnProperty(url)) {
-	          _this2.cache[url] = _this2.parseVideo(url);
+	        if (!_this3.cache.hasOwnProperty(url)) {
+	          _this3.cache[url] = _this3.parseVideo(url);
 	        }
 
-	        return _this2.cache[url];
+	        return _this3.cache[url];
 	      });
 	    }
 
 	    /**
-	     * Load a binary file and return an array buffer.
-	     * @method loadArrayBuffer
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {object} params The criteria for determining which representation to load.
-	     * @param {function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the array buffer
+	     * @inheritdoc
 	     */
-	  }, {
-	    key: 'loadArrayBuffer',
-	    value: function loadArrayBuffer(fileId, fileVersionId, params, progress) {
-	      var _this3 = this;
 
-	      if (params === undefined) params = {};
+	  }, {
+	    key: 'loadGeometry',
+	    value: function loadGeometry(fileId, fileVersionId) {
+	      var _this4 = this;
+
+	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	      var progress = arguments[3];
+
 
 	      params.repParams = '3dcg_bin.bin';
 
 	      // Get the representation URL.
 	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
 
-	        if (progress) {
-	          _this3.addProgressListener(url, progress);
-	        }
-	        // If the representation is cached, return the cached data; otherwise,
-	        // get the representation.
-	        if (!_this3.cache.hasOwnProperty(url)) {
-	          _this3.cache[url] = new _lie2['default'](function (resolve, reject) {
-	            _this3.sdkLoader.getRepresentation(url, _this3.onAssetLoadProgress.bind(_this3), { responseType: 'arraybuffer', info: { url: url } }).then(function (response) {
-	              _this3.removeProgressListeners(url);
-	              resolve({
-	                data: response.response,
-	                properties: {}
-	              });
-	            })['catch'](function (err) {
-	              _this3.removeProgressListeners(url);
-	              reject(err);
-	            });
+	        return _this4.loadResourceFromUrl(url, { responseType: 'arraybuffer' }, function (response) {
+	          return _lie2.default.resolve({
+	            data: response.response,
+	            properties: {}
 	          });
-	        }
-
-	        return _this3.cache[url];
+	        }, progress);
 	      });
 	    }
 
@@ -2107,6 +2173,7 @@
 	    * @param {string} url The key to store the total size at
 	    * @returns {int} The byte size of the asset, with applied compression factor
 	    */
+
 	  }, {
 	    key: 'getGzippedLength',
 	    value: function getGzippedLength(xhr, url) {
@@ -2123,103 +2190,35 @@
 	     * @param {Function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the JSON data
 	     */
+
 	  }, {
 	    key: 'loadJson',
-	    value: function loadJson(fileId, fileVersionId, params, progress) {
-	      var _this4 = this;
+	    value: function loadJson(fileId, fileVersionId) {
+	      var _this5 = this;
 
-	      if (params === undefined) params = {};
+	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	      var progress = arguments[3];
+
 
 	      params.repParams = '3dcg_json.json';
 
 	      // Get the representation URL.
 	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
 
-	        if (progress) {
-	          _this4.addProgressListener(url, progress);
-	        }
-
-	        // If the representation is cached, return the cached data; otherwise,
-	        // get the representation.
-	        if (!_this4.cache.hasOwnProperty(url)) {
-	          _this4.cache[url] = new _lie2['default'](function (resolve, reject) {
-	            _this4.sdkLoader.getRepresentation(url, _this4.onAssetLoadProgress.bind(_this4), {
-	              responseType: 'json',
-	              info: { url: url }
-	            }).then(function (response) {
-	              _this4.removeProgressListeners(url);
-	              resolve({
-	                data: response.response,
-	                properties: {}
-	              });
-	            })['catch'](function (err) {
-	              _this4.removeProgressListeners(url);
-	              reject(err);
-	            });
+	        return _this5.loadResourceFromUrl(url, { responseType: 'json' }, function (response) {
+	          return _lie2.default.resolve({
+	            data: response.response,
+	            properties: {}
 	          });
-	        }
-
-	        return _this4.cache[url];
+	        }, progress);
 	      });
-	    }
-
-	    /**
-	     * Finds an image representation based on the specified criteria.
-	     * @method findImageRepresentation
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @returns {Object} the representation that best matches the search criteria
-	     */
-	  }, {
-	    key: 'findImageRepresentation',
-	    value: function findImageRepresentation(params) {
-
-	      var size = params.size,
-	          extension = params.extension || 'png';
-
-	      // Attempt to get width and height and use for size.
-	      if (!size) {
-	        // Using default 2048 as it is the representation we want to hit first.
-	        size = Math.max(isNaN(params.width) ? 2048 : params.width, isNaN(params.height) ? 2048 : params.height);
-	      }
-
-	      // Filter representations by by pixel format.
-	      var matches = [];
-
-	      ImageRepresentations.forEach(function (representation) {
-	        if (extension === representation.extension) {
-	          matches.push(representation);
-	        }
-	      });
-
-	      // Check to see if there are any matches.
-	      if (matches.length === 0) {
-	        throw new Error('No matching image representations found');
-	      }
-
-	      // Sort available representations by size (BIGGEST to smallest).
-	      matches.sort(function (a, b) {
-	        return b.size - a.size;
-	      });
-
-	      // Default to the largest image size.
-	      var match = matches[0];
-
-	      // Round up to the closest image size. (Working our way from LARGEST to smallest)
-	      matches.forEach(function (representation) {
-	        if (size <= representation.size) {
-	          match = representation;
-	        }
-	      });
-
-	      return match;
 	    }
 	  }]);
 
 	  return RunmodeLoader;
-	})(_baseLoader2['default']);
+	}(_baseLoader2.default);
 
-	exports['default'] = RunmodeLoader;
-	module.exports = exports['default'];
+	exports.default = RunmodeLoader;
 
 /***/ }
 /******/ ]);
