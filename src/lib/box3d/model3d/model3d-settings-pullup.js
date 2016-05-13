@@ -22,6 +22,7 @@ import {
     RENDER_MODE_LIT,
     RENDER_MODE_UNLIT,
     RENDER_MODE_NORMALS,
+    RENDER_MODE_SHAPE,
     RENDER_MODE_WIRE,
     RENDER_MODE_UNTEXTURED_WIRE,
     RENDER_MODE_UV,
@@ -42,6 +43,10 @@ const RENDER_MODES = [
         text: RENDER_MODE_NORMALS,
         callback: 'onRenderModeSelected',
         args: [RENDER_MODE_NORMALS]
+    }, {
+        text: RENDER_MODE_SHAPE,
+        callback: 'onRenderModeSelected',
+        args: [RENDER_MODE_SHAPE]
     }, {
         text: RENDER_MODE_WIRE,
         callback: 'onRenderModeSelected',

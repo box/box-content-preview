@@ -30,6 +30,7 @@ export const CAMERA_PROJECTION_ORTHOGRAPHIC = 'Orthographic';
 export const RENDER_MODE_LIT = 'Lit';
 export const RENDER_MODE_UNLIT = 'Unlit';
 export const RENDER_MODE_NORMALS = 'Normals';
+export const RENDER_MODE_SHAPE = 'Shape';
 export const RENDER_MODE_WIRE = 'Wireframe';
 export const RENDER_MODE_UNTEXTURED_WIRE = 'Untextured Wireframe';
 export const RENDER_MODE_UV = 'UV Overlay';
