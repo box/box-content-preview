@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import autobind from 'autobind-decorator';
 import {
     UIRegistry,
     createButton,
@@ -99,7 +98,6 @@ class Model3DSettingsPullup extends EventEmitter {
      * @param {Array} configEntry.args Arguments to be bound to the function callback
      * @returns {void}
      */
-    @autobind
     convertToValidCallback(configEntry) {
         const entry = configEntry;
         const callback = entry.callback;
@@ -116,17 +114,26 @@ class Model3DSettingsPullup extends EventEmitter {
         // The containing pullup element
         const pullupEl = createPullup();
         this.pullupEl = pullupEl;
+        this.uiRegistry.registerUiItem('settings-pullup-el', pullupEl);
 
         // Default Render Mode Dropdown
-        const renderPanelData = Object.assign([], RENDER_MODES);
-        renderPanelData.forEach(this.convertToValidCallback);
+        const renderPanelData = [];
+        RENDER_MODES.forEach((entry) => {
+            const entryCopy = Object.assign({}, entry);
+            this.convertToValidCallback(entryCopy);
+            renderPanelData.push(entryCopy);
+        });
         const renderModeDropdownEl = createDropdown('Render Mode', 'Lit', renderPanelData);
         this.renderModeEl = renderModeDropdownEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
         pullupEl.appendChild(renderModeDropdownEl);
 
         // Default Camera Projection Dropdown
-        const projectionPanelData = Object.assign([], PROJECTION_MODES);
-        projectionPanelData.forEach(this.convertToValidCallback);
+        const projectionPanelData = [];
+        PROJECTION_MODES.forEach((entry) => {
+            const entryCopy = Object.assign({}, entry);
+            this.convertToValidCallback(entryCopy);
+            projectionPanelData.push(entryCopy);
+        });
         const projectionPanelRowEl = createDropdown('Camera Projection',
             'Perspective', projectionPanelData);
         this.projectionModeEl = projectionPanelRowEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
@@ -247,7 +254,6 @@ class Model3DSettingsPullup extends EventEmitter {
      * Notify listeners of save event
      * @returns {void}
      */
-    @autobind
     onSaveSelected() {
         // We can cheat because the strings in the label match the metadata values
         this.emit(EVENT_SAVE_SCENE_DEFAULTS, this.renderModeEl.textContent, this.projectionModeEl.textContent);
