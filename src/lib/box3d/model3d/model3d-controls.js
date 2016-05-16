@@ -214,6 +214,8 @@ class Model3dControls extends Box3DControls {
         this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
         this.settingsPullup.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         this.settingsPullup.destroy();
+        this.settingsPanelEl = null;
+        this.settingsPullup = null;
 
         super.destroy();
     }
