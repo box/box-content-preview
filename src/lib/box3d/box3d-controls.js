@@ -17,6 +17,7 @@ import {
 } from '../icons/icons';
 
 import { CLASS_HIDDEN } from '../constants';
+import { UIRegistry } from './box3d-ui-utils';
 
 @autobind
 class Box3DControls extends EventEmitter {
@@ -33,12 +34,10 @@ class Box3DControls extends EventEmitter {
         super();
 
         this.vrEnabled = false;
-
-        // List of registered elements and their events
-        this.eventRegistry = {};
-
         this.el = containerEl;
         this.controls = new Controls(this.el);
+
+        this.uiRegistry = new UIRegistry();
     }
 
     /**
@@ -66,69 +65,6 @@ class Box3DControls extends EventEmitter {
      */
     addVRButton() {
         this.vrButtonEl = this.controls.add(__('box3d_toggle_vr'), this.handleToggleVr, '', ICON_3D_VR);
-    }
-
-    /**
-     * Register an element for automatic event unbinding and cleanup
-     * @param {string} uniqueId  A unique identifier for accessing the given element
-     * @param {HTMLElement} element   The element we are registering
-     * @param {string} [eventName] An event we want to bind to
-     * @param {Function} [callback]  A function we want to call, on the provided event happening
-     * @returns {void}
-     */
-    registerUiItem(uniqueId, element, eventName, callback) {
-        if (!this.eventRegistry[uniqueId]) {
-            this.eventRegistry[uniqueId] = {
-                el: element,
-                uuid: uniqueId,
-                events: {}
-            };
-        }
-
-        if (eventName && callback) {
-            element.addEventListener(eventName, callback);
-
-            const registeredEvents = this.eventRegistry[uniqueId].events;
-            registeredEvents[eventName] = registeredEvents[eventName] || [];
-            registeredEvents[eventName].push(callback);
-        }
-    }
-
-    /**
-     * Unregistrer and remove the UI item
-     * @param {Object} item The ui item created in registerUiItem()
-     * @returns {void}
-     */
-    unregisterUiItem(item) {
-        if (!this.eventRegistry[item.uuid]) {
-            return;
-        }
-
-        if (item.el.parentElement) {
-            item.el.parentElement.removeChild(item.el);
-        }
-
-        Object.keys(item.events).forEach((eventName) => {
-            item.events[eventName].forEach((callback) => {
-                item.el.removeEventListener(eventName, callback);
-            });
-            /*eslint-disable*/
-            delete item.events[eventName];
-            delete item.el;
-            /*eslint-enable*/
-        });
-
-        delete this.eventRegistry[item.uuid];
-    }
-
-    /**
-     * Unregister the entire ui registry
-     * @returns {void}
-     */
-    unregisterUiItems() {
-        Object.keys(this.eventRegistry).forEach((uiItem) => {
-            this.unregisterUiItem(this.eventRegistry[uiItem]);
-        });
     }
 
     /**
@@ -215,7 +151,8 @@ class Box3DControls extends EventEmitter {
         if (this.controls) {
             this.controls.destroy();
         }
-        this.unregisterUiItems();
+        this.uiRegistry.unregisterUiItems();
+        this.uiRegistry = null;
     }
 
 }

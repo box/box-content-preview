@@ -1,12 +1,11 @@
 $blue-highlight: #22A7F0;
 
 .box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item {
-    line-height: 45px;
-    white-space: nowrap;
-    padding: 0 18px;
-    color: #ffffff;
-    opacity: 0.7;
     cursor: pointer;
+    line-height: 26px;
+    padding: 0 18px;
+    position: relative;
+    white-space: nowrap;
 }
 
 .box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item:hover,
@@ -16,24 +15,28 @@ $blue-highlight: #22A7F0;
 }
 
 .box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item.box-preview-current-render-mode {
-    background-color: #000;
-    border-radius: 5px;
+    color: $blue-highlight;
+}
+
+.box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item > span {
+    display: none;
+}
+
+.box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item.box-preview-current-render-mode > span {
+    display: inline-block;
+    left: -6px;
+    position: absolute;
 }
 
 .box-preview-box3d .box-preview-render-mode-selector {
     margin: auto;
-    -webkit-transform: translate(-36%, 0);
-    -ms-transform: translate(-36%, 0);
-    transform: translate(-36%, 0);
-}
-
-.box-preview-box3d .box-preview-render-mode-selector:after {
-    left: 50%;
-    margin-left: -12px;
+    -webkit-transform: translate(-7%, 0);
+    -ms-transform: translate(-7%, 0);
+    transform: translate(-7%, 0);
 }
 
 .box-preview-box3d .box-preview-render-mode-selector .box-preview-inline-icon {
-    margin-right: 10px;
+
 }
 
 .box-preview-settings-wrapper {
@@ -60,7 +63,12 @@ $blue-highlight: #22A7F0;
     width: 220px;
 }
 
-.box-preview-box3d .box-preview-settings-panel button {
+.box-preview-box3d .box-preview-settings-panel-row {
+    display: block;
+    margin-top: 6px;
+}
+
+.box-preview-box3d .box-preview-settings-panel-row button {
     border: 0;
     background: #929292;
     color: #fff;
@@ -69,19 +77,15 @@ $blue-highlight: #22A7F0;
     margin-right: 5px;
 }
 
-.box-preview-box3d .box-preview-settings-panel .box-preview-settings-save-btn {
+.box-preview-box3d  .box-preview-settings-panel-row .box-preview-settings-save-btn {
     background: $blue-highlight;
+    color: white;
 }
 
 .box-preview-box3d .box-preview-settings-panel:after {
     right: 10%;
 }
 
-.box-preview-box3d .box-preview-settings-panel-row {
-    display: block;
-    margin: 25px 0;
-}
-
 .box-preview-box3d .box-preview-settings-panel-row:before,
 .box-preview-box3d .box-preview-settings-panel-row:after {
     display: table;
@@ -91,25 +95,23 @@ $blue-highlight: #22A7F0;
 
 .box-preview-box3d .box-preview-settings-panel-row:after {
     clear: both;
-}
-
-.box-preview-box3d .box-preview-settings-panel-row:before,
-.box-preview-box3d .box-preview-settings-panel-row:after {
-    display: table;
-    content: "";
-    line-height: 0;
-}
-
-.box-preview-box3d .box-preview-settings-panel-row:after {
-    clear: both;
+    padding-bottom: 10px;
 }
 
 .box-preview-box3d .box-preview-settings-panel-label {
+    color: #878787;
+    margin-bottom: 4px;
     line-height: 1;
-    margin-bottom: 15px;
+    white-space: nowrap;
 }
 
-.box-preview-box3d .box-preview-settings-panel-btn {
+.box-preview-box3d .box-preview-render-mode-selector .box-preview-settings-panel-label {
+    line-height: 1;
+    color: #878787;
+    padding: 0 18px;
+}
+
+.box-preview-box3d .box-preview-panel-btn {
     height: 34px;
     line-height: 34px;
     border-radius: 5px;
@@ -118,7 +120,7 @@ $blue-highlight: #22A7F0;
 }
 
 .box-preview-box3d .box-preview-default-setting-selector {
-    height: 34px;
+    // padding-bottom: 10px;
     position: relative;
     /* -> containing block */
 }
@@ -147,8 +149,9 @@ $blue-highlight: #22A7F0;
     top: 95%;
     background: #fff;
     color: #3b3b3b;
-    width: 100%;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    width: 100%;
 }
 
 .box-preview-box3d .box-preview-default-setting-selector > ul li {
@@ -162,78 +165,41 @@ $blue-highlight: #22A7F0;
 }
 
 .box-preview-box3d .box-preview-setting-selector-label {
-    border: 1px solid #6c6c6c;
-    padding: 0 18px;
-    background: #494949;
+    border: 1px solid #CACCD0;
+    color: #000;
+    padding: 0px 0px 0px 10px;
+    background: #FFF;
+    border-radius: 2px;
+    width: 164px;
+    white-space: nowrap;
 }
 
-.box-preview-box3d .box-preview-orientation-controls {
-    width: 10%;
-    text-align: center;
-    cursor: pointer;
-    line-height: 30px;
+.box-preview-box3d .box-preview-default-setting-selector:after {
+    content: '\25BC';
+    position: absolute;
+    top: 40%;
+    right: 12px;
 }
 
-.box-preview-box3d .box-preview-orientation-controls span {
-    height: 10px;
-}
+.box-preview-box3d .box3d-settings-axis-widget {
+    border: 1px solid #CACCD0;
+    border-radius: 2px;
+    display: inline;
+    margin: 4px;
+    padding-bottom: 10px;
 
-.box-preview-box3d .box-preview-orientation-prev {
-    float: left;
-}
+    span {
+        display: inline;
+    }
 
-.box-preview-box3d .box-preview-orientation-next {
-    float: right;
-}
+    .box3d-settings-axis-label {
 
-.box-preview-box3d .box-preview-orientation-selector {
-    border: 1px solid #6c6c6c;
-    background: #494949;
-    width: 80%;
-    float: left;
-    margin: 0;
-}
+    }
 
-.box-preview-box3d .box-preview-orientation-selector:before,
-.box-preview-box3d .box-preview-orientation-selector:after {
-    display: table;
-    content: "";
-    line-height: 0;
-}
-
-.box-preview-box3d .box-preview-orientation-selector:after {
-    clear: both;
-}
-
-.box-preview-box3d .box-preview-orientation-selector:before,
-.box-preview-box3d .box-preview-orientation-selector:after {
-    display: table;
-    content: "";
-    line-height: 0;
-}
-
-.box-preview-box3d .box-preview-orientation-selector:after {
-    clear: both;
-}
-
-.box-preview-box3d .box-preview-orientation-selector li {
-    float: left;
-    width: 33.33%;
-    line-height: 34px;
-    text-align: center;
-    border-right: 1px solid #6c6c6c;
-    cursor: pointer;
-}
-
-.box-preview-box3d .box-preview-orientation-selector li:last-child {
-    border-right: none;
-}
-
-.box-preview-box3d .box-preview-orientation-selector li.box-preview-current-axis {
-    background: $blue-highlight;
-    color: #fff;
-}
-
-.box-preview-box3d .box-preview-orientation-selector li:hover {
-    color: #fff;
+    .box3d-setting-axis-rotate {
+        color: $blue-highlight;
+        padding: 6px;
+        cursor: pointer;
+        font-size: medium;
+    }
 }

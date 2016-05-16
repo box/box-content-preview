@@ -41,12 +41,15 @@
     z-index: 2;
     position: absolute;
     font-size: 13px;
-    border-radius: 5px;
-    background: rgba(33, 33, 33, 0.95);
-    color: rgba(255, 255, 255, 0.7);
+    background: #FFF;
+    color: #484848;
     margin: auto;
     border: 0;
     outline: 0;
+    border-color: #CACCD0;
+    border-style: solid;
+    border-width: 1px;
+    font-weight: bold;
 }
 
 .box-preview-box3d .box-preview-overlay span {
@@ -56,6 +59,7 @@
     opacity: 0.7;
 }
 
+.box-preview-box3d li,
 .box-preview-box3d ul {
     list-style: none;
     padding: 0;
@@ -63,18 +67,7 @@
 }
 
 .box-preview-box3d .box-preview-pullup {
-    bottom: calc(140%);
+    bottom: calc(100%);
     text-align: left;
-}
-
-.box-preview-box3d .box-preview-pullup:after {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    top: 100%;
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 8px solid rgba(35, 35, 35, 0.95);
+    padding: 10px;
 }
