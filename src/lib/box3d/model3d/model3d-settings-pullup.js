@@ -114,7 +114,6 @@ class Model3DSettingsPullup extends EventEmitter {
         // The containing pullup element
         const pullupEl = createPullup();
         this.pullupEl = pullupEl;
-        pullupEl.setAttribute('TEST_ID', Math.random());
         this.uiRegistry.registerUiItem('settings-pullup-el', pullupEl);
 
         // Default Render Mode Dropdown
