@@ -1,5 +1,37 @@
 # Change Log
 
+## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
+
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.55.0...HEAD)
+
+**Merged pull requests:**
+
+- PDFJS v1.5.256 [\#364](https://gitenterprise.inside-box.net/Preview/Preview/pull/364) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Mega refactor of control bar, consolidated settings into control bar, new ui utils [\#363](https://gitenterprise.inside-box.net/Preview/Preview/pull/363) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Modify document viewer padding [\#362](https://gitenterprise.inside-box.net/Preview/Preview/pull/362) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] i18n and profile pictures [\#361](https://gitenterprise.inside-box.net/Preview/Preview/pull/361) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing document viewer bugs [\#360](https://gitenterprise.inside-box.net/Preview/Preview/pull/360) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding 15px vertical padding to document viewer [\#359](https://gitenterprise.inside-box.net/Preview/Preview/pull/359) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Design changes [\#358](https://gitenterprise.inside-box.net/Preview/Preview/pull/358) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
+## [v0.55.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.55.0) (2016-05-10)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.54.0...v0.55.0)
+
+**Merged pull requests:**
+
+- \[Annotations\] Design changes [\#357](https://gitenterprise.inside-box.net/Preview/Preview/pull/357) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- util.js tests [\#356](https://gitenterprise.inside-box.net/Preview/Preview/pull/356) ([phora](https://gitenterprise.inside-box.net/phora))
+- \[Annotations\] Updating designs and making changes from feedback [\#355](https://gitenterprise.inside-box.net/Preview/Preview/pull/355) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing download button for error files [\#354](https://gitenterprise.inside-box.net/Preview/Preview/pull/354) ([phora](https://gitenterprise.inside-box.net/phora))
+- Adding download button to error.js [\#353](https://gitenterprise.inside-box.net/Preview/Preview/pull/353) ([phora](https://gitenterprise.inside-box.net/phora))
+- UI tweaks [\#352](https://gitenterprise.inside-box.net/Preview/Preview/pull/352) ([phora](https://gitenterprise.inside-box.net/phora))
+- Header style tweak [\#351](https://gitenterprise.inside-box.net/Preview/Preview/pull/351) ([phora](https://gitenterprise.inside-box.net/phora))
+- Fixing cache.js [\#350](https://gitenterprise.inside-box.net/Preview/Preview/pull/350) ([phora](https://gitenterprise.inside-box.net/phora))
+- \[Annotations\] Cleaning up annotator code [\#349](https://gitenterprise.inside-box.net/Preview/Preview/pull/349) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Removing source map generation from live builds [\#348](https://gitenterprise.inside-box.net/Preview/Preview/pull/348) ([phora](https://gitenterprise.inside-box.net/phora))
+- icons for 3d [\#347](https://gitenterprise.inside-box.net/Preview/Preview/pull/347) ([phora](https://gitenterprise.inside-box.net/phora))
+- Updating Changelog to v0.54.0 [\#346](https://gitenterprise.inside-box.net/Preview/Preview/pull/346) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
 ## [v0.54.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.54.0) (2016-05-04)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.53.0...v0.54.0)
 
