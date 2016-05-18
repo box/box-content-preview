@@ -6,8 +6,6 @@
 import './document.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
-import debounce from 'lodash.debounce';
-import fullscreen from '../fullscreen';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 import {
     ICON_DROP_DOWN,
@@ -17,8 +15,6 @@ import {
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT
 } from '../icons/icons';
-
-const WHEEL_DEBOUNCE = 100;
 
 const Box = global.Box || {};
 
@@ -39,19 +35,6 @@ class Document extends DocBase {
     constructor(container, options) {
         super(container, options);
         this.docEl.classList.add('box-preview-doc-document');
-    }
-
-    /**
-     * [destructor]
-     *
-     * @returns {void}
-     */
-    destroy() {
-        if (this.docEl) {
-            this.docEl.removeEventListener('wheel', this.wheelHandler());
-        }
-
-        super.destroy();
     }
 
     /**
@@ -77,18 +60,6 @@ class Document extends DocBase {
     //--------------------------------------------------------------------------
 
     /**
-     * Binds DOM listeners for document element.
-     *
-     * @returns {void}
-     * @private
-     */
-    bindDOMListeners() {
-        super.bindDOMListeners();
-
-        this.docEl.addEventListener('wheel', this.wheelHandler());
-    }
-
-    /**
      * Bind event listeners for document controls
      *
      * @returns {void}
@@ -108,32 +79,6 @@ class Document extends DocBase {
 
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
-    }
-
-    /**
-     * Debounced mouse wheel handler, scroll documents by page when in full
-     * screen mode, and regularly when not in full screen. This needs
-     * to be debounced because otherwise, the inertia scroll on Macbooks fires
-     * the 'wheel' event too many times.
-     *
-     * @returns {void}
-     * @private
-     */
-    wheelHandler() {
-        if (!this.debouncedWheelHandler) {
-            this.debouncedWheelHandler = debounce((event) => {
-                // If fullscreen, scroll by page
-                if (fullscreen.isFullscreen()) {
-                    if (event.deltaY > 0) {
-                        this.nextPage();
-                    } else {
-                        this.previousPage();
-                    }
-                }
-            }, WHEEL_DEBOUNCE);
-        }
-
-        return this.debouncedWheelHandler;
     }
 }
 
