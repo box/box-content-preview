@@ -159,6 +159,9 @@ class Preview extends EventEmitter {
         // Shared link header
         this.options.sharedLink = options.sharedLink;
 
+        // Shared link password
+        this.options.sharedLinkPassword = options.sharedLinkPassword;
+
         // Save the location of preview for viewers
         this.options.location = Object.assign({}, this.location);
 
@@ -548,58 +551,71 @@ class Preview extends EventEmitter {
      * Loads a viewer.
      *
      * @private
-     * @returns {Promise} Promise to load a viewer
+     * @returns {void}
      */
     attachViewerListeners() {
-        // Add listeners for viewer download event
-        this.viewer.addListener('download', this.download);
+        this.viewer.addListener('viewerevent', (data) => {
+            switch (data.event) {
+                case 'download':
+                    this.download();
+                    break;
+                case 'error':
+                    this.triggerError();
+                    break;
+                case 'reload':
+                    this.show(this.file.id, this.previewOptions);
+                    break;
+                case 'load':
+                    this.finishLoading();
+                    break;
+                default:
+                    this.emit(data.event, data.data);
+            }
+        });
+    }
 
-        // Add listeners for viewer load / error event
-        this.viewer.addListener('error', this.triggerError);
+    /**
+     * Final tasks to finish loading a viewer.
+     *
+     * @private
+     * @returns {void}
+     */
+    finishLoading() {
+        // Show or hide annotate/print/download buttons
+        this.showAnnotateButton();
 
-        // Reload event is fired when entire preview needs to be reloaded
-        this.viewer.addListener('reload', () => {
-            this.show(this.file.id, this.previewOptions);
+        // We don't support creating highlights on mobile for now since the
+        // event we would listen to, selectionchange, fires continuously and
+        // is unreliable
+        if (!Browser.isMobile()) {
+            this.showHighlightButton();
+        }
+
+        this.showPrintButton();
+        this.showDownloadButton();
+
+        // Once the viewer loads, hide the loading indicator
+        if (this.contentContainer) {
+            this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+        }
+
+        // Bump up preview count
+        this.count.success++;
+
+        // Finally emit the viewer instance back with a load event
+        this.emit('load', {
+            viewer: this.viewer,
+            metrics: this.logger.done(this.count),
+            file: this.file
         });
 
-        // Load event is fired when preview loads
-        this.viewer.addListener('load', () => {
-            // Show or hide annotate/print/download buttons
-            this.showAnnotateButton();
+        // Hookup for phantom JS health check
+        if (typeof window.callPhantom === 'function') {
+            window.callPhantom(1);
+        }
 
-            // We don't support creating highlights on mobile for now since the
-            // event we would listen to, selectionchange, fires continuously and
-            // is unreliable
-            if (!Browser.isMobile()) {
-                this.showHighlightButton();
-            }
-
-            this.showPrintButton();
-            this.showDownloadButton();
-
-            // Once the viewer loads, hide the loading indicator
-            if (this.contentContainer) {
-                this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
-            }
-
-            // Bump up preview count
-            this.count.success++;
-
-            // Finally emit the viewer instance back with a load event
-            this.emit('load', {
-                viewer: this.viewer,
-                metrics: this.logger.done(this.count),
-                file: this.file
-            });
-
-            // Hookup for phantom JS health check
-            if (typeof window.callPhantom === 'function') {
-                window.callPhantom(1);
-            }
-
-            // Prefetch other files
-            this.prefetch();
-        });
+        // Prefetch other files
+        this.prefetch();
     }
 
     /**
@@ -693,7 +709,7 @@ class Preview extends EventEmitter {
         const headers = {
             'X-Rep-Hints': `3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
         };
-        return getHeaders(headers, token || this.options.token, this.options.sharedLink);
+        return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
     }
 
     /**
@@ -827,7 +843,7 @@ class Preview extends EventEmitter {
             // Browser caches the content
             const loader = this.getLoader(file);
             if (loader && typeof loader.prefetch === 'function') {
-                loader.prefetch(file, token, this.location, this.options.sharedLink);
+                loader.prefetch(file, token, this.location, this.options.sharedLink, this.options.sharedLinkPassword);
             }
         }
     }

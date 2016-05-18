@@ -105,9 +105,10 @@ class AssetLoader {
      * @param {String} token auth token
      * @param {Object} location asset location
      * @param {String} sharedLink shared link
+     * @param {String} password shared link password
      * @returns {void}
      */
-    prefetch(file, token, location, sharedLink) {
+    prefetch(file, token, location, sharedLink, sharedLinkPassword) {
         // Create an asset path creator function
         const assetUrlCreator = createAssetUrlCreator(location);
 
@@ -135,12 +136,12 @@ class AssetLoader {
 
         if (viewer.PREFETCH === 'xhr') {
             fetch(representation.links.content.url, {
-                headers: getHeaders({}, token, sharedLink)
+                headers: getHeaders({}, token, sharedLink, sharedLinkPassword)
             });
         } else {
             const img = document.createElement('img');
             img.crossOrigin = 'anonymous';
-            img.src = createContentUrl(representation.links.content.url, token, sharedLink);
+            img.src = createContentUrl(representation.links.content.url, token, sharedLink, sharedLinkPassword);
         }
     }
 
