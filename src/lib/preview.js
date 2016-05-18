@@ -568,6 +568,9 @@ class Preview extends EventEmitter {
                 case 'load':
                     this.finishLoading();
                     break;
+                case 'notification':
+                    this.emit('notification', data.data);
+                    break;
                 default:
                     this.emit(data.event, data.data);
             }
