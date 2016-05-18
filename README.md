@@ -269,7 +269,6 @@ Box.Preview.addListener('rotate', (data) => {
     } else if (data.viewerName === 'Image360') {
         // Do something else when 360 image rotation happens
     } else if (...) { ... }
-}
 });
 
 ```
