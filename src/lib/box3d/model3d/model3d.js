@@ -191,7 +191,6 @@ class Model3d extends Box3D {
 
                 // Update settings ui
                 this.controls.setCurrentProjectionMode(defaults.cameraProjection);
-                this.handleSettingsSetRenderMode(defaults.defaultRenderMode);
 
                 // Update renderer
                 this.handleSetCameraProjection(defaults.cameraProjection);
@@ -266,7 +265,7 @@ class Model3d extends Box3D {
     handleReset() {
         super.handleReset();
         this.handleRotationAxisSet(this.axes.up, this.axes.forward, true);
-        this.controls.setCurrentRenderMode(this.renderMode);
+        this.controls.handleSetRenderMode(this.renderMode);
         this.controls.setCurrentProjectionMode(this.projection);
     }
 
@@ -278,16 +277,6 @@ class Model3d extends Box3D {
     @autobind
     handleSetRenderMode(mode = 'Lit') {
         this.renderer.setRenderMode(mode);
-    }
-
-    /**
-     * Handle a render mode set coming from the settings panel
-     * @param {String} renderMode The render mode to change to
-     * @returns {void}
-     */
-    @autobind
-    handleSettingsSetRenderMode(renderMode) {
-        this.controls.setCurrentRenderMode(renderMode);
     }
 
     /**
