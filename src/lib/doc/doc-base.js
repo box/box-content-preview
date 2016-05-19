@@ -816,6 +816,9 @@ class DocBase extends Base {
     enterfullscreenHandler() {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.FULLSCREEN;
         this.pdfViewer.currentScaleValue = 'page-fit';
+
+        // Force resize for annotations
+        this.resize();
     }
 
     /**
@@ -828,6 +831,9 @@ class DocBase extends Base {
     exitfullscreenHandler() {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.NORMAL;
         this.pdfViewer.currentScaleValue = 'auto';
+
+        // Force resize for annotations
+        this.resize();
     }
 }
 

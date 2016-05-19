@@ -15,15 +15,9 @@
     user-select: none;
     width: 100%;
 
-    // Fullscreen CSS
+    // Hide scrollbar when fullscreen since it causes loading issues
     .box-preview-is-fullscreen & {
-        .page {
-            padding: 0;
-        }
-
-        .textLayer {
-            margin: 0;
-        }
+        overflow: hidden;
     }
 
     //---------- Override CSS from generic PDFJS viewer build ----------//
@@ -35,14 +29,8 @@
         margin: 0 auto;
         // We use padding instead of margin to push down since we want to
         // include this padding when PDF.js jumps to pages
-        padding: 15px 0 0;
+        padding: 15px 0;
         position: relative;
-
-        // Use margin to create padding for last page so we don't have to
-        // modify page height calculations
-        &:last-child {
-            margin-bottom: 15px;
-        }
 
         // scss-lint:disable SelectorDepth
         .loadingIcon {
