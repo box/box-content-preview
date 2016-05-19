@@ -1,14 +1,21 @@
 import {
     CSS_CLASS_OVERLAY,
     CSS_CLASS_PULLUP,
-    CSS_CLASS_PANEL_BUTTON,
     CSS_CLASS_SETTINGS_PANEL_LABEL,
     CSS_CLASS_SETTINGS_PANEL_ROW,
-    CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL,
-    CSS_CLASS_DEFAULT_SETTING_SELECTOR,
     CSS_CLASS_HIDDEN
 } from './model3d/model3d-constants';
 
+import {
+    CLASS_BOX_PREVIEW_BUTTON,
+    CLASS_BOX_PREVIEW_LINK,
+    CLASS_BOX_PREVIEW_MENU,
+    CLASS_BOX_PREVIEW_OVERLAY,
+    CLASS_BOX_PREVIEW_OVERLAY_WRAPPER,
+    CLASS_BOX_PREVIEW_TOGGLE_OVERLAY
+} from '../constants.js';
+
+const CLASS_IS_VISIBLE = 'is-visible';
 
 /**
  * Create a label
@@ -30,7 +37,7 @@ function createLabel(text = '') {
 function createButton(text = '') {
     const button = document.createElement('button');
     button.textContent = text;
-    button.classList.add(CSS_CLASS_PANEL_BUTTON);
+    button.classList.add(CLASS_BOX_PREVIEW_BUTTON);
     return button;
 }
 
@@ -76,42 +83,49 @@ function createRow(labelText) {
 function createDropdown(labelText = '', listText = '', listContent = []) {
     const wrapperEl = createRow(labelText);
 
-    const dropdownWrapperEl = document.createElement('div');
-    dropdownWrapperEl.classList.add(CSS_CLASS_DEFAULT_SETTING_SELECTOR);
-    wrapperEl.appendChild(dropdownWrapperEl);
+    const overlayContainerEl = document.createElement('div');
+    overlayContainerEl.classList.add(CLASS_BOX_PREVIEW_TOGGLE_OVERLAY);
 
-    const listLabelEl = document.createElement('span');
-    listLabelEl.textContent = listText;
-    listLabelEl.classList.add(CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL);
-    listLabelEl.classList.add(CSS_CLASS_PANEL_BUTTON);
-    dropdownWrapperEl.appendChild(listLabelEl);
+    const overlayWrapperEl = document.createElement('div');
+    overlayWrapperEl.classList.add(CLASS_BOX_PREVIEW_OVERLAY_WRAPPER);
 
-    const dropdownEl = document.createElement('ul');
-    dropdownEl.classList.add(CSS_CLASS_HIDDEN);
-    dropdownWrapperEl.appendChild(dropdownEl);
+    overlayWrapperEl.innerHTML = `<div class=${CLASS_BOX_PREVIEW_OVERLAY}>
+                                        <menu class=${CLASS_BOX_PREVIEW_MENU}>
+                                            <div class="link-group">
+                                                <ul></ul>
+                                            </div>
+                                        </menu>
+                                    </div>`;
 
+    // Button for dropdown
+    const dropdownButtonEl = document.createElement('button');
+    dropdownButtonEl.textContent = listText;
+    dropdownButtonEl.classList.add(CLASS_BOX_PREVIEW_BUTTON);
+    dropdownButtonEl.addEventListener('click', () => {
+        overlayWrapperEl.classList.toggle(CLASS_IS_VISIBLE);
+    });
+
+    const listEl = overlayWrapperEl.querySelector('ul');
+    // Create list items
     listContent.forEach((entry) => {
-        const text = entry.text || '';
-        const listItemEl = document.createElement('li');
-        listItemEl.textContent = text;
-
-        listItemEl.addEventListener('click', () => {
-            listLabelEl.textContent = text;
-            dropdownEl.classList.toggle(CSS_CLASS_HIDDEN);
+        const li = document.createElement('li');
+        const labelEl = document.createElement('a');
+        labelEl.classList.add(CLASS_BOX_PREVIEW_LINK);
+        labelEl.textContent = entry.text;
+        labelEl.addEventListener('click', () => {
+            dropdownButtonEl.textContent = entry.text;
+            overlayWrapperEl.classList.toggle(CLASS_IS_VISIBLE);
+            entry.callback();
         });
-
-        const callback = entry.callback;
-        // Callbacks come as a string OR a function
-        if (callback && typeof callback === 'function') {
-            listItemEl.addEventListener('click', callback);
-        }
-
-        dropdownEl.appendChild(listItemEl);
+        li.appendChild(labelEl);
+        listEl.appendChild(li);
     });
 
-    listLabelEl.addEventListener('click', () => {
-        dropdownEl.classList.toggle(CSS_CLASS_HIDDEN);
-    });
+    // Add button and wrapper, in order
+    overlayContainerEl.appendChild(dropdownButtonEl);
+    overlayContainerEl.appendChild(overlayWrapperEl);
+
+    wrapperEl.appendChild(overlayContainerEl);
 
     return wrapperEl;
 }

@@ -9,8 +9,14 @@ a {
     text-shadow: 1px 1px 1px fade-out($white, .996);
 }
 
-body {
+body,
+button {
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+li {
+    margin: 0;
+    padding: 0;
 }
 
 //------------------------------------------------------------------------------
@@ -152,4 +158,101 @@ body {
     border: 1px solid $box-blue;
     box-shadow: none;
     outline: 0;
+}
+
+//------------------------------------------------------------------------------
+// Menus
+//------------------------------------------------------------------------------
+.box-preview-overlay {
+    background: $white;
+    border: 1px solid $sf-fog;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+    margin: 0;
+    opacity: 0;
+    padding: 8px 0;
+    pointer-events: none;
+    position: absolute;
+    -webkit-transform: rotateY(-10deg) rotateX(-10deg);
+    transform: rotateY(-10deg) rotateX(-10deg);
+    -webkit-transform-origin: left top;
+    transform-origin: left top;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transition: visibility 0s linear 0.075s, opacity 0.075s, -webkit-transform 0.125s;
+    transition: visibility 0s linear 0.075s, opacity 0.075s, -webkit-transform 0.125s;
+    transition: visibility 0s linear 0.075s, opacity 0.075s, transform 0.125s;
+    transition: visibility 0s linear 0.075s, opacity 0.075s, transform 0.125s, -webkit-transform 0.125s;
+    visibility: hidden;
+    z-index: 90;
+}
+
+.box-preview-link {
+    color: #64686D;
+    font-smoothing: antialiased;
+    line-height: 1.5em;
+    overflow: hidden;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+    -webkit-transition: color 0.05s;
+    transition: color 0.05s;
+    white-space: nowrap;
+}
+
+.box-preview-menu {
+    list-style: none;
+    margin: 0;
+    min-width: 225px;
+    padding: 0;
+    white-space: nowrap;
+
+    .link-group {
+        ul {
+            margin: 0;
+
+            a {
+                color: #494949;
+                display: block;
+                padding: 5px 35px 5px 15px;
+
+                &:hover {
+                    background: #F6FAFD;
+                    color: #1A5976;
+                    fill: #1A5976;
+                    cursor: pointer;
+                }
+            }
+
+        }
+    }
+}
+
+.box-preview-toggle-overlay {
+
+    & > button {
+        margin-bottom: 0;
+        margin-left: 0;
+    }
+}
+
+.box-preview-overlay-wrapper {
+    display: inherit;
+    position: relative;
+
+    .box-preview-overlay {
+        margin-top: 5px;
+    }
+
+    &.is-visible {
+
+        .box-preview-overlay {
+            opacity: 1;
+            pointer-events: all;
+            -webkit-transform: rotateY(0deg) rotateX(0deg);
+            transform: rotateY(0deg) rotateX(0deg);
+            -webkit-transition-delay: 0s;
+            transition-delay: 0s;
+            visibility: visible;
+        }
+    }
 }
