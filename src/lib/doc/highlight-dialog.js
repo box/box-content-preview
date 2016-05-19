@@ -15,6 +15,7 @@ import { CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
+const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 
 @autobind
@@ -99,7 +100,7 @@ class HighlightDialog extends AnnotationDialog {
         const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`);
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageWidth = pageDimensions.width;
-        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP;
+        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const scale = annotatorUtil.getScale(this._annotatedElement);
         const coordinates = annotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
         const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale);
