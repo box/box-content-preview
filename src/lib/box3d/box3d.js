@@ -45,7 +45,7 @@ class Box3D extends Base {
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_BOX3D;
 
-        const sdkOpts = { token: options.token, apiBase: options.api };
+        const sdkOpts = { token: options.token, apiBase: options.api, sharedLink: options.sharedLink };
         this.boxSdk = new BoxSDK(sdkOpts);
 
         this.loadTimeout = 50000;
