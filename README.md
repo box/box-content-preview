@@ -224,6 +224,24 @@ EVENTNAME can be one of the following
 ```
 * `navigate` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event happens.
 
+* `notification` event will be fired when either the preview wrapper or one of the viewers wants to notify something like a warning or non-fatal error:
+```javascript
+  {
+      message: 'message', // Message to show
+      type: 'warning'    // 'warning' or 'notice' or 'error'
+  }
+```
+
+* Each viewer will fire its own sets of events. For example, Image viewer will fire `rotate` or `resize` etc. Another viewer may fire similar or other events. All these will be propogated on the viewer instance as shown in the examples below and even on the preview wrapper with the following data:
+```javascript
+  {
+      event: EVENTNAME,         // Some event
+      data: DATA,               // Some data
+      viewerName: VIEWERNAME,   // Name of the viewer. See VIEWERNAME above
+      fileId: fileId            // The file id
+  }
+```
+
 Examples
 --------
 
@@ -241,6 +259,16 @@ Box.Preview.addListener('load', (data) => {
     viewer.addListener('rotate', () => {
         // do something
     });
+});
+
+OR
+
+Box.Preview.addListener('rotate', (data) => {
+    if (data.viewerName === 'Image') {
+        // Do something when image rotation happens
+    } else if (data.viewerName === 'Image360') {
+        // Do something else when 360 image rotation happens
+    } else if (...) { ... }
 });
 
 ```
