@@ -39,16 +39,16 @@ build_assets() {
 
 
     echo "----------------------------------------------------"
-    echo "Starting release build for version" $VERSION
+    echo "Starting CI build for version" $VERSION
     echo "----------------------------------------------------"
 
-    if npm run release; then
+    if npm run ci; then
         echo "----------------------------------------------------"
-        echo "Built release assets for version" $VERSION
+        echo "Built CI assets for version" $VERSION
         echo "----------------------------------------------------"
     else
         echo "----------------------------------------------------"
-        echo "Failed to build release assets!"
+        echo "Failed to build CI assets!"
         echo "----------------------------------------------------"
         exit 1;
     fi
