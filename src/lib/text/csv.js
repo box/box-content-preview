@@ -101,7 +101,9 @@ class CSV extends TextBase {
      * @returns {function} Cell renderer function
      */
     renderCell(cellIndex) {
+        /* eslint-disable react/prop-types */
         return ({ rowIndex }) => <Cell>{this.data[rowIndex][cellIndex]}</Cell>;
+        /* eslint-enable react/prop-types */
     }
 
     /**
