@@ -46,6 +46,10 @@ $header-height: 48px;
     + .box-preview:not(.box-preview-is-fullscreen) {
         top: $header-height;
     }
+
+    .box-preview-custom-logo {
+        max-height: 30px;
+    }
 }
 
 .box-preview-header-btns button {
