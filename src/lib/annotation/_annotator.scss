@@ -1,4 +1,4 @@
-@import '../variables';
+@import 'node_modules/box-ui/src/common/variables';
 
 $highlight-yellow: #ffc900;
 
@@ -104,7 +104,7 @@ $avatar-color-9: #f22c44;
 
     .annotation-container {
         background-color: $white;
-        border: 1px solid $alto;
+        border: 1px solid $seesee;
         border-radius: 4px;
         padding: 15px;
     }
@@ -126,7 +126,7 @@ $avatar-color-9: #f22c44;
     }
 
     .annotation-comment {
-        border-bottom: 1px solid $alto;
+        border-bottom: 1px solid $seesee;
         margin-top: 15px;
         padding-bottom: 15px;
         position: relative;
@@ -242,7 +242,7 @@ $avatar-color-9: #f22c44;
 }
 
 .box-preview-annotation-profile {
-    background-color: $sixes;
+    background-color: $tendemob-grey;
     border-radius: 16px; // Circle
     color: $white;
     font-size: 12px;
@@ -309,7 +309,7 @@ $avatar-color-9: #f22c44;
 .box-preview-delete-highlight-btn,
 .box-preview-delete-highlight-btn:hover {
     background-color: $white;
-    border: 1px solid $alto;
+    border: 1px solid $seesee;
     border-radius: 2px;
     padding: 5px 6px;
 }

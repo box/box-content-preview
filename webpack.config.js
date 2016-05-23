@@ -9,8 +9,11 @@ var img = path.join(__dirname, 'src/img');
 // Check if webpack was run with a production flag that signifies a release build
 var isRelease = process.env.BUILD_PROD === '1';
 
+// Check if webpack was run with a CI flag that signifies a CI build
+var isCI = process.env.BUILD_CI === '1';
+
 // Get the version from package.json
-var version = isRelease ? require('./package.json').version : 'dev';
+var version = (isRelease || isCI) ? require('./package.json').version : 'dev';
 
 var languages = isRelease ? [
     "en-AU",
@@ -60,7 +63,7 @@ module.exports = languages.map(function(language, index) {
     // If this is not a release build
     //      add the Rsync plugin for local development where copying to dev VM is needed.
     //      change source maps to be inline
-    if (!isRelease) {
+    if (!isRelease && !isCI) {
         config.plugins.push(new RsyncPlugin('dist/.', '${USER}@${USER}.dev.box.net:/box/www/assets/content-experience'));
         config.devtool = '#inline-source-map';
     }
