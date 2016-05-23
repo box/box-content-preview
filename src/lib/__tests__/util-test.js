@@ -105,12 +105,22 @@ describe('util', () => {
             assert.equal(headers.Authorization, 'Bearer token');
             assert.equal(headers.BoxApi, 'shared_link=https://sharename');
         });
+        it('should return correct headers with password', () => {
+            const headers = getHeaders({ foo: 'bar' }, 'token', 'https://sharename', 'password');
+            assert.equal(headers.foo, 'bar');
+            assert.equal(headers.Authorization, 'Bearer token');
+            assert.equal(headers.BoxApi, 'shared_link=https://sharename&shared_link_password=password');
+        });
     });
 
     describe('createContentUrl()', () => {
         it('should return correct content url', () => {
             const url = createContentUrl('url?foo=bar', 'token', 'https://shared name');
             assert.equal(url, 'url?foo=bar&access_token=token&shared_link=https://shared%20name');
+        });
+        it('should return correct content url with password', () => {
+            const url = createContentUrl('url?foo=bar', 'token', 'https://shared name', 'password');
+            assert.equal(url, 'url?foo=bar&access_token=token&shared_link=https://shared%20name&shared_link_password=password');
         });
     });
 

@@ -148,15 +148,20 @@ export function createStylesheet(url) {
  * @param {Object} [headers] optional headers
  * @param {String} [token] optional auth token
  * @param {String} [sharedLink] optional shared link
+ * @param {String} [password] optional shared link password
  * @returns {Object} Headers
  */
-export function getHeaders(headers = {}, token = '', sharedLink = '') {
+export function getHeaders(headers = {}, token = '', sharedLink = '', password = '') {
     /* eslint-disable no-param-reassign */
     if (token) {
         headers.Authorization = `Bearer ${token}`;
     }
     if (sharedLink) {
         headers.BoxApi = `shared_link=${sharedLink}`;
+
+        if (password) {
+            headers.BoxApi = `${headers.BoxApi}&shared_link_password=${password}`;
+        }
     }
     /* eslint-enable no-param-reassign */
     return headers;
@@ -169,9 +174,10 @@ export function getHeaders(headers = {}, token = '', sharedLink = '') {
  * @param {String} url content url
  * @param {String} [token] optional auth token
  * @param {String} [sharedLink] optional shared link
+ * @param {String} [password] optional shared link password
  * @returns {String} content urls
  */
-export function createContentUrl(url, token = '', sharedLink = '') {
+export function createContentUrl(url, token = '', sharedLink = '', password = '') {
     if (!token && !sharedLink) {
         return url;
     }
@@ -192,6 +198,9 @@ export function createContentUrl(url, token = '', sharedLink = '') {
             params = `${params}&`;
         }
         params = `${params}shared_link=${encodeURI(sharedLink)}`;
+        if (password) {
+            params = `${params}&shared_link_password=${encodeURI(password)}`;
+        }
     }
 
     return `${url}${delim}${params}`;

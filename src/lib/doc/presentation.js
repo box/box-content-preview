@@ -6,7 +6,6 @@
 import './presentation.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
-import debounce from 'lodash.debounce';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 
 import { CLASS_INVISIBLE } from '../constants';
@@ -16,8 +15,6 @@ import {
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT
 } from '../icons/icons';
-
-const WHEEL_DEBOUNCE = 100;
 
 const Box = global.Box || {};
 
@@ -41,19 +38,6 @@ class Presentation extends DocBase {
     }
 
     /**
-     * [destructor]
-     *
-     * @returns {void}
-     */
-    destroy() {
-        if (this.docEl) {
-            this.docEl.removeEventListener('wheel', this.wheelHandler());
-        }
-
-        super.destroy();
-    }
-
-    /**
      * Go to specified page. We implement presentation mode by hiding the
      * previous current page and showing the new page.
      *
@@ -70,39 +54,9 @@ class Presentation extends DocBase {
         pageEl.classList.remove(CLASS_INVISIBLE);
     }
 
-    /**
-     * Handles keyboard events for presentation viewer.
-     *
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
-     */
-    onKeydown(key) {
-        if (key === 'ArrowDown') {
-            this.nextPage();
-            return true;
-        } else if (key === 'ArrowUp') {
-            this.previousPage();
-            return true;
-        }
-
-        return super.onKeydown(key);
-    }
-
     //--------------------------------------------------------------------------
     // Event Listeners
     //--------------------------------------------------------------------------
-
-    /**
-     * Adds event listeners for document element.
-     *
-     * @returns {void}
-     * @private
-     */
-    bindDOMListeners() {
-        super.bindDOMListeners();
-
-        this.docEl.addEventListener('wheel', this.wheelHandler());
-    }
 
     /**
      * Adds event listeners for presentation controls
@@ -153,17 +107,18 @@ class Presentation extends DocBase {
      * @private
      */
     wheelHandler() {
-        if (!this.debouncedWheelHandler) {
-            this.debouncedWheelHandler = debounce((event) => {
-                if (event.deltaY > 0) {
-                    this.nextPage();
-                } else {
-                    this.previousPage();
-                }
-            }, WHEEL_DEBOUNCE);
-        }
+        event.preventDefault();
 
-        return this.debouncedWheelHandler;
+        // This filters out trackpad events since Macbook inertial scrolling
+        // fires wheel events in a very unpredictable way
+        const isFromMouseWheel = event.wheelDelta % 120 === 0;
+        if (isFromMouseWheel) {
+            if (event.deltaY > 0) {
+                this.nextPage();
+            } else {
+                this.previousPage();
+            }
+        }
     }
 }
 

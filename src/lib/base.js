@@ -121,7 +121,7 @@ class Base extends EventEmitter {
      * @returns {Object} fetch headers
      */
     appendAuthParam(url) {
-        return createContentUrl(url, this.options.token, this.options.sharedLink);
+        return createContentUrl(url, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
     }
 
     /**
@@ -132,7 +132,7 @@ class Base extends EventEmitter {
      * @returns {Object} fetch headers
      */
     appendAuthHeader(headers = {}) {
-        return getHeaders(headers, this.options.token, this.options.sharedLink);
+        return getHeaders(headers, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
     }
 
     /**
@@ -198,6 +198,22 @@ class Base extends EventEmitter {
         this.removeAllListeners();
         this.containerEl.innerHTML = '';
         this.destroyed = true;
+    }
+
+    /**
+     * Emits a generic viewer event
+     *
+     * @protected
+     * @returns {void}
+     */
+    emit(event, data) {
+        super.emit(event, data);
+        super.emit('viewerevent', {
+            event,
+            data,
+            viewerName: this.options.viewerName,
+            fileId: this.options.file.id
+        });
     }
 }
 

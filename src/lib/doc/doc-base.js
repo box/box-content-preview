@@ -16,6 +16,7 @@ import { createAssetUrlCreator, decodeKeydown } from '../util';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
+const DOCUMENT_VIEWER_NAME = 'Document';
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const PRESENTATION_MODE_STATE = {
@@ -387,11 +388,29 @@ class DocBase extends Base {
      * @returns {Boolean} consumed or not
      */
     onKeydown(key) {
+        const isDocument = this.options.viewerName === DOCUMENT_VIEWER_NAME;
+
         switch (key) {
             case 'ArrowLeft':
                 this.previousPage();
                 break;
             case 'ArrowRight':
+                this.nextPage();
+                break;
+
+            // Only navigate pages with up/down in document viewer if in fullscreen
+            case 'ArrowUp':
+                if (isDocument && !fullscreen.isFullscreen()) {
+                    return false;
+                }
+
+                this.previousPage();
+                break;
+            case 'ArrowDown':
+                if (isDocument && !fullscreen.isFullscreen()) {
+                    return false;
+                }
+
                 this.nextPage();
                 break;
             case '[':
@@ -418,19 +437,24 @@ class DocBase extends Base {
      * @private
      */
     setupPdfjs() {
-        // Set PDFJS worker
+        // Set PDFJS worker & character maps
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
-        const pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
-        PDFJS.workerSrc = pdfWorkerUrl;
-
-        // Set PDFJS options
-        const pdfCMapBaseURI = `${this.options.location.staticBaseURI}third-party/doc/cmaps/`;
-        PDFJS.cMapUrl = pdfCMapBaseURI;
+        PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.js');
+        PDFJS.cMapUrl = `${this.options.location.staticBaseURI}third-party/doc/cmaps/`;
         PDFJS.cMapPacked = true;
-        PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab
+
+        // Open links in new tab
+        PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
 
         // Disable range requests for files smaller than 2MB
-        PDFJS.disableRange = this.options.file.size < 2097152;
+        PDFJS.disableRange = this.options.file && this.options.file.size ?
+            this.options.file.size < 2097152 :
+            false;
+
+        // Disable text layer if user doesn't have download permissions
+        PDFJS.disableTextLayer = this.options.file && this.options.file.permissions ?
+            !this.options.file.permissions.can_download :
+            false;
     }
 
     /**
@@ -637,6 +661,9 @@ class DocBase extends Base {
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
+        // Mousewheel handler
+        this.docEl.addEventListener('wheel', this.wheelHandler);
+
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
@@ -654,6 +681,7 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
+            this.docEl.removeEventListener('wheel', this.wheelHandler);
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
@@ -834,6 +862,32 @@ class DocBase extends Base {
 
         // Force resize for annotations
         this.resize();
+    }
+
+    /**
+     * Mousewheel handler - scrolls presentations by page and scrolls documents
+     * normally unless in fullscreen, in which it scrolls by page.
+     *
+     * @returns {Function} Debounced mousewheel handler
+     * @private
+     */
+    wheelHandler() {
+        if (this.options.viewerName === DOCUMENT_VIEWER_NAME && !fullscreen.isFullscreen()) {
+            return;
+        }
+
+        event.preventDefault();
+
+        // This filters out trackpad events since Macbook inertial scrolling
+        // fires wheel events in a very unpredictable way
+        const isFromMouseWheel = event.wheelDelta % 120 === 0;
+        if (isFromMouseWheel) {
+            if (event.deltaY > 0) {
+                this.nextPage();
+            } else {
+                this.previousPage();
+            }
+        }
     }
 }
 
