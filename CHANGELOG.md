@@ -1,11 +1,18 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.55.0...HEAD)
+## [v0.56.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.56.0) (2016-05-24)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.55.0...v0.56.0)
 
 **Merged pull requests:**
 
+- Adding box-ui as dependency [\#375](https://gitenterprise.inside-box.net/Preview/Preview/pull/375) ([phora](https://gitenterprise.inside-box.net/phora))
+- Passing shared link to SDK to apply as header for requests [\#374](https://gitenterprise.inside-box.net/Preview/Preview/pull/374) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Disabling text layer based on permissions [\#372](https://gitenterprise.inside-box.net/Preview/Preview/pull/372) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Document viewer padding fix [\#371](https://gitenterprise.inside-box.net/Preview/Preview/pull/371) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Cleaning up document viewer [\#370](https://gitenterprise.inside-box.net/Preview/Preview/pull/370) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Exposing shared link password [\#369](https://gitenterprise.inside-box.net/Preview/Preview/pull/369) ([phora](https://gitenterprise.inside-box.net/phora))
+- Settings pullup object assign bug [\#366](https://gitenterprise.inside-box.net/Preview/Preview/pull/366) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Updating logs [\#365](https://gitenterprise.inside-box.net/Preview/Preview/pull/365) ([phora](https://gitenterprise.inside-box.net/phora))
 - PDFJS v1.5.256 [\#364](https://gitenterprise.inside-box.net/Preview/Preview/pull/364) ([tjin](https://gitenterprise.inside-box.net/tjin))
 - Mega refactor of control bar, consolidated settings into control bar, new ui utils [\#363](https://gitenterprise.inside-box.net/Preview/Preview/pull/363) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
 - Modify document viewer padding [\#362](https://gitenterprise.inside-box.net/Preview/Preview/pull/362) ([tjin](https://gitenterprise.inside-box.net/tjin))
