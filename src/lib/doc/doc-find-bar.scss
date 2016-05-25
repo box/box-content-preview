@@ -6,8 +6,8 @@ $blue:                #00f !default;
 
 .box-preview-find-bar {
     background: $white;
-    border: 1px solid transparentize($black, .95);
-    box-shadow: 0 1px 0 transparentize($white, .95) transparentize($black, .95);
+    border: 1px solid fade-out($black, .95);
+    box-shadow: 0 1px 0 fade-out($white, .95) fade-out($black, .95);
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 12px;
     padding: 6px;
@@ -15,10 +15,15 @@ $blue:                #00f !default;
     right: 15px;
     top: 48px;
 
+    // Removes "clear field" x at the end of input fields in IE10+ on Windows 8+
+    ::-ms-clear { 
+        display:none; 
+    }
+
     .box-preview-doc-find-field {
-        border: 1px solid transparentize($black, .95);
+        border: 1px solid fade-out($black, .95);
         border-radius: 2px 0 0 2px;
-        box-shadow: 0 1px 0 transparentize($white, .95) transparentize($black, .95);
+        box-shadow: 0 1px 0 fade-out($white, .95) fade-out($black, .95);
         color: $better-black;
         line-height: 20px;
         outline-style: none;
@@ -35,7 +40,7 @@ $blue:                #00f !default;
     }
 
     .box-preview-doc-find-results-count {
-        color: transparentize($better-black, .75);
+        color: fade-out($better-black, .75);
         cursor: default;
         line-height: 1;
         margin: 0;
@@ -61,7 +66,7 @@ $blue:                #00f !default;
         width: 34px;
 
         .icon {
-            fill: transparentize($better-black, .25);
+            fill: fade-out($better-black, .25);
         }
     }
 
@@ -88,7 +93,7 @@ $blue:                #00f !default;
     .box-preview-find-match-not-found,
     .box-preview-find-match-not-found:hover,
     .box-preview-find-match-not-found:focus {
-        border-color: transparentize($great-balls-of-fire, .5);
+        border-color: fade-out($great-balls-of-fire, .5);
     }
 }
 
@@ -96,19 +101,19 @@ $blue:                #00f !default;
     opacity: 1;
 
     .highlight {
-        background-color: transparentize($moon-yellow, .5);
+        background-color: fade-out($moon-yellow, .5);
         border-radius: 0;
 
         &.selected {
-            background-color: transparentize($medium-aquamarine, .5);
+            background-color: fade-out($medium-aquamarine, .5);
         }
     }
 
     ::selection {
-        background-color: transparentize($blue, .7);
+        background-color: fade-out($blue, .7);
     }
 
     *::-moz-selection {
-        background-color: transparentize($blue, .7);
+        background-color: fade-out($blue, .7);
     }
 }
