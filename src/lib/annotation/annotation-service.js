@@ -6,6 +6,7 @@
 
 import autobind from 'autobind-decorator';
 import Annotation from './annotation';
+import { getHeaders } from '../util';
 
 @autobind
 class AnnotationService {
@@ -30,19 +31,31 @@ class AnnotationService {
     }
 
     //--------------------------------------------------------------------------
+    // Typedef
+    //--------------------------------------------------------------------------
+
+    /**
+     * The data object for constructing an Annotation Service.
+     * @typedef {Object} AnnotationServiceData
+     * @property {String} api API root
+     * @property {String} fileID File ID
+     * @property {String} token Access token
+     */
+
+    //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
 
     /**
      * [constructor]
      *
-     * @param {String} api API endpoint
-     * @param {String} token API token
+     * @param {AnnotationServiceData} data Annotation Service data
      * @returns {AnnotationService} AnnotationService instance
      */
-    constructor(api, token) {
-        this._api = api;
-        this._token = token;
+    constructor(data) {
+        this._api = data.api;
+        this._fileID = data.fileID;
+        this._headers = getHeaders({}, data.token);
     }
 
     /**
@@ -53,19 +66,35 @@ class AnnotationService {
      */
     create(annotation) {
         return new Promise((resolve, reject) => {
-            const annotationData = annotation;
-            annotationData.annotationID = AnnotationService.generateID();
-            annotationData.created = (new Date()).getTime();
-            annotationData.modified = annotationData.created;
+            fetch(`${this._api}/2.0/annotations`, {
+                method: 'POST',
+                headers: this._headers,
+                body: JSON.stringify({
+                    item: {
+                        type: 'file_version',
+                        id: annotation.fileVersionID
+                    },
+                    details: {
+                        type: annotation.type,
+                        location: annotation.location,
+                        threadID: annotation.threadID
+                    },
+                    message: annotation.text
+                })
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.type === 'error') {
+                    reject('Could not create annotation');
+                }
 
-            // @TODO(tjin): Call to annotations create API with annotationData
-
-            const createdAnnotation = new Annotation(annotationData);
-            if (createdAnnotation) {
-                resolve(createdAnnotation);
-            } else {
-                reject('Could not create annotation');
-            }
+                if (data.id) {
+                    const createdAnnotation = this._createAnnotation(data);
+                    resolve(createdAnnotation);
+                } else {
+                    reject('Could not create annotation');
+                }
+            });
         });
     }
 
@@ -77,14 +106,26 @@ class AnnotationService {
      */
     read(fileVersionID) {
         return new Promise((resolve, reject) => {
-            // @TODO(tjin): Call to annotations read API with fileVersionID
+            fetch(`${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}`, {
+                headers: this._headers
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.type === 'error') {
+                    reject('Could not create annotation');
+                }
 
-            const annotations = [];
-            if (annotations) {
-                resolve(annotations);
-            } else {
-                reject(`Could not read annotations from file version with ID ${fileVersionID}`);
-            }
+                if (data.entries) {
+                    // @TODO(tjin) load more than 100 annotations
+                    const annotations = [];
+                    data.entries.forEach((annotationData) => {
+                        annotations.push(this._createAnnotation(annotationData));
+                    });
+                    resolve(annotations);
+                } else {
+                    reject(`Could not read annotations from file version with ID ${fileVersionID}`);
+                }
+            });
         });
     }
 
@@ -113,9 +154,17 @@ class AnnotationService {
      */
     delete(annotationID) {
         return new Promise((resolve, reject) => {
-            // @TODO(tjin): Call to annotations delete API with annotationID
-
-            reject(`Could not delete annotation with ID ${annotationID}`);
+            fetch(`${this._api}/2.0/annotations/${annotationID}`, {
+                method: 'DELETE',
+                headers: this._headers
+            })
+            .then((response) => {
+                if (response.status === 204) {
+                    resolve();
+                } else {
+                    reject(`Could not delete annotation with ID ${annotationID}`);
+                }
+            });
         });
     }
 
@@ -158,6 +207,27 @@ class AnnotationService {
         });
 
         return threadMap;
+    }
+
+    /**
+     * Generates an Annotation object from an API response.
+     *
+     * @param {Object} data API response data
+     * @returns {Annotation} Created annotation
+     * @private
+     */
+    _createAnnotation(data) {
+        return new Annotation({
+            annotationID: data.id,
+            fileVersionID: data.item.id,
+            threadID: data.details.threadID,
+            type: data.details.type,
+            text: data.message,
+            location: data.details.location,
+            user: data.created_by,
+            created: data.created_at,
+            modified: data.modified_at
+        });
     }
 }
 

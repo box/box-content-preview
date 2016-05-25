@@ -723,15 +723,22 @@ class Preview extends EventEmitter {
      * @private
      */
     showAnnotateButton() {
-        // @TODO(tjin): Add permission checks here once we have annotation permissions
-        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable('point')) {
-            this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-            this.annotateButton.classList.remove(CLASS_HIDDEN);
-            this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
-
-            const dividerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DIVIDER);
-            dividerEl.classList.remove(CLASS_HIDDEN);
+        // Permission check
+        if (!this.file || !this.file.permissions || !this.file.permissions.can_annotate) {
+            return;
         }
+
+        // Viewer-compatability check
+        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('point')) {
+            return;
+        }
+
+        this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+        this.annotateButton.classList.remove(CLASS_HIDDEN);
+        this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
+
+        const dividerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DIVIDER);
+        dividerEl.classList.remove(CLASS_HIDDEN);
     }
 
     /**
@@ -741,12 +748,18 @@ class Preview extends EventEmitter {
      * @private
      */
     showHighlightButton() {
-        // @TODO(tjin): Add permission checks here once we have annotation permissions
-        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable('highlight')) {
-            this.highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
-            this.highlightButton.classList.remove(CLASS_HIDDEN);
-            this.highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
+        // Permission check
+        if (!this.file || !this.file.permissions || !this.file.permissions.can_annotate) {
+            return;
         }
+
+        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('highlight')) {
+            return;
+        }
+
+        this.highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
+        this.highlightButton.classList.remove(CLASS_HIDDEN);
+        this.highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
     }
 
     /**
