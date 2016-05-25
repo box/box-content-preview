@@ -1,6 +1,6 @@
 @import 'scrubber';
 @import 'settings';
-@import '../variables';
+@import 'node_modules/box-ui/src/common/variables';
 
 .box-preview-media-controls-is-visible .box-preview-media-controls-wrapper,
 .box-preview-media-controls-wrapper:active,
