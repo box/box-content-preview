@@ -334,7 +334,6 @@ class Model3dRenderer extends Box3DRenderer {
 
             if (camera) {
                 const aspect = this.getAspect();
-                let enableZoom;
                 switch (projection) {
                     case CAMERA_PROJECTION_ORTHOGRAPHIC:
                         camera.setProperties({
@@ -344,19 +343,15 @@ class Model3dRenderer extends Box3DRenderer {
                             right: 50 * aspect,
                             cameraType: 'orthographic'
                         });
-                        enableZoom = false;
                         break;
                     case CAMERA_PROJECTION_PERSPECTIVE:
                         camera.setProperties({
                             aspect: this.getAspect(),
                             cameraType: 'perspective'
                         });
-                        enableZoom = true;
                         break;
                     // no default
                 }
-                const controllerComponent = camera.componentRegistry.getById('previewCameraController');
-                controllerComponent.setAttribute('enableZoom', enableZoom);
                 camera.trigger('resetOrbitCameraController');
             }
         }
