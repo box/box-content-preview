@@ -201,141 +201,6 @@ class DocFindBar extends EventEmitter {
     }
 
     //--------------------------------------------------------------------------
-    // Event Handlers
-    //--------------------------------------------------------------------------
-    /**
-     * Handler to show/hide find bar
-     * @param  {Event} event
-     * @returns {void}
-     */
-    displayFindBarHandler(event) {
-        const key = decodeKeydown(event).toLowerCase();
-        switch (key) {
-            case 'meta+f':
-            case 'control+f':
-            case 'meta+g':
-            case 'control+g':
-            case 'f3':
-                this.open();
-                event.preventDefault();
-                return;
-
-            default:
-                return;
-        }
-    }
-
-    /**
-     * Handler to dispatch find event on input
-     * @returns {void}
-     */
-    findFieldHandler() {
-        this.dispatchFindEvent('find');
-        this.currentMatch = 1;
-    }
-
-    /**
-     * Handler for find keyboard short cuts
-     * @param  {Event} event
-     * @returns {void}
-     */
-    barKeyDownHandler(event) {
-        const key = decodeKeydown(event);
-        switch (key) {
-            case 'Enter':
-                this.findNextHandler(false);
-                break;
-            case 'Shift+Enter':
-                this.findPreviousHandler(false);
-                break;
-            case 'Escape':
-                this.close();
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     * Handler to find previous match and update match count accordingly
-     * @param  {Boolean} clicked False when triggered through keyboard shortcut
-     * @returns {void}
-     */
-    findPreviousHandler(clicked) {
-        if (this.findFieldEl.value) {
-            if (!clicked) {
-                this.findPreviousButtonEl.focus();
-            } else {
-                this.dispatchFindEvent('findagain', true);
-                this.currentMatch = this.currentMatch - 1;
-
-                // Loops search to last match in document
-                if (this.currentMatch <= 0) {
-                    this.currentMatch = this.matchResultCount;
-                }
-            }
-        }
-    }
-
-    /**
-     * Handler to find next match count and update match count accordingly
-     * @param  {Boolean} clicked False when triggered through keyboard shortcut
-     * @returns {void}
-     */
-    findNextHandler(clicked) {
-        if (this.findFieldEl.value) {
-            if (!clicked) {
-                this.findNextButtonEl.focus();
-            } else {
-                this.dispatchFindEvent('findagain', false);
-                this.currentMatch = this.currentMatch + 1;
-
-                // Loops search to first match in document
-                if (this.currentMatch >= this.matchResultCount) {
-                    this.currentMatch = 1;
-                }
-            }
-        }
-    }
-
-    /**
-     * Unhide Find Bar
-     * @returns {void}
-     */
-    open() {
-        // Repopulate and re-highlight find field with last search
-        if (this.prevSearchQuery) {
-            this.findFieldEl.value = this.prevSearchQuery;
-            this.findFieldHandler();
-        }
-
-        if (!this.opened) {
-            this.opened = true;
-            this.bar.classList.remove(CLASS_HIDDEN);
-        }
-        this.findFieldEl.select();
-        this.findFieldEl.focus();
-    }
-
-    /**
-     * Hide Find Bar
-     * @returns {void}
-     */
-    close() {
-        // Save and clear current search to hide highlights
-        this.prevSearchQuery = this.findFieldEl.value;
-        this.findFieldEl.value = '';
-        this.findFieldHandler();
-
-        if (!this.opened) {
-            return;
-        }
-        this.opened = false;
-        this.bar.classList.add(CLASS_HIDDEN);
-        this.findController.active = false;
-    }
-
-    //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
     /**
@@ -368,6 +233,148 @@ class DocFindBar extends EventEmitter {
 
         // Remove KeyDown handler to show/hide find bar
         document.removeEventListener('keydown', this.displayFindBarHandler);
+    }
+
+    //--------------------------------------------------------------------------
+    // Event Handlers
+    //--------------------------------------------------------------------------
+    /**
+     * Handler to show/hide find bar
+     * @param  {Event} event
+     * @returns {void}
+     * @private
+     */
+    displayFindBarHandler(event) {
+        const key = decodeKeydown(event).toLowerCase();
+        switch (key) {
+            case 'meta+f':
+            case 'control+f':
+            case 'meta+g':
+            case 'control+g':
+            case 'f3':
+                this.open();
+                event.preventDefault();
+                return;
+
+            default:
+                return;
+        }
+    }
+
+    /**
+     * Handler to dispatch find event on input
+     * @returns {void}
+     * @private
+     */
+    findFieldHandler() {
+        this.dispatchFindEvent('find');
+        this.currentMatch = 1;
+    }
+
+    /**
+     * Handler for find keyboard short cuts
+     * @param  {Event} event
+     * @returns {void}
+     * @private
+     */
+    barKeyDownHandler(event) {
+        const key = decodeKeydown(event);
+        switch (key) {
+            case 'Enter':
+                this.findNextHandler(false);
+                break;
+            case 'Shift+Enter':
+                this.findPreviousHandler(false);
+                break;
+            case 'Escape':
+                this.close();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Handler to find previous match and update match count accordingly
+     * @param  {Boolean} clicked False when triggered through keyboard shortcut
+     * @returns {void}
+     * @private
+     */
+    findPreviousHandler(clicked) {
+        if (this.findFieldEl.value) {
+            if (!clicked) {
+                this.findPreviousButtonEl.focus();
+            } else {
+                this.dispatchFindEvent('findagain', true);
+                this.currentMatch = this.currentMatch - 1;
+
+                // Loops search to last match in document
+                if (this.currentMatch <= 0) {
+                    this.currentMatch = this.matchResultCount;
+                }
+            }
+        }
+    }
+
+    /**
+     * Handler to find next match count and update match count accordingly
+     * @param  {Boolean} clicked False when triggered through keyboard shortcut
+     * @returns {void}
+     * @private
+     */
+    findNextHandler(clicked) {
+        if (this.findFieldEl.value) {
+            if (!clicked) {
+                this.findNextButtonEl.focus();
+            } else {
+                this.dispatchFindEvent('findagain', false);
+                this.currentMatch = this.currentMatch + 1;
+
+                // Loops search to first match in document
+                if (this.currentMatch >= this.matchResultCount) {
+                    this.currentMatch = 1;
+                }
+            }
+        }
+    }
+
+    /**
+     * Unhide Find Bar
+     * @returns {void}
+     * @private
+     */
+    open() {
+        // Repopulate and re-highlight find field with last search
+        if (this.prevSearchQuery) {
+            this.findFieldEl.value = this.prevSearchQuery;
+            this.findFieldHandler();
+        }
+
+        if (!this.opened) {
+            this.opened = true;
+            this.bar.classList.remove(CLASS_HIDDEN);
+        }
+        this.findFieldEl.select();
+        this.findFieldEl.focus();
+    }
+
+    /**
+     * Hide Find Bar
+     * @returns {void}
+     * @private
+     */
+    close() {
+        // Save and clear current search to hide highlights
+        this.prevSearchQuery = this.findFieldEl.value;
+        this.findFieldEl.value = '';
+        this.findFieldHandler();
+
+        if (!this.opened) {
+            return;
+        }
+        this.opened = false;
+        this.bar.classList.add(CLASS_HIDDEN);
+        this.findController.active = false;
     }
 }
 
