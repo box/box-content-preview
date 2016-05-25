@@ -1,42 +1,8 @@
 $blue-highlight: #22A7F0;
 
-.box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item {
-    cursor: pointer;
-    line-height: 26px;
-    padding: 0 18px;
-    position: relative;
-    white-space: nowrap;
-}
-
-.box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item:hover,
 .box-preview-settings-wrapper .box-preview-settings-btn:active,
 .box-preview-box3d .box-preview-overlay span:active {
     opacity: 1.0;
-}
-
-.box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item.box-preview-current-render-mode {
-    color: $blue-highlight;
-}
-
-.box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item > span {
-    display: none;
-}
-
-.box-preview-box3d .box-preview-render-mode-selector .box-preview-rendermode-item.box-preview-current-render-mode > span {
-    display: inline-block;
-    left: -6px;
-    position: absolute;
-}
-
-.box-preview-box3d .box-preview-render-mode-selector {
-    margin: auto;
-    -webkit-transform: translate(-7%, 0);
-    -ms-transform: translate(-7%, 0);
-    transform: translate(-7%, 0);
-}
-
-.box-preview-box3d .box-preview-render-mode-selector .box-preview-inline-icon {
-
 }
 
 .box-preview-settings-wrapper {
@@ -103,12 +69,6 @@ $blue-highlight: #22A7F0;
     margin-bottom: 4px;
     line-height: 1;
     white-space: nowrap;
-}
-
-.box-preview-box3d .box-preview-render-mode-selector .box-preview-settings-panel-label {
-    line-height: 1;
-    color: #878787;
-    padding: 0 18px;
 }
 
 .box-preview-box3d .box-preview-panel-btn {
