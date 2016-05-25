@@ -1,17 +1,17 @@
 @import '../annotation/annotator';
 @import './doc-base';
 
-.box-preview-is-fullscreen .box-preview-doc .box-preview-doc-presentation {
-    overflow: hidden;
-}
-
 // Centers single page for presentation mode
 // scss-lint:disable SelectorFormat
-.box-preview-doc-presentation .pdfViewer .page {
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    top: 0;
+.box-preview-doc.box-preview-doc-presentation {
+    overflow: hidden;
+
+    .pdfViewer .page {
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
 }

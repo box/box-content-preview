@@ -119,7 +119,7 @@ class Dash extends VideoBase {
 
         return (url, headers) => {
             if (url && url.indexOf(token) === -1) {
-                getHeaders(headers, token, this.options.sharedLink);
+                getHeaders(headers, token, this.options.sharedLink, this.options.sharedLinkPassword);
             }
         };
     }
@@ -246,7 +246,7 @@ class Dash extends VideoBase {
     loadFilmStrip() {
         const filmstrip = this.options.file.representations.entries.find((entry) => entry.representation === 'filmstrip');
         if (filmstrip) {
-            const url = createContentUrl(filmstrip.links.content.url, this.options.token, this.options.sharedLink);
+            const url = createContentUrl(filmstrip.links.content.url, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
             const status = new RepStatus(filmstrip, getHeaders({}, this.options.token, this.options.sharedLink));
             this.mediaControls.initFilmstrip(url, status, this.aspect);
         }
