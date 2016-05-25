@@ -12,7 +12,6 @@ import {
     AXIS_Z,
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
-    CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL,
     CSS_CLASS_HIDDEN,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SAVE_SCENE_DEFAULTS,
@@ -27,6 +26,8 @@ import {
     RENDER_MODE_UV,
     ROTATION_STEP
 } from './model3d-constants';
+
+import { CLASS_BOX_PREVIEW_OVERLAY_WRAPPER } from '../../constants';
 
 // For registering events on elements
 const RENDER_MODES = [
@@ -124,7 +125,7 @@ class Model3DSettingsPullup extends EventEmitter {
             renderPanelData.push(entryCopy);
         });
         const renderModeDropdownEl = createDropdown('Render Mode', 'Lit', renderPanelData);
-        this.renderModeEl = renderModeDropdownEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
+        this.renderModeEl = renderModeDropdownEl.querySelector('button');
         pullupEl.appendChild(renderModeDropdownEl);
 
         // Default Camera Projection Dropdown
@@ -136,18 +137,18 @@ class Model3DSettingsPullup extends EventEmitter {
         });
         const projectionPanelRowEl = createDropdown('Camera Projection',
             'Perspective', projectionPanelData);
-        this.projectionModeEl = projectionPanelRowEl.querySelector(`span.${CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL}`);
+        this.projectionModeEl = projectionPanelRowEl.querySelector('button');
         pullupEl.appendChild(projectionPanelRowEl);
 
-        const renderModeListEl = renderModeDropdownEl.querySelector('ul');
-        const projectionListEl = projectionPanelRowEl.querySelector('ul');
+        const renderModeListEl = renderModeDropdownEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
+        const projectionListEl = projectionPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
 
         this.uiRegistry.registerUiItem('settings-render-mode-selector-label', this.renderModeEl, 'click', () => {
-            projectionListEl.classList.add(CSS_CLASS_HIDDEN);
+            projectionListEl.classList.remove('is-visible');
         });
 
         this.uiRegistry.registerUiItem('settings-projection-mode-selector-label', this.projectionModeEl, 'click', () => {
-            renderModeListEl.classList.add(CSS_CLASS_HIDDEN);
+            renderModeListEl.classList.remove('is-visible');
         });
 
         // Axis Rotation Icons
@@ -159,7 +160,9 @@ class Model3DSettingsPullup extends EventEmitter {
         pullupEl.appendChild(saveRowEl);
         const saveButtonEl = createButton('Save Settings');
         this.uiRegistry.registerUiItem('settings-save-button', saveButtonEl, 'click', this.onSaveSelected.bind(this));
-        saveButtonEl.classList.add('box-preview-settings-save-btn');
+
+        saveButtonEl.classList.add('box-preview-btn-primary');
+
         saveRowEl.appendChild(saveButtonEl);
 
         this.saveRowEl = saveRowEl;
@@ -196,10 +199,9 @@ class Model3DSettingsPullup extends EventEmitter {
         const axisEl = document.createElement('div');
         axisEl.classList.add('box3d-settings-axis-widget');
 
-        // - icon, on the left
         const minusIconEl = document.createElement('span');
-        minusIconEl.textContent = '-';
         minusIconEl.classList.add('box3d-setting-axis-rotate');
+        minusIconEl.classList.add('box3d-setting-axis-rotate-left');
         this.uiRegistry.registerUiItem(`minus-${axisLabel}-axis-icon`, minusIconEl, 'click', minusIconCallback);
         axisEl.appendChild(minusIconEl);
 
@@ -209,10 +211,9 @@ class Model3DSettingsPullup extends EventEmitter {
         axisLabelEl.classList.add('box3d-settings-axis-label');
         axisEl.appendChild(axisLabelEl);
 
-        // + icon, on the right
         const plusIconEl = document.createElement('span');
-        plusIconEl.textContent = '+';
         plusIconEl.classList.add('box3d-setting-axis-rotate');
+        plusIconEl.classList.add('box3d-setting-axis-rotate-right');
         this.uiRegistry.registerUiItem(`plus-${axisLabel}-axis-icon`, plusIconEl, 'click', plusIconCallback);
         axisEl.appendChild(plusIconEl);
 
@@ -282,7 +283,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * @returns {void}
      */
     hideSaveButton() {
-        this.saveRowEl.classList.add(CSS_CLASS_HIDDEN);
+        this.saveRowEl.querySelector('button').classList.add(CSS_CLASS_HIDDEN);
     }
 
     /**

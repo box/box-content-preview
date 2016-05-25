@@ -37,7 +37,7 @@
     cursor: grabbing;
 }
 
-.box-preview-box3d .box-preview-overlay {
+.box-preview-box3d .box-preview-overlay-panel {
     z-index: 2;
     position: absolute;
     font-size: 13px;
@@ -49,14 +49,18 @@
     border-color: #CACCD0;
     border-style: solid;
     border-width: 1px;
-    font-weight: bold;
+    font-weight: 400;
 }
 
-.box-preview-box3d .box-preview-overlay span {
+.box-preview-box3d .box-preview-overlay-panel span {
     position: relative;
     top: 5px;
     display: inline-block;
     opacity: 0.7;
+}
+
+.box-preview-box3d .box-preview-toggle-overlay .box-preview-menu {
+    min-width: 196px;
 }
 
 .box-preview-box3d li,
@@ -64,10 +68,4 @@
     list-style: none;
     padding: 0;
     margin: 0;
-}
-
-.box-preview-box3d .box-preview-pullup {
-    bottom: calc(100%);
-    text-align: left;
-    padding: 10px;
 }
