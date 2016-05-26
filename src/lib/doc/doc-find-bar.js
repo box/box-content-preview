@@ -87,7 +87,7 @@ class DocFindBar extends EventEmitter {
 
         this.findButtonContainerEl = document.createElement('span');
         this.findButtonContainerEl.classList.add('box-preview-doc-find-controls');
-        this.findButtonContainerEl.innerHTML = findNextButton + findPreviousButton + findCloseButton;
+        this.findButtonContainerEl.innerHTML = findPreviousButton + findNextButton + findCloseButton;
 
         this.bar.appendChild(this.findButtonContainerEl);
     }
@@ -320,7 +320,7 @@ class DocFindBar extends EventEmitter {
                 this.currentMatch = this.currentMatch + 1;
 
                 // Loops search to first match in document
-                if (this.currentMatch >= this.matchResultCount) {
+                if (this.currentMatch > this.matchResultCount) {
                     this.currentMatch = 1;
                 }
             }
