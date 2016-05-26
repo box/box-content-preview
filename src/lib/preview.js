@@ -456,31 +456,25 @@ class Preview extends EventEmitter {
             return;
         }
 
-        // Try catch here to catch any viewer errors
-        // The caller function tries to catch all network specific errors
-        try {
-            if (file.type !== 'file') {
-                throw new Error(__('error_box_file_fetch'));
-            }
+        if (file.type !== 'file') {
+            throw new Error(__('error_box_file_fetch'));
+        }
 
-            // Save reference to the file and update logger
-            this.file = file;
-            this.logger.setFile(file);
+        // Save reference to the file and update logger
+        this.file = file;
+        this.logger.setFile(file);
 
-            // Get exiting cache before updating it to latest version
-            const cached = cache.get(file.id);
+        // Get exiting cache before updating it to latest version
+        const cached = cache.get(file.id);
 
-            // Cache the new file object
-            cache.set(file.id, file);
+        // Cache the new file object
+        cache.set(file.id, file);
 
-            // Finally load the viewer if file sha mismatches
-            // @TODO add watermark check also here
-            if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
-                this.logger.setCacheStale();
-                this.loadViewer();
-            }
-        } catch (err) {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
+        // Finally load the viewer if file sha mismatches
+        // @TODO add watermark check also here
+        if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
+            this.logger.setCacheStale();
+            this.loadViewer();
         }
     }
 
@@ -521,11 +515,17 @@ class Preview extends EventEmitter {
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
 
-        // Load the representation assets
-        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
-
         // Load all the static assets
         const promiseToLoadStaticAssets = loader.load(viewer, this.options.location);
+        promiseToLoadStaticAssets.catch((err) => {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_static_assets_load')));
+        });
+
+        // Load the representation assets
+        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
+        promiseToGetRepresentationStatusSuccess.catch((err) => {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_representation_load')));
+        });
 
         // Proceed only when both static and representation assets have been loaded
         Promise.all([promiseToLoadStaticAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
@@ -545,7 +545,7 @@ class Preview extends EventEmitter {
             // Load the representation into the viewer
             this.viewer.load(representation.links.content.url);
         }).catch((err) => {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_representation_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
         });
     }
 
@@ -556,13 +556,12 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     attachViewerListeners() {
+        // Node requires listener attached to 'error'
+        this.viewer.addListener('error', this.triggerError);
         this.viewer.addListener('viewerevent', (data) => {
             switch (data.event) {
                 case 'download':
                     this.download();
-                    break;
-                case 'error':
-                    this.triggerError();
                     break;
                 case 'reload':
                     this.show(this.file.id, this.previewOptions);
