@@ -11,14 +11,14 @@ import Browser from '../browser';
 import cache from '../cache';
 import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
-import fullscreen from '../fullscreen';
-import { createAssetUrlCreator, decodeKeydown } from '../util';
 import DocFindBar from './doc-find-bar';
+import fullscreen from '../fullscreen';
 import { CLASS_BOX_PREVIEW_FIND_BAR } from '../constants';
+import { createAssetUrlCreator, decodeKeydown } from '../util';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
-const DOCUMENT_VIEWER_NAME = 'Document';
+const PRESENTATION_VIEWER_NAME = 'Presentation';
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const PRESENTATION_MODE_STATE = {
@@ -55,7 +55,7 @@ class DocBase extends Base {
         this.findBarEl = this.docEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
 
-        this.isPresentation = (this.options.viewerName === 'Presentation');
+        this.isPresentation = (this.options.viewerName === PRESENTATION_VIEWER_NAME);
     }
 
     /**
@@ -130,13 +130,8 @@ class DocBase extends Base {
             pdfViewer: this.pdfViewer
         });
         this.pdfViewer.setFindController(this.findController);
-        this.findBar = new DocFindBar(this.findBarEl, this.findController, this.isPresentation);
+        this.findBar = new DocFindBar(this.findBarEl, this.findController);
         this.findController.setFindBar(this.findBar);
-
-        // Add listener to presentations update page number
-        if (this.isPresentation) {
-            this.findBar.addListener('setpage', this.scrollToFindMatchPageHandler);
-        }
     }
 
     /**
@@ -144,11 +139,6 @@ class DocBase extends Base {
      * @returns {void}
      */
     destroyFind() {
-        // Remove findBar EventListeners
-        if (this.isPresentation) {
-            this.findBar.removeListener('setpage', this.scrollToFindMatchPageHandler);
-        }
-
         // Remove find controller events
         const events = [
             'find',
@@ -450,8 +440,6 @@ class DocBase extends Base {
      * @returns {Boolean} consumed or not
      */
     onKeydown(key) {
-        const isDocument = this.options.viewerName === DOCUMENT_VIEWER_NAME;
-
         switch (key) {
             case 'ArrowLeft':
                 this.previousPage();
@@ -462,14 +450,14 @@ class DocBase extends Base {
 
             // Only navigate pages with up/down in document viewer if in fullscreen
             case 'ArrowUp':
-                if (isDocument && !fullscreen.isFullscreen()) {
+                if (!this.isPresentation && !fullscreen.isFullscreen()) {
                     return false;
                 }
 
                 this.previousPage();
                 break;
             case 'ArrowDown':
-                if (isDocument && !fullscreen.isFullscreen()) {
+                if (!this.isPresentation && !fullscreen.isFullscreen()) {
                     return false;
                 }
 
@@ -531,6 +519,11 @@ class DocBase extends Base {
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl
         });
+
+        // Overwrite scrollPageIntoView for presentations since we have custom pagination
+        if (this.isPresentation) {
+            this.pdfViewer.scrollPageIntoView = this.setPage;
+        }
 
         // Load PDF from representation URL
         PDFJS.getDocument({
@@ -933,7 +926,7 @@ class DocBase extends Base {
      * @private
      */
     wheelHandler() {
-        if (this.options.viewerName === DOCUMENT_VIEWER_NAME && !fullscreen.isFullscreen()) {
+        if (!this.isPresentation && !fullscreen.isFullscreen()) {
             return;
         }
 
@@ -949,14 +942,6 @@ class DocBase extends Base {
                 this.previousPage();
             }
         }
-    }
-
-    /**
-     * Sets current page to page which includes the selected find match
-     * @returns {void}
-     */
-    scrollToFindMatchPageHandler() {
-        this.setPage(this.findController.selected.pageIdx + 1);
     }
 }
 

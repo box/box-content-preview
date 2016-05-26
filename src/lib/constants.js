@@ -5,15 +5,16 @@ export const CLASS_PREVIEW_LOADED = 'box-preview-loaded';
 export const CLASS_BOX_PREVIEW = 'box-preview';
 export const CLASS_BOX_PREVIEW_BUTTON = 'box-preview-btn';
 export const CLASS_BOX_PREVIEW_CONTAINER = 'box-preview-container';
-export const CLASS_BOX_PREVIEW_LINK = 'box-preview-link';
-export const CLASS_BOX_PREVIEW_MOBILE = 'box-preview-is-mobile';
+export const CLASS_BOX_PREVIEW_FIND_BAR = 'box-preview-find-bar';
+export const CLASS_BOX_PREVIEW_HAS_HEADER = 'box-preview-has-header';
 export const CLASS_BOX_PREVIEW_HEADER = 'box-preview-header';
 export const CLASS_BOX_PREVIEW_HEADER_BTNS = 'box-preview-header-btns';
+export const CLASS_BOX_PREVIEW_LINK = 'box-preview-link';
 export const CLASS_BOX_PREVIEW_MENU = 'box-preview-menu';
+export const CLASS_BOX_PREVIEW_MOBILE = 'box-preview-is-mobile';
 export const CLASS_BOX_PREVIEW_OVERLAY = 'box-preview-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'box-preview-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'box-preview-toggle-overlay';
-export const CLASS_BOX_PREVIEW_FIND_BAR = 'box-preview-find-bar';
 export const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 export const CLASS_INVISIBLE = 'box-preview-is-invisible';
 
@@ -27,6 +28,7 @@ export const SELECTOR_BOX_PREVIEW_BTN_DIVIDER = '.box-preview-btn-divider';
 export const SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT = '.box-preview-btn-highlight';
 export const SELECTOR_BOX_PREVIEW_BTN_PRINT = '.box-preview-btn-print';
 export const SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD = '.box-preview-btn-download';
+export const SELECTOR_BOX_PREVIEW_HEADER = `.${CLASS_BOX_PREVIEW_HEADER}`;
 
 export const COLOR_HEADER_LIGHT = '#fff';
 export const COLOR_HEADER_DARK = '#000';

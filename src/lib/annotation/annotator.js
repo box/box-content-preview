@@ -13,7 +13,7 @@ import LocalStorageAnnotationService from './localstorage-annotation-service';
 
 import * as annotatorUtil from './annotator-util';
 import * as constants from './annotation-constants';
-import { CLASS_ACTIVE } from '../constants';
+import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_HEADER } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
 const ANONYMOUS_USER = {
@@ -181,7 +181,7 @@ class Annotator extends EventEmitter {
      */
     _setupControls() {
         // No need to set up controls if Preview header exists
-        if (document.querySelector('.box-preview-header')) {
+        if (document.querySelector(SELECTOR_BOX_PREVIEW_HEADER)) {
             return;
         }
 
