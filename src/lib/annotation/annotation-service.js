@@ -94,6 +94,9 @@ class AnnotationService {
                 } else {
                     reject('Could not create annotation');
                 }
+            })
+            .catch(() => {
+                reject('Could not create annotation');
             });
         });
     }
@@ -125,6 +128,9 @@ class AnnotationService {
                 } else {
                     reject(`Could not read annotations from file version with ID ${fileVersionID}`);
                 }
+            })
+            .catch(() => {
+                reject(`Could not read annotations from file version with ID ${fileVersionID}`);
             });
         });
     }

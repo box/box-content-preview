@@ -238,8 +238,9 @@ class Annotator extends EventEmitter {
      * @private
      */
     _fetchAnnotations() {
-        // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
+        this._threads = {};
 
+        // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
         return this._annotationService.getThreadMap(this._fileVersionID)
             .then((threadMap) => {
                 // Generate map of page to threads
@@ -302,9 +303,25 @@ class Annotator extends EventEmitter {
 
             // Remove from map
             this._threads[page] = this._threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
+        });
 
-            // Unbind listeners
+        // Thread should be cleaned up, unbind listeners - we don't do this
+        // in threaddeleted listener since thread may still need to respond
+        // to error messages
+        thread.addListener('threadcleanup', () => {
             this._unbindCustomListenersOnThread(thread);
+        });
+
+        thread.addListener('annotationcreateerror', () => {
+            // @TODO(tjin): Show annotation creation error
+        });
+
+        thread.addListener('annotationdeleteerror', () => {
+            // Need to re-fetch and re-render annotations since we can't easily
+            // recover an annotation removed from the client-side map
+            this.showAnnotations();
+
+            // @TODO(tjin): Show annotation deletion error
         });
     }
 
@@ -317,6 +334,8 @@ class Annotator extends EventEmitter {
      */
     _unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners(['threaddeleted']);
+        thread.removeAllListeners(['annotationcreateerror']);
+        thread.removeAllListeners(['annotationdeleteerror']);
     }
 
     /**
