@@ -17,6 +17,7 @@ import {
     CLASS_NAVIGATION_VISIBILITY,
     CLASS_HIDDEN,
     CLASS_PREVIEW_LOADED,
+    CLASS_BOX_PREVIEW_HAS_HEADER,
     CLASS_BOX_PREVIEW_HEADER,
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW,
@@ -320,6 +321,7 @@ class Preview extends EventEmitter {
         // Add the header if needed
         if (this.options.header !== 'none') {
             this.container.firstElementChild.className = CLASS_BOX_PREVIEW_HEADER;
+            this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
         }
 
         // Show navigation if needed

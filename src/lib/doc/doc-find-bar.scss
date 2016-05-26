@@ -13,11 +13,15 @@ $blue:                #00f !default;
     padding: 6px;
     position: fixed;
     right: 15px;
-    top: 48px;
+    top: 0;
+
+    .box-preview-has-header & {
+        top: 48px;
+    }
 
     // Removes "clear field" x at the end of input fields in IE10+ on Windows 8+
-    ::-ms-clear { 
-        display:none; 
+    ::-ms-clear {
+        display: none;
     }
 
     .box-preview-doc-find-field {
@@ -97,6 +101,7 @@ $blue:                #00f !default;
     }
 }
 
+// scss-lint:disable SelectorFormat
 .textLayer {
     opacity: 1;
 

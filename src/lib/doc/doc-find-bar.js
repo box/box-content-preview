@@ -25,10 +25,9 @@ class DocFindBar extends EventEmitter {
      * @constructor
      * @param  {string|HTML Element} findBar Find Bar node
      * @param  {Object} findController
-     * @param  {Boolean} isPresentation
      * @returns {void}
      */
-    constructor(findBar, findController, isPresentation) {
+    constructor(findBar, findController) {
         super();
 
         this.opened = false;
@@ -39,13 +38,6 @@ class DocFindBar extends EventEmitter {
 
         if (this.findController === null) {
             throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
-        }
-
-        // overwrites scrollIntoView method for presentation documents
-        if (isPresentation) {
-            this.findController.scrollIntoView = () => {
-                this.emit('setpage');
-            };
         }
 
         // Default hides find bar on load
@@ -245,6 +237,7 @@ class DocFindBar extends EventEmitter {
      * @private
      */
     displayFindBarHandler(event) {
+        // Lowercase keydown so we capture both lower and uppercase
         const key = decodeKeydown(event).toLowerCase();
         switch (key) {
             case 'meta+f':
@@ -254,10 +247,21 @@ class DocFindBar extends EventEmitter {
             case 'f3':
                 this.open();
                 event.preventDefault();
-                return;
+                break;
+
+            case 'escape':
+                // Ignore if findbar is not open
+                if (!this.opened) {
+                    return;
+                }
+
+                this.close();
+                event.stopPropagation();
+                event.preventDefault();
+                break;
 
             default:
-                return;
+                break;
         }
     }
 
@@ -287,7 +291,14 @@ class DocFindBar extends EventEmitter {
                 this.findPreviousHandler(false);
                 break;
             case 'Escape':
+                // Ignore if findbar is not open
+                if (!this.opened) {
+                    return;
+                }
+
                 this.close();
+                event.stopPropagation();
+                event.preventDefault();
                 break;
             default:
                 break;
