@@ -5,6 +5,9 @@
 
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 
+const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
+const PAGE_PADDING_BOTTOM = 15;
+const PAGE_PADDING_TOP = 15;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
@@ -15,7 +18,6 @@ const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
 
 /**
  * Finds the closest ancestor DOM element with the specified class.
- *
  * @param {HTMLElement} element Element to search ancestors of
  * @param {String} className Class name to query
  * @returns {HTMLElement|null} Closest ancestor with given class or null
@@ -34,7 +36,6 @@ export function findClosestElWithClass(element, className) {
  * Finds the closest element with a data type and returns that data type. If
  * an attributeName is provided, search for that data atttribute instead of
  * data type.
- *
  * @param {HTMLElement} element Element to find closest data type for
  * @param {String} [attributeName] Optional different data attribute to search
  * for
@@ -54,7 +55,6 @@ export function findClosestDataType(element, attributeName) {
 
 /**
  * Returns the page element and page number that the element is on.
- *
  * @param {HTMLElement} element Element to find page and page number for
  * @returns {Object} Page element/page number if found or null/-1 if not
  */
@@ -75,7 +75,6 @@ export function getPageElAndPageNumber(element) {
 
 /**
  * Shows the specified element or element with specified selector.
- *
  * @param {HTMLElement|String} elementOrSelector Element or CSS selector
  * @returns {void}
  */
@@ -92,7 +91,6 @@ export function showElement(elementOrSelector) {
 
 /**
  * Hides the specified element or element with specified selector.
- *
  * @param {HTMLElement|String} elementOrSelector Element or CSS selector
  * @returns {void}
  */
@@ -110,7 +108,6 @@ export function hideElement(elementOrSelector) {
 /**
  * Reset textarea element - clears value, resets styles, and remove active
  * state.
- *
  * @param {HTMLElement} element Textarea to reset
  * @returns {void}
  */
@@ -129,7 +126,6 @@ export function resetTextarea(element) {
 /**
  * Fast test if a given point is within a polygon. Taken from
  * http://jsperf.com/ispointinpath-boundary-test-speed/6
- *
  * @param {Number[]} poly Polygon defined by array of [x,y] coordinates
  * @param {Number} x X coordinate of point to Test
  * @param {Number} y Y coordinate of point to Test
@@ -146,7 +142,6 @@ export function isPointInPolyOpt(poly, x, y) {
 /**
  * Returns the Rangy highlight object and highlight elements representing
  * the current selection on the given page element.
- *
  * @param {Object} highlighter Rangy highlighter
  * @param {HTMLElement} pageEl Page element highlight is over
  * @returns {Object} Rangy highlight object and highlight DOM elements
@@ -172,7 +167,6 @@ export function getHighlightAndHighlightEls(highlighter, pageEl) {
 
 /**
  * Returns whether or not there currently is a non-empty selection.
- *
  * @returns {Boolean} Whether there is a non-empty selection
  */
 export function isSelectionPresent() {
@@ -190,7 +184,6 @@ export function isSelectionPresent() {
 
 /**
  * Checks whether element is fully in viewport.
- *
  * @returns {Boolean} Whether element is fully in viewport
  */
 export function isElementInViewport(element) {
@@ -204,13 +197,34 @@ export function isElementInViewport(element) {
     );
 }
 
+/**
+ * Returns avatar image HTML for annotation dialog. This will be either an
+ * image with the supplied avatar URL as a source if there is a URL passed in
+ * or one generated using the initials of the annotator.
+ * @param {String} avatarUrl URL of avatar photo
+ * @param {String} userId User ID of annotator
+ * @param {String} userName Username of annotator
+ * @returns {String} HTML for profile image
+ */
+export function getAvatarHtml(avatarUrl, userId, userName) {
+    if (avatarUrl !== '') {
+        return `<img src=${avatarUrl} alt="${__('annotation_profile_alt')}">`.trim();
+    }
+
+    // http://stackoverflow.com/questions/8133630/spliting-the-first-character-of-the-words
+    const initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
+    return `
+        <div class="box-preview-annotation-profile avatar-color-${userId % AVATAR_COLOR_COUNT}">
+            ${initials}
+        </div>`.trim();
+}
+
 //------------------------------------------------------------------------------
 // Coordinate Utils
 //------------------------------------------------------------------------------
 
 /**
  * Converts coordinates in PDF space to coordinates in DOM space.
- *
  * @param {Number[]} coordinates Either a [x,y] coordinate location or
  * quad points in the format of 8xn numbers in PDF space in PDF units
  * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
@@ -241,7 +255,6 @@ export function convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale) {
 
 /**
  * Converts coordinates in DOM space to coordinates in PDF space.
- *
  * @param {Number[]} coordinates Either a [x,y] coordinate location or
  * quad points in the format of 8xn numbers in DOM space in CSS pixels
  * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
@@ -274,7 +287,6 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
 
 /**
  * Returns zoom scale of annotated element.
- *
  * @param {HTMLElement} annotatedElement HTML element being annotated on
  * @returns {Number} Zoom scale
  */
@@ -285,14 +297,13 @@ export function getScale(annotatedElement) {
 /**
  * Returns browser coordinates given an annotation location object and
  * the HTML element being annotated on.
- *
  * @param {Object} location Annotation location object
  * @param {HTMLElement} annotatedElement HTML element being annotated on
  * @returns {Number[]} [x,y] browser coordinates
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
-    const pageHeight = pageEl.getBoundingClientRect().height;
+    const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
     const scale = getScale(annotatedElement);
     return convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, scale);
 }
@@ -305,7 +316,6 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
  *
  * We do this by letting the browser figure out the coordinates for us.
  * See http://stackoverflow.com/a/17098667
- *
  * @param {HTMLElement} element Element to get quad points for
  * @param {HTMLElement} pageEl Page element quad points are relative to
  * @param {Number} scale Document zoom scale
@@ -338,8 +348,9 @@ export function getQuadPoints(element, pageEl, scale) {
     const corner3Dimensions = quadCorner3El.getBoundingClientRect();
     const corner4Dimensions = quadCorner4El.getBoundingClientRect();
     const pageDimensions = pageEl.getBoundingClientRect();
+    const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
     const pageLeft = pageDimensions.left;
-    const pageBottom = pageDimensions.top;
+    const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
 
     // Cleanup helper container
     element.removeChild(quadCornerContainerEl);
@@ -347,17 +358,17 @@ export function getQuadPoints(element, pageEl, scale) {
     // Calculate coordinates of these 4 corners
     const quadPoints = [
         corner1Dimensions.left - pageLeft,
-        corner1Dimensions.top - pageBottom,
+        corner1Dimensions.top - pageTop,
         corner2Dimensions.left - pageLeft,
-        corner2Dimensions.top - pageBottom,
+        corner2Dimensions.top - pageTop,
         corner3Dimensions.left - pageLeft,
-        corner3Dimensions.top - pageBottom,
+        corner3Dimensions.top - pageTop,
         corner4Dimensions.left - pageLeft,
-        corner4Dimensions.top - pageBottom
+        corner4Dimensions.top - pageTop
     ];
 
     // Return quad points at 100% scale in PDF units
-    return convertDOMSpaceToPDFSpace(quadPoints, pageDimensions.height, scale);
+    return convertDOMSpaceToPDFSpace(quadPoints, pageHeight, scale);
 }
 
 /**
@@ -366,7 +377,6 @@ export function getQuadPoints(element, pageEl, scale) {
  * as the bottom right corner of the rectangle representing the bottom-most
  * annotation. Note that these coordinates are in PDF default user space, with
  * the origin at the bottom left corner of the document.
- *
  * @param {Number[]} quadPoints Quad points of annotation to get lower
  * right corner for in PDF space in PDF units
  * @returns {Number[]} [x,y] of lower right corner of quad points in PDF
@@ -393,7 +403,6 @@ export function getLowerRightCorner(quadPoints) {
  * Returns the lower right corner of the last quad point. This should provide
  * the same location the add highlight button is shown at given that the
  * quad points are stored in the correct order, ie left to right, top to bottom.
- *
  * @param {Number[]} quadPoints Quad points in PDF space in PDF units
  * @returns {Number[]} [x,y] of lower right corner of last quad point
  */
@@ -411,12 +420,11 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
 
 /**
  * Escapes HTML.
- *
  * @param {String} str Input string
  * @returns {String} HTML escaped string
  */
 export function htmlEscape(str) {
-    return str.replace(/&/g, '&amp;') // first!
+    return `${str}`.replace(/&/g, '&amp;') // first!
               .replace(/>/g, '&gt;')
               .replace(/</g, '&lt;')
               .replace(/"/g, '&quot;')

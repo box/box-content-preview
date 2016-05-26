@@ -1,14 +1,24 @@
+/**
+ * @fileoverview Base document viewer class. The document and presentation
+ * viewers extend this class.
+ * @author tjin
+ */
+
 import autobind from 'autobind-decorator';
+import LocalStorageAnnotationService from '../annotation/localstorage-annotation-service';
 import Base from '../base';
 import Browser from '../browser';
 import cache from '../cache';
 import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
+import DocFindBar from './doc-find-bar';
 import fullscreen from '../fullscreen';
+import { CLASS_BOX_PREVIEW_FIND_BAR } from '../constants';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
+const PRESENTATION_VIEWER_NAME = 'Presentation';
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const PRESENTATION_MODE_STATE = {
@@ -22,10 +32,16 @@ const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 @autobind
 class DocBase extends Base {
 
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
     /**
-     * @constructor
+     * [constructor]
+     *
      * @param {string|HTMLElement} container Container node
      * @param {object} [options] Some options
+     * @returns {DocBase} DocBase instance
      */
     constructor(container, options) {
         super(container, options);
@@ -35,36 +51,38 @@ class DocBase extends Base {
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = 60000;
+
+        this.findBarEl = this.docEl.appendChild(document.createElement('div'));
+        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
+
+        this.isPresentation = (this.options.viewerName === PRESENTATION_VIEWER_NAME);
     }
 
     /**
      * [destructor]
+     *
      * @returns {void}
      */
     destroy() {
-        // Remove object event listeners
-        fullscreen.removeListener('enter', this.enterfullscreenHandler);
-        fullscreen.removeListener('exit', this.exitfullscreenHandler);
+        this.unbindDOMListeners();
 
         // Clean up print blob
         this.printBlob = null;
 
-        // Remove DOM event listeners
-        if (this.docEl) {
-            this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
-            this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
-            this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
-            this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
-        }
-
-        // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
         }
 
         // Destroy the annotator
         if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners('pointmodeenter');
+            this.annotator.removeAllListeners('pointmodeexit');
             this.annotator.destroy();
+        }
+
+        // Clean up the find bar and controller
+        if (this.findBar && this.findController) {
+            this.destroyFind();
         }
 
         // Clean up viewer and PDF document object
@@ -82,7 +100,6 @@ class DocBase extends Base {
     /**
      * Loads a document.
      *
-     * @public
      * @param {String} pdfUrl The pdf to load
      * @returns {Promise} Promise to load a pdf
      */
@@ -92,22 +109,50 @@ class DocBase extends Base {
             PDFJS.disableWorker = true;
         }
 
-        const assetUrlCreator = createAssetUrlCreator(this.options.location);
-        const pdfWorkerUrl = assetUrlCreator('third-party/doc/pdf.worker.js');
-        PDFJS.workerSrc = pdfWorkerUrl;
-
-        const pdfCMapBaseURI = `${this.options.location.staticBaseURI}third-party/doc/cmaps/`;
-        PDFJS.cMapUrl = pdfCMapBaseURI;
-        PDFJS.cMapPacked = true;
-        PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK; // Open links in new tab
-
-        // Disable range requests for files smaller than 2MB
-        PDFJS.disableRange = this.options.file.size < 2097152;
-
+        this.setupPdfjs();
         this.initViewer(pdfUrl);
         this.initPrint(pdfUrl);
+        this.initFind();
 
         super.load();
+    }
+
+    /**
+     * Initializes the Find Bar and Find Controller
+     * @returns {void}
+     */
+    initFind() {
+        if (!this.findBarEl) { // doesn't initialize find controller if find bar doesn't exists
+            return;
+        }
+
+        this.findController = new PDFFindController({
+            pdfViewer: this.pdfViewer
+        });
+        this.pdfViewer.setFindController(this.findController);
+        this.findBar = new DocFindBar(this.findBarEl, this.findController);
+        this.findController.setFindBar(this.findBar);
+    }
+
+    /**
+     * Clean up find controller and find bar
+     * @returns {void}
+     */
+    destroyFind() {
+        // Remove find controller events
+        const events = [
+            'find',
+            'findagain',
+            'findhighlightallchange',
+            'findcasesensitivitychange'
+        ];
+
+        for (const event of events) {
+            window.removeEventListener(event, this.findController.handleEvent);
+        }
+
+        // Cleanup find bar
+        this.findBar.destroy();
     }
 
     /**
@@ -183,7 +228,7 @@ class DocBase extends Base {
      */
     setPage(pageNum) {
         this.pdfViewer.currentPageNumber = pageNum;
-        this.setCurrentPage(this.pdfViewer.currentPageNumber);
+        this.cachePage(this.pdfViewer.currentPageNumber);
     }
 
     /**
@@ -191,7 +236,7 @@ class DocBase extends Base {
      *
      * @returns {Number} Current page
      */
-    getCurrentPage() {
+    getCachedPage() {
         let page = 1;
 
         if (cache.has(CURRENT_PAGE_MAP_KEY)) {
@@ -209,7 +254,7 @@ class DocBase extends Base {
      * @param {Number} page Current page
      * @returns {void}
      */
-    setCurrentPage(page) {
+    cachePage(page) {
         let currentPageMap = {};
         if (cache.has(CURRENT_PAGE_MAP_KEY)) {
             currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
@@ -336,9 +381,8 @@ class DocBase extends Base {
     }
 
     /**
-     * Enters or exits fullscreen
+     * Enters or exits fullscreen.
      *
-     * @public
      * @returns {void}
      */
     toggleFullscreen() {
@@ -350,7 +394,6 @@ class DocBase extends Base {
      * Returns whether or not viewer is annotatable with the provided annotation
      * type.
      *
-     * @public
      * @param {String} type Type of annotation
      * @returns {Boolean} Whether or not viewer is annotatable
      */
@@ -390,20 +433,97 @@ class DocBase extends Base {
         return this.annotator.toggleHighlightModeHandler;
     }
 
-    /* ----- Private Helpers ----- */
+    /**
+     * Handles keyboard events for document viewer.
+     *
+     * @param {String} key keydown key
+     * @returns {Boolean} consumed or not
+     */
+    onKeydown(key) {
+        switch (key) {
+            case 'ArrowLeft':
+                this.previousPage();
+                break;
+            case 'ArrowRight':
+                this.nextPage();
+                break;
+
+            // Only navigate pages with up/down in document viewer if in fullscreen
+            case 'ArrowUp':
+                if (!this.isPresentation && !fullscreen.isFullscreen()) {
+                    return false;
+                }
+
+                this.previousPage();
+                break;
+            case 'ArrowDown':
+                if (!this.isPresentation && !fullscreen.isFullscreen()) {
+                    return false;
+                }
+
+                this.nextPage();
+                break;
+            case '[':
+                this.previousPage();
+                break;
+            case ']':
+                this.nextPage();
+                break;
+            default:
+                return false;
+        }
+
+        return true;
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
 
     /**
-     * Loads PDF.js with provided PDF
+     * Sets options for PDF.js.
      *
+     * @returns {void}
      * @private
+     */
+    setupPdfjs() {
+        // Set PDFJS worker & character maps
+        const assetUrlCreator = createAssetUrlCreator(this.options.location);
+        PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.js');
+        PDFJS.cMapUrl = `${this.options.location.staticBaseURI}third-party/doc/cmaps/`;
+        PDFJS.cMapPacked = true;
+
+        // Open links in new tab
+        PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
+
+        // Disable range requests for files smaller than 2MB
+        PDFJS.disableRange = this.options.file && this.options.file.size ?
+            this.options.file.size < 2097152 :
+            false;
+
+        // Disable text layer if user doesn't have download permissions
+        PDFJS.disableTextLayer = this.options.file && this.options.file.permissions ?
+            !this.options.file.permissions.can_download :
+            false;
+    }
+
+    /**
+     * Loads PDF.js with provided PDF.
+     *
      * @param {String} pdfUrl The URL of the PDF to load
      * @returns {void}
+     * @private
      */
     initViewer(pdfUrl) {
         // Initialize PDF.js in container
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl
         });
+
+        // Overwrite scrollPageIntoView for presentations since we have custom pagination
+        if (this.isPresentation) {
+            this.pdfViewer.scrollPageIntoView = this.setPage;
+        }
 
         // Load PDF from representation URL
         PDFJS.getDocument({
@@ -420,28 +540,15 @@ class DocBase extends Base {
             this.emit('error', err.message);
         });
 
-        // When page structure is initialized, set default zoom and load controls
-        this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
-
-        // When first page is rendered, message that preview has loaded
-        this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
-
-        // When text layer is rendered, show annotations if enabled
-        this.docEl.addEventListener('textlayerrendered', this.textlayerrenderedHandler);
-
-        // Update page number when page changes
-        this.docEl.addEventListener('pagechange', this.pagechangeHandler);
-
-        // Mousedown and mouseup handler to enable and disable text selection
-        this.docEl.addEventListener('mousedown', this.mousedownHandler);
-        this.docEl.addEventListener('mouseup', this.mouseupHandler);
+        this.bindDOMListeners();
     }
 
     /**
-     * Initialize variables and elements for printing
+     * Initialize variables and elements for printing.
      *
      * @param {String} pdfUrl The URL of the PDF to load
      * @returns {void}
+     * @private
      */
     initPrint(pdfUrl) {
         // @TODO(tjin): Can we re-use the same blob used by PDF.js to render the content?
@@ -463,41 +570,45 @@ class DocBase extends Base {
     /**
      * Creates UI for preview controls.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-
-        this.addEventListenersForDocControls();
-        this.addEventListenersForDocElement();
-
+        this.bindControlListeners();
         this.initPageNumEl();
     }
 
     /**
-     * Initializes annotations
+     * Initializes annotations.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     initAnnotations() {
         const fileVersionID = this.options.file.file_version.id;
+        const annotationService = new LocalStorageAnnotationService({
+            api: this.options.api,
+            token: this.options.token
+        });
+
+        // Construct and init annotator
         this.annotator = new DocAnnotator({
             annotatedElement: this.docEl,
+            annotationService,
             fileVersionID
         });
         this.annotator.init();
         this.annotator.setScale(this.pdfViewer.currentScale);
 
         // Disable controls during point annotation mode
-        this.annotator.on('pointmodeenter', () => {
+        this.annotator.addListener('pointmodeenter', () => {
             if (this.controls) {
                 this.controls.disable();
             }
         });
 
-        this.annotator.on('pointmodeexit', () => {
+        this.annotator.addListener('pointmodeexit', () => {
             if (this.controls) {
                 this.controls.enable();
             }
@@ -505,10 +616,10 @@ class DocBase extends Base {
     }
 
     /**
-     * Initializes page number selector
+     * Initializes page number selector.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     initPageNumEl() {
         const pageNumEl = this.controls.controlsEl.querySelector('.box-preview-doc-page-num');
@@ -522,32 +633,11 @@ class DocBase extends Base {
         this.currentPageEl = pageNumEl.querySelector('.box-preview-doc-current-page');
     }
 
-    /**
-     * Adds event listeners for document controls
-     *
-     * @private
-     * @returns {void}
-     */
-    addEventListenersForDocControls() {
-        // overriden
-    }
-
-    /**
-     * Adds event listeners for document element
-     *
-     * @private
-     * @returns {void}
-     */
-    addEventListenersForDocElement() {
-        fullscreen.addListener('enter', this.enterfullscreenHandler);
-        fullscreen.addListener('exit', this.exitfullscreenHandler);
-    }
-
 	/**
 	 * Replaces the page number display with an input box that allows the user to type in a page number
      *
-     * @private
 	 * @returns {void}
+     * @private
 	 */
     showPageNumInput() {
         // show the input box with the current page number selected within it
@@ -565,8 +655,8 @@ class DocBase extends Base {
     /**
 	 * Hide the page number input
 	 *
-     * @private
 	 * @returns {void}
+     * @private
 	 */
     hidePageNumInput() {
         this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
@@ -578,8 +668,8 @@ class DocBase extends Base {
      * Update page number in page control widget.
      *
      * @param {number} pageNum Nubmer of page to update to
-     * @private
      * @returns {void}
+     * @private
      */
     updateCurrentPage(pageNum) {
         let truePageNum = pageNum;
@@ -603,124 +693,70 @@ class DocBase extends Base {
         this.checkPaginationButtons();
     }
 
-    /* ----- Event Handlers ----- */
-    /**
-     * Handles keyboard events for document viewer.
-     *
-     * @private
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
-     */
-    onKeydown(key) {
-        switch (key) {
-            case 'ArrowLeft':
-                this.previousPage();
-                break;
-            case 'ArrowRight':
-                this.nextPage();
-                break;
-            case '[':
-                this.previousPage();
-                break;
-            case ']':
-                this.nextPage();
-                break;
-            default:
-                return false;
-        }
-
-        return true;
-    }
+    //--------------------------------------------------------------------------
+    // Event Listeners
+    //--------------------------------------------------------------------------
 
     /**
-     * Handler for 'pagesinit' event
+     * Binds DOM listeners for document viewer.
      *
-     * @private
      * @returns {void}
-     */
-    pagesinitHandler() {
-        this.pdfViewer.currentScaleValue = 'auto';
-
-        // Initialize annotations before other UI
-        // @TODO maybe this should move out to individual viewers
-        if ((this.options.viewers.Document && this.options.viewers.Document.annotations) ||
-            (this.options.viewers.Presentation && this.options.viewers.Presentation.annotations)) {
-            this.initAnnotations();
-        }
-
-        if (this.options.ui !== false) {
-            this.loadUI();
-        }
-
-        this.checkPaginationButtons();
-
-        // Set current page to previously opened page or first page
-        this.setPage(this.getCurrentPage());
-    }
-
-    /**
-     * Handler for 'pagerendered' event
-     *
      * @private
-     * @returns {void}
      */
-    pagerenderedHandler() {
-        if (this.annotator && this._reRenderAnnotations) {
-            this.annotator.renderAnnotations();
-            this._reRenderAnnotations = false;
-        }
+    bindDOMListeners() {
+        // When page structure is initialized, set default zoom and load controls
+        this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
 
-        if (this.loaded) {
-            return;
-        }
+        // When first page is rendered, message that preview has loaded
+        this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
 
-        this.loaded = true;
-        this.emit('load');
+        // When text layer is rendered, show annotations if enabled
+        this.docEl.addEventListener('textlayerrendered', this.textlayerrenderedHandler);
+
+        // Update page number when page changes
+        this.docEl.addEventListener('pagechange', this.pagechangeHandler);
+
+        // Mousewheel handler
+        this.docEl.addEventListener('wheel', this.wheelHandler);
+
+        // Fullscreen
+        fullscreen.addListener('enter', this.enterfullscreenHandler);
+        fullscreen.addListener('exit', this.exitfullscreenHandler);
     }
 
     /**
-     * Handler for 'textlayerrendered' event
+     * Unbinds DOM listeners for document viewer.
      *
-     * @private
      * @returns {void}
+     * @private
      */
-    textlayerrenderedHandler() {
-        if (!this.annotator || this.annotationsLoaded) {
-            return;
+    unbindDOMListeners() {
+        if (this.docEl) {
+            this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
+            this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
+            this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
+            this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
+            this.docEl.removeEventListener('wheel', this.wheelHandler);
         }
 
-        // Show existing annotations after text layer is rendered
-        this.annotator.showAnnotations();
-        this.annotationsLoaded = true;
+        fullscreen.removeListener('enter', this.enterfullscreenHandler);
+        fullscreen.removeListener('exit', this.exitfullscreenHandler);
     }
 
     /**
-     * Handler for 'pagechange' event
+     * Binds listeners for document controls. Overridden.
      *
-     * @param {Event} event Pagechange event
-     * @private
      * @returns {void}
+     * @private
      */
-    pagechangeHandler(event) {
-        const pageNum = event.pageNumber;
-        this.updateCurrentPage(pageNum);
-
-        // We only set cache the current page if 'pagechange' was fired from a
-        // scrolling event - this filters out 'pagechange' events fired from
-        // viewer init or when exiting fullscreen
-        if (this._isScrolling) {
-            this.setCurrentPage(pageNum);
-        }
-
-        this._isScrolling = false;
-    }
+    bindControlListeners() {}
 
     /**
-	 * Blur handler for page number input
-	 *
+	 * Blur handler for page number input.
+     *
 	 * @param  {Event} event Blur event
-     * @private
 	 * @returns {void}
+     * @private
 	 */
     pageNumInputBlurHandler(event) {
         const target = event.target;
@@ -734,11 +770,11 @@ class DocBase extends Base {
     }
 
 	/**
-	 * Keydown handler for page number input
-	 *
+	 * Keydown handler for page number input.
+     *
 	 * @param {Event} event Keydown event
-     * @private
 	 * @returns {void}
+     * @private
 	 */
     pageNumInputKeydownHandler(event) {
         const key = decodeKeydown(event);
@@ -766,9 +802,89 @@ class DocBase extends Base {
                 event.stopPropagation();
                 event.preventDefault();
                 break;
-
             default:
                 return;
+        }
+    }
+
+    /**
+     * Handler for 'pagesinit' event.
+     *
+     * @returns {void}
+     * @private
+     */
+    pagesinitHandler() {
+        this.pdfViewer.currentScaleValue = 'auto';
+
+        // Initialize annotations before other UI
+        // @TODO maybe this should move out to individual viewers
+        if ((this.options.viewers.Document && this.options.viewers.Document.annotations) ||
+            (this.options.viewers.Presentation && this.options.viewers.Presentation.annotations)) {
+            this.initAnnotations();
+        }
+
+        if (this.options.ui !== false) {
+            this.loadUI();
+        }
+
+        this.checkPaginationButtons();
+
+        // Set current page to previously opened page or first page
+        this.setPage(this.getCachedPage());
+    }
+
+    /**
+     * Handler for 'pagerendered' event.
+     *
+     * @returns {void}
+     * @private
+     */
+    pagerenderedHandler() {
+        if (this.annotator && this._reRenderAnnotations) {
+            this.annotator.renderAnnotations();
+            this._reRenderAnnotations = false;
+        }
+
+        if (this.loaded) {
+            return;
+        }
+
+        this.loaded = true;
+        this.emit('load');
+    }
+
+    /**
+     * Handler for 'textlayerrendered' event.
+     *
+     * @returns {void}
+     * @private
+     */
+    textlayerrenderedHandler() {
+        if (!this.annotator || this.annotationsLoaded) {
+            return;
+        }
+
+        // Show existing annotations after text layer is rendered
+        this.annotator.showAnnotations();
+        this.annotationsLoaded = true;
+    }
+
+    /**
+     * Handler for 'pagechange' event.
+     *
+     * @param {Event} event Pagechange event
+     * @returns {void}
+     * @private
+     */
+    pagechangeHandler(event) {
+        const pageNum = event.pageNumber;
+        this.updateCurrentPage(pageNum);
+
+        // We only set cache the current page if 'pagechange' was fired after
+        // preview is loaded - this filters out pagechange events fired by
+        // the viewer's initialization
+        if (this.loaded) {
+            this.cachePage(pageNum);
         }
     }
 
@@ -776,30 +892,56 @@ class DocBase extends Base {
      * Fullscreen entered handler. Add presentation mode class, set
      * presentation mode state, and set zoom to fullscreen zoom.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     enterfullscreenHandler() {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.FULLSCREEN;
         this.pdfViewer.currentScaleValue = 'page-fit';
 
-        // Restore current page
-        this.setPage(this.getCurrentPage());
+        // Force resize for annotations
+        this.resize();
     }
 
     /**
      * Fullscreen exited handler. Remove presentation mode class, set
      * presentation mode state, and reset zoom.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     exitfullscreenHandler() {
         this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.NORMAL;
         this.pdfViewer.currentScaleValue = 'auto';
 
-        // Restore current page
-        this.setPage(this.getCurrentPage());
+        // Force resize for annotations
+        this.resize();
+    }
+
+    /**
+     * Mousewheel handler - scrolls presentations by page and scrolls documents
+     * normally unless in fullscreen, in which it scrolls by page.
+     *
+     * @returns {Function} Debounced mousewheel handler
+     * @private
+     */
+    wheelHandler() {
+        if (!this.isPresentation && !fullscreen.isFullscreen()) {
+            return;
+        }
+
+        event.preventDefault();
+
+        // This filters out trackpad events since Macbook inertial scrolling
+        // fires wheel events in a very unpredictable way
+        const isFromMouseWheel = event.wheelDelta % 120 === 0;
+        if (isFromMouseWheel) {
+            if (event.deltaY > 0) {
+                this.nextPage();
+            } else {
+                this.previousPage();
+            }
+        }
     }
 }
 

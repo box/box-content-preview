@@ -1,4 +1,4 @@
-@import 'variables';
+@import 'node_modules/box-ui/src/common/variables';
 @import 'boxui';
 
 $header-height: 48px;
@@ -28,13 +28,13 @@ $header-height: 48px;
     width: 100%;
 
     a {
-        color: $alto;
+        color: $seesee;
     }
 }
 
 .box-preview-header {
     align-items: center;
-    border-bottom: 1px solid $alto;
+    border-bottom: 1px solid $seesee;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-align: center;
@@ -100,7 +100,7 @@ $header-height: 48px;
 }
 
 .box-preview-btn-divider {
-    border-right: 1px solid $alto;
+    border-right: 1px solid $seesee;
     display: inline-block;
     height: 24px;
     margin-right: 10px;

@@ -142,7 +142,7 @@ class DocAnnotator extends Annotator {
         const highlightModeBtnEl = document.createElement('button');
         highlightModeBtnEl.classList.add('box-preview-btn-plain');
         highlightModeBtnEl.classList.add('box-preview-btn-highlight');
-        highlightModeBtnEl.innerHTML = ICON_HIGHLIGHT;
+        highlightModeBtnEl.innerHTML = ICON_HIGHLIGHT.trim();
         highlightModeBtnEl.addEventListener('click', this.toggleHighlightModeHandler);
         annotationButtonContainerEl.insertBefore(highlightModeBtnEl, annotationButtonContainerEl.firstChild);
     }

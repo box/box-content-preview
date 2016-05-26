@@ -113,18 +113,18 @@ push_to_maven() {
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
 
-    echo "-------------------------------------------------------------"
-    echo "Installing node modules from https://registry.nodejitsu.com"
-    echo "-------------------------------------------------------------"
-    if npm install --registry https://registry.nodejitsu.com; then
+    echo "---------------------------------------------------------------------------------------------------------------------------"
+    echo "Installing node modules from http://maven-vip.dev.box.net:8150/nexus/content/groups/npm-all/ OR https://registry.npmjs.org"
+    echo "---------------------------------------------------------------------------------------------------------------------------"
+    if npm install; then
         echo "----------------------------------------------------"
         echo "Installed node modules."
         echo "----------------------------------------------------"
     else
-        echo "---------------------------------------------------------------------------------------------------------------------------"
-        echo "Installing node modules from http://maven-vip.dev.box.net:8150/nexus/content/groups/npm-all/ OR https://registry.npmjs.org"
-        echo "---------------------------------------------------------------------------------------------------------------------------"
-        if npm install; then
+        echo "-------------------------------------------------------------"
+        echo "Installing node modules from https://registry.nodejitsu.com"
+        echo "-------------------------------------------------------------"
+        if npm install --registry https://registry.nodejitsu.com; then
             echo "----------------------------------------------------"
             echo "Installed node modules."
             echo "----------------------------------------------------"

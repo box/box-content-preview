@@ -12,7 +12,8 @@ import EventEmitter from 'events';
 
 import * as annotatorUtil from './annotator-util';
 
-const POINT_ANNOTATION_ICON_WIDTH = 16;
+const PAGE_PADDING_TOP = 15;
+const POINT_ANNOTATION_ICON_WIDTH = 18;
 const POINT_ANNOTATION_TYPE = 'point';
 const POINT_STATE_INACTIVE = 'inactive';
 const POINT_STATE_PENDING = 'pending';
@@ -95,7 +96,8 @@ class AnnotationThread extends EventEmitter {
 
         // Position and append to page
         this._element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-        this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+        // Add 15px for vertical padding on page
+        this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 2 + PAGE_PADDING_TOP}px`;
         pageEl.appendChild(this._element);
 
         annotatorUtil.showElement(this._element);

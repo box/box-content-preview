@@ -1,6 +1,17 @@
-@import '../variables';
+@import 'node_modules/box-ui/src/common/variables';
 
 $highlight-yellow: #ffc900;
+
+// Taken from Box React UI avatar
+$avatar-color-1: #18bbf7;
+$avatar-color-2: #0d67c7;
+$avatar-color-3: #052e5c;
+$avatar-color-4: #747679;
+$avatar-color-5: #fda308;
+$avatar-color-6: #98c332;
+$avatar-color-7: #159f45;
+$avatar-color-8: #b800b2;
+$avatar-color-9: #f22c44;
 
 .box-preview-annotation-controls {
     background-color: $white;
@@ -52,6 +63,22 @@ $highlight-yellow: #ffc900;
 }
 
 // Icon buttons
+.box-preview-add-highlight-btn,
+.box-preview-delete-highlight-btn,
+.delete-comment-btn {
+    svg {
+        fill: lighten($better-black, 15%);
+    }
+
+    &:hover svg {
+        fill: $better-black;
+    }
+}
+
+.box-preview-add-highlight-btn:hover svg {
+    fill: $highlight-yellow;
+}
+
 .box-preview-btn-plain {
     &.box-preview-btn-annotate:hover svg,
     &.box-preview-btn-annotate.box-preview-is-active svg {
@@ -77,18 +104,20 @@ $highlight-yellow: #ffc900;
 
     .annotation-container {
         background-color: $white;
-        border: 1px solid $sf-fog;
+        border: 1px solid $seesee;
         border-radius: 4px;
         padding: 15px;
     }
 
-    .annotation-textarea,
-    .reply-textarea {
+    .box-preview-textarea {
         display: block;
         font-size: 13px;
         height: 34px;
         max-width: 250px;
+        min-height: 34px;
         padding: 7px;
+        -webkit-transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
+        transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
         width: 250px;
 
         &.box-preview-is-active {
@@ -97,7 +126,7 @@ $highlight-yellow: #ffc900;
     }
 
     .annotation-comment {
-        border-bottom: 1px solid $sf-fog;
+        border-bottom: 1px solid $seesee;
         margin-top: 15px;
         padding-bottom: 15px;
         position: relative;
@@ -117,8 +146,9 @@ $highlight-yellow: #ffc900;
         vertical-align: top;
 
         img {
-            height: 30px;
-            width: 30px;
+            border-radius: 50%;
+            height: 32px;
+            width: 32px;
         }
     }
 
@@ -146,7 +176,7 @@ $highlight-yellow: #ffc900;
     }
 
     .delete-confirmation {
-        background-color: transparentize($white, .05);
+        background-color: fade-out($white, .05);
         height: 100%;
         left: 0;
         position: absolute;
@@ -155,7 +185,7 @@ $highlight-yellow: #ffc900;
         z-index: 2; // Above the delete button
 
         .button-container {
-            margin-top: 5px;
+            margin-top: 0;
             text-align: center;
         }
     }
@@ -163,7 +193,7 @@ $highlight-yellow: #ffc900;
     .delete-confirmation-message {
         color: $fours;
         font-size: 12px;
-        padding: 5px 0 3px;
+        padding: 0 0 5px;
         text-align: center;
     }
 
@@ -189,27 +219,72 @@ $highlight-yellow: #ffc900;
         }
 
         &:focus {
-            box-shadow: 0 0 2px 1px transparentize($black, .8);
-            // box-shadow: 0 1px 2px fade-out($black, .9);
-            // outline: 1px solid darken($sf-fog, 14%);
+            box-shadow: 0 0 2px 1px fade-out($black, .8);
         }
     }
 }
 
 .box-preview-point-annotation-btn {
-    background-color: transparentize($box-blue, .3);
+    background-color: fade-out($box-blue, .3);
     border-radius: 50%; // Circle
     border-style: none;
     cursor: pointer;
-    height: 16px;
+    height: 18px;
     padding: 0;
     position: absolute;
     -webkit-transition: background-color .5s;
     transition: background-color .5s;
-    width: 16px;
+    width: 18px;
 
     &:hover {
         background-color: $box-blue;
+    }
+}
+
+.box-preview-annotation-profile {
+    background-color: $tendemob-grey;
+    border-radius: 16px; // Circle
+    color: $white;
+    font-size: 12px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    width: 32px;
+
+    &.avatar-color-0 {
+        background-color: $avatar-color-1;
+    }
+
+    &.avatar-color-1 {
+        background-color: $avatar-color-2;
+    }
+
+    &.avatar-color-2 {
+        background-color: $avatar-color-3;
+    }
+
+    &.avatar-color-3 {
+        background-color: $avatar-color-4;
+    }
+
+    &.avatar-color-4 {
+        background-color: $avatar-color-5;
+    }
+
+    &.avatar-color-5 {
+        background-color: $avatar-color-6;
+    }
+
+    &.avatar-color-6 {
+        background-color: $avatar-color-7;
+    }
+
+    &.avatar-color-7 {
+        background-color: $avatar-color-8;
+    }
+
+    &.avatar-color-8 {
+        background-color: $avatar-color-9;
     }
 }
 
@@ -218,12 +293,10 @@ $highlight-yellow: #ffc900;
 //------------------------------------------------------------------------------
 
 .box-preview-annotation-layer {
-    bottom: 0;
     cursor: text;
     left: 0;
     position: absolute;
-    right: 0;
-    top: 0;
+    top: 15px; // Match 15px padding top on page
 }
 
 .box-preview-highlight-dialog {
@@ -236,7 +309,7 @@ $highlight-yellow: #ffc900;
 .box-preview-delete-highlight-btn,
 .box-preview-delete-highlight-btn:hover {
     background-color: $white;
-    border: 1px solid $sf-fog;
+    border: 1px solid $seesee;
     border-radius: 2px;
     padding: 5px 6px;
 }
@@ -301,7 +374,7 @@ $highlight-yellow: #ffc900;
 .box-preview-point-annotation-mode .box-preview-annotation-layer,
 .box-preview-point-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('../annotation/point-annotation.cur'), crosshair;
+    cursor: url('../annotation/point.cur'), crosshair;
 }
 
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
@@ -315,7 +388,7 @@ $highlight-yellow: #ffc900;
 .box-preview-highlight-annotation-mode .box-preview-annotation-layer,
 .box-preview-highlight-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('../annotation/highlight-annotation.cur'), text;
+    cursor: url('../annotation/highlight.cur'), text;
 }
 
 // IE10 and IE11 don't implement custom cursors correctly, see:
@@ -326,10 +399,7 @@ $highlight-yellow: #ffc900;
 .ie.box-preview-point-annotation-mode .box-preview-annotation-layer,
 .ie.box-preview-point-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('//cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/point-annotation.cur'), crosshair;
-
-    // Uncomment before v0.55.0 release
-    // cursor: url('//cdn01.boxcdn.net/content-experience/0.55.0/third-party/doc/cursors/point-annotation.cur'), crosshair;
+    cursor: url('//cdn01.boxcdn.net/content-experience/0.56.0/third-party/doc/cursors/point.cur'), crosshair;
 }
 
 // scss-lint:disable UrlFormat
@@ -337,8 +407,5 @@ $highlight-yellow: #ffc900;
 .ie.box-preview-highlight-annotation-mode .box-preview-annotation-layer,
 .ie.box-preview-highlight-annotation-mode .textLayer > div {
     // We use a .cur file since they embed click origin information
-    cursor: url('//cdn01.boxcdn.net/content-experience/0.53.0/third-party/static/cursors/highlight-annotation.cur'), text;
-
-    // Uncomment before v0.55.0 release
-    // cursor: url('//cdn01.boxcdn.net/content-experience/0.55.0/third-party/doc/cursors/highlight-annotation.cur'), text;
+    cursor: url('//cdn01.boxcdn.net/content-experience/0.56.0/third-party/doc/cursors/highlight.cur'), text;
 }

@@ -36,12 +36,12 @@ class AnnotationService {
     /**
      * [constructor]
      *
-     * @param {String} endpoint API endpoint
+     * @param {String} api API endpoint
      * @param {String} token API token
      * @returns {AnnotationService} AnnotationService instance
      */
-    constructor(endpoint, token) {
-        this._endpoint = endpoint;
+    constructor(api, token) {
+        this._api = api;
         this._token = token;
     }
 

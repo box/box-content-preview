@@ -14,11 +14,11 @@ The browser needs to have the Promise API implimented. If not, it can be polyfil
 
 Latest version of the SDK hosted on Box's CDN
 ============================
-* Version: 0.54.0
+* Version: 0.56.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.54.0/en-US/preview.js  
-https://cdn01.boxcdn.net/content-experience/0.54.0/en-US/preview.css
+https://cdn01.boxcdn.net/content-experience/0.56.0/en-US/preview.js  
+https://cdn01.boxcdn.net/content-experience/0.56.0/en-US/preview.css
 
 Usage
 =====
@@ -32,9 +32,9 @@ Usage
     <!-- Polyfill promise API if using Internet Explorer -->
     <script src="//cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js"></script>
 
-    <!-- version 0.54.0 of preview library for locale en-US -->
-    <script src="//cdn01.boxcdn.net/content-experience/0.54.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.54.0/en-US/preview.css" />
+    <!-- version 0.56.0 of preview library for locale en-US -->
+    <script src="//cdn01.boxcdn.net/content-experience/0.56.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.56.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="width:500px; height:212px;"></div>
@@ -76,6 +76,11 @@ Install SCSS linter `gem install scss_lint` for linting SCSS files.
 Release build
 =============
 `npm run release` does a release build.
+
+
+Change log
+===========
+Generate using `github_changelog_generator --github-site https://gitenterprise.inside-box.net --github-api https://gitenterprise.inside-box.net/api/v3 --token 0c280723f1ceb4dd83f934f1dc117b9f0a15a2df Preview/Preview`
 
 
 Demo and testing local changes
@@ -219,6 +224,24 @@ EVENTNAME can be one of the following
 ```
 * `navigate` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event happens.
 
+* `notification` event will be fired when either the preview wrapper or one of the viewers wants to notify something like a warning or non-fatal error:
+```javascript
+  {
+      message: 'message', // Message to show
+      type: 'warning'    // 'warning' or 'notice' or 'error'
+  }
+```
+
+* Each viewer will fire its own sets of events. For example, Image viewer will fire `rotate` or `resize` etc. Another viewer may fire similar or other events. All these will be propogated on the viewer instance as shown in the examples below and even on the preview wrapper with the following data:
+```javascript
+  {
+      event: EVENTNAME,         // Some event
+      data: DATA,               // Some data
+      viewerName: VIEWERNAME,   // Name of the viewer. See VIEWERNAME above
+      fileId: fileId            // The file id
+  }
+```
+
 Examples
 --------
 
@@ -236,6 +259,16 @@ Box.Preview.addListener('load', (data) => {
     viewer.addListener('rotate', () => {
         // do something
     });
+});
+
+OR
+
+Box.Preview.addListener('rotate', (data) => {
+    if (data.viewerName === 'Image') {
+        // Do something when image rotation happens
+    } else if (data.viewerName === 'Image360') {
+        // Do something else when 360 image rotation happens
+    } else if (...) { ... }
 });
 
 ```

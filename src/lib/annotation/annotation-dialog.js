@@ -15,6 +15,7 @@ import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { ICON_DELETE } from '../icons/icons';
 
 const DIALOG_HIDE_TIMEOUT = 500;
+const PAGE_PADDING_TOP = 15;
 
 @autobind
 class AnnotationDialog extends EventEmitter {
@@ -158,19 +159,29 @@ class AnnotationDialog extends EventEmitter {
             <div class="box-preview-annotation-caret"></div>
             <div class="annotation-container">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
-                    <textarea class="box-preview-textarea annotation-textarea ${CLASS_ACTIVE}" placeholder="Add a comment here..."></textarea>
+                    <textarea class="box-preview-textarea annotation-textarea ${CLASS_ACTIVE}"
+                        placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
                     <div class="button-container">
-                        <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-annotation-btn">CANCEL</button>
-                        <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-annotation-btn">POST</button>
+                        <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
+                            ${__('annotation_cancel')}
+                        </button>
+                        <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-annotation-btn">
+                            ${__('annotation_post')}
+                        </button>
                     </div>
                 </section>
                 <section class="${annotations.length ? '' : CLASS_HIDDEN}" data-section="show">
                     <div class="annotation-comments"></div>
                     <div class="reply-container">
-                        <textarea class="box-preview-textarea reply-textarea" placeholder="Post a reply..." data-type="reply-textarea"></textarea>
+                        <textarea class="box-preview-textarea reply-textarea"
+                            placeholder="${__('annotation_reply_placeholder')}" data-type="reply-textarea"></textarea>
                         <div class="button-container ${CLASS_HIDDEN}">
-                            <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-reply-btn">CANCEL</button>
-                            <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-reply-btn">POST</button>
+                            <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-reply-btn">
+                                ${__('annotation_cancel')}
+                            </button>
+                            <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-reply-btn">
+                                ${__('annotation_post')}
+                            </button>
                         </div>
                     </div>
                 </section>
@@ -191,8 +202,10 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _addAnnotationElement(annotation) {
-        const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl);
-        const userName = annotatorUtil.htmlEscape(annotation.user.name);
+        const userId = parseInt(annotatorUtil.htmlEscape(annotation.user.id || 1), 10);
+        const userName = annotatorUtil.htmlEscape(annotation.user.name || __('annotation_anonymous_username'));
+        const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
+        const avatarHtml = annotatorUtil.getAvatarHtml(avatarUrl, userId, userName);
         const created = new Date(annotation.created).toLocaleDateString(
             'en-US',
             { hour: '2-digit', minute: '2-digit' }
@@ -203,7 +216,7 @@ class AnnotationDialog extends EventEmitter {
         annotationEl.classList.add('annotation-comment');
         annotationEl.setAttribute('data-annotation-id', annotation.annotationID);
         annotationEl.innerHTML = `
-            <div class="profile-image-container"><img src=${avatarUrl} alt="Profile"></div>
+            <div class="profile-image-container">${avatarHtml}</div>
             <div class="profile-container">
                 <div class="user-name">${userName}</div>
                 <div class="comment-date">${created}</div>
@@ -211,10 +224,16 @@ class AnnotationDialog extends EventEmitter {
             <div class="comment-text">${text}</div>
             <button class="box-preview-btn-plain delete-comment-btn" data-type="delete-btn">${ICON_DELETE}</button>
             <div class="delete-confirmation ${CLASS_HIDDEN}">
-                <div class="delete-confirmation-message">Delete this annotation?</div>
+                <div class="delete-confirmation-message">
+                    ${__('annotation_delete_confirmation_message')}
+                </div>
                 <div class="button-container">
-                    <button class="box-preview-btn cancel-delete-btn" data-type="cancel-delete-btn">CANCEL</button>
-                    <button class="box-preview-btn box-preview-btn-primary confirm-delete-btn" data-type="confirm-delete-btn">DELETE</button>
+                    <button class="box-preview-btn cancel-delete-btn" data-type="cancel-delete-btn">
+                        ${__('annotation_cancel')}
+                    </button>
+                    <button class="box-preview-btn box-preview-btn-primary confirm-delete-btn" data-type="confirm-delete-btn">
+                        ${__('annotation_delete')}
+                    </button>
                 </div>
             </div>`.trim();
 
@@ -278,7 +297,7 @@ class AnnotationDialog extends EventEmitter {
 
         // Position the dialog
         this._element.style.left = `${dialogLeftX}px`;
-        this._element.style.top = `${dialogTopY}px`;
+        this._element.style.top = `${dialogTopY + PAGE_PADDING_TOP}px`;
     }
 
     /**

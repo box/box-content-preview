@@ -1490,7 +1490,7 @@
 	    value: function findBestMatchImage(representations) {
 	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	      params.channels = params.channels || 'rgb';
+	      params.channels = params.channels || ['red', 'green', 'blue'];
 	      params.maxResolution = params.maxResolution || 16384;
 
 	      if (!representations || !(representations instanceof Array)) {
@@ -1513,6 +1513,15 @@
 	          closestResDiff = resDiff;
 	          closestMatch = image;
 	        }
+	      };
+
+	      var doChannelsMatch = function doChannelsMatch(imageChannels, channels) {
+	        for (var i = 0; i < imageChannels.length; i++) {
+	          if (imageChannels[i] !== channels[i]) {
+	            return false;
+	          }
+	        }
+	        return true;
 	      };
 
 	      // Get closest match for compression param. Compression will either match exactly or
@@ -1539,10 +1548,9 @@
 	      }
 	      // Go through the list and look for the closest match.
 	      compressionMatches.forEach(function (image) {
-	        image.channels = image.channels || 'rgb';
-	        var channels = image.channels;
+	        image.channels = image.channels || ['red', 'green', 'blue'];
 	        // Filter by channels first, then match by closest resolution.
-	        if (channels === params.channels) {
+	        if (doChannelsMatch(image.channels, params.channels)) {
 	          hasFormat = true;
 	          findResolutionMatch(image);
 	        } else {
@@ -1575,7 +1583,7 @@
 	            var data = {
 	              properties: {
 	                compression: representation.compression,
-	                channels: representation.channels || 'rgb'
+	                channels: representation.channels || ['red', 'green', 'blue']
 	              }
 	            };
 

@@ -1,66 +1,20 @@
 import Box3DControls from '../box3d-controls';
+import Model3DSettingsPullup from './model3d-settings-pullup';
 import autobind from 'autobind-decorator';
 import {
-    EVENT_CLOSE_RENDER_MODE_UI,
-    EVENT_CLOSE_SETTINGS_UI,
+    EVENT_CLOSE_UI,
+    EVENT_ROTATE_ON_AXIS,
+    EVENT_SAVE_SCENE_DEFAULTS,
+    EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_RENDER_MODE
 } from './model3d-constants';
 
-import { CLASS_HIDDEN } from '../../constants';
-
-const CSS_CLASS_CURRENT_RENDER_MODE = 'box-preview-current-render-mode';
-
-const RENDER_MODES = {
-    lit: {
-        name: 'Lit',
-        key: 'lit',
-        baseClass: 'lit', // add rm- for control, and icon-rm, and .rm- for query selector
-        el: null
-    },
-    unlit: {
-        name: 'Unlit',
-        key: 'unlit',
-        baseClass: 'unlit',
-        el: null
-    },
-    normals: {
-        name: 'Normals',
-        key: 'normals',
-        baseClass: 'normals',
-        el: null
-    },
-    shape: {
-        name: 'Shape',
-        key: 'shape',
-        baseClass: 'normals',
-        el: null
-    },
-    wireframe: {
-        name: 'Wireframe',
-        key: 'wireframe',
-        baseClass: 'wireframe',
-        el: null
-    },
-    flatwire: {
-        name: 'Untextured Wireframe',
-        key: 'flatwire',
-        baseClass: 'untexturedwireframe',
-        el: null
-    },
-    uv: {
-        name: 'UV Overlay',
-        key: 'uv',
-        baseClass: 'uvoverlay',
-        el: null
-    }
-};
-
 import {
-    ICON_3D_RENDER_MODES,
-    ICON_3D_RESET,
-    ICON_GEAR
+    ICON_GEAR,
+    ICON_3D_RESET
 } from '../../icons/icons';
 
+const DEFAULT_RENDER_MODE = 'Lit';
 
 /**
  * Model3dControls
@@ -78,71 +32,37 @@ class Model3dControls extends Box3DControls {
      */
     constructor(containerEl) {
         super(containerEl);
-        this.renderModeCurrent = RENDER_MODES.lit.name;
+        this.settingsPanelEl = null;
+        this.settingsPullup = new Model3DSettingsPullup();
     }
 
     /**
      * @inheritdoc
+     * @param {bool} showSaveButton Whether or not we allow the user to attempt saving to metadata
      */
-    addUi() {
-        this.renderModesSelectorEl = document.createElement('ul');
-        this.renderModesSelectorEl.classList.add('box-preview-overlay');
-        this.renderModesSelectorEl.classList.add('box-preview-pullup');
-        this.renderModesSelectorEl.classList.add('box-preview-render-mode-selector');
-        this.renderModesSelectorEl.classList.add(CLASS_HIDDEN);
+    addUi(showSaveButton = false) {
+        this.addListener(EVENT_CLOSE_UI, this.handleCloseUi);
 
-        Object.keys(RENDER_MODES).forEach((mode) => {
-            const renderModeEl = this.createRenderModeItem(RENDER_MODES[mode]);
-            this.renderModesSelectorEl.appendChild(renderModeEl);
-        });
+        if (!showSaveButton) {
+            this.settingsPullup.hideSaveButton();
+        }
+        this.settingsPanelEl = this.settingsPullup.pullupEl;
+        this.settingsPullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+        this.settingsPullup.addListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+        this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
+        this.settingsPullup.addListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
 
         this.resetButtonEl = this.controls.add(__('box3d_reset_camera'), this.handleReset, '', ICON_3D_RESET);
 
         this.addVRButton();
         this.hideVrButton();
 
-        const renderModesEl = this.controls.add(__('box3d_render_modes'), this.handleToggleRenderModes, '', ICON_3D_RENDER_MODES);
-        renderModesEl.parentElement.appendChild(this.renderModesSelectorEl);
+        this.settingsButtonEl = this.controls.add(__('box3d_settings'), this.handleToggleSettings, '', ICON_GEAR);
+        this.settingsButtonEl.parentElement.appendChild(this.settingsPanelEl);
 
-        this.settingsButtonEl = this.controls.add(__('box3d_settings'), this.fixme, '', ICON_GEAR);
         this.addFullscreenButton();
 
-        // Set default to lit!
-        this.handleSetRenderMode(RENDER_MODES.lit);
-
-        this.addListener(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseUi);
-        this.controls.controlsEl.addEventListener('click', this.handleControlsClick);
-    }
-
-    /**
-     * Create a render mode selector for the render mode controls
-     * @param {Object} renderModeDescriptor Description of render mode data. See RENDER_MODES
-     * @returns {HTMLElement} The built render mode item to add to render modes list UI
-     */
-    createRenderModeItem(renderModeDescriptor) {
-        const className = renderModeDescriptor.baseClass;
-
-        const renderModeItem = document.createElement('li');
-        renderModeItem.classList.add(`box-preview-rm-${className}`);
-        renderModeItem.classList.add('box-preview-rendermode-item');
-        /*eslint-disable*/
-        renderModeDescriptor.el = renderModeItem;
-        /*eslint-enable*/
-        const onRenderModeChange = () => {
-            this.handleCloseUi();
-            this.handleSetRenderMode(renderModeDescriptor);
-        };
-
-        this.registerUiItem(className, renderModeItem, 'click', onRenderModeChange);
-
-        const renderModeIcon = document.createElement('span');
-        renderModeIcon.classList.add(`box-preview-icon-rm-${className}`);
-        renderModeIcon.classList.add('box-preview-inline-icon');
-
-        renderModeItem.appendChild(renderModeIcon);
-        renderModeItem.innerHTML += renderModeDescriptor.name;
-
-        return renderModeItem;
+        this.handleSetRenderMode(DEFAULT_RENDER_MODE);
     }
 
     /**
@@ -150,31 +70,43 @@ class Model3dControls extends Box3DControls {
      * @returns {void}
      */
     handleToggleRenderModes() {
-        this.toggleElementVisibility(this.renderModesSelectorEl);
+        this.setElementVisibility(this.settingsPanelEl, false);
     }
 
     /**
-     * Handle a change of render mode
-     * @param {object} renderMode A render mode descriptor, used to set the current
-     * render mode icon, and send an event
+     * Handle toggle Settings ui event
      * @returns {void}
      */
-    handleSetRenderMode(renderMode = 'Lit') {
-        const current = this.renderModesSelectorEl.querySelector(`.${CSS_CLASS_CURRENT_RENDER_MODE}`);
-        if (current) {
-            current.classList.remove(CSS_CLASS_CURRENT_RENDER_MODE);
-        }
+    handleToggleSettings() {
+        this.toggleElementVisibility(this.settingsPanelEl);
+    }
 
-        let mode = renderMode;
-        // In the case the render mode name is passed, we'll use it to get the
-        // corresponding render mode info
-        if (typeof mode === 'string') {
-            mode = this.getModeByName(renderMode);
-        }
+    /**
+     * Handle a change of render mode, from the settings panel
+     * @param {string} renderMode The render mode name to notify listeners of
+     * @returns {void}
+     */
+    handleSetRenderMode(renderMode) {
+        this.emit(EVENT_SET_RENDER_MODE, renderMode);
+        this.settingsPullup.setCurrentRenderMode(renderMode);
+    }
 
-        mode.el.classList.add(CSS_CLASS_CURRENT_RENDER_MODE);
-        this.renderModeCurrent = mode.key;
-        this.emit(EVENT_SET_RENDER_MODE, mode.name);
+    /**
+     * Handle change of camera projection
+     * @param {string} mode The projection mode to use
+     * @returns {void}
+     */
+    handleSetCameraProjection(mode) {
+        this.emit(EVENT_SET_CAMERA_PROJECTION, mode);
+    }
+
+    /**
+     * Handle rotation on axis
+     * @param {Object} rotation Rotation axis description with axis and amount (in degrees)
+     * @returns {void}
+     */
+    handleAxisRotation(rotation) {
+        this.emit(EVENT_ROTATE_ON_AXIS, rotation);
     }
 
     /**
@@ -182,50 +114,43 @@ class Model3dControls extends Box3DControls {
      * @returns {void}
      */
     handleCloseUi() {
-        this.setElementVisibility(this.renderModesSelectorEl, false);
+        this.setElementVisibility(this.settingsPanelEl, false);
     }
 
     /**
-     * Handle controls click Event
+     * @inheritdoc
+     */
+    handleReset() {
+        super.handleReset();
+        this.handleCloseUi();
+    }
+
+    /**
+     * Handle a save event
+     * @param {string} renderMode     The render mode to save
+     * @param {string} projectionMode The projection mode to save
      * @returns {void}
      */
-    handleControlsClick() {
-        this.emit(EVENT_CLOSE_SETTINGS_UI);
+    handleSceneSave(renderMode, projectionMode) {
+        this.emit(EVENT_SAVE_SCENE_DEFAULTS, renderMode, projectionMode);
     }
 
     /**
-     * Set a the render mode, from a key in the Render Modes dictionary
-     * @param {string} modeIcon The key in the RENDER_MODES dictionary to use to
-     * get the icon class that we'll change the render mode button to
+     * @inheritdoc
+     */
+    handleToggleFullscreen() {
+        super.handleToggleFullscreen();
+        this.handleCloseUi();
+    }
+
+    /**
+     * Set the current projection mode being used by the settings pullup
+     * @param {string} renderMode The projection mode to set on the pullup
      * @returns {void}
      */
-    setRenderModeIcon(modeIcon) {
-        const icon = this.renderModeControl.querySelector('span');
-        icon.className = modeIcon;
-    }
-
-
-    /**
-     * Given a render mode name, get the corresponding render mode info
-     * @param {String} renderModeName The name of the render mode
-     * @returns {Object} Render mode descriptor
-     */
-    getModeByName(renderModeName) {
-        let renderMode;
-
-        /* eslint-disable no-restricted-syntax */
-        for (const renderModeKey in RENDER_MODES) {
-            if (RENDER_MODES.hasOwnProperty(renderModeKey)) {
-                const renderModeDesc = RENDER_MODES[renderModeKey];
-                if (renderModeDesc.name === renderModeName) {
-                    renderMode = renderModeDesc;
-                    break;
-                }
-            }
-        }
-        /* eslint-enable no-restricted-syntax */
-
-        return renderMode;
+    setCurrentProjectionMode(mode) {
+        this.settingsPullup.onProjectionSelected(mode);
+        this.settingsPullup.setCurrentProjectionMode(mode);
     }
 
     /**
@@ -235,7 +160,17 @@ class Model3dControls extends Box3DControls {
         if (this.controls) {
             this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
         }
-        this.removeListener(EVENT_CLOSE_RENDER_MODE_UI, this.handleCloseUi);
+
+        this.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
+
+        this.settingsPullup.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+        this.settingsPullup.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+        this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
+        this.settingsPullup.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
+        this.settingsPullup.destroy();
+        this.settingsPanelEl = null;
+        this.settingsPullup = null;
+
         super.destroy();
     }
 }
