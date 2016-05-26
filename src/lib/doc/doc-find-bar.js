@@ -311,7 +311,7 @@ class DocFindBar extends EventEmitter {
      * @returns {void}
      * @private
      */
-    findPreviousHandler(clicked) {
+    findNextHandler(clicked) {
         if (this.findFieldEl.value) {
             if (!clicked) {
                 this.findPreviousButtonEl.focus();
@@ -333,7 +333,7 @@ class DocFindBar extends EventEmitter {
      * @returns {void}
      * @private
      */
-    findNextHandler(clicked) {
+    findPreviousHandler(clicked) {
         if (this.findFieldEl.value) {
             if (!clicked) {
                 this.findNextButtonEl.focus();
