@@ -81,13 +81,13 @@ class DocFindBar extends EventEmitter {
      * @returns {void}
      */
     createFindButtons() {
-        const findPreviousButton = `<button class="box-preview-doc-find-prev">${ICON_FIND_DROP_DOWN}</button>`.trim();
-        const findNextButton = `<button class="box-preview-doc-find-next">${ICON_FIND_DROP_UP}</button>`.trim();
+        const findPreviousButton = `<button class="box-preview-doc-find-prev">${ICON_FIND_DROP_UP}</button>`.trim();
+        const findNextButton = `<button class="box-preview-doc-find-next">${ICON_FIND_DROP_DOWN}</button>`.trim();
         const findCloseButton = `<button class="box-preview-doc-find-close">${ICON_CLOSE}</button>`.trim();
 
         this.findButtonContainerEl = document.createElement('span');
         this.findButtonContainerEl.classList.add('box-preview-doc-find-controls');
-        this.findButtonContainerEl.innerHTML = findPreviousButton + findNextButton + findCloseButton;
+        this.findButtonContainerEl.innerHTML = findNextButton + findPreviousButton + findCloseButton;
 
         this.bar.appendChild(this.findButtonContainerEl);
     }
@@ -306,34 +306,12 @@ class DocFindBar extends EventEmitter {
     }
 
     /**
-     * Handler to find previous match and update match count accordingly
-     * @param  {Boolean} clicked False when triggered through keyboard shortcut
-     * @returns {void}
-     * @private
-     */
-    findNextHandler(clicked) {
-        if (this.findFieldEl.value) {
-            if (!clicked) {
-                this.findPreviousButtonEl.focus();
-            } else {
-                this.dispatchFindEvent('findagain', true);
-                this.currentMatch = this.currentMatch - 1;
-
-                // Loops search to last match in document
-                if (this.currentMatch <= 0) {
-                    this.currentMatch = this.matchResultCount;
-                }
-            }
-        }
-    }
-
-    /**
      * Handler to find next match count and update match count accordingly
      * @param  {Boolean} clicked False when triggered through keyboard shortcut
      * @returns {void}
      * @private
      */
-    findPreviousHandler(clicked) {
+    findNextHandler(clicked) {
         if (this.findFieldEl.value) {
             if (!clicked) {
                 this.findNextButtonEl.focus();
@@ -344,6 +322,28 @@ class DocFindBar extends EventEmitter {
                 // Loops search to first match in document
                 if (this.currentMatch >= this.matchResultCount) {
                     this.currentMatch = 1;
+                }
+            }
+        }
+    }
+
+    /**
+     * Handler to find previous match and update match count accordingly
+     * @param  {Boolean} clicked False when triggered through keyboard shortcut
+     * @returns {void}
+     * @private
+     */
+    findPreviousHandler(clicked) {
+        if (this.findFieldEl.value) {
+            if (!clicked) {
+                this.findPreviousButtonEl.focus();
+            } else {
+                this.dispatchFindEvent('findagain', true);
+                this.currentMatch = this.currentMatch - 1;
+
+                // Loops search to last match in document
+                if (this.currentMatch <= 0) {
+                    this.currentMatch = this.matchResultCount;
                 }
             }
         }
