@@ -84,11 +84,7 @@ class AnnotationService {
             })
             .then((response) => response.json())
             .then((data) => {
-                if (data.type === 'error') {
-                    reject('Could not create annotation');
-                }
-
-                if (data.id) {
+                if (data.type !== 'error' && data.id) {
                     const createdAnnotation = this._createAnnotation(data);
                     resolve(createdAnnotation);
                 } else {
@@ -184,6 +180,32 @@ class AnnotationService {
         return this.read(fileVersionID).then(this._createThreadMap);
     }
 
+    /**
+     * Returns the annotation user.
+     * @TODO(tjin): Update this with API for transactional annotation user
+     * when available
+     *
+     * @returns {Promise} Promise to get annotation user
+     */
+    getAnnotationUser() {
+        return new Promise((resolve, reject) => {
+            fetch(`${this._api}/2.0/users/me`, {
+                headers: this._headers
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.type !== 'error' && data.id) {
+                    resolve({
+                        id: data.id,
+                        name: data.name
+                    });
+                } else {
+                    reject('Could not get annotation user');
+                }
+            });
+        });
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -230,7 +252,11 @@ class AnnotationService {
             type: data.details.type,
             text: data.message,
             location: data.details.location,
-            user: data.created_by,
+            user: {
+                id: data.created_by.id,
+                name: data.created_by.name,
+                avatarUrl: data.created_by.profile_image
+            },
             created: data.created_at,
             modified: data.modified_at
         });
