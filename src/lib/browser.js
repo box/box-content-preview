@@ -232,6 +232,24 @@ class Browser {
     static isMobile() {
         return (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch));
     }
+
+    /**
+     * Returns whether or not the device is running IOS
+     *
+     * @returns {Boolean} true if the device is running IOS
+     */
+    static isIOS() {
+        return /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+    }
+
+    /**
+     * Returns whether or not the device is running Android
+     *
+     * @returns {Boolean} true if the device is running Android
+     */
+    static isAndroid() {
+        return /Android/g.test(navigator.userAgent);
+    }
 }
 
 export default Browser;
