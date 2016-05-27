@@ -17,9 +17,8 @@ import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_HEADER } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
 const ANONYMOUS_USER = {
-    id: 231345,
-    name: 'Kylo Ren'
-    // avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
+    id: 0,
+    name: __('annotation_anonymous_user_name')
 };
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
@@ -39,7 +38,6 @@ class Annotator extends EventEmitter {
      * @property {HTMLElement} annotatedElement HTML element to annotate on
      * @property {AnnotationService|LocalStorageAnnotationService} [annotationService] Annotations CRUD service
      * @property {String} fileVersionID File version ID
-     * @property {Object} [user] User creating the thread
      */
 
     //--------------------------------------------------------------------------
@@ -58,7 +56,12 @@ class Annotator extends EventEmitter {
         this._annotatedElement = data.annotatedElement;
         this._annotationService = data.annotationService || new LocalStorageAnnotationService();
         this._fileVersionID = data.fileVersionID;
-        this._user = data.user || ANONYMOUS_USER;
+        this._user = ANONYMOUS_USER;
+
+        // Fetch information about the user from server
+        this._annotationService.getAnnotationUser().then((user) => {
+            this._user = user;
+        });
     }
 
     /**
