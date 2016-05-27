@@ -143,7 +143,7 @@ function sceneEntities(prefix) {
             width: 1024,
             height: 512,
             compression: 'zip',
-            channels: 'rgbe'
+            channels: ['red', 'green', 'blue', 'exponent']
         }]
     }, {
         id: 'HDR_ENV_IMG_1',
@@ -162,7 +162,7 @@ function sceneEntities(prefix) {
             width: 512,
             height: 256,
             compression: 'zip',
-            channels: 'rgbe'
+            channels: ['red', 'green', 'blue', 'exponent']
         }]
     }, {
         id: 'HDR_ENV_IMG_2',
@@ -181,7 +181,7 @@ function sceneEntities(prefix) {
             width: 256,
             height: 128,
             compression: 'zip',
-            channels: 'rgbe'
+            channels: ['red', 'green', 'blue', 'exponent']
         }]
     }, {
         id: 'HDR_ENV_MAP_0',

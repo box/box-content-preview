@@ -61521,6 +61521,16 @@
 	      }
 	    }
 	  }, {
+	    key: 'getHdrPackingType',
+	    value: function getHdrPackingType(channels) {
+	      if (channels.length === 4) {
+	        if (channels[3] === 'exponent') {
+	          return 'rgbe';
+	        }
+	      }
+	      return null;
+	    }
+	  }, {
 	    key: 'createDxtTextureData',
 	    value: function createDxtTextureData(buffer) {
 	      var texture = new _three2.default.CompressedTexture(),
@@ -93384,7 +93394,7 @@
 	      this.box3DRuntime.resourceLoader.load(this, {
 	        width: width > this.getMaxTextureSize() ? this.getMaxTextureSize() : width,
 	        height: height > this.getMaxTextureSize() ? this.getMaxTextureSize() : height,
-	        channels: this.isHdr() ? 'rgbe' : undefined,
+	        channels: this.isHdr() ? ['red', 'green', 'blue', 'exponent'] : undefined,
 	        compression: this.getCompressionFormat(),
 	        xhrKey: this.id
 	      }, onProgress).then(function onFinalTextureLoad(data) {
@@ -93399,7 +93409,7 @@
 	      this.box3DRuntime.resourceLoader.load(this, {
 	        width: 64,
 	        height: 64,
-	        channels: this.isHdr() ? 'rgbe' : undefined,
+	        channels: this.isHdr() ? ['red', 'green', 'blue', 'exponent'] : undefined,
 	        compression: this.getCompressionFormat(),
 	        xhrKey: this.id
 	      }).then(function onLowMipLoad(data) {
@@ -97352,7 +97362,7 @@
 	        this.hdrSource.dispose();
 	      }
 	      this.hdrSource = this.runtimeData;
-	      // this.hdrSourceFormat = imageData.channels;
+
 	      this.runtimeData = new _three2.default.WebGLRenderTarget(imageData.width, imageData.height, {
 	        // The filter settings will be overridden later by the usual method
 	        minFilter: _three2.default.LinearFilter,
@@ -97364,7 +97374,7 @@
 	      });
 
 	      var packingDefines = {};
-	      switch (imageData.channels) {
+	      switch (this.getHdrPackingType(imageData.channels)) {
 	        case 'rgbe':
 	          packingDefines.HDR_RGBE = 0;
 	          packingDefines.FLIP_Y = 0;

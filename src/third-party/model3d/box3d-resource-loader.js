@@ -353,10 +353,9 @@
 	          if (!url) {
 	            reject(new Error('No representation available for: ' + fileId));
 	          }
+	          url = url.replace('entities.json', resource.src);
 
-	          url += '/' + resource.src;
-
-	          resolve(_this2.loadResourceFromUrl(url, { responseType: responseType }, function (response) {
+	          resolve(_this2.loadResourceFromUrl(url, { responseType: responseType, sendToken: true, withCredentials: true }, function (response) {
 	            return _this2.parseImage(response, resource);
 	          }, progress));
 	        });
@@ -1028,8 +1027,6 @@
 
 	      loadFunc = loadFunc.bind(this);
 
-	      var idPromise = this.getAssetIdPromise(asset, params);
-
 	      switch (asset.type) {
 
 	        case 'image':
@@ -1046,26 +1043,13 @@
 
 	        case 'animation':
 	        case 'meshGeometry':
-	          {
-	            var fileId = asset.getProperty('fileId');
-	            var fileVersionId = asset.getProperty('fileVersionId');
-	            // Mesh geometry and animation data are part of the 3dcg representation,
-	            // so we use the same fileVersionId to fetch them.
-	            // #TODO @jholdstock: Need to fix this for external meshes. I believe @dweis
-	            // already had a fix for this, but it was never merged.
-	            idPromise = _lie2.default.resolve({
-	              fileId: fileId || this.fileId,
-	              fileVersionId: fileVersionId || this.fileVersionId
-	            });
-	          }
+
 	          break;
 	      }
 
-	      // First, resolve the fileVersionId, then load the representation.
+	      // Load the representation.
 	      return new _lie2.default(function (resolve, reject) {
-	        idPromise.then(function (fileIds) {
-	          return loadFunc(fileIds.fileId, fileIds.fileVersionId, params, progress);
-	        }).then(resolve).catch(function (err) {
+	        loadFunc(_this2.fileId, _this2.fileVersionId, params, progress).then(resolve).catch(function (err) {
 	          _this2.onAssetNotFound(asset);
 	          reject(err);
 	        });
@@ -1497,7 +1481,6 @@
 	        throw new Error('Invalid sourceFiles list for image. Must specify a "regular" image.');
 	      }
 	      var hasFormat = false;
-	      // let hasCompression = true;
 	      var closestMatch = void 0;
 	      var closestResDiff = 20000;
 	      // Compare the resolution of the image with what was requested and
@@ -1513,15 +1496,6 @@
 	          closestResDiff = resDiff;
 	          closestMatch = image;
 	        }
-	      };
-
-	      var doChannelsMatch = function doChannelsMatch(imageChannels, channels) {
-	        for (var i = 0; i < imageChannels.length; i++) {
-	          if (imageChannels[i] !== channels[i]) {
-	            return false;
-	          }
-	        }
-	        return true;
 	      };
 
 	      // Get closest match for compression param. Compression will either match exactly or
@@ -1550,7 +1524,7 @@
 	      compressionMatches.forEach(function (image) {
 	        image.channels = image.channels || ['red', 'green', 'blue'];
 	        // Filter by channels first, then match by closest resolution.
-	        if (doChannelsMatch(image.channels, params.channels)) {
+	        if (image.channels.toString() === params.channels.toString()) {
 	          hasFormat = true;
 	          findResolutionMatch(image);
 	        } else {
@@ -1559,9 +1533,6 @@
 	          }
 	        }
 	      });
-	      // if (closestMatch) {
-	      //   closestMatch.compression = hasCompression ? params.compression : 'none';
-	      // }
 
 	      return closestMatch;
 	    }
