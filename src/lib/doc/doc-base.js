@@ -5,7 +5,7 @@
  */
 
 import autobind from 'autobind-decorator';
-import LocalStorageAnnotationService from '../annotation/localstorage-annotation-service';
+import AnnotationService from '../annotation/annotation-service';
 import Base from '../base';
 import Browser from '../browser';
 import cache from '../cache';
@@ -587,8 +587,9 @@ class DocBase extends Base {
      */
     initAnnotations() {
         const fileVersionID = this.options.file.file_version.id;
-        const annotationService = new LocalStorageAnnotationService({
+        const annotationService = new AnnotationService({
             api: this.options.api,
+            fileID: this.options.file.id,
             token: this.options.token
         });
 
