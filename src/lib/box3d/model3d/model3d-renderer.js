@@ -10,6 +10,8 @@ import {
     CAMERA_PROJECTION_ORTHOGRAPHIC
 } from './model3d-constants';
 
+const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
+
 /**
  * Model3dRenderer
  * This class handles rendering the preview of the 3D model using the Box3D
@@ -216,7 +218,7 @@ class Model3dRenderer extends Box3DRenderer {
             instance.scaleToSize(100);
 
             // Center the instance.
-            instance.alignToPosition({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 });
+            instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
 
             if (callback) {
                 callback(instance);
@@ -366,7 +368,7 @@ class Model3dRenderer extends Box3DRenderer {
         if (this.instance && this.box3d && !this.isRotating) {
             this.isRotating = true;
             const postUpdate = () => {
-                this.instance.alignToPosition({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 });
+                this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
             };
 
             // Kick off rotation
@@ -390,10 +392,14 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     setAxisRotation(upAxis, forwardAxis, useTransition) {
+        if (!this.instance) {
+            return;
+        }
         this.box3d.trigger('set_axes', upAxis, forwardAxis, useTransition);
         // Save these values back to forward and up, for metadata save
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
+        this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
     }
 }
 
