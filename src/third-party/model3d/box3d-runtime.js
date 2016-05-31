@@ -54707,7 +54707,7 @@
 	      var separatorIndex = assetId ? assetId.indexOf('#') : -1,
 	          documentAsset,
 	          documentId,
-	          entityName;
+	          entitySid;
 
 	      if (separatorIndex >= 0) {
 	        documentId = assetId.substr(0, separatorIndex);
@@ -54717,8 +54717,8 @@
 	          return null;
 	        }
 
-	        entityName = assetId.substr(separatorIndex + 1);
-	        assetId = documentAsset.getEntityId(entityName);
+	        entitySid = assetId.substr(separatorIndex + 1);
+	        assetId = documentAsset.getEntityId(entitySid);
 	      }
 
 	      if (this.assets[assetId]) {
@@ -55760,39 +55760,6 @@
 	    _classCallCheck(this, Box3DEntity);
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DEntity).call(this));
-
-	    _this.events = {
-	      load: {
-	        params: [],
-	        action: false,
-	        category: 'Loading'
-	      },
-	      loadBase: {
-	        params: [],
-	        action: false,
-	        category: 'Loading'
-	      },
-	      loadChildren: {
-	        params: [],
-	        action: false,
-	        category: 'Loading'
-	      },
-	      startTimer: {
-	        params: [{
-	          name: 'time',
-	          description: 'The time (in seconds) that will elapse before the \'endTimer\' event ' + 'will be fired.',
-	          type: 'f',
-	          default: 5.0
-	        }],
-	        action: true,
-	        category: 'General'
-	      },
-	      endTimer: {
-	        params: [],
-	        action: false,
-	        category: 'General'
-	      }
-	    };
 
 	    jsonDesc = jsonDesc || {};
 	    _this.box3DRuntime = undefined;
@@ -58504,15 +58471,15 @@
 	        if (filter && filter.length) {
 	          for (var i = 0; i < filter.length; i++) {
 	            var type = filter[i];
-	            var prototype = this.box3DRuntime.assetRegistry.getEntityClass(type).prototype;
-	            prototype.events[name] = {
+	            var typeClass = this.box3DRuntime.assetRegistry.getEntityClass(type);
+	            typeClass.events[name] = {
 	              params: parameters,
 	              action: action,
 	              category: category
 	            };
 	          }
 	        } else {
-	          Box3D.Box3DEntity.prototype.events[name] = {
+	          Box3D.Box3DEntity.events[name] = {
 	            params: parameters,
 	            action: action,
 	            category: category
@@ -58584,6 +58551,38 @@
 	    type: 'string',
 	    description: '',
 	    default: 'unnamed'
+	  }
+	};
+	Box3DEntity.events = {
+	  load: {
+	    params: [],
+	    action: false,
+	    category: 'Loading'
+	  },
+	  loadBase: {
+	    params: [],
+	    action: false,
+	    category: 'Loading'
+	  },
+	  loadChildren: {
+	    params: [],
+	    action: false,
+	    category: 'Loading'
+	  },
+	  startTimer: {
+	    params: [{
+	      name: 'time',
+	      description: 'The time (in seconds) that will elapse before the \'endTimer\' event ' + 'will be fired.',
+	      type: 'f',
+	      default: 5.0
+	    }],
+	    action: true,
+	    category: 'General'
+	  },
+	  endTimer: {
+	    params: [],
+	    action: false,
+	    category: 'General'
 	  }
 	};
 	Box3DEntity._setValueObj = { value: null };
@@ -58796,13 +58795,13 @@
 
 	  }, {
 	    key: 'add',
-	    value: function add(scriptId) {
+	    value: function add(script) {
 	      var componentData = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	      var name = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
 
 	      var id = (0, _uuid2.default)();
 	      var newComponent = {
-	        scriptId: scriptId,
+	        scriptId: _lodash2.default.isString(script) ? script : script.id,
 	        componentData: componentData,
 	        enabled: true,
 	        name: name
@@ -63393,6 +63392,11 @@
 	            "default": true,
 	            "description": "Listen for touch end event"
 	          },
+	          "doubleTap": {
+	            "type": "b",
+	            "default": true,
+	            "description": "Listen for a touch double tap event"
+	          },
 	          "cancel": {
 	            "type": "b",
 	            "default": true,
@@ -63415,7 +63419,7 @@
 	          },
 	          "dragBufferDistance": {
 	            "type": "f",
-	            "default": 4,
+	            "default": 12,
 	            "name": "Drag Buffer Distance",
 	            "description": "The distance from initial touch down that you need to move your finger before a drag event is fired, in pixels"
 	          },
@@ -70721,12 +70725,13 @@
 	    'start': { type: 'b', default: true, description: 'Listen for Touch Start' },
 	    'start_preventDefault': { type: 'b', default: true, description: 'Prevent default behaviour of touch start event' },
 	    'end': { type: 'b', default: true, description: 'Listen for touch end event' },
+	    'doubleTap': { type: 'b', default: true, description: 'Listen for a touch double tap event'},
 	    'cancel': { type: 'b', default: true, description: 'Listen for touch cancel event' },
 	    'leave': { type: 'b', default: true, description: 'Listen for touch leave event' },
 	    'move': { type: 'b', default: true, description: 'Listen for touch move event' },
 	    'move_preventDefault': { type: 'b', default: true, description: 'Prevent default move behaviour (ie, dragging the window)' },
 	    'dragBufferDistance' : {
-	      type : 'float', default : 4.0,
+	      type : 'float', default : 12.0,
 	      name : 'Drag Buffer Distance',
 	      description : 'The distance from initial touch down that you need to move your finger before a drag event is fired, in pixels'
 	    },
@@ -70825,12 +70830,26 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	// Amount of time to wait, is milliseconds, for a double tap to occur. Used on Mobile Devices
+	var DOUBLE_TAP_TIME = 300;
+
 	function Box3DMouseVector() {
 	  var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 	  var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
 	  this.x = x;
 	  this.y = y;
+
+	  this.copy = function (otherVector) {
+	    this.x = otherVector.x;
+	    this.y = otherVector.y;
+	  };
+
+	  this.distanceTo = function (otherVector) {
+	    var x = this.x - otherVector.x;
+	    var y = this.y - otherVector.y;
+	    return Math.sqrt(x * x + y * y);
+	  };
 	}
 
 	function Box3DInputEvent(event, name) {
@@ -70982,6 +71001,12 @@
 	    _this.touchDragState = false;
 	    _this.touchDragStatePrevious = false;
 
+	    // Double tap handling
+	    _this.doubleTapHandle = null;
+	    _this.doubleTapPosition = new Box3DMouseVector();
+	    _this.listenForTouchStart = false;
+	    _this.listenForTouchEnd = false;
+
 	    _this.touchesStart = [];
 	    _this.touchesOutOfBuffer = [];
 
@@ -71028,6 +71053,7 @@
 	      this.onTouchLeave = this.onTouchLeave.bind(this);
 	      this.onTouchMove = this.onTouchMove.bind(this);
 	      this.onDoubleClick = this.onDoubleClick.bind(this);
+	      this.onDoubleTap = this.onDoubleTap.bind(this);
 
 	      window.addEventListener('blur', this.clearKeyStates, false);
 
@@ -71132,6 +71158,10 @@
 
 	      if (this.touchEvents.end) {
 	        this.canvas.addEventListener('touchend', this.onTouchEnd);
+	      }
+
+	      if (this.touchEvents.doubleTap) {
+	        this.canvas.addEventListener('touchstart', this.onDoubleTap);
 	      }
 
 	      if (this.touchEvents.cancel) {
@@ -71370,6 +71400,66 @@
 	        this.getGlobalEvents().trigger('touch_end');
 	      }
 	    }
+
+	    /**
+	     * Mobile device support for double click
+	     * @param {DOMEvent} e The event passed from the DOM event handler
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'onDoubleTap',
+	    value: function onDoubleTap(e) {
+
+	      // If any events, make sure position doesn't change EVER!
+	      if ((this.listenForTouchStart || this.listenForTouchEnd) && this.doubleTapPosition.distanceTo(this.touchPosition) > this.touchEvents.dragBufferDistance) {
+
+	        this.clearDoubleTapState();
+	        return;
+	      }
+
+	      // Initial touch down, listen for up
+	      if (!this.listenForTouchStart && !this.listenForTouchEnd) {
+	        this.doubleTapPosition.copy(this.touchPosition);
+	        this.clearDoubleTapState();
+	        // Listen for next touch release to signify first tap completion
+	        this.canvas.addEventListener('touchend', this.onDoubleTap);
+
+	        this.listenForTouchEnd = true;
+	      } else if (!this.listenForTouchStart && this.listenForTouchEnd) {
+	        this.clearDoubleTapState();
+	        this.listenForTouchStart = true;
+	      } else if (this.listenForTouchStart && !this.listenForTouchEnd) {
+	        this.clearDoubleTapState();
+	        this.listenForTouchStart = true;
+	        this.listenForTouchEnd = true;
+	        // Last release refers to final touch completion
+	        this.canvas.addEventListener('touchend', this.onDoubleTap);
+	      } else {
+	        // Successful double tap motions, let's process it
+	        this.clearDoubleTapState();
+	        // Add to queue that will be flushed on next update
+	        this.onTouchEvent(e, 'doubleTap');
+	      }
+
+	      // Setup a deadline for the state transition to occur!
+	      this.doubleTapHandle = setTimeout(this.clearDoubleTapState.bind(this), DOUBLE_TAP_TIME);
+	    }
+
+	    /**
+	     * Clear and reset handles for double tap events
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'clearDoubleTapState',
+	    value: function clearDoubleTapState() {
+	      clearTimeout(this.doubleTapHandle);
+	      this.doubleTapHandle = null;
+	      this.listenForTouchStart = false;
+	      this.listenForTouchEnd = false;
+	      this.canvas.removeEventListener('touchend', this.onDoubleTap);
+	    }
 	  }, {
 	    key: 'onTouchCancel',
 	    value: function onTouchCancel(e) {
@@ -71410,7 +71500,7 @@
 	        this.getScenePercent(e.touches[i], touchObj);
 	        touchObj.originalTouch = e.touches[i];
 
-	        if (this.distance(e.touches[i], this.touchesStart[i]) > this.touchEvents.dragBufferDistance) {
+	        if (this.touchesStart[i] && this.distance(e.touches[i], this.touchesStart[i]) > this.touchEvents.dragBufferDistance) {
 	          this.touchDragState = true;
 	        }
 
@@ -71747,6 +71837,7 @@
 	        document.body.removeEventListener('mouseleave', this.onMouseLeave);
 	        this.canvas.removeEventListener('contextmenu', this.onContextMenu);
 	        this.canvas.removeEventListener('dblclick', this.onDoubleClick);
+	        this.canvas.removeEventListener('touchstart', this.onDoubleTap);
 	      }
 	      this.mouseButtonState = undefined;
 	      this.mouseButtonStatePrevious = undefined;
@@ -76513,6 +76604,7 @@
 	*  }
 	*/
 	/* eslint-enable */
+	/* global Box3D */
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -76570,18 +76662,18 @@
 	      this.previewCamControl.setTarget(this.getScene());
 	      this.cameraDistance = this.getRuntimeData().position.distanceTo(this.previewCamControl.pivotPoint.position);
 
-	      this.listenTo(this.getRuntime(), 'doubleClick', this.onDoubleClick, this);
-
 	      if (window.Box3D.isMobile()) {
 	        this.listenTo(this.getRuntime(), 'touchStart', this.onMouseDown, this);
 	        this.listenTo(this.getRuntime(), 'touchMove', this.onMouseMove, this);
 	        this.listenTo(this.getRuntime(), 'touchEnd', this.onMouseUp, this);
+	        this.listenTo(this.getRuntime(), 'doubleTap', this.onDoubleClick, this);
 	      } else {
 	        this.listenTo(this.getRuntime(), 'mouseScroll', this.interrupt, this);
 	        this.listenTo(this.getRuntime(), 'mouseMove', this.onMouseMove, this);
 	        this.listenTo(this.getRuntime(), 'mouseDown', this.onMouseDown, this);
 	        this.listenTo(this.getRuntime(), 'mouseUp', this.onMouseUp, this);
 	        this.listenTo(this.getRuntime(), 'keyDown', this.interrupt, this);
+	        this.listenTo(this.getRuntime(), 'doubleClick', this.onDoubleClick, this);
 	      }
 
 	      this.listenTo(this.getEntity(), 'resetOrbitCameraController', this.onReset, this);
@@ -76640,7 +76732,10 @@
 	          this.srcPos = new _three2.default.Vector3();
 	        }
 
-	        this.mouseVector.set(event.scenePercentX * 2 - 1, -event.scenePercentY * 2 + 1);
+	        var pointX = Box3D.isMobile() ? this.getInput().touchPositionPercent.x : event.scenePercentX;
+	        var pointY = Box3D.isMobile() ? this.getInput().touchPositionPercent.y : event.scenePercentY;
+
+	        this.mouseVector.set(pointX * 2 - 1, -pointY * 2 + 1);
 
 	        this.raycaster.near = 0;
 	        //a bit longer to accommodate being fully zoomed out
@@ -87051,13 +87146,13 @@
 	      };
 
 	      var onDocumentLoaded = function onDocumentLoaded(entities) {
-	        // Reference entities by name.
+	        // Reference entities by SID.
 	        _this2.runtimeData = {
 	          entityIds: {}
 	        };
 
 	        entities.forEach(function (entity) {
-	          this.runtimeData.entityIds[entity.name] = entity.id;
+	          this.runtimeData.entityIds[entity.sid] = entity.id;
 	        }, _this2);
 
 	        callback();
@@ -87067,17 +87162,17 @@
 	    }
 
 	    /**
-	     * Return the ID of the entity with the specified name.
+	     * Return the ID of the entity with the specified SID.
 	     * @method getEntityId
 	     * @public
-	     * @param {String} name - the name of the entity
+	     * @param {String} sid - the SID of the entity
 	     * @returns {String|undefined} the ID of the entity or undefined
 	     */
 
 	  }, {
 	    key: 'getEntityId',
-	    value: function getEntityId(name) {
-	      return this.runtimeData ? this.runtimeData.entityIds[name] : undefined;
+	    value: function getEntityId(sid) {
+	      return this.runtimeData ? this.runtimeData.entityIds[sid] : undefined;
 	    }
 	  }]);
 
@@ -93132,10 +93227,7 @@
 	  function Box3DObject(json) {
 	    _classCallCheck(this, Box3DObject);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DObject).call(this, json));
-
-	    _this._workVector3 = new _three2.default.Vector3();
-	    return _this;
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DObject).call(this, json));
 	  }
 
 	  _createClass(Box3DObject, [{
@@ -93293,11 +93385,11 @@
 	     * Align an object relative to a position. This uses the object's bounding box.
 	     * @method alignToPosition
 	     * @param  {vector3} newPosition The position to work relative to.
-	     * @param  {vector3} alignment   An object of the form { x: x, y: y, z: z} where the
+	     * @param  {Object} [alignment]   An object of the form { x: x, y: y, z: z} where the
 	     * values for x, y and z are between -1 and +1 and specify how the object is aligned to
 	     * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
 	     * object to the specified position.
-	     * @param  {Object} options     Options object. You can pass in 'success' and 'failure'
+	     * @param  {Object} [options]     Options object. You can pass in 'success' and 'failure'
 	     * callbacks that will be called when the action finishes.
 	     */
 
@@ -93305,11 +93397,11 @@
 	    key: 'alignToPosition',
 	    value: function alignToPosition(newPosition, alignment, options) {
 
-	      var quaternion = this.getQuaternion();
-	      var scale = this.getScale();
-	      var center = this.getCenter();
-	      var rotation = new _three2.default.Quaternion();
-	      rotation.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+	      var position = new _three2.default.Vector3(newPosition.x || 0, newPosition.y || 0, newPosition.z || 0),
+	          quaternion = this.getQuaternion(),
+	          scale = this.getScale(),
+	          center = this.getCenter(),
+	          rotation = new _three2.default.Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 
 	      var bounds = this.getBounds();
 	      if (!bounds) {
@@ -93335,11 +93427,11 @@
 	          var newMin = Math.min(aabb.min[x], aabb.max[x]);
 	          var newMax = Math.max(aabb.min[x], aabb.max[x]);
 	          var align = alignment[x] * 0.5 + 0.5;
-	          newPosition[x] -= (1.0 - align) * newMin + align * newMax;
+	          position[x] -= (1.0 - align) * newMin + align * newMax;
 	        }, this);
 	      }
 
-	      this.setProperty('position', newPosition, options);
+	      this.setProperty('position', position, options);
 	    }
 
 	    /**
