@@ -13,6 +13,7 @@ import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../fullscreen';
+import throttle from 'lodash.throttle';
 import { CLASS_BOX_PREVIEW_FIND_BAR } from '../constants';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
 
@@ -28,6 +29,7 @@ const PRESENTATION_MODE_STATE = {
     FULLSCREEN: 3
 };
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
+const WHEEL_THROTTLE = 200;
 
 @autobind
 class DocBase extends Base {
@@ -718,7 +720,7 @@ class DocBase extends Base {
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
         // Mousewheel handler
-        this.docEl.addEventListener('wheel', this.wheelHandler);
+        this.docEl.addEventListener('wheel', this.wheelHandler());
 
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
@@ -737,7 +739,7 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
-            this.docEl.removeEventListener('wheel', this.wheelHandler);
+            this.docEl.removeEventListener('wheel', this.wheelHandler());
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
@@ -923,26 +925,27 @@ class DocBase extends Base {
      * Mousewheel handler - scrolls presentations by page and scrolls documents
      * normally unless in fullscreen, in which it scrolls by page.
      *
-     * @returns {Function} Debounced mousewheel handler
+     * @returns {Function} Throttled mousewheel handler
      * @private
      */
     wheelHandler() {
-        if (!this.isPresentation && !fullscreen.isFullscreen()) {
-            return;
+        if (!this.throttledWheelHandler) {
+            this.throttledWheelHandler = throttle((event) => {
+                if (!this.isPresentation && !fullscreen.isFullscreen()) {
+                    return;
+                }
+
+                if (event.deltaY > 0) {
+                    this.nextPage();
+                } else {
+                    this.previousPage();
+                }
+
+                event.preventDefault();
+            }, WHEEL_THROTTLE);
         }
 
-        event.preventDefault();
-
-        // This filters out trackpad events since Macbook inertial scrolling
-        // fires wheel events in a very unpredictable way
-        const isFromMouseWheel = event.wheelDelta % 120 === 0;
-        if (isFromMouseWheel) {
-            if (event.deltaY > 0) {
-                this.nextPage();
-            } else {
-                this.previousPage();
-            }
-        }
+        return this.throttledWheelHandler;
     }
 }
 
