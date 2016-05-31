@@ -36,7 +36,11 @@ describe('image.js', () => {
 
     beforeEach(() => {
         fixture.load('image/__tests__/image-test.html');
-        image = new Image('.container');
+        image = new Image('.container', {
+            file: {
+                id: '1'
+            }
+        });
     });
 
     afterEach(() => {

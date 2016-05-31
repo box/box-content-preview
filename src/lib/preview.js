@@ -172,6 +172,9 @@ class Preview extends EventEmitter {
         // Show or hide the header
         this.options.header = options.header || 'light';
 
+        // Custom logo
+        this.options.logo = options.logo || '';
+
         // Save the files to iterate through
         this.collection = options.collection || [];
 
@@ -281,6 +284,31 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Sets up the preview header.
+     *
+     * @returns {void}
+     * @private
+     */
+    setupHeader() {
+        // Add the header if needed
+        if (this.options.header !== 'none') {
+            const headerEl = this.container.firstElementChild;
+            headerEl.className = CLASS_BOX_PREVIEW_HEADER;
+            this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
+
+            // Set custom logo
+            if (this.options.logo !== '') {
+                const defaultLogoEl = headerEl.querySelector('.box-preview-default-logo');
+                defaultLogoEl.classList.add(CLASS_HIDDEN);
+
+                const customLogoEl = headerEl.querySelector('.box-preview-custom-logo');
+                customLogoEl.src = this.options.logo;
+                customLogoEl.classList.remove(CLASS_HIDDEN);
+            }
+        }
+    }
+
+    /**
      * Initializes the container for preview.
      *
      * @private
@@ -318,11 +346,7 @@ class Preview extends EventEmitter {
         // Save a handle to the preview content
         this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
 
-        // Add the header if needed
-        if (this.options.header !== 'none') {
-            this.container.firstElementChild.className = CLASS_BOX_PREVIEW_HEADER;
-            this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
-        }
+        this.setupHeader();
 
         // Show navigation if needed
         this.showNavigation();

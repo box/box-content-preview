@@ -13,7 +13,11 @@ describe('swf.js', () => {
 
     beforeEach(() => {
         fixture.load('swf/__tests__/swf-test.html');
-        swf = new SWF('.container');
+        swf = new SWF('.container', {
+            file: {
+                id: '1'
+            }
+        });
     });
 
     afterEach(() => {
