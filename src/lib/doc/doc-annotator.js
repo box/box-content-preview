@@ -38,6 +38,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * [destructor]
+     *
      * @returns {void}
      */
     destroy() {
@@ -47,6 +48,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Initializes annotator.
+     *
      * @returns {void}
      */
     init() {
@@ -81,6 +83,7 @@ class DocAnnotator extends Annotator {
     /**
      * Toggles highlight annotation mode on and off. When highlight mode is on,
      * every selection becomes a highlight.
+     *
      * @param {Event} event DOM event
      * @returns {void}
      */
@@ -125,6 +128,7 @@ class DocAnnotator extends Annotator {
      * Sets up annotation controls - this is needed if there is no Preview
      * header, where the controls are normally. The doc annotator adds a
      * highlight mode.
+     *
      * @returns {void}
      * @private
      */
@@ -149,6 +153,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Annotations setup.
+     *
      * @returns {void}
      * @private
      */
@@ -165,6 +170,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Binds DOM event listeners.
+     *
      * @returns {void}
      * @private
      */
@@ -179,6 +185,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Unbinds DOM event listeners.
+     *
      * @returns {void}
      * @private
      */
@@ -193,6 +200,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Binds point mode event listeners.
+     *
      * @returns {void}
      * @private
      */
@@ -202,6 +210,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Unbinds point mode event listeners.
+     *
      * @returns {void}
      * @private
      */
@@ -215,6 +224,7 @@ class DocAnnotator extends Annotator {
      * true by the mousemove handler, and if not, delegate to click handlers
      * for highlight threads. Also delegates to mousedown handler for each
      * thread.
+     *
      * @param {Event} event DOM event
      * @returns {void}
      * @private
@@ -234,6 +244,7 @@ class DocAnnotator extends Annotator {
     /**
      * Throttled mousemove handler over annotated element. Delegates to
      * mousemove handler of highlight threads on the page.
+     *
      * @returns {Function} mousemove handler
      * @private
      */
@@ -283,6 +294,7 @@ class DocAnnotator extends Annotator {
      * Mouseup handler. Switches between creating a highlight and delegating
      * to highlight click handlers depending on whether mouse moved since
      * mousedown.
+     *
      * @param {Event} event DOM event
      * @private
      */
@@ -301,6 +313,7 @@ class DocAnnotator extends Annotator {
     /**
      * Handler for creating a pending highlight thread from the current
      * selection.
+     *
      * @param {Event} event DOM event
      * @private
      */
@@ -331,7 +344,8 @@ class DocAnnotator extends Annotator {
         const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter, pageEl);
         const quadPoints = [];
         highlightEls.forEach((element) => {
-            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl, annotatorUtil.getScale(this._annotatedElement)));
+            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl,
+                annotatorUtil.getScale(this._annotatedElement)));
         });
 
         // Remove rangy highlight and restore selection
@@ -359,6 +373,7 @@ class DocAnnotator extends Annotator {
     /**
      * Highlight click handler. Delegates click event to click handlers for
      * threads on the page.
+     *
      * @param {Event} event DOM event
      * @private
      */
@@ -389,6 +404,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Show hand cursor instead of normal cursor.
+     *
      * @returns {void}
      * @private
      */
@@ -398,6 +414,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Use normal cursor.
+     *
      * @returns {void}
      * @private
      */
@@ -407,6 +424,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Returns the highlight threads on the specified page.
+     *
      * @param {Number} page Page to get highlight threads for
      * @returns {HighlightThread[]} Highlight annotation threads
      * @private
@@ -418,6 +436,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Returns highlight threads with a state in the specified states.
+     *
      * @param {...String} states States of highlight threads to find
      * @returns {HighlightThread[]} Pending highlight threads.
      * @private
@@ -442,6 +461,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Binds custom event listeners for a thread.
+     *
      * @param {AnnotationThread} thread Thread to bind events to
      * @returns {void}
      * @private
@@ -460,6 +480,7 @@ class DocAnnotator extends Annotator {
     /**
      * Shows highlight annotations for the specified page by re-drawing all
      * highlight annotations currently in memory for the specified page.
+     *
      * @param {Number} page Page to draw annotations for
      * @returns {void}
      * @private
@@ -485,6 +506,7 @@ class DocAnnotator extends Annotator {
     /**
      * Creates the proper type of thread, adds it to in-memory map, and returns
      * it.
+     *
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
      * @param {String} [type] Optional annotation type
@@ -511,6 +533,7 @@ class DocAnnotator extends Annotator {
 
     /**
      * Returns whether or not annotator is in highlight mode.
+     *
      * @returns {Boolean} Whether or not in highlight mode
      * @private
      */
@@ -523,6 +546,7 @@ class DocAnnotator extends Annotator {
      * internal highlighter list that has a matching ID. We can't directly use
      * the highlighter's removeHighlights since the highlight could possibly
      * not be a true Rangy highlight object.
+     *
      * @param {Object} highlight Highlight to delete.
      * @returns {void}
      * @private

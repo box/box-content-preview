@@ -6,6 +6,7 @@
  */
 
 import autobind from 'autobind-decorator';
+import Annotation from './annotation';
 import AnnotationDialog from './annotation-dialog';
 import AnnotationService from './annotation-service';
 import EventEmitter from 'events';
@@ -45,6 +46,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * [constructor]
+     *
      * @param {AnnotationThreadData} data Data for constructing thread
      * @returns {AnnotationThread} Annotation thread instance
      */
@@ -65,6 +67,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * [destructor]
+     *
      * @returns {void}
      */
     destroy() {
@@ -88,6 +91,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Shows the annotation indicator.
+     *
      * @returns {void}
      */
     show() {
@@ -109,6 +113,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Hides the annotation indicator.
+     *
      * @returns {void}
      */
     hide() {
@@ -117,6 +122,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Reset state to inactive.
+     *
      * @returns {void}
      */
     reset() {
@@ -125,47 +131,81 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Saves an annotation.
+     *
      * @param {String} type Type of annotation
      * @param {String} text Text of annotation to save
-     * @returns {Promise} Promise
+     * @returns {void}
      */
     saveAnnotation(type, text) {
         const annotationData = this._createAnnotationData(type, text);
-        return this._annotationService.create(annotationData).then((savedAnnotation) => {
-            this._annotations.push(savedAnnotation);
 
-            // Add annotation element to dialog
-            if (this._dialog) {
-                this._dialog.addAnnotation(savedAnnotation);
+        // Save annotation on client
+        const tempAnnotationID = AnnotationService.generateID();
+        const tempAnnotationData = annotationData;
+        tempAnnotationData.annotationID = tempAnnotationID;
+        tempAnnotationData.created = (new Date()).getTime();
+        tempAnnotationData.modified = tempAnnotationData.created;
+        const tempAnnotation = new Annotation(tempAnnotationData);
+        this._saveAnnotationToThread(tempAnnotation);
+
+        // Save annotation on server
+        this._annotationService.create(annotationData).then((savedAnnotation) => {
+            // If no temporary annotation is found, save to thread normally
+            const tempIdx = this._annotations.indexOf(tempAnnotation);
+            if (tempIdx === -1) {
+                this._saveAnnotationToThread(savedAnnotation);
             }
 
-            this.reset();
+            // Otherwise, replace temporary annotation with annotation saved to server
+            this._annotations[tempIdx] = savedAnnotation;
+
+            if (this._dialog) {
+                this._dialog.removeAnnotation(tempAnnotationID);
+                this._dialog.addAnnotation(savedAnnotation);
+            }
         }).catch(() => {
-            // no-op
+            // Remove temporary annotation
+            this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
+
+            // Broadcast error
+            this.emit('annotationcreateerror');
         });
     }
 
     /**
      * Deletes an annotation.
+     *
      * @param {String} annotationID ID of annotation to delete
-     * @returns {Promise} Promise
+     * @param {Boolean} [useServer] Whether or not to delete on server, default true
+     * @returns {void}
      */
-    deleteAnnotation(annotationID) {
-        return this._annotationService.delete(annotationID).then(() => {
-            this._annotations = this._annotations.filter((annotation) => annotation.annotationID !== annotationID);
+    deleteAnnotation(annotationID, useServer = true) {
+        // Delete annotation on client
+        this._annotations = this._annotations.filter((annotation) => annotation.annotationID !== annotationID);
 
-            // If this annotation was the last one in the thread
-            if (this._annotations.length === 0) {
-                // Destroy
-                this.destroy();
+        // If this annotation was the last one in the thread, destroy the thread
+        if (this._annotations.length === 0) {
+            this.destroy();
 
-            // Otherwise, remove deleted annotation from dialog
-            } else {
-                if (this._dialog) {
-                    this._dialog.removeAnnotation(annotationID);
+        // Otherwise, remove deleted annotation from dialog
+        } else if (this._dialog) {
+            this._dialog.removeAnnotation(annotationID);
+        }
+
+        // Delete annotation on server
+        if (useServer) {
+            this._annotationService.delete(annotationID)
+            .then(() => {
+                // Broadcast thread cleanup if needed
+                if (this._annotations.length === 0) {
+                    this.emit('threadcleanup');
                 }
-            }
-        });
+            })
+            .catch(() => {
+                // Broadcast error
+                this.emit('annotationdeleteerror');
+            });
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -174,6 +214,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Gets location.
+     *
      * @returns {Object} Location
      */
     get location() {
@@ -182,6 +223,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Gets threadID.
+     *
      * @returns {String} threadID
      */
     get threadID() {
@@ -190,6 +232,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Gets type.
+     *
      * @returns {String} type
      */
     get type() {
@@ -198,6 +241,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Gets state.
+     *
      * @returns {String} state
      */
     get state() {
@@ -211,6 +255,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Sets up the thread. Creates HTML for annotation indicator, sets
      * appropriate dialog, and binds event listeners.
+     *
      * @returns {void}
      * @private
      */
@@ -233,7 +278,26 @@ class AnnotationThread extends EventEmitter {
     }
 
     /**
+     * Saves the provided annotation to the thread and dialog if appropriate
+     * and resets state to inactive.
+     *
+     * @param {Annotation} annotation Annotation to save
+     * @returns {void}
+     * @private
+     */
+    _saveAnnotationToThread(annotation) {
+        this._annotations.push(annotation);
+
+        if (this._dialog) {
+            this._dialog.addAnnotation(annotation);
+        }
+
+        this.reset();
+    }
+
+    /**
      * Creates the HTML for the annotation indicator.
+     *
      * @returns {HTMLElement} HTML element
      * @private
      */
@@ -246,6 +310,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Binds DOM event listeners for the thread.
+     *
      * @returns {void}
      * @private
      */
@@ -257,6 +322,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Unbinds DOM event listeners for the thread.
+     *
      * @returns {void}
      * @private
      */
@@ -268,6 +334,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Binds custom event listeners for the dialog.
+     *
      * @returns {void}
      * @private
      */
@@ -290,6 +357,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Unbinds custom event listeners for the dialog.
+     *
      * @returns {void}
      * @private
      */
@@ -301,6 +369,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Shows the appropriate annotation dialog for this thread.
+     *
      * @returns {void}
      * @private
      */
@@ -313,6 +382,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Hides the appropriate annotation dialog for this thread.
+     *
      * @returns {void}
      * @private
      */
@@ -324,6 +394,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Mouseout handler. Hides dialog if we aren't creating the first one.
+     *
      * @returns {void}
      * @private
      */
@@ -335,6 +406,7 @@ class AnnotationThread extends EventEmitter {
 
     /**
      * Create an annotation data object to pass to annotation service.
+     *
      * @param {String} type Type of annotation
      * @param {String} text Annotation text
      * @returns {Object} Annotation data

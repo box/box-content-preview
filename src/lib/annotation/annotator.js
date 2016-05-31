@@ -17,9 +17,8 @@ import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_HEADER } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
 const ANONYMOUS_USER = {
-    id: 231345,
-    name: 'Kylo Ren'
-    // avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
+    id: 0,
+    name: __('annotation_anonymous_user_name')
 };
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
@@ -39,7 +38,6 @@ class Annotator extends EventEmitter {
      * @property {HTMLElement} annotatedElement HTML element to annotate on
      * @property {AnnotationService|LocalStorageAnnotationService} [annotationService] Annotations CRUD service
      * @property {String} fileVersionID File version ID
-     * @property {Object} [user] User creating the thread
      */
 
     //--------------------------------------------------------------------------
@@ -48,6 +46,7 @@ class Annotator extends EventEmitter {
 
     /**
      * [constructor]
+     *
      * @param {AnnotatorData} data Data for constructing an Annotator
      * @returns {Annotator} Annotator instance
      */
@@ -57,11 +56,17 @@ class Annotator extends EventEmitter {
         this._annotatedElement = data.annotatedElement;
         this._annotationService = data.annotationService || new LocalStorageAnnotationService();
         this._fileVersionID = data.fileVersionID;
-        this._user = data.user || ANONYMOUS_USER;
+        this._user = ANONYMOUS_USER;
+
+        // Fetch information about the user from server
+        this._annotationService.getAnnotationUser().then((user) => {
+            this._user = user;
+        });
     }
 
     /**
      * [destructor]
+     *
      * @returns {void}
      */
     destroy() {
@@ -77,6 +82,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Initializes annotator.
+     *
      * @returns {void}
      */
     init() {
@@ -92,6 +98,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Fetches and shows saved annotations.
+     *
      * @returns {void}
      */
     showAnnotations() {
@@ -101,6 +108,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Hides annotations.
+     *
      * @returns {void}
      */
     hideAnnotations() {
@@ -113,6 +121,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Renders annotations from memory.
+     *
      * @returns {void}
      * @private
      */
@@ -123,6 +132,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Sets the zoom scale.
+     *
      * @param {Number} scale
      * @returns {void}
      */
@@ -133,6 +143,7 @@ class Annotator extends EventEmitter {
     /**
      * Toggles point annotation mode on and off. When point annotation mode is
      * on, clicking an area will create a point annotation at that location.
+     *
      * @param {HTMLEvent} event DOM event
      * @returns {void}
      */
@@ -176,6 +187,7 @@ class Annotator extends EventEmitter {
     /**
      * Sets up annotation controls - this is needed if there is no Preview
      * header, where the controls are normally.
+     *
      * @returns {void}
      * @private
      */
@@ -196,6 +208,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Destroys annotation controls if there are any.
+     *
      * @returns {void}
      * @private
      */
@@ -210,6 +223,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Annotations setup.
+     *
      * @returns {void}
      * @private
      */
@@ -222,12 +236,14 @@ class Annotator extends EventEmitter {
     /**
      * Fetches persisted annotations, creates threads as needed, and generates
      * an in-memory map of page to threads.
+     *
      * @returns {Promise} Promise for fetching saved annotations
      * @private
      */
     _fetchAnnotations() {
-        // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
+        this._threads = {};
 
+        // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
         return this._annotationService.getThreadMap(this._fileVersionID)
             .then((threadMap) => {
                 // Generate map of page to threads
@@ -244,6 +260,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Shows annotations.
+     *
      * @returns {void}
      * @private
      */
@@ -259,6 +276,7 @@ class Annotator extends EventEmitter {
      * Binds DOM event listeners. No-op here, but should be overridden by any
      * annotator that needs to bind event listeners to the DOM in the normal
      * state (ie not in any annotation mode).
+     *
      * @returns {void}
      * @private
      */
@@ -268,6 +286,7 @@ class Annotator extends EventEmitter {
      * Unbinds DOM event listeners. No-op here, but should be overridden by any
      * annotator that needs to bind event listeners to the DOM in the normal
      * state (ie not in any annotation mode).
+     *
      * @returns {void}
      * @private
      */
@@ -275,6 +294,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Binds custom event listeners for a thread.
+     *
      * @param {AnnotationThread} thread Thread to bind events to
      * @returns {void}
      * @private
@@ -286,24 +306,44 @@ class Annotator extends EventEmitter {
 
             // Remove from map
             this._threads[page] = this._threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
+        });
 
-            // Unbind listeners
+        // Thread should be cleaned up, unbind listeners - we don't do this
+        // in threaddeleted listener since thread may still need to respond
+        // to error messages
+        thread.addListener('threadcleanup', () => {
             this._unbindCustomListenersOnThread(thread);
+        });
+
+        thread.addListener('annotationcreateerror', () => {
+            // @TODO(tjin): Show annotation creation error
+        });
+
+        thread.addListener('annotationdeleteerror', () => {
+            // Need to re-fetch and re-render annotations since we can't easily
+            // recover an annotation removed from the client-side map
+            this.showAnnotations();
+
+            // @TODO(tjin): Show annotation deletion error
         });
     }
 
     /**
      * Unbinds custom event listeners for the thread.
+     *
      * @param {AnnotationThread} thread Thread to bind events to
      * @returns {void}
      * @private
      */
     _unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners(['threaddeleted']);
+        thread.removeAllListeners(['annotationcreateerror']);
+        thread.removeAllListeners(['annotationdeleteerror']);
     }
 
     /**
      * Binds event listeners for point annotation mode.
+     *
      * @returns {void}
      * @private
      */
@@ -313,6 +353,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Unbinds event listeners for point annotation mode.
+     *
      * @returns {void}
      * @private
      */
@@ -323,6 +364,7 @@ class Annotator extends EventEmitter {
     /**
      * Event handler for adding a point annotation. Creates a point annotation
      * thread at the clicked location.
+     *
      * @param {Event} event DOM event
      * @returns {void}
      * @private
@@ -372,6 +414,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Creates a new AnnotationThread, adds it to in-memory map, and returns it.
+     *
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
      * @param {String} type Annotation type
@@ -394,6 +437,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Adds thread to in-memory map.
+     *
      * @param {AnnotationThread} thread Thread to add
      * @returns {void}
      * @private
@@ -407,6 +451,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Returns whether or not annotator is in point mode.
+     *
      * @returns {Boolean} Whether or not in point mode
      * @private
      */
@@ -416,6 +461,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Returns pending point threads.
+     *
      * @returns {AnnotationThread[]} Pending point threads.
      * @private
      */

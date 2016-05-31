@@ -96,6 +96,21 @@ class LocalStorageAnnotationService extends AnnotationService {
         });
     }
 
+    /**
+     * Returns a dummy annotation user.
+     *
+     * @returns {Promise} Promise to get annotation user
+     */
+    getAnnotationUser() {
+        return new Promise((resolve) => {
+            resolve({
+                id: 0,
+                name: __('annotation_anonymous_user_name'),
+                avatarUrl: 'https://i.imgur.com/BcZWDIg.png'
+            });
+        });
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
