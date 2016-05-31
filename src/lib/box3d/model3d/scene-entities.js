@@ -189,7 +189,6 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_0',
             name: 'HDR Env Map 0',
-            type: 'float',
             isHdr: true,
             minFilter: 'linear',
             magFilter: 'linear',
@@ -202,7 +201,6 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_1',
             name: 'HDR Env Map 1',
-            type: 'float',
             isHdr: true,
             minFilter: 'linear',
             magFilter: 'linear',
@@ -215,7 +213,6 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_2',
             name: 'HDR Env Map 2',
-            type: 'float',
             isHdr: true,
             minFilter: 'linear',
             magFilter: 'linear',
@@ -231,7 +228,6 @@ function sceneEntities(prefix) {
             type: 'float',
             width: 512,
             height: 512,
-            stream: false,
             generateMipmaps: true,
             vMapping: 'clamp',
             uMapping: 'clamp'
@@ -254,7 +250,6 @@ function sceneEntities(prefix) {
             type: 'float',
             width: 256,
             height: 256,
-            stream: false,
             generateMipmaps: true,
             vMapping: 'clamp',
             uMapping: 'clamp'
@@ -277,7 +272,6 @@ function sceneEntities(prefix) {
             type: 'float',
             width: 128,
             height: 128,
-            stream: false,
             generateMipmaps: true,
             vMapping: 'clamp',
             uMapping: 'clamp'

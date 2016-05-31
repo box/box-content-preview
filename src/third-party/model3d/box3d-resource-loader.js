@@ -335,6 +335,7 @@
 	        }
 	        var responseType = void 0;
 	        switch (resource.compression) {
+	          case 'dxt':
 	          case 'dxt1':
 	          case 'dxt5':
 	            responseType = 'arraybuffer';
@@ -1026,6 +1027,7 @@
 	      }
 
 	      loadFunc = loadFunc.bind(this);
+	      var idPromise = _lie2.default.resolve({ fileId: this.fileId, fileVersionId: this.fileVersionId });
 
 	      switch (asset.type) {
 
@@ -1043,13 +1045,16 @@
 
 	        case 'animation':
 	        case 'meshGeometry':
-
 	          break;
+	        case 'document':
+	          idPromise = this.getAssetIdPromise(asset, params);
 	      }
 
 	      // Load the representation.
 	      return new _lie2.default(function (resolve, reject) {
-	        loadFunc(_this2.fileId, _this2.fileVersionId, params, progress).then(resolve).catch(function (err) {
+	        idPromise.then(function (fileIds) {
+	          return loadFunc(fileIds.fileId, fileIds.fileVersionId, params, progress);
+	        }).then(resolve).catch(function (err) {
 	          _this2.onAssetNotFound(asset);
 	          reject(err);
 	        });
@@ -1488,9 +1493,7 @@
 	      var findResolutionMatch = function findResolutionMatch(image) {
 	        image.width = image.width || 1;
 	        image.height = image.height || 1;
-	        var width = image.width;
-	        var height = image.height;
-	        var maxRes = Math.max(width, height);
+	        var maxRes = Math.max(image.width, image.height);
 	        var resDiff = params.maxResolution - maxRes;
 	        if (resDiff >= 0 && resDiff < closestResDiff) {
 	          closestResDiff = resDiff;
@@ -1520,6 +1523,7 @@
 	          return image.compression === 'zip' || image.compression === 'jpeg';
 	        });
 	      }
+
 	      // Go through the list and look for the closest match.
 	      compressionMatches.forEach(function (image) {
 	        image.channels = image.channels || ['red', 'green', 'blue'];
@@ -1549,6 +1553,10 @@
 	    key: 'parseImage',
 	    value: function parseImage(response, representation) {
 	      return new _lie2.default(function (resolve, reject) {
+	        if (!(response.response instanceof Blob)) {
+	          return reject(new Error('data is not a valid Blob'));
+	        }
+
 	        try {
 	          (function () {
 	            var data = {

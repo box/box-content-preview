@@ -54060,7 +54060,7 @@
 
 	      initializeAssets(documentAssets);
 
-	      return loadAssets(documentAssets).then(function () {
+	      return loadAssets([/* Temporarily don't load document assets.*/]).then(function () {
 	        initializeAssets(nonDocumentAssets);
 	        initializeObjects(objects);
 	        return entityArray;
