@@ -5,6 +5,7 @@ import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';
 import Model3dRenderer from './model3d-renderer';
 import {
+    CAMERA_PROJECTION_PERSPECTIVE,
     EVENT_CLOSE_UI,
     EVENT_METADATA_UPDATE_FAILURE,
     EVENT_METADATA_UPDATE_SUCCESS,
@@ -12,8 +13,11 @@ import {
     EVENT_ROTATE_ON_AXIS,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_CAMERA_PROJECTION,
-    EVENT_SAVE_SCENE_DEFAULTS
+    EVENT_SAVE_SCENE_DEFAULTS,
+    RENDER_MODE_LIT
+
 } from './model3d-constants';
+
 import {
     CSS_CLASS_INVISIBLE,
     EVENT_LOAD,
@@ -24,6 +28,8 @@ import {
 const Box = global.Box || {};
 
 const MISSING_MAX = 4;
+const DEFAULT_AXIS_UP = '+Y';
+const DEFAULT_AXIS_FORWARD = '+Z';
 
 /**
  * Model3d
@@ -203,6 +209,10 @@ class Model3d extends Box3D {
                 /* eslint-disable no-console */
                 console.error(error);
                 /* eslint-enable no-console */
+                this.axes.up = DEFAULT_AXIS_UP;
+                this.axes.forward = DEFAULT_AXIS_FORWARD;
+                this.renderMode = RENDER_MODE_LIT;
+                this.projection = CAMERA_PROJECTION_PERSPECTIVE;
                 // Make sure to display the settings panel, but hide the save button
                 this.controls.addUi(false);
                 this.showWrapper();
