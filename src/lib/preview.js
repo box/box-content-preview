@@ -480,25 +480,29 @@ class Preview extends EventEmitter {
             return;
         }
 
-        if (file.type !== 'file') {
-            throw new Error(__('error_box_file_fetch'));
-        }
+        try {
+            if (file.type !== 'file') {
+                throw new Error(__('error_box_file_fetch'));
+            }
 
-        // Save reference to the file and update logger
-        this.file = file;
-        this.logger.setFile(file);
+            // Save reference to the file and update logger
+            this.file = file;
+            this.logger.setFile(file);
 
-        // Get exiting cache before updating it to latest version
-        const cached = cache.get(file.id);
+            // Get exiting cache before updating it to latest version
+            const cached = cache.get(file.id);
 
-        // Cache the new file object
-        cache.set(file.id, file);
+            // Cache the new file object
+            cache.set(file.id, file);
 
-        // Finally load the viewer if file sha mismatches
-        // @TODO add watermark check also here
-        if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
-            this.logger.setCacheStale();
-            this.loadViewer();
+            // Finally load the viewer if file sha mismatches
+            // @TODO add watermark check also here
+            if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
+                this.logger.setCacheStale();
+                this.loadViewer();
+            }
+        } catch (err) {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
         }
     }
 
