@@ -142,16 +142,10 @@ class DocBase extends Base {
      */
     destroyFind() {
         // Remove find controller events
-        const events = [
-            'find',
-            'findagain',
-            'findhighlightallchange',
-            'findcasesensitivitychange'
-        ];
-
-        for (const event of events) {
-            window.removeEventListener(event, this.findController.handleEvent);
-        }
+        window.removeEventListener('find', this.findController.handleEvent);
+        window.removeEventListener('findagain', this.findController.handleEvent);
+        window.removeEventListener('findhighlightallchange', this.findController.handleEvent);
+        window.removeEventListener('findcasesensitivitychange', this.findController.handleEvent);
 
         // Cleanup find bar
         this.findBar.destroy();
