@@ -422,7 +422,7 @@ class Annotator extends EventEmitter {
      * @private
      */
     _createAnnotationThread(annotations, location, type) {
-        const thread = new AnnotationThread({
+        const threadParams = {
             annotatedElement: this._annotatedElement,
             annotations,
             annotationService: this._annotationService,
@@ -430,7 +430,14 @@ class Annotator extends EventEmitter {
             location,
             user: this._user,
             type
-        });
+        };
+
+        // Set existing thread ID if created with annotations
+        if (annotations.length > 0) {
+            threadParams.threadID = annotations[0].threadID;
+        }
+
+        const thread = new AnnotationThread(threadParams);
         this._addThreadToMap(thread);
         return thread;
     }
