@@ -274,7 +274,7 @@ class DocBase extends Base {
         const nextPageButtonEl = this.containerEl.querySelector('.box-preview-next-page');
 
         // Disable page number selector for Safari fullscreen, see https://jira.inside-box.net/browse/COXP-997
-        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen();
+        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
 
         // Disable page number selector if there is only one page or less
         if (pageNumButtonEl) {
@@ -446,14 +446,14 @@ class DocBase extends Base {
 
             // Only navigate pages with up/down in document viewer if in fullscreen
             case 'ArrowUp':
-                if (!this.isPresentation && !fullscreen.isFullscreen()) {
+                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
                     return false;
                 }
 
                 this.previousPage();
                 break;
             case 'ArrowDown':
-                if (!this.isPresentation && !fullscreen.isFullscreen()) {
+                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
                     return false;
                 }
 
@@ -925,7 +925,7 @@ class DocBase extends Base {
     wheelHandler() {
         if (!this.throttledWheelHandler) {
             this.throttledWheelHandler = throttle((event) => {
-                if (!this.isPresentation && !fullscreen.isFullscreen()) {
+                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
                     return;
                 }
 

@@ -52,7 +52,7 @@ class Presentation extends DocBase {
         super.setPage(pageNum);
 
         // Forces rendering of page - without this, fullscreen presentation pages sometimes don't load
-        if (fullscreen.isFullscreen()) {
+        if (fullscreen.isFullscreen(this.containerEl)) {
             this.pdfViewer.update();
         }
 
