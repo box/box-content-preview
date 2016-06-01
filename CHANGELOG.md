@@ -1,5 +1,41 @@
 # Change Log
 
+## [v0.58.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.58.0) (2016-06-01)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.57.0...v0.58.0)
+
+**Merged pull requests:**
+
+- \[Annotations\] Set existing thread ID if appropriate [\#397](https://gitenterprise.inside-box.net/Preview/Preview/pull/397) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing error handling by adding back try/catch [\#396](https://gitenterprise.inside-box.net/Preview/Preview/pull/396) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Changing logo option to logoUrl [\#395](https://gitenterprise.inside-box.net/Preview/Preview/pull/395) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
+## [v0.57.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.57.0) (2016-06-01)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.56.0...v0.57.0)
+
+**Merged pull requests:**
+
+- Fixing fullscreen checks for IE10 [\#394](https://gitenterprise.inside-box.net/Preview/Preview/pull/394) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing find bar cleanup in IE10 [\#393](https://gitenterprise.inside-box.net/Preview/Preview/pull/393) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing wheel handler in doc viewer [\#392](https://gitenterprise.inside-box.net/Preview/Preview/pull/392) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding custom logo to preview header [\#391](https://gitenterprise.inside-box.net/Preview/Preview/pull/391) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Bug fixes 05 27 2016 [\#390](https://gitenterprise.inside-box.net/Preview/Preview/pull/390) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Axis alignment is now reusing a constant variable [\#389](https://gitenterprise.inside-box.net/Preview/Preview/pull/389) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- \[Annotations\] Add profile image via API [\#388](https://gitenterprise.inside-box.net/Preview/Preview/pull/388) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing preview error messages [\#387](https://gitenterprise.inside-box.net/Preview/Preview/pull/387) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Swapping find bar buttons + fixing match count [\#386](https://gitenterprise.inside-box.net/Preview/Preview/pull/386) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Properly fixing next/prev buttons in find bar [\#385](https://gitenterprise.inside-box.net/Preview/Preview/pull/385) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- PDFJS 1.5.274 [\#384](https://gitenterprise.inside-box.net/Preview/Preview/pull/384) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing previous/next buttons for find bar [\#383](https://gitenterprise.inside-box.net/Preview/Preview/pull/383) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Various document viewer fixes [\#381](https://gitenterprise.inside-box.net/Preview/Preview/pull/381) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Added ios and android checks to Browser.js. Using ios check in 360 video loader [\#380](https://gitenterprise.inside-box.net/Preview/Preview/pull/380) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- re-enabling zoom for ortho-projection [\#379](https://gitenterprise.inside-box.net/Preview/Preview/pull/379) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Removing DICOM from Preview [\#378](https://gitenterprise.inside-box.net/Preview/Preview/pull/378) ([cebberson](https://gitenterprise.inside-box.net/cebberson))
+- \[Annotations\] Use annotations API instead of localstorage [\#377](https://gitenterprise.inside-box.net/Preview/Preview/pull/377) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Updating changelog [\#376](https://gitenterprise.inside-box.net/Preview/Preview/pull/376) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- New Settings Panel Styles for 3D [\#373](https://gitenterprise.inside-box.net/Preview/Preview/pull/373) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Render mode panel removed [\#368](https://gitenterprise.inside-box.net/Preview/Preview/pull/368) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Find controller prototype [\#343](https://gitenterprise.inside-box.net/Preview/Preview/pull/343) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.56.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.56.0) (2016-05-24)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.55.0...v0.56.0)
 
