@@ -103,29 +103,6 @@ class Presentation extends DocBase {
 
         super.pagesinitHandler();
     }
-
-    /**
-     * Debounced mouse wheel handler, scroll presentations by page. This needs
-     * to be debounced because otherwise, the inertia scroll on Macbooks fires
-     * the 'wheel' event too many times.
-     *
-     * @returns {Function} Debounced mousewheel handler
-     * @private
-     */
-    wheelHandler() {
-        event.preventDefault();
-
-        // This filters out trackpad events since Macbook inertial scrolling
-        // fires wheel events in a very unpredictable way
-        const isFromMouseWheel = event.wheelDelta % 120 === 0;
-        if (isFromMouseWheel) {
-            if (event.deltaY > 0) {
-                this.nextPage();
-            } else {
-                this.previousPage();
-            }
-        }
-    }
 }
 
 Box.Preview = Box.Preview || {};
