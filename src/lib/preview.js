@@ -172,8 +172,8 @@ class Preview extends EventEmitter {
         // Show or hide the header
         this.options.header = options.header || 'light';
 
-        // Custom logo
-        this.options.logo = options.logo || '';
+        // Custom logo URL
+        this.options.logoUrl = options.logoUrl || '';
 
         // Save the files to iterate through
         this.collection = options.collection || [];
@@ -297,12 +297,12 @@ class Preview extends EventEmitter {
             this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
 
             // Set custom logo
-            if (this.options.logo !== '') {
+            if (this.options.logoUrl !== '') {
                 const defaultLogoEl = headerEl.querySelector('.box-preview-default-logo');
                 defaultLogoEl.classList.add(CLASS_HIDDEN);
 
                 const customLogoEl = headerEl.querySelector('.box-preview-custom-logo');
-                customLogoEl.src = this.options.logo;
+                customLogoEl.src = this.options.logoUrl;
                 customLogoEl.classList.remove(CLASS_HIDDEN);
             }
         }
