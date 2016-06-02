@@ -5,7 +5,7 @@
  */
 
 import autobind from 'autobind-decorator';
-import LocalStorageAnnotationService from '../annotation/localstorage-annotation-service';
+import AnnotationService from '../annotation/annotation-service';
 import Base from '../base';
 import Browser from '../browser';
 import cache from '../cache';
@@ -13,6 +13,7 @@ import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../fullscreen';
+import throttle from 'lodash.throttle';
 import { CLASS_BOX_PREVIEW_FIND_BAR } from '../constants';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
 
@@ -28,6 +29,7 @@ const PRESENTATION_MODE_STATE = {
     FULLSCREEN: 3
 };
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
+const WHEEL_THROTTLE = 200;
 
 @autobind
 class DocBase extends Base {
@@ -140,16 +142,10 @@ class DocBase extends Base {
      */
     destroyFind() {
         // Remove find controller events
-        const events = [
-            'find',
-            'findagain',
-            'findhighlightallchange',
-            'findcasesensitivitychange'
-        ];
-
-        for (const event of events) {
-            window.removeEventListener(event, this.findController.handleEvent);
-        }
+        window.removeEventListener('find', this.findController.handleEvent);
+        window.removeEventListener('findagain', this.findController.handleEvent);
+        window.removeEventListener('findhighlightallchange', this.findController.handleEvent);
+        window.removeEventListener('findcasesensitivitychange', this.findController.handleEvent);
 
         // Cleanup find bar
         this.findBar.destroy();
@@ -278,7 +274,7 @@ class DocBase extends Base {
         const nextPageButtonEl = this.containerEl.querySelector('.box-preview-next-page');
 
         // Disable page number selector for Safari fullscreen, see https://jira.inside-box.net/browse/COXP-997
-        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen();
+        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
 
         // Disable page number selector if there is only one page or less
         if (pageNumButtonEl) {
@@ -450,14 +446,14 @@ class DocBase extends Base {
 
             // Only navigate pages with up/down in document viewer if in fullscreen
             case 'ArrowUp':
-                if (!this.isPresentation && !fullscreen.isFullscreen()) {
+                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
                     return false;
                 }
 
                 this.previousPage();
                 break;
             case 'ArrowDown':
-                if (!this.isPresentation && !fullscreen.isFullscreen()) {
+                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
                     return false;
                 }
 
@@ -587,9 +583,11 @@ class DocBase extends Base {
      */
     initAnnotations() {
         const fileVersionID = this.options.file.file_version.id;
-        const annotationService = new LocalStorageAnnotationService({
+        const annotationService = new AnnotationService({
             api: this.options.api,
-            token: this.options.token
+            fileID: this.options.file.id,
+            token: this.options.token,
+            canAnnotate: !!this.options.file.permissions.can_annotate
         });
 
         // Construct and init annotator
@@ -717,7 +715,7 @@ class DocBase extends Base {
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
         // Mousewheel handler
-        this.docEl.addEventListener('wheel', this.wheelHandler);
+        this.docEl.addEventListener('wheel', this.wheelHandler());
 
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
@@ -736,7 +734,7 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
-            this.docEl.removeEventListener('wheel', this.wheelHandler);
+            this.docEl.removeEventListener('wheel', this.wheelHandler());
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
@@ -922,26 +920,27 @@ class DocBase extends Base {
      * Mousewheel handler - scrolls presentations by page and scrolls documents
      * normally unless in fullscreen, in which it scrolls by page.
      *
-     * @returns {Function} Debounced mousewheel handler
+     * @returns {Function} Throttled mousewheel handler
      * @private
      */
     wheelHandler() {
-        if (!this.isPresentation && !fullscreen.isFullscreen()) {
-            return;
+        if (!this.throttledWheelHandler) {
+            this.throttledWheelHandler = throttle((event) => {
+                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
+                    return;
+                }
+
+                if (event.deltaY > 0) {
+                    this.nextPage();
+                } else {
+                    this.previousPage();
+                }
+
+                event.preventDefault();
+            }, WHEEL_THROTTLE);
         }
 
-        event.preventDefault();
-
-        // This filters out trackpad events since Macbook inertial scrolling
-        // fires wheel events in a very unpredictable way
-        const isFromMouseWheel = event.wheelDelta % 120 === 0;
-        if (isFromMouseWheel) {
-            if (event.deltaY > 0) {
-                this.nextPage();
-            } else {
-                this.previousPage();
-            }
-        }
+        return this.throttledWheelHandler;
     }
 }
 

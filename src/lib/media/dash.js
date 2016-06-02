@@ -301,7 +301,7 @@ class Dash extends VideoBase {
 
         // Add a new width or height. Don't need to add both
         // since the video will auto adjust the other dimension accordingly.
-        if (fullscreen.isFullscreen()) {
+        if (fullscreen.isFullscreen(this.containerEl)) {
             // Case 1: Full screen mode, stretch the video
             // to fit the whole screen irrespective of its width and height.
 

@@ -55772,39 +55772,6 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DEntity).call(this));
 
-	    _this.events = {
-	      load: {
-	        params: [],
-	        action: false,
-	        category: 'Loading'
-	      },
-	      loadBase: {
-	        params: [],
-	        action: false,
-	        category: 'Loading'
-	      },
-	      loadChildren: {
-	        params: [],
-	        action: false,
-	        category: 'Loading'
-	      },
-	      startTimer: {
-	        params: [{
-	          name: 'time',
-	          description: 'The time (in seconds) that will elapse before the \'endTimer\' event ' + 'will be fired.',
-	          type: 'f',
-	          default: 5.0
-	        }],
-	        action: true,
-	        category: 'General'
-	      },
-	      endTimer: {
-	        params: [],
-	        action: false,
-	        category: 'General'
-	      }
-	    };
-
 	    jsonDesc = jsonDesc || {};
 	    _this.box3DRuntime = undefined;
 	    _this.componentRegistry = undefined;
@@ -58515,15 +58482,15 @@
 	        if (filter && filter.length) {
 	          for (var i = 0; i < filter.length; i++) {
 	            var type = filter[i];
-	            var prototype = this.box3DRuntime.assetRegistry.getEntityClass(type).prototype;
-	            prototype.events[name] = {
+	            var typeClass = this.box3DRuntime.assetRegistry.getEntityClass(type);
+	            typeClass.events[name] = {
 	              params: parameters,
 	              action: action,
 	              category: category
 	            };
 	          }
 	        } else {
-	          Box3D.Box3DEntity.prototype.events[name] = {
+	          Box3D.Box3DEntity.events[name] = {
 	            params: parameters,
 	            action: action,
 	            category: category
@@ -58600,6 +58567,38 @@
 	    type: 'object',
 	    description: '',
 	    default: {}
+	  }
+	};
+	Box3DEntity.events = {
+	  load: {
+	    params: [],
+	    action: false,
+	    category: 'Loading'
+	  },
+	  loadBase: {
+	    params: [],
+	    action: false,
+	    category: 'Loading'
+	  },
+	  loadChildren: {
+	    params: [],
+	    action: false,
+	    category: 'Loading'
+	  },
+	  startTimer: {
+	    params: [{
+	      name: 'time',
+	      description: 'The time (in seconds) that will elapse before the \'endTimer\' event ' + 'will be fired.',
+	      type: 'f',
+	      default: 5.0
+	    }],
+	    action: true,
+	    category: 'General'
+	  },
+	  endTimer: {
+	    params: [],
+	    action: false,
+	    category: 'General'
 	  }
 	};
 	Box3DEntity._setValueObj = { value: null };
@@ -58811,13 +58810,13 @@
 
 	  }, {
 	    key: 'add',
-	    value: function add(scriptId) {
+	    value: function add(script) {
 	      var componentData = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	      var name = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
 
 	      var id = (0, _uuid2.default)();
 	      var newComponent = {
-	        scriptId: scriptId,
+	        scriptId: _lodash2.default.isString(script) ? script : script.id,
 	        componentData: componentData,
 	        enabled: true,
 	        name: name

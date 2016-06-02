@@ -2122,7 +2122,6 @@
       _createClass(Metadata, [{
         key: 'setApiBase',
         value: function setApiBase(baseUrl) {
-
           this.apiBase = baseUrl;
         }
 
@@ -2135,8 +2134,26 @@
       }, {
         key: 'setAuthToken',
         value: function setAuthToken(token) {
-
           this.xhr.setAuthToken(token);
+        }
+
+        /**
+         * Add the shared link to the passed in options object
+         * @param {Object} options The options object that requires shared link header to be added
+         * @returns {void}
+         */
+
+      }, {
+        key: 'addSharedLinkToHeaders',
+        value: function addSharedLinkToHeaders(options) {
+          if (!this.sharedLink) {
+            return;
+          }
+
+          var opts = options;
+          opts.headers = opts.headers || {};
+
+          opts.headers.boxapi = (0, _utils.sharedLinkForHeader)(this.sharedLink);
         }
 
         /**
@@ -2151,8 +2168,13 @@
       }, {
         key: 'get',
         value: function get(id, scope, template) {
+          var options = {
+            responseType: 'json'
+          };
 
-          return this.xhr.get(this.apiBase + '/2.0/files/' + id + '/metadata/' + scope + '/' + template, null, { responseType: 'json', headers: { boxapi: (0, _utils.sharedLinkForHeader)(this.sharedLink) } });
+          this.addSharedLinkToHeaders(options);
+
+          return this.xhr.get(this.apiBase + '/2.0/files/' + id + '/metadata/' + scope + '/' + template, null, options);
         }
 
         /**
@@ -2165,8 +2187,13 @@
       }, {
         key: 'getAll',
         value: function getAll(id) {
+          var options = {
+            responseType: 'json'
+          };
 
-          return this.xhr.get(this.apiBase + '/2.0/files/' + id + '/metadata', null, { responseType: 'json', headers: { boxapi: (0, _utils.sharedLinkForHeader)(this.sharedLink) } });
+          this.addSharedLinkToHeaders(options);
+
+          return this.xhr.get(this.apiBase + '/2.0/files/' + id + '/metadata', null, options);
         }
 
         /**
@@ -2186,7 +2213,6 @@
       }, {
         key: 'create',
         value: function create(id, scope, template, customKeyVal) {
-
           return this.xhr.post(this.apiBase + '/2.0/files/' + id + '/metadata/' + scope + '/' + template, JSON.stringify(customKeyVal), null, { headers: CREATE_HEADERS });
         }
 
@@ -2244,7 +2270,6 @@
       }, {
         key: 'update',
         value: function update(id, scope, template, operation) {
-
           // make sure to convert to a proper operation list for Metadata API. A 'properation' list
           if (typeof operation === 'string') {
             operation = [operation];
@@ -2267,7 +2292,6 @@
       }, {
         key: 'delete',
         value: function _delete(id, scope, template) {
-
           return this.xhr.delete(this.apiBase + 'files/' + id + '/metadata/' + scope + '/' + template);
         }
 
@@ -2281,7 +2305,6 @@
       }, {
         key: 'getGlobalProperties',
         value: function getGlobalProperties(id) {
-
           return this.get(id, 'global', 'properties');
         }
 
@@ -2294,8 +2317,13 @@
       }, {
         key: 'getEnterpriseTemplates',
         value: function getEnterpriseTemplates() {
+          var options = {
+            responseType: 'json'
+          };
 
-          return this.xhr.get(this.apiBase + '/2.0/metadata_templates/enterprise', null, { responseType: 'json', headers: { boxapi: (0, _utils.sharedLinkForHeader)(this.sharedLink) } });
+          this.addSharedLinkToHeaders(options);
+
+          return this.xhr.get(this.apiBase + '/2.0/metadata_templates/enterprise', null, options);
         }
 
         /**
@@ -2309,8 +2337,13 @@
       }, {
         key: 'getSchemaForTemplate',
         value: function getSchemaForTemplate(scope, template) {
+          var options = {
+            responseType: 'json'
+          };
 
-          return this.xhr.get(this.apiBase + '/2.0/metadata_templates/' + scope + '/' + template + '/schema', null, { headers: { boxapi: (0, _utils.sharedLinkForHeader)(this.sharedLink) } });
+          this.addSharedLinkToHeaders(options);
+
+          return this.xhr.get(this.apiBase + '/2.0/metadata_templates/' + scope + '/' + template + '/schema', null, options);
         }
       }]);
 

@@ -87,7 +87,7 @@ class DocFindBar extends EventEmitter {
 
         this.findButtonContainerEl = document.createElement('span');
         this.findButtonContainerEl.classList.add('box-preview-doc-find-controls');
-        this.findButtonContainerEl.innerHTML = findNextButton + findPreviousButton + findCloseButton;
+        this.findButtonContainerEl.innerHTML = findPreviousButton + findNextButton + findCloseButton;
 
         this.bar.appendChild(this.findButtonContainerEl);
     }
@@ -105,15 +105,15 @@ class DocFindBar extends EventEmitter {
         this.unbindDOMListeners();
 
         // Clean up the find buttons
-        this.findPreviousButtonEl.remove();
-        this.findNextButtonEl.remove();
-        this.findCloseButtonEl.remove();
-        this.findButtonContainerEl.remove();
+        this.findPreviousButtonEl.parentNode.removeChild(this.findPreviousButtonEl);
+        this.findNextButtonEl.parentNode.removeChild(this.findNextButtonEl);
+        this.findCloseButtonEl.parentNode.removeChild(this.findCloseButtonEl);
+        this.findButtonContainerEl.parentNode.removeChild(this.findButtonContainerEl);
 
         // Clean up find bar and controller object
-        this.findResultsCountEl.remove();
-        this.findFieldEl.remove();
-        this.bar.remove();
+        this.findResultsCountEl.parentNode.removeChild(this.findResultsCountEl);
+        this.findFieldEl.parentNode.removeChild(this.findFieldEl);
+        this.bar.parentNode.removeChild(this.bar);
     }
 
     /**
@@ -320,7 +320,7 @@ class DocFindBar extends EventEmitter {
                 this.currentMatch = this.currentMatch + 1;
 
                 // Loops search to first match in document
-                if (this.currentMatch >= this.matchResultCount) {
+                if (this.currentMatch > this.matchResultCount) {
                     this.currentMatch = 1;
                 }
             }

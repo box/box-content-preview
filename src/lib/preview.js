@@ -172,6 +172,9 @@ class Preview extends EventEmitter {
         // Show or hide the header
         this.options.header = options.header || 'light';
 
+        // Custom logo URL
+        this.options.logoUrl = options.logoUrl || '';
+
         // Save the files to iterate through
         this.collection = options.collection || [];
 
@@ -281,6 +284,31 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Sets up the preview header.
+     *
+     * @returns {void}
+     * @private
+     */
+    setupHeader() {
+        // Add the header if needed
+        if (this.options.header !== 'none') {
+            const headerEl = this.container.firstElementChild;
+            headerEl.className = CLASS_BOX_PREVIEW_HEADER;
+            this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
+
+            // Set custom logo
+            if (this.options.logoUrl !== '') {
+                const defaultLogoEl = headerEl.querySelector('.box-preview-default-logo');
+                defaultLogoEl.classList.add(CLASS_HIDDEN);
+
+                const customLogoEl = headerEl.querySelector('.box-preview-custom-logo');
+                customLogoEl.src = this.options.logoUrl;
+                customLogoEl.classList.remove(CLASS_HIDDEN);
+            }
+        }
+    }
+
+    /**
      * Initializes the container for preview.
      *
      * @private
@@ -318,11 +346,7 @@ class Preview extends EventEmitter {
         // Save a handle to the preview content
         this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
 
-        // Add the header if needed
-        if (this.options.header !== 'none') {
-            this.container.firstElementChild.className = CLASS_BOX_PREVIEW_HEADER;
-            this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
-        }
+        this.setupHeader();
 
         // Show navigation if needed
         this.showNavigation();
@@ -456,8 +480,6 @@ class Preview extends EventEmitter {
             return;
         }
 
-        // Try catch here to catch any viewer errors
-        // The caller function tries to catch all network specific errors
         try {
             if (file.type !== 'file') {
                 throw new Error(__('error_box_file_fetch'));
@@ -521,11 +543,17 @@ class Preview extends EventEmitter {
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
 
-        // Load the representation assets
-        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
-
         // Load all the static assets
         const promiseToLoadStaticAssets = loader.load(viewer, this.options.location);
+        promiseToLoadStaticAssets.catch((err) => {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_static_assets_load')));
+        });
+
+        // Load the representation assets
+        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
+        promiseToGetRepresentationStatusSuccess.catch((err) => {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_representation_load')));
+        });
 
         // Proceed only when both static and representation assets have been loaded
         Promise.all([promiseToLoadStaticAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
@@ -545,7 +573,7 @@ class Preview extends EventEmitter {
             // Load the representation into the viewer
             this.viewer.load(representation.links.content.url);
         }).catch((err) => {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_representation_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
         });
     }
 
@@ -556,13 +584,12 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     attachViewerListeners() {
+        // Node requires listener attached to 'error'
+        this.viewer.addListener('error', this.triggerError);
         this.viewer.addListener('viewerevent', (data) => {
             switch (data.event) {
                 case 'download':
                     this.download();
-                    break;
-                case 'error':
-                    this.triggerError();
                     break;
                 case 'reload':
                     this.show(this.file.id, this.previewOptions);
@@ -724,15 +751,22 @@ class Preview extends EventEmitter {
      * @private
      */
     showAnnotateButton() {
-        // @TODO(tjin): Add permission checks here once we have annotation permissions
-        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable('point')) {
-            this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-            this.annotateButton.classList.remove(CLASS_HIDDEN);
-            this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
-
-            const dividerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DIVIDER);
-            dividerEl.classList.remove(CLASS_HIDDEN);
+        // Permission check
+        if (!this.file || !this.file.permissions || !this.file.permissions.can_annotate) {
+            return;
         }
+
+        // Viewer-compatability check
+        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('point')) {
+            return;
+        }
+
+        this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+        this.annotateButton.classList.remove(CLASS_HIDDEN);
+        this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
+
+        const dividerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DIVIDER);
+        dividerEl.classList.remove(CLASS_HIDDEN);
     }
 
     /**
@@ -742,12 +776,18 @@ class Preview extends EventEmitter {
      * @private
      */
     showHighlightButton() {
-        // @TODO(tjin): Add permission checks here once we have annotation permissions
-        if (this.viewer && typeof this.viewer.isAnnotatable === 'function' && this.viewer.isAnnotatable('highlight')) {
-            this.highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
-            this.highlightButton.classList.remove(CLASS_HIDDEN);
-            this.highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
+        // Permission check
+        if (!this.file || !this.file.permissions || !this.file.permissions.can_annotate) {
+            return;
         }
+
+        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('highlight')) {
+            return;
+        }
+
+        this.highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
+        this.highlightButton.classList.remove(CLASS_HIDDEN);
+        this.highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
     }
 
     /**

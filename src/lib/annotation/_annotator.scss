@@ -99,6 +99,7 @@ $avatar-color-9: #f22c44;
     border-top: 20px solid transparent; // Transparent border for hover detection
     cursor: default; // Overrides cursor: none from annotation mode
     position: absolute;
+    text-align: left;
     width: 282px; // Hard-coded width to solve layout issues
     z-index: 9999; // Annotation dialog should be above other content
 
@@ -140,6 +141,17 @@ $avatar-color-9: #f22c44;
         }
     }
 
+    &.cannot-annotate {
+        .annotation-comment:last-child {
+            padding-bottom: 0;
+        }
+
+        .delete-comment-btn,
+        .reply-container {
+            display: none;
+        }
+    }
+
     .profile-image-container {
         display: inline-block;
         padding-right: 5px;
@@ -147,6 +159,7 @@ $avatar-color-9: #f22c44;
 
         img {
             border-radius: 50%;
+            display: block; // Remove padding from inline display
             height: 32px;
             width: 32px;
         }
@@ -159,6 +172,10 @@ $avatar-color-9: #f22c44;
             color: $fours;
             font-size: 13px;
             font-weight: bold;
+            max-width: 175px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .comment-date {

@@ -116,10 +116,10 @@ $blue:                #00f !default;
     }
 
     ::selection {
-        background-color: fade-out($blue, .7);
+        background-color: fade-out($blue, .8);
     }
 
     *::-moz-selection {
-        background-color: fade-out($blue, .7);
+        background-color: fade-out($blue, .8);
     }
 }

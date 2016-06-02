@@ -166,7 +166,7 @@ describe('util', () => {
 
         describe('loadScripts()', () => {
             it('should insert scripts into the document', () => {
-                loadScripts(['foo', 'bar']);
+                loadScripts(['foo', 'bar']).catch(() => {});
                 const head = document.getElementsByTagName('head')[0];
                 assert.ok(head.querySelector('script[src="foo"]') instanceof HTMLScriptElement);
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);

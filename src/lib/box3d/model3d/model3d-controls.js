@@ -6,15 +6,14 @@ import {
     EVENT_ROTATE_ON_AXIS,
     EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_SET_CAMERA_PROJECTION,
-    EVENT_SET_RENDER_MODE
+    EVENT_SET_RENDER_MODE,
+    RENDER_MODE_LIT
 } from './model3d-constants';
 
 import {
     ICON_GEAR,
     ICON_3D_RESET
 } from '../../icons/icons';
-
-const DEFAULT_RENDER_MODE = 'Lit';
 
 /**
  * Model3dControls
@@ -62,7 +61,7 @@ class Model3dControls extends Box3DControls {
 
         this.addFullscreenButton();
 
-        this.handleSetRenderMode(DEFAULT_RENDER_MODE);
+        this.handleSetRenderMode(RENDER_MODE_LIT);
     }
 
     /**
