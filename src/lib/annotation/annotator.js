@@ -16,10 +16,6 @@ import * as constants from './annotation-constants';
 import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_HEADER } from '../constants';
 import { ICON_ANNOTATION } from '../icons/icons';
 
-const ANONYMOUS_USER = {
-    id: 0,
-    name: __('annotation_anonymous_user_name')
-};
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_TYPE = 'point';
@@ -57,12 +53,6 @@ class Annotator extends EventEmitter {
         this._annotatedElement = data.annotatedElement;
         this._annotationService = data.annotationService || new LocalStorageAnnotationService();
         this._fileVersionID = data.fileVersionID;
-        this._user = ANONYMOUS_USER;
-
-        // Fetch information about the user from server
-        this._annotationService.getAnnotationUser().then((user) => {
-            this._user = user;
-        });
     }
 
     /**
@@ -431,7 +421,6 @@ class Annotator extends EventEmitter {
             annotationService: this._annotationService,
             fileVersionID: this._fileVersionID,
             location,
-            user: this._user,
             type
         };
 

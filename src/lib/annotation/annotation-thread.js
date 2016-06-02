@@ -36,7 +36,6 @@ class AnnotationThread extends EventEmitter {
      * @property {String} fileVersionID File version ID
      * @property {Object} location Location object
      * @property {String} threadID Thread ID
-     * @property {Object} user User creating the thread
      * @property {String} type Type of thread
      */
 
@@ -59,7 +58,6 @@ class AnnotationThread extends EventEmitter {
         this._fileVersionID = data.fileVersionID;
         this._location = data.location;
         this._threadID = data.threadID || AnnotationService.generateID();
-        this._user = data.user;
         this._type = data.type;
 
         this._setup();
@@ -423,7 +421,7 @@ class AnnotationThread extends EventEmitter {
             type,
             text,
             location: this._location,
-            user: this._user,
+            user: this._annotationService.user,
             threadID: this._threadID
         };
     }
