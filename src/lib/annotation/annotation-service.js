@@ -8,6 +8,11 @@ import autobind from 'autobind-decorator';
 import Annotation from './annotation';
 import { getHeaders } from '../util';
 
+const ANONYMOUS_USER = {
+    id: 0,
+    name: __('annotation_anonymous_user_name')
+};
+
 @autobind
 class AnnotationService {
 
@@ -58,6 +63,7 @@ class AnnotationService {
         this._fileID = data.fileID;
         this._headers = getHeaders({}, data.token);
         this._canAnnotate = data.canAnnotate;
+        this._user = ANONYMOUS_USER;
     }
 
     /**
@@ -88,6 +94,12 @@ class AnnotationService {
             .then((data) => {
                 if (data.type !== 'error' && data.id) {
                     const createdAnnotation = this._createAnnotation(data);
+
+                    // Set user if not set already
+                    if (this._user.id === 0) {
+                        this._user = createdAnnotation.user;
+                    }
+
                     resolve(createdAnnotation);
                 } else {
                     reject('Could not create annotation');
@@ -168,6 +180,9 @@ class AnnotationService {
                 } else {
                     reject(`Could not delete annotation with ID ${annotationID}`);
                 }
+            })
+            .catch(() => {
+                reject(`Could not delete annotation with ID ${annotationID}`);
             });
         });
     }
@@ -204,9 +219,16 @@ class AnnotationService {
                 } else {
                     reject('Could not get annotation user');
                 }
+            })
+            .catch(() => {
+                reject('Could not get annotation user');
             });
         });
     }
+
+    //--------------------------------------------------------------------------
+    // Getters
+    //--------------------------------------------------------------------------
 
     /**
      * Gets canAnnotate.
@@ -215,6 +237,15 @@ class AnnotationService {
      */
     get canAnnotate() {
         return this._canAnnotate;
+    }
+
+    /**
+     * Gets user.
+     *
+     * @returns {Object} User object
+     */
+    get user() {
+        return this._user;
     }
 
     //--------------------------------------------------------------------------

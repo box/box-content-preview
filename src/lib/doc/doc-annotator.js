@@ -530,7 +530,6 @@ class DocAnnotator extends Annotator {
                 annotationService: this._annotationService,
                 fileVersionID: this._fileVersionID,
                 location,
-                user: this._user,
                 type
             });
             this._addThreadToMap(highlightThread);
