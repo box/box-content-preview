@@ -269,7 +269,8 @@ class AnnotationThread extends EventEmitter {
         this._dialog = new AnnotationDialog({
             annotatedElement: this._annotatedElement,
             annotations: this._annotations,
-            location: this._location
+            location: this._location,
+            canAnnotate: this._annotationService.canAnnotate
         });
         this._bindCustomListenersOnDialog();
 
@@ -374,8 +375,12 @@ class AnnotationThread extends EventEmitter {
      * @private
      */
     _showDialog() {
-        // Don't show dialog if there is a current selection
-        if (this._dialog && !annotatorUtil.isSelectionPresent()) {
+        // Don't show dialog if user can annotate and there is a current selection
+        if (this._annotationService.canAnnotate && annotatorUtil.isSelectionPresent()) {
+            return;
+        }
+
+        if (this._dialog) {
             this._dialog.show();
         }
     }

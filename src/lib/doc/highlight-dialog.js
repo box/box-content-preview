@@ -31,6 +31,11 @@ class HighlightDialog extends AnnotationDialog {
      * @returns {void}
      */
     show() {
+        // If user cannot annotate, don't show dialog
+        if (!this._canAnnotate) {
+            return;
+        }
+
         // Position and show - we need to reposition every time since the DOM
         // could have changed from zooming
         this._position();
