@@ -218,7 +218,15 @@ class AnnotationDialog extends EventEmitter {
      */
     _addAnnotationElement(annotation) {
         const userId = parseInt(annotatorUtil.htmlEscape(annotation.user.id || 0), 10);
-        const userName = annotatorUtil.htmlEscape(annotation.user.name || '');
+
+        // Temporary until annotation user API is available
+        let userName;
+        if (userId === 0) {
+            userName = __('annotation_posting_message');
+        } else {
+            userName = annotatorUtil.htmlEscape(annotation.user.name || '');
+        }
+
         const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
         const avatarHtml = annotatorUtil.getAvatarHtml(avatarUrl, userId, userName);
         const created = new Date(annotation.created).toLocaleDateString(
