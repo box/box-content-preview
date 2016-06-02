@@ -40,6 +40,7 @@ class AnnotationService {
      * @property {String} api API root
      * @property {String} fileID File ID
      * @property {String} token Access token
+     * @property {Boolean} canAnnotate Can user annotate
      */
 
     //--------------------------------------------------------------------------
@@ -56,6 +57,7 @@ class AnnotationService {
         this._api = data.api;
         this._fileID = data.fileID;
         this._headers = getHeaders({}, data.token);
+        this._canAnnotate = data.canAnnotate;
     }
 
     /**
@@ -204,6 +206,15 @@ class AnnotationService {
                 }
             });
         });
+    }
+
+    /**
+     * Gets canAnnotate.
+     *
+     * @returns {Boolean} Whether or not user can create or modify annotations.
+     */
+    get canAnnotate() {
+        return this._canAnnotate;
     }
 
     //--------------------------------------------------------------------------

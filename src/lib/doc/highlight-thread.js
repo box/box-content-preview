@@ -208,7 +208,8 @@ class HighlightThread extends AnnotationThread {
         this._dialog = new HighlightDialog({
             annotatedElement: this._annotatedElement,
             annotations: this._annotations,
-            location: this._location
+            location: this._location,
+            canAnnotate: this._annotationService.canAnnotate
         });
         this._bindCustomListenersOnDialog();
     }

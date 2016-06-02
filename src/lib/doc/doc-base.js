@@ -586,7 +586,8 @@ class DocBase extends Base {
         const annotationService = new AnnotationService({
             api: this.options.api,
             fileID: this.options.file.id,
-            token: this.options.token
+            token: this.options.token,
+            canAnnotate: !!this.options.file.permissions.can_annotate
         });
 
         // Construct and init annotator

@@ -31,6 +31,7 @@ class AnnotationDialog extends EventEmitter {
      * @property {Annotation[]} annotations Annotations in dialog, can be an
      * empty array for a new thread
      * @property {Object} location Location object
+     * @property {Boolean} canAnnotate Whether or not user can annotate
      */
 
     //--------------------------------------------------------------------------
@@ -49,6 +50,7 @@ class AnnotationDialog extends EventEmitter {
         this._annotatedElement = data.annotatedElement;
         this._location = data.location;
         this._hasAnnotations = data.annotations.length > 0;
+        this._canAnnotate = data.canAnnotate;
 
         this._setup(data.annotations);
     }
@@ -84,7 +86,12 @@ class AnnotationDialog extends EventEmitter {
         // could have changed from zooming
         this._position();
 
-        // Focus textarea if visible
+        // If user cannot annotate, hide reply/edit/delete UI
+        if (!this._canAnnotate) {
+            this._element.classList.add(constants.CLASS_CANNOT_ANNOTATE);
+        }
+
+        // Focus the textarea if visible
         const textAreaEl = this._hasAnnotations ?
             this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA) :
             this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);

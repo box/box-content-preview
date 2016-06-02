@@ -140,6 +140,17 @@ $avatar-color-9: #f22c44;
         }
     }
 
+    &.cannot-annotate {
+        .annotation-comment:last-child {
+            padding-bottom: 0;
+        }
+
+        .delete-comment-btn,
+        .reply-container {
+            display: none;
+        }
+    }
+
     .profile-image-container {
         display: inline-block;
         padding-right: 5px;

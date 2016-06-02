@@ -38,6 +38,7 @@ class Annotator extends EventEmitter {
      * @property {HTMLElement} annotatedElement HTML element to annotate on
      * @property {AnnotationService|LocalStorageAnnotationService} [annotationService] Annotations CRUD service
      * @property {String} fileVersionID File version ID
+     * @property {Boolean} canAnnotate Whether or not user can create or modify annotations
      */
 
     //--------------------------------------------------------------------------
@@ -305,7 +306,9 @@ class Annotator extends EventEmitter {
             const page = thread.location.page || 1;
 
             // Remove from map
-            this._threads[page] = this._threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
+            if (this._threads[page] instanceof Array) {
+                this._threads[page] = this._threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
+            }
         });
 
         // Thread should be cleaned up, unbind listeners - we don't do this
