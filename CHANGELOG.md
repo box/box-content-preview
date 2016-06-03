@@ -1,5 +1,23 @@
 # Change Log
 
+## [v0.60.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.60.0) (2016-06-03)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.59.0...v0.60.0)
+
+**Merged pull requests:**
+
+- Updating shaka player to 1.6.5 [\#403](https://gitenterprise.inside-box.net/Preview/Preview/pull/403) ([phora](https://gitenterprise.inside-box.net/phora))
+
+## [v0.59.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.59.0) (2016-06-03)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.58.0...v0.59.0)
+
+**Merged pull requests:**
+
+- Temporary annotator [\#402](https://gitenterprise.inside-box.net/Preview/Preview/pull/402) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix black canvas flickering [\#401](https://gitenterprise.inside-box.net/Preview/Preview/pull/401) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Fixing annotation user [\#400](https://gitenterprise.inside-box.net/Preview/Preview/pull/400) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] View-only annotations UI [\#399](https://gitenterprise.inside-box.net/Preview/Preview/pull/399) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Updating changelog for v0.58.0 [\#398](https://gitenterprise.inside-box.net/Preview/Preview/pull/398) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
 ## [v0.58.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.58.0) (2016-06-01)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.57.0...v0.58.0)
 
