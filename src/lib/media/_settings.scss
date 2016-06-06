@@ -2,9 +2,10 @@
 
 $padding: 8px;
 $item-height: 26px;
+$item-hover-color: #F6FAFD;
 
 .box-preview-media-settings {
-    background-color: rgba($white, .9);
+    background-color: $white;
     border: 1px solid $sf-fog;
     border-radius: 2px;
     bottom: 60px;
@@ -59,15 +60,14 @@ $item-height: 26px;
 
 .box-preview-media-settings-item:hover,
 .box-preview-media-settings-sub-item:hover {
-    background-color: $box-blue;
+    background-color: $item-hover-color;
 
-    .box-preview-media-settings-value,
     .box-preview-media-settings-label {
-        color: $white;
+        color: lighten($blue-steel, 50%);
     }
 
-    svg {
-        fill: $white;
+    .box-preview-media-settings-value {
+        color: $blue-steel;
     }
 }
 
@@ -81,6 +81,7 @@ $item-height: 26px;
 
 .box-preview-media-settings-item .box-preview-media-settings-label {
     color: $downtown-grey;
+    font-size: 11px;
     font-weight: 400;
     padding-left: $padding / 2;
     text-align: left;
@@ -90,6 +91,8 @@ $item-height: 26px;
 
 .box-preview-media-settings-value {
 
+    color: $sunset-grey;
+    font-size: 12px;
     text-align: right;
 
     .box-preview-media-settings-item & {
