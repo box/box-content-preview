@@ -100,7 +100,7 @@
     "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
     "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
     "lint": "./node_modules/.bin/eslint src/lib",
-    "prepush": "npm run lint && npm run coverage",
+    "prepush": "npm run lint",
     "build": "npm run lint && npm run clean && npm run build-rb && npm run dev",
     "ci": "npm run lint && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run jenkins",
     "release": "npm run lint && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"
