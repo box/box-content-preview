@@ -78,7 +78,8 @@ class Annotator extends EventEmitter {
      */
     init() {
         this.setScale(1);
-        this._setupControls();
+        // @TODO(tjin): Add back annotations control if needed
+        // this._setupControls();
         this._setupAnnotations();
 
         // Add IE-specific class for custom cursors
