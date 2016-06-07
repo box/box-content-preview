@@ -57,7 +57,7 @@ class Video360Loader extends Base360Loader {
         const isSupportedBrowser = BROWSERS_SUPPORTED.some((browserName) => browserName === name);
 
         // If a 360 viewer but isn't a valid browser
-        if ((!isSupportedBrowser && !!viewer) || isIOS) {
+        if ((!isSupportedBrowser && !!viewer) || (!!viewer && isIOS)) {
             throw new Error(__('error_no_360_playback_support'));
         }
 
