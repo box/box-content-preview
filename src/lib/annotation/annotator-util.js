@@ -211,8 +211,11 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
         return `<img src=${avatarUrl} alt="${__('annotation_profile_alt')}">`.trim();
     }
 
-    // http://stackoverflow.com/questions/8133630/spliting-the-first-character-of-the-words
-    const initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
+    let initials = '';
+    if (userId !== 0) {
+        // http://stackoverflow.com/questions/8133630/spliting-the-first-character-of-the-words
+        initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
+    }
     return `
         <div class="box-preview-annotation-profile avatar-color-${userId % AVATAR_COLOR_COUNT}">
             ${initials}

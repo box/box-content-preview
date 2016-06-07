@@ -762,6 +762,7 @@ class Preview extends EventEmitter {
         }
 
         this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+        this.annotateButton.title = __('annotation_point_toggle');
         this.annotateButton.classList.remove(CLASS_HIDDEN);
         this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
 
@@ -786,6 +787,7 @@ class Preview extends EventEmitter {
         }
 
         this.highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
+        this.highlightButton.title = __('annotation_highlight_toggle');
         this.highlightButton.classList.remove(CLASS_HIDDEN);
         this.highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
     }
@@ -799,6 +801,7 @@ class Preview extends EventEmitter {
     showPrintButton() {
         if (this.file && this.file.permissions && this.file.permissions.can_download && this.viewer && typeof this.viewer.print === 'function') {
             this.printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
+            this.printButton.title = __('print');
             this.printButton.classList.remove(CLASS_HIDDEN);
             this.printButton.addEventListener('click', this.print);
         }
@@ -813,6 +816,7 @@ class Preview extends EventEmitter {
     showDownloadButton() {
         if (this.file && this.file.permissions && this.file.permissions.can_download) {
             this.downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
+            this.downloadButton.title = __('download');
             this.downloadButton.classList.remove(CLASS_HIDDEN);
             this.downloadButton.addEventListener('click', this.download);
         }
