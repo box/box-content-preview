@@ -567,7 +567,7 @@ class Preview extends EventEmitter {
             // Viewer object will still be sent along the load event also.
             this.emit('viewer', this.viewer);
 
-            // Add listeners for viewer load / error event
+            // Add listeners for viewer events
             this.attachViewerListeners();
 
             // Load the representation into the viewer
@@ -707,8 +707,12 @@ class Preview extends EventEmitter {
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
                 file: this.file
             }));
+
             this.viewer.load('', reason);
             this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+
+            // Add listeners for viewer events
+            this.attachViewerListeners();
 
             // Show the download button
             this.showDownloadButton();
