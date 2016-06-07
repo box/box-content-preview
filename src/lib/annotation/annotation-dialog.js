@@ -245,7 +245,9 @@ class AnnotationDialog extends EventEmitter {
                 <div class="comment-date">${created}</div>
             </div>
             <div class="comment-text">${text}</div>
-            <button class="box-preview-btn-plain delete-comment-btn" data-type="delete-btn">${ICON_DELETE}</button>
+            <button class="box-preview-btn-plain delete-comment-btn" data-type="delete-btn" title="${__('annotation_delete_comment')}">
+                ${ICON_DELETE}
+            </button>
             <div class="delete-confirmation ${CLASS_HIDDEN}">
                 <div class="delete-confirmation-message">
                     ${__('annotation_delete_confirmation_message')}
