@@ -192,9 +192,8 @@ class Browser {
         }
 
         const hasStandardDerivatives = !!gl.getExtension(EXT_STANDARD_DERIVATIVES);
-        const hasFloatingPointTextures = !!gl.getExtension(EXT_FLOATING_POINT_TEXTURES);
 
-        return hasStandardDerivatives && hasFloatingPointTextures;
+        return hasStandardDerivatives;
     }
 
     /**

@@ -1,5 +1,4 @@
 import './model3d.scss';
-import Browser from '../../browser';
 import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';
@@ -21,7 +20,6 @@ import {
 import {
     CSS_CLASS_INVISIBLE,
     EVENT_LOAD,
-    EVENT_ERROR,
     EVENT_TRIGGER_RESIZE
 } from '../box3d-constants';
 
@@ -47,11 +45,6 @@ class Model3d extends Box3D {
      */
     constructor(container, options) {
         super(container, options);
-
-        if (!Browser.supportsModel3D()) {
-            this.wrapperEl.parentElement.removeChild(this.wrapperEl);
-            this.emit(EVENT_ERROR, new Error(__('error_no_box3d_preview_support')));
-        }
 
         this.wrapperEl.classList.add(CSS_CLASS_INVISIBLE);
 
