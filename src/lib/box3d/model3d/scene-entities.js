@@ -120,6 +120,7 @@ function sceneEntities(prefix) {
         },
         representations: [{
             src: `${prefix}third-party/model3d/matcap.png`,
+            isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
             width: 256,
@@ -138,6 +139,7 @@ function sceneEntities(prefix) {
         },
         representations: [{
             src: `${prefix}third-party/model3d/HDR_Env0.png`,
+            isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
             width: 1024,
@@ -157,6 +159,7 @@ function sceneEntities(prefix) {
         },
         representations: [{
             src: `${prefix}third-party/model3d/HDR_Env1.png`,
+            isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
             width: 512,
@@ -176,6 +179,7 @@ function sceneEntities(prefix) {
         },
         representations: [{
             src: `${prefix}third-party/model3d/HDR_Env2.png`,
+            isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
             width: 256,

@@ -134,21 +134,7 @@
 	      var progress = arguments[2];
 
 
-	      var isLocal = false;
-	      var representations = asset.get('representations');
-	      if (representations && representations.length) {
-	        // Assume that if the first representation has a path, they all do.
-	        var src = representations[0].src;
-	        if (src) {
-	          isLocal = representations[0].src.substr(0, 4).toLowerCase() === 'http';
-	        }
-	      }
-
-	      if (isLocal) {
-	        return this.loader.loadAssetFromPath(asset, params, progress);
-	      } else {
-	        return this.loader.loadAssetFromPackage(asset, params, progress);
-	      }
+	      return this.loader.loadAsset(asset, params, progress);
 	    }
 
 	    /**
@@ -294,26 +280,15 @@
 	     */
 
 	  }, {
-	    key: 'getAssetIdPromise',
-	    value: function getAssetIdPromise(box3dAsset) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	    key: 'getBaseUrl',
+	    value: function getBaseUrl(fileId, fileVersionId, validator) {
 
-	      var fileName = box3dAsset.getProperty('filename');
-	      var fileId = box3dAsset.getProperty('fileId');
-	      var fileVersionId = box3dAsset.getProperty('fileVersionId');
-	      var idPromise = void 0;
-
-	      if (fileId) {
-	        idPromise = _lie2.default.resolve({
-	          fileId: fileId,
-	          fileVersionId: fileVersionId
-	        });
-	      } else {
-	        // Use search API Instead
-	        idPromise = this.sdkLoader.getFileIds(fileName, this.parentId, params);
-	      }
-
-	      return idPromise;
+	      return this.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
+	        // Chop off entities.json
+	        // TODO - this really assumes that we're loading the '3d'
+	        // representation, doesn't it?...
+	        return _lie2.default.resolve(url.replace('entities.json', ''));
+	      });
 	    }
 
 	    /**
@@ -321,142 +296,9 @@
 	     */
 
 	  }, {
-	    key: 'loadImageFromPackage',
-	    value: function loadImageFromPackage(fileId, fileVersionId) {
-	      var _this2 = this;
-
-	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	      var progress = arguments[3];
-
-	      return new _lie2.default(function (resolve, reject) {
-	        var resource = params.resource;
-	        if (!resource) {
-	          return reject(new Error('No valid representation found.'));
-	        }
-	        var responseType = void 0;
-	        switch (resource.compression) {
-	          case 'dxt':
-	          case 'dxt1':
-	          case 'dxt5':
-	            responseType = 'arraybuffer';
-	            break;
-	          default:
-	            responseType = 'blob';
-	        }
-
-	        // Check to see if we are grabbing the correct representation
-	        var validator = function validator(entry) {
-	          return entry.representation === '3d';
-	        };
-
-	        _this2.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
-	          //#TODO @jholdstock: Generalize this loading & progress behaviour
-	          if (!url) {
-	            reject(new Error('No representation available for: ' + fileId));
-	          }
-	          url = url.replace('entities.json', resource.src);
-
-	          resolve(_this2.loadResourceFromUrl(url, { responseType: responseType, sendToken: true, withCredentials: true }, function (response) {
-	            return _this2.parseImage(response, resource);
-	          }, progress));
-	        });
-	      });
-	    }
-
-	    /**
-	     * Load a Video representation
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @returns {Promise} a promise that resolves in video data usable by the Box3DRuntime
-	     */
-
-	  }, {
-	    key: 'loadVideoFromPackage',
-	    value: function loadVideoFromPackage(fileId /*, fileVersionId, params = {}*/) {
-	      var _this3 = this;
-
-	      return new _lie2.default(function (resolve, reject) {
-
-	        var validator = function validator(entry) {
-	          return entry.representation === 'mp4';
-	        };
-
-	        _this3.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
-	          if (!url) {
-	            return reject(new Error('No representation available for: ' + fileId));
-	          }
-
-	          _this3.parseVideo(url).then(resolve).catch(reject);
-	        }).catch(reject);
-	      });
-	    }
-
-	    /**
-	     * @inheritDoc
-	     */
-
-	  }, {
-	    key: 'loadGeometry',
-	    value: function loadGeometry(fileId, fileVersionId) {
-	      var _this4 = this;
-
-	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	      var progress = arguments[3];
-
-
-	      var validator = function validator(entry) {
-	        return entry.representation === '3d';
-	      };
-
-	      // We need to fetch file info for a content path (it can be a cached url)
-	      return this.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
-
-	        // Because 3d representation is only entities.json, we'll remove it,
-	        // and add geometry.bin
-	        url = url.replace('entities.json', 'geometry.bin');
-
-	        return _this4.loadResourceFromUrl(url, { responseType: 'arraybuffer' }, function (response) {
-	          return _lie2.default.resolve({
-	            data: response.response,
-	            properties: {}
-	          });
-	        }, progress);
-	      });
-	    }
-
-	    /**
-	     * Load a JSON file and return a JavaScript Object.
-	     * @method loadJson
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @param {Function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the JSON data
-	     */
-
-	  }, {
-	    key: 'loadJson',
-	    value: function loadJson(fileId, fileVersionId) {
-	      var _this5 = this;
-
-	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	      var progress = arguments[3];
-
-
-	      var validator = function validator(entry) {
-	        return entry.representation === '3d';
-	      };
-	      // Get the representation URL.
-	      return this.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
-
-	        return _this5.loadResourceFromUrl(url, { responseType: 'json' }, function (response) {
-	          return _lie2.default.resolve({
-	            data: response.response,
-	            properties: {}
-	          });
-	        }, progress);
-	      });
+	    key: 'getCredentialOptions',
+	    value: function getCredentialOptions(isPathRelative) {
+	      return { sendToken: isPathRelative, withCredentials: false };
 	    }
 	  }]);
 
@@ -959,6 +801,16 @@
 	  'application/vnd.box.box3d+bin': 1.0
 	};
 
+	var DEFAULT_CHANNELS = ['red', 'green', 'blue'];
+	var MAX_IMAGE_RESOLUTION = 16384;
+	var COMPRESSION_TYPE = {
+	  DXT: 'dxt',
+	  DXT1: 'dxt1',
+	  DXT5: 'dxt5',
+	  JPEG: 'jpeg',
+	  ZIP: 'zip'
+	};
+
 	var BaseLoader = function (_EventEmitter) {
 	  _inherits(BaseLoader, _EventEmitter);
 
@@ -1002,8 +854,8 @@
 	  }
 
 	  /**
-	   * Load a "remote" (dynamically resolved) Box3DAsset.
-	   * @method loadAssetFromPackage
+	   * Load the data for a given Box3DAsset.
+	   * @method loadAsset
 	   * @param {Box3DAsset} asset The asset that is being loaded
 	   * @param {Object} params The criteria for determining which representation to load
 	   * @param {Function} progress The progress callback
@@ -1012,8 +864,8 @@
 
 
 	  _createClass(BaseLoader, [{
-	    key: 'loadAssetFromPackage',
-	    value: function loadAssetFromPackage(asset) {
+	    key: 'loadAsset',
+	    value: function loadAsset(asset) {
 	      var _this2 = this;
 
 	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
@@ -1027,12 +879,17 @@
 	      }
 
 	      loadFunc = loadFunc.bind(this);
-	      var idPromise = _lie2.default.resolve({ fileId: this.fileId, fileVersionId: this.fileVersionId });
+	      var fileIdPromise = this.getFileIdPromise(asset);
+	      var prefixUrl = true;
+	      var validator = validator = function validator(entry) {
+	        return entry.representation === '3d';
+	      };
 
 	      switch (asset.type) {
 
 	        case 'image':
 	          {
+	            prefixUrl = false;
 	            var resource = void 0;
 	            try {
 	              resource = this.findImageResource(asset, params);
@@ -1040,25 +897,60 @@
 	              return _lie2.default.reject(err);
 	            }
 	            params.resource = resource;
+
+	            // TODO - when we support 3d reps for images, change this.
+	            validator = function validator(entry) {
+	              if (params.resource.compression === 'zip' && entry.representation === 'png') {
+	                return true;
+	              } else if (params.resource.compression === 'jpeg' && entry.representation === 'jpg') {
+	                return true;
+	              }
+	              return false;
+	            };
 	          }
 	          break;
 
-	        case 'animation':
-	        case 'meshGeometry':
-	          break;
 	        case 'document':
-	          idPromise = this.getAssetIdPromise(asset, params);
+	          break;
 	      }
 
 	      // Load the representation.
 	      return new _lie2.default(function (resolve, reject) {
-	        idPromise.then(function (fileIds) {
-	          return loadFunc(fileIds.fileId, fileIds.fileVersionId, params, progress);
+	        // Get the file ID for the asset.
+	        fileIdPromise.then(function (fileIds) {
+
+	          if (fileIds.fileId !== _this2.fileId || prefixUrl) {
+
+	            // Get the base representation url for fileId and fileVersionId
+	            return _this2.getBaseUrl(fileIds.fileId, fileIds.fileVersionId, validator).then(function (baseUrl) {
+	              if (!baseUrl) {
+	                reject(new Error('No 3d representation available for: ' + fileIds.fileId));
+	              }
+	              // Load the data using our selected loading function
+	              return loadFunc(baseUrl, params, progress);
+	            });
+	          }
+	          return loadFunc('', params, progress);
 	        }).then(resolve).catch(function (err) {
 	          _this2.onAssetNotFound(asset);
 	          reject(err);
 	        });
 	      });
+	    }
+
+	    /**
+	     * Get the base url for a representation.
+	     * @param  {String} fileId        Box file Id
+	     * @param  {String} fileVersionId Box file version Id
+	     * @param  {Function} validator   Function called for every representation found and finds one
+	     * to fetch the url for.
+	     * @returns {String}               The base url for the representation
+	     */
+
+	  }, {
+	    key: 'getBaseUrl',
+	    value: function getBaseUrl() /* fileId, fileVersionId, validator*/{
+	      throw new Error('getBaseUrl not implemented!');
 	    }
 
 	    /**
@@ -1074,10 +966,10 @@
 
 	      switch (box3dAsset.type) {
 	        case 'image':
-	          loadFunc = this.loadImageFromPackage;
+	          loadFunc = this.loadImage;
 	          break;
 	        case 'video':
-	          loadFunc = this.loadVideoFromPackage;
+	          loadFunc = this.loadVideo;
 	          break;
 	        case 'animation':
 	        /*fall-through*/
@@ -1085,7 +977,7 @@
 	          loadFunc = this.loadGeometry;
 	          break;
 	        case 'document':
-	          loadFunc = this.loadJson;
+	          loadFunc = this.loadDocument;
 	          break;
 	      }
 
@@ -1100,37 +992,25 @@
 	     */
 
 	  }, {
-	    key: 'getAssetIdPromise',
-	    value: function getAssetIdPromise() /*box3dAsset, params = {}*/{
-	      throw new Error('getAssetIdPromise not implemented!');
-	    }
+	    key: 'getFileIdPromise',
+	    value: function getFileIdPromise(box3dAsset) {
+	      var fileId = box3dAsset.getProperty('fileId');
+	      var fileVersionId = box3dAsset.getProperty('fileVersionId');
+	      var idPromise = void 0;
 
-	    /**
-	     * Load a statically-resolved Box3DAsset.
-	     * @method loadAssetFromPath
-	     * @param {Box3DAsset} asset The asset that is being loaded
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @param {Function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the asset data
-	     */
-
-	  }, {
-	    key: 'loadAssetFromPath',
-	    value: function loadAssetFromPath(asset) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	      var progress = arguments[2];
-
-	      var loadFunc = void 0;
-
-	      switch (asset.type) {
-	        case 'image':
-	          loadFunc = this.loadImageFromPath.bind(this);
-	          break;
-	        default:
-	          return _lie2.default.reject(new Error('Asset type not supported for local loading: ' + asset.type));
+	      if (fileId) {
+	        idPromise = _lie2.default.resolve({
+	          fileId: fileId,
+	          fileVersionId: fileVersionId
+	        });
+	      } else {
+	        idPromise = _lie2.default.resolve({
+	          fileId: this.fileId,
+	          fileVersionId: this.fileVersionId
+	        });
 	      }
 
-	      return loadFunc(asset, params, progress);
+	      return idPromise;
 	    }
 
 	    /**
@@ -1280,58 +1160,140 @@
 	    }
 
 	    /**
+	     * Get the required credentials to load a file, taking into account whether the url
+	     * is absolute or relative.
+	     * This will be overridden if needed.
+	     * @method getCredentialOptions
+	     * @param {Boolean} isPathRelative Is the url defined relative to the base content url
+	     * @returns {Object} The credentials to use.
+	     */
+
+	  }, {
+	    key: 'getCredentialOptions',
+	    value: function getCredentialOptions() /*isPathRelative*/{
+	      return {};
+	    }
+
+	    /**
+	     * Get loader-specific options for file searching, if any.
+	     * @method getFileSearchOptions
+	     * @returns {Object} Object containing file search params.
+	     */
+
+	  }, {
+	    key: 'getFileSearchOptions',
+	    value: function getFileSearchOptions() {
+	      return {};
+	    }
+
+	    /**
+	     * Use the base url and the relative url and construct a useable full url for the current loader
+	     * This will be overridden if needed.
+	     * @method modifyImagePath
+	     * @param  {String} baseRepUrl The base content url for representations
+	     * @param  {String} url     The relative url of the representation
+	     * @returns {String}         The fully qualified url for the representation
+	     */
+
+	  }, {
+	    key: 'modifyImagePath',
+	    value: function modifyImagePath(baseRepUrl, url) {
+	      return url;
+	    }
+
+	    /**
+	     * Use the base url and the relative url and construct a useable full url for the current loader
+	     * This will be overridden if needed.
+	     * @method modifyGeometryPath
+	     * @param  {String} baseUrl The base content url
+	     * @param  {String} url     The relative url of the representation
+	     * @returns {String}         The fully qualified url for the representation
+	     */
+
+	  }, {
+	    key: 'modifyGeometryPath',
+	    value: function modifyGeometryPath(baseUrl, url) {
+	      return baseUrl + url;
+	    }
+
+	    /**
+	     * Use the base url and the relative url and construct a useable full url for the current loader
+	     * This will be overridden if needed.
+	     * @method modifyDocumentPath
+	     * @param  {String} baseUrl The base content url
+	     * @param  {String} url     The relative url of the representation
+	     * @returns {String}         The fully qualified url for the representation
+	     */
+
+	  }, {
+	    key: 'modifyDocumentPath',
+	    value: function modifyDocumentPath(baseUrl, url) {
+	      return baseUrl + url;
+	    }
+
+	    /**
 	     * Load a JSON file and return a JavaScript Object.
-	     * @method loadJson
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @method loadDocument
+	     * @param {string} baseUrl The representation url for the Box file
 	     * @param {Object} params The criteria for determining which representation to load
 	     * @param {Function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the JSON data
 	     */
 
 	  }, {
-	    key: 'loadJson',
-	    value: function loadJson() /*fileId, fileVersionId, params = {}, progress*/{
-	      throw new Error('loadJson() Not Implemented');
+	    key: 'loadDocument',
+	    value: function loadDocument(baseUrl) {
+	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progress = arguments[2];
+
+
+	      var url = this.modifyDocumentPath(baseUrl, 'entities.json');
+
+	      return this.loadResourceFromUrl(url, { responseType: 'json' }, function (response) {
+	        return _lie2.default.resolve({
+	          data: response.response,
+	          properties: {}
+	        });
+	      }, progress);
 	    }
 
 	    /**
 	     * Load an image representation from a Box3D package.
-	     * @method loadImageFromPackage
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @method loadImage
+	     * @param {string} baseUrl The representation url for the Box file
 	     * @param {object} params The criteria for determining which representation to load
 	     * @param {function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the image data
 	     */
 
 	  }, {
-	    key: 'loadImageFromPackage',
-	    value: function loadImageFromPackage() /*fileId, fileVersionId, params, progress*/{
-	      throw new Error('loadImageFromPackage() Not Implemented');
-	    }
+	    key: 'loadImage',
+	    value: function loadImage(baseUrl, params, progress) {
+	      var _this5 = this;
 
-	    /**
-	     * Load a video representation.
-	     * @method loadVideoFromPackage
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {object} params The criteria for determining which representation to load
-	     * @param {function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the video data
-	     */
+	      var resource = params.resource;
+	      if (!resource) {
+	        return _lie2.default.reject(new Error('No valid representation found.'));
+	      }
+	      var responseType = this.getImageResponseType(resource.compression);
 
-	  }, {
-	    key: 'loadVideoFromPackage',
-	    value: function loadVideoFromPackage() /*fileId, fileVersionId, params, progress*/{
-	      throw new Error('loadVideoFromPackage() Not Implemented');
+	      var resourceUrl = resource.src;
+	      var isRepresentation = !resource.isExternal;
+	      if (isRepresentation) {
+	        // The path is relative (to our base content path);
+	        resourceUrl = this.modifyImagePath(baseUrl, resourceUrl);
+	      }
+
+	      // Get the representation URL.
+	      return this.loadResourceFromUrl(resourceUrl, Object.assign({ responseType: responseType }, this.getCredentialOptions(isRepresentation)), function (response) {
+	        return _this5.parseImage(response, resource);
+	      }, progress);
 	    }
 
 	    /**
 	     * Load the binary file that contains the geometry and return an array buffer.
 	     * @method loadGeometry
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
+	     * @param {string} baseUrl The representation url for the Box file
 	     * @param {object} params The criteria for determining which representation to load.
 	     * @param {function} progress The progress callback
 	     * @returns {Promise} a promise that resolves the array buffer
@@ -1339,63 +1301,27 @@
 
 	  }, {
 	    key: 'loadGeometry',
-	    value: function loadGeometry() /*fileId, fileVersionId, params = {}, progress*/{
-	      throw new Error('loadGeometry() not implemented');
-	    }
-
-	    /**
-	     * Load a "local" image. Local images are statically resolved using the asset's "resources".
-	     * @method loadImageFromPath
-	     * @param {Box3DAsset} asset The asset being loaded
-	     * @param {object} params The criteria for deciding which resource to load
-	     * @param {function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the image data
-	     */
-
-	  }, {
-	    key: 'loadImageFromPath',
-	    value: function loadImageFromPath(asset) {
-	      var _this5 = this;
-
+	    value: function loadGeometry(baseUrl) {
 	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	      var progress = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+	      var progress = arguments[2];
 
 
-	      var resource = void 0;
-	      try {
-	        resource = this.findImageResource(asset, params);
-	      } catch (err) {
-	        return _lie2.default.reject(err);
-	      }
-	      var url = resource.src;
-	      if (progress) {
-	        this.addProgressListener(url, progress);
-	      }
+	      // Because 3d representation is only entities.json, we'll remove it,
+	      // and add geometry.bin
+	      var url = this.modifyGeometryPath(baseUrl, 'geometry.bin');
 
-	      var responseType = void 0;
-	      switch (resource.compression) {
-	        case 'dxt1':
-	        case 'dxt5':
-	          responseType = 'arraybuffer';
-	          break;
-	        default:
-	          responseType = 'blob';
-	      }
-
-	      return new _lie2.default(function (resolve, reject) {
-	        _this5.sdkLoader.get(url, { responseType: responseType, sendToken: false,
-	          withCredentials: false, info: { url: url } }, _this5.onAssetLoadProgress.bind(_this5)).then(function (response) {
-	          _this5.removeProgressListeners(url);
-	          return _this5.parseImage(response, resource);
-	        }).then(resolve).catch(function (err) {
-	          _this5.removeProgressListeners(url);
-	          reject(err);
+	      return this.loadResourceFromUrl(url, { responseType: 'arraybuffer' }, function (response) {
+	        return _lie2.default.resolve({
+	          data: response.response,
+	          properties: {}
 	        });
-	      });
+	      }, progress);
 	    }
 
 	    /**
 	     * Returns a promise that loads a file from a given URL.
+	     * @method loadResourceFromUrl
+	     * @private
 	     * @param  {String} url        The file to load.
 	     * @param  {Object} params     Optional parameters to pass when loading representation.
 	     * @param  {Function} processResponse Optional function to do something with the reponse before
@@ -1417,26 +1343,50 @@
 	      if (onProgress) {
 	        this.addProgressListener(url, onProgress);
 	      }
-	      params.info = { url: url };
+	      var repParams = Object.assign({ url: url }, params);
 	      // If the representation is cached, return the cached data; otherwise,
 	      // get the representation.
 	      if (!this.cache.hasOwnProperty(url)) {
-	        this.cache[url] = new _lie2.default(function (resolve, reject) {
-	          _this6.sdkLoader.getRepresentation(url, _this6.onAssetLoadProgress.bind(_this6), params).then(function (response) {
-	            if (processResponse) {
-	              return processResponse(response);
-	            }
-	            return _lie2.default.resolve(response);
-	          }).then(function (data) {
-	            _this6.removeProgressListeners(url);
-	            resolve(data);
-	          }).catch(function (err) {
-	            _this6.removeProgressListeners(url);
-	            reject(err);
-	          });
+	        this.cache[url] = this.sdkLoader.getRepresentation(url, this.onAssetLoadProgress.bind(this), repParams).then(function (response) {
+	          if (processResponse) {
+	            return processResponse(response);
+	          }
+	          return _lie2.default.resolve(response);
+	        }).then(function (data) {
+	          _this6.removeProgressListeners(url);
+	          return _lie2.default.resolve(data);
+	        }).catch(function (err) {
+	          _this6.removeProgressListeners(url);
+	          return _lie2.default.reject(err);
 	        });
 	      }
 	      return this.cache[url];
+	    }
+
+	    /**
+	     * Given a compression type for a representation (e.g. 'jpeg', 'dxt', etc.), return
+	     * the responseType that is expected (e.g. 'blob' or 'arraybuffer')
+	     * @method getImageResponseType
+	     * @public
+	     * @param  {String} compression The compression type for the representation ('jpeg', 'dxt', etc.)
+	     * @returns {String}             Either 'blob' or 'arraybuffer'
+	     */
+
+	  }, {
+	    key: 'getImageResponseType',
+	    value: function getImageResponseType(compression) {
+	      var responseType = void 0;
+	      switch (compression) {
+	        case COMPRESSION_TYPE.DXT:
+	        case COMPRESSION_TYPE.DXT1:
+	        case COMPRESSION_TYPE.DXT5:
+	          responseType = 'arraybuffer';
+	          break;
+	        default:
+	          responseType = 'blob';
+	          break;
+	      }
+	      return responseType;
 	    }
 
 	    /**
@@ -1453,7 +1403,6 @@
 	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 
-	      // TODO: intelligently find a resource based on params.
 	      var representations = asset.get('representations');
 	      if (!representations || representations.length === 0) {
 	        throw new Error('Box3DAsset has no resources: ' + asset.getName());
@@ -1463,6 +1412,7 @@
 	      if (!match) {
 	        throw new Error('Unable to find match for given image description');
 	      }
+
 	      return match;
 	    }
 
@@ -1479,66 +1429,60 @@
 	    value: function findBestMatchImage(representations) {
 	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	      params.channels = params.channels || ['red', 'green', 'blue'];
-	      params.maxResolution = params.maxResolution || 16384;
+	      var repParams = Object.assign({
+	        maxResolution: MAX_IMAGE_RESOLUTION }, params);
 
 	      if (!representations || !(representations instanceof Array)) {
 	        throw new Error('Invalid sourceFiles list for image. Must specify a "regular" image.');
 	      }
-	      var hasFormat = false;
-	      var closestMatch = void 0;
-	      var closestResDiff = 20000;
-	      // Compare the resolution of the image with what was requested and
-	      // keep track of the closest match.
-	      var findResolutionMatch = function findResolutionMatch(image) {
-	        image.width = image.width || 1;
-	        image.height = image.height || 1;
-	        var maxRes = Math.max(image.width, image.height);
-	        var resDiff = params.maxResolution - maxRes;
-	        if (resDiff >= 0 && resDiff < closestResDiff) {
-	          closestResDiff = resDiff;
-	          closestMatch = image;
-	        }
-	      };
 
 	      // Get closest match for compression param. Compression will either match exactly or
 	      // fall back to 'none'
 	      var compressionMatches = representations.filter(function (image) {
-	        if (image.compression === params.compression) {
+	        if (image.compression === repParams.compression) {
 	          return true;
 	        }
 	        switch (image.compression) {
-	          case 'zip':
-	          case 'jpeg':
-	            return !params.compression;
-	          case 'dxt1':
-	          case 'dxt5':
-	            return params.compression === 'dxt';
+	          case COMPRESSION_TYPE.ZIP:
+	          case COMPRESSION_TYPE.JPEG:
+	            return !repParams.compression;
+	          case COMPRESSION_TYPE.DXT:
+	          case COMPRESSION_TYPE.DXT1:
+	          case COMPRESSION_TYPE.DXT5:
+	            return repParams.compression === COMPRESSION_TYPE.DXT;
 	        }
 	        return false;
 	      });
 	      // If no matches for the supplied compression exist, try to find the regular images (png or jpg)
 	      if (compressionMatches.length === 0) {
 	        compressionMatches = representations.filter(function (image) {
-	          return image.compression === 'zip' || image.compression === 'jpeg';
+	          return image.compression === COMPRESSION_TYPE.ZIP || image.compression === COMPRESSION_TYPE.JPEG;
 	        });
 	      }
 
-	      // Go through the list and look for the closest match.
-	      compressionMatches.forEach(function (image) {
-	        image.channels = image.channels || ['red', 'green', 'blue'];
-	        // Filter by channels first, then match by closest resolution.
-	        if (image.channels.toString() === params.channels.toString()) {
-	          hasFormat = true;
-	          findResolutionMatch(image);
-	        } else {
-	          if (!hasFormat) {
-	            findResolutionMatch(image);
-	          }
-	        }
+	      var formatMatches = compressionMatches.filter(function (image) {
+	        var channels = image.channels || DEFAULT_CHANNELS;
+	        return !repParams.channels || channels.toString() === repParams.channels.toString();
 	      });
 
-	      return closestMatch;
+	      if (formatMatches.length === 0) {
+	        formatMatches = compressionMatches;
+	      }
+
+	      // For each match, compute the difference between its size and the max size.
+	      var sizeDiffs = formatMatches.map(function (image) {
+	        return repParams.maxResolution - Math.max(image.width || 1, image.height || 1);
+	      });
+
+	      // Find the index of the minimum, *positive* “diff”.
+	      // This is equivalent to the largest image that is less than or equal to the max specified.
+	      var bestIdx = sizeDiffs.reduce(function (bestIdx, currentDiff, currentIdx) {
+	        var bestDiff = bestIdx >= 0 ? sizeDiffs[bestIdx] : Number.MAX_VALUE;
+	        return currentDiff >= 0 && currentDiff < bestDiff ? currentIdx : bestIdx;
+	      }, -1);
+
+	      // Locate the match.
+	      return bestIdx >= 0 ? formatMatches[bestIdx] : undefined;
 	    }
 
 	    /**
@@ -1553,62 +1497,41 @@
 	    key: 'parseImage',
 	    value: function parseImage(response, representation) {
 	      return new _lie2.default(function (resolve, reject) {
-	        if (!(response.response instanceof Blob)) {
-	          return reject(new Error('data is not a valid Blob'));
+
+	        var data = {
+	          properties: {
+	            compression: representation.compression,
+	            channels: representation.channels || DEFAULT_CHANNELS
+	          }
+	        };
+
+	        if (response.response instanceof ArrayBuffer) {
+	          data.data = response.response;
+	          data.properties.width = representation.width;
+	          data.properties.height = representation.height;
+	          return resolve(data);
+	        } else if (response.response instanceof Blob) {
+	          try {
+	            (function () {
+	              var url = URL.createObjectURL(response.response),
+	                  img = new Image();
+
+	              img.onload = function () {
+	                data.data = img;
+	                data.properties.width = img.width;
+	                data.properties.height = img.height;
+
+	                return resolve(data);
+	              };
+
+	              img.src = url;
+	            })();
+	          } catch (err) {
+	            return reject(err);
+	          }
+	        } else {
+	          return reject(new Error('data is not a valid format'));
 	        }
-
-	        try {
-	          (function () {
-	            var data = {
-	              properties: {
-	                compression: representation.compression,
-	                channels: representation.channels || ['red', 'green', 'blue']
-	              }
-	            };
-
-	            if (response.response instanceof ArrayBuffer) {
-	              data.data = response.response;
-	              data.properties.width = representation.width;
-	              data.properties.height = representation.height;
-	              resolve(data);
-	            } else {
-	              (function () {
-	                var url = URL.createObjectURL(response.response),
-	                    img = new Image();
-
-	                img.onload = function () {
-	                  data.data = img;
-	                  data.properties.width = img.width;
-	                  data.properties.height = img.height;
-
-	                  resolve(data);
-	                };
-
-	                img.src = url;
-	              })();
-	            }
-	          })();
-	        } catch (err) {
-	          reject(err);
-	        }
-	      });
-	    }
-
-	    /**
-	     * Create a video usable by the Box3DRuntime
-	     * @param {String} videoUrl The src url for the video asset
-	     * @param {Object} representation  The descriptor for the representation that was loaded
-	     * @returns {Promise} A promise that resolves with video data usable by Box3DRuntime
-	     */
-
-	  }, {
-	    key: 'parseVideo',
-	    value: function parseVideo(videoUrl /*, representation = {}*/) {
-	      var videoTag = document.createElement('video');
-	      videoTag.src = videoUrl;
-
-	      return _lie2.default.resolve({
-	        data: videoTag
 	      });
 	    }
 
@@ -2024,26 +1947,20 @@
 
 	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RunmodeLoader).call(this, fileId, fileVersionId, opts));
 	  }
+
 	  /**
-	  * See base-loader.js for base functionality.
-	  * @param {object} asset The verold asset to load
-	  * @param {object} params The parameters we want to pass to the BoxSDK and base loader.
-	  * Used for things like xhr key, progress id, and looseMatch mode
-	  * @param {function|null} progress The progress callback, on xhr load progress
-	  * @returns {Promise} a promise that resolves in the loaded and parsed data for Box3D
-	  */
+	   * @inheritdoc
+	   */
 
 
 	  _createClass(RunmodeLoader, [{
-	    key: 'loadAssetFromPackage',
-	    value: function loadAssetFromPackage(asset) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	      var progress = arguments[2];
-
-
-	      params.looseMatch = true;
-
-	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'loadAssetFromPackage', this).call(this, asset, params, progress);
+	    key: 'getBaseUrl',
+	    value: function getBaseUrl(fileId, fileVersionId /*, validator*/) {
+	      // SDK requires that we pass something in as the 3rd param so we'll make it temporary.
+	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, 'temp').then(function (url) {
+	        var tokens = url.match(/(.+)temp$/);
+	        return _lie2.default.resolve(tokens[1]);
+	      });
 	    }
 
 	    /**
@@ -2051,80 +1968,36 @@
 	     */
 
 	  }, {
-	    key: 'getAssetIdPromise',
-	    value: function getAssetIdPromise(box3dAsset) {
-	      var fileName = box3dAsset.getProperty('filename');
-	      var fileId = box3dAsset.getProperty('fileId');
-	      var fileVersionId = box3dAsset.getProperty('fileVersionId');
-	      var idPromise = void 0;
-
-	      if (fileId) {
-	        idPromise = _lie2.default.resolve({
-	          fileId: fileId,
-	          fileVersionId: fileVersionId
-	        });
-	      } else {
-	        // Use search API Instead
-	        idPromise = this.sdkLoader.getFileIds(fileName, this.fileId, { looseMatch: true });
-	      }
-
-	      return idPromise;
+	    key: 'getFileSearchOptions',
+	    value: function getFileSearchOptions() {
+	      return { looseMatch: true };
 	    }
 
 	    /**
-	     * Load an image representation.
-	     * @method loadRemoteImage
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @param {Function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the image data
+	     * @inheritdoc
 	     */
 
 	  }, {
-	    key: 'loadImageFromPackage',
-	    value: function loadImageFromPackage(fileId, fileVersionId, params, progress) {
-	      var _this2 = this;
-
-	      var resource = params.resource;
-	      if (!resource) {
-	        return _lie2.default.reject(new Error('No valid representation found.'));
-	      }
-	      var responseType = void 0;
-	      switch (resource.compression) {
-	        case 'dxt1':
-	        case 'dxt5':
-	          responseType = 'arraybuffer';
-	          break;
-	        default:
-	          responseType = 'blob';
-	      }
-
-	      // Get the representation URL.
-	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, resource.src).then(function (url) {
-
-	        return _this2.loadResourceFromUrl(url, { responseType: responseType }, function (response) {
-	          return _this2.parseImage(response, resource);
-	        }, progress);
-	      });
-	    }
-	  }, {
-	    key: 'loadVideoFromPackage',
-	    value: function loadVideoFromPackage(fileId, fileVersionId) /*, progress*/{
-	      var _this3 = this;
-
-	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-
-	      params.repParams = 'video_480.mp4';
-
-	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
-	        if (!_this3.cache.hasOwnProperty(url)) {
-	          _this3.cache[url] = _this3.parseVideo(url);
+	    key: 'modifyImagePath',
+	    value: function modifyImagePath(baseUrl, relativeUrl) {
+	      // Convert V2 relative src to runmode path
+	      // (e.g., images/1024/0.jpg -> 3dcg_image_1024_jpg/0.jpg)
+	      var urlTokens = relativeUrl.match(/^images\/(\d+)\/(\d+)\.(.+)$/);
+	      if (!urlTokens) {
+	        // Try to match this form - images/1024/rgbe/0.jpg
+	        urlTokens = relativeUrl.match(/^images\/(\d+)\/(\w+)\/(\d+)\.(.+)$/);
+	        if (!urlTokens) {
+	          return _lie2.default.reject(new Error('Unexpected formatting in image representation src.'));
 	        }
+	      }
 
-	        return _this3.cache[url];
-	      });
+	      var length = urlTokens.length;
+	      var filename = urlTokens[length - 2] + '.' + urlTokens[length - 1];
+	      var fileExtension = urlTokens[length - 1];
+
+	      var folder1 = urlTokens[1];
+	      var folder2 = urlTokens.length > 4 ? '_' + urlTokens[2] : '';
+	      return '3dcg_images_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
 	    }
 
 	    /**
@@ -2132,26 +2005,19 @@
 	     */
 
 	  }, {
-	    key: 'loadGeometry',
-	    value: function loadGeometry(fileId, fileVersionId) {
-	      var _this4 = this;
+	    key: 'modifyGeometryPath',
+	    value: function modifyGeometryPath(baseUrl /*, url*/) {
+	      return baseUrl + '3dcg_bin.bin';
+	    }
 
-	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	      var progress = arguments[3];
+	    /**
+	     * @inheritdoc
+	     */
 
-
-	      params.repParams = '3dcg_bin.bin';
-
-	      // Get the representation URL.
-	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
-
-	        return _this4.loadResourceFromUrl(url, { responseType: 'arraybuffer' }, function (response) {
-	          return _lie2.default.resolve({
-	            data: response.response,
-	            properties: {}
-	          });
-	        }, progress);
-	      });
+	  }, {
+	    key: 'modifyDocumentPath',
+	    value: function modifyDocumentPath(baseUrl /*, url*/) {
+	      return baseUrl + '3dcg_json.json';
 	    }
 
 	    /**
@@ -2166,39 +2032,6 @@
 	    value: function getGzippedLength(xhr, url) {
 
 	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: true });
-	    }
-
-	    /**
-	     * Load a JSON file and return a JavaScript Object.
-	     * @method loadJson
-	     * @param {string} fileId The ID of the file we are going to load
-	     * @param {string} fileVersionId The file version ID of the file to load
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @param {Function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the JSON data
-	     */
-
-	  }, {
-	    key: 'loadJson',
-	    value: function loadJson(fileId, fileVersionId) {
-	      var _this5 = this;
-
-	      var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	      var progress = arguments[3];
-
-
-	      params.repParams = '3dcg_json.json';
-
-	      // Get the representation URL.
-	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, params.repParams).then(function (url) {
-
-	        return _this5.loadResourceFromUrl(url, { responseType: 'json' }, function (response) {
-	          return _lie2.default.resolve({
-	            data: response.response,
-	            properties: {}
-	          });
-	        }, progress);
-	      });
 	    }
 	  }]);
 

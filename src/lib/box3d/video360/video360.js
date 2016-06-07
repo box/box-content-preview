@@ -123,19 +123,26 @@ class Video360 extends Dash {
         const scene = this.renderer.getBox3D().getEntityById('SCENE_ID');
         const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
-        this.textureAsset = this.renderer.getBox3D().assetRegistry.createAsset({
-            id: 'VIDEO_TEX_ID',
-            type: 'textureVideo',
+        this.videoAsset = this.renderer.getBox3D().assetRegistry.createAsset({
+            id: 'VIDEO_ID',
+            type: 'video',
             properties: {
                 // layout: 'stereo2dOverUnder',
-                stream: true,
                 generateMipmaps: false,
+                querySelector: `.${this.mediaContainerEl.className} video`,
+                autoPlay: false
+            }
+        });
+
+        this.textureAsset = this.renderer.getBox3D().assetRegistry.createAsset({
+            id: 'VIDEO_TEX_ID',
+            type: 'texture2D',
+            properties: {
+                imageId: 'VIDEO_ID',
                 minFilter: 'linear',
                 magFilter: 'linear',
                 uMapping: 'clamp',
-                vMapping: 'clamp',
-                querySelector: `.${this.mediaContainerEl.className} video`,
-                autoPlay: false
+                vMapping: 'clamp'
             }
         });
         return new Promise((resolve) => {
