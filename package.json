@@ -39,6 +39,7 @@
     "fetch-mock-forwarder": "1.0.0",
     "file-loader": "0.8.5",
     "fixed-data-table": "0.6.0",
+    "husky": "0.11.4",
     "i18n-webpack-plugin": "0.2.7",
     "isomorphic-fetch": "2.2.1",
     "isparta-loader": "2.0.0",
@@ -99,7 +100,7 @@
     "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
     "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
     "lint": "./node_modules/.bin/eslint src/lib",
-    "eslint": "./build/pre-commit.sh",
+    "prepush": "npm run lint",
     "build": "npm run lint && npm run clean && npm run build-rb && npm run dev",
     "ci": "npm run lint && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run jenkins",
     "release": "npm run lint && npm run clean && npm run build-rb && karma start karma.release.conf.js && npm run prod"

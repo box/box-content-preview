@@ -17,7 +17,7 @@ Latest version of the SDK hosted on Box's CDN
 * Version: 0.60.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.60.0/en-US/preview.js  
+https://cdn01.boxcdn.net/content-experience/0.60.0/en-US/preview.js
 https://cdn01.boxcdn.net/content-experience/0.60.0/en-US/preview.css
 
 Usage
@@ -61,8 +61,6 @@ Clone and compile
 
 While developing
 ================
-Install git pre-commit hook `cp build/pre-commit.sh .git/hooks/pre-commit`.
-
 Install SCSS linter `gem install scss_lint` for linting SCSS files.
 
 * `npm run build` to generate resource bundles and JS webpack bundles.
