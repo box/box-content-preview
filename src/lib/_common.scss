@@ -52,18 +52,23 @@ $header-height: 48px;
     }
 }
 
-.box-preview-header-btns button {
-    padding: 0 10px;
+.box-preview-header-btns {
+    line-height: $header-height;
 
-    svg {
-        fill: lighten($better-black, 15%);
-    }
-
-    &:hover {
-        padding: 0 10px; // Override btn-plain
+    button {
+        padding: 0 10px;
 
         svg {
-            fill: $better-black;
+            fill: lighten($better-black, 15%);
+        }
+
+        &:hover {
+            padding: 0 10px; // Override btn-plain
+
+            // scss-lint:disable NestingDepth
+            svg {
+                fill: $better-black;
+            }
         }
     }
 }
