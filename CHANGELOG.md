@@ -1,5 +1,18 @@
 # Change Log
 
+## [v0.61.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.61.0) (2016-06-07)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.60.0...v0.61.0)
+
+**Merged pull requests:**
+
+- Tweaking header buttons height [\#412](https://gitenterprise.inside-box.net/Preview/Preview/pull/412) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Disable annotations drop-under UI for now [\#411](https://gitenterprise.inside-box.net/Preview/Preview/pull/411) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix error viewer download button by always binding listeners [\#410](https://gitenterprise.inside-box.net/Preview/Preview/pull/410) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Coxp 1938 [\#409](https://gitenterprise.inside-box.net/Preview/Preview/pull/409) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Adding husky for prepush ocmmit [\#407](https://gitenterprise.inside-box.net/Preview/Preview/pull/407) ([phora](https://gitenterprise.inside-box.net/phora))
+- Adding tooltips to header and delete comment button [\#406](https://gitenterprise.inside-box.net/Preview/Preview/pull/406) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update changelog to v0.60.0 [\#404](https://gitenterprise.inside-box.net/Preview/Preview/pull/404) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
 ## [v0.60.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.60.0) (2016-06-03)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.59.0...v0.60.0)
 
