@@ -889,6 +889,7 @@
 
 	        case 'image':
 	          {
+	            // All images should have paths already specified with the correct prefix.
 	            prefixUrl = false;
 	            var resource = void 0;
 	            try {
@@ -898,7 +899,7 @@
 	            }
 	            params.resource = resource;
 
-	            // TODO - when we support 3d reps for images, change this.
+	            // FIXME - when we support 3d reps for images, remove this and always use the 3d rep.
 	            validator = function validator(entry) {
 	              if (params.resource.compression === 'zip' && entry.representation === 'png') {
 	                return true;
@@ -919,6 +920,8 @@
 	        // Get the file ID for the asset.
 	        fileIdPromise.then(function (fileIds) {
 
+	          // If we're loading from another Box file, get the base url.
+	          // Also get the base url if we still need to prefix the url that we have.
 	          if (fileIds.fileId !== _this2.fileId || prefixUrl) {
 
 	            // Get the base representation url for fileId and fileVersionId
@@ -1190,14 +1193,14 @@
 	     * Use the base url and the relative url and construct a useable full url for the current loader
 	     * This will be overridden if needed.
 	     * @method modifyImagePath
-	     * @param  {String} baseRepUrl The base content url for representations
-	     * @param  {String} url     The relative url of the representation
+	     * @param  {String} url     The url defined in the representation
 	     * @returns {String}         The fully qualified url for the representation
 	     */
 
 	  }, {
 	    key: 'modifyImagePath',
-	    value: function modifyImagePath(baseRepUrl, url) {
+	    value: function modifyImagePath(url) {
+	      // By default, don't modify image paths.
 	      return url;
 	    }
 
@@ -1280,8 +1283,8 @@
 	      var resourceUrl = resource.src;
 	      var isRepresentation = !resource.isExternal;
 	      if (isRepresentation) {
-	        // The path is relative (to our base content path);
-	        resourceUrl = this.modifyImagePath(baseUrl, resourceUrl);
+	        // The path is for a proper representation. Modify it if needed.
+	        resourceUrl = this.modifyImagePath(resourceUrl);
 	      }
 
 	      // Get the representation URL.
@@ -1979,13 +1982,14 @@
 
 	  }, {
 	    key: 'modifyImagePath',
-	    value: function modifyImagePath(baseUrl, relativeUrl) {
+	    value: function modifyImagePath(url) {
+	      // This code assumes that relativeUrl is actually the fully qualified path.
 	      // Convert V2 relative src to runmode path
 	      // (e.g., images/1024/0.jpg -> 3dcg_image_1024_jpg/0.jpg)
-	      var urlTokens = relativeUrl.match(/^images\/(\d+)\/(\d+)\.(.+)$/);
+	      var urlTokens = url.match(/images\/(\d+)\/(\d+)\.(.+)$/);
 	      if (!urlTokens) {
 	        // Try to match this form - images/1024/rgbe/0.jpg
-	        urlTokens = relativeUrl.match(/^images\/(\d+)\/(\w+)\/(\d+)\.(.+)$/);
+	        urlTokens = url.match(/images\/(\d+)\/(\w+)\/(\d+)\.(.+)$/);
 	        if (!urlTokens) {
 	          return _lie2.default.reject(new Error('Unexpected formatting in image representation src.'));
 	        }
@@ -1997,7 +2001,9 @@
 
 	      var folder1 = urlTokens[1];
 	      var folder2 = urlTokens.length > 4 ? '_' + urlTokens[2] : '';
-	      return '3dcg_images_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
+	      // Attach the base of the given url back onto the modified path.
+	      var baseFolder = url.replace(urlTokens[0], '');
+	      return baseFolder + '3dcg_images_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
 	    }
 
 	    /**

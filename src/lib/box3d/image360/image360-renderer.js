@@ -92,12 +92,13 @@ class Image360Renderer extends Box3DRenderer {
             type: 'image',
             properties: {
                 // layout: 'stereo2dOverUnder',
-                // stream: true,
                 generateMipmaps: false
             },
             representations: []
         });
 
+        // FIXME - when we get support for '3d' representations on image files, the logic below
+        // should no longer be needed.
         // Figure out the appropriate representation info and then add that info to the asset.
         const grabOriginal = (fileProperties.extension === 'jpg' ||
             fileProperties.extension === 'jpeg' ||
