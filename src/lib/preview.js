@@ -761,7 +761,7 @@ class Preview extends EventEmitter {
         }
 
         // Viewer-compatability check
-        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('point')) {
+        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('point') || Browser.isMobile()) {
             return;
         }
 
@@ -786,7 +786,7 @@ class Preview extends EventEmitter {
             return;
         }
 
-        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('highlight')) {
+        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('highlight') || Browser.isMobile()) {
             return;
         }
 

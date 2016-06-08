@@ -7,7 +7,6 @@
 import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation/annotation-thread';
 import HighlightDialog from './highlight-dialog';
-
 import * as annotatorUtil from '../annotation/annotator-util';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
@@ -28,6 +27,7 @@ class HighlightThread extends AnnotationThread {
     /**
      * [destructor]
      *
+     * @override
      * @returns {void}
      */
     destroy() {
@@ -44,6 +44,7 @@ class HighlightThread extends AnnotationThread {
      * If it is inactive, we draw the highlight. If it is active, we draw
      * the highlight in active state and show the 'delete' button.
      *
+     * @override
      * @returns {void}
      */
     show() {
@@ -73,6 +74,7 @@ class HighlightThread extends AnnotationThread {
      * that if there are any overlapping highlights, this will cut out
      * the overlapping portion.
      *
+     * @override
      * @returns {void}
      */
     hide() {
@@ -82,6 +84,7 @@ class HighlightThread extends AnnotationThread {
     /**
      * Reset state to inactive and redraw.
      *
+     * @override
      * @returns {void}
      */
     reset() {
@@ -92,6 +95,7 @@ class HighlightThread extends AnnotationThread {
     /**
      * Saves an annotation.
      *
+     * @override
      * @param {String} type Type of annotation
      * @param {String} text Text of annotation to save
      * @returns {Promise} Promise
@@ -195,6 +199,7 @@ class HighlightThread extends AnnotationThread {
      * Sets up the thread. Highlight threads have no HTML element since they
      * are drawn onto the canvas, but do have a dialog for adding/deleting.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -217,6 +222,7 @@ class HighlightThread extends AnnotationThread {
     /**
      * Binds custom event listeners for the dialog.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -235,6 +241,7 @@ class HighlightThread extends AnnotationThread {
     /**
      * Unbinds custom event listeners for the dialog.
      *
+     * @override
      * @returns {void}
      * @private
      */
