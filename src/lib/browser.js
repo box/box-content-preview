@@ -4,7 +4,6 @@ const MIME_H264_BASELINE = 'video/mp4; codecs="avc1.42E01E"';
 const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
 const EXT_STANDARD_DERIVATIVES = 'OES_standard_derivatives';
-const EXT_FLOATING_POINT_TEXTURES = 'OES_texture_float';
 const USER_AGENT = navigator.userAgent;
 
 let name = undefined;
@@ -192,9 +191,8 @@ class Browser {
         }
 
         const hasStandardDerivatives = !!gl.getExtension(EXT_STANDARD_DERIVATIVES);
-        const hasFloatingPointTextures = !!gl.getExtension(EXT_FLOATING_POINT_TEXTURES);
 
-        return hasStandardDerivatives && hasFloatingPointTextures;
+        return hasStandardDerivatives;
     }
 
     /**

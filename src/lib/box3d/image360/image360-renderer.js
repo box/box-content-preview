@@ -88,25 +88,56 @@ class Image360Renderer extends Box3DRenderer {
         const scene = this.box3d.getEntityById('SCENE_ID');
         const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
-        this.textureAsset = this.box3d.assetRegistry.createAsset({
-            type: 'texture2D',
+        this.imageAsset = this.box3d.assetRegistry.createAsset({
+            type: 'image',
             properties: {
-                // layout: 'stereo2dOverUnder',
-                stream: true,
-                generateMipmaps: false,
-                minFilter: 'linear',
-                magFilter: 'linear',
-                uMapping: 'clamp',
-                vMapping: 'clamp',
-                fileId: fileProperties.id,
-                representation: (fileProperties.extension === 'jpg' || fileProperties.fileExtension === 'png') ? 'original' : undefined
-            }
+                // layout: 'stereo2dOverUnder'
+            },
+            representations: []
         });
-        return new Promise((resolve) => {
-            this.textureAsset.load(() => {
-                skybox.enable();
-                skybox.setAttribute('skyboxTexture', this.textureAsset.id);
-                resolve();
+
+        // FIXME - when we get support for '3d' representations on image files, the logic below
+        // should no longer be needed.
+        // Figure out the appropriate representation info and then add that info to the asset.
+        const extension = fileProperties.extension.toLowerCase();
+        let compression = extension === 'png' ? 'zip' : 'jpeg';
+        this.boxSdk.representationLoader.getRepresentationUrl(fileProperties.id, (entry) => {
+            const grabOriginal = (extension === 'jpg' || extension === 'jpeg'
+                || extension === 'png');
+            if (grabOriginal && entry.representation === 'original') {
+                return true;
+            } else if (!grabOriginal && entry.properties.dimensions === '2048x2048') {
+                if (entry.representation === 'jpg') {
+                    compression = 'jpeg';
+                } else if (entry.representation === 'png') {
+                    compression = 'zip';
+                }
+                return true;
+            }
+            return false;
+        }).then((url) => {
+            this.imageAsset.set('representations', [{
+                src: url,
+                compression
+            }]);
+
+            this.textureAsset = this.box3d.assetRegistry.createAsset({
+                type: 'texture2D',
+                properties: {
+                    // layout: 'stereo2dOverUnder',
+                    imageId: this.imageAsset.id,
+                    minFilter: 'linear',
+                    magFilter: 'linear',
+                    uMapping: 'clamp',
+                    vMapping: 'clamp'
+                }
+            });
+            return new Promise((resolve) => {
+                this.textureAsset.load(() => {
+                    skybox.enable();
+                    skybox.setAttribute('skyboxTexture', this.textureAsset.id);
+                    resolve();
+                });
             });
         });
     }
