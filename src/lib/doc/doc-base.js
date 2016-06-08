@@ -82,9 +82,9 @@ class DocBase extends Base {
             this.annotator.destroy();
         }
 
-        // Clean up the find bar and controller
-        if (this.findBar && this.findController) {
-            this.destroyFind();
+        // Clean up the find bar
+        if (this.findBar) {
+            this.findBar.destroy();
         }
 
         // Clean up viewer and PDF document object
@@ -128,27 +128,11 @@ class DocBase extends Base {
             return;
         }
 
-        this.findController = new PDFFindController({
+        this.findController = new PDFJS.PDFFindController({
             pdfViewer: this.pdfViewer
         });
         this.pdfViewer.setFindController(this.findController);
         this.findBar = new DocFindBar(this.findBarEl, this.findController);
-        this.findController.setFindBar(this.findBar);
-    }
-
-    /**
-     * Clean up find controller and find bar
-     * @returns {void}
-     */
-    destroyFind() {
-        // Remove find controller events
-        window.removeEventListener('find', this.findController.handleEvent);
-        window.removeEventListener('findagain', this.findController.handleEvent);
-        window.removeEventListener('findhighlightallchange', this.findController.handleEvent);
-        window.removeEventListener('findcasesensitivitychange', this.findController.handleEvent);
-
-        // Cleanup find bar
-        this.findBar.destroy();
     }
 
     /**

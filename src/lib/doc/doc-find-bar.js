@@ -34,11 +34,14 @@ class DocFindBar extends EventEmitter {
         this.bar = findBar;
         this.findController = findController;
         this.currentMatch = 0;
-        this.matchResultCount = 0;
 
         if (this.findController === null) {
             throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
         }
+
+        // overriding some find controller methods to update match count
+        this.findController.updateUIState = this.updateUIState;
+        this.findController.updateUIResultsCount = this.updateUIResultsCount;
 
         // Default hides find bar on load
         this.bar.classList.add(CLASS_HIDDEN);
@@ -100,7 +103,6 @@ class DocFindBar extends EventEmitter {
      */
     destroy() {
         this.currentMatch = 0;
-        this.matchResultCount = 0;
 
         this.unbindDOMListeners();
 
@@ -120,28 +122,23 @@ class DocFindBar extends EventEmitter {
      * Dispatch custom find event based specified type
      * @param  {string} type
      * @param  {Boolean} findPrev
-     * @returns {Boolean} whether the default action of the event was not canceled
+     * @returns {void}
      */
     dispatchFindEvent(type, findPrev) {
-        const event = document.createEvent('CustomEvent');
-        event.initCustomEvent(type, true, true, {
+        this.findController.executeCommand(type, {
             query: this.findFieldEl.value,
+            phraseSearch: true, // true by default
             highlightAll: true, // true by default
             findPrevious: findPrev
         });
-
-        return window.dispatchEvent(event);
     }
 
     /**
      * Update Find Bar UI to current match state
      * @param  {Number} state FindState from PDFFindController
-     * @param  {Number} previous Previous FindState from PDFFindController
-     * @param  {Number} matchCount
      * @returns {void}
      */
-    updateUIState(state, previous, matchCount) {
-        this.matchResultCount = matchCount;
+    updateUIState(state) {
         this.status = '';
 
         switch (state) {
@@ -162,21 +159,20 @@ class DocFindBar extends EventEmitter {
         }
 
         this.findFieldEl.setAttribute('data-status', this.status);
-        this.updateResultsCount(matchCount);
+        this.updateUIResultsCount();
     }
 
     /**
      * Update results count to current match count
-     * @param  {Number} matchCount
      * @returns {void}
      */
-    updateResultsCount(matchCount) {
+    updateUIResultsCount() {
         if (!this.findResultsCountEl) {
             return; // no UI control is provided
         }
 
         // If there are no matches, hide the counter
-        if (!matchCount) {
+        if (!this.findController.matchCount) {
             this.findResultsCountEl.classList.add(CLASS_HIDDEN);
             return;
         }
@@ -186,7 +182,7 @@ class DocFindBar extends EventEmitter {
         this.findFieldEl.style.paddingRight = `${paddingRight}px`;
 
         // Create the match counter
-        this.findResultsCountEl.textContent = this.currentMatch + MATCH_SEPARATOR + matchCount;
+        this.findResultsCountEl.textContent = this.currentMatch + MATCH_SEPARATOR + this.findController.matchCount;
 
         // Show the counter
         this.findResultsCountEl.classList.remove(CLASS_HIDDEN);
@@ -320,7 +316,7 @@ class DocFindBar extends EventEmitter {
                 this.currentMatch = this.currentMatch + 1;
 
                 // Loops search to first match in document
-                if (this.currentMatch > this.matchResultCount) {
+                if (this.currentMatch > this.findController.matchCount) {
                     this.currentMatch = 1;
                 }
             }
@@ -343,7 +339,7 @@ class DocFindBar extends EventEmitter {
 
                 // Loops search to last match in document
                 if (this.currentMatch <= 0) {
-                    this.currentMatch = this.matchResultCount;
+                    this.currentMatch = this.findController.matchCount;
                 }
             }
         }
