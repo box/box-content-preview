@@ -84,7 +84,7 @@ function sceneEntities(prefix) {
             rendererComponent: {
                 componentData: {
                     antialias: true,
-                    renderOnDemand: true
+                    renderOnDemand: false
                 },
                 scriptId: 'box3d_renderer',
                 isBuiltIn: true,

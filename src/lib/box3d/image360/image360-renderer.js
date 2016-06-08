@@ -91,8 +91,7 @@ class Image360Renderer extends Box3DRenderer {
         this.imageAsset = this.box3d.assetRegistry.createAsset({
             type: 'image',
             properties: {
-                // layout: 'stereo2dOverUnder',
-                generateMipmaps: false
+                // layout: 'stereo2dOverUnder'
             },
             representations: []
         });
@@ -100,11 +99,11 @@ class Image360Renderer extends Box3DRenderer {
         // FIXME - when we get support for '3d' representations on image files, the logic below
         // should no longer be needed.
         // Figure out the appropriate representation info and then add that info to the asset.
-        const grabOriginal = (fileProperties.extension === 'jpg' ||
-            fileProperties.extension === 'jpeg' ||
-            fileProperties.fileExtension === 'png');
-        let compression = fileProperties.fileExtension === 'png' ? 'zip' : 'jpeg';
+        const extension = fileProperties.extension.toLowerCase();
+        let compression = extension === 'png' ? 'zip' : 'jpeg';
         this.boxSdk.representationLoader.getRepresentationUrl(fileProperties.id, (entry) => {
+            const grabOriginal = (extension === 'jpg' || extension === 'jpeg'
+                || extension === 'png');
             if (grabOriginal && entry.representation === 'original') {
                 return true;
             } else if (!grabOriginal && entry.properties.dimensions === '2048x2048') {

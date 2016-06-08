@@ -76,155 +76,155 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _EffectComposer = __webpack_require__(63);
+	var _EffectComposer = __webpack_require__(64);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(64);
+	var _BloomPass = __webpack_require__(65);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(65);
+	var _BokehPass = __webpack_require__(66);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(66);
+	var _DotScreenPass = __webpack_require__(67);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(67);
+	var _FilmPass = __webpack_require__(68);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(68);
+	var _MaskPass = __webpack_require__(69);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(69);
+	var _RenderPass = __webpack_require__(70);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(70);
+	var _SavePass = __webpack_require__(71);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(71);
+	var _ShaderPass = __webpack_require__(72);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(110);
+	var _TexturePass = __webpack_require__(111);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(111);
+	var _AdaptiveToneMappingPass = __webpack_require__(112);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(112);
+	var _AnimationAsset = __webpack_require__(113);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(113);
+	var _ApplicationAsset = __webpack_require__(114);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(114);
+	var _AudioAsset = __webpack_require__(115);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _DocumentAsset = __webpack_require__(115);
+	var _DocumentAsset = __webpack_require__(116);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
 
-	var _ImageAsset = __webpack_require__(144);
+	var _ImageAsset = __webpack_require__(145);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _VideoAsset = __webpack_require__(145);
+	var _VideoAsset = __webpack_require__(146);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
-	var _MaterialAsset = __webpack_require__(17);
+	var _MaterialAsset = __webpack_require__(18);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(146);
+	var _MeshGeometryAsset = __webpack_require__(147);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(148);
+	var _PrimitiveGeometryAsset = __webpack_require__(149);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(149);
+	var _PrefabAsset = __webpack_require__(150);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(150);
+	var _RenderTexture2DAsset = __webpack_require__(151);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(152);
+	var _RenderTextureCubeAsset = __webpack_require__(153);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _SceneAsset = __webpack_require__(153);
+	var _SceneAsset = __webpack_require__(154);
 
 	var _SceneAsset2 = _interopRequireDefault(_SceneAsset);
 
-	var _ShaderAsset = __webpack_require__(154);
+	var _ShaderAsset = __webpack_require__(155);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _ScriptAsset = __webpack_require__(160);
+	var _ScriptAsset = __webpack_require__(161);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _Texture2DAsset = __webpack_require__(162);
+	var _Texture2DAsset = __webpack_require__(163);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(163);
+	var _TextureCubeAsset = __webpack_require__(164);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _Box3DObject = __webpack_require__(164);
+	var _Box3DObject = __webpack_require__(165);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(165);
+	var _CameraObject = __webpack_require__(166);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(166);
+	var _LightObject = __webpack_require__(167);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _SkinnedMeshObject = __webpack_require__(167);
+	var _SkinnedMeshObject = __webpack_require__(168);
 
 	var _SkinnedMeshObject2 = _interopRequireDefault(_SkinnedMeshObject);
 
-	var _StaticMeshObject = __webpack_require__(169);
+	var _StaticMeshObject = __webpack_require__(170);
 
 	var _StaticMeshObject2 = _interopRequireDefault(_StaticMeshObject);
 
-	var _ModelObject = __webpack_require__(170);
+	var _ModelObject = __webpack_require__(171);
 
 	var _ModelObject2 = _interopRequireDefault(_ModelObject);
 
-	var _APIUtilities = __webpack_require__(161);
+	var _APIUtilities = __webpack_require__(162);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(171);
+	var _DOMUtilities = __webpack_require__(172);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(116);
+	var _JSONLoader = __webpack_require__(117);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(172);
+	var _DevResourceLoader = __webpack_require__(173);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
 
@@ -13067,19 +13067,23 @@
 
 	var _uuid2 = _interopRequireDefault(_uuid);
 
+	var _stats = __webpack_require__(10);
+
+	var _stats2 = _interopRequireDefault(_stats);
+
 	var _RuntimeEvents2 = __webpack_require__(2);
 
 	var _RuntimeEvents3 = _interopRequireDefault(_RuntimeEvents2);
 
-	var _EntityDispatcher = __webpack_require__(10);
+	var _EntityDispatcher = __webpack_require__(11);
 
 	var _EntityDispatcher2 = _interopRequireDefault(_EntityDispatcher);
 
-	var _AssetRegistry = __webpack_require__(11);
+	var _AssetRegistry = __webpack_require__(12);
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(60);
+	var _raf = __webpack_require__(61);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -13339,12 +13343,19 @@
 	        done();
 	      }
 
+	      function initDebugging(done) {
+	        this.stats = new _stats2.default();
+	        this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+	        document.body.appendChild(this.stats.dom);
+	        done();
+	      }
+
 	      // Run each initialize task.
 	      // We run each task inside setTimeout() to reduce blockage of the main
 	      // thread. Tasks are chained together using promises.
 	      var promise = Promise.resolve(); // Empty promise to start our chain
 
-	      [initGlobalEvents, initContainer, initCanvas, initResourceLoader, initState, initAssetRegistry, initEntities, initListeners, initFinish].forEach(function (initFunction) {
+	      [initGlobalEvents, initContainer, initCanvas, initResourceLoader, initState, initAssetRegistry, initEntities, initListeners, initFinish, initDebugging].forEach(function (initFunction) {
 	        var _this3 = this;
 
 	        var nextPromise = new Promise(function (resolve, reject) {
@@ -13736,6 +13747,10 @@
 	        return;
 	      }
 
+	      if (this.stats) {
+	        this.stats.begin();
+	      }
+
 	      this.frameCount++;
 
 	      this.frameDelta = this.getTimeNow() - this.lastFrameDelta;
@@ -13763,6 +13778,9 @@
 	        this.trigger('renderGroup9', this.frameDelta);
 	        this.trigger('renderGroup10', this.frameDelta);
 	        this.trigger('postRender', this.frameDelta);
+	      }
+	      if (this.stats) {
+	        this.stats.end();
 	      }
 	    }
 	  }]);
@@ -55497,6 +55515,186 @@
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * @author mrdoob / http://mrdoob.com/
+	 */
+
+	var Stats = function () {
+
+	  var mode = 0;
+
+	  var container = document.createElement( 'div' );
+	  container.style.cssText = 'position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000';
+	  container.addEventListener( 'click', function ( event ) {
+
+	    event.preventDefault();
+	    showPanel( ++ mode % container.children.length );
+
+	  }, false );
+
+	  //
+
+	  function addPanel( panel ) {
+
+	    container.appendChild( panel.dom );
+	    return panel;
+
+	  }
+
+	  function showPanel( id ) {
+
+	    for ( var i = 0; i < container.children.length; i ++ ) {
+
+	      container.children[ i ].style.display = i === id ? 'block' : 'none';
+
+	    }
+
+	    mode = id;
+
+	  }
+
+	  //
+
+	  var beginTime = ( performance || Date ).now(), prevTime = beginTime, frames = 0;
+
+	  var fpsPanel = addPanel( new Stats.Panel( 'FPS', '#0ff', '#002' ) );
+	  var msPanel = addPanel( new Stats.Panel( 'MS', '#0f0', '#020' ) );
+
+	  if ( self.performance && self.performance.memory ) {
+
+	    var memPanel = addPanel( new Stats.Panel( 'MB', '#f08', '#201' ) );
+
+	  }
+
+	  showPanel( 0 );
+
+	  return {
+
+	    REVISION: 16,
+
+	    dom: container,
+
+	    addPanel: addPanel,
+	    showPanel: showPanel,
+
+	    begin: function () {
+
+	      beginTime = ( performance || Date ).now();
+
+	    },
+
+	    end: function () {
+
+	      frames ++;
+
+	      var time = ( performance || Date ).now();
+
+	      msPanel.update( time - beginTime, 200 );
+
+	      if ( time > prevTime + 1000 ) {
+
+	        fpsPanel.update( ( frames * 1000 ) / ( time - prevTime ), 100 );
+
+	        prevTime = time;
+	        frames = 0;
+
+	        if ( memPanel ) {
+
+	          var memory = performance.memory;
+	          memPanel.update( memory.usedJSHeapSize / 1048576, memory.jsHeapSizeLimit / 1048576 );
+
+	        }
+
+	      }
+
+	      return time;
+
+	    },
+
+	    update: function () {
+
+	      beginTime = this.end();
+
+	    },
+
+	    // Backwards Compatibility
+
+	    domElement: container,
+	    setMode: showPanel
+
+	  };
+
+	};
+
+	Stats.Panel = function ( name, fg, bg ) {
+
+	  var min = Infinity, max = 0, round = Math.round;
+	  var PR = round( window.devicePixelRatio || 1 );
+
+	  var WIDTH = 80 * PR, HEIGHT = 48 * PR,
+	      TEXT_X = 3 * PR, TEXT_Y = 2 * PR,
+	      GRAPH_X = 3 * PR, GRAPH_Y = 15 * PR,
+	      GRAPH_WIDTH = 74 * PR, GRAPH_HEIGHT = 30 * PR;
+
+	  var canvas = document.createElement( 'canvas' );
+	  canvas.width = WIDTH;
+	  canvas.height = HEIGHT;
+	  canvas.style.cssText = 'width:80px;height:48px';
+
+	  var context = canvas.getContext( '2d' );
+	  context.font = 'bold ' + ( 9 * PR ) + 'px Helvetica,Arial,sans-serif';
+	  context.textBaseline = 'top';
+
+	  context.fillStyle = bg;
+	  context.fillRect( 0, 0, WIDTH, HEIGHT );
+
+	  context.fillStyle = fg;
+	  context.fillText( name, TEXT_X, TEXT_Y );
+	  context.fillRect( GRAPH_X, GRAPH_Y, GRAPH_WIDTH, GRAPH_HEIGHT );
+
+	  context.fillStyle = bg;
+	  context.globalAlpha = 0.9;
+	  context.fillRect( GRAPH_X, GRAPH_Y, GRAPH_WIDTH, GRAPH_HEIGHT );
+
+	  return {
+
+	    dom: canvas,
+
+	    update: function ( value, maxValue ) {
+
+	      min = Math.min( min, value );
+	      max = Math.max( max, value );
+
+	      context.fillStyle = bg;
+	      context.globalAlpha = 1;
+	      context.fillRect( 0, 0, WIDTH, GRAPH_Y );
+	      context.fillStyle = fg;
+	      context.fillText( round( value ) + ' ' + name + ' (' + round( min ) + '-' + round( max ) + ')', TEXT_X, TEXT_Y );
+
+	      context.drawImage( canvas, GRAPH_X + PR, GRAPH_Y, GRAPH_WIDTH - PR, GRAPH_HEIGHT, GRAPH_X, GRAPH_Y, GRAPH_WIDTH - PR, GRAPH_HEIGHT );
+
+	      context.fillRect( GRAPH_X + GRAPH_WIDTH - PR, GRAPH_Y, PR, GRAPH_HEIGHT );
+
+	      context.fillStyle = bg;
+	      context.globalAlpha = 0.9;
+	      context.fillRect( GRAPH_X + GRAPH_WIDTH - PR, GRAPH_Y, PR, round( ( 1 - ( value / maxValue ) ) * GRAPH_HEIGHT ) );
+
+	    }
+
+	  };
+
+	};
+
+	if ( true ) {
+
+	  module.exports = Stats;
+
+	}
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 	/**
 	* @module Box3D
@@ -56156,7 +56354,7 @@
 	exports.default = EntityDispatcher;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56183,23 +56381,23 @@
 
 	var _RuntimeEvents3 = _interopRequireDefault(_RuntimeEvents2);
 
-	var _Box3DAsset = __webpack_require__(12);
+	var _Box3DAsset = __webpack_require__(13);
 
 	var _Box3DAsset2 = _interopRequireDefault(_Box3DAsset);
 
-	var _BaseRegistry = __webpack_require__(15);
+	var _BaseRegistry = __webpack_require__(16);
 
 	var _BaseRegistry2 = _interopRequireDefault(_BaseRegistry);
 
-	var _MaterialRegistry = __webpack_require__(16);
+	var _MaterialRegistry = __webpack_require__(17);
 
 	var _MaterialRegistry2 = _interopRequireDefault(_MaterialRegistry);
 
-	var _TextureRegistry = __webpack_require__(18);
+	var _TextureRegistry = __webpack_require__(19);
 
 	var _TextureRegistry2 = _interopRequireDefault(_TextureRegistry);
 
-	var _ScriptRegistry = __webpack_require__(21);
+	var _ScriptRegistry = __webpack_require__(22);
 
 	var _ScriptRegistry2 = _interopRequireDefault(_ScriptRegistry);
 
@@ -56685,7 +56883,7 @@
 	exports.default = AssetRegistry;
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56710,7 +56908,7 @@
 
 	var _uuid2 = _interopRequireDefault(_uuid);
 
-	var _Box3DEntity2 = __webpack_require__(13);
+	var _Box3DEntity2 = __webpack_require__(14);
 
 	var _Box3DEntity3 = _interopRequireDefault(_Box3DEntity2);
 
@@ -57343,7 +57541,7 @@
 	exports.default = Box3DAsset;
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57372,7 +57570,7 @@
 
 	var _RuntimeEvents3 = _interopRequireDefault(_RuntimeEvents2);
 
-	var _ComponentRegistry = __webpack_require__(14);
+	var _ComponentRegistry = __webpack_require__(15);
 
 	var _ComponentRegistry2 = _interopRequireDefault(_ComponentRegistry);
 
@@ -57656,11 +57854,13 @@
 	        asset = this.box3DRuntime.assetRegistry.getAssetById(assetId);
 	        // When each dependency is loaded, check if we're done and mark dependencies as
 	        // finished if we are done.
-	        asset.when('loadBase', function () {
-	          if (this.checkIfOwnDependenciesLoaded()) {
-	            this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
-	          }
-	        }, this);
+	        if (asset) {
+	          asset.when('loadBase', function () {
+	            if (this.checkIfOwnDependenciesLoaded()) {
+	              this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
+	            }
+	          }, this);
+	        }
 	      } else {
 	        dependency.count++;
 	      }
@@ -60239,7 +60439,7 @@
 	exports.default = Box3DEntity;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60268,7 +60468,7 @@
 
 	var _RuntimeEvents3 = _interopRequireDefault(_RuntimeEvents2);
 
-	var _Box3DEntity = __webpack_require__(13);
+	var _Box3DEntity = __webpack_require__(14);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
@@ -61135,7 +61335,7 @@
 	module.exports = ComponentRegistry;
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61319,7 +61519,7 @@
 	exports.default = BaseRegistry;
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61340,11 +61540,11 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseRegistry2 = __webpack_require__(15);
+	var _BaseRegistry2 = __webpack_require__(16);
 
 	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
 
-	var _MaterialAsset = __webpack_require__(17);
+	var _MaterialAsset = __webpack_require__(18);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
@@ -61592,7 +61792,7 @@
 	exports.default = MaterialRegistry;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61613,7 +61813,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -62695,7 +62895,7 @@
 	module.exports = MaterialAsset;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62710,11 +62910,11 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseRegistry2 = __webpack_require__(15);
+	var _BaseRegistry2 = __webpack_require__(16);
 
 	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
 
-	var _BaseTextureAsset = __webpack_require__(19);
+	var _BaseTextureAsset = __webpack_require__(20);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
@@ -62856,7 +63056,7 @@
 	exports.default = TextureRegistry;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62877,15 +63077,15 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DEntity = __webpack_require__(13);
+	var _Box3DEntity = __webpack_require__(14);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _BaseImageAsset = __webpack_require__(20);
+	var _BaseImageAsset = __webpack_require__(21);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
@@ -63578,7 +63778,7 @@
 	exports.default = BaseTextureAsset;
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63595,7 +63795,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -63917,7 +64117,7 @@
 	exports.default = BaseImageAsset;
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -63963,11 +64163,11 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _BaseRegistry2 = __webpack_require__(15);
+	var _BaseRegistry2 = __webpack_require__(16);
 
 	var _BaseRegistry3 = _interopRequireDefault(_BaseRegistry2);
 
-	var _componentsBuiltin = __webpack_require__(22);
+	var _componentsBuiltin = __webpack_require__(23);
 
 	var _componentsBuiltin2 = _interopRequireDefault(_componentsBuiltin);
 
@@ -64080,11 +64280,11 @@
 	exports.default = ScriptRegistry;
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(25),__webpack_require__(42),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(23),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59) 
+	  __webpack_require__(26),__webpack_require__(43),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(24),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
 	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
@@ -68183,7 +68383,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -68240,7 +68440,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68769,7 +68969,7 @@
 	exports.default = ObjectPicker;
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -69420,7 +69620,7 @@
 	exports.default = Box3DComponent;
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -69446,7 +69646,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69501,7 +69701,7 @@
 	exports.default = AudioListener;
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -69566,7 +69766,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69962,7 +70162,7 @@
 	exports.default = CubeMapCapture;
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70002,7 +70202,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70354,7 +70554,7 @@
 	exports.default = Curve;
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70373,7 +70573,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70433,7 +70633,7 @@
 	exports.default = DebugConsoleDisplay;
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70481,7 +70681,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70860,7 +71060,7 @@
 	exports.default = DebugTextureViewer;
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70960,7 +71160,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71058,7 +71258,7 @@
 	exports.default = DefaultFilters;
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71105,7 +71305,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71174,7 +71374,7 @@
 	exports.default = Environment;
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71202,7 +71402,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71335,7 +71535,7 @@
 	exports.default = EventHandler;
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71378,7 +71578,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71595,7 +71795,7 @@
 	exports.default = Exploder;
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71643,7 +71843,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72168,7 +72368,7 @@
 	exports.default = FreeCamera;
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72191,7 +72391,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72293,7 +72493,7 @@
 	exports.default = Fullscreen;
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72317,7 +72517,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72560,7 +72760,7 @@
 	exports.default = HMDRenderEffect;
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72686,7 +72886,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -73727,7 +73927,7 @@
 	exports.default = InputController;
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73840,7 +74040,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74422,7 +74622,7 @@
 	exports.default = Animation;
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74457,7 +74657,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74594,7 +74794,7 @@
 	exports.default = LookAt;
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74626,7 +74826,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74791,7 +74991,7 @@
 	exports.default = NormalMapGenerator;
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74888,7 +75088,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -75464,7 +75664,7 @@
 	exports.default = ObjectAnimator;
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -75513,7 +75713,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -75861,7 +76061,7 @@
 	exports.default = AudioSource;
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75999,7 +76199,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76858,7 +77058,7 @@
 	exports.default = OrbitCamera;
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76885,7 +77085,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77048,7 +77248,7 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77081,7 +77281,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77453,7 +77653,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77592,7 +77792,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -78454,7 +78654,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78485,7 +78685,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -78728,7 +78928,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78752,7 +78952,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -78835,7 +79035,7 @@
 	exports.default = PreviewVRControls;
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78875,7 +79075,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79239,7 +79439,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79347,7 +79547,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79801,7 +80001,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79838,7 +80038,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -80453,7 +80653,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80500,7 +80700,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -80800,7 +81000,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80902,7 +81102,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -81444,7 +81644,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81519,7 +81719,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -81666,7 +81866,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81692,7 +81892,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -81774,7 +81974,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81813,7 +82013,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -82003,7 +82203,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82061,11 +82261,11 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _BaseImageAsset = __webpack_require__(20);
+	var _BaseImageAsset = __webpack_require__(21);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
@@ -82372,7 +82572,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82400,7 +82600,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -82575,7 +82775,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -82602,11 +82802,11 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DComponent2 = __webpack_require__(24);
+	var _Box3DComponent2 = __webpack_require__(25);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _BaseImageAsset = __webpack_require__(20);
+	var _BaseImageAsset = __webpack_require__(21);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
@@ -82817,10 +83017,10 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(61)
+	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(62)
 	  , root = typeof window === 'undefined' ? global : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -82896,7 +83096,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -82932,10 +83132,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(62)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(63)))
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -83035,7 +83235,7 @@
 
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83201,7 +83401,7 @@
 
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83383,7 +83583,7 @@
 
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83490,7 +83690,7 @@
 
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83558,7 +83758,7 @@
 
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83637,7 +83837,7 @@
 
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83731,7 +83931,7 @@
 
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83797,7 +83997,7 @@
 
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83867,12 +84067,11 @@
 
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)
-		, __webpack_require__(91)
-		, __webpack_require__(73)
+		, __webpack_require__(92)
 		, __webpack_require__(74)
 		, __webpack_require__(75)
 		, __webpack_require__(76)
@@ -83890,8 +84089,8 @@
 		, __webpack_require__(88)
 		, __webpack_require__(89)
 		, __webpack_require__(90)
-		, __webpack_require__(72)
-		, __webpack_require__(92)
+		, __webpack_require__(91)
+		, __webpack_require__(73)
 		, __webpack_require__(93)
 		, __webpack_require__(94)
 		, __webpack_require__(95)
@@ -83908,7 +84107,8 @@
 		, __webpack_require__(106)
 		, __webpack_require__(107)
 		, __webpack_require__(108)
-		, __webpack_require__(109)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(109)
+		, __webpack_require__(110)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -84004,7 +84204,7 @@
 
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84110,7 +84310,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84183,7 +84383,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84254,7 +84454,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84312,7 +84512,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84444,7 +84644,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84830,7 +85030,7 @@
 
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84895,7 +85095,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84950,7 +85150,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85006,7 +85206,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85114,7 +85314,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85167,7 +85367,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85221,7 +85421,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85286,7 +85486,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85361,7 +85561,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85462,7 +85662,7 @@
 
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85555,7 +85755,7 @@
 
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85666,7 +85866,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85764,7 +85964,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85846,7 +86046,7 @@
 
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85884,7 +86084,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85969,7 +86169,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86038,7 +86238,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86110,7 +86310,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86186,7 +86386,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86254,7 +86454,7 @@
 
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86335,7 +86535,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86401,7 +86601,7 @@
 
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86461,7 +86661,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86525,7 +86725,7 @@
 
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86588,7 +86788,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86885,7 +87085,7 @@
 
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86970,7 +87170,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87123,7 +87323,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87187,7 +87387,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87287,7 +87487,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87356,7 +87556,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87428,7 +87628,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87499,7 +87699,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87554,7 +87754,7 @@
 
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88182,7 +88382,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88207,7 +88407,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -88758,7 +88958,7 @@
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88771,7 +88971,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -88833,7 +89033,7 @@
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88846,7 +89046,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -88917,7 +89117,7 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88932,11 +89132,11 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(116);
+	var _JSONLoader = __webpack_require__(117);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -89038,12 +89238,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(3), __webpack_require__(117)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(3), __webpack_require__(118)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -89171,14 +89371,14 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(118);
-	var v1 = __webpack_require__(119);
-	var v2 = __webpack_require__(120);
+	var _ = __webpack_require__(119);
+	var v1 = __webpack_require__(120);
+	var v2 = __webpack_require__(121);
 
 	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
 	  'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
@@ -89506,7 +89706,7 @@
 
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -90855,12 +91055,12 @@
 
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(118);
+	var _ = __webpack_require__(119);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -90918,13 +91118,13 @@
 
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(118);
-	var uuid = __webpack_require__(121);
+	var _ = __webpack_require__(119);
+	var uuid = __webpack_require__(122);
 
 	/**
 	 * Returns the basename of a filename (i.e., the final element in the path).
@@ -91005,7 +91205,7 @@
 
 
 /***/ },
-/* 121 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(Buffer) {//     uuid.js
@@ -91066,7 +91266,7 @@
 	    // Moderately fast, high quality
 	    if (true) {
 	      try {
-	        var _rb = __webpack_require__(126).randomBytes;
+	        var _rb = __webpack_require__(127).randomBytes;
 	        _nodeRNG = _rng = _rb && function() {return _rb(16);};
 	        _rng();
 	      } catch(e) {}
@@ -91281,10 +91481,10 @@
 	  }
 	})('undefined' !== typeof window ? window : null);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer))
 
 /***/ },
-/* 122 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -91297,9 +91497,9 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(123)
-	var ieee754 = __webpack_require__(124)
-	var isArray = __webpack_require__(125)
+	var base64 = __webpack_require__(124)
+	var ieee754 = __webpack_require__(125)
+	var isArray = __webpack_require__(126)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -92836,10 +93036,10 @@
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 123 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -92969,7 +93169,7 @@
 
 
 /***/ },
-/* 124 */
+/* 125 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -93059,7 +93259,7 @@
 
 
 /***/ },
-/* 125 */
+/* 126 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -93070,10 +93270,10 @@
 
 
 /***/ },
-/* 126 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(127)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(128)
 
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -93084,9 +93284,9 @@
 	    ].join('\n'))
 	}
 
-	exports.createHash = __webpack_require__(129)
+	exports.createHash = __webpack_require__(130)
 
-	exports.createHmac = __webpack_require__(141)
+	exports.createHmac = __webpack_require__(142)
 
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -93107,7 +93307,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 
-	var p = __webpack_require__(142)(exports)
+	var p = __webpack_require__(143)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 
@@ -93127,16 +93327,16 @@
 	  }
 	})
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer))
 
 /***/ },
-/* 127 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(128)
+	    g.crypto || g.msCrypto || __webpack_require__(129)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -93160,22 +93360,22 @@
 	  }
 	}())
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(122).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(123).Buffer))
 
 /***/ },
-/* 128 */
+/* 129 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 129 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(130)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(131)
 
-	var md5 = toConstructor(__webpack_require__(138))
-	var rmd160 = toConstructor(__webpack_require__(140))
+	var md5 = toConstructor(__webpack_require__(139))
+	var rmd160 = toConstructor(__webpack_require__(141))
 
 	function toConstructor (fn) {
 	  return function () {
@@ -93203,10 +93403,10 @@
 	  return createHash(alg)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer))
 
 /***/ },
-/* 130 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -93215,16 +93415,16 @@
 	  return new Alg()
 	}
 
-	var Buffer = __webpack_require__(122).Buffer
-	var Hash   = __webpack_require__(131)(Buffer)
+	var Buffer = __webpack_require__(123).Buffer
+	var Hash   = __webpack_require__(132)(Buffer)
 
-	exports.sha1 = __webpack_require__(132)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(136)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(137)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(133)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(137)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(138)(Buffer, Hash)
 
 
 /***/ },
-/* 131 */
+/* 132 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -93307,7 +93507,7 @@
 
 
 /***/ },
-/* 132 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -93319,7 +93519,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 
-	var inherits = __webpack_require__(133).inherits
+	var inherits = __webpack_require__(134).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -93451,7 +93651,7 @@
 
 
 /***/ },
-/* 133 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -93979,7 +94179,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(134);
+	exports.isBuffer = __webpack_require__(135);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -94023,7 +94223,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(135);
+	exports.inherits = __webpack_require__(136);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -94041,10 +94241,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(62)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(63)))
 
 /***/ },
-/* 134 */
+/* 135 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -94055,7 +94255,7 @@
 	}
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -94084,7 +94284,7 @@
 
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -94096,7 +94296,7 @@
 	 *
 	 */
 
-	var inherits = __webpack_require__(133).inherits
+	var inherits = __webpack_require__(134).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -94237,10 +94437,10 @@
 
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(133).inherits
+	var inherits = __webpack_require__(134).inherits
 
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -94487,7 +94687,7 @@
 
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -94499,7 +94699,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 
-	var helpers = __webpack_require__(139);
+	var helpers = __webpack_require__(140);
 
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -94648,7 +94848,7 @@
 
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -94686,10 +94886,10 @@
 
 	module.exports = { hash: hash };
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer))
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -94898,13 +95098,13 @@
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer))
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(129)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(130)
 
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -94948,13 +95148,13 @@
 	}
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer))
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(143)
+	var pbkdf2Export = __webpack_require__(144)
 
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -94969,7 +95169,7 @@
 
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -95057,10 +95257,10 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer))
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95077,11 +95277,11 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DEntity = __webpack_require__(13);
+	var _Box3DEntity = __webpack_require__(14);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _BaseImageAsset2 = __webpack_require__(20);
+	var _BaseImageAsset2 = __webpack_require__(21);
 
 	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
 
@@ -95403,7 +95603,7 @@
 	exports.default = ImageAsset;
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95420,7 +95620,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _BaseImageAsset2 = __webpack_require__(20);
+	var _BaseImageAsset2 = __webpack_require__(21);
 
 	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
 
@@ -95642,7 +95842,7 @@
 	exports.default = VideoAsset;
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95665,7 +95865,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(147);
+	var _BaseGeometryAsset2 = __webpack_require__(148);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -96095,7 +96295,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96120,7 +96320,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -96344,7 +96544,7 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96365,7 +96565,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(147);
+	var _BaseGeometryAsset2 = __webpack_require__(148);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -96564,7 +96764,7 @@
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96585,7 +96785,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -96660,7 +96860,7 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96675,15 +96875,15 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _ImageAsset = __webpack_require__(144);
+	var _ImageAsset = __webpack_require__(145);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _BaseTextureAsset = __webpack_require__(19);
+	var _BaseTextureAsset = __webpack_require__(20);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(151);
+	var _BaseRenderTextureAsset = __webpack_require__(152);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -96737,7 +96937,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96750,11 +96950,11 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _BaseTextureAsset2 = __webpack_require__(19);
+	var _BaseTextureAsset2 = __webpack_require__(20);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _ImageAsset = __webpack_require__(144);
+	var _ImageAsset = __webpack_require__(145);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -96891,7 +97091,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96908,15 +97108,15 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _ImageAsset = __webpack_require__(144);
+	var _ImageAsset = __webpack_require__(145);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _BaseTextureAsset = __webpack_require__(19);
+	var _BaseTextureAsset = __webpack_require__(20);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(151);
+	var _BaseRenderTextureAsset = __webpack_require__(152);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -96983,7 +97183,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97012,7 +97212,7 @@
 
 	var _uuid2 = _interopRequireDefault(_uuid);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -97290,7 +97490,7 @@
 	exports.default = SceneAsset;
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97311,15 +97511,15 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(155);
+	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(156);
 
 	var _Box3DShaderPBR_MetalRoughness2 = _interopRequireDefault(_Box3DShaderPBR_MetalRoughness);
 
-	var _Box3DShaderPBR_SpecGloss = __webpack_require__(159);
+	var _Box3DShaderPBR_SpecGloss = __webpack_require__(160);
 
 	var _Box3DShaderPBR_SpecGloss2 = _interopRequireDefault(_Box3DShaderPBR_SpecGloss);
 
@@ -97553,12 +97753,12 @@
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(156), __webpack_require__(157), __webpack_require__(158)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(157), __webpack_require__(158), __webpack_require__(159)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -97618,7 +97818,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -98753,24 +98953,24 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports) {
 
 	module.exports = "\r\n/**\r\n * Shader used as a Box3D material type\r\n *\r\n * Written by Mike Bond\r\n */\r\n#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\tattribute vec4 tangent;\r\n#endif\r\n\r\nattribute vec2 uv2;\r\n\r\nuniform float time;\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n\tuniform float logDepthBufFC;\r\n#endif\r\n\r\n#ifdef DISPLACEMENT_MAP_RGBA\r\n\tuniform float displacementMag;\r\n\tuniform float displacementBias;\r\n\tuniform sampler2D displacementTexture;\r\n\tuniform int displacementUVChannel;\r\n\tuniform vec2 displacementTextureOffset;\r\n\tuniform vec2 displacementTextureScale;\r\n\tuniform vec2 displacementTexturePan;\r\n#endif\r\n\r\nvarying vec4 vNormal_VS;\r\n\r\n#if ( defined(NORMAL_MAP) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\nvarying vec4 vTangent_VS;\r\nvarying vec4 vBinormal_VS;\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(ROUGHNESS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR ) && defined( ALBEDO )\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tuniform mat4 bindMatrix;\r\n\tuniform mat4 bindMatrixInverse;\r\n\r\n\t#ifdef BONE_TEXTURE\r\n\r\n\t\tuniform sampler2D boneTexture;\r\n\t\tuniform int boneTextureWidth;\r\n\t\tuniform int boneTextureHeight;\r\n\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tfloat j = i * 4.0;\r\n\t\t\tfloat x = mod( j, float( boneTextureWidth ) );\r\n\t\t\tfloat y = floor( j / float( boneTextureHeight ) );\r\n\r\n\t\t\tfloat dx = 1.0 / float( boneTextureWidth );\r\n\t\t\tfloat dy = 1.0 / float( boneTextureHeight );\r\n\r\n\t\t\ty = dy * ( y + 0.5 );\r\n\r\n\t\t\tvec4 v1 = texture2D( boneTexture, vec2( dx * ( x + 0.5 ), y ) );\r\n\t\t\tvec4 v2 = texture2D( boneTexture, vec2( dx * ( x + 1.5 ), y ) );\r\n\t\t\tvec4 v3 = texture2D( boneTexture, vec2( dx * ( x + 2.5 ), y ) );\r\n\t\t\tvec4 v4 = texture2D( boneTexture, vec2( dx * ( x + 3.5 ), y ) );\r\n\r\n\t\t\tmat4 bone = mat4( v1, v2, v3, v4 );\r\n\r\n\t\t\treturn bone;\r\n\t\t}\r\n\t#else\r\n\r\n\t\tuniform mat4 boneGlobalMatrices[ NUM_BONES ];\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tmat4 bone = boneGlobalMatrices[ int(i) ];\r\n\t\t\treturn bone;\r\n\t\t}\r\n\r\n\t#endif\r\n#endif\r\n\r\n//Only for m * v (not v * m!)\r\nvec3 mulVectorByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn (v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] ) )).xyz;\r\n}\r\n\r\n//Only for m * p (not p * m!)\r\nvec4 mulPointByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] + m[3] ) );\r\n}\r\n\r\n\r\n\r\nvoid main() {\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvUv.xy = uv;\r\n\tvUv.y = 1.0 - vUv.y;\r\n\tvUv.zw = uv2;\r\n\tvUv.w = 1.0 - vUv.w;\r\n#endif\r\n\r\n#if defined( DISPLACEMENT_MAP_RGBA )\r\n\tfloat texDisplacement = 0.0;\r\n\t#if ( DISPLACEMENT_MAP_RGBA == 0 )\r\n\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\t\ttexDisplacement = displacementMag * displacementMap.x + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\r\n\t#elif ( DISPLACEMENT_MAP_RGBA == 1 )\r\n\t\t#define DISPLACEMENT_WITH_NORMAL\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\r\n\t\ttexDisplacement = displacementMag * displacementMap.a + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\t#endif\r\n\tvec4 displacedPosition = vec4( (normal * texDisplacement ) + position.xyz, 1.0 );\r\n#else\r\n\tvec4 displacedPosition = vec4( position, 1.0 );\r\n\r\n#endif\r\n\r\n\r\nhighp vec3 vNormal = normal;\r\n#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\thighp vec3 vTangent = tangent.xyz;\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tmat4 boneMatX = getBoneMatrix( skinIndex.x );\r\n\tmat4 boneMatY = getBoneMatrix( skinIndex.y );\r\n\tmat4 boneMatZ = getBoneMatrix( skinIndex.z );\r\n\tmat4 boneMatW = getBoneMatrix( skinIndex.w );\r\n\r\n\tmat4 skinMatrix = mat4( 0.0 );\r\n        skinMatrix += skinWeight.x * boneMatX;\r\n\tskinMatrix += skinWeight.y * boneMatY;\r\n\tskinMatrix += skinWeight.z * boneMatZ;\r\n\tskinMatrix += skinWeight.w * boneMatW;\r\n        skinMatrix  = bindMatrixInverse * skinMatrix * bindMatrix;\r\n\r\n\tvNormal = (skinMatrix * vec4( vNormal, 0.0 )).xyz;\r\n\t#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\t\tvTangent = (skinMatrix * vec4( vTangent, 0.0 )).xyz;\r\n\t#endif\r\n\r\n\tvec4 skinVertex    = bindMatrix * displacedPosition;\r\n\tdisplacedPosition  = boneMatX * skinVertex * skinWeight.x;\r\n\tdisplacedPosition += boneMatY * skinVertex * skinWeight.y;\r\n\tdisplacedPosition += boneMatZ * skinVertex * skinWeight.z;\r\n\tdisplacedPosition += boneMatW * skinVertex * skinWeight.w;\r\n\tdisplacedPosition  = bindMatrixInverse * displacedPosition;\r\n#endif\r\n\r\nvPosition_VS = modelViewMatrix * displacedPosition;\r\n\r\n#ifdef USE_BILLBOARDING\r\n\tgl_Position = projectionMatrix * (viewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + modelViewMatrix * displacedPosition );\r\n#else\r\n\tgl_Position = projectionMatrix * modelViewMatrix * displacedPosition;\r\n#endif\r\n\r\n#if defined( USE_LOGDEPTHBUF ) && !defined(DEPTH_PASS)\r\n\tgl_Position.z = log2(max(1e-6, gl_Position.w + 1.0)) * logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvFragDepth = 1.0 + gl_Position.w;\r\n\t#else\r\n\t\tgl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;\r\n\t#endif\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR )\r\n\t\t#if defined( ALBEDO )\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t\tvColor = color * color;\r\n\t\t\t#else\r\n\t\t\t\tvColor = color;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#endif\r\n\r\n\tvNormal_VS.xyz = normalMatrix * vNormal;\r\n\r\n\t#ifdef FLIP_SIDED\r\n\t\tvNormal_VS = -vNormal_VS;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\r\n\t\t#if defined( NORMAL_MAP ) && defined(USE_TANGENTS)\r\n\t\t\tvTangent_VS.xyz = normalMatrix * vTangent.xyz;\r\n\t\t\tvBinormal_VS.xyz = cross( vNormal_VS.xyz, vTangent_VS.xyz ) * tangent.w;\r\n\t\t#endif\r\n\r\n\t#endif\r\n#endif\r\n}"
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports) {
 
 	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\tuniform float reflectionFresnel;\r\n\t\t#ifdef ENVIRONMENT_MAP_CUBE_0\r\n\t\t\tuniform samplerCube environmentMapCube_0;\r\n\t\t\tuniform samplerCube environmentMapCube_1;\r\n\t\t\tuniform samplerCube environmentMapCube_2;\r\n\t\t#elif defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\tuniform sampler2D environmentMap2D_0;\r\n\t\t\tuniform sampler2D environmentMap2D_1;\r\n\t\t\tuniform sampler2D environmentMap2D_2;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(ROUGHNESS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\n#ifdef USE_ENVIRONMENT_MAP\r\nvec3 getReflectionFromRoughness(in vec3 ref0, in vec3 ref1, in vec3 ref2, in float roughness) {\r\n\tvec3 colour1, colour2;\r\n\tfloat interp = roughness * 2.0;\r\n\tif (roughness <= 0.5) {\r\n\t\tcolour1 = ref0;\r\n\t\tcolour2 = ref1;\r\n\t} else {\r\n\t\tinterp -= 1.0;\r\n\t\tcolour1 = ref1;\r\n\t\tcolour2 = ref2;\r\n\t}\r\n\treturn mix(colour1, colour2, interp);\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t// Convert from sRGB to linear\r\n\t\t albedoTex.xyz *= albedoTex.xyz;\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t// Convert from sRGB to linear\r\n\t\t\temissiveTex *= emissiveTex;\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t// Convert from sRGB to linear\r\n\t\t\tsssTex *= sssTex;\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 envMapReflectedColor;\r\n\t\t\tvec3 envMapDiffuseColor;\r\n\r\n\t\t\t#if defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\t\tvec3 reflectedColor0 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor1 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor2 = vec3(0.0);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 sampleUV;\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tmipBias = roughnessValue * 6.0;\r\n\t\t\t\t\treflectedColor0 = textureCube( environmentMapCube_0, sampleUV, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 3.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = textureCube( environmentMapCube_1, sampleUV, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 sampleUV;\r\n\t\t\t\t\t//Sphere map reflection\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t\t\t\t\t//Planar reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tmipBias = roughnessValue * 10.0;\r\n\t\t\t\t\treflectedColor0 = texture2D( environmentMap2D_0, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 5.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = texture2D( environmentMap2D_1, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\tenvMapReflectedColor = getReflectionFromRoughness(reflectedColor0, reflectedColor1, reflectedColor2, roughnessValue);\r\n\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\tenvMapDiffuseColor = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tenvMapDiffuseColor = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * specWeight + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && (defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0))\r\n\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\t\tvec3 reflectance_term = envMapReflectedColor.xyz * fresnel;\r\n\t\t\t\t#if !defined(METALNESS)\r\n\t\t\t\t\treflectance_term *= (1.0 - roughnessValue);\r\n\t\t\t\t#endif\r\n\t\t\t\ttotalSpecular += reflectance_term * specularColorValue;\r\n\r\n\t\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\ttotalDiffuse += envMapDiffuseColor;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t// Convert from linear to sRGB\r\n\t\tfinalColor = sqrt( finalColor );\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(156), __webpack_require__(157), __webpack_require__(158)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(157), __webpack_require__(158), __webpack_require__(159)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -98830,7 +99030,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
@@ -98848,15 +99048,15 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DEntity = __webpack_require__(13);
+	var _Box3DEntity = __webpack_require__(14);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _Box3DAsset2 = __webpack_require__(12);
+	var _Box3DAsset2 = __webpack_require__(13);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _APIUtilities = __webpack_require__(161);
+	var _APIUtilities = __webpack_require__(162);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
@@ -98995,7 +99195,7 @@
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -99069,7 +99269,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99090,11 +99290,11 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(19);
+	var _BaseTextureAsset2 = __webpack_require__(20);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _VideoAsset = __webpack_require__(145);
+	var _VideoAsset = __webpack_require__(146);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -99227,7 +99427,7 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99242,7 +99442,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(19);
+	var _BaseTextureAsset2 = __webpack_require__(20);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
@@ -99317,7 +99517,7 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99342,7 +99542,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DEntity2 = __webpack_require__(13);
+	var _Box3DEntity2 = __webpack_require__(14);
 
 	var _Box3DEntity3 = _interopRequireDefault(_Box3DEntity2);
 
@@ -100053,7 +100253,7 @@
 	exports.default = Box3DObject;
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100070,7 +100270,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(164);
+	var _Box3DObject2 = __webpack_require__(165);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100213,7 +100413,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100234,7 +100434,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(164);
+	var _Box3DObject2 = __webpack_require__(165);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100591,7 +100791,7 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 167 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100610,7 +100810,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(168);
+	var _BaseMeshObject2 = __webpack_require__(169);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -100764,7 +100964,7 @@
 	exports.default = SkinnedMeshObject;
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100789,7 +100989,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(164);
+	var _Box3DObject2 = __webpack_require__(165);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101716,7 +101916,7 @@
 	exports.default = BaseMeshObject;
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101731,7 +101931,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(168);
+	var _BaseMeshObject2 = __webpack_require__(169);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -101781,7 +101981,7 @@
 	exports.default = StaticMeshObject;
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101794,7 +101994,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DObject2 = __webpack_require__(164);
+	var _Box3DObject2 = __webpack_require__(165);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101871,7 +102071,7 @@
 	exports.default = ModelObject;
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -101897,7 +102097,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
