@@ -17,7 +17,7 @@ const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 
 @autobind
-class HighlightDialog extends AnnotationDialog {
+class DocHighlightDialog extends AnnotationDialog {
 
     //--------------------------------------------------------------------------
     // Public
@@ -229,4 +229,4 @@ class HighlightDialog extends AnnotationDialog {
     }
 }
 
-export default HighlightDialog;
+export default DocHighlightDialog;

@@ -2,11 +2,16 @@
  * @fileoverview Base annotator class that implements point annotations.
  * Viewer-specific annotations should extend this for other annotation types
  * or to modify point annotation behavior.
+ *
+ * The following methods should be overridden by a child class:
+ * _bindDOMListeners() - bind DOM listeners to the annotated element
+ * _unbindDOMListeners() - unbind DOM listeners to the annotated element
+ * _getLocationFromEvent() - get annotation location from DOM event
+ * _createAnnotationThread() - create and cache appropriate annotation thread
  * @author tjin
  */
 
 import autobind from 'autobind-decorator';
-import AnnotationThread from './annotation-thread';
 import Browser from '../browser';
 import EventEmitter from 'events';
 import LocalStorageAnnotationService from './localstorage-annotation-service';
@@ -351,7 +356,8 @@ class Annotator extends EventEmitter {
     /* eslint-enable no-unused-vars */
 
     /**
-     * Creates a new AnnotationThread, adds it to in-memory map, and returns it.
+     * This should be overridden to create a new annotation thread as
+     * appropriate, add it to the in-memory map, and return the thread.
      *
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
@@ -359,25 +365,9 @@ class Annotator extends EventEmitter {
      * @returns {AnnotationThread} Created annotation thread
      * @private
      */
-    _createAnnotationThread(annotations, location, type) {
-        const threadParams = {
-            annotatedElement: this._annotatedElement,
-            annotations,
-            annotationService: this._annotationService,
-            fileVersionID: this._fileVersionID,
-            location,
-            type
-        };
-
-        // Set existing thread ID if created with annotations
-        if (annotations.length > 0) {
-            threadParams.threadID = annotations[0].threadID;
-        }
-
-        const thread = new AnnotationThread(threadParams);
-        this._addThreadToMap(thread);
-        return thread;
-    }
+    /* eslint-disable no-unused-vars */
+    _createAnnotationThread(annotations, location, type) {}
+    /* eslint-enable no-unused-vars */
 
     /**
      * Adds thread to in-memory map.

@@ -7,7 +7,8 @@
 import autobind from 'autobind-decorator';
 import Annotator from '../annotation/annotator';
 import Browser from '../browser';
-import HighlightThread from './highlight-thread';
+import DocHighlightThread from './doc-highlight-thread';
+import DocPointThread from './doc-point-thread';
 import rangy from 'rangy';
 /* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342
@@ -155,8 +156,6 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _bindDOMListeners() {
-        super._bindDOMListeners();
-
         // If user cannot create or modify annotations, don't bind any listeners
         if (!this._annotationService.canAnnotate) {
             return;
@@ -176,8 +175,6 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _unbindDOMListeners() {
-        super._unbindDOMListeners();
-
         if (!this._annotationService.canAnnotate) {
             return;
         }
@@ -472,7 +469,7 @@ class DocAnnotator extends Annotator {
      * Returns the highlight threads on the specified page.
      *
      * @param {Number} page Page to get highlight threads for
-     * @returns {HighlightThread[]} Highlight annotation threads
+     * @returns {DocHighlightThread[]} Highlight annotation threads
      * @private
      */
     _getHighlightThreadsOnPage(page) {
@@ -484,7 +481,7 @@ class DocAnnotator extends Annotator {
      * Returns highlight threads with a state in the specified states.
      *
      * @param {...String} states States of highlight threads to find
-     * @returns {HighlightThread[]} Highlight threads with the specified states
+     * @returns {DocHighlightThread[]} Highlight threads with the specified states
      * @private
      */
     _getHighlightThreadsWithStates(...states) {
@@ -562,8 +559,10 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _createAnnotationThread(annotations, location, type) {
+        let thread;
+
         if (type === HIGHLIGHT_ANNOTATION_TYPE) {
-            const highlightThread = new HighlightThread({
+            thread = new DocHighlightThread({
                 annotatedElement: this._annotatedElement,
                 annotations,
                 annotationService: this._annotationService,
@@ -571,11 +570,26 @@ class DocAnnotator extends Annotator {
                 location,
                 type
             });
-            this._addThreadToMap(highlightThread);
-            return highlightThread;
+        } else {
+            const threadParams = {
+                annotatedElement: this._annotatedElement,
+                annotations,
+                annotationService: this._annotationService,
+                fileVersionID: this._fileVersionID,
+                location,
+                type
+            };
+
+            // Set existing thread ID if created with annotations
+            if (annotations.length > 0) {
+                threadParams.threadID = annotations[0].threadID;
+            }
+
+            thread = new DocPointThread(threadParams);
         }
 
-        return super._createAnnotationThread(annotations, location, type);
+        this._addThreadToMap(thread);
+        return thread;
     }
 
     /**
