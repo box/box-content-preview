@@ -7,11 +7,9 @@
 
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../annotation/annotation-dialog';
-
 import * as annotatorUtil from '../annotation/annotator-util';
-import { decodeKeydown } from '../util.js';
-
 import { CLASS_HIDDEN } from '../constants';
+import { decodeKeydown } from '../util.js';
 import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
@@ -28,6 +26,7 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * Positions and shows the dialog.
      *
+     * @override
      * @returns {void}
      */
     show() {
@@ -45,6 +44,7 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * Hides the dialog.
      *
+     * @override
      * @returns {void}
      */
     hide() {
@@ -54,6 +54,7 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * Hides the dialog after the highlight is saved.
      *
+     * @override
      * @returns {void}
      */
     addAnnotation() {
@@ -67,6 +68,7 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * No-op. Overrides base dialog removeAnnotation().
      *
+     * @override
      * @returns {void}
      */
     removeAnnotation() {}
@@ -78,6 +80,7 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * Sets up the dialog element.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -101,6 +104,7 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * Positions the dialog.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -139,6 +143,7 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * Binds DOM event listeners.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -151,6 +156,7 @@ class HighlightDialog extends AnnotationDialog {
     /**
      * Unbinds DOM event listeners.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -188,20 +194,10 @@ class HighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * Mouseup handler on dialog. Prevents propagation of mouseup so no
-     * duplicate highlights are created.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     */
-    _mouseupHandler(event) {
-        event.stopPropagation();
-    }
-
-    /**
      * Keydown handler on dialog. Needed since we are binding to 'mousedown'
      * instead of 'click'.
      *
+     * @override
      * @returns {void}
      * @private
      */

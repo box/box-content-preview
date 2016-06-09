@@ -6,12 +6,10 @@
 
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-
 import * as annotatorUtil from './annotator-util';
 import * as constants from './annotation-constants';
-import { decodeKeydown } from '../util.js';
-
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
+import { decodeKeydown } from '../util.js';
 import { ICON_DELETE } from '../icons/icons';
 
 const DIALOG_HIDE_TIMEOUT = 500;
@@ -523,7 +521,10 @@ class AnnotationDialog extends EventEmitter {
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl);
         annotatorUtil.hideElement(replyButtonEls);
-        replyTextEl.focus();
+
+        if (annotatorUtil.isElementInViewport(replyTextEl)) {
+            replyTextEl.focus();
+        }
     }
 
     /**

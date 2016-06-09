@@ -16,11 +16,9 @@ import rangyHighlight from 'rangy/lib/rangy-highlighter';
 import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
-
 import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/annotation-constants';
 import { CLASS_ACTIVE } from '../constants';
-import { ICON_HIGHLIGHT } from '../icons/icons';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const HIGHLIGHT_STATE_ACTIVE = 'active';
@@ -28,6 +26,9 @@ const HIGHLIGHT_STATE_ACTIVE_HOVER = 'active-hover';
 const HIGHLIGHT_STATE_HOVER = 'hover';
 const IS_MOBILE = Browser.isMobile();
 const MOUSEMOVE_THROTTLE_MS = 50;
+const PAGE_PADDING_BOTTOM = 15;
+const PAGE_PADDING_TOP = 15;
+const POINT_ANNOTATION_TYPE = 'point';
 
 @autobind
 class DocAnnotator extends Annotator {
@@ -39,6 +40,7 @@ class DocAnnotator extends Annotator {
     /**
      * [destructor]
      *
+     * @override
      * @returns {void}
      */
     destroy() {
@@ -49,6 +51,7 @@ class DocAnnotator extends Annotator {
     /**
      * Initializes annotator.
      *
+     * @override
      * @returns {void}
      */
     init() {
@@ -88,13 +91,15 @@ class DocAnnotator extends Annotator {
      * @returns {void}
      */
     toggleHighlightModeHandler(event = {}) {
-        // This unfortunately breaks encapsulation since we're modifying the header buttons
+        // This unfortunately breaks encapsulation, but the header currently
+        // doesn't manage its own functionality
         let buttonEl = event.target;
         if (!buttonEl) {
-            const containerEl = document.querySelector('.box-preview-header') ||
-                this._annotatedElement.querySelector('.box-preview-annotation-controls');
+            const containerEl = document.querySelector('.box-preview-header');
             buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-highlight') : null;
         }
+
+        this._destroyPendingThreads();
 
         // If in highlight mode, turn it off
         if (this._isInHighlightMode()) {
@@ -125,35 +130,9 @@ class DocAnnotator extends Annotator {
     //--------------------------------------------------------------------------
 
     /**
-     * Sets up annotation controls - this is needed if there is no Preview
-     * header, where the controls are normally. The doc annotator adds a
-     * highlight mode.
-     *
-     * @returns {void}
-     * @private
-     */
-    _setupControls() {
-        super._setupControls();
-
-        // No need to set up controls if Preview header exists or on mobile
-        // since we don't support creating highlights on mobile
-        if (document.querySelector('.box-preview-header') || IS_MOBILE) {
-            return;
-        }
-
-        // Add highlight mode button
-        const annotationButtonContainerEl = this._annotatedElement.querySelector('.box-preview-annotation-controls');
-        const highlightModeBtnEl = document.createElement('button');
-        highlightModeBtnEl.classList.add('box-preview-btn-plain');
-        highlightModeBtnEl.classList.add('box-preview-btn-highlight');
-        highlightModeBtnEl.innerHTML = ICON_HIGHLIGHT.trim();
-        highlightModeBtnEl.addEventListener('click', this.toggleHighlightModeHandler);
-        annotationButtonContainerEl.insertBefore(highlightModeBtnEl, annotationButtonContainerEl.firstChild);
-    }
-
-    /**
      * Annotations setup.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -171,6 +150,7 @@ class DocAnnotator extends Annotator {
     /**
      * Binds DOM event listeners.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -191,6 +171,7 @@ class DocAnnotator extends Annotator {
     /**
      * Unbinds DOM event listeners.
      *
+     * @override
      * @returns {void}
      * @private
      */
@@ -225,6 +206,85 @@ class DocAnnotator extends Annotator {
      */
     _unbindHighlightModeListeners() {
         this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
+    }
+
+    /**
+     * Returns an annotation location on a document from the DOM event or null
+     * if no correct annotation location can be inferred from the event. For
+     * point annotations, we return the (x, y) coordinates and page the
+     * point is on in PDF units with the lower left corner of the document as
+     * the origin. For highlight annotations, we return the PDF quad points
+     * as defined by the PDF spec and page the highlight is on.
+     *
+     * @override
+     * @param {Event} event DOM event
+     * @param {string} annotationType Type of annotation
+     * @returns {Object|null} Location object
+     */
+    _getLocationFromEvent(event, annotationType) {
+        let location = null;
+
+        if (annotationType === POINT_ANNOTATION_TYPE) {
+            // If there is a selection, ignore
+            if (annotatorUtil.isSelectionPresent()) {
+                return location;
+            }
+
+            // If click isn't on a page, ignore
+            const eventTarget = event.target;
+            const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(eventTarget);
+            if (!pageEl) {
+                return location;
+            }
+
+            // If click is inside an annotation dialog, ignore
+            const dataType = annotatorUtil.findClosestDataType(eventTarget);
+            if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
+                return location;
+            }
+
+            // Store coordinates at 100% scale in PDF space in PDF units
+            const pageDimensions = pageEl.getBoundingClientRect();
+            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+            const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
+            const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageTop];
+            const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, annotatorUtil.getScale(this._annotatedElement));
+            const [x, y] = pdfCoordinates;
+
+            location = { x, y, page };
+        } else if (annotationType === HIGHLIGHT_ANNOTATION_TYPE) {
+            if (!annotatorUtil.isSelectionPresent()) {
+                return location;
+            }
+
+            // Get correct page
+            let { pageEl, page } = annotatorUtil.getPageElAndPageNumber(event.target);
+            if (page === -1) {
+                // The ( .. ) around assignment is required syntax
+                ({ pageEl, page } = annotatorUtil.getPageElAndPageNumber(window.getSelection().anchorNode));
+            }
+
+            // Use Rangy to save the current selection because using the
+            // highlight module can mess with the selection. We restore this
+            // selection after we clean up the highlight
+            const savedSelection = rangy.saveSelection();
+
+            // Use highlight module to calculate quad points
+            const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter, pageEl);
+            const quadPoints = [];
+            highlightEls.forEach((element) => {
+                quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl,
+                    annotatorUtil.getScale(this._annotatedElement)));
+            });
+
+            // Remove rangy highlight and restore selection
+            this._removeRangyHighlight(highlight);
+            rangy.restoreSelection(savedSelection);
+
+            location = { page, quadPoints };
+        }
+
+        return location;
     }
 
     /**
@@ -327,45 +387,22 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightCreateHandler(event) {
-        if (!annotatorUtil.isSelectionPresent()) {
-            return;
-        }
+        event.stopPropagation();
 
-        // Reset active highlight threads and delete pending threads before creating a new highlight
+        // Reset active highlight threads before creating new highlight
         const threads = this._getHighlightThreadsWithStates(HIGHLIGHT_STATE_ACTIVE, HIGHLIGHT_STATE_ACTIVE_HOVER);
         threads.forEach((thread) => {
             thread.reset();
         });
 
-        // Get correct page
-        let { pageEl, page } = annotatorUtil.getPageElAndPageNumber(event.target);
-        if (page === -1) {
-            // The ( .. ) around assignment is required syntax
-            ({ pageEl, page } = annotatorUtil.getPageElAndPageNumber(window.getSelection().anchorNode));
+        // Get annotation location from mouseup event, ignore if location is invalid
+        const location = this._getLocationFromEvent(event, HIGHLIGHT_ANNOTATION_TYPE);
+        if (!location) {
+            return;
         }
 
-        // Use Rangy to save the current selection because using the
-        // highlight module can mess with the selection. We restore this
-        // selection after we clean up the highlight
-        const savedSelection = rangy.saveSelection();
-
-        // Use highlight module to calculate quad points
-        const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter, pageEl);
-        const quadPoints = [];
-        highlightEls.forEach((element) => {
-            quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl,
-                annotatorUtil.getScale(this._annotatedElement)));
-        });
-
-        // Remove rangy highlight and restore selection
-        this._removeRangyHighlight(highlight);
-        rangy.restoreSelection(savedSelection);
-
         // Create and show pending annotation thread
-        const thread = this._createAnnotationThread([], {
-            page,
-            quadPoints
-        }, HIGHLIGHT_ANNOTATION_TYPE);
+        const thread = this._createAnnotationThread([], location, HIGHLIGHT_ANNOTATION_TYPE);
 
         // If in highlight mode, save highlight immediately
         if (this._isInHighlightMode()) {
@@ -447,14 +484,14 @@ class DocAnnotator extends Annotator {
      * Returns highlight threads with a state in the specified states.
      *
      * @param {...String} states States of highlight threads to find
-     * @returns {HighlightThread[]} Pending highlight threads.
+     * @returns {HighlightThread[]} Highlight threads with the specified states
      * @private
      */
     _getHighlightThreadsWithStates(...states) {
         const threads = [];
 
         Object.keys(this._threads).forEach((page) => {
-            // Append pending highlight threads on page to array of pending threads
+            // Append pending highlight threads on page to array of threads
             [].push.apply(threads, this._threads[page].filter((thread) => {
                 let matchedState = false;
                 states.forEach((state) => {
@@ -471,6 +508,7 @@ class DocAnnotator extends Annotator {
     /**
      * Binds custom event listeners for a thread.
      *
+     * @override
      * @param {AnnotationThread} thread Thread to bind events to
      * @returns {void}
      * @private
@@ -516,6 +554,7 @@ class DocAnnotator extends Annotator {
      * Creates the proper type of thread, adds it to in-memory map, and returns
      * it.
      *
+     * @override
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
      * @param {String} [type] Optional annotation type

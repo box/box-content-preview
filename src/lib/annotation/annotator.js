@@ -10,14 +10,9 @@ import AnnotationThread from './annotation-thread';
 import Browser from '../browser';
 import EventEmitter from 'events';
 import LocalStorageAnnotationService from './localstorage-annotation-service';
-
-import * as annotatorUtil from './annotator-util';
 import * as constants from './annotation-constants';
-import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_HEADER } from '../constants';
-import { ICON_ANNOTATION } from '../icons/icons';
+import { CLASS_ACTIVE } from '../constants';
 
-const PAGE_PADDING_BOTTOM = 15;
-const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_TYPE = 'point';
 const POINT_STATE_PENDING = 'pending';
 
@@ -34,7 +29,6 @@ class Annotator extends EventEmitter {
      * @property {HTMLElement} annotatedElement HTML element to annotate on
      * @property {AnnotationService|LocalStorageAnnotationService} [annotationService] Annotations CRUD service
      * @property {String} fileVersionID File version ID
-     * @property {Boolean} canAnnotate Whether or not user can create or modify annotations
      */
 
     //--------------------------------------------------------------------------
@@ -61,8 +55,6 @@ class Annotator extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        this._destroyControls();
-
         Object.keys(this._threads).forEach((page) => {
             this._threads[page].forEach((thread) => {
                 this._unbindCustomListenersOnThread(thread);
@@ -78,8 +70,6 @@ class Annotator extends EventEmitter {
      */
     init() {
         this.setScale(1);
-        // @TODO(tjin): Add back annotations control if needed
-        // this._setupControls();
         this._setupAnnotations();
 
         // Add IE-specific class for custom cursors
@@ -140,13 +130,15 @@ class Annotator extends EventEmitter {
      * @returns {void}
      */
     togglePointModeHandler(event = {}) {
-        // This unfortunately breaks encapsulation since we're modifying the header buttons
+        // This unfortunately breaks encapsulation, but the header currently
+        // doesn't manage its own functionality
         let buttonEl = event.target;
         if (!buttonEl) {
-            const containerEl = document.querySelector('.box-preview-header') ||
-                this._annotatedElement.querySelector('.box-preview-annotation-controls');
+            const containerEl = document.querySelector('.box-preview-header');
             buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-annotate') : null;
         }
+
+        this._destroyPendingThreads();
 
         // If in annotation mode, turn it off
         if (this._isInPointMode()) {
@@ -175,43 +167,6 @@ class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
-
-    /**
-     * Sets up annotation controls - this is needed if there is no Preview
-     * header, where the controls are normally.
-     *
-     * @returns {void}
-     * @private
-     */
-    _setupControls() {
-        // No need to set up controls if Preview header exists
-        if (document.querySelector(SELECTOR_BOX_PREVIEW_HEADER)) {
-            return;
-        }
-
-        const annotationButtonContainerEl = document.createElement('div');
-        annotationButtonContainerEl.classList.add('box-preview-annotation-controls');
-        annotationButtonContainerEl.innerHTML = `
-            <button class="box-preview-btn-plain box-preview-btn-annotate">${ICON_ANNOTATION}</button>`.trim();
-        const pointAnnotationModeBtnEl = annotationButtonContainerEl.querySelector('.box-preview-btn-annotate');
-        pointAnnotationModeBtnEl.addEventListener('click', this.togglePointModeHandler);
-        this._annotatedElement.appendChild(annotationButtonContainerEl);
-    }
-
-    /**
-     * Destroys annotation controls if there are any.
-     *
-     * @returns {void}
-     * @private
-     */
-    _destroyControls() {
-        const annotationButtonContainerEl = document.querySelector('.box-preview-annotation-controls');
-        if (annotationButtonContainerEl) {
-            const pointAnnotationModeBtnEl = annotationButtonContainerEl.querySelector('.box-preview-btn-annotate');
-            pointAnnotationModeBtnEl.removeEventListener('click', this.togglePointModeHandler);
-            annotationButtonContainerEl.parentNode.removeChild(annotationButtonContainerEl);
-        }
-    }
 
     /**
      * Annotations setup.
@@ -366,37 +321,14 @@ class Annotator extends EventEmitter {
     _pointClickHandler(event) {
         event.stopPropagation();
 
-        // If click isn't on a page, ignore
-        const eventTarget = event.target;
-        const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(eventTarget);
-        if (!pageEl) {
+        // Destroy any pending threads
+        this._destroyPendingThreads();
+
+        // Get annotation location from click event, ignore click if location is invalid
+        const location = this._getLocationFromEvent(event, POINT_ANNOTATION_TYPE);
+        if (!location) {
             return;
         }
-
-        // If click is inside an annotation dialog, ignore
-        const dataType = annotatorUtil.findClosestDataType(eventTarget);
-        if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
-            return;
-        }
-
-        // If there is a selection, ignore
-        if (annotatorUtil.isSelectionPresent()) {
-            return;
-        }
-
-        // Destroy any pending point threads
-        this._getPendingPointThreads().forEach((pendingThread) => {
-            pendingThread.destroy();
-        });
-
-        // Store coordinates at 100% scale in PDF space in PDF units
-        const pageDimensions = pageEl.getBoundingClientRect();
-        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-        const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
-        const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageTop];
-        const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, annotatorUtil.getScale(this._annotatedElement));
-        const [x, y] = pdfCoordinates;
-        const location = { x, y, page };
 
         // Create new thread with no annotations, show indicator, and show dialog
         const thread = this._createAnnotationThread([], location, POINT_ANNOTATION_TYPE);
@@ -405,6 +337,18 @@ class Annotator extends EventEmitter {
         // Bind events on thread
         this._bindCustomListenersOnThread(thread);
     }
+
+    /**
+     * This should be overridden to return an annotation location object from
+     * the DOM event.
+     *
+     * @param {Event} event DOM event
+     * @param {string} annotationType Type of annotation
+     * @returns {Object} Location object
+     */
+    /* eslint-disable no-unused-vars */
+    _getLocationFromEvent(event, annotationType) {}
+    /* eslint-enable no-unused-vars */
 
     /**
      * Creates a new AnnotationThread, adds it to in-memory map, and returns it.
@@ -444,7 +388,7 @@ class Annotator extends EventEmitter {
      */
     _addThreadToMap(thread) {
         // Add thread to in-memory map
-        const page = thread.location.page || 1;
+        const page = thread.location.page || 1; // Defaults to page 1 if thread has no page
         this._threads[page] = this._threads[page] || [];
         this._threads[page].push(thread);
     }
@@ -460,22 +404,19 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Returns pending point threads.
+     * Destroys pending threads.
      *
-     * @returns {AnnotationThread[]} Pending point threads.
+     * @returns {void}
      * @private
      */
-    _getPendingPointThreads() {
-        const pendingThreads = [];
-
+    _destroyPendingThreads() {
         Object.keys(this._threads).forEach((page) => {
-            // Append pending point threads on page to array of pending threads
-            [].push.apply(pendingThreads, this._threads[page].filter((thread) => {
-                return thread.state === POINT_STATE_PENDING &&
-                    thread.type === POINT_ANNOTATION_TYPE;
-            }));
+            this._threads[page]
+                .filter((thread) => thread.state === POINT_STATE_PENDING)
+                .forEach((pendingThread) => {
+                    pendingThread.destroy();
+                });
         });
-        return pendingThreads;
     }
 }
 

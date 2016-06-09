@@ -10,7 +10,6 @@ import Annotation from './annotation';
 import AnnotationDialog from './annotation-dialog';
 import AnnotationService from './annotation-service';
 import EventEmitter from 'events';
-
 import * as annotatorUtil from './annotator-util';
 
 const PAGE_PADDING_TOP = 15;

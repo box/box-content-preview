@@ -567,11 +567,13 @@ class DocBase extends Base {
      */
     initAnnotations() {
         const fileVersionID = this.options.file.file_version.id;
+        // Users can currently only view annotations on mobile
+        const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
         const annotationService = new AnnotationService({
             api: this.options.api,
             fileID: this.options.file.id,
             token: this.options.token,
-            canAnnotate: !!this.options.file.permissions.can_annotate
+            canAnnotate
         });
 
         // Construct and init annotator
