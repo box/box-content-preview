@@ -53,13 +53,12 @@ $header-height: 48px;
 }
 
 .box-preview-header-btns {
-    line-height: $header-height;
-
     button {
         padding: 0 10px;
 
         svg {
             fill: lighten($better-black, 15%);
+            vertical-align: middle;
         }
 
         &:hover {

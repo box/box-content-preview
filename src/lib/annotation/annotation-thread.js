@@ -2,18 +2,19 @@
  * @fileoverview Base annotation thread class. This implements a 'thread' with
  * annotations that manages an indicator element (point icon in the case of
  * point annotations) and dialogs for creating/deleting annotations.
+ *
+ * The following methods should be overridden by a child class:
+ * show() - show the annotation indicator
+ * _createDialog() - create appropriate annotation dialog
  * @author tjin
  */
 
 import autobind from 'autobind-decorator';
 import Annotation from './annotation';
-import AnnotationDialog from './annotation-dialog';
 import AnnotationService from './annotation-service';
 import EventEmitter from 'events';
 import * as annotatorUtil from './annotator-util';
 
-const PAGE_PADDING_TOP = 15;
-const POINT_ANNOTATION_ICON_WIDTH = 18;
 const POINT_ANNOTATION_TYPE = 'point';
 const POINT_STATE_INACTIVE = 'inactive';
 const POINT_STATE_PENDING = 'pending';
@@ -87,26 +88,11 @@ class AnnotationThread extends EventEmitter {
     }
 
     /**
-     * Shows the annotation indicator.
+     * This should be overridden to show the annotation indicator.
      *
      * @returns {void}
      */
-    show() {
-        const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;
-        const [browserX, browserY] = annotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
-
-        // Position and append to page
-        this._element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-        // Add 15px for vertical padding on page
-        this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 2 + PAGE_PADDING_TOP}px`;
-        pageEl.appendChild(this._element);
-
-        annotatorUtil.showElement(this._element);
-
-        if (this._state === POINT_STATE_PENDING) {
-            this._showDialog();
-        }
-    }
+    show() {}
 
     /**
      * Hides the annotation indicator.
@@ -263,17 +249,21 @@ class AnnotationThread extends EventEmitter {
             this._state = POINT_STATE_INACTIVE;
         }
 
-        this._dialog = new AnnotationDialog({
-            annotatedElement: this._annotatedElement,
-            annotations: this._annotations,
-            location: this._location,
-            canAnnotate: this._annotationService.canAnnotate
-        });
+        this._createDialog();
         this._bindCustomListenersOnDialog();
 
         this._element = this._createElement();
         this._bindDOMListeners();
     }
+
+    /**
+     * Should be overridden to create an annotation dialog as appropriate and
+     * save as a property on the thread.
+     *
+     * @returns {void}
+     * @private
+     */
+    _createDialog() {}
 
     /**
      * Saves the provided annotation to the thread and dialog if appropriate

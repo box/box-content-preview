@@ -517,7 +517,7 @@ class DocBase extends Base {
             console.error(err);
             console.error(err.message);
             /*eslint-enable*/
-            this.emit('error', err.message);
+            this.emit('error', err);
         });
 
         this.bindDOMListeners();

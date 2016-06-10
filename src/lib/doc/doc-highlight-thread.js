@@ -6,7 +6,7 @@
 
 import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation/annotation-thread';
-import HighlightDialog from './highlight-dialog';
+import DocHighlightDialog from './doc-highlight-dialog';
 import * as annotatorUtil from '../annotation/annotator-util';
 
 const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
@@ -22,7 +22,7 @@ const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 
 @autobind
-class HighlightThread extends AnnotationThread {
+class DocHighlightThread extends AnnotationThread {
 
     /**
      * [destructor]
@@ -210,7 +210,7 @@ class HighlightThread extends AnnotationThread {
             this._state = HIGHLIGHT_STATE_INACTIVE;
         }
 
-        this._dialog = new HighlightDialog({
+        this._dialog = new DocHighlightDialog({
             annotatedElement: this._annotatedElement,
             annotations: this._annotations,
             location: this._location,
@@ -361,4 +361,4 @@ class HighlightThread extends AnnotationThread {
     }
 }
 
-export default HighlightThread;
+export default DocHighlightThread;
