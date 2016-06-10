@@ -6,7 +6,6 @@
 import './presentation.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
-import fullscreen from '../fullscreen';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 
 import { CLASS_INVISIBLE } from '../constants';
@@ -50,11 +49,6 @@ class Presentation extends DocBase {
         pageEl.classList.add(CLASS_INVISIBLE);
 
         super.setPage(pageNum);
-
-        // Forces rendering of page - without this, fullscreen presentation pages sometimes don't load
-        if (fullscreen.isFullscreen(this.containerEl)) {
-            this.pdfViewer.update();
-        }
 
         pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
         pageEl.classList.remove(CLASS_INVISIBLE);
