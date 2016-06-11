@@ -163,7 +163,6 @@ class DocBase extends Base {
     /**
      * Re-sizing logic.
      *
-     * @public
      * @returns {void}
      */
     resize() {
@@ -182,7 +181,6 @@ class DocBase extends Base {
     /**
      * Go to previous page
      *
-     * @public
      * @returns {void}
      */
     previousPage() {
@@ -192,7 +190,6 @@ class DocBase extends Base {
     /**
      * Go to next page
      *
-     * @public
      * @returns {void}
      */
     nextPage() {
@@ -203,12 +200,16 @@ class DocBase extends Base {
      * Go to specified page
      *
      * @param {number} pageNum Page to navigate to
-     * @public
      * @returns {void}
      */
     setPage(pageNum) {
         this.pdfViewer.currentPageNumber = pageNum;
         this.cachePage(this.pdfViewer.currentPageNumber);
+
+        // Forces rendering of page - without this, fullscreen pages sometimes don't load
+        if (fullscreen.isFullscreen(this.containerEl)) {
+            this.pdfViewer.update();
+        }
     }
 
     /**
@@ -344,7 +345,6 @@ class DocBase extends Base {
      * Rotates documents by delta degrees
      *
      * @param {number} delta Degrees to rotate
-     * @public
      * @returns {void}
      */
     rotateLeft(delta = -90) {
@@ -515,7 +515,6 @@ class DocBase extends Base {
         }).catch((err) => {
             /*eslint-disable*/
             console.error(err);
-            console.error(err.message);
             /*eslint-enable*/
             this.emit('error', err);
         });
@@ -700,8 +699,8 @@ class DocBase extends Base {
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
-        // Mousewheel handler
-        this.docEl.addEventListener('wheel', this.wheelHandler());
+        // Mousewheel handler - we set passive: true to make page more responsive
+        this.docEl.addEventListener('wheel', this.wheelHandler(), { passive: true });
 
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
@@ -720,7 +719,9 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
-            this.docEl.removeEventListener('wheel', this.wheelHandler());
+
+            // We set passive: true to make page more responsive
+            this.docEl.removeEventListener('wheel', this.wheelHandler(), { passive: true });
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
@@ -918,11 +919,9 @@ class DocBase extends Base {
 
                 if (event.deltaY > 0) {
                     this.nextPage();
-                } else {
+                } else if (event.deltaY < 0) {
                     this.previousPage();
                 }
-
-                event.preventDefault();
             }, WHEEL_THROTTLE);
         }
 
