@@ -1,5 +1,7 @@
 import './image.scss';
 import autobind from 'autobind-decorator';
+import AnnotationService from '../annotation/annotation-service';
+import Annotator from '../annotation/annotator';
 import Base from './image-base';
 import { get } from '../util';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../icons/icons';
@@ -25,6 +27,7 @@ class Image extends Base {
      */
     constructor(container, options) {
         super(container, options);
+        this.container = container;
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_IMAGE;
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
@@ -36,6 +39,8 @@ class Image extends Base {
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
         this.currentRotationAngle = 0;
+
+        this.initAnnotations();
     }
 
     /**
@@ -43,6 +48,13 @@ class Image extends Base {
      * @returns {void}
      */
     destroy() {
+        // Destroy the annotator
+        if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners('pointmodeenter');
+            this.annotator.removeAllListeners('pointmodeexit');
+            this.annotator.destroy();
+        }
+
         // Remove listeners
         if (this.imageEl) {
             this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
@@ -158,7 +170,7 @@ class Image extends Base {
      * @returns {void}
      */
     updatePannability() {
-        if (!this.imageEl) {
+        if (!this.imageEl || this.annotator.isInPointMode()) {
             return;
         }
         this.isPannable = this.imageEl.clientWidth > this.wrapperEl.clientWidth || this.imageEl.clientHeight > this.wrapperEl.clientHeight;
@@ -350,6 +362,85 @@ class Image extends Base {
         this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+
+        // Show existing annotations after text layer is rendered
+        this.annotator.showAnnotations();
+    }
+
+    /**
+     * Initializes annotations.
+     *
+     * @returns {void}
+     * @private
+     */
+    initAnnotations() {
+        const fileVersionID = this.options.file.file_version.id;
+        // Users can currently only view annotations on mobile
+        const canAnnotate = true;// !!this.options.file.permissions.can_annotate && !Browser.isMobile();
+        const annotationService = new AnnotationService({
+            api: this.options.api,
+            fileID: this.options.file.id,
+            token: this.options.token,
+            canAnnotate
+        });
+
+        // Construct and init annotator
+        this.annotator = new Annotator({
+            annotatedElement: this.imageEl,
+            annotationService,
+            fileVersionID
+        });
+        this.annotator.init(this);
+        this.annotator.setScale(1);
+
+        // Disable controls during point annotation mode
+        this.annotator.addListener('pointmodeenter', () => {
+            if (this.controls) {
+                this.controls.disable();
+            }
+        });
+
+        this.annotator.addListener('pointmodeexit', () => {
+            if (this.controls) {
+                this.controls.enable();
+            }
+        });
+    }
+
+    /**
+     * Returns whether or not viewer is annotatable with the provided annotation
+     * type.
+     *
+     * @param {String} type Type of annotation
+     * @returns {Boolean} Whether or not viewer is annotatable
+     */
+    isAnnotatable(type) {
+        if (type !== 'point') {
+            return false;
+        }
+
+        const viewerName = this.options.viewerName;
+        return this.options.viewers && this.options.viewers[viewerName] &&
+            this.options.viewers[viewerName].annotations;
+    }
+
+    /**
+     * Returns click handler for toggling point annotation mode.
+     *
+     * @returns {Function|null} Click handler
+     */
+    getPointModeClickHandler() {
+        if (!this.isAnnotatable('point')) {
+            return null;
+        }
+
+        const togglePointModeHandler = (event = {}) => {
+            this.isZoomable = false;
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            this.annotator.togglePointModeHandler(event);
+        };
+        return togglePointModeHandler;
     }
 }
 
