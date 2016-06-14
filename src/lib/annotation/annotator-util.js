@@ -298,6 +298,35 @@ export function getScale(annotatedElement) {
 }
 
 /**
+ * Returns x, y scale factor calculated from comparing current page dimensions
+ * with page dimensions when annotations were created
+ *
+ * @param {Object} location Annotation location object
+ * @param {HTMLElement} pageEl Page element
+ * @returns {Object|null} {x, y} scale if scaling is needed, null otherwise
+ */
+export function getDimensionScaleFactor(location, pageEl) {
+    let scaleFactor = null;
+
+    // Scale comparing current dimensions with saved dimensions if needed
+    const dimensions = location.dimensions;
+    if (dimensions && dimensions.x !== undefined && dimensions.y !== undefined) {
+        const pageDimensions = pageEl.getBoundingClientRect();
+        const height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const width = pageDimensions.width;
+
+        if (width !== dimensions.x || height !== dimensions.y) {
+            scaleFactor = {
+                x: width / dimensions.x,
+                y: height / dimensions.y
+            };
+        }
+    }
+
+    return scaleFactor;
+}
+
+/**
  * Returns browser coordinates given an annotation location object and
  * the HTML element being annotated on.
  * @param {Object} location Annotation location object
@@ -306,9 +335,19 @@ export function getScale(annotatedElement) {
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
+    let x = location.x;
+    let y = location.y;
+
+    // If needed, scale coords comparing current dimensions with saved dimensions
+    const scaleFactor = getDimensionScaleFactor(location, pageEl);
+    if (scaleFactor) {
+        x *= scaleFactor.x;
+        y *= scaleFactor.y;
+    }
+
     const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
     const scale = getScale(annotatedElement);
-    return convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, scale);
+    return convertPDFSpaceToDOMSpace([x, y], pageHeight, scale);
 }
 
 /**
