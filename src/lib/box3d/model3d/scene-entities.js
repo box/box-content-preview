@@ -1,3 +1,4 @@
+import Browser from '../../browser';
 /**
  * Returns the default scene entities array
  * @param  {string} prefix Prefix to be used for loading static assets
@@ -83,18 +84,26 @@ function sceneEntities(prefix) {
         components: {
             rendererComponent: {
                 componentData: {
-                    antialias: true,
-                    renderOnDemand: false,
+                    antialias: !Browser.isMobile(),
+                    renderOnDemand: true,
+                    maxTexture2dSize: Browser.isMobile() ? 1024 : undefined,
+                    maxTextureCubeSize: Browser.isMobile() ? 512 : undefined,
+                    // Mobile fragment precision at mediump is often too low.
+                    // TODO - investigate changing some values in shaders to highp
+                    // to eliviate the problem while letting the rest default to mediump.
+                    precision: Browser.isMobile() ? 'highp' : 'mediump',
                     clearAlpha: 1.0,
                     clearColor: { r: 0.95, g: 0.95, b: 0.95 }
                 },
                 scriptId: 'box3d_renderer',
-                isBuiltIn: true,
                 enabled: true
+            },
+            debugPerformance: {
+                scriptId: 'debug_performance',
+                enabled: false
             },
             inputController: {
                 scriptId: 'input_controller_component',
-                isBuiltIn: true,
                 enabled: true
             },
             renderModesComponent: {
@@ -195,7 +204,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_0',
             name: 'HDR Env Map 0',
-            isHdr: true,
+            isHdr: !Browser.isMobile(),
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
@@ -207,7 +216,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_1',
             name: 'HDR Env Map 1',
-            isHdr: true,
+            isHdr: !Browser.isMobile(),
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
@@ -219,7 +228,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_2',
             name: 'HDR Env Map 2',
-            isHdr: true,
+            isHdr: !Browser.isMobile(),
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
