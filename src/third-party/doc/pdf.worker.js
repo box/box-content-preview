@@ -42618,22 +42618,24 @@ var NetworkManager = (function NetworkManagerClosure() {
     return array.buffer;
   }
 
-  var supportsMozChunked = (function supportsMozChunkedClosure() {
-    try {
-      var x = new XMLHttpRequest();
-      // Firefox 37- required .open() to be called before setting responseType.
-      // https://bugzilla.mozilla.org/show_bug.cgi?id=707484
-      // Even though the URL is not visited, .open() could fail if the URL is
-      // blocked, e.g. via the connect-src CSP directive or the NoScript addon.
-      // When this error occurs, this feature detection method will mistakenly
-      // report that moz-chunked-arraybuffer is not supported in Firefox 37-.
-      x.open('GET', 'https://example.com');
-      x.responseType = 'moz-chunked-arraybuffer';
-      return x.responseType === 'moz-chunked-arraybuffer';
-    } catch (e) {
-      return false;
-    }
-  })();
+  // @NOTE(tjin): Force to false since this causes a warning in non-Firefox browsers
+  var supportsMozChunked = false;
+  // var supportsMozChunked = (function supportsMozChunkedClosure() {
+  //   try {
+  //     var x = new XMLHttpRequest();
+  //     // Firefox 37- required .open() to be called before setting responseType.
+  //     // https://bugzilla.mozilla.org/show_bug.cgi?id=707484
+  //     // Even though the URL is not visited, .open() could fail if the URL is
+  //     // blocked, e.g. via the connect-src CSP directive or the NoScript addon.
+  //     // When this error occurs, this feature detection method will mistakenly
+  //     // report that moz-chunked-arraybuffer is not supported in Firefox 37-.
+  //     x.open('GET', 'https://example.com');
+  //     x.responseType = 'moz-chunked-arraybuffer';
+  //     return x.responseType === 'moz-chunked-arraybuffer';
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // })();
 
   NetworkManager.prototype = {
     requestRange: function NetworkManager_requestRange(begin, end, listeners) {
@@ -43175,4 +43177,3 @@ var NetworkManager = (function NetworkManagerClosure() {
 
   exports.WorkerMessageHandler = pdfjsLibs.pdfjsCoreWorker.WorkerMessageHandler;
 }));
-
