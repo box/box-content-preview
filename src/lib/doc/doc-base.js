@@ -222,7 +222,7 @@ class DocBase extends Base {
 
         if (cache.has(CURRENT_PAGE_MAP_KEY)) {
             const currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
-            page = currentPageMap[this.options.file.sha1] || page;
+            page = currentPageMap[this.options.file.id] || page;
         }
 
         return page;
@@ -241,7 +241,7 @@ class DocBase extends Base {
             currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
         }
 
-        currentPageMap[this.options.file.sha1] = page;
+        currentPageMap[this.options.file.id] = page;
         cache.set(CURRENT_PAGE_MAP_KEY, currentPageMap, true /* useLocalStorage */);
     }
 
