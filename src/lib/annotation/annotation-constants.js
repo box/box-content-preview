@@ -23,3 +23,11 @@ export const SELECTOR_BUTTON_DELETE_COMMENT = `.${CLASS_BUTTON_DELETE_COMMENT}`;
 export const SELECTOR_COMMENTS_CONTAINER = `.${CLASS_COMMENTS_CONTAINER}`;
 export const SELECTOR_REPLY_CONTAINER = `.${CLASS_REPLY_CONTAINER}`;
 export const SELECTOR_REPLY_TEXTAREA = `.${CLASS_REPLY_TEXTAREA}`;
+
+export const ANNOTATION_STATE_ACTIVE = 'active'; // clicked
+export const ANNOTATION_STATE_ACTIVE_HOVER = 'active-hover'; // clicked and mouse is over
+export const ANNOTATION_STATE_HOVER = 'hover'; // mouse is over
+export const ANNOTATION_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
+export const ANNOTATION_STATE_PENDING = 'pending'; // not saved
+export const ANNOTATION_TYPE_POINT = 'point';
+export const ANNOTATION_TYPE_HIGHLIGHT = 'highlight';

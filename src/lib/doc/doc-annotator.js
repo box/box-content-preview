@@ -21,15 +21,10 @@ import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/annotation-constants';
 import { CLASS_ACTIVE } from '../constants';
 
-const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
-const HIGHLIGHT_STATE_ACTIVE = 'active';
-const HIGHLIGHT_STATE_ACTIVE_HOVER = 'active-hover';
-const HIGHLIGHT_STATE_HOVER = 'hover';
 const IS_MOBILE = Browser.isMobile();
 const MOUSEMOVE_THROTTLE_MS = 50;
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
-const POINT_ANNOTATION_TYPE = 'point';
 
 @autobind
 class DocAnnotator extends Annotator {
@@ -71,14 +66,14 @@ class DocAnnotator extends Annotator {
 
         // If in highlight mode and we enter point mode, turn off highlight mode
         this.addListener('pointmodeenter', () => {
-            if (this._isInHighlightMode()) {
+            if (this.isInHighlightMode()) {
                 this.toggleHighlightModeHandler();
             }
         });
 
         // If in point mode and we enter highlight mode, turn off point mode
         this.addListener('highlightmodeenter', () => {
-            if (this._isInPointMode()) {
+            if (this.isInPointMode()) {
                 this.togglePointModeHandler();
             }
         });
@@ -103,7 +98,7 @@ class DocAnnotator extends Annotator {
         this._destroyPendingThreads();
 
         // If in highlight mode, turn it off
-        if (this._isInHighlightMode()) {
+        if (this.isInHighlightMode()) {
             this.emit('highlightmodeexit');
             this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
             if (buttonEl) {
@@ -111,7 +106,7 @@ class DocAnnotator extends Annotator {
             }
 
             this._unbindHighlightModeListeners(); // Disable highlight mode
-            this._bindDOMListeners(); // Re-enable other annotations
+            this.bindDOMListeners(); // Re-enable other annotations
 
         // Otherwise, enable highlight mode
         } else {
@@ -121,89 +116,14 @@ class DocAnnotator extends Annotator {
                 buttonEl.classList.add(CLASS_ACTIVE);
             }
 
-            this._unbindDOMListeners(); // Disable other annotations
+            this.unbindDOMListeners(); // Disable other annotations
             this._bindHighlightModeListeners(); // Enable highlight mode
         }
     }
 
     //--------------------------------------------------------------------------
-    // Private functions
+    // Abstract Implementations
     //--------------------------------------------------------------------------
-
-    /**
-     * Annotations setup.
-     *
-     * @override
-     * @returns {void}
-     * @private
-     */
-    _setupAnnotations() {
-        super._setupAnnotations();
-
-        // Init rangy and rangy highlight
-        this._highlighter = rangy.createHighlighter();
-        this._highlighter.addClassApplier(rangy.createClassApplier('rangy-highlight', {
-            ignoreWhiteSpace: true,
-            tagNames: ['span', 'a']
-        }));
-    }
-
-    /**
-     * Binds DOM event listeners.
-     *
-     * @override
-     * @returns {void}
-     * @private
-     */
-    _bindDOMListeners() {
-        // If user cannot create or modify annotations, don't bind any listeners
-        if (!this._annotationService.canAnnotate) {
-            return;
-        }
-
-        this._annotatedElement.addEventListener('mousedown', this._highlightMousedownHandler);
-        this._annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
-        this._annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
-        this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
-    }
-
-    /**
-     * Unbinds DOM event listeners.
-     *
-     * @override
-     * @returns {void}
-     * @private
-     */
-    _unbindDOMListeners() {
-        if (!this._annotationService.canAnnotate) {
-            return;
-        }
-
-        this._annotatedElement.removeEventListener('mousedown', this._highlightMousedownHandler);
-        this._annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
-        this._annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
-        this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
-    }
-
-    /**
-     * Binds point mode event listeners.
-     *
-     * @returns {void}
-     * @private
-     */
-    _bindHighlightModeListeners() {
-        this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
-    }
-
-    /**
-     * Unbinds point mode event listeners.
-     *
-     * @returns {void}
-     * @private
-     */
-    _unbindHighlightModeListeners() {
-        this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
-    }
 
     /**
      * Returns an annotation location on a document from the DOM event or null
@@ -218,10 +138,10 @@ class DocAnnotator extends Annotator {
      * @param {string} annotationType Type of annotation
      * @returns {Object|null} Location object
      */
-    _getLocationFromEvent(event, annotationType) {
+    getLocationFromEvent(event, annotationType) {
         let location = null;
 
-        if (annotationType === POINT_ANNOTATION_TYPE) {
+        if (annotationType === constants.ANNOTATION_TYPE_POINT) {
             // If there is a selection, ignore
             if (annotatorUtil.isSelectionPresent()) {
                 return location;
@@ -249,7 +169,7 @@ class DocAnnotator extends Annotator {
             const [x, y] = pdfCoordinates;
 
             location = { x, y, page };
-        } else if (annotationType === HIGHLIGHT_ANNOTATION_TYPE) {
+        } else if (annotationType === constants.ANNOTATION_TYPE_HIGHLIGHT) {
             if (!annotatorUtil.isSelectionPresent()) {
                 return location;
             }
@@ -282,6 +202,162 @@ class DocAnnotator extends Annotator {
         }
 
         return location;
+    }
+
+    /**
+     * Creates the proper type of thread, adds it to in-memory map, and returns
+     * it.
+     *
+     * @override
+     * @param {Annotation[]} annotations Annotations in thread
+     * @param {Object} location Location object
+     * @param {String} [type] Optional annotation type
+     * @returns {AnnotationThread} Created annotation thread
+     */
+    createAnnotationThread(annotations, location, type) {
+        let thread;
+
+        if (type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
+            thread = new DocHighlightThread({
+                annotatedElement: this._annotatedElement,
+                annotations,
+                annotationService: this._annotationService,
+                fileVersionID: this._fileVersionID,
+                location,
+                type
+            });
+        } else {
+            const threadParams = {
+                annotatedElement: this._annotatedElement,
+                annotations,
+                annotationService: this._annotationService,
+                fileVersionID: this._fileVersionID,
+                location,
+                type
+            };
+
+            // Set existing thread ID if created with annotations
+            if (annotations.length > 0) {
+                threadParams.threadID = annotations[0].threadID;
+            }
+
+            thread = new DocPointThread(threadParams);
+        }
+
+        this.addThreadToMap(thread);
+        return thread;
+    }
+
+    //--------------------------------------------------------------------------
+    // Protected
+    //--------------------------------------------------------------------------
+
+    /**
+     * Annotations setup.
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    setupAnnotations() {
+        super.setupAnnotations();
+
+        // Init rangy and rangy highlight
+        this._highlighter = rangy.createHighlighter();
+        this._highlighter.addClassApplier(rangy.createClassApplier('rangy-highlight', {
+            ignoreWhiteSpace: true,
+            tagNames: ['span', 'a']
+        }));
+    }
+
+    /**
+     * Binds DOM event listeners.
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    bindDOMListeners() {
+        // If user cannot create or modify annotations, don't bind any listeners
+        if (!this._annotationService.canAnnotate) {
+            return;
+        }
+
+        this._annotatedElement.addEventListener('mousedown', this._highlightMousedownHandler);
+        this._annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
+        this._annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
+        this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
+    }
+
+    /**
+     * Unbinds DOM event listeners.
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    unbindDOMListeners() {
+        if (!this._annotationService.canAnnotate) {
+            return;
+        }
+
+        this._annotatedElement.removeEventListener('mousedown', this._highlightMousedownHandler);
+        this._annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
+        this._annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
+        this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
+    }
+
+    /**
+     * Binds custom event listeners for a thread.
+     *
+     * @override
+     * @param {AnnotationThread} thread Thread to bind events to
+     * @returns {void}
+     * @protected
+     */
+    bindCustomListenersOnThread(thread) {
+        super.bindCustomListenersOnThread(thread);
+
+        // We need to redraw highlights on the page if a thread was deleted
+        // since deleting 'cuts' out the highlight, which may have been
+        // overlapping with another
+        thread.addListener('threaddeleted', () => {
+            this._showHighlightsOnPage(thread.location.page);
+        });
+    }
+
+    /**
+     * Returns whether or not annotator is in highlight mode.
+     *
+     * @returns {Boolean} Whether or not in highlight mode
+     * @protected
+     */
+    isInHighlightMode() {
+        return this._annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * Binds point mode event listeners.
+     *
+     * @returns {void}
+     * @private
+     */
+    _bindHighlightModeListeners() {
+        this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
+    }
+
+    /**
+     * Unbinds point mode event listeners.
+     *
+     * @returns {void}
+     * @private
+     */
+    _unbindHighlightModeListeners() {
+        this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
     }
 
     /**
@@ -337,8 +413,8 @@ class DocAnnotator extends Annotator {
 
                 // If we are hovering over a highlight, we should use a hand cursor
                 if (delayThreads.some((thread) => {
-                    return thread.state === HIGHLIGHT_STATE_HOVER ||
-                        thread.state === HIGHLIGHT_STATE_ACTIVE_HOVER;
+                    return thread.state === constants.ANNOTATION_STATE_HOVER ||
+                        thread.state === constants.ANNOTATION_STATE_ACTIVE_HOVER;
                 })) {
                     this._useHandCursor();
                 } else {
@@ -369,7 +445,7 @@ class DocAnnotator extends Annotator {
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we're in highlight mode,
         // we trigger the create handler instad of the click handler
-        if (!IS_MOBILE && (this._didMouseMove || this._isInHighlightMode())) {
+        if (!IS_MOBILE && (this._didMouseMove || this.isInHighlightMode())) {
             this._highlightCreateHandler(event);
         } else {
             this._highlightClickHandler(event);
@@ -387,30 +463,30 @@ class DocAnnotator extends Annotator {
         event.stopPropagation();
 
         // Reset active highlight threads before creating new highlight
-        const threads = this._getHighlightThreadsWithStates(HIGHLIGHT_STATE_ACTIVE, HIGHLIGHT_STATE_ACTIVE_HOVER);
+        const threads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_ACTIVE, constants.ANNOTATION_STATE_ACTIVE_HOVER);
         threads.forEach((thread) => {
             thread.reset();
         });
 
         // Get annotation location from mouseup event, ignore if location is invalid
-        const location = this._getLocationFromEvent(event, HIGHLIGHT_ANNOTATION_TYPE);
+        const location = this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_HIGHLIGHT);
         if (!location) {
             return;
         }
 
         // Create and show pending annotation thread
-        const thread = this._createAnnotationThread([], location, HIGHLIGHT_ANNOTATION_TYPE);
+        const thread = this.createAnnotationThread([], location, constants.ANNOTATION_TYPE_HIGHLIGHT);
 
         // If in highlight mode, save highlight immediately
-        if (this._isInHighlightMode()) {
-            thread.saveAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '');
+        if (this.isInHighlightMode()) {
+            thread.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, '');
             // saveAnnotation() shows the annotation afterwards
         } else {
             thread.show();
         }
 
         // Bind events on thread
-        this._bindCustomListenersOnThread(thread);
+        this.bindCustomListenersOnThread(thread);
     }
 
     /**
@@ -474,7 +550,7 @@ class DocAnnotator extends Annotator {
      */
     _getHighlightThreadsOnPage(page) {
         const threads = this._threads[page] || [];
-        return threads.filter((thread) => thread.type === HIGHLIGHT_ANNOTATION_TYPE);
+        return threads.filter((thread) => thread.type === constants.ANNOTATION_TYPE_HIGHLIGHT);
     }
 
     /**
@@ -495,30 +571,11 @@ class DocAnnotator extends Annotator {
                     matchedState = matchedState || (thread.state === state);
                 });
 
-                return matchedState && thread.type === HIGHLIGHT_ANNOTATION_TYPE;
+                return matchedState && thread.type === constants.ANNOTATION_TYPE_HIGHLIGHT;
             }));
         });
 
         return threads;
-    }
-
-    /**
-     * Binds custom event listeners for a thread.
-     *
-     * @override
-     * @param {AnnotationThread} thread Thread to bind events to
-     * @returns {void}
-     * @private
-     */
-    _bindCustomListenersOnThread(thread) {
-        super._bindCustomListenersOnThread(thread);
-
-        // We need to redraw highlights on the page if a thread was deleted
-        // since deleting 'cuts' out the highlight, which may have been
-        // overlapping with another
-        thread.addListener('threaddeleted', () => {
-            this._showHighlightsOnPage(thread.location.page);
-        });
     }
 
     /**
@@ -545,61 +602,6 @@ class DocAnnotator extends Annotator {
         });
 
         // console.log(`Drawing annotations for page ${page} took ${new Date().getTime() - time}ms`);
-    }
-
-    /**
-     * Creates the proper type of thread, adds it to in-memory map, and returns
-     * it.
-     *
-     * @override
-     * @param {Annotation[]} annotations Annotations in thread
-     * @param {Object} location Location object
-     * @param {String} [type] Optional annotation type
-     * @returns {AnnotationThread} Created annotation thread
-     * @private
-     */
-    _createAnnotationThread(annotations, location, type) {
-        let thread;
-
-        if (type === HIGHLIGHT_ANNOTATION_TYPE) {
-            thread = new DocHighlightThread({
-                annotatedElement: this._annotatedElement,
-                annotations,
-                annotationService: this._annotationService,
-                fileVersionID: this._fileVersionID,
-                location,
-                type
-            });
-        } else {
-            const threadParams = {
-                annotatedElement: this._annotatedElement,
-                annotations,
-                annotationService: this._annotationService,
-                fileVersionID: this._fileVersionID,
-                location,
-                type
-            };
-
-            // Set existing thread ID if created with annotations
-            if (annotations.length > 0) {
-                threadParams.threadID = annotations[0].threadID;
-            }
-
-            thread = new DocPointThread(threadParams);
-        }
-
-        this._addThreadToMap(thread);
-        return thread;
-    }
-
-    /**
-     * Returns whether or not annotator is in highlight mode.
-     *
-     * @returns {Boolean} Whether or not in highlight mode
-     * @private
-     */
-    _isInHighlightMode() {
-        return this._annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
     }
 
     /**

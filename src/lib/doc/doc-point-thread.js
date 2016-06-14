@@ -8,16 +8,16 @@ import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation/annotation-thread';
 import DocPointDialog from './doc-point-dialog';
 import * as annotatorUtil from '../annotation/annotator-util';
+import * as constants from '../annotation/annotation-constants';
 
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_WIDTH = 18;
-const POINT_STATE_PENDING = 'pending';
 
 @autobind
 class DocPointThread extends AnnotationThread {
 
     //--------------------------------------------------------------------------
-    // Public
+    // Abstract Implementations
     //--------------------------------------------------------------------------
 
     /**
@@ -38,23 +38,18 @@ class DocPointThread extends AnnotationThread {
 
         annotatorUtil.showElement(this._element);
 
-        if (this._state === POINT_STATE_PENDING) {
-            this._showDialog();
+        if (this._state === constants.ANNOTATION_STATE_PENDING) {
+            this.showDialog();
         }
     }
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
 
     /**
      * Creates the document point annotation dialog for the thread.
      *
      * @override
      * @returns {void}
-     * @private
      */
-    _createDialog() {
+    createDialog() {
         this._dialog = new DocPointDialog({
             annotatedElement: this._annotatedElement,
             annotations: this._annotations,

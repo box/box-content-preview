@@ -8,21 +8,20 @@ import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation/annotation-thread';
 import DocHighlightDialog from './doc-highlight-dialog';
 import * as annotatorUtil from '../annotation/annotator-util';
+import * as constants from '../annotation/annotation-constants';
 
-const HIGHLIGHT_ANNOTATION_TYPE = 'highlight';
 const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';
 const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 233, 23, 0.5)';
 const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 255, 255, 1)';
-const HIGHLIGHT_STATE_ACTIVE = 'active'; // clicked
-const HIGHLIGHT_STATE_ACTIVE_HOVER = 'active-hover'; // clicked and mouse is over
-const HIGHLIGHT_STATE_HOVER = 'hover'; // mouse is over
-const HIGHLIGHT_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
-const HIGHLIGHT_STATE_PENDING = 'pending';
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 
 @autobind
 class DocHighlightThread extends AnnotationThread {
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
 
     /**
      * [destructor]
@@ -33,39 +32,8 @@ class DocHighlightThread extends AnnotationThread {
     destroy() {
         super.destroy();
 
-        if (this._state === HIGHLIGHT_STATE_PENDING) {
+        if (this._state === constants.ANNOTATION_STATE_PENDING) {
             window.getSelection().removeAllRanges();
-        }
-    }
-
-    /**
-     * Shows the highlight thread, which means different things based on the
-     * state of the thread. If the thread is pending, we show the 'add' button.
-     * If it is inactive, we draw the highlight. If it is active, we draw
-     * the highlight in active state and show the 'delete' button.
-     *
-     * @override
-     * @returns {void}
-     */
-    show() {
-        switch (this._state) {
-            case HIGHLIGHT_STATE_PENDING:
-                this._dialog.show();
-                break;
-            case HIGHLIGHT_STATE_INACTIVE:
-                this._dialog.hide();
-                this._draw(HIGHLIGHT_NORMAL_FILL_STYLE);
-                break;
-            case HIGHLIGHT_STATE_HOVER:
-                this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
-                break;
-            case HIGHLIGHT_STATE_ACTIVE:
-            case HIGHLIGHT_STATE_ACTIVE_HOVER:
-                this._dialog.show();
-                this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
-                break;
-            default:
-                break;
         }
     }
 
@@ -88,7 +56,7 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {void}
      */
     reset() {
-        this._state = HIGHLIGHT_STATE_INACTIVE;
+        this._state = constants.ANNOTATION_STATE_INACTIVE;
         this.show();
     }
 
@@ -113,7 +81,7 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousedown() {
         // Destroy pending highlights on mousedown
-        if (this._state === HIGHLIGHT_STATE_PENDING) {
+        if (this._state === constants.ANNOTATION_STATE_PENDING) {
             this.destroy();
         }
     }
@@ -136,10 +104,10 @@ class DocHighlightThread extends AnnotationThread {
     onClick(event, consumed) {
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
-        if (!consumed && (this._state === HIGHLIGHT_STATE_HOVER ||
-            this._state === HIGHLIGHT_STATE_ACTIVE_HOVER ||
+        if (!consumed && (this._state === constants.ANNOTATION_STATE_HOVER ||
+            this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER ||
             this._isInHighlight(event))) {
-            this._state = HIGHLIGHT_STATE_ACTIVE;
+            this._state = constants.ANNOTATION_STATE_ACTIVE;
             return true;
         }
 
@@ -160,26 +128,26 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
-        if (this._state === HIGHLIGHT_STATE_PENDING) {
+        if (this._state === constants.ANNOTATION_STATE_PENDING) {
             return false;
         }
 
         // If mouse is in highlight, change state to hover or active-hover
         if (this._isInHighlight(event)) {
-            if (this._state === HIGHLIGHT_STATE_ACTIVE ||
-                this._state === HIGHLIGHT_STATE_ACTIVE_HOVER) {
-                this._state = HIGHLIGHT_STATE_ACTIVE_HOVER;
+            if (this._state === constants.ANNOTATION_STATE_ACTIVE ||
+                this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
+                this._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
             } else {
-                this._state = HIGHLIGHT_STATE_HOVER;
+                this._state = constants.ANNOTATION_STATE_HOVER;
             }
 
         // If mouse is not in highlight, and state was previously active-hover,
         // change state back to active
-        } else if (this._state === HIGHLIGHT_STATE_ACTIVE_HOVER) {
-            this._state = HIGHLIGHT_STATE_ACTIVE;
+        } else if (this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
+            this._state = constants.ANNOTATION_STATE_ACTIVE;
 
         // If mouse is not in highlight, and state is active, do not override
-        } else if (this._state === HIGHLIGHT_STATE_ACTIVE) {
+        } else if (this._state === constants.ANNOTATION_STATE_ACTIVE) {
             // No-op
 
         // If mouse is not in highlight and state is not active, reset
@@ -192,44 +160,80 @@ class DocHighlightThread extends AnnotationThread {
     }
 
     //--------------------------------------------------------------------------
-    // Private
+    // Abstract Implementations
     //--------------------------------------------------------------------------
 
     /**
-     * Sets up the thread. Highlight threads have no HTML element since they
-     * are drawn onto the canvas, but do have a dialog for adding/deleting.
+     * Shows the highlight thread, which means different things based on the
+     * state of the thread. If the thread is pending, we show the 'add' button.
+     * If it is inactive, we draw the highlight. If it is active, we draw
+     * the highlight in active state and show the 'delete' button.
      *
      * @override
      * @returns {void}
-     * @private
      */
-    _setup() {
-        if (this._annotations.length === 0) {
-            this._state = HIGHLIGHT_STATE_PENDING;
-        } else {
-            this._state = HIGHLIGHT_STATE_INACTIVE;
+    show() {
+        switch (this._state) {
+            case constants.ANNOTATION_STATE_PENDING:
+                this._dialog.show();
+                break;
+            case constants.ANNOTATION_STATE_INACTIVE:
+                this._dialog.hide();
+                this._draw(HIGHLIGHT_NORMAL_FILL_STYLE);
+                break;
+            case constants.ANNOTATION_STATE_HOVER:
+                this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
+                break;
+            case constants.ANNOTATION_STATE_ACTIVE:
+            case constants.ANNOTATION_STATE_ACTIVE_HOVER:
+                this._dialog.show();
+                this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
+                break;
+            default:
+                break;
         }
+    }
 
+    /**
+     * Creates the document highlight annotation dialog for the thread.
+     *
+     * @override
+     * @returns {void}
+     */
+    createDialog() {
         this._dialog = new DocHighlightDialog({
             annotatedElement: this._annotatedElement,
             annotations: this._annotations,
             location: this._location,
             canAnnotate: this._annotationService.canAnnotate
         });
-        this._bindCustomListenersOnDialog();
     }
+
+    //--------------------------------------------------------------------------
+    // Protected
+    //--------------------------------------------------------------------------
+
+    /**
+     * No-op setup element. Highlight threads have no HTML indicator since
+     * they are drawn onto the canvas.
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    setupElement() {}
 
     /**
      * Binds custom event listeners for the dialog.
      *
      * @override
      * @returns {void}
-     * @private
+     * @protected
      */
-    _bindCustomListenersOnDialog() {
+    bindCustomListenersOnDialog() {
         // Annotation created
         this._dialog.addListener('annotationcreate', () => {
-            this.saveAnnotation(HIGHLIGHT_ANNOTATION_TYPE, '');
+            this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, '');
         });
 
         // Annotation deleted
@@ -243,12 +247,16 @@ class DocHighlightThread extends AnnotationThread {
      *
      * @override
      * @returns {void}
-     * @private
+     * @protected
      */
-    _unbindCustomListenersOnDialog() {
-        this.removeAllListeners(['annotationcreate']);
-        this.removeAllListeners(['annotationdelete']);
+    unbindCustomListenersOnDialog() {
+        this.removeAllListeners('annotationcreate');
+        this.removeAllListeners('annotationdelete');
     }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
 
     /**
      * Draws the highlight with the specified fill style.

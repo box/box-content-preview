@@ -3,9 +3,9 @@
  * annotations that manages an indicator element (point icon in the case of
  * point annotations) and dialogs for creating/deleting annotations.
  *
- * The following methods should be overridden by a child class:
+ * The following abstract methods must be implemented by a child class:
  * show() - show the annotation indicator
- * _createDialog() - create appropriate annotation dialog
+ * createDialog() - create appropriate annotation dialog
  * @author tjin
  */
 
@@ -14,10 +14,7 @@ import Annotation from './annotation';
 import AnnotationService from './annotation-service';
 import EventEmitter from 'events';
 import * as annotatorUtil from './annotator-util';
-
-const POINT_ANNOTATION_TYPE = 'point';
-const POINT_STATE_INACTIVE = 'inactive';
-const POINT_STATE_PENDING = 'pending';
+import * as constants from '../annotation/annotation-constants';
 
 @autobind
 class AnnotationThread extends EventEmitter {
@@ -60,7 +57,7 @@ class AnnotationThread extends EventEmitter {
         this._threadID = data.threadID || AnnotationService.generateID();
         this._type = data.type;
 
-        this._setup();
+        this.setup();
     }
 
     /**
@@ -70,12 +67,12 @@ class AnnotationThread extends EventEmitter {
      */
     destroy() {
         if (this._dialog) {
-            this._unbindCustomListenersOnDialog();
+            this.unbindCustomListenersOnDialog();
             this._dialog.destroy();
         }
 
         if (this._element) {
-            this._unbindDOMListeners();
+            this.unbindDOMListeners();
 
             if (this._element.parentNode) {
                 this._element.parentNode.removeChild(this._element);
@@ -86,13 +83,6 @@ class AnnotationThread extends EventEmitter {
 
         this.emit('threaddeleted');
     }
-
-    /**
-     * This should be overridden to show the annotation indicator.
-     *
-     * @returns {void}
-     */
-    show() {}
 
     /**
      * Hides the annotation indicator.
@@ -109,7 +99,34 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     reset() {
-        this._state = POINT_STATE_INACTIVE;
+        this._state = constants.ANNOTATION_STATE_INACTIVE;
+    }
+
+    /**
+     * Shows the appropriate annotation dialog for this thread.
+     *
+     * @returns {void}
+     */
+    showDialog() {
+        // Don't show dialog if user can annotate and there is a current selection
+        if (this._annotationService.canAnnotate && annotatorUtil.isSelectionPresent()) {
+            return;
+        }
+
+        if (this._dialog) {
+            this._dialog.show();
+        }
+    }
+
+    /**
+     * Hides the appropriate annotation dialog for this thread.
+     *
+     * @returns {void}
+     */
+    hideDialog() {
+        if (this._dialog) {
+            this._dialog.hide();
+        }
     }
 
     /**
@@ -192,6 +209,25 @@ class AnnotationThread extends EventEmitter {
     }
 
     //--------------------------------------------------------------------------
+    // Abstract
+    //--------------------------------------------------------------------------
+
+    /**
+     * Must be implemented to show the annotation indicator.
+     *
+     * @returns {void}
+     */
+    show() {}
+
+    /**
+     * Must be implemented to create the appropriate annotation dialog and save
+     * as a property on the thread.
+     *
+     * @returns {void}
+     */
+    createDialog() {}
+
+    //--------------------------------------------------------------------------
     // Getters
     //--------------------------------------------------------------------------
 
@@ -232,7 +268,7 @@ class AnnotationThread extends EventEmitter {
     }
 
     //--------------------------------------------------------------------------
-    // Private
+    // Protected
     //--------------------------------------------------------------------------
 
     /**
@@ -240,71 +276,41 @@ class AnnotationThread extends EventEmitter {
      * appropriate dialog, and binds event listeners.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _setup() {
+    setup() {
         if (this._annotations.length === 0) {
-            this._state = POINT_STATE_PENDING;
+            this._state = constants.ANNOTATION_STATE_PENDING;
         } else {
-            this._state = POINT_STATE_INACTIVE;
+            this._state = constants.ANNOTATION_STATE_INACTIVE;
         }
 
-        this._createDialog();
-        this._bindCustomListenersOnDialog();
+        this.createDialog();
+        this.bindCustomListenersOnDialog();
 
+        this.setupElement();
+    }
+
+    /**
+     * Sets up indicator element.
+     *
+     * @returns {void}
+     * @protected
+     */
+    setupElement() {
         this._element = this._createElement();
-        this._bindDOMListeners();
-    }
-
-    /**
-     * Should be overridden to create an annotation dialog as appropriate and
-     * save as a property on the thread.
-     *
-     * @returns {void}
-     * @private
-     */
-    _createDialog() {}
-
-    /**
-     * Saves the provided annotation to the thread and dialog if appropriate
-     * and resets state to inactive.
-     *
-     * @param {Annotation} annotation Annotation to save
-     * @returns {void}
-     * @private
-     */
-    _saveAnnotationToThread(annotation) {
-        this._annotations.push(annotation);
-
-        if (this._dialog) {
-            this._dialog.addAnnotation(annotation);
-        }
-
-        this.reset();
-    }
-
-    /**
-     * Creates the HTML for the annotation indicator.
-     *
-     * @returns {HTMLElement} HTML element
-     * @private
-     */
-    _createElement() {
-        const indicatorEl = document.createElement('button');
-        indicatorEl.classList.add('box-preview-point-annotation-btn');
-        indicatorEl.setAttribute('data-type', 'annotation-indicator');
-        return indicatorEl;
+        this.bindDOMListeners();
     }
 
     /**
      * Binds DOM event listeners for the thread.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _bindDOMListeners() {
-        this._element.addEventListener('click', this._showDialog);
-        this._element.addEventListener('mouseover', this._showDialog);
+    bindDOMListeners() {
+        this._element.addEventListener('click', this.showDialog);
+        this._element.addEventListener('mouseover', this.showDialog);
         this._element.addEventListener('mouseout', this._mouseoutHandler);
     }
 
@@ -312,11 +318,11 @@ class AnnotationThread extends EventEmitter {
      * Unbinds DOM event listeners for the thread.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _unbindDOMListeners() {
-        this._element.removeEventListener('click', this._showDialog);
-        this._element.removeEventListener('mouseover', this._showDialog);
+    unbindDOMListeners() {
+        this._element.removeEventListener('click', this.showDialog);
+        this._element.removeEventListener('mouseover', this.showDialog);
         this._element.removeEventListener('mouseout', this._mouseoutHandler);
     }
 
@@ -324,12 +330,12 @@ class AnnotationThread extends EventEmitter {
      * Binds custom event listeners for the dialog.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _bindCustomListenersOnDialog() {
+    bindCustomListenersOnDialog() {
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
-            this.saveAnnotation(POINT_ANNOTATION_TYPE, data.text);
+            this.saveAnnotation(constants.ANNOTATION_TYPE_POINT, data.text);
         });
 
         // Annotation canceled
@@ -347,41 +353,29 @@ class AnnotationThread extends EventEmitter {
      * Unbinds custom event listeners for the dialog.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _unbindCustomListenersOnDialog() {
-        this.removeAllListeners(['annotationcreate']);
-        this.removeAllListeners(['annotationcancel']);
-        this.removeAllListeners(['annotationdelete']);
+    unbindCustomListenersOnDialog() {
+        this.removeAllListeners('annotationcreate');
+        this.removeAllListeners('annotationcancel');
+        this.removeAllListeners('annotationdelete');
     }
 
-    /**
-     * Shows the appropriate annotation dialog for this thread.
-     *
-     * @returns {void}
-     * @private
-     */
-    _showDialog() {
-        // Don't show dialog if user can annotate and there is a current selection
-        if (this._annotationService.canAnnotate && annotatorUtil.isSelectionPresent()) {
-            return;
-        }
-
-        if (this._dialog) {
-            this._dialog.show();
-        }
-    }
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
 
     /**
-     * Hides the appropriate annotation dialog for this thread.
+     * Creates the HTML for the annotation indicator.
      *
-     * @returns {void}
+     * @returns {HTMLElement} HTML element
      * @private
      */
-    _hideDialog() {
-        if (this._dialog) {
-            this._dialog.hide();
-        }
+    _createElement() {
+        const indicatorEl = document.createElement('button');
+        indicatorEl.classList.add('box-preview-point-annotation-btn');
+        indicatorEl.setAttribute('data-type', 'annotation-indicator');
+        return indicatorEl;
     }
 
     /**
@@ -392,8 +386,26 @@ class AnnotationThread extends EventEmitter {
      */
     _mouseoutHandler() {
         if (this._annotations.length !== 0) {
-            this._hideDialog();
+            this.hideDialog();
         }
+    }
+
+    /**
+     * Saves the provided annotation to the thread and dialog if appropriate
+     * and resets state to inactive.
+     *
+     * @param {Annotation} annotation Annotation to save
+     * @returns {void}
+     * @private
+     */
+    _saveAnnotationToThread(annotation) {
+        this._annotations.push(annotation);
+
+        if (this._dialog) {
+            this._dialog.addAnnotation(annotation);
+        }
+
+        this.reset();
     }
 
     /**
