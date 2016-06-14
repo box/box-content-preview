@@ -1,3 +1,4 @@
+import Browser from '../../browser';
 export default [{
     id: 'CAMERA_ID',
     type: 'camera',
@@ -76,8 +77,13 @@ export default [{
     components: {
         rendererComponent: {
             componentData: {
-                antialias: true,
-                renderOnDemand: false
+                antialias: !Browser.isMobile(),
+                renderOnDemand: false,
+                devicePixelRatio: 1.0,
+                // Mobile fragment precision at mediump is often too low.
+                // TODO - investigate changing some values in shaders to highp
+                // to eliviate the problem while letting the rest default to mediump.
+                precision: Browser.isMobile() ? 'highp' : 'mediump'
             },
             scriptId: 'box3d_renderer',
             isBuiltIn: true,

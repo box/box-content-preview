@@ -63783,18 +63783,19 @@
 	        return this.runtimeData[dimension];
 	      }
 	      var renderer = this.box3DRuntime.getRenderer();
-	      var textureSize = void 0;
+	      var textureRes = void 0;
 	      if (renderer) {
 	        if (this.isCubeImage()) {
-	          textureSize = renderer.getMaxTextureResolutionCube();
+	          textureRes = renderer.getMaxTextureResolutionCube();
 	        } else {
-	          textureSize = renderer.getMaxTextureResolution2d();
+	          textureRes = renderer.getMaxTextureResolution2d();
 	        }
-	        textureSize = Math.min(this.getProperty(dimension), textureSize);
+	        var dimProperty = this.getProperty(dimension);
+	        textureRes = dimProperty ? Math.min(dimProperty, textureRes) : textureRes;
 	      } else {
-	        textureSize = this.getProperty(dimension);
+	        textureRes = this.getProperty(dimension);
 	      }
-	      return Math.max(1, textureSize);
+	      return Math.max(1, textureRes);
 	    }
 
 	    /**

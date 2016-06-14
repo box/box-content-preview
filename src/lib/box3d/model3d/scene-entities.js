@@ -86,8 +86,8 @@ function sceneEntities(prefix) {
                 componentData: {
                     antialias: !Browser.isMobile(),
                     renderOnDemand: true,
-                    maxTexture2dSize: Browser.isMobile() ? 1024 : undefined,
-                    maxTextureCubeSize: Browser.isMobile() ? 512 : undefined,
+                    maxTextureResolution2d: Browser.isMobile() ? 1024 : undefined,
+                    maxTextureResolutionCube: Browser.isMobile() ? 512 : undefined,
                     // Mobile fragment precision at mediump is often too low.
                     // TODO - investigate changing some values in shaders to highp
                     // to eliviate the problem while letting the rest default to mediump.
