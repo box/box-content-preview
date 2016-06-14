@@ -2,8 +2,8 @@
  * @fileoverview The annotation dialog class manages a dialog's HTML, event
  * handlers, and broadcasting annotations CRUD events.
  *
- * The following methods should be overridden by a child class:
- * _position() - position the dialog on the file using the location property
+ * The following abstract methods must be implemented by a child class:
+ * position() - position the dialog on the file using the location property
  * @author tjin
  */
 
@@ -52,7 +52,7 @@ class AnnotationDialog extends EventEmitter {
         this._hasAnnotations = data.annotations.length > 0;
         this._canAnnotate = data.canAnnotate;
 
-        this._setup(data.annotations);
+        this.setup(data.annotations);
     }
 
     /**
@@ -62,7 +62,7 @@ class AnnotationDialog extends EventEmitter {
      */
     destroy() {
         if (this._element) {
-            this._unbindDOMListeners();
+            this.unbindDOMListeners();
 
             if (this._element.parentNode) {
                 this._element.parentNode.removeChild(this._element);
@@ -84,7 +84,7 @@ class AnnotationDialog extends EventEmitter {
 
         // Position and show - we need to reposition every time since the DOM
         // could have changed from zooming
-        this._position();
+        this.position();
 
         // If user cannot annotate, hide reply/edit/delete UI
         if (!this._canAnnotate) {
@@ -154,7 +154,18 @@ class AnnotationDialog extends EventEmitter {
     }
 
     //--------------------------------------------------------------------------
-    // Private
+    // Abstract
+    //--------------------------------------------------------------------------
+
+    /**
+     * Must be implemented to position the dialog on the preview.
+     *
+     * @returns {void}
+     */
+    position() {}
+
+    //--------------------------------------------------------------------------
+    // Protected
     //--------------------------------------------------------------------------
 
     /**
@@ -162,9 +173,9 @@ class AnnotationDialog extends EventEmitter {
      *
      * @param {Annotation[]} Annotations to show in the dialog
      * @returns {void}
-     * @private
+     * @protected
      */
-    _setup(annotations) {
+    setup(annotations) {
         // Generate HTML of dialog
         this._element = document.createElement('div');
         this._element.setAttribute('data-type', 'annotation-dialog');
@@ -206,8 +217,61 @@ class AnnotationDialog extends EventEmitter {
             this._addAnnotationElement(annotation);
         });
 
-        this._bindDOMListeners();
+        this.bindDOMListeners();
     }
+
+    /**
+     * Binds DOM event listeners.
+     *
+     * @returns {void}
+     * @protected
+     */
+    bindDOMListeners() {
+        this._element.addEventListener('keydown', this.keydownHandler);
+        this._element.addEventListener('click', this._clickHandler);
+        this._element.addEventListener('mouseup', this._mouseupHandler);
+        this._element.addEventListener('mouseenter', this._mouseenterHandler);
+        this._element.addEventListener('mouseleave', this._mouseleaveHandler);
+    }
+
+    /**
+     * Unbinds DOM event listeners.
+     *
+     * @returns {void}
+     * @protected
+     */
+    unbindDOMListeners() {
+        this._element.removeEventListener('keydown', this.keydownHandler);
+        this._element.removeEventListener('click', this._clickHandler);
+        this._element.removeEventListener('mouseup', this._mouseupHandler);
+        this._element.removeEventListener('mouseenter', this._mouseenterHandler);
+        this._element.removeEventListener('mouseleave', this._mouseleaveHandler);
+    }
+
+    /**
+     * Keydown handler for dialog.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     * @protected
+     */
+    keydownHandler(event) {
+        event.stopPropagation();
+
+        const key = decodeKeydown(event);
+        if (key === 'Escape') {
+            this.hide(true); // hide without delay
+        } else {
+            const dataType = annotatorUtil.findClosestDataType(event.target);
+            if (dataType === 'reply-textarea') {
+                this._activateReply();
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
 
     /**
      * Adds an annotation to the dialog.
@@ -267,42 +331,6 @@ class AnnotationDialog extends EventEmitter {
     }
 
     /**
-     * This should be overridden to position the dialog on the preview.
-     *
-     * @returns {void}
-     * @private
-     */
-    _position() {}
-
-    /**
-     * Binds DOM event listeners.
-     *
-     * @returns {void}
-     * @private
-     */
-    _bindDOMListeners() {
-        this._element.addEventListener('keydown', this._keydownHandler);
-        this._element.addEventListener('click', this._clickHandler);
-        this._element.addEventListener('mouseup', this._mouseupHandler);
-        this._element.addEventListener('mouseenter', this._mouseenterHandler);
-        this._element.addEventListener('mouseleave', this._mouseleaveHandler);
-    }
-
-    /**
-     * Unbinds DOM event listeners.
-     *
-     * @returns {void}
-     * @private
-     */
-    _unbindDOMListeners() {
-        this._element.removeEventListener('keydown', this._keydownHandler);
-        this._element.removeEventListener('click', this._clickHandler);
-        this._element.removeEventListener('mouseup', this._mouseupHandler);
-        this._element.removeEventListener('mouseenter', this._mouseenterHandler);
-        this._element.removeEventListener('mouseleave', this._mouseleaveHandler);
-    }
-
-    /**
      * Mouseup handler. Stops propagation of mouseup, which may be used by
      * other annotation classes.
      *
@@ -335,27 +363,6 @@ class AnnotationDialog extends EventEmitter {
     _mouseleaveHandler() {
         if (this._hasAnnotations) {
             this.hide();
-        }
-    }
-
-    /**
-     * Keydown handler for dialog.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     * @private
-     */
-    _keydownHandler(event) {
-        event.stopPropagation();
-
-        const key = decodeKeydown(event);
-        if (key === 'Escape') {
-            this.hide(true); // hide without delay
-        } else {
-            const dataType = annotatorUtil.findClosestDataType(event.target);
-            if (dataType === 'reply-textarea') {
-                this._activateReply();
-            }
         }
     }
 

@@ -37,7 +37,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
         // Position and show - we need to reposition every time since the DOM
         // could have changed from zooming
-        this._position();
+        this.position();
         annotatorUtil.showElement(this._element);
     }
 
@@ -66,7 +66,8 @@ class DocHighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * No-op. Overrides base dialog removeAnnotation().
+     * No-op when removing an annotation since highlights only have one
+     * annotation.
      *
      * @override
      * @returns {void}
@@ -74,41 +75,16 @@ class DocHighlightDialog extends AnnotationDialog {
     removeAnnotation() {}
 
     //--------------------------------------------------------------------------
-    // Private
+    // Abstract Implementations
     //--------------------------------------------------------------------------
-
-    /**
-     * Sets up the dialog element.
-     *
-     * @override
-     * @returns {void}
-     * @private
-     */
-    _setup(annotations) {
-        this._element = document.createElement('div');
-        this._element.classList.add('box-preview-highlight-dialog');
-        this._element.innerHTML = `
-            <div class="box-preview-annotation-caret"></div>
-            <button class="box-preview-btn-plain box-preview-add-highlight-btn ${annotations.length ? CLASS_HIDDEN : ''}"
-                data-type="add-highlight-btn">
-                ${ICON_HIGHLIGHT}
-            </button>
-            <button class="box-preview-btn-plain box-preview-delete-highlight-btn ${annotations.length ? '' : CLASS_HIDDEN}"
-                data-type="delete-highlight-btn">
-                ${ICON_DELETE}
-            </button>`.trim();
-
-        this._bindDOMListeners();
-    }
 
     /**
      * Positions the dialog.
      *
      * @override
      * @returns {void}
-     * @private
      */
-    _position() {
+    position() {
         // Position it below lower right corner of the highlight - we need
         // to reposition every time since the DOM could have changed from
         // zooming
@@ -140,14 +116,42 @@ class DocHighlightDialog extends AnnotationDialog {
         pageEl.appendChild(this._element);
     }
 
+    //--------------------------------------------------------------------------
+    // Protected
+    //--------------------------------------------------------------------------
+
+    /**
+     * Sets up the dialog element.
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    setup(annotations) {
+        this._element = document.createElement('div');
+        this._element.classList.add('box-preview-highlight-dialog');
+        this._element.innerHTML = `
+            <div class="box-preview-annotation-caret"></div>
+            <button class="box-preview-btn-plain box-preview-add-highlight-btn ${annotations.length ? CLASS_HIDDEN : ''}"
+                data-type="add-highlight-btn">
+                ${ICON_HIGHLIGHT}
+            </button>
+            <button class="box-preview-btn-plain box-preview-delete-highlight-btn ${annotations.length ? '' : CLASS_HIDDEN}"
+                data-type="delete-highlight-btn">
+                ${ICON_DELETE}
+            </button>`.trim();
+
+        this.bindDOMListeners();
+    }
+
     /**
      * Binds DOM event listeners.
      *
      * @override
      * @returns {void}
-     * @private
+     * @protected
      */
-    _bindDOMListeners() {
+    bindDOMListeners() {
         this._element.addEventListener('mousedown', this._mousedownHandler);
         this._element.addEventListener('mouseup', this._mouseupHandler);
         this._element.addEventListener('keydown', this._mousedownHandler);
@@ -158,13 +162,32 @@ class DocHighlightDialog extends AnnotationDialog {
      *
      * @override
      * @returns {void}
-     * @private
+     * @protected
      */
-    _unbindDOMListeners() {
+    unbindDOMListeners() {
         this._element.removeEventListener('mousedown', this._mousedownHandler);
         this._element.removeEventListener('mouseup', this._mouseupHandler);
         this._element.removeEventListener('keydown', this._mousedownHandler);
     }
+
+    /**
+     * Keydown handler on dialog. Needed since we are binding to 'mousedown'
+     * instead of 'click'.
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    keydownHandler(event) {
+        event.stopPropagation();
+        if (decodeKeydown(event) === 'Enter') {
+            this._mousedownHandler(event);
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
 
     /**
      * Mousedown handler on dialog.
@@ -190,21 +213,6 @@ class DocHighlightDialog extends AnnotationDialog {
 
             default:
                 break;
-        }
-    }
-
-    /**
-     * Keydown handler on dialog. Needed since we are binding to 'mousedown'
-     * instead of 'click'.
-     *
-     * @override
-     * @returns {void}
-     * @private
-     */
-    _keydownHandler(event) {
-        event.stopPropagation();
-        if (decodeKeydown(event) === 'Enter') {
-            this._mousedownHandler(event);
         }
     }
 

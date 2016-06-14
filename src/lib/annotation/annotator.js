@@ -3,11 +3,9 @@
  * Viewer-specific annotations should extend this for other annotation types
  * or to modify point annotation behavior.
  *
- * The following methods should be overridden by a child class:
- * _bindDOMListeners() - bind DOM listeners to the annotated element
- * _unbindDOMListeners() - unbind DOM listeners to the annotated element
- * _getLocationFromEvent() - get annotation location from DOM event
- * _createAnnotationThread() - create and cache appropriate annotation thread
+ * The following abstract methods must be implemented by a child class:
+ * getLocationFromEvent() - get annotation location from DOM event
+ * createAnnotationThread() - create and cache appropriate annotation thread
  * @author tjin
  */
 
@@ -17,9 +15,6 @@ import EventEmitter from 'events';
 import LocalStorageAnnotationService from './localstorage-annotation-service';
 import * as constants from './annotation-constants';
 import { CLASS_ACTIVE } from '../constants';
-
-const POINT_ANNOTATION_TYPE = 'point';
-const POINT_STATE_PENDING = 'pending';
 
 @autobind
 class Annotator extends EventEmitter {
@@ -62,10 +57,10 @@ class Annotator extends EventEmitter {
     destroy() {
         Object.keys(this._threads).forEach((page) => {
             this._threads[page].forEach((thread) => {
-                this._unbindCustomListenersOnThread(thread);
+                this.unbindCustomListenersOnThread(thread);
             });
         });
-        this._unbindDOMListeners();
+        this.unbindDOMListeners();
     }
 
     /**
@@ -75,7 +70,7 @@ class Annotator extends EventEmitter {
      */
     init() {
         this.setScale(1);
-        this._setupAnnotations();
+        this.setupAnnotations();
 
         // Add IE-specific class for custom cursors
         if (Browser.getName() === 'Explorer') {
@@ -90,7 +85,7 @@ class Annotator extends EventEmitter {
      */
     showAnnotations() {
         // Show annotations after we've generated an in-memory map
-        this._fetchAnnotations().then(this.renderAnnotations);
+        this.fetchAnnotations().then(this.renderAnnotations);
     }
 
     /**
@@ -114,7 +109,12 @@ class Annotator extends EventEmitter {
      */
     renderAnnotations() {
         this.hideAnnotations();
-        this._showAnnotations();
+
+        Object.keys(this._threads).forEach((page) => {
+            this._threads[page].forEach((thread) => {
+                thread.show();
+            });
+        });
     }
 
     /**
@@ -146,15 +146,15 @@ class Annotator extends EventEmitter {
         this._destroyPendingThreads();
 
         // If in annotation mode, turn it off
-        if (this._isInPointMode()) {
+        if (this.isInPointMode()) {
             this.emit('pointmodeexit');
             this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.remove(CLASS_ACTIVE);
             }
 
-            this._unbindPointModeListeners(); // Disable point mode
-            this._bindDOMListeners(); // Re-enable other annotations
+            this.unbindPointModeListeners(); // Disable point mode
+            this.bindDOMListeners(); // Re-enable other annotations
 
         // Otherwise, enable annotation mode
         } else {
@@ -164,25 +164,54 @@ class Annotator extends EventEmitter {
                 buttonEl.classList.add(CLASS_ACTIVE);
             }
 
-            this._unbindDOMListeners(); // Disable other annotations
-            this._bindPointModeListeners();  // Enable point mode
+            this.unbindDOMListeners(); // Disable other annotations
+            this.bindPointModeListeners();  // Enable point mode
         }
     }
 
     //--------------------------------------------------------------------------
-    // Private
+    // Abstract
+    //--------------------------------------------------------------------------
+
+    /**
+     * Must be implemented to return an annotation location object from the DOM
+     * event.
+     *
+     * @param {Event} event DOM event
+     * @param {string} annotationType Type of annotation
+     * @returns {Object} Location object
+     */
+    /* eslint-disable no-unused-vars */
+    getLocationFromEvent(event, annotationType) {}
+    /* eslint-enable no-unused-vars */
+
+    /**
+     * Must be implemented to create the appropriate new thread, add it to the
+     * in-memory map, and return the thread.
+     *
+     * @param {Annotation[]} annotations Annotations in thread
+     * @param {Object} location Location object
+     * @param {String} type Annotation type
+     * @returns {AnnotationThread} Created annotation thread
+     */
+    /* eslint-disable no-unused-vars */
+    createAnnotationThread(annotations, location, type) {}
+    /* eslint-enable no-unused-vars */
+
+    //--------------------------------------------------------------------------
+    // Protected
     //--------------------------------------------------------------------------
 
     /**
      * Annotations setup.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _setupAnnotations() {
+    setupAnnotations() {
         // Map of page => [threads on page]
         this._threads = {};
-        this._bindDOMListeners();
+        this.bindDOMListeners();
     }
 
     /**
@@ -190,9 +219,9 @@ class Annotator extends EventEmitter {
      * an in-memory map of page to threads.
      *
      * @returns {Promise} Promise for fetching saved annotations
-     * @private
+     * @protected
      */
-    _fetchAnnotations() {
+    fetchAnnotations() {
         this._threads = {};
 
         // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
@@ -202,56 +231,42 @@ class Annotator extends EventEmitter {
                 Object.keys(threadMap).forEach((threadID) => {
                     const annotations = threadMap[threadID];
                     const firstAnnotation = annotations[0];
-                    const thread = this._createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
+                    const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
 
                     // Bind events on thread
-                    this._bindCustomListenersOnThread(thread);
+                    this.bindCustomListenersOnThread(thread);
                 });
             });
     }
 
     /**
-     * Shows annotations.
-     *
-     * @returns {void}
-     * @private
-     */
-    _showAnnotations() {
-        Object.keys(this._threads).forEach((page) => {
-            this._threads[page].forEach((thread) => {
-                thread.show();
-            });
-        });
-    }
-
-    /**
-     * Binds DOM event listeners. No-op here, but should be overridden by any
+     * Binds DOM event listeners. No-op here, but can be overridden by any
      * annotator that needs to bind event listeners to the DOM in the normal
      * state (ie not in any annotation mode).
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _bindDOMListeners() {}
+    bindDOMListeners() {}
 
     /**
-     * Unbinds DOM event listeners. No-op here, but should be overridden by any
+     * Unbinds DOM event listeners. No-op here, but can be overridden by any
      * annotator that needs to bind event listeners to the DOM in the normal
      * state (ie not in any annotation mode).
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _unbindDOMListeners() {}
+    unbindDOMListeners() {}
 
     /**
      * Binds custom event listeners for a thread.
      *
      * @param {AnnotationThread} thread Thread to bind events to
      * @returns {void}
-     * @private
+     * @protected
      */
-    _bindCustomListenersOnThread(thread) {
+    bindCustomListenersOnThread(thread) {
         // Thread was deleted, remove from thread map
         thread.addListener('threaddeleted', () => {
             const page = thread.location.page || 1;
@@ -266,7 +281,7 @@ class Annotator extends EventEmitter {
         // in threaddeleted listener since thread may still need to respond
         // to error messages
         thread.addListener('threadcleanup', () => {
-            this._unbindCustomListenersOnThread(thread);
+            this.unbindCustomListenersOnThread(thread);
         });
 
         thread.addListener('annotationcreateerror', () => {
@@ -287,9 +302,9 @@ class Annotator extends EventEmitter {
      *
      * @param {AnnotationThread} thread Thread to bind events to
      * @returns {void}
-     * @private
+     * @protected
      */
-    _unbindCustomListenersOnThread(thread) {
+    unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners(['threaddeleted']);
         thread.removeAllListeners(['annotationcreateerror']);
         thread.removeAllListeners(['annotationdeleteerror']);
@@ -299,20 +314,20 @@ class Annotator extends EventEmitter {
      * Binds event listeners for point annotation mode.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _bindPointModeListeners() {
-        this._annotatedElement.addEventListener('click', this._pointClickHandler);
+    bindPointModeListeners() {
+        this._annotatedElement.addEventListener('click', this.pointClickHandler);
     }
 
     /**
      * Unbinds event listeners for point annotation mode.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _unbindPointModeListeners() {
-        this._annotatedElement.removeEventListener('click', this._pointClickHandler);
+    unbindPointModeListeners() {
+        this._annotatedElement.removeEventListener('click', this.pointClickHandler);
     }
 
     /**
@@ -321,62 +336,36 @@ class Annotator extends EventEmitter {
      *
      * @param {Event} event DOM event
      * @returns {void}
-     * @private
+     * @protected
      */
-    _pointClickHandler(event) {
+    pointClickHandler(event) {
         event.stopPropagation();
 
         // Destroy any pending threads
         this._destroyPendingThreads();
 
         // Get annotation location from click event, ignore click if location is invalid
-        const location = this._getLocationFromEvent(event, POINT_ANNOTATION_TYPE);
+        const location = this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_POINT);
         if (!location) {
             return;
         }
 
         // Create new thread with no annotations, show indicator, and show dialog
-        const thread = this._createAnnotationThread([], location, POINT_ANNOTATION_TYPE);
+        const thread = this.createAnnotationThread([], location, constants.ANNOTATION_TYPE_POINT);
         thread.show();
 
         // Bind events on thread
-        this._bindCustomListenersOnThread(thread);
+        this.bindCustomListenersOnThread(thread);
     }
-
-    /**
-     * This should be overridden to return an annotation location object from
-     * the DOM event.
-     *
-     * @param {Event} event DOM event
-     * @param {string} annotationType Type of annotation
-     * @returns {Object} Location object
-     */
-    /* eslint-disable no-unused-vars */
-    _getLocationFromEvent(event, annotationType) {}
-    /* eslint-enable no-unused-vars */
-
-    /**
-     * This should be overridden to create a new annotation thread as
-     * appropriate, add it to the in-memory map, and return the thread.
-     *
-     * @param {Annotation[]} annotations Annotations in thread
-     * @param {Object} location Location object
-     * @param {String} type Annotation type
-     * @returns {AnnotationThread} Created annotation thread
-     * @private
-     */
-    /* eslint-disable no-unused-vars */
-    _createAnnotationThread(annotations, location, type) {}
-    /* eslint-enable no-unused-vars */
 
     /**
      * Adds thread to in-memory map.
      *
      * @param {AnnotationThread} thread Thread to add
      * @returns {void}
-     * @private
+     * @protected
      */
-    _addThreadToMap(thread) {
+    addThreadToMap(thread) {
         // Add thread to in-memory map
         const page = thread.location.page || 1; // Defaults to page 1 if thread has no page
         this._threads[page] = this._threads[page] || [];
@@ -387,11 +376,15 @@ class Annotator extends EventEmitter {
      * Returns whether or not annotator is in point mode.
      *
      * @returns {Boolean} Whether or not in point mode
-     * @private
+     * @protected
      */
-    _isInPointMode() {
+    isInPointMode() {
         return this._annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
     }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
 
     /**
      * Destroys pending threads.
@@ -402,7 +395,7 @@ class Annotator extends EventEmitter {
     _destroyPendingThreads() {
         Object.keys(this._threads).forEach((page) => {
             this._threads[page]
-                .filter((thread) => thread.state === POINT_STATE_PENDING)
+                .filter((thread) => thread.state === constants.ANNOTATION_STATE_PENDING)
                 .forEach((pendingThread) => {
                     pendingThread.destroy();
                 });

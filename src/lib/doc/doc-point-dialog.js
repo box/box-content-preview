@@ -14,7 +14,7 @@ const PAGE_PADDING_TOP = 15;
 class DocPointDialog extends AnnotationDialog {
 
     //--------------------------------------------------------------------------
-    // Private
+    // Abstract Implementations
     //--------------------------------------------------------------------------
 
     /**
@@ -22,9 +22,8 @@ class DocPointDialog extends AnnotationDialog {
      *
      * @override
      * @returns {void}
-     * @private
      */
-    _position() {
+    position() {
         const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;
         const [browserX, browserY] = annotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
 
