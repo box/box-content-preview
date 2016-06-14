@@ -84,7 +84,9 @@ function sceneEntities(prefix) {
             rendererComponent: {
                 componentData: {
                     antialias: true,
-                    renderOnDemand: false
+                    renderOnDemand: false,
+                    clearAlpha: 1.0,
+                    clearColor: { r: 0.95, g: 0.95, b: 0.95 }
                 },
                 scriptId: 'box3d_renderer',
                 isBuiltIn: true,
