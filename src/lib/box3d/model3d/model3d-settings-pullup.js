@@ -209,6 +209,7 @@ class Model3DSettingsPullup extends EventEmitter {
         const axisLabelEl = document.createElement('span');
         axisLabelEl.textContent = axisLabel.toUpperCase();
         axisLabelEl.classList.add('box3d-settings-axis-label');
+        axisLabelEl.classList.add(`box3d-settings-axis-label-${axisLabel}`);
         axisEl.appendChild(axisLabelEl);
 
         const plusIconEl = document.createElement('span');

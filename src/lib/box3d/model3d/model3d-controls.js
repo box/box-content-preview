@@ -7,6 +7,7 @@ import {
     EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_RENDER_MODE,
+    EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
 } from './model3d-constants';
 
@@ -77,6 +78,7 @@ class Model3dControls extends Box3DControls {
      * @returns {void}
      */
     handleToggleSettings() {
+        this.emit(EVENT_TOGGLE_HELPERS);
         this.toggleElementVisibility(this.settingsPanelEl);
     }
 
@@ -113,6 +115,7 @@ class Model3dControls extends Box3DControls {
      * @returns {void}
      */
     handleCloseUi() {
+        this.emit(EVENT_TOGGLE_HELPERS, false);
         this.setElementVisibility(this.settingsPanelEl, false);
     }
 

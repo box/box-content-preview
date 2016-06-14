@@ -63786,9 +63786,9 @@
 	      var textureSize = void 0;
 	      if (renderer) {
 	        if (this.isCubeImage()) {
-	          textureSize = renderer.getMaxTextureCubeSize();
+	          textureSize = renderer.getMaxTextureResolutionCube();
 	        } else {
-	          textureSize = renderer.getMaxTexture2dSize();
+	          textureSize = renderer.getMaxTextureResolution2d();
 	        }
 	        textureSize = Math.min(this.getProperty(dimension), textureSize);
 	      } else {
@@ -67691,16 +67691,16 @@
 	          "High": "highp"
 	        }
 	      },
-	      "maxTexture2dSize": {
-	        "name": "maxTexture2dSize",
+	      "maxTextureResolution2d": {
+	        "name": "maxTextureResolution2d",
 	        "type": "i",
 	        "description": "Clamp the maximum allowed dimension of a 2d texture.",
 	        "default": 32768,
 	        "min": 1024,
 	        "max": 32768
 	      },
-	      "maxTextureCubeSize": {
-	        "name": "maxTextureCubeSize",
+	      "maxTextureResolutionCube": {
+	        "name": "maxTextureResolutionCube",
 	        "type": "i",
 	        "description": "Clamp the maximum allowed dimension of a cube texture.",
 	        "default": 32768,
@@ -67757,8 +67757,8 @@
 	      "clearColor",
 	      "clearAlpha",
 	      "precision",
-	      "maxTexture2dSize",
-	      "maxTextureCubeSize",
+	      "maxTextureResolution2d",
+	      "maxTextureResolutionCube",
 	      "shadowsEnabled",
 	      "shadowsEnabledMobile",
 	      "shadowType",
@@ -80982,13 +80982,13 @@
 	 *     'High':  'highp'
 	 *   }
 	 * }
-	 * @vattr Integer maxTexture2dSize {
+	 * @vattr Integer maxTextureResolution2d {
 	 *   description: 'Clamp the maximum allowed dimension of a 2d texture.',
 	 *   default: 32768,
 	 *   min: 1024,
 	 *   max: 32768
 	 * }
-	 * @vattr Integer maxTextureCubeSize {
+	 * @vattr Integer maxTextureResolutionCube {
 	 *   description: 'Clamp the maximum allowed dimension of a cube texture.',
 	 *   default: 32768,
 	 *   min: 512,
@@ -81085,8 +81085,8 @@
 	    _this.maxDirLights = -1;
 	    _this.maxSpotLights = -1;
 	    _this.maxHemiLights = -1;
-	    _this.maxTexture2dSize = Number.MAX_SAFE_INTEGER;
-	    _this.maxTextureCubeSize = Number.MAX_SAFE_INTEGER;
+	    _this.maxTextureResolution2d = Number.MAX_SAFE_INTEGER;
+	    _this.maxTextureResolutionCube = Number.MAX_SAFE_INTEGER;
 
 	    _this.clearColor = new _three2.default.Color();
 	    _this.clearAlpha = 0.0;
@@ -81394,34 +81394,34 @@
 
 	    /**
 	     * Returns the maximum texture size supported by the device.
-	     * @method  getMaxTextureSize
+	     * @method  getMaxTextureResolution2d
 	     * @public
 	     * @return {Integer} The maximum texture size.
 	     */
 
 	  }, {
-	    key: 'getMaxTexture2dSize',
-	    value: function getMaxTexture2dSize() {
-	      if (!this.maxTexture2dSize) {
+	    key: 'getMaxTextureResolution2d',
+	    value: function getMaxTextureResolution2d() {
+	      if (!this.maxTextureResolution2d) {
 	        return this.getGPUCapability('MAX_TEXTURE_SIZE');
 	      }
-	      return Math.min(this.maxTexture2dSize, this.getGPUCapability('MAX_TEXTURE_SIZE'));
+	      return Math.min(this.maxTextureResolution2d, this.getGPUCapability('MAX_TEXTURE_SIZE'));
 	    }
 
 	    /**
 	     * Returns the maximum cube texture size supported by the device.
-	     * @method  getMaxTextureCubeSize
+	     * @method  getMaxTextureResolutionCube
 	     * @public
 	     * @return {Integer} The cubemap maximum texture size.
 	     */
 
 	  }, {
-	    key: 'getMaxTextureCubeSize',
-	    value: function getMaxTextureCubeSize() {
-	      if (!this.maxTextureCubeSize) {
+	    key: 'getMaxTextureResolutionCube',
+	    value: function getMaxTextureResolutionCube() {
+	      if (!this.maxTextureResolutionCube) {
 	        return this.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE');
 	      }
-	      return Math.min(this.maxTextureCubeSize, this.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'));
+	      return Math.min(this.maxTextureResolutionCube, this.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'));
 	    }
 	  }, {
 	    key: 'preRender',

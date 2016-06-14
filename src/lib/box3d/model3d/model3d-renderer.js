@@ -1,4 +1,4 @@
-/* global Box3D */
+/* global Box3D, THREE */
 import autobind from 'autobind-decorator';
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
@@ -33,7 +33,8 @@ class Model3dRenderer extends Box3DRenderer {
         this.axisUp = null;
         this.axisForward = null;
         this.instance = null;
-
+        this.grid = null;
+        this.axisDisplay = null;
         this.isRotating = false;
     }
 
@@ -167,6 +168,9 @@ class Model3dRenderer extends Box3DRenderer {
             this.attachSceneLoadHandler(this.getScene());
         }
 
+        // Add grid and axis helpers to the scene.
+        this.addHelpersToScene();
+
         // make sure we add ALL assets to the asset list to destroy
         entities.forEach((entity) => {
             if (entity.id === entity.parentAssetId) {
@@ -271,10 +275,68 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
+     * Add the grid to the scene for rendering
+     * @method addHelpersToScene
+     * @private
+     * @returns {void}
+     */
+    addHelpersToScene() {
+        const scene = this.getScene().runtimeData;
+        this.grid = new THREE.GridHelper(50, 10, 0xaaaaaa, 0xaaaaaa);
+        this.grid.material.transparent = true;
+        this.grid.material.blending = THREE.MultiplyBlending;
+        scene.add(this.grid);
+        this.grid.visible = false;
+
+        this.axisDisplay = new THREE.AxisHelper(50);
+        scene.add(this.axisDisplay);
+        this.axisDisplay.visible = false;
+    }
+
+    /**
+     * Remove the grid and axis helpers from the scene and cleanup
+     * their resources
+     * @method cleanupHelpers
+     * @private
+     * @returns {void}
+     */
+    cleanupHelpers() {
+        const scene = this.getScene().runtimeData;
+        scene.remove(this.grid);
+        this.grid.material.dispose();
+        this.grid.geometry.dispose();
+        scene.remove(this.axisDisplay);
+        this.axisDisplay.material.dispose();
+        this.axisDisplay.geometry.dispose();
+    }
+
+    /**
+     * Show, hide or toggle the 'helpers' in the scene. These include the grid display
+     * and axis markings.
+     * @private
+     * @param {Boolean} show True or false to show or hide. If not specified, the helpers will be toggled.
+     * @returns {void}
+     */
+    toggleHelpers(show) {
+        let enable = false;
+        if (show !== undefined) {
+            enable = !!show;
+        } else {
+            // If we're toggling, just check state of one helper. This will ensure
+            // that the states are always in sync and reduces code length.
+            enable = !this.grid.visible;
+        }
+        this.axisDisplay.visible = enable;
+        this.grid.visible = enable;
+    }
+
+    /**
      * Remove instances specific to this preview from the scene.
      * @returns {void}
      */
     cleanupScene() {
+        this.cleanupHelpers();
+
         this.instances.forEach((instance) => {
             instance.destroy();
         });

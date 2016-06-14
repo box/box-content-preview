@@ -6,6 +6,7 @@ export const EVENT_ROTATE_ON_AXIS = 'rotateOnAxis';
 export const EVENT_SAVE_SCENE_DEFAULTS = 'sceneSave';
 export const EVENT_SET_RENDER_MODE = 'setRenderMode';
 export const EVENT_SET_CAMERA_PROJECTION = 'setCameraProjection';
+export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 
 // CSS
 export const CSS_CLASS_OVERLAY = 'box-preview-overlay-panel';

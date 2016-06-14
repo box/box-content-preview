@@ -110,6 +110,22 @@ $arrow-top-bottom: 4px solid transparent;
             display: inline;
         }
 
+        .box3d-settings-axis-label {
+            text-shadow: 1px 1px 1px $seven-six;
+        }
+
+        .box3d-settings-axis-label-x {
+            color: #ff4500;
+        }
+
+        .box3d-settings-axis-label-y {
+            color: #92d020;
+        }
+
+        .box3d-settings-axis-label-z {
+            color: #1e90ff;
+        }
+
         .box3d-setting-axis-rotate {
             color: $box-blue;
             padding: 0 12px;

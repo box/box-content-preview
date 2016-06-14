@@ -11,6 +11,7 @@ import {
     EVENT_MISSING_ASSET,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SET_RENDER_MODE,
+    EVENT_TOGGLE_HELPERS,
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SAVE_SCENE_DEFAULTS,
     RENDER_MODE_LIT
@@ -76,6 +77,7 @@ class Model3d extends Box3D {
 
         if (this.controls) {
             this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+            this.controls.on(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
             this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
@@ -92,6 +94,7 @@ class Model3d extends Box3D {
 
         if (this.controls) {
             this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+            this.controls.removeListener(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
@@ -280,6 +283,19 @@ class Model3d extends Box3D {
     @autobind
     handleSetRenderMode(mode = 'Lit') {
         this.renderer.setRenderMode(mode);
+    }
+
+    /**
+     * Show, hide or toggle the 'helpers' in the scene. These include the grid display
+     * and axis markings.
+     * @method handleToggleHelpers
+     * @private
+     * @param {Boolean} show True or false to show or hide. If not specified, the helpers will be toggled.
+     * @returns {void}
+     */
+    @autobind
+    handleToggleHelpers(show) {
+        this.renderer.toggleHelpers(show);
     }
 
     /**
