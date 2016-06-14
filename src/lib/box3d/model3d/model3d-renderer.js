@@ -184,10 +184,9 @@ class Model3dRenderer extends Box3DRenderer {
     addIblToMaterials() {
         const materials = this.box3d.assetRegistry.Materials.assets;
 
-        /* eslint-disable no-restricted-syntax */
-        for (const i in materials) {
-            if (materials.hasOwnProperty(i)) {
-                const mat = materials[i];
+        Object.keys(materials).forEach((id) => {
+            const mat = materials[id];
+            if (mat) {
                 mat.setProperty('useSceneLights', false);
                 mat.setProperty('useEnvironmentMap', true);
                 mat.setProperty('environmentMapProjection', 'cubeMap');
@@ -195,8 +194,7 @@ class Model3dRenderer extends Box3DRenderer {
                 mat.setProperty('environmentMapCube_1', 'HDR_ENV_MAP_CUBE_1');
                 mat.setProperty('environmentMapCube_2', 'HDR_ENV_MAP_CUBE_2');
             }
-        }
-        /* eslint-enable no-restricted-syntax */
+        });
     }
 
     /**
