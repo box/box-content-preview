@@ -307,7 +307,9 @@ var DEFAULT_SCALE = 1.0;
 var UNKNOWN_SCALE = 0;
 var MAX_AUTO_SCALE = 1.25;
 var SCROLLBAR_PADDING = 40;
-var VERTICAL_PADDING = 5;
+// @NOTE(tjin): Force 30px (15px top and bottom) padding for pptx
+var VERTICAL_PADDING = 30;
+// var VERTICAL_PADDING = 5;
 
 var mozL10n = document.mozL10n || document.webL10n;
 
@@ -4043,4 +4045,3 @@ exports.PDFViewer = PDFViewer;
 
   exports.PDFJS = PDFJS;
 }));
-
