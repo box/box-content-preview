@@ -386,7 +386,7 @@ class Image extends Base {
 
         // Construct and init annotator
         this.annotator = new ImageAnnotator({
-            annotatedElement: this.imageEl,
+            annotatedElement: this.wrapperEl,
             annotationService,
             fileVersionID
         });

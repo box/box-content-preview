@@ -5,13 +5,9 @@
 
 import autobind from 'autobind-decorator';
 import Annotator from '../annotation/annotator';
-// import Browser from '../browser';
 import ImagePointThread from './image-point-thread';
 import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/annotation-constants';
-
-// const IS_MOBILE = Browser.isMobile();
-// const MOUSEMOVE_THROTTLE_MS = 50;
 
 @autobind
 class ImageAnnotator extends Annotator {
@@ -60,8 +56,7 @@ class ImageAnnotator extends Annotator {
 
         const imageDimensions = imageEl.getBoundingClientRect();
         const browserCoordinates = [event.clientX - imageDimensions.left, event.clientY - imageDimensions.top];
-        const imageCoordinates = this.convertDOMSpaceToImageSpace(browserCoordinates, imageDimensions.height, 1);
-        const [x, y] = imageCoordinates;
+        const [x, y] = browserCoordinates;
 
         // We save the dimensions of the annotated element so we can
         // compare to the element being rendered on and scale as appropriate
@@ -73,37 +68,6 @@ class ImageAnnotator extends Annotator {
         location = { x, y, imageEl, dimensions };
 
         return location;
-    }
-
-    /**
-     * Converts coordinates in DOM space to coordinates in image space.
-     * @param {Number[]} coordinates Either a [x,y] coordinate location or
-     * quad points in the format of 8xn numbers in DOM space in CSS pixels
-     * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
-     * coordinate origin from top left (DOM) to bottom left (image)
-     * @returns {Number[]} Either [x,y] or 8xn coordinates in image space in image
-     * units
-     */
-    convertDOMSpaceToImageSpace(coordinates, pageHeight) {
-        let imageCoordinates = [];
-        if (coordinates.length === 2) {
-            const [x, y] = coordinates;
-            imageCoordinates = [x, pageHeight - y];
-        } else {
-            const [x1, y1, x2, y2, x3, y3, x4, y4] = coordinates;
-            imageCoordinates = [
-                x1,
-                pageHeight - y1,
-                x2,
-                pageHeight - y2,
-                x3,
-                pageHeight - y3,
-                x4,
-                pageHeight - y4
-            ];
-        }
-
-        return imageCoordinates.map((val) => (val).toFixed(4));
     }
 
     /**
