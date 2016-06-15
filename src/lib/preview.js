@@ -39,6 +39,8 @@ const MOUSEMOVE_THROTTLE = 1500;
 const RETRY_TIMEOUT = 500;
 const RETRY_COUNT = 5;
 const API = 'https://api.box.com';
+const IS_MOBILE = Browser.isMobile();
+
 const Box = global.Box || {};
 
 @autobind
@@ -619,7 +621,7 @@ class Preview extends EventEmitter {
         // We don't support creating highlights on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable
-        if (!Browser.isMobile()) {
+        if (!IS_MOBILE) {
             this.showHighlightButton();
         }
 
@@ -760,8 +762,10 @@ class Preview extends EventEmitter {
             return;
         }
 
-        // Viewer-compatability check
-        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('point') || Browser.isMobile()) {
+        // Feature check
+        if (IS_MOBILE || !this.viewer ||
+            typeof this.viewer.isAnnotatable !== 'function' ||
+            !this.viewer.isAnnotatable('point')) {
             return;
         }
 
@@ -786,7 +790,10 @@ class Preview extends EventEmitter {
             return;
         }
 
-        if (!this.viewer || typeof this.viewer.isAnnotatable !== 'function' || !this.viewer.isAnnotatable('highlight') || Browser.isMobile()) {
+        // Feature check
+        if (IS_MOBILE || !this.viewer ||
+            typeof this.viewer.isAnnotatable !== 'function' ||
+            !this.viewer.isAnnotatable('highlight')) {
             return;
         }
 
@@ -803,12 +810,21 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showPrintButton() {
-        if (this.file && this.file.permissions && this.file.permissions.can_download && this.viewer && typeof this.viewer.print === 'function') {
-            this.printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
-            this.printButton.title = __('print');
-            this.printButton.classList.remove(CLASS_HIDDEN);
-            this.printButton.addEventListener('click', this.print);
+        // Permission check
+        if (!this.file || !this.file.permissions ||
+            !this.file.permissions.can_download) {
+            return;
         }
+
+        // Feature check
+        if (IS_MOBILE || !this.viewer || typeof this.viewer.print !== 'function') {
+            return;
+        }
+
+        this.printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
+        this.printButton.title = __('print');
+        this.printButton.classList.remove(CLASS_HIDDEN);
+        this.printButton.addEventListener('click', this.print);
     }
 
     /**
@@ -818,12 +834,16 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showDownloadButton() {
-        if (this.file && this.file.permissions && this.file.permissions.can_download) {
-            this.downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
-            this.downloadButton.title = __('download');
-            this.downloadButton.classList.remove(CLASS_HIDDEN);
-            this.downloadButton.addEventListener('click', this.download);
+        // Permission & feature check
+        if (IS_MOBILE || !this.file || !this.file.permissions ||
+            !this.file.permissions.can_download) {
+            return;
         }
+
+        this.downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
+        this.downloadButton.title = __('download');
+        this.downloadButton.classList.remove(CLASS_HIDDEN);
+        this.downloadButton.addEventListener('click', this.download);
     }
 
     /**

@@ -21,11 +21,6 @@
         display: none !important;
     }
 
-    // Hide scrollbar when fullscreen since it causes loading issues
-    .box-preview-is-fullscreen & {
-        overflow: hidden;
-    }
-
     //---------- Override CSS from generic PDFJS viewer build ----------//
     .pdfViewer .page {
         border: 0;

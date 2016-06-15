@@ -13,7 +13,6 @@ import Controls from '../controls';
 import DocAnnotator from './doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../fullscreen';
-import throttle from 'lodash.throttle';
 import { CLASS_BOX_PREVIEW_FIND_BAR } from '../constants';
 import { createAssetUrlCreator, decodeKeydown } from '../util';
 
@@ -29,7 +28,6 @@ const PRESENTATION_MODE_STATE = {
     FULLSCREEN: 3
 };
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
-const WHEEL_THROTTLE = 200;
 
 @autobind
 class DocBase extends Base {
@@ -427,22 +425,6 @@ class DocBase extends Base {
             case 'ArrowRight':
                 this.nextPage();
                 break;
-
-            // Only navigate pages with up/down in document viewer if in fullscreen
-            case 'ArrowUp':
-                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
-                    return false;
-                }
-
-                this.previousPage();
-                break;
-            case 'ArrowDown':
-                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
-                    return false;
-                }
-
-                this.nextPage();
-                break;
             case '[':
                 this.previousPage();
                 break;
@@ -684,7 +666,7 @@ class DocBase extends Base {
      * Binds DOM listeners for document viewer.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
     bindDOMListeners() {
         // When page structure is initialized, set default zoom and load controls
@@ -699,9 +681,6 @@ class DocBase extends Base {
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
-        // Mousewheel handler - we set passive: true to make page more responsive
-        this.docEl.addEventListener('wheel', this.wheelHandler(), { passive: true });
-
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
@@ -711,7 +690,7 @@ class DocBase extends Base {
      * Unbinds DOM listeners for document viewer.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
     unbindDOMListeners() {
         if (this.docEl) {
@@ -719,9 +698,6 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
-
-            // We set passive: true to make page more responsive
-            this.docEl.removeEventListener('wheel', this.wheelHandler(), { passive: true });
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
@@ -732,7 +708,7 @@ class DocBase extends Base {
      * Binds listeners for document controls. Overridden.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
     bindControlListeners() {}
 
@@ -901,31 +877,6 @@ class DocBase extends Base {
 
         // Force resize for annotations
         this.resize();
-    }
-
-    /**
-     * Mousewheel handler - scrolls presentations by page and scrolls documents
-     * normally unless in fullscreen, in which it scrolls by page.
-     *
-     * @returns {Function} Throttled mousewheel handler
-     * @private
-     */
-    wheelHandler() {
-        if (!this.throttledWheelHandler) {
-            this.throttledWheelHandler = throttle((event) => {
-                if (!this.isPresentation && !fullscreen.isFullscreen(this.containerEl)) {
-                    return;
-                }
-
-                if (event.deltaY > 0) {
-                    this.nextPage();
-                } else if (event.deltaY < 0) {
-                    this.previousPage();
-                }
-            }, WHEEL_THROTTLE);
-        }
-
-        return this.throttledWheelHandler;
     }
 }
 
