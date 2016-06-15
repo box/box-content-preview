@@ -9,6 +9,7 @@ import AnnotationThread from '../annotation/annotation-thread';
 import DocHighlightDialog from './doc-highlight-dialog';
 import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/annotation-constants';
+import * as docAnnotatorUtil from './doc-annotator-util';
 
 const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';
 const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 233, 23, 0.5)';
@@ -274,7 +275,7 @@ class DocHighlightThread extends AnnotationThread {
         const quadPoints = this._location.quadPoints;
         const pageEl = this._getPageEl();
         const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-        const scaleFactor = annotatorUtil.getDimensionScaleFactor(this._location, pageEl);
+        const scaleFactor = docAnnotatorUtil.getDimensionScaleFactor(this._location, pageEl);
 
         quadPoints.forEach((quadPoint) => {
             // If needed, scale quad points comparing current dimensions with saved dimensions
@@ -285,7 +286,7 @@ class DocHighlightThread extends AnnotationThread {
                 });
             }
 
-            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
+            const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
             context.fillStyle = fillStyle;
@@ -329,10 +330,10 @@ class DocHighlightThread extends AnnotationThread {
         const y = event.clientY - pageTop;
 
         return this._location.quadPoints.some((quadPoint) => {
-            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
+            const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
-            return annotatorUtil.isPointInPolyOpt([
+            return docAnnotatorUtil.isPointInPolyOpt([
                 [x1, y1],
                 [x2, y2],
                 [x3, y3],
