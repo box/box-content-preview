@@ -101,7 +101,7 @@ class Image360Renderer extends Box3DRenderer {
         // Figure out the appropriate representation info and then add that info to the asset.
         const extension = fileProperties.extension.toLowerCase();
         let compression = extension === 'png' ? 'zip' : 'jpeg';
-        this.boxSdk.representationLoader.getRepresentationUrl(fileProperties.id, (entry) => {
+        return this.boxSdk.representationLoader.getRepresentationUrl(fileProperties.id, (entry) => {
             const grabOriginal = (extension === 'jpg' || extension === 'jpeg'
                 || extension === 'png');
             if (grabOriginal && entry.representation === 'original') {
