@@ -163,12 +163,20 @@ class DocAnnotator extends Annotator {
             // Store coordinates at 100% scale in PDF space in PDF units
             const pageDimensions = pageEl.getBoundingClientRect();
             const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+            const pageWidth = pageDimensions.width;
             const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
             const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageTop];
             const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x, y] = pdfCoordinates;
 
-            location = { x, y, page };
+            // We save the dimensions of the annotated element so we can
+            // compare to the element being rendered on and scale as appropriate
+            const dimensions = {
+                x: pageWidth,
+                y: pageHeight
+            };
+
+            location = { x, y, page, dimensions };
         } else if (annotationType === constants.ANNOTATION_TYPE_HIGHLIGHT) {
             if (!annotatorUtil.isSelectionPresent()) {
                 return location;
@@ -198,7 +206,17 @@ class DocAnnotator extends Annotator {
             this._removeRangyHighlight(highlight);
             rangy.restoreSelection(savedSelection);
 
-            location = { page, quadPoints };
+            // We save the dimensions of the annotated element so we can
+            // compare to the element being rendered on and scale as appropriate
+            const pageDimensions = pageEl.getBoundingClientRect();
+            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+            const pageWidth = pageDimensions.width;
+            const dimensions = {
+                x: pageWidth,
+                y: pageHeight
+            };
+
+            location = { page, quadPoints, dimensions };
         }
 
         return location;

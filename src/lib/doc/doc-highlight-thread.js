@@ -272,9 +272,20 @@ class DocHighlightThread extends AnnotationThread {
         }
 
         const quadPoints = this._location.quadPoints;
-        const pageHeight = this._getPageEl().getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const pageEl = this._getPageEl();
+        const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const scaleFactor = annotatorUtil.getDimensionScaleFactor(this._location, pageEl);
+
         quadPoints.forEach((quadPoint) => {
-            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
+            // If needed, scale quad points comparing current dimensions with saved dimensions
+            let scaledQuadPoint = quadPoint;
+            if (scaleFactor) {
+                scaledQuadPoint = quadPoint.map((val, index) => {
+                    return index % 2 ? val * scaleFactor.y : val * scaleFactor.x;
+                });
+            }
+
+            const browserQuadPoint = annotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
             context.fillStyle = fillStyle;
