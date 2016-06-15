@@ -38,8 +38,9 @@ class Document extends DocBase {
     }
 
     /**
-     * Handles keyboard events for presentation viewer.
+     * Handles keyboard events for document viewer.
      *
+     * @override
      * @param {String} key keydown key
      * @returns {Boolean} consumed or not
      */
