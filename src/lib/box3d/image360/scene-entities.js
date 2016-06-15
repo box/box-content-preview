@@ -80,6 +80,7 @@ export default [{
             componentData: {
                 antialias: !Browser.isMobile(),
                 renderOnDemand: true,
+                devicePixelRatio: 1.0,
                 // Mobile fragment precision at mediump is often too low.
                 // TODO - investigate changing some values in shaders to highp
                 // to eliviate the problem while letting the rest default to mediump.
@@ -88,6 +89,10 @@ export default [{
             scriptId: 'box3d_renderer',
             isBuiltIn: true,
             enabled: true
+        },
+        debugPerformance: {
+            scriptId: 'debug_performance',
+            enabled: false
         },
         inputController: {
             scriptId: 'input_controller_component',

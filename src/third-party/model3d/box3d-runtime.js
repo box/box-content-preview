@@ -63786,11 +63786,12 @@
 	      var textureSize = void 0;
 	      if (renderer) {
 	        if (this.isCubeImage()) {
-	          textureSize = renderer.getMaxTextureResolutionCube();
+	          textureSize = renderer.getMaxTextureSizeCube();
 	        } else {
-	          textureSize = renderer.getMaxTextureResolution2d();
+	          textureSize = renderer.getMaxTextureSize2d();
 	        }
-	        textureSize = Math.min(this.getProperty(dimension), textureSize);
+	        var dimProperty = this.getProperty(dimension);
+	        textureSize = dimProperty ? Math.min(dimProperty, textureSize) : textureSize;
 	      } else {
 	        textureSize = this.getProperty(dimension);
 	      }
@@ -67691,16 +67692,16 @@
 	          "High": "highp"
 	        }
 	      },
-	      "maxTextureResolution2d": {
-	        "name": "maxTextureResolution2d",
+	      "maxTextureSize2d": {
+	        "name": "maxTextureSize2d",
 	        "type": "i",
 	        "description": "Clamp the maximum allowed dimension of a 2d texture.",
 	        "default": 32768,
 	        "min": 1024,
 	        "max": 32768
 	      },
-	      "maxTextureResolutionCube": {
-	        "name": "maxTextureResolutionCube",
+	      "maxTextureSizeCube": {
+	        "name": "maxTextureSizeCube",
 	        "type": "i",
 	        "description": "Clamp the maximum allowed dimension of a cube texture.",
 	        "default": 32768,
@@ -67757,8 +67758,8 @@
 	      "clearColor",
 	      "clearAlpha",
 	      "precision",
-	      "maxTextureResolution2d",
-	      "maxTextureResolutionCube",
+	      "maxTextureSize2d",
+	      "maxTextureSizeCube",
 	      "shadowsEnabled",
 	      "shadowsEnabledMobile",
 	      "shadowType",
@@ -80982,13 +80983,13 @@
 	 *     'High':  'highp'
 	 *   }
 	 * }
-	 * @vattr Integer maxTextureResolution2d {
+	 * @vattr Integer maxTextureSize2d {
 	 *   description: 'Clamp the maximum allowed dimension of a 2d texture.',
 	 *   default: 32768,
 	 *   min: 1024,
 	 *   max: 32768
 	 * }
-	 * @vattr Integer maxTextureResolutionCube {
+	 * @vattr Integer maxTextureSizeCube {
 	 *   description: 'Clamp the maximum allowed dimension of a cube texture.',
 	 *   default: 32768,
 	 *   min: 512,
@@ -81085,8 +81086,8 @@
 	    _this.maxDirLights = -1;
 	    _this.maxSpotLights = -1;
 	    _this.maxHemiLights = -1;
-	    _this.maxTextureResolution2d = Number.MAX_SAFE_INTEGER;
-	    _this.maxTextureResolutionCube = Number.MAX_SAFE_INTEGER;
+	    _this.maxTextureSize2d = Number.MAX_SAFE_INTEGER;
+	    _this.maxTextureSizeCube = Number.MAX_SAFE_INTEGER;
 
 	    _this.clearColor = new _three2.default.Color();
 	    _this.clearAlpha = 0.0;
@@ -81394,34 +81395,34 @@
 
 	    /**
 	     * Returns the maximum texture size supported by the device.
-	     * @method  getMaxTextureResolution2d
+	     * @method  getMaxTextureSize2d
 	     * @public
 	     * @return {Integer} The maximum texture size.
 	     */
 
 	  }, {
-	    key: 'getMaxTextureResolution2d',
-	    value: function getMaxTextureResolution2d() {
-	      if (!this.maxTextureResolution2d) {
+	    key: 'getMaxTextureSize2d',
+	    value: function getMaxTextureSize2d() {
+	      if (!this.maxTextureSize2d) {
 	        return this.getGPUCapability('MAX_TEXTURE_SIZE');
 	      }
-	      return Math.min(this.maxTextureResolution2d, this.getGPUCapability('MAX_TEXTURE_SIZE'));
+	      return Math.min(this.maxTextureSize2d, this.getGPUCapability('MAX_TEXTURE_SIZE'));
 	    }
 
 	    /**
 	     * Returns the maximum cube texture size supported by the device.
-	     * @method  getMaxTextureResolutionCube
+	     * @method  getMaxTextureSizeCube
 	     * @public
 	     * @return {Integer} The cubemap maximum texture size.
 	     */
 
 	  }, {
-	    key: 'getMaxTextureResolutionCube',
-	    value: function getMaxTextureResolutionCube() {
-	      if (!this.maxTextureResolutionCube) {
+	    key: 'getMaxTextureSizeCube',
+	    value: function getMaxTextureSizeCube() {
+	      if (!this.maxTextureSizeCube) {
 	        return this.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE');
 	      }
-	      return Math.min(this.maxTextureResolutionCube, this.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'));
+	      return Math.min(this.maxTextureSizeCube, this.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'));
 	    }
 	  }, {
 	    key: 'preRender',

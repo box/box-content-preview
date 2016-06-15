@@ -86,8 +86,8 @@ function sceneEntities(prefix) {
                 componentData: {
                     antialias: !Browser.isMobile(),
                     renderOnDemand: true,
-                    maxTexture2dSize: Browser.isMobile() ? 1024 : undefined,
-                    maxTextureCubeSize: Browser.isMobile() ? 512 : undefined,
+                    maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
+                    maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
                     // Mobile fragment precision at mediump is often too low.
                     // TODO - investigate changing some values in shaders to highp
                     // to eliviate the problem while letting the rest default to mediump.
@@ -239,8 +239,8 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 0',
-            isHdr: true,
-            type: 'float',
+            isHdr: !Browser.isMobile(),
+            type: Browser.isMobile() ? 'uByte' : 'float',
             width: 512,
             height: 512,
             generateMipmaps: true,
@@ -261,8 +261,8 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 1',
-            isHdr: true,
-            type: 'float',
+            isHdr: !Browser.isMobile(),
+            type: Browser.isMobile() ? 'uByte' : 'float',
             width: 256,
             height: 256,
             generateMipmaps: true,
@@ -283,8 +283,8 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 2',
-            isHdr: true,
-            type: 'float',
+            isHdr: !Browser.isMobile(),
+            type: Browser.isMobile() ? 'uByte' : 'float',
             width: 128,
             height: 128,
             generateMipmaps: true,
