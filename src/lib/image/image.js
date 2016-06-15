@@ -1,7 +1,7 @@
 import './image.scss';
 import autobind from 'autobind-decorator';
 import AnnotationService from '../annotation/annotation-service';
-import Annotator from '../annotation/annotator';
+import ImageAnnotator from './image-annotator';
 import Base from './image-base';
 import { get } from '../util';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../icons/icons';
@@ -385,7 +385,7 @@ class Image extends Base {
         });
 
         // Construct and init annotator
-        this.annotator = new Annotator({
+        this.annotator = new ImageAnnotator({
             annotatedElement: this.imageEl,
             annotationService,
             fileVersionID
