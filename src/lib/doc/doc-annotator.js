@@ -19,6 +19,7 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 import throttle from 'lodash.throttle';
 import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/annotation-constants';
+import * as docAnnotatorUtil from './doc-annotator-util';
 import { CLASS_ACTIVE } from '../constants';
 
 const IS_MOBILE = Browser.isMobile();
@@ -143,13 +144,13 @@ class DocAnnotator extends Annotator {
 
         if (annotationType === constants.ANNOTATION_TYPE_POINT) {
             // If there is a selection, ignore
-            if (annotatorUtil.isSelectionPresent()) {
+            if (docAnnotatorUtil.isSelectionPresent()) {
                 return location;
             }
 
             // If click isn't on a page, ignore
             const eventTarget = event.target;
-            const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(eventTarget);
+            const { pageEl, page } = docAnnotatorUtil.getPageElAndPageNumber(eventTarget);
             if (!pageEl) {
                 return location;
             }
@@ -166,7 +167,7 @@ class DocAnnotator extends Annotator {
             const pageWidth = pageDimensions.width;
             const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
             const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageTop];
-            const pdfCoordinates = annotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, annotatorUtil.getScale(this._annotatedElement));
+            const pdfCoordinates = docAnnotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x, y] = pdfCoordinates;
 
             // We save the dimensions of the annotated element so we can
@@ -178,15 +179,15 @@ class DocAnnotator extends Annotator {
 
             location = { x, y, page, dimensions };
         } else if (annotationType === constants.ANNOTATION_TYPE_HIGHLIGHT) {
-            if (!annotatorUtil.isSelectionPresent()) {
+            if (!docAnnotatorUtil.isSelectionPresent()) {
                 return location;
             }
 
             // Get correct page
-            let { pageEl, page } = annotatorUtil.getPageElAndPageNumber(event.target);
+            let { pageEl, page } = docAnnotatorUtil.getPageElAndPageNumber(event.target);
             if (page === -1) {
                 // The ( .. ) around assignment is required syntax
-                ({ pageEl, page } = annotatorUtil.getPageElAndPageNumber(window.getSelection().anchorNode));
+                ({ pageEl, page } = docAnnotatorUtil.getPageElAndPageNumber(window.getSelection().anchorNode));
             }
 
             // Use Rangy to save the current selection because using the
@@ -195,10 +196,10 @@ class DocAnnotator extends Annotator {
             const savedSelection = rangy.saveSelection();
 
             // Use highlight module to calculate quad points
-            const { highlight, highlightEls } = annotatorUtil.getHighlightAndHighlightEls(this._highlighter, pageEl);
+            const { highlight, highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this._highlighter, pageEl);
             const quadPoints = [];
             highlightEls.forEach((element) => {
-                quadPoints.push(annotatorUtil.getQuadPoints(element, pageEl,
+                quadPoints.push(docAnnotatorUtil.getQuadPoints(element, pageEl,
                     annotatorUtil.getScale(this._annotatedElement)));
             });
 
@@ -419,7 +420,7 @@ class DocAnnotator extends Annotator {
                 }
 
                 const delayThreads = [];
-                const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
+                const page = docAnnotatorUtil.getPageElAndPageNumber(event.target).page;
                 if (page !== -1) {
                     this._getHighlightThreadsOnPage(page).forEach((thread) => {
                         const shouldDelay = thread.onMousemove(event);

@@ -9,12 +9,32 @@ import AnnotationThread from '../annotation/annotation-thread';
 import DocPointDialog from './doc-point-dialog';
 import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/annotation-constants';
+import * as docAnnotatorUtil from './doc-annotator-util';
 
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_WIDTH = 18;
 
 @autobind
 class DocPointThread extends AnnotationThread {
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    /**
+     * Shows the appropriate annotation dialog for this thread.
+     *
+     * @override
+     * @returns {void}
+     */
+    showDialog() {
+        // Don't show dialog if user can annotate and there is a current selection
+        if (this._annotationService.canAnnotate && docAnnotatorUtil.isSelectionPresent()) {
+            return;
+        }
+
+        super.showDialog();
+    }
 
     //--------------------------------------------------------------------------
     // Abstract Implementations
@@ -28,7 +48,7 @@ class DocPointThread extends AnnotationThread {
      */
     show() {
         const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;
-        const [browserX, browserY] = annotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
+        const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
 
         // Position and append to page
         this._element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;

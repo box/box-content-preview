@@ -7,6 +7,7 @@
 import AnnotationDialog from '../annotation/annotation-dialog';
 import autobind from 'autobind-decorator';
 import * as annotatorUtil from '../annotation/annotator-util';
+import * as docAnnotatorUtil from './doc-annotator-util';
 
 const PAGE_PADDING_TOP = 15;
 
@@ -25,7 +26,7 @@ class DocPointDialog extends AnnotationDialog {
      */
     position() {
         const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;
-        const [browserX, browserY] = annotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
+        const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
 
         // Show dialog so we can get width
         pageEl.appendChild(this._element);

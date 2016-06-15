@@ -8,6 +8,7 @@
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../annotation/annotation-dialog';
 import * as annotatorUtil from '../annotation/annotator-util';
+import * as docAnnotatorUtil from './doc-annotator-util';
 import { CLASS_HIDDEN } from '../constants';
 import { decodeKeydown } from '../util.js';
 import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
@@ -93,8 +94,8 @@ class DocHighlightDialog extends AnnotationDialog {
         const pageWidth = pageDimensions.width;
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const scale = annotatorUtil.getScale(this._annotatedElement);
-        const coordinates = annotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
-        const [browserX, browserY] = annotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale);
+        const coordinates = docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
+        const [browserX, browserY] = docAnnotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale);
 
         // Make sure button dialog doesn't go off the page
         let dialogX = browserX - 19; // Center 38px button
