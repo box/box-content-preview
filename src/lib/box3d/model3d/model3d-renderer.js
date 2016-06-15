@@ -261,7 +261,7 @@ class Model3dRenderer extends Box3DRenderer {
      */
     onSceneLoad() {
         this.reset();
-        this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
+        // this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
         super.onSceneLoad();
     }
 
