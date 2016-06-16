@@ -63297,7 +63297,10 @@
 	      };
 	      var imageAsset = this.getImage();
 	      if (imageAsset) {
-	        imageAsset.when('load', function () {
+	        // Listen to 'load' event on the image. This can happen multiple times if
+	        // the image is streaming or a properties change force a new version
+	        // to be downloaded.
+	        this.listenTo(imageAsset, 'load', function () {
 	          if (!imageAsset.runtimeData) {
 	            handleImageFailure();
 	            return;
@@ -64156,9 +64159,6 @@
 	      if (dimension !== BaseImageAsset.DIMENSION.width && dimension !== BaseImageAsset.DIMENSION.height) {
 	        _log2.default.warn('Invalid dimension name used to query image size, ' + dimension);
 	        return 0;
-	      }
-	      if (this.isLoaded() && this.runtimeData) {
-	        return this.runtimeData[dimension];
 	      }
 	      var renderer = this.box3DRuntime.getRenderer();
 	      var textureSize = void 0;
@@ -95666,12 +95666,16 @@
 	      if (this.getProperty('stream')) {
 	        loadLowResImage = loader.load(this, textureParams).then(function (data) {
 	          _this2.onImageLoad(data);
+	          if (typeof callback === 'function') {
+	            callback.call(_this2);
+	          }
 	        });
 	      }
 	      loadLowResImage.then(function () {
 	        // Now load the high-res version of the image.
 	        var width = _this2.getWidth();
 	        var height = _this2.getHeight();
+	        _this2.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.INPROGRESS);
 	        textureParams.maxResolution = Math.max(width, height);
 	        return loader.load(_this2, textureParams, onImageLoadProgress);
 	      }).then(this.onImageLoad.bind(this)).catch(this.onImageLoadError.bind(this)).then(function () {

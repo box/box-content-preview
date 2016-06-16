@@ -146,6 +146,7 @@ class Model3dRenderer extends Box3DRenderer {
     */
     createPrefabInstances(entities) {
         let prefabEntity;
+        let geometryEntity;
 
         if (!this.box3d) {
             return;
@@ -155,15 +156,21 @@ class Model3dRenderer extends Box3DRenderer {
         entities.forEach((entityDesc) => {
             if (entityDesc.type === 'prefab') {
                 prefabEntity = entityDesc;
+            } else if (entityDesc.type === 'meshGeometry') {
+                geometryEntity = entityDesc;
             }
         });
 
         // Traverse the scene and add IBL to every referenced material
         this.addIblToMaterials();
 
-        if (prefabEntity) {
+        if (prefabEntity && geometryEntity) {
             const prefabAsset = this.box3d.assetRegistry.getAssetById(prefabEntity.id);
-            this.addInstanceToScene(prefabAsset, this.getScene(), this.attachSceneLoadHandler.bind(this));
+            const geometryAsset = this.box3d.assetRegistry.getAssetById(geometryEntity.id);
+            geometryAsset.once('load', () => {
+                this.addInstanceToScene(prefabAsset, this.getScene(), this.attachSceneLoadHandler.bind(this));
+            });
+            geometryAsset.load();
         } else {
             this.attachSceneLoadHandler(this.getScene());
         }
