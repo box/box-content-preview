@@ -46,7 +46,13 @@ class ImageAnnotator extends Annotator {
     getLocationFromEvent(event) {
         let location = null;
         const eventTarget = event.target;
-        const imageEl = annotatorUtil.findClosestElWithClass(eventTarget, constants.CLASS_ANNOTATION_POINT_MODE);
+        const wrapperEl = annotatorUtil.findClosestElWithClass(eventTarget, constants.CLASS_ANNOTATION_POINT_MODE);
+
+        // Get image tag inside viewer
+        const imageEl = wrapperEl.getElementsByTagName('img')[0];
+        if (!imageEl) {
+            return location;
+        }
 
         // If click is inside an annotation dialog, ignore
         const dataType = annotatorUtil.findClosestDataType(eventTarget);
@@ -54,9 +60,15 @@ class ImageAnnotator extends Annotator {
             return location;
         }
 
+        const wrapperDimensions = wrapperEl.getBoundingClientRect();
         const imageDimensions = imageEl.getBoundingClientRect();
-        const browserCoordinates = [event.clientX - imageDimensions.left, event.clientY - imageDimensions.top];
+        const browserCoordinates = [event.clientX - wrapperDimensions.left, event.clientY - wrapperDimensions.top];
         const [x, y] = browserCoordinates;
+
+        // If click is outside image area
+        if (x > imageDimensions.right || x < imageDimensions.left || y > imageDimensions.bottom || y < imageDimensions.top) {
+            return location;
+        }
 
         // We save the dimensions of the annotated element so we can
         // compare to the element being rendered on and scale as appropriate
