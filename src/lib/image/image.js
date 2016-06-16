@@ -2,6 +2,7 @@ import './image.scss';
 import autobind from 'autobind-decorator';
 import AnnotationService from '../annotation/annotation-service';
 import ImageAnnotator from './image-annotator';
+import Browser from '../browser';
 import Base from './image-base';
 import { get } from '../util';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../icons/icons';
@@ -376,7 +377,7 @@ class Image extends Base {
     initAnnotations() {
         const fileVersionID = this.options.file.file_version.id;
         // Users can currently only view annotations on mobile
-        const canAnnotate = true;// !!this.options.file.permissions.can_annotate && !Browser.isMobile();
+        const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
         const annotationService = new AnnotationService({
             api: this.options.api,
             fileID: this.options.file.id,
