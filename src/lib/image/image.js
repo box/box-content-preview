@@ -123,6 +123,11 @@ class Image extends Base {
      * @returns {void}
      */
     handleMouseUp(event) {
+        // Ignore zoom/pan mouse events if in annotation mode
+        if (this.annotator.isInPointMode()) {
+            return;
+        }
+
         // If this is not a left click, then ignore
         // If this is a CTRL or CMD click, then ignore
         if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
