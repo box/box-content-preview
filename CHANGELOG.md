@@ -1,5 +1,37 @@
 # Change Log
 
+## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
+
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.62.0...HEAD)
+
+**Merged pull requests:**
+
+- Fixing various Preview SDK bugs [\#429](https://gitenterprise.inside-box.net/Preview/Preview/pull/429) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Added a missing promise return [\#428](https://gitenterprise.inside-box.net/Preview/Preview/pull/428) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Forcing devicePixelRatio of 1.0 for 360 previews and fixing max textu… [\#424](https://gitenterprise.inside-box.net/Preview/Preview/pull/424) ([mbond](https://gitenterprise.inside-box.net/mbond))
+
+## [v0.62.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.62.0) (2016-06-15)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.61.0...v0.62.0)
+
+**Merged pull requests:**
+
+- COXP-1993 [\#427](https://gitenterprise.inside-box.net/Preview/Preview/pull/427) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Move document-specific annotator utils to separate file [\#426](https://gitenterprise.inside-box.net/Preview/Preview/pull/426) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Store and user annotation dimensions [\#425](https://gitenterprise.inside-box.net/Preview/Preview/pull/425) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Moving necessary functions from private to protected [\#423](https://gitenterprise.inside-box.net/Preview/Preview/pull/423) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding grid and axis helpers when settings are selected. Intended to … [\#422](https://gitenterprise.inside-box.net/Preview/Preview/pull/422) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Turning off antialias on mobile, restricting texture size in 3D and f… [\#421](https://gitenterprise.inside-box.net/Preview/Preview/pull/421) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Cache page number with file ID instead of sha1 [\#420](https://gitenterprise.inside-box.net/Preview/Preview/pull/420) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- PDF.js overrides [\#419](https://gitenterprise.inside-box.net/Preview/Preview/pull/419) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Document viewer performance tweaks [\#418](https://gitenterprise.inside-box.net/Preview/Preview/pull/418) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Continuing to move out document-specific code from base annotator [\#417](https://gitenterprise.inside-box.net/Preview/Preview/pull/417) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Refactoring out document-specific code from base annotator [\#416](https://gitenterprise.inside-box.net/Preview/Preview/pull/416) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Upgrading PDF.js to v1.5.287 [\#415](https://gitenterprise.inside-box.net/Preview/Preview/pull/415) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Switching to use PDFFindController declared in pdf\_viewer.js [\#414](https://gitenterprise.inside-box.net/Preview/Preview/pull/414) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Update changelog for v0.61.0 [\#413](https://gitenterprise.inside-box.net/Preview/Preview/pull/413) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Coxp 1728 support for image texture separation [\#408](https://gitenterprise.inside-box.net/Preview/Preview/pull/408) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Video settings menu tweaks [\#405](https://gitenterprise.inside-box.net/Preview/Preview/pull/405) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.61.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.61.0) (2016-06-07)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.60.0...v0.61.0)
 
