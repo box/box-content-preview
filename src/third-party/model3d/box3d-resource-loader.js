@@ -1983,7 +1983,7 @@
 	  }, {
 	    key: 'modifyImagePath',
 	    value: function modifyImagePath(url) {
-	      // This code assumes that relativeUrl is actually the fully qualified path.
+	      // This code assumes that url is actually the fully qualified path.
 	      // Convert V2 relative src to runmode path
 	      // (e.g., images/1024/0.jpg -> 3dcg_image_1024_jpg/0.jpg)
 	      var urlTokens = url.match(/images\/(\d+)\/(\d+)\.(.+)$/);
@@ -2003,7 +2003,7 @@
 	      var folder2 = urlTokens.length > 4 ? '_' + urlTokens[2] : '';
 	      // Attach the base of the given url back onto the modified path.
 	      var baseFolder = url.replace(urlTokens[0], '');
-	      return baseFolder + '3dcg_images_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
+	      return baseFolder + '3dcg_image_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
 	    }
 
 	    /**
