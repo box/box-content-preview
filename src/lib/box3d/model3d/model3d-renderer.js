@@ -328,6 +328,7 @@ class Model3dRenderer extends Box3DRenderer {
         }
         this.axisDisplay.visible = enable;
         this.grid.visible = enable;
+        this.box3d.needsRender = true;
     }
 
     /**
