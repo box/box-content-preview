@@ -230,7 +230,7 @@ class Model3dRenderer extends Box3DRenderer {
             instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
 
             if (callback) {
-                callback(instance);
+                callback(scene);
             }
 
             // Attach PreviewAxisRotation component to the instance
@@ -263,12 +263,13 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
-     * Enable VR and reset the scene, on scene load event fired from Box3DRuntime
      * @inheritdoc
      */
     onSceneLoad() {
+        // Reset the camera
         this.reset();
-        this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
+        // Unload the intermediate HDR maps that are no longer needed.
+        // this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
         super.onSceneLoad();
     }
 

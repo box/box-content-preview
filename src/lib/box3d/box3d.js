@@ -143,7 +143,7 @@ class Box3D extends Base {
      */
     @autobind
     toggleFullscreen() {
-        fullscreen.toggle(this.containerEl, this.vrDevice);
+        fullscreen.toggle(this.containerEl);
     }
 
     /**
@@ -152,7 +152,7 @@ class Box3D extends Base {
      */
     @autobind
     handleEnableVr() {
-        this.vrDevice = this.renderer.vrDevice;
+        // this.vrDevice = this.renderer.vrDevice;
         this.renderer.enableVr();
     }
 
@@ -162,7 +162,7 @@ class Box3D extends Base {
      */
     @autobind
     handleDisableVr() {
-        this.vrDevice = undefined;
+        // this.vrDevice = undefined;
         this.renderer.disableVr();
     }
 
