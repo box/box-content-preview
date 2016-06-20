@@ -81231,11 +81231,6 @@
 	      }
 	    }
 	  }, {
-	    key: 'setEffect',
-	    value: function setEffect(effect) {
-	      this.effect = effect;
-	    }
-	  }, {
 	    key: 'renderView',
 	    value: function renderView(delta) {
 	      if (this.isEnabled()) {
@@ -81307,8 +81302,7 @@
 	            clearDepth: this.clearDepth,
 	            delta: delta,
 	            opacity: this.opacity,
-	            renderTarget: renderTarget,
-	            effect: this.effect
+	            renderTarget: renderTarget
 	          });
 	        }
 	      }
@@ -81490,6 +81484,7 @@
 
 	    _this.preRenderFns = {};
 	    _this.postRenderFns = {};
+	    _this.renderPasses = [];
 	    _this.viewport = new _three2.default.Vector4();
 
 	    _this.renderOnDemand = true;
@@ -81540,6 +81535,11 @@
 	      this.getRuntime().off('resize', this.resize, this);
 	      this.getRuntime().off('postRender', this.postRender, this);
 
+	      for (var i = 0; i < this.renderPasses.length; i++) {
+	        this.renderPasses[i].pass = null;
+	        this.renderPasses[i].scene = null;
+	        this.renderPasses[i].camera = null;
+	      }
 	      if (this.threeRenderer) {
 	        this.threeRenderer.context = null;
 	      }
@@ -81680,6 +81680,55 @@
 	      }
 	    }
 	  }, {
+	    key: 'addRenderPass',
+	    value: function addRenderPass(pass, priority) {
+	      if (priority < 0) {
+	        this.renderPasses.splice(0, 0, {
+	          pass: pass,
+	          scene: pass.scene,
+	          camera: pass.camera
+	        });
+	      } else {
+	        this.renderPasses.push({
+	          pass: pass,
+	          scene: pass.scene,
+	          camera: pass.camera
+	        });
+	      }
+	      this.renderPasses.forEach(function (pass) {
+	        pass.pass.clear = false;
+	      });
+
+	      this.renderPasses[0].pass.clear = true;
+	      this.renderPasses[0].pass.clearColor = this.clearColor;
+	      this.renderPasses[0].pass.clearAlpha = this.clearAlpha;
+	      this.renderPassesNeedUpdate = true;
+	    }
+	  }, {
+	    key: 'removeRenderPass',
+	    value: function removeRenderPass(pass) {
+	      var i,
+	          foundIndex = -1;
+	      for (i = 0; i < this.renderPasses.length; i++) {
+	        if (this.renderPasses[i].pass === pass) {
+	          foundIndex = i;
+	          break;
+	        }
+	      }
+	      if (foundIndex >= 0) {
+	        this.renderPasses.splice(foundIndex, 1);
+	      }
+	      this.renderPassesNeedUpdate = true;
+	    }
+	  }, {
+	    key: 'initRenderPasses',
+	    value: function initRenderPasses() {
+	      for (var i = 0; i < this.renderPasses.length; i++) {
+	        this.renderPasses[i].pass.scene = this.renderPasses[i].scene;
+	        this.renderPasses[i].pass.camera = this.renderPasses[i].camera;
+	      }
+	    }
+	  }, {
 	    key: 'applyRenderSettings',
 	    value: function applyRenderSettings() {
 	      if (this.threeRenderer) {
@@ -81767,46 +81816,100 @@
 	      this.threeRenderer.setViewport(0, 0, this.getWidth(), this.getHeight());
 	    }
 	  }, {
+	    key: 'postRender',
+	    value: function postRender() {
+	      this.renderPassesNeedUpdate = false;
+	    }
+	  }, {
 	    key: 'renderView',
 	    value: function renderView(scene, camera, options) {
-	      // var i = 0;
+	      var i = 0;
 	      var screenDimensions;
 	      options = options || {};
 	      if (camera) {
 	        if (options.enablePreRenderFunctions) {
 	          this.getRuntime().trigger('preRenderView', scene, camera, options);
 	        }
-	        if (options.opacity !== undefined && (!options.viewPort || options.viewPort.width === this.getWidth() && options.viewPort.height === this.getHeight())) {
-	          if (this.getCanvas().style.opacity != options.opacity) {
-	            this.getCanvas().style.opacity = options.opacity;
+	        for (i = 0; i < this.renderPasses.length; i++) {
+	          this.renderPasses[i].pass.scene = this.renderPasses[i].scene ? this.renderPasses[i].scene : scene;
+	          this.renderPasses[i].pass.camera = this.renderPasses[i].camera ? this.renderPasses[i].camera : camera;
+	        }
+
+	        if (options.composer && options.composer.customPasses.length) {
+	          if (options.composer.renderPassesNeedUpdate || this.renderPassesNeedUpdate) {
+	            var renderPasses = [];
+	            for (i = 0; i < this.renderPasses.length; i++) {
+	              renderPasses[i] = this.renderPasses[i].pass;
+	            }
+	            options.composer.passes = renderPasses.concat(options.composer.customPasses);
+	            options.composer.renderPassesNeedUpdate = false;
 	          }
-	        } else if (this.getCanvas().style.opacity != 1) {
-	          this.getCanvas().style.opacity = 1.0;
-	        }
-
-	        if (!options.renderTarget) {
-	          this.threeRenderer.setRenderTarget(null);
-	          this.threeRenderer.clear(options.clearColor, options.clearDepth, options.clearStencil);
-	        } else {
-	          this.threeRenderer.setRenderTarget(options.renderTarget);
-	          this.threeRenderer.clear(options.clearColor, options.clearDepth, options.clearStencil);
-	        }
-
-	        if (options.viewPort) {
+	          //TODO - move this viewport stuff into RenderView?
+	          var lastPass = options.composer.passes[options.composer.passes.length - 1];
+	          lastPass.viewPort = options.viewPort;
+	          if (lastPass.uniforms && lastPass.uniforms.opacity) {
+	            lastPass.uniforms.opacity.value = options.opacity !== undefined ? options.opacity : 1.0;
+	          }
 	          screenDimensions = this.getAssetRegistry().Materials.sharedUniforms.screenDimensions;
-	          screenDimensions.value.x = options.viewPort.x;
-	          screenDimensions.value.y = options.viewPort.y;
-	          screenDimensions.value.z = options.viewPort.width * this.devicePixelRatio;
-	          screenDimensions.value.w = options.viewPort.height * this.devicePixelRatio;
-	          this.threeRenderer.setViewport(options.viewPort.x, options.viewPort.y, options.viewPort.width, options.viewPort.height);
-	        }
+	          screenDimensions.value.x = 0.0;
+	          screenDimensions.value.y = 0.0;
+	          screenDimensions.value.z = this.getCanvasWidth();
+	          screenDimensions.value.w = this.getCanvasHeight();
 
-	        var renderer = options.effect ? options.effect : this.threeRenderer;
-
-	        if (options.renderTarget) {
-	          renderer.render(scene, camera, options.renderTarget, false);
+	          lastPass.renderToScreen = options.renderToScreen !== undefined ? options.renderToScreen : true;
+	          if (options.renderTarget) {
+	            lastPass.renderToTexture = options.renderTarget;
+	            lastPass.renderToScreen = false;
+	          }
+	          options.composer.render(options.delta !== undefined ? options.delta : 0.0167);
 	        } else {
-	          renderer.render(scene, camera);
+
+	          if (options.opacity !== undefined && (!options.viewPort || options.viewPort.width === this.getWidth() && options.viewPort.height === this.getHeight())) {
+	            if (this.getCanvas().style.opacity != options.opacity) {
+	              this.getCanvas().style.opacity = options.opacity;
+	            }
+	          } else if (this.getCanvas().style.opacity != 1) {
+	            this.getCanvas().style.opacity = 1.0;
+	          }
+
+	          if (!options.renderTarget) {
+	            this.threeRenderer.setRenderTarget(null);
+	            this.threeRenderer.clear(options.clearColor, options.clearDepth, options.clearStencil);
+	          } else {
+	            this.threeRenderer.setRenderTarget(options.renderTarget);
+	            this.threeRenderer.clear(options.clearColor, options.clearDepth, options.clearStencil);
+	          }
+
+	          if (options.viewPort) {
+	            screenDimensions = this.getAssetRegistry().Materials.sharedUniforms.screenDimensions;
+	            screenDimensions.value.x = options.viewPort.x;
+	            screenDimensions.value.y = options.viewPort.y;
+	            screenDimensions.value.z = options.viewPort.width * this.devicePixelRatio;
+	            screenDimensions.value.w = options.viewPort.height * this.devicePixelRatio;
+	            this.threeRenderer.setViewport(options.viewPort.x, options.viewPort.y, options.viewPort.width, options.viewPort.height);
+	          }
+
+	          var renderer = options.effect ? options.effect : this.threeRenderer;
+
+	          for (i = 0; i < this.renderPasses.length; i++) {
+	            if (!this.renderPasses[i].pass.scene) {
+	              continue;
+	            }
+	            var prevOverrideMat = this.renderPasses[i].pass.scene.overrideMaterial;
+	            if (this.renderPasses[i].pass.overrideMaterial) {
+	              this.renderPasses[i].pass.scene.overrideMaterial = this.renderPasses[i].pass.overrideMaterial;
+	            }
+
+	            if (options.renderTarget) {
+	              renderer.render(this.renderPasses[i].pass.scene, this.renderPasses[i].pass.camera, options.renderTarget, false);
+	            } else {
+	              renderer.render(this.renderPasses[i].pass.scene, this.renderPasses[i].pass.camera);
+	            }
+
+	            if (this.renderPasses[i].pass.overrideMaterial) {
+	              this.renderPasses[i].pass.scene.overrideMaterial = prevOverrideMat;
+	            }
+	          }
 	        }
 
 	        this.getRuntime().trigger('postRenderView', scene, camera, options);
@@ -97571,17 +97674,18 @@
 	    key: 'createRuntimeData',
 	    value: function createRuntimeData(callback) {
 	      this.runtimeData = new _three2.default.Scene();
+	      this.runtimeData.childIDs = {};
 	      this.runtimeData.matrixAutoUpdate = false;
 	      this.runtimeData.name = this.getName();
 
 	      // TODO: Separate this logic into another function so that we can
 	      // enable/disable rendering of the scene.
-	      // const renderer = this.box3DRuntime.getRenderer();
-	      // if (renderer) {
-	      //   const scenePass = new THREE.RenderPass();
-	      //   scenePass.clear = false;
-	      //   renderer.addRenderPass(scenePass);
-	      // }
+	      var renderer = this.box3DRuntime.getRenderer();
+	      if (renderer) {
+	        var scenePass = new _three2.default.RenderPass();
+	        scenePass.clear = false;
+	        renderer.addRenderPass(scenePass);
+	      }
 
 	      callback();
 	    }
