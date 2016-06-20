@@ -77424,6 +77424,9 @@
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
 	      if (changes.indexOf('inputTexture') !== -1) {
+	        var prevTex = this.getPreviousAttribute('inputTexture');
+	        this.unregisterDependency(prevTex);
+	        this.registerDependency(this.inputTexture);
 	        this.updateTexture();
 	      }
 	    }
@@ -77431,6 +77434,7 @@
 	    key: 'init',
 	    value: function init() {
 	      this.skyboxScene = new _three2.default.Scene();
+	      this.registerDependency(this.inputTexture);
 	      this.initCameras();
 	      this.createSkybox();
 	    }
@@ -77443,6 +77447,7 @@
 	    key: 'shutdown',
 	    value: function shutdown() {
 	      if (this.inputTexture) {
+	        this.unregisterDependency(this.inputTexture);
 	        this.inputTexture.off('load', this.renderToCube, this);
 	      }
 	      this.skyboxGeometry.dispose();
