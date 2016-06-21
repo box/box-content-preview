@@ -46,16 +46,6 @@ function sceneEntities(prefix) {
                 componentData: {},
                 enabled: true,
                 scriptId: 'preview_camera_focus'
-            },
-            previewVrController: {
-                componentData: {},
-                enabled: false,
-                scriptId: 'preview_vr_controls'
-            },
-            vrDisplayController: {
-                componentData: {},
-                enabled: false,
-                scriptId: 'hmd_renderer_script'
             }
         }
     }, {

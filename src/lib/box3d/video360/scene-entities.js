@@ -37,18 +37,6 @@ export default [{
             },
             enabled: true,
             scriptId: 'orbit_camera_controller'
-        },
-        previewVrController: {
-            componentData: {
-                cameraControllerName: 'Orbit Camera Controller'
-            },
-            enabled: false,
-            scriptId: 'preview_vr_controls'
-        },
-        vrDisplayController: {
-            componentData: {},
-            enabled: false,
-            scriptId: 'hmd_renderer_script'
         }
     }
 }, {

@@ -269,7 +269,7 @@ class Model3dRenderer extends Box3DRenderer {
         // Reset the camera
         this.reset();
         // Unload the intermediate HDR maps that are no longer needed.
-        // this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
+        this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
         super.onSceneLoad();
     }
 

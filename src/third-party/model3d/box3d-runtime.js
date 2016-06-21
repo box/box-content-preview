@@ -44489,15 +44489,15 @@
 
 		this.texImage2D = function () {
 
-			// try {
+			try {
 
 				gl.texImage2D.apply( gl, arguments );
 
-			// } catch ( error ) {
+			} catch ( error ) {
 
-			// 	console.error( error );
+				console.error( error );
 
-			// }
+			}
 
 		};
 
@@ -64455,7 +64455,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(25),__webpack_require__(43),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(23),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59)
+	  __webpack_require__(25),__webpack_require__(43),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(23),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
 	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
@@ -68497,7 +68497,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Texture2dToCubeMap"
 	  }
-	}, ComponentTexture2dToCubeMap);
+	}, ComponentTexture2dToCubeMap); 
 	}
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -72821,10 +72821,6 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _lodash = __webpack_require__(3);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _Box3DComponent2 = __webpack_require__(24);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
@@ -72862,14 +72858,6 @@
 	function Box3DInputEvent(event, name) {
 	  this.event = event;
 	  this.name = name;
-	}
-
-	function oculusFilter(device) {
-	  return device.deviceName.toLowerCase().indexOf('oculus') !== -1;
-	}
-
-	function cardboardFilter(device) {
-	  return device.deviceName.toLowerCase().indexOf('cardboard') === -1;
 	}
 
 	var percents = {
@@ -81101,7 +81089,7 @@
 	          precision: this.precision,
 	          logarithmicDepthBuffer: this.logarithmicDepthBuffer
 	        });
-	        this.threeRenderer.setPixelRatio(this.devicePixelRatio !== 0 ? this.devicePixelRatio : window.devicePixelRatio);
+	        this.threeRenderer.setPixelRatio(this.devicePixelRatio > 0 ? this.devicePixelRatio : window.devicePixelRatio);
 	        this.storeGpuCaps();
 	      } else {
 	        _log2.default.warn('WebGL not supported so falling back to canvas renderer.');
@@ -81118,7 +81106,7 @@
 	          }
 	        }, this);
 
-	        if (this.devicePixelRatio === 0.0) {
+	        if (!(this.devicePixelRatio > 0.0)) {
 	          this.devicePixelRatio = window.devicePixelRatio;
 	        }
 	        this.threeRenderer.setPixelRatio(this.devicePixelRatio);
@@ -83279,7 +83267,7 @@
 		if ( THREE.BokehShader === undefined ) {
 			console.error( "THREE.BokehPass relies on THREE.BokehShader" );
 		}
-
+		
 		var bokehShader = THREE.BokehShader;
 		var bokehUniforms = THREE.UniformsUtils.clone( bokehShader.uniforms );
 
@@ -83987,7 +83975,7 @@
 			"uniform vec2 resolution;",
 			THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
 			THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
-
+			
 			"void main() {",
 				"vec2 offset = 0.5 / resolution;",
 				"vec4 colour;",
@@ -84017,9 +84005,9 @@
 				"}",
 
 				"gl_FragColor = colour * 0.25;",
-
+				
 				THREE.ShaderChunk[ "hdr_encode_fragment" ],
-
+				
 			"}",
 		].join('\n')
 
@@ -85769,7 +85757,7 @@
 			"#endif",
 
 			"uniform sampler2D tDiffuse;",
-
+			
 			"varying vec2 vUv;",
 
 			THREE.ShaderChunk['hdr_decode_pars_fragment'],
@@ -85778,7 +85766,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-
+				
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"gl_FragColor = vec4( HDRDecodeLOGLUV( texel ), 1.0 );",
@@ -86074,7 +86062,7 @@
 			"uniform sampler2D tDiffuse;",
 			"uniform float sides;",
 			"uniform float angle;",
-
+			
 			"varying vec2 vUv;",
 
 			"void main() {",
@@ -86146,7 +86134,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-
+				
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"texel.xyz = HDRDecodeLOGLUV( texel );",
@@ -86218,7 +86206,7 @@
 
 			"uniform sampler2D tDiffuse;",
 			"uniform int side;",
-
+			
 			"varying vec2 vUv;",
 
 			"void main() {",
@@ -86473,7 +86461,7 @@
 			"opacity": { type: "f", value: 1.0 }
 		},
 			// ] ),
-
+		
 
 		vertexShader: [
 
@@ -86861,7 +86849,7 @@
 			"varying vec2 vUv;",
 
 			"uniform float exposureBias;",
-
+			
 			"#ifdef SAMPLE_LUMINANCE",
 				"uniform sampler2D luminanceMap;",
 			"#else",
@@ -86885,12 +86873,12 @@
 		      "return ( ( x * ( A * x + C * B ) + D * E ) / ( x * ( A * x + B ) + D * F ) ) - E / F;",
 		    "}",
 		  // #endif
-
+			
 			"const vec3 LUM_CONVERT = vec3(0.299, 0.587, 0.114);",
 
 			"vec3 ToneMap( vec3 vColor ) {",
 				"#ifdef SAMPLE_LUMINANCE",
-					// Get the calculated average luminance
+					// Get the calculated average luminance 
 					"vec4 lumAvg = texture2D(luminanceMap, vUv);",
 					"float fLumAvg = lumAvg.r;",
 					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
@@ -86907,7 +86895,7 @@
 				"#else",
 					"float fLumAvg = averageLuminance;",
 				"#endif",
-
+				
 				// "#if defined( FILMIC_UC2 )",
 				"#ifdef ADAPT_WHITE_BALANCE",
 					"vec3 maxLum = texture2D( maxLuminanceRT, vUv ).rgb;",
@@ -86920,9 +86908,9 @@
 				"vec3 curr = UC2Tonemap( (exposureBias / (fLumAvg + 0.025)) * vColor );",
 				// "vec3 curr = UC2Tonemap( exposureBias * vColor );",
 				// "vec3 whiteScale = 1.0 / UC2Tonemap(white);",
-
+				
 				"return curr * white;",
-
+	            
 				// "#else",//Reinhard Tonemapping
 				// 	// Calculate the luminance of the current pixel
 				// 	"float fLumPixel = dot(vColor, LUM_CONVERT);",
@@ -86938,7 +86926,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-
+				
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"gl_FragColor = vec4( ToneMap( HDRDecodeLOGLUV( texel ) ), 1.0 );",
@@ -92989,7 +92977,7 @@
 	      /* This will not work in older browsers.
 	       * See https://developer.mozilla.org/en-US/docs/Web/API/window.crypto.getRandomValues
 	       */
-
+	    
 	      _crypto.getRandomValues(bytes);
 	      return bytes;
 	    }
@@ -93931,7 +93919,7 @@
 /* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
-
+	
 	/**
 	 * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
 	 * in FIPS 180-2
@@ -97002,16 +96990,6 @@
 	      this.runtimeData = new _three2.default.Scene();
 	      this.runtimeData.matrixAutoUpdate = false;
 	      this.runtimeData.name = this.getName();
-
-	      // TODO: Separate this logic into another function so that we can
-	      // enable/disable rendering of the scene.
-	      // const renderer = this.box3DRuntime.getRenderer();
-	      // if (renderer) {
-	      //   const scenePass = new THREE.RenderPass();
-	      //   scenePass.clear = false;
-	      //   renderer.addRenderPass(scenePass);
-	      // }
-
 	      callback();
 	    }
 

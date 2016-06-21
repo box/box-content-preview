@@ -291,13 +291,6 @@ class Box3DRenderer extends EventEmitter {
 
         const renderer = this.box3d.getRenderer();
         renderer.setAttribute('renderOnDemand', false);
-        // const camera = this.getCamera();
-
-        // const hmdComponent = camera.componentRegistry.getFirstByScriptId('hmd_renderer_script');
-        // hmdComponent.enable();
-
-        // const vrControlsComponent = camera.componentRegistry.getFirstByScriptId('preview_vr_controls');
-        // vrControlsComponent.enable();
     }
 
     /**
@@ -351,22 +344,11 @@ class Box3DRenderer extends EventEmitter {
             const renderViewComponent = camera.componentRegistry.getFirstByScriptId(renderViewId);
             renderViewComponent.effect = null;
             this.box3d.off('preUpdate', this.updateVrControls, this);
-            // renderViewComponent.setViewport('0', '0', '100%', '100%');
-            // renderViewComponent = this.rightEyeCamera.componentRegistry.getFirstByScriptId(renderViewId);
-            // renderViewComponent.disable();
         }
         this.vrEffect.exitPresent();
         const renderer = this.box3d.getRenderer();
         renderer.setAttribute('renderOnDemand', true);
         this.box3d.needsRender = true;
-
-        // const camera = this.getCamera();
-
-        // const hmdComponent = camera.componentRegistry.getFirstByScriptId('hmd_renderer_script');
-        // hmdComponent.disable();
-
-        // const vrControlsComponent = camera.componentRegistry.getFirstByScriptId('preview_vr_controls');
-        // vrControlsComponent.disable();
     }
 
     /**
@@ -399,7 +381,6 @@ class Box3DRenderer extends EventEmitter {
      */
     enableVrIfPresent() {
         if (WEBVR.isLatestAvailable()) {
-            // this.containerEl.appendChild(WEBVR.getMessage());
             const renderer = this.box3d.getThreeRenderer();
             if (!this.vrEffect) {
                 this.vrEffect = new THREE.VREffect(renderer);
@@ -408,14 +389,6 @@ class Box3DRenderer extends EventEmitter {
             }
             this.emit(EVENT_SHOW_VR_BUTTON);
         }
-        // Get the vrDevice to pass to the fullscreen API
-        // this.input = this.box3d.getApplication().componentRegistry.getFirstByScriptId('input_controller_component');
-        // if (this.input) {
-        //     this.input.whenVrDeviceAvailable((device) => {
-        //         this.vrDevice = device;
-        //         this.emit(EVENT_SHOW_VR_BUTTON);
-        //     });
-        // }
     }
 }
 
