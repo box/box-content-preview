@@ -76,71 +76,71 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _EffectComposer = __webpack_require__(65);
+	var _EffectComposer = __webpack_require__(63);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(66);
+	var _BloomPass = __webpack_require__(64);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(67);
+	var _BokehPass = __webpack_require__(65);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(68);
+	var _DotScreenPass = __webpack_require__(66);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(69);
+	var _FilmPass = __webpack_require__(67);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(70);
+	var _MaskPass = __webpack_require__(68);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(71);
+	var _RenderPass = __webpack_require__(69);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(72);
+	var _SavePass = __webpack_require__(70);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(73);
+	var _ShaderPass = __webpack_require__(71);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(112);
+	var _TexturePass = __webpack_require__(110);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(113);
+	var _AdaptiveToneMappingPass = __webpack_require__(111);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(114);
+	var _AnimationAsset = __webpack_require__(112);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(115);
+	var _ApplicationAsset = __webpack_require__(113);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(116);
+	var _AudioAsset = __webpack_require__(114);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _DocumentAsset = __webpack_require__(117);
+	var _DocumentAsset = __webpack_require__(115);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
 
-	var _ImageAsset = __webpack_require__(146);
+	var _ImageAsset = __webpack_require__(144);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _VideoAsset = __webpack_require__(147);
+	var _VideoAsset = __webpack_require__(145);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -148,83 +148,83 @@
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(148);
+	var _MeshGeometryAsset = __webpack_require__(146);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(150);
+	var _PrimitiveGeometryAsset = __webpack_require__(148);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(151);
+	var _PrefabAsset = __webpack_require__(149);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(152);
+	var _RenderTexture2DAsset = __webpack_require__(150);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(154);
+	var _RenderTextureCubeAsset = __webpack_require__(152);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _SceneAsset = __webpack_require__(155);
+	var _SceneAsset = __webpack_require__(153);
 
 	var _SceneAsset2 = _interopRequireDefault(_SceneAsset);
 
-	var _ShaderAsset = __webpack_require__(156);
+	var _ShaderAsset = __webpack_require__(154);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _ScriptAsset = __webpack_require__(162);
+	var _ScriptAsset = __webpack_require__(160);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _Texture2DAsset = __webpack_require__(164);
+	var _Texture2DAsset = __webpack_require__(162);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(165);
+	var _TextureCubeAsset = __webpack_require__(163);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _Box3DObject = __webpack_require__(166);
+	var _Box3DObject = __webpack_require__(164);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(167);
+	var _CameraObject = __webpack_require__(165);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(168);
+	var _LightObject = __webpack_require__(166);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _SkinnedMeshObject = __webpack_require__(169);
+	var _SkinnedMeshObject = __webpack_require__(167);
 
 	var _SkinnedMeshObject2 = _interopRequireDefault(_SkinnedMeshObject);
 
-	var _StaticMeshObject = __webpack_require__(171);
+	var _StaticMeshObject = __webpack_require__(169);
 
 	var _StaticMeshObject2 = _interopRequireDefault(_StaticMeshObject);
 
-	var _ModelObject = __webpack_require__(172);
+	var _ModelObject = __webpack_require__(170);
 
 	var _ModelObject2 = _interopRequireDefault(_ModelObject);
 
-	var _APIUtilities = __webpack_require__(163);
+	var _APIUtilities = __webpack_require__(161);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(173);
+	var _DOMUtilities = __webpack_require__(171);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(118);
+	var _JSONLoader = __webpack_require__(116);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(174);
+	var _DevResourceLoader = __webpack_require__(172);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
 
@@ -13079,7 +13079,7 @@
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(62);
+	var _raf = __webpack_require__(60);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -44489,15 +44489,15 @@
 
 		this.texImage2D = function () {
 
-			try {
+			// try {
 
 				gl.texImage2D.apply( gl, arguments );
 
-			} catch ( error ) {
+			// } catch ( error ) {
 
-				console.error( error );
+			// 	console.error( error );
 
-			}
+			// }
 
 		};
 
@@ -58002,7 +58002,7 @@
 	        // When each dependency is loaded, check if we're done and mark dependencies as
 	        // finished if we are done.
 	        if (asset) {
-	          this.listenTo(asset, 'load', function () {
+	          asset.when('loadBase', function () {
 	            if (this.checkIfOwnDependenciesLoaded()) {
 	              this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
 	            }
@@ -58032,12 +58032,6 @@
 	        dependency.count--;
 	        if (dependency.count === 0) {
 	          delete this.dependencies[assetId];
-	          var asset = this.box3DRuntime.assetRegistry.getAssetById(assetId);
-	          // When each dependency is loaded, check if we're done and mark dependencies as
-	          // finished if we are done.
-	          if (asset) {
-	            this.stopListening(asset, 'load');
-	          }
 	        }
 	        // Inform entities referencing this entity as a dependency of the change
 	        this.trigger('change:dependency', null, assetId);
@@ -64461,9 +64455,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(25),__webpack_require__(44),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(23),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61) 
+	  __webpack_require__(25),__webpack_require__(43),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(23),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59)
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
-	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentHMDEffect,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentPreviewVRControls,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
+	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
 	   Box3D.ScriptRegistry.registerScript({
 	  "id": "audio_listener",
@@ -64619,13 +64613,13 @@
 	        "name": "near",
 	        "type": "f",
 	        "description": "The closest distance to this object to render. Adjust this to avoid   rendering local geometry to the texture.",
-	        "default": 25
+	        "default": 0.25
 	      },
 	      "far": {
 	        "name": "far",
 	        "type": "f",
 	        "description": "The furthest distance from this object to render.",
-	        "default": 160000
+	        "default": 1600
 	      },
 	      "updateFrameInterval": {
 	        "name": "updateFrameInterval",
@@ -65435,7 +65429,7 @@
 	      "movementSpeed": {
 	        "name": "movementSpeed",
 	        "type": "f",
-	        "default": 300,
+	        "default": 3,
 	        "max": 1000,
 	        "min": 0.01
 	      },
@@ -65543,30 +65537,6 @@
 	    "path": "Box3DRuntime/Components/BuiltIn/Fullscreen"
 	  }
 	}, ComponentFullscreen);  Box3D.ScriptRegistry.registerScript({
-	  "id": "hmd_renderer_script",
-	  "sid": "HMD Effect",
-	  "properties": {
-	    "name": "HMD Effect",
-	    "description": "Enables a head-mounted display effect (e.g. for Oculus Rift) on this camera.",
-	    "attributes": {},
-	    "attributesOrder": [],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "camera"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/HMDEffect"
-	  }
-	}, ComponentHMDEffect);  Box3D.ScriptRegistry.registerScript({
 	  "id": "input_controller_component",
 	  "sid": "Input Controller",
 	  "properties": {
@@ -65736,34 +65706,12 @@
 	            "description": "Events fired from the keys are picked up by the Event Handler"
 	          }
 	        }
-	      },
-	      "vrEvents": {
-	        "name": "vrEvents",
-	        "type": "custom",
-	        "attributes": {
-	          "enable": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Enable events from VR devices"
-	          },
-	          "position": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Enable events for sensor position changes (when available from device)"
-	          },
-	          "orientation": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Enable events for sensor orientation changes"
-	          }
-	        }
 	      }
 	    },
 	    "attributesOrder": [
 	      "mouseEvents",
 	      "touchEvents",
-	      "keyEvents",
-	      "vrEvents"
+	      "keyEvents"
 	    ],
 	    "events": {
 	      "mouse_down_left": {
@@ -66037,20 +65985,6 @@
 	        "name": "touch_end",
 	        "action": false,
 	        "category": "Input - Touch",
-	        "parameters": []
-	      },
-	      "vr_orientation": {
-	        "scope": "global",
-	        "name": "vr_orientation",
-	        "action": false,
-	        "category": "Input - VR",
-	        "parameters": []
-	      },
-	      "vr_position": {
-	        "scope": "global",
-	        "name": "vr_position",
-	        "action": false,
-	        "category": "Input - VR",
 	        "parameters": []
 	      }
 	    },
@@ -66813,8 +66747,8 @@
 	        "name": "movementSpeed",
 	        "type": "f",
 	        "description": "The speed that the camera moves when panning",
-	        "default": 800,
-	        "max": 20000,
+	        "default": 8,
+	        "max": 2000,
 	        "min": 0.1
 	      },
 	      "autoOrbit": {
@@ -67147,8 +67081,8 @@
 	        "name": "movementSpeed",
 	        "type": "f",
 	        "description": "The speed that the camera moves when panning",
-	        "default": 800,
-	        "max": 20000,
+	        "default": 8,
+	        "max": 2000,
 	        "min": 0.1
 	      },
 	      "autoOrbit": {
@@ -67391,39 +67325,6 @@
 	    "path": "Box3DRuntime/Components/BuiltIn/PreviewCameraFocus"
 	  }
 	}, ComponentPreviewCameraFocus);  Box3D.ScriptRegistry.registerScript({
-	  "id": "preview_vr_controls",
-	  "sid": "Preview VR Controls",
-	  "properties": {
-	    "name": "Preview VR Controls",
-	    "description": "A controller for the preview camera when using a VR device.",
-	    "attributes": {
-	      "cameraControllerName": {
-	        "name": "cameraControllerName",
-	        "type": "s",
-	        "default": "Preview Camera Controller",
-	        "description": "The name of the camera controller component that this component will override."
-	      }
-	    },
-	    "attributesOrder": [
-	      "cameraControllerName"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "camera"
-	    ],
-	    "category": "Camera Controllers",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/PreviewVRControls"
-	  }
-	}, ComponentPreviewVRControls);  Box3D.ScriptRegistry.registerScript({
 	  "id": "reflection_capture_planar",
 	  "sid": "Reflection Capture Plane",
 	  "properties": {
@@ -68596,7 +68497,7 @@
 	    },
 	    "path": "Box3DRuntime/Components/BuiltIn/Texture2dToCubeMap"
 	  }
-	}, ComponentTexture2dToCubeMap); 
+	}, ComponentTexture2dToCubeMap);
 	}
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -69936,11 +69837,11 @@
 	 * @vattr Float near {
 	 *   description: 'The closest distance to this object to render. Adjust this to avoid
 	 *   rendering local geometry to the texture.',
-	 *   default: 25
+	 *   default: 0.25
 	 * }
 	 * @vattr Float far {
 	 *   description: 'The furthest distance from this object to render.',
-	 *   default: 160000.00
+	 *   default: 1600.00
 	 *  }
 	 * @vattr Integer updateFrameInterval {
 	 *   description: 'The number of frames to skip in between updates of the reflection.
@@ -72134,7 +72035,7 @@
 	 * @vattr Boolean invertY { default: false }
 	 * @vattr Boolean invertZoom { default: false }
 	 * @vattr Float lookSpeed { default: 1.0, min: 0.0001, max: 1000 }
-	 * @vattr Float movementSpeed { default: 300, max: 1000, min: 0.01 }
+	 * @vattr Float movementSpeed { default: 3, max: 1000, min: 0.01 }
 	 * @vattr Vector2 pitchAngleBounds { default: { max: 75.0, min: -75 }, max: { max: 90.0, min: 90.0 }, min: { max: -90, min: -90.01 }}
 	 * @vattr Boolean enablePan { default: true }
 	 * @vattr Boolean enableZoom { default: true }
@@ -72813,273 +72714,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
-	/**
-	 * @vid hmd_renderer_script
-	 * @vname HMD Effect
-	 * @vfilter camera
-	 * @vdescription Enables a head-mounted display effect (e.g. for Oculus Rift) on this camera.
-	 * @vcategory Rendering
-	 */
-	/* eslint-enable */
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DComponent2 = __webpack_require__(24);
-
-	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	function fovToNDCScaleOffset(fov) {
-
-	  var pxscale = 2.0 / (fov.leftTan + fov.rightTan);
-	  var pxoffset = (fov.leftTan - fov.rightTan) * pxscale * 0.5;
-	  var pyscale = 2.0 / (fov.upTan + fov.downTan);
-	  var pyoffset = (fov.upTan - fov.downTan) * pyscale * 0.5;
-	  return {
-	    scale: [pxscale, pyscale],
-	    offset: [pxoffset, pyoffset]
-	  };
-	}
-
-	function fovPortToProjection(fov, rightHanded, zNear, zFar) {
-
-	  rightHanded = rightHanded === undefined ? true : rightHanded;
-	  zNear = zNear === undefined ? 0.01 : zNear;
-	  zFar = zFar === undefined ? 10000.0 : zFar;
-
-	  var handednessScale = rightHanded ? -1.0 : 1.0;
-
-	  // start with an identity matrix
-	  var mobj = new _three2.default.Matrix4();
-	  var m = mobj.elements;
-
-	  // and with scale/offset info for normalized device coords
-	  var scaleAndOffset = fovToNDCScaleOffset(fov);
-
-	  // X result, map clip edges to [-w,+w]
-	  m[0 * 4 + 0] = scaleAndOffset.scale[0];
-	  m[0 * 4 + 1] = 0.0;
-	  m[0 * 4 + 2] = scaleAndOffset.offset[0] * handednessScale;
-	  m[0 * 4 + 3] = 0.0;
-
-	  // Y result, map clip edges to [-w,+w]
-	  // Y offset is negated because this proj matrix transforms from world coords with Y=up,
-	  // but the NDC scaling has Y=down (thanks D3D?)
-	  m[1 * 4 + 0] = 0.0;
-	  m[1 * 4 + 1] = scaleAndOffset.scale[1];
-	  m[1 * 4 + 2] = -scaleAndOffset.offset[1] * handednessScale;
-	  m[1 * 4 + 3] = 0.0;
-
-	  // Z result (up to the app)
-	  m[2 * 4 + 0] = 0.0;
-	  m[2 * 4 + 1] = 0.0;
-	  m[2 * 4 + 2] = zFar / (zNear - zFar) * -handednessScale;
-	  m[2 * 4 + 3] = zFar * zNear / (zNear - zFar);
-
-	  // W result (= Z in)
-	  m[3 * 4 + 0] = 0.0;
-	  m[3 * 4 + 1] = 0.0;
-	  m[3 * 4 + 2] = handednessScale;
-	  m[3 * 4 + 3] = 0.0;
-
-	  mobj.transpose();
-
-	  return mobj;
-	}
-
-	function fovToProjection(fov, rightHanded, zNear, zFar) {
-
-	  var DEG2RAD = Math.PI / 180.0;
-
-	  var fovPort = {
-	    upTan: Math.tan(fov.upDegrees * DEG2RAD),
-	    downTan: Math.tan(fov.downDegrees * DEG2RAD),
-	    leftTan: Math.tan(fov.leftDegrees * DEG2RAD),
-	    rightTan: Math.tan(fov.rightDegrees * DEG2RAD)
-	  };
-
-	  return fovPortToProjection(fovPort, rightHanded, zNear, zFar);
-	}
-
-	var HMDRenderEffect = function (_Box3DComponent) {
-	  _inherits(HMDRenderEffect, _Box3DComponent);
-
-	  function HMDRenderEffect() {
-	    _classCallCheck(this, HMDRenderEffect);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(HMDRenderEffect).call(this));
-
-	    _this.eyeFOVL = { upDegrees: 50, downDegrees: 50, leftDegrees: 50, rightDegrees: 50 };
-	    _this.eyeFOVR = { upDegrees: 50, downDegrees: 50, leftDegrees: 50, rightDegrees: 50 };
-	    _this.eyeTranslationL = { x: -0.032, y: 0.0, z: 0.0 };
-	    _this.eyeTranslationR = { x: 0.032, y: 0.0, z: 0.0 };
-	    _this.renderOptions = {
-	      viewPort: {
-	        x: 0,
-	        y: 0,
-	        width: 100,
-	        height: 100
-	      },
-	      clearColor: false,
-	      clearDepth: false,
-	      delta: 0.16
-	    };
-	    return _this;
-	  }
-
-	  _createClass(HMDRenderEffect, [{
-	    key: 'init',
-	    value: function init() {
-	      this.getRuntime().on('resize', this.resize, this);
-	      this.on('enable', this.onEnabled, this);
-	      this.on('disable', this.onDisabled, this);
-	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
-	      this.getRuntime().off('resize', this.resize, this);
-	      this.off('enable', this.onEnabled, this);
-	      this.off('disable', this.onDisabled, this);
-	      if (this.hmdRenderTarget) {
-	        this.hmdRenderTarget.dispose();
-	      }
-	    }
-	  }, {
-	    key: 'componentsLoaded',
-	    value: function componentsLoaded() {
-	      this.renderViewComp = this.getEntity().componentRegistry.getFirstByScriptId('render_view_component');
-	      this.renderFiltersComp = this.getEntity().componentRegistry.getFirstByScriptId('camera_filters_script');
-	    }
-	  }, {
-	    key: 'entityLoaded',
-	    value: function entityLoaded() {
-	      this.initHMDEffect();
-	      if (this.isEnabled()) {
-	        this.onEnabled();
-	      }
-	    }
-	  }, {
-	    key: 'resize',
-	    value: function resize() {}
-	  }, {
-	    key: 'onEnabled',
-	    value: function onEnabled() {
-
-	      if (this.renderViewComp) {
-	        this.renderViewComp.setRenderOverride(this.renderView, this);
-	        this.resize();
-	        this.getRuntime().needsRender = true;
-	      }
-	    }
-	  }, {
-	    key: 'onDisabled',
-	    value: function onDisabled() {
-	      if (this.renderViewComp) {
-	        this.renderViewComp.setRenderOverride(null);
-	        this.getRuntime().needsRender = true;
-	      }
-	    }
-	  }, {
-	    key: 'renderView',
-	    value: function renderView(delta) {
-
-	      var scene;
-	      var renderer;
-	      var threeRenderer;
-	      var camera;
-	      var cameraL = this.cameraL;
-	      var cameraR = this.cameraR;
-
-	      if (this.isEnabled()) {
-
-	        scene = this.getThreeScene();
-	        renderer = this.getRenderer();
-	        threeRenderer = this.getThreeRenderer();
-	        camera = this.getRuntimeData();
-
-	        if (camera && scene) {
-
-	          var size = threeRenderer.getSize();
-	          size.width /= 2;
-
-	          threeRenderer.enableScissorTest(true);
-	          threeRenderer.clear();
-
-	          if (camera.parent === null) camera.updateMatrixWorld();
-
-	          cameraL.projectionMatrix = fovToProjection(this.eyeFOVL, true, camera.near, camera.far);
-	          cameraR.projectionMatrix = fovToProjection(this.eyeFOVR, true, camera.near, camera.far);
-
-	          camera.matrixWorld.decompose(cameraL.position, cameraL.quaternion, cameraL.scale);
-	          camera.matrixWorld.decompose(cameraR.position, cameraR.quaternion, cameraR.scale);
-
-	          this.cameraL.translateX(this.eyeTranslationL.x);
-	          this.cameraR.translateX(this.eyeTranslationR.x);
-
-	          this.renderOptions.viewPort.x = 0;
-	          this.renderOptions.viewPort.y = 0;
-	          this.renderOptions.viewPort.width = size.width;
-	          this.renderOptions.viewPort.height = size.height;
-	          this.renderOptions.delta = delta;
-	          // render left eye
-	          threeRenderer.setScissor(0, 0, size.width, size.height);
-	          renderer.renderView(scene, cameraL, this.renderOptions);
-
-	          // render right eye
-	          this.renderOptions.viewPort.x = size.width;
-	          threeRenderer.setScissor(size.width, 0, size.width, size.height);
-	          renderer.renderView(scene, cameraR, this.renderOptions);
-	          threeRenderer.enableScissorTest(false);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'initHMDEffect',
-	    value: function initHMDEffect() {
-	      var that = this;
-	      // Perspective cameras for each eye
-	      this.cameraL = new _three2.default.PerspectiveCamera();
-	      this.cameraR = new _three2.default.PerspectiveCamera();
-
-	      this.getInput().whenVrDeviceAvailable(function onVrDevice(vrDevice) {
-	        var eyeParamsL = vrDevice.getEyeParameters('left');
-	        var eyeParamsR = vrDevice.getEyeParameters('right');
-	        that.eyeTranslationL = eyeParamsL.eyeTranslation;
-	        that.eyeTranslationR = eyeParamsR.eyeTranslation;
-	        that.eyeFOVL = eyeParamsL.recommendedFieldOfView;
-	        that.eyeFOVR = eyeParamsR.recommendedFieldOfView;
-	      });
-
-	      this.resize();
-	    }
-	  }]);
-
-	  return HMDRenderEffect;
-	}(_Box3DComponent3.default);
-
-	exports.default = HMDRenderEffect;
-
-/***/ },
-/* 39 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* eslint-disable */
 	/*
 	@vid input_controller_component
 	@vname Input Controller
@@ -73133,14 +72767,6 @@
 	  }
 	}
 
-	@vattr custom vrEvents {
-	  attributes : {
-	    'enable': { type: 'b', default: true, description: 'Enable events from VR devices' },
-	    'position': { type: 'b', default: true, description: 'Enable events for sensor position changes (when available from device)' },
-	    'orientation': { type: 'b', default: true, description: 'Enable events for sensor orientation changes' },
-	  }
-	}
-
 	@vevent global mouse_down_left { scope: 'global', action: false, 'category':'Input - Mouse', parameters: [] }
 	@vevent global mouse_down_right { scope: 'global', action: false, 'category':'Input - Mouse', parameters: [] }
 	@vevent global mouse_down_middle { scope: 'global', action: false, 'category':'Input - Mouse', parameters: [] }
@@ -73180,11 +72806,8 @@
 	@vevent global keypress_space { 'scope': 'global', 'action': false, 'category':'Input - Keys', 'parameters': [] }
 	@vevent global touch_start { 'scope': 'global', 'action': false, 'category':'Input - Touch', 'parameters': [] }
 	@vevent global touch_end { 'scope': 'global', 'action': false, 'category':'Input - Touch', 'parameters': [] }
-	@vevent global vr_orientation { 'scope': 'global', 'action': false, 'category':'Input - VR', 'parameters': [] }
-	@vevent global vr_position { 'scope': 'global', 'action': false, 'category':'Input - VR', 'parameters': [] }
 	*/
 	/* eslint-enable */
-	/* global PositionSensorVRDevice, HMDVRDevice */
 	/* global Box3D */
 	'use strict';
 
@@ -73400,9 +73023,6 @@
 	    _this.canvas = null;
 	    _this.pointerLockElement = null;
 	    _this.pointerLockEnabled = false;
-
-	    _this.vrDevice = null;
-	    _this.vrInputs = [];
 	    return _this;
 	  }
 
@@ -73450,12 +73070,6 @@
 	        }
 	        if (this.touchEvents.enable) {
 	          this.enableTouchEvents();
-	        }
-	        if (this.vrEvents.enable) {
-	          // VR input devices
-	          if (navigator.getVRDevices) {
-	            navigator.getVRDevices().then(this.onInitVRDevices.bind(this));
-	          }
 	        }
 	      }
 	    }
@@ -74119,89 +73733,6 @@
 	      }
 	    }
 	  }, {
-	    key: 'resetVrSensor',
-	    value: function resetVrSensor() {
-	      var i, length;
-	      for (i = 0, length = this.vrInputs.length; i < length; ++i) {
-	        var vrInput = this.vrInputs[i];
-
-	        if (vrInput.resetSensor !== undefined) {
-	          vrInput.resetSensor();
-	        } else if (vrInput.zeroSensor !== undefined) {
-	          vrInput.zeroSensor();
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'filterInvalidDevices',
-	    value: function filterInvalidDevices(devices) {
-	      devices = devices.filter(oculusFilter);
-
-	      if (devices.length >= 1) {
-	        return devices.filter(cardboardFilter);
-	      } else {
-	        return devices;
-	      }
-	    }
-	  }, {
-	    key: 'onInitVRDevices',
-	    value: function onInitVRDevices(devices) {
-	      devices = this.filterInvalidDevices(devices);
-	      devices.forEach(function eachVrDevice(device) {
-	        if (device instanceof PositionSensorVRDevice) {
-	          this.vrInputs.push(device);
-	        } else if (device instanceof HMDVRDevice) {
-	          this.vrDevice = device;
-	        }
-	      }, this);
-	      this.trigger('vrDeviceAvailable', this.vrDevice);
-	    }
-	  }, {
-	    key: 'whenVrDeviceAvailable',
-	    value: function whenVrDeviceAvailable(callback) {
-	      if (this.vrDevice && _lodash2.default.isFunction(callback)) {
-	        callback(this.vrDevice);
-	      } else {
-	        this.once('vrDeviceAvailable', function (device) {
-	          if (_lodash2.default.isFunction(callback)) {
-	            callback(device);
-	          }
-	        });
-	      }
-	    }
-	  }, {
-	    key: 'getVrInput',
-	    value: function getVrInput() {
-	      // TODO: I'm sure that this function can be made to take some
-	      // parameters to help decide what input to return...
-	      return this.vrInputs.length ? this.vrInputs[0] : null;
-	    }
-	  }, {
-	    key: 'getVrDevice',
-	    value: function getVrDevice() {
-	      return this.vrDevice;
-	    }
-	  }, {
-	    key: 'update',
-	    value: function update() {
-	      if (this.isEnabled()) {
-	        if (this.vrEvents.enable) {
-	          this.vrInputs.forEach(function (device) {
-	            var state = device.getState();
-
-	            if (state.orientation && this.vrEvents.orientation) {
-	              this.getGlobalEvents().trigger('vr_orientation', state.orientation);
-	            }
-
-	            if (state.position && this.vrEvents.position) {
-	              this.getGlobalEvents().trigger('vr_position', state.position);
-	            }
-	            this.getRuntime().needsRender = true;
-	          }, this);
-	        }
-	      }
-	    }
-	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
 	      window.removeEventListener('blur', this.onBlur, false);
@@ -74233,7 +73764,6 @@
 	      this.touchPreviousPosition = undefined;
 	      this.keyState = undefined;
 	      this.keyStatePrevious = undefined;
-	      this.vrInputs = undefined;
 	    }
 	  }]);
 
@@ -74243,7 +73773,7 @@
 	exports.default = InputController;
 
 /***/ },
-/* 40 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74938,7 +74468,7 @@
 	exports.default = Animation;
 
 /***/ },
-/* 41 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75110,7 +74640,7 @@
 	exports.default = LookAt;
 
 /***/ },
-/* 42 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75307,7 +74837,7 @@
 	exports.default = NormalMapGenerator;
 
 /***/ },
-/* 43 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75980,7 +75510,7 @@
 	exports.default = ObjectAnimator;
 
 /***/ },
-/* 44 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76377,7 +75907,7 @@
 	exports.default = AudioSource;
 
 /***/ },
-/* 45 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -76421,8 +75951,8 @@
 	}
 	@vattr float movementSpeed {
 	  'description' : 'The speed that the camera moves when panning',
-	  'default' : 800.0,
-	  'max' : 20000,
+	  'default' : 8.0,
+	  'max' : 2000,
 	  'min' : 0.1
 	}
 	@vattr bool autoOrbit {
@@ -76947,7 +76477,7 @@
 	        if (Math.abs(this.currentZoomSpeed) < 0.0001) {
 	          this.currentZoomSpeed = 0.0;
 	        }
-	        var newDistance = currentDistance + this.currentZoomSpeed * 0.01 * this.currentOrbitDistance;
+	        var newDistance = currentDistance + this.currentZoomSpeed * this.currentOrbitDistance;
 	        targetDistance = Math.min(this.orbitDistanceMax, Math.max(this.orbitDistanceMin, newDistance));
 	        interpDistance = targetDistance - currentDistance;
 	        this.currentOrbitDistance = targetDistance;
@@ -77374,7 +76904,7 @@
 	exports.default = OrbitCamera;
 
 /***/ },
-/* 46 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -77430,6 +76960,9 @@
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
 	      if (changes.indexOf('inputTexture') !== -1) {
+	        var prevTex = this.getPreviousAttribute('inputTexture');
+	        this.unregisterDependency(prevTex);
+	        this.registerDependency(this.inputTexture);
 	        this.updateTexture();
 	      }
 	    }
@@ -77437,6 +76970,7 @@
 	    key: 'init',
 	    value: function init() {
 	      this.skyboxScene = new _three2.default.Scene();
+	      this.registerDependency(this.inputTexture);
 	      this.initCameras();
 	      this.createSkybox();
 	    }
@@ -77449,6 +76983,7 @@
 	    key: 'shutdown',
 	    value: function shutdown() {
 	      if (this.inputTexture) {
+	        this.unregisterDependency(this.inputTexture);
 	        this.inputTexture.off('load', this.renderToCube, this);
 	      }
 	      this.skyboxGeometry.dispose();
@@ -77564,7 +77099,7 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 47 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77969,7 +77504,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 48 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78013,8 +77548,8 @@
 	}
 	@vattr float movementSpeed {
 	  'description' : 'The speed that the camera moves when panning',
-	  'default' : 800.0,
-	  'max' : 20000,
+	  'default' : 8.0,
+	  'max' : 2000,
 	  'min' : 0.1
 	}
 	@vattr bool autoOrbit {
@@ -78526,7 +78061,7 @@
 	          this.currentZoomSpeed = 0.0;
 	        }
 	        if (this.getRuntimeData() instanceof _three2.default.PerspectiveCamera) {
-	          var newDistance = currentDistance + this.currentZoomSpeed * 0.01 * this.currentOrbitDistance;
+	          var newDistance = currentDistance + this.currentZoomSpeed * this.currentOrbitDistance;
 	          targetDistance = Math.min(this.orbitDistanceMax, Math.max(this.orbitDistanceMin, newDistance));
 	          interpDistance = targetDistance - currentDistance;
 	          this.currentOrbitDistance = targetDistance;
@@ -78534,8 +78069,8 @@
 	          var camera = this.getRuntimeData();
 	          var change = this.currentZoomSpeed * 0.1;
 	          var aspect = camera.right / camera.top;
-	          var maxHeight = 250;
-	          var minHeight = 5;
+	          var maxHeight = 2.5;
+	          var minHeight = 0.05;
 	          camera.top += change;
 	          camera.bottom -= change;
 	          camera.top = Math.max(Math.min(camera.top, maxHeight), minHeight);
@@ -78970,7 +78505,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 49 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79244,114 +78779,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 50 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* eslint-disable */
-	/*
-	@vid preview_vr_controls
-	@vname Preview VR Controls
-	@vdescription A controller for the preview camera when using a VR device.
-	@vfilter camera
-	@vcategory Camera Controllers
-	@vattr string cameraControllerName {
-	  'default' : 'Preview Camera Controller',
-	  'description' : 'The name of the camera controller component that this component will override.',
-	}
-	*/
-	/* eslint-enable */
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _Box3DComponent2 = __webpack_require__(24);
-
-	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var PreviewVRControls = function (_Box3DComponent) {
-	  _inherits(PreviewVRControls, _Box3DComponent);
-
-	  function PreviewVRControls() {
-	    _classCallCheck(this, PreviewVRControls);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewVRControls).call(this));
-
-	    _this.previewCamControl = null;
-	    _this.vrOrientation = {
-	      x: 0.0,
-	      y: 0.0,
-	      z: 0.0,
-	      w: 1.0
-	    };
-	    _this.cameraControllerName = 'Preview Camera Controller';
-	    return _this;
-	  }
-
-	  _createClass(PreviewVRControls, [{
-	    key: 'init',
-	    value: function init() {
-	      this.listenTo(this, 'enable', this.onEnable);
-	      this.listenTo(this, 'disable', this.onDisable);
-	    }
-	  }, {
-	    key: 'assetLoaded',
-	    value: function assetLoaded() {
-	      this.previewCamControl = this.getComponentRegistry().getFirstByScriptName(this.cameraControllerName);
-	    }
-	  }, {
-	    key: 'onEnable',
-	    value: function onEnable() {
-	      // Bind to orientation updates so that we can update the VR camera
-	      this.getGlobalEvents().on('vr_orientation', this.onVrOrientation, this);
-	    }
-	  }, {
-	    key: 'onDisable',
-	    value: function onDisable() {
-	      this.getGlobalEvents().off('vr_orientation', this.onVrOrientation, this);
-	    }
-	  }, {
-	    key: 'onVrOrientation',
-	    value: function onVrOrientation(orientation) {
-	      this.vrOrientation = orientation;
-	    }
-	  }, {
-	    key: 'update',
-	    value: function update() {
-
-	      if (this.isEnabled() && this.previewCamControl) {
-
-	        var threeCamera = this.previewCamControl.getEntity().runtimeData;
-
-	        // Apply the saved orientation from the VR device to update the orbit of the camera.
-	        threeCamera.quaternion.set(this.vrOrientation.x, this.vrOrientation.y, this.vrOrientation.z, this.vrOrientation.w);
-
-	        threeCamera.position.set(0.0, 0.0, this.previewCamControl.currentOrbitDistance);
-	        threeCamera.position.applyQuaternion(threeCamera.quaternion);
-
-	        this.getRuntime().needsRender = true;
-	      }
-	    }
-	  }]);
-
-	  return PreviewVRControls;
-	}(_Box3DComponent3.default);
-
-	exports.default = PreviewVRControls;
-
-/***/ },
-/* 51 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79755,7 +79183,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 52 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80317,7 +79745,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 53 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80969,7 +80397,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 54 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81322,7 +80750,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 55 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81491,7 +80919,6 @@
 
 	    _this.preRenderFns = {};
 	    _this.postRenderFns = {};
-	    _this.renderPasses = [];
 	    _this.viewport = new _three2.default.Vector4();
 
 	    _this.renderOnDemand = true;
@@ -81542,11 +80969,6 @@
 	      this.getRuntime().off('resize', this.resize, this);
 	      this.getRuntime().off('postRender', this.postRender, this);
 
-	      for (var i = 0; i < this.renderPasses.length; i++) {
-	        this.renderPasses[i].pass = null;
-	        this.renderPasses[i].scene = null;
-	        this.renderPasses[i].camera = null;
-	      }
 	      if (this.threeRenderer) {
 	        this.threeRenderer.context = null;
 	      }
@@ -81686,53 +81108,6 @@
 	        this.threeRenderer = new _three2.default.CanvasRenderer();
 	      }
 	    }
-
-	    // addRenderPass(pass, priority) {
-	    //   if (priority < 0) {
-	    //     this.renderPasses.splice(0, 0, {
-	    //       pass: pass,
-	    //       scene: pass.scene,
-	    //       camera: pass.camera
-	    //     });
-	    //   } else {
-	    //     this.renderPasses.push({
-	    //       pass: pass,
-	    //       scene: pass.scene,
-	    //       camera: pass.camera
-	    //     });
-	    //   }
-	    //   this.renderPasses.forEach((pass) => {
-	    //     pass.pass.clear = false;
-	    //   });
-
-	    //   this.renderPasses[0].pass.clear = true;
-	    //   this.renderPasses[0].pass.clearColor = this.clearColor;
-	    //   this.renderPasses[0].pass.clearAlpha = this.clearAlpha;
-	    //   this.renderPassesNeedUpdate = true;
-	    // }
-
-	    // removeRenderPass(pass) {
-	    //   var i,
-	    //     foundIndex = -1;
-	    //   for (i = 0; i < this.renderPasses.length; i++) {
-	    //     if (this.renderPasses[i].pass === pass) {
-	    //       foundIndex = i;
-	    //       break;
-	    //     }
-	    //   }
-	    //   if (foundIndex >= 0) {
-	    //     this.renderPasses.splice(foundIndex, 1);
-	    //   }
-	    //   this.renderPassesNeedUpdate = true;
-	    // }
-
-	    // initRenderPasses() {
-	    //   for (var i = 0; i < this.renderPasses.length; i++) {
-	    //     this.renderPasses[i].pass.scene = this.renderPasses[i].scene;
-	    //     this.renderPasses[i].pass.camera = this.renderPasses[i].camera;
-	    //   }
-	    // }
-
 	  }, {
 	    key: 'applyRenderSettings',
 	    value: function applyRenderSettings() {
@@ -81821,11 +81196,6 @@
 	      this.threeRenderer.setViewport(0, 0, this.getWidth(), this.getHeight());
 	    }
 	  }, {
-	    key: 'postRender',
-	    value: function postRender() {
-	      this.renderPassesNeedUpdate = false;
-	    }
-	  }, {
 	    key: 'renderView',
 	    value: function renderView(scene, camera, options) {
 	      // var i = 0;
@@ -81835,43 +81205,6 @@
 	        if (options.enablePreRenderFunctions) {
 	          this.getRuntime().trigger('preRenderView', scene, camera, options);
 	        }
-	        // for (i = 0; i < this.renderPasses.length; i++) {
-	        //   this.renderPasses[i].pass.scene = this.renderPasses[i].scene ?
-	        //     this.renderPasses[i].scene : scene;
-	        //   this.renderPasses[i].pass.camera = this.renderPasses[i].camera ?
-	        //     this.renderPasses[i].camera : camera;
-	        // }
-
-	        // if (options.composer && options.composer.customPasses.length) {
-	        //   if (options.composer.renderPassesNeedUpdate || this.renderPassesNeedUpdate) {
-	        //     var renderPasses = [];
-	        //     for (i = 0; i < this.renderPasses.length; i++) {
-	        //       renderPasses[i] = this.renderPasses[i].pass;
-	        //     }
-	        //     options.composer.passes = renderPasses.concat(options.composer.customPasses);
-	        //     options.composer.renderPassesNeedUpdate = false;
-	        //   }
-	        //   //TODO - move this viewport stuff into RenderView?
-	        //   var lastPass = options.composer.passes[options.composer.passes.length - 1];
-	        //   lastPass.viewPort = options.viewPort;
-	        //   if (lastPass.uniforms && lastPass.uniforms.opacity) {
-	        //     lastPass.uniforms.opacity.value = options.opacity !== undefined ? options.opacity : 1.0;
-	        //   }
-	        //   screenDimensions = this.getAssetRegistry().Materials.sharedUniforms.screenDimensions;
-	        //   screenDimensions.value.x = 0.0;
-	        //   screenDimensions.value.y = 0.0;
-	        //   screenDimensions.value.z = this.getCanvasWidth();
-	        //   screenDimensions.value.w = this.getCanvasHeight();
-
-	        //   lastPass.renderToScreen = options.renderToScreen !== undefined ?
-	        //     options.renderToScreen : true;
-	        //   if (options.renderTarget) {
-	        //     lastPass.renderToTexture = options.renderTarget;
-	        //     lastPass.renderToScreen = false;
-	        //   }
-	        //   options.composer.render(options.delta !== undefined ? options.delta : 0.0167);
-	        // } else {
-
 	        if (options.opacity !== undefined && (!options.viewPort || options.viewPort.width === this.getWidth() && options.viewPort.height === this.getHeight())) {
 	          if (this.getCanvas().style.opacity != options.opacity) {
 	            this.getCanvas().style.opacity = options.opacity;
@@ -81899,31 +81232,11 @@
 
 	        var renderer = options.effect ? options.effect : this.threeRenderer;
 
-	        // for (i = 0; i < this.renderPasses.length; i++) {
-	        // if (!this.renderPasses[i].pass.scene) {
-	        //   continue;
-	        // }
-	        // var prevOverrideMat = this.renderPasses[i].pass.scene.overrideMaterial;
-	        // if (this.renderPasses[i].pass.overrideMaterial) {
-	        //   this.renderPasses[i].pass.scene.overrideMaterial =
-	        //     this.renderPasses[i].pass.overrideMaterial;
-	        // }
-
 	        if (options.renderTarget) {
-	          // renderer.render(this.renderPasses[i].pass.scene, this.renderPasses[i].pass.camera,
-	          //   options.renderTarget, false);
 	          renderer.render(scene, camera, options.renderTarget, false);
 	        } else {
-	          // renderer.render(this.renderPasses[i].pass.scene,
-	          //   this.renderPasses[i].pass.camera);
 	          renderer.render(scene, camera);
 	        }
-
-	        // if (this.renderPasses[i].pass.overrideMaterial) {
-	        //   this.renderPasses[i].pass.scene.overrideMaterial = prevOverrideMat;
-	        // }
-	        // }
-	        // }
 
 	        this.getRuntime().trigger('postRenderView', scene, camera, options);
 	      }
@@ -81986,7 +81299,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 56 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82208,7 +81521,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 57 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82316,7 +81629,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 58 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82545,7 +81858,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 59 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82914,7 +82227,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 60 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -83117,7 +82430,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 61 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -83359,10 +82672,10 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 62 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(63)
+	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(61)
 	  , root = typeof window === 'undefined' ? global : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -83438,7 +82751,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 63 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -83474,10 +82787,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(64)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(62)))
 
 /***/ },
-/* 64 */
+/* 62 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -83577,7 +82890,7 @@
 
 
 /***/ },
-/* 65 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83743,7 +83056,7 @@
 
 
 /***/ },
-/* 66 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83925,7 +83238,7 @@
 
 
 /***/ },
-/* 67 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83966,7 +83279,7 @@
 		if ( THREE.BokehShader === undefined ) {
 			console.error( "THREE.BokehPass relies on THREE.BokehShader" );
 		}
-		
+
 		var bokehShader = THREE.BokehShader;
 		var bokehUniforms = THREE.UniformsUtils.clone( bokehShader.uniforms );
 
@@ -84032,7 +83345,7 @@
 
 
 /***/ },
-/* 68 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84100,7 +83413,7 @@
 
 
 /***/ },
-/* 69 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84179,7 +83492,7 @@
 
 
 /***/ },
-/* 70 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84273,7 +83586,7 @@
 
 
 /***/ },
-/* 71 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84339,7 +83652,7 @@
 
 
 /***/ },
-/* 72 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84409,11 +83722,13 @@
 
 
 /***/ },
-/* 73 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)
-		, __webpack_require__(93)
+		, __webpack_require__(91)
+		, __webpack_require__(73)
+		, __webpack_require__(74)
 		, __webpack_require__(75)
 		, __webpack_require__(76)
 		, __webpack_require__(77)
@@ -84430,9 +83745,9 @@
 		, __webpack_require__(88)
 		, __webpack_require__(89)
 		, __webpack_require__(90)
-		, __webpack_require__(91)
+		, __webpack_require__(72)
 		, __webpack_require__(92)
-		, __webpack_require__(74)
+		, __webpack_require__(93)
 		, __webpack_require__(94)
 		, __webpack_require__(95)
 		, __webpack_require__(96)
@@ -84448,9 +83763,7 @@
 		, __webpack_require__(106)
 		, __webpack_require__(107)
 		, __webpack_require__(108)
-		, __webpack_require__(109)
-		, __webpack_require__(110)
-		, __webpack_require__(111)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(109)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -84535,7 +83848,7 @@
 
 
 /***/ },
-/* 74 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84641,7 +83954,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 75 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84674,7 +83987,7 @@
 			"uniform vec2 resolution;",
 			THREE.ShaderChunk[ "hdr_decode_pars_fragment" ],
 			THREE.ShaderChunk[ "hdr_encode_pars_fragment" ],
-			
+
 			"void main() {",
 				"vec2 offset = 0.5 / resolution;",
 				"vec4 colour;",
@@ -84704,9 +84017,9 @@
 				"}",
 
 				"gl_FragColor = colour * 0.25;",
-				
+
 				THREE.ShaderChunk[ "hdr_encode_fragment" ],
-				
+
 			"}",
 		].join('\n')
 
@@ -84714,7 +84027,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 76 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84785,7 +84098,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 77 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84843,7 +84156,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 78 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84975,7 +84288,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 79 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85361,7 +84674,7 @@
 
 
 /***/ },
-/* 80 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85426,7 +84739,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 81 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85481,7 +84794,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 82 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85537,7 +84850,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85645,7 +84958,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 84 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85698,7 +85011,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 85 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85752,7 +85065,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 86 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85817,7 +85130,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 87 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85892,7 +85205,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 88 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85993,7 +85306,7 @@
 
 
 /***/ },
-/* 89 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86086,7 +85399,7 @@
 
 
 /***/ },
-/* 90 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86197,7 +85510,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 91 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86295,7 +85608,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 92 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86377,7 +85690,7 @@
 
 
 /***/ },
-/* 93 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86415,7 +85728,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 94 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86456,7 +85769,7 @@
 			"#endif",
 
 			"uniform sampler2D tDiffuse;",
-			
+
 			"varying vec2 vUv;",
 
 			THREE.ShaderChunk['hdr_decode_pars_fragment'],
@@ -86465,7 +85778,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-				
+
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"gl_FragColor = vec4( HDRDecodeLOGLUV( texel ), 1.0 );",
@@ -86500,7 +85813,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 95 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86569,7 +85882,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 96 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86641,7 +85954,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 97 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86717,7 +86030,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 98 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86761,7 +86074,7 @@
 			"uniform sampler2D tDiffuse;",
 			"uniform float sides;",
 			"uniform float angle;",
-			
+
 			"varying vec2 vUv;",
 
 			"void main() {",
@@ -86785,7 +86098,7 @@
 
 
 /***/ },
-/* 99 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86833,7 +86146,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-				
+
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"texel.xyz = HDRDecodeLOGLUV( texel );",
@@ -86866,7 +86179,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 100 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86905,7 +86218,7 @@
 
 			"uniform sampler2D tDiffuse;",
 			"uniform int side;",
-			
+
 			"varying vec2 vUv;",
 
 			"void main() {",
@@ -86932,7 +86245,7 @@
 
 
 /***/ },
-/* 101 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86992,7 +86305,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 102 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87056,7 +86369,7 @@
 
 
 /***/ },
-/* 103 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87119,7 +86432,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 104 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87160,7 +86473,7 @@
 			"opacity": { type: "f", value: 1.0 }
 		},
 			// ] ),
-		
+
 
 		vertexShader: [
 
@@ -87416,7 +86729,7 @@
 
 
 /***/ },
-/* 105 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87501,7 +86814,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 106 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87548,7 +86861,7 @@
 			"varying vec2 vUv;",
 
 			"uniform float exposureBias;",
-			
+
 			"#ifdef SAMPLE_LUMINANCE",
 				"uniform sampler2D luminanceMap;",
 			"#else",
@@ -87572,12 +86885,12 @@
 		      "return ( ( x * ( A * x + C * B ) + D * E ) / ( x * ( A * x + B ) + D * F ) ) - E / F;",
 		    "}",
 		  // #endif
-			
+
 			"const vec3 LUM_CONVERT = vec3(0.299, 0.587, 0.114);",
 
 			"vec3 ToneMap( vec3 vColor ) {",
 				"#ifdef SAMPLE_LUMINANCE",
-					// Get the calculated average luminance 
+					// Get the calculated average luminance
 					"vec4 lumAvg = texture2D(luminanceMap, vUv);",
 					"float fLumAvg = lumAvg.r;",
 					"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
@@ -87594,7 +86907,7 @@
 				"#else",
 					"float fLumAvg = averageLuminance;",
 				"#endif",
-				
+
 				// "#if defined( FILMIC_UC2 )",
 				"#ifdef ADAPT_WHITE_BALANCE",
 					"vec3 maxLum = texture2D( maxLuminanceRT, vUv ).rgb;",
@@ -87607,9 +86920,9 @@
 				"vec3 curr = UC2Tonemap( (exposureBias / (fLumAvg + 0.025)) * vColor );",
 				// "vec3 curr = UC2Tonemap( exposureBias * vColor );",
 				// "vec3 whiteScale = 1.0 / UC2Tonemap(white);",
-				
+
 				"return curr * white;",
-	            
+
 				// "#else",//Reinhard Tonemapping
 				// 	// Calculate the luminance of the current pixel
 				// 	"float fLumPixel = dot(vColor, LUM_CONVERT);",
@@ -87625,7 +86938,7 @@
 			"void main() {",
 
 				"vec4 texel = texture2D( tDiffuse, vUv );",
-				
+
 				"#if defined( HDR_INPUT ) && defined( HDR_INPUT_TYPE )",
 					"#if ( HDR_INPUT_TYPE == HDR_TYPE_LOGLUV )",
 						"gl_FragColor = vec4( ToneMap( HDRDecodeLOGLUV( texel ) ), 1.0 );",
@@ -87654,7 +86967,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 107 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87718,7 +87031,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 108 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87818,7 +87131,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87887,7 +87200,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 110 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87959,7 +87272,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88030,7 +87343,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 112 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88085,7 +87398,7 @@
 
 
 /***/ },
-/* 113 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88713,7 +88026,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 114 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89289,7 +88602,7 @@
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 115 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89364,7 +88677,7 @@
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 116 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89448,7 +88761,7 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 117 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89467,7 +88780,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(118);
+	var _JSONLoader = __webpack_require__(116);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -89569,12 +88882,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 118 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(3), __webpack_require__(119)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(3), __webpack_require__(117)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -89702,14 +89015,14 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 119 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(120);
-	var v1 = __webpack_require__(121);
-	var v2 = __webpack_require__(122);
+	var _ = __webpack_require__(118);
+	var v1 = __webpack_require__(119);
+	var v2 = __webpack_require__(120);
 
 	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
 	  'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
@@ -90037,7 +89350,7 @@
 
 
 /***/ },
-/* 120 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -91386,12 +90699,12 @@
 
 
 /***/ },
-/* 121 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(120);
+	var _ = __webpack_require__(118);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -91449,13 +90762,13 @@
 
 
 /***/ },
-/* 122 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(120);
-	var uuid = __webpack_require__(123);
+	var _ = __webpack_require__(118);
+	var uuid = __webpack_require__(121);
 
 	/**
 	 * Returns the basename of a filename (i.e., the final element in the path).
@@ -91536,7 +90849,7 @@
 
 
 /***/ },
-/* 123 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(Buffer) {//     uuid.js
@@ -91597,7 +90910,7 @@
 	    // Moderately fast, high quality
 	    if (true) {
 	      try {
-	        var _rb = __webpack_require__(128).randomBytes;
+	        var _rb = __webpack_require__(126).randomBytes;
 	        _nodeRNG = _rng = _rb && function() {return _rb(16);};
 	        _rng();
 	      } catch(e) {}
@@ -91812,10 +91125,10 @@
 	  }
 	})('undefined' !== typeof window ? window : null);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
 
 /***/ },
-/* 124 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -91828,9 +91141,9 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(125)
-	var ieee754 = __webpack_require__(126)
-	var isArray = __webpack_require__(127)
+	var base64 = __webpack_require__(123)
+	var ieee754 = __webpack_require__(124)
+	var isArray = __webpack_require__(125)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -93367,10 +92680,10 @@
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 125 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -93500,7 +92813,7 @@
 
 
 /***/ },
-/* 126 */
+/* 124 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -93590,7 +92903,7 @@
 
 
 /***/ },
-/* 127 */
+/* 125 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -93601,10 +92914,10 @@
 
 
 /***/ },
-/* 128 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(129)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(127)
 
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -93615,9 +92928,9 @@
 	    ].join('\n'))
 	}
 
-	exports.createHash = __webpack_require__(131)
+	exports.createHash = __webpack_require__(129)
 
-	exports.createHmac = __webpack_require__(143)
+	exports.createHmac = __webpack_require__(141)
 
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -93638,7 +92951,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 
-	var p = __webpack_require__(144)(exports)
+	var p = __webpack_require__(142)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 
@@ -93658,16 +92971,16 @@
 	  }
 	})
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
 
 /***/ },
-/* 129 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(130)
+	    g.crypto || g.msCrypto || __webpack_require__(128)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -93676,7 +92989,7 @@
 	      /* This will not work in older browsers.
 	       * See https://developer.mozilla.org/en-US/docs/Web/API/window.crypto.getRandomValues
 	       */
-	    
+
 	      _crypto.getRandomValues(bytes);
 	      return bytes;
 	    }
@@ -93691,22 +93004,22 @@
 	  }
 	}())
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(122).Buffer))
 
 /***/ },
-/* 130 */
+/* 128 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 131 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(132)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(130)
 
-	var md5 = toConstructor(__webpack_require__(140))
-	var rmd160 = toConstructor(__webpack_require__(142))
+	var md5 = toConstructor(__webpack_require__(138))
+	var rmd160 = toConstructor(__webpack_require__(140))
 
 	function toConstructor (fn) {
 	  return function () {
@@ -93734,10 +93047,10 @@
 	  return createHash(alg)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
 
 /***/ },
-/* 132 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -93746,16 +93059,16 @@
 	  return new Alg()
 	}
 
-	var Buffer = __webpack_require__(124).Buffer
-	var Hash   = __webpack_require__(133)(Buffer)
+	var Buffer = __webpack_require__(122).Buffer
+	var Hash   = __webpack_require__(131)(Buffer)
 
-	exports.sha1 = __webpack_require__(134)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(138)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(139)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(132)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(136)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(137)(Buffer, Hash)
 
 
 /***/ },
-/* 133 */
+/* 131 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -93838,7 +93151,7 @@
 
 
 /***/ },
-/* 134 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -93850,7 +93163,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 
-	var inherits = __webpack_require__(135).inherits
+	var inherits = __webpack_require__(133).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -93982,7 +93295,7 @@
 
 
 /***/ },
-/* 135 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -94510,7 +93823,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(136);
+	exports.isBuffer = __webpack_require__(134);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -94554,7 +93867,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(137);
+	exports.inherits = __webpack_require__(135);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -94572,10 +93885,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(64)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(62)))
 
 /***/ },
-/* 136 */
+/* 134 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -94586,7 +93899,7 @@
 	}
 
 /***/ },
-/* 137 */
+/* 135 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -94615,10 +93928,10 @@
 
 
 /***/ },
-/* 138 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
-	
+
 	/**
 	 * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
 	 * in FIPS 180-2
@@ -94627,7 +93940,7 @@
 	 *
 	 */
 
-	var inherits = __webpack_require__(135).inherits
+	var inherits = __webpack_require__(133).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -94768,10 +94081,10 @@
 
 
 /***/ },
-/* 139 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(135).inherits
+	var inherits = __webpack_require__(133).inherits
 
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -95018,7 +94331,7 @@
 
 
 /***/ },
-/* 140 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -95030,7 +94343,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 
-	var helpers = __webpack_require__(141);
+	var helpers = __webpack_require__(139);
 
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -95179,7 +94492,7 @@
 
 
 /***/ },
-/* 141 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -95217,10 +94530,10 @@
 
 	module.exports = { hash: hash };
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
 
 /***/ },
-/* 142 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -95429,13 +94742,13 @@
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
 
 /***/ },
-/* 143 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(131)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(129)
 
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -95479,13 +94792,13 @@
 	}
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
 
 /***/ },
-/* 144 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(145)
+	var pbkdf2Export = __webpack_require__(143)
 
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -95500,7 +94813,7 @@
 
 
 /***/ },
-/* 145 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -95588,10 +94901,10 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(122).Buffer))
 
 /***/ },
-/* 146 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95645,8 +94958,6 @@
 
 	    /** @inheritdoc */
 	    value: function unload(options) {
-	      _get(Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
-
 	      if (this.runtimeData) {
 	        this.box3DRuntime.trigger('imageUnloaded', this.id);
 
@@ -95654,6 +94965,8 @@
 	      }
 
 	      this.loadedBytes = 0;
+
+	      _get(Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /** @inheritdoc */
@@ -95902,7 +95215,7 @@
 	exports.default = ImageAsset;
 
 /***/ },
-/* 147 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96141,7 +95454,7 @@
 	exports.default = VideoAsset;
 
 /***/ },
-/* 148 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96164,7 +95477,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(149);
+	var _BaseGeometryAsset2 = __webpack_require__(147);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -96594,7 +95907,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 149 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96843,7 +96156,7 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 150 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96864,7 +96177,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(149);
+	var _BaseGeometryAsset2 = __webpack_require__(147);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -97063,7 +96376,7 @@
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 151 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97159,7 +96472,7 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 152 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97174,7 +96487,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _ImageAsset = __webpack_require__(146);
+	var _ImageAsset = __webpack_require__(144);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97182,7 +96495,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(153);
+	var _BaseRenderTextureAsset = __webpack_require__(151);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97236,7 +96549,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 153 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97253,7 +96566,7 @@
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _ImageAsset = __webpack_require__(146);
+	var _ImageAsset = __webpack_require__(144);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97390,7 +96703,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 154 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97407,7 +96720,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _ImageAsset = __webpack_require__(146);
+	var _ImageAsset = __webpack_require__(144);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97415,7 +96728,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(153);
+	var _BaseRenderTextureAsset = __webpack_require__(151);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97482,7 +96795,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 155 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97788,7 +97101,7 @@
 	exports.default = SceneAsset;
 
 /***/ },
-/* 156 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97813,11 +97126,11 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(157);
+	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(155);
 
 	var _Box3DShaderPBR_MetalRoughness2 = _interopRequireDefault(_Box3DShaderPBR_MetalRoughness);
 
-	var _Box3DShaderPBR_SpecGloss = __webpack_require__(161);
+	var _Box3DShaderPBR_SpecGloss = __webpack_require__(159);
 
 	var _Box3DShaderPBR_SpecGloss2 = _interopRequireDefault(_Box3DShaderPBR_SpecGloss);
 
@@ -98051,12 +97364,12 @@
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 157 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(158), __webpack_require__(159), __webpack_require__(160)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(156), __webpack_require__(157), __webpack_require__(158)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -98116,7 +97429,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 158 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -99251,24 +98564,24 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 159 */
+/* 157 */
 /***/ function(module, exports) {
 
 	module.exports = "\r\n/**\r\n * Shader used as a Box3D material type\r\n *\r\n * Written by Mike Bond\r\n */\r\n#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\tattribute vec4 tangent;\r\n#endif\r\n\r\nattribute vec2 uv2;\r\n\r\nuniform float time;\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n\tuniform float logDepthBufFC;\r\n#endif\r\n\r\n#ifdef DISPLACEMENT_MAP_RGBA\r\n\tuniform float displacementMag;\r\n\tuniform float displacementBias;\r\n\tuniform sampler2D displacementTexture;\r\n\tuniform int displacementUVChannel;\r\n\tuniform vec2 displacementTextureOffset;\r\n\tuniform vec2 displacementTextureScale;\r\n\tuniform vec2 displacementTexturePan;\r\n#endif\r\n\r\nvarying vec4 vNormal_VS;\r\n\r\n#if ( defined(NORMAL_MAP) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\nvarying vec4 vTangent_VS;\r\nvarying vec4 vBinormal_VS;\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(ROUGHNESS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR ) && defined( ALBEDO )\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tuniform mat4 bindMatrix;\r\n\tuniform mat4 bindMatrixInverse;\r\n\r\n\t#ifdef BONE_TEXTURE\r\n\r\n\t\tuniform sampler2D boneTexture;\r\n\t\tuniform int boneTextureWidth;\r\n\t\tuniform int boneTextureHeight;\r\n\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tfloat j = i * 4.0;\r\n\t\t\tfloat x = mod( j, float( boneTextureWidth ) );\r\n\t\t\tfloat y = floor( j / float( boneTextureHeight ) );\r\n\r\n\t\t\tfloat dx = 1.0 / float( boneTextureWidth );\r\n\t\t\tfloat dy = 1.0 / float( boneTextureHeight );\r\n\r\n\t\t\ty = dy * ( y + 0.5 );\r\n\r\n\t\t\tvec4 v1 = texture2D( boneTexture, vec2( dx * ( x + 0.5 ), y ) );\r\n\t\t\tvec4 v2 = texture2D( boneTexture, vec2( dx * ( x + 1.5 ), y ) );\r\n\t\t\tvec4 v3 = texture2D( boneTexture, vec2( dx * ( x + 2.5 ), y ) );\r\n\t\t\tvec4 v4 = texture2D( boneTexture, vec2( dx * ( x + 3.5 ), y ) );\r\n\r\n\t\t\tmat4 bone = mat4( v1, v2, v3, v4 );\r\n\r\n\t\t\treturn bone;\r\n\t\t}\r\n\t#else\r\n\r\n\t\tuniform mat4 boneGlobalMatrices[ NUM_BONES ];\r\n\t\tmat4 getBoneMatrix( const in float i ) {\r\n\r\n\t\t\tmat4 bone = boneGlobalMatrices[ int(i) ];\r\n\t\t\treturn bone;\r\n\t\t}\r\n\r\n\t#endif\r\n#endif\r\n\r\n//Only for m * v (not v * m!)\r\nvec3 mulVectorByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn (v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] ) )).xyz;\r\n}\r\n\r\n//Only for m * p (not p * m!)\r\nvec4 mulPointByMatrix4x4( in vec3 v, in mat4 m ) {\r\n\treturn v.x * m[0] + ( v.y * m[1] + ( v.z * m[2] + m[3] ) );\r\n}\r\n\r\n\r\n\r\nvoid main() {\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) || defined( EMISSIVE_MAP ) || defined( SSS_MAP ) || defined( DISPLACEMENT_MAP_RGBA ) || defined( AO_MAP )\r\n\tvUv.xy = uv;\r\n\tvUv.y = 1.0 - vUv.y;\r\n\tvUv.zw = uv2;\r\n\tvUv.w = 1.0 - vUv.w;\r\n#endif\r\n\r\n#if defined( DISPLACEMENT_MAP_RGBA )\r\n\tfloat texDisplacement = 0.0;\r\n\t#if ( DISPLACEMENT_MAP_RGBA == 0 )\r\n\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\t\ttexDisplacement = displacementMag * displacementMap.x + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\r\n\t#elif ( DISPLACEMENT_MAP_RGBA == 1 )\r\n\t\t#define DISPLACEMENT_WITH_NORMAL\r\n\t\tvec2 displacementUV = vUv.xy * displacementTextureScale + displacementTextureOffset + displacementTexturePan * time;\r\n\t\tvec4 displacementMap = texture2D( displacementTexture, displacementUV );\r\n\r\n\t\ttexDisplacement = displacementMag * displacementMap.a + displacementMag * (displacementBias * 0.5 - 0.5);\r\n\t#endif\r\n\tvec4 displacedPosition = vec4( (normal * texDisplacement ) + position.xyz, 1.0 );\r\n#else\r\n\tvec4 displacedPosition = vec4( position, 1.0 );\r\n\r\n#endif\r\n\r\n\r\nhighp vec3 vNormal = normal;\r\n#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\thighp vec3 vTangent = tangent.xyz;\r\n#endif\r\n\r\n#ifdef USE_SKINNING\r\n\r\n\tmat4 boneMatX = getBoneMatrix( skinIndex.x );\r\n\tmat4 boneMatY = getBoneMatrix( skinIndex.y );\r\n\tmat4 boneMatZ = getBoneMatrix( skinIndex.z );\r\n\tmat4 boneMatW = getBoneMatrix( skinIndex.w );\r\n\r\n\tmat4 skinMatrix = mat4( 0.0 );\r\n        skinMatrix += skinWeight.x * boneMatX;\r\n\tskinMatrix += skinWeight.y * boneMatY;\r\n\tskinMatrix += skinWeight.z * boneMatZ;\r\n\tskinMatrix += skinWeight.w * boneMatW;\r\n        skinMatrix  = bindMatrixInverse * skinMatrix * bindMatrix;\r\n\r\n\tvNormal = (skinMatrix * vec4( vNormal, 0.0 )).xyz;\r\n\t#if ( defined( NORMAL_MAP ) && defined(USE_TANGENTS) || defined( DISPLACEMENT_MAP_RGBA ) ) && !defined( DEPTH_PASS )\r\n\t\tvTangent = (skinMatrix * vec4( vTangent, 0.0 )).xyz;\r\n\t#endif\r\n\r\n\tvec4 skinVertex    = bindMatrix * displacedPosition;\r\n\tdisplacedPosition  = boneMatX * skinVertex * skinWeight.x;\r\n\tdisplacedPosition += boneMatY * skinVertex * skinWeight.y;\r\n\tdisplacedPosition += boneMatZ * skinVertex * skinWeight.z;\r\n\tdisplacedPosition += boneMatW * skinVertex * skinWeight.w;\r\n\tdisplacedPosition  = bindMatrixInverse * displacedPosition;\r\n#endif\r\n\r\nvPosition_VS = modelViewMatrix * displacedPosition;\r\n\r\n#ifdef USE_BILLBOARDING\r\n\tgl_Position = projectionMatrix * (viewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + modelViewMatrix * displacedPosition );\r\n#else\r\n\tgl_Position = projectionMatrix * modelViewMatrix * displacedPosition;\r\n#endif\r\n\r\n#if defined( USE_LOGDEPTHBUF ) && !defined(DEPTH_PASS)\r\n\tgl_Position.z = log2(max(1e-6, gl_Position.w + 1.0)) * logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvFragDepth = 1.0 + gl_Position.w;\r\n\t#else\r\n\t\tgl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;\r\n\t#endif\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\t#if defined( USE_COLOR )\r\n\t\t#if defined( ALBEDO )\r\n\t\t\t#ifdef GAMMA_INPUT\r\n\t\t\t\tvColor = color * color;\r\n\t\t\t#else\r\n\t\t\t\tvColor = color;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#endif\r\n\r\n\tvNormal_VS.xyz = normalMatrix * vNormal;\r\n\r\n\t#ifdef FLIP_SIDED\r\n\t\tvNormal_VS = -vNormal_VS;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\r\n\t\t#if defined( NORMAL_MAP ) && defined(USE_TANGENTS)\r\n\t\t\tvTangent_VS.xyz = normalMatrix * vTangent.xyz;\r\n\t\t\tvBinormal_VS.xyz = cross( vNormal_VS.xyz, vTangent_VS.xyz ) * tangent.w;\r\n\t\t#endif\r\n\r\n\t#endif\r\n#endif\r\n}"
 
 /***/ },
-/* 160 */
+/* 158 */
 /***/ function(module, exports) {
 
 	module.exports = "/**\r\n * Box3D Uber Shader\r\n *\r\n * Written by Mike Bond\r\n * August 2015\r\n */\r\n\r\nuniform float time;\r\nuniform int renderModeNormals;\r\nuniform float opacity;\r\n#define PI 3.14159265359\r\n\r\n#ifdef USE_LOGDEPTHBUF\r\n\tuniform float logDepthBufFC;\r\n\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\tvarying float vFragDepth;\r\n\t#endif\r\n#endif\r\n\r\n#ifdef ALBEDO\r\nuniform vec3 baseAlbedo;\r\n#else\r\nconst vec3 baseAlbedo = vec3(0.0);\r\n#endif\r\n\r\n#ifdef ALBEDO_MAP\r\n\tuniform sampler2D albedoMap;\r\n#endif\r\n#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\tuniform int albedoMapUVChannel;\r\n#endif\r\n#ifdef ALBEDO_MAP_OFFSET\r\n\tuniform vec2 albedoMapOffset;\r\n#endif\r\n#ifdef ALBEDO_MAP_SCALE\r\n\tuniform vec2 albedoMapScale;\r\n#endif\r\n#ifdef ALBEDO_MAP_PAN\r\n\tuniform vec2 albedoMapPan;\r\n#endif\r\n\r\n#ifdef ALPHA_MAP\r\n\tuniform sampler2D alphaMap;\r\n#endif\r\n#ifdef ALPHA_MAP_UV_CHANNEL\r\n\tuniform int alphaMapUVChannel;\r\n#endif\r\n#ifdef ALPHA_MAP_OFFSET\r\n\tuniform vec2 alphaMapOffset;\r\n#endif\r\n#ifdef ALPHA_MAP_SCALE\r\n\tuniform vec2 alphaMapScale;\r\n#endif\r\n#ifdef ALPHA_MAP_PAN\r\n\tuniform vec2 alphaMapPan;\r\n#endif\r\n\r\n#ifdef SPECULAR_COLOR\r\n\tuniform vec3 specularColor;\r\n#endif\r\n#ifdef SPECULAR_MAP\r\n\tuniform sampler2D specularMap;\r\n#endif\r\n\r\n#ifdef METALNESS\r\nuniform float metalness;\r\n#endif\r\n#ifdef METALNESS_MAP\r\n\tuniform sampler2D metalnessMap;\r\n#endif\r\n\r\n#ifdef GLOSS\r\n\tuniform float gloss;\r\n#endif\r\n#ifdef GLOSS_MAP\r\n\tuniform sampler2D glossMap;\r\n#endif\r\n\r\n#ifdef ROUGHNESS\r\n\tuniform float roughness;\r\n#endif\r\n\r\n#ifdef SPECULAR\r\n\tuniform float reflectivityF0;\r\n#endif\r\n\r\n#ifdef ROUGHNESS_MAP\r\n\tuniform sampler2D roughnessMap;\r\n#endif\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#ifdef AO_MAP\r\n\tuniform sampler2D aoMap;\r\n\tuniform int aoUVChannel;\r\n\tuniform vec2 aoMapOffset;\r\n\tuniform vec2 aoMapScale;\r\n\tuniform vec2 aoMapPan;\r\n\t#endif\r\n\r\n#endif\r\n\r\n\r\n#if !defined( DEPTH_PASS )\r\n\r\n\tuniform vec4 screenDimensions;\r\n\r\n\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\tuniform float reflectionFresnel;\r\n\t\t#ifdef ENVIRONMENT_MAP_CUBE_0\r\n\t\t\tuniform samplerCube environmentMapCube_0;\r\n\t\t\tuniform samplerCube environmentMapCube_1;\r\n\t\t\tuniform samplerCube environmentMapCube_2;\r\n\t\t#elif defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\tuniform sampler2D environmentMap2D_0;\r\n\t\t\tuniform sampler2D environmentMap2D_1;\r\n\t\t\tuniform sampler2D environmentMap2D_2;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\tvarying vec3 vColor;\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\tuniform float normalScale;\r\n\t\tuniform sampler2D normalMap;\r\n\t\tuniform int normalUVChannel;\r\n\t\tuniform vec2 normalMapOffset;\r\n\t\tuniform vec2 normalMapScale;\r\n\t\tuniform vec2 normalMapPan;\r\n\t\tuniform bool flipNormalY;\r\n\t\tuniform bool flipNormalX;\r\n\t\t#ifdef PARALLAX_MAPPING\r\n\t\t\tuniform float parallaxScale;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef BUMP_MAP\r\n\t\tuniform float bumpScale;\r\n\t\tuniform sampler2D bumpMap;\r\n\t\tuniform int bumpUVChannel;\r\n\t\tuniform vec2 bumpMapOffset;\r\n\t\tuniform vec2 bumpMapScale;\r\n\t\tuniform vec2 bumpMapPan;\r\n\t#endif\r\n\r\n\t#ifdef EMISSIVE\r\n\t\tuniform float emissiveIntensity;\r\n\t\t#ifdef EMISSIVE_COLOR\r\n\t\tuniform vec3 emissiveColor;\r\n\t\t#endif\r\n\t\t#ifdef EMISSIVE_MAP\r\n\t\tuniform sampler2D emissiveMap;\r\n\t\tuniform int emissiveUVChannel;\r\n\t\tuniform vec2 emissiveMapOffset;\r\n\t\tuniform vec2 emissiveMapScale;\r\n\t\tuniform vec2 emissiveMapPan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n\t#ifdef SCATTERING\r\n\t\t#ifdef TRANSLUCENT_SCATTERING\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterScale;\r\n\t\t#elif defined( LOCAL_SCATTERING )\r\n\t\tuniform vec3 scatterColor;\r\n\t\tuniform float scatterLocalScale;\r\n\t\t#endif\r\n\r\n\t\t#ifdef SSS_TEXTURE\r\n\t\tuniform sampler2D sssTexture;\r\n\t\tuniform int sssUVChannel;\r\n\t\tuniform vec2 sssTextureOffset;\r\n\t\tuniform vec2 sssTextureScale;\r\n\t\tuniform vec2 sssTexturePan;\r\n\t\t#endif\r\n\t#endif\r\n\r\n#endif\r\n\r\n#if defined(ALBEDO_MAP) || defined(ALPHA_MAP) || defined(GLOSS_MAP) || defined(ROUGHNESS_MAP) || defined(SPECULAR_MAP) || defined(METALNESS_MAP) || defined(NORMAL_MAP) || defined(BUMP_MAP) ||defined( EMISSIVE_MAP ) || defined( SSS_TEXTURE ) || defined( DISPLACEMENT_WITH_NORMAL ) || defined( AO_MAP )\r\n\tvarying vec4 vUv;\r\n#endif\r\n\r\nvarying vec4 vPosition_VS;\r\n\r\n#if !defined( DEPTH_PASS )\r\n\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\tvarying vec4 vTangent_VS;\r\n\t\tvarying vec4 vBinormal_VS;\r\n\r\n\t#endif\r\n\r\n\tvarying vec4 vNormal_VS;\r\n\r\n\tuniform vec3 ambientLightColor;\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t#if NUM_DIR_LIGHTS > 0\r\n\t\t\tuniform vec3 directionalLightColor[ NUM_DIR_LIGHTS ];\r\n\t\t\tuniform vec3 directionalLightDirection[ NUM_DIR_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t\t#if NUM_POINT_LIGHTS > 0\r\n\t\t\tuniform vec3 pointLightPosition[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform float pointLightDistance[ NUM_POINT_LIGHTS ];\r\n\t\t\tuniform vec3 pointLightColor[ NUM_POINT_LIGHTS ];\r\n\t\t#endif\r\n\r\n\t#endif\r\n\r\n\t#ifdef USE_FOG\r\n\t\tuniform lowp vec3 fogColor;\r\n\t\tuniform highp float fogDensity;\r\n\t#endif\r\n\r\n\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t// From http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/\r\n\t\tvec2 LightingFuncGGX_FV(float dotLH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\r\n\t\t\t// F\r\n\t\t\tfloat F_a, F_b;\r\n\t\t\tfloat dotLH5 = pow(1.0-dotLH,5.0);\r\n\t\t\tF_a = 1.0;\r\n\t\t\tF_b = dotLH5;\r\n\r\n\t\t\t// V\r\n\t\t\tfloat vis;\r\n\t\t\tfloat k = alpha/2.0;\r\n\t\t\tfloat k2 = k*k;\r\n\t\t\tfloat invK2 = 1.0-k2;\r\n\t\t\tvis = 1.0 / (dotLH*dotLH*invK2 + k2);\r\n\r\n\t\t\treturn vec2(F_a*vis,F_b*vis);\r\n\t\t}\r\n\r\n\t\tfloat LightingFuncGGX_D(float dotNH, float roughness)\r\n\t\t{\r\n\t\t\tfloat alpha = roughness*roughness;\r\n\t\t\tfloat alphaSqr = alpha*alpha;\r\n\t\t\tfloat pi = 3.14159;\r\n\t\t\tfloat denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0;\r\n\r\n\t\t\tfloat D = alphaSqr/(pi * denom * denom);\r\n\t\t\treturn D;\r\n\t\t}\r\n\r\n\t\tfloat SpecularFuncGGX( in float roughness, in float dotNH, in float dotLH, in float dotNL, in float F0 )\r\n\t\t{\r\n\t\t\tdotNH = clamp( dotNH, 0.0, 1.0 );\r\n\t\t  dotLH = clamp( dotLH, 0.0, 1.0 );\r\n\t\t  dotNL = clamp( dotNL, 0.0, 1.0 );\r\n\r\n\t\t\tfloat D = LightingFuncGGX_D(dotNH,roughness);\r\n\t\t\tvec2 FV_helper = LightingFuncGGX_FV(dotLH,roughness);\r\n\t\t\tfloat FV = F0*FV_helper.x + (1.0-F0)*FV_helper.y;\r\n\t\t\tfloat specular = dotNL * D * FV;\r\n\r\n\t\t\treturn specular;\r\n\t\t}\r\n\r\n\r\n\t#endif\r\n\r\n\t#ifdef NORMAL_MAP\r\n\t\t// Per-Pixel Tangent Space Normal Mapping\r\n\t\t// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\r\n\r\n\t\tmat3 getTSMatrix( vec3 eye_pos, vec3 surf_norm ) {\r\n\r\n\t\t\tvec3 q0 = dFdx( eye_pos.xyz );\r\n\t\t\tvec3 q1 = dFdy( eye_pos.xyz );\r\n\t\t\tvec2 st0 = dFdx( vUv.st );\r\n\t\t\tvec2 st1 = dFdy( vUv.st );\r\n\r\n\t\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\r\n\t\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\r\n\t\t\tvec3 N = surf_norm;\r\n\r\n\t\t\tmat3 tsn = mat3( T, S, N );\r\n\t\t\treturn tsn;\r\n\r\n\t\t}\r\n\t#elif defined(BUMP_MAP)\r\n\r\n\t\tvec3 perturbNormal( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\r\n\r\n\t\t\tvec3 vSigmaX = dFdx( surf_pos );\r\n\t\t\tvec3 vSigmaY = dFdy( surf_pos );\r\n\t\t\tvec3 vN = surf_norm;\t\t// normalized\r\n\r\n\t\t\tvec3 R1 = cross( vSigmaY, vN );\r\n\t\t\tvec3 R2 = cross( vN, vSigmaX );\r\n\r\n\t\t\tfloat fDet = dot( vSigmaX, R1 );\r\n\r\n\t\t\tvec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\r\n\t\t\treturn normalize( abs( fDet ) * surf_norm - vGrad );\r\n\r\n\t\t}\r\n\t#endif\r\n\r\n\t#ifdef LOCAL_SCATTERING\r\n\t\tvoid calculateLocalScattering( \tin vec3 lightDirection, in float NdotL,\tout float albedoWeight, in vec3 normal_Scatter, out float scatterWeight ) {\r\n\r\n\t\t\tfloat NdotL_Scatter = dot( normal_Scatter, lightDirection );\r\n\t\t\tfloat albedoWeightHalf = clamp( 0.5 * NdotL_Scatter + 0.5, 0.0, 1.0 );\r\n\r\n\t\t\tscatterWeight = albedoWeightHalf;\r\n\r\n\t\t\talbedoWeight = clamp( mix( NdotL_Scatter, NdotL, 0.15 ), 0.0, 1.0 );\r\n\t\t}\r\n\t#endif\r\n#endif\r\n\r\n#ifdef DEPTH_PASS\r\n\tvec4 pack_depth( const in float depth ) {\r\n\r\n\tconst vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );\r\n\tconst vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );\r\n\tvec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );\r\n\tres = res.xxyz * -bit_mask + res;\r\n\treturn res;\r\n\r\n}\r\n#endif\r\n\r\n#ifdef USE_ENVIRONMENT_MAP\r\nvec3 getReflectionFromRoughness(in vec3 ref0, in vec3 ref1, in vec3 ref2, in float roughness) {\r\n\tvec3 colour1, colour2;\r\n\tfloat interp = roughness * 2.0;\r\n\tif (roughness <= 0.5) {\r\n\t\tcolour1 = ref0;\r\n\t\tcolour2 = ref1;\r\n\t} else {\r\n\t\tinterp -= 1.0;\r\n\t\tcolour1 = ref1;\r\n\t\tcolour2 = ref2;\r\n\t}\r\n\treturn mix(colour1, colour2, interp);\r\n}\r\n#endif\r\n\r\nvoid main() {\r\n\r\n\t#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\r\n\t\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\r\n\t#endif\r\n\r\n\tvec2 uvOffset = vec2(0.0, 0.0);\r\n\tvec3 eyeVector_VS = normalize(vPosition_VS.xyz);\r\n\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\t#if defined(NORMAL_MAP)\r\n\t\t\tvec2 vNormalUv = vUv.xy;\r\n\t\t\tvec3 normalTex = texture2D( normalMap, vNormalUv + uvOffset ).xyz;\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tvec2 vBumpUv = vUv.xy;\r\n\t\t\t// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\r\n\t\t\t// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\r\n\r\n\t\t\t// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\r\n\r\n\t\t\tvec2 dSTdx = dFdx(vBumpUv);\r\n\t\t\tvec2 dSTdy = dFdy(vBumpUv);\r\n\r\n\t\t\tfloat Hll = bumpScale * texture2D( bumpMap, vBumpUv ).x;\r\n\t\t\tfloat dBx = bumpScale * texture2D( bumpMap, vBumpUv + dSTdx ).x - Hll;\r\n\t\t\tfloat dBy = bumpScale * texture2D( bumpMap, vBumpUv + dSTdy ).x - Hll;\r\n\r\n\t\t\tvec2 dHdxy = vec2( dBx, dBy );\r\n\r\n\t\t#endif\r\n\t#endif\r\n\t#if defined( ALBEDO_MAP )\r\n\t\t#ifdef ALBEDO_MAP_UV_CHANNEL\r\n\t\t\t#if (ALBEDO_MAP_UV_CHANNEL == 0)\r\n\t\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t\t#else\r\n\t\t\t\tvec2 vDiffuseUv = vUv.zw;\r\n\t\t\t#endif\r\n\t\t#else\r\n\t\t\tvec2 vDiffuseUv = vUv.xy;\r\n\t\t#endif\r\n\t\t// TODO\r\n\t\t// vDiffuseUv = vDiffuseUv * albedoMapScale + albedoMapOffset + uvOffset + albedoMapPan * time;\r\n\t\tvec4 albedoTex = texture2D( albedoMap, vDiffuseUv );\r\n\t\t// Convert from sRGB to linear\r\n\t\t albedoTex.xyz *= albedoTex.xyz;\r\n\r\n\t#endif\r\n\tvec3 baseColor = vec3(0.0);\r\n\t#if !defined( DEPTH_PASS )\r\n\r\n\t\tvec3 totalDiffuse = vec3( 0.0, 0.0, 0.0 );\r\n\t\tvec3 totalSpecular = vec3( 0.0 );\r\n\t\tvec3 totalScatter = vec3( 0.0 );\r\n\r\n\t\t#ifdef SPECULAR\r\n\t\t\tfloat r0Value = reflectivityF0;\r\n\t\t#endif\r\n\t\t#if defined(SPECULAR_MAP)\r\n\t\t  #ifdef SPECULAR_MAP_UV_CHANNEL\r\n\t\t\t\t#if (SPECULAR_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vSpecularUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vSpecularUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 specularTex = texture2D(specularMap, vSpecularUv);\r\n\t\t#endif\r\n\t\t#if defined(METALNESS_MAP)\r\n\t\t  #ifdef METALNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (METALNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vMetalnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vMetalnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tvec4 metalnessTex = texture2D(metalnessMap, vMetalnessUv);\r\n\t\t\t#ifdef METALNESS\r\n\t\t\tfloat metalnessValue = metalnessTex.x * metalness;\r\n\t\t\t#else\r\n\t\t\tfloat metalnessValue = metalnessTex.x;\r\n\t\t\t#endif\r\n\t\t#elif defined(METALNESS)\r\n\t\t\tfloat metalnessValue = metalness;\r\n\t\t#else\r\n\t\t\tfloat metalnessValue = 0.0;\r\n\t\t#endif\r\n\r\n\t\t#if defined( EMISSIVE_MAP )\r\n\t\t\t// vec2 vEmissiveUv = mix( vUv.xy, vUv.zw, float(emissiveUVChannel) );\r\n\t\t\t// vEmissiveUv = vEmissiveUv * emissiveMapScale + emissiveMapOffset + uvOffset + emissiveMapPan * time;\r\n\t\t\tvec3 emissiveTex = texture2D( emissiveMap, vUv.xy ).xyz;\r\n\t\t\t// Convert from sRGB to linear\r\n\t\t\temissiveTex *= emissiveTex;\r\n\t\t#endif\r\n\t\t#if defined( AO_MAP )\r\n\t\t\t// vec2 vAOUv = mix( vUv.xy, vUv.zw, float(aoUVChannel) );\r\n\t\t\t// vAOUv = vAOUv * aoMapScale + aoMapOffset + uvOffset + aoMapPan * time;\r\n\t\t\tvec3 aoTex = texture2D( aoMap, vUv.xy).xyz;\r\n\t\t#endif\r\n\t\t#if defined( SCATTERING ) && defined( SSS_TEXTURE )\r\n\t\t\tvec2 vSSSUv = mix( vUv.xy, vUv.zw, float(sssUVChannel) );\r\n\t\t\tvSSSUv = vSSSUv * sssTextureScale + sssTextureOffset + uvOffset + sssTexturePan * time;\r\n\t\t\tvec3 sssTex = texture2D( sssTexture, vSSSUv).xyz;\r\n\t\t\t// Convert from sRGB to linear\r\n\t\t\tsssTex *= sssTex;\r\n\t\t#endif\r\n\r\n\t\tvec3 normal_VS = normalize(vNormal_VS.xyz);\r\n\t\t#if defined( NORMAL_MAP )\r\n\t\t\tnormalTex.xy = normalTex.xy * 2.0 - 1.0;\r\n\r\n\t\t\tif ( flipNormalY ) {\r\n\t\t  \tnormalTex *= vec3( 1.0, -1.0, 1.0 );\r\n\t\t  }\r\n\t\t  if ( flipNormalX ) {\r\n\t\t  \tnormalTex *= vec3( -1.0, 1.0, 1.0 );\r\n\t\t  }\r\n\r\n\t\t\tnormalTex.xy *= normalScale;\r\n\r\n\t\t\t//Transform the normal to view space so that we can do lighting calculations, sample the environment map, etc.\r\n\t\t\t#if defined(NORMAL_MAP) && defined(USE_TANGENTS)\r\n\t\t\t\tmat3 T2V_Transform = mat3(normalize(vTangent_VS.xyz), normalize(vBinormal_VS.xyz), normal_VS);\r\n\t\t\t#elif defined(NORMAL_MAP)\r\n\t\t\t\tmat3 T2V_Transform = getTSMatrix(eyeVector_VS, normal_VS);\r\n\t\t\t#endif\r\n\t\t\tnormal_VS = T2V_Transform * normalTex;\r\n\r\n\t\t#elif defined(BUMP_MAP)\r\n\t\t\tnormal_VS = perturbNormal(vPosition_VS.xyz, normal_VS, dHdxy);\r\n\t\t#endif\r\n\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\tvec3 normal_Scatter = normal_VS;\r\n\t\t#endif\r\n\r\n\t\t#ifdef DOUBLE_SIDED\r\n\t\t\tnormal_VS = normal_VS * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\r\n\t\t#endif\r\n\t\tfloat NdotV = dot(-eyeVector_VS, normal_VS);\r\n\r\n\r\n\t\tfloat roughnessValue = 0.0;\r\n\t\t#ifdef GLOSS\r\n\t\t\troughnessValue = 1.0 - gloss;\r\n\t\t#elif defined(ROUGHNESS)\r\n\t\t\troughnessValue = roughness;\r\n\t\t#endif\r\n\t\t// float finalAlpha = opacity;\r\n\t\t#ifdef USE_GLOSS_FROM_SPECULAR_MAP\r\n\t\t\troughnessValue = 1.0 - gloss * specularTex.a;\r\n\t\t#elif defined(GLOSS_MAP)\r\n\t\t\t#ifdef GLOSS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (GLOSS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vGlossUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vGlossUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(glossMap, vGlossUv).x;\r\n\t\t\troughnessValue = 1.0 - gloss * roughnessTex;\r\n\t\t#elif defined(USE_ROUGHNESS_FROM_METALNESS_MAP)\r\n\t\t\tfloat roughnessTex = metalnessTex.a;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#elif defined(ROUGHNESS_MAP)\r\n\t\t\t#ifdef ROUGHNESS_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ROUGHNESS_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vRoughnessUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vRoughnessUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat roughnessTex = texture2D(roughnessMap, vRoughnessUv).x;\r\n\t\t\troughnessValue = min(roughnessValue + roughnessTex, 1.0);\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_ENVIRONMENT_MAP\r\n\t\t\tfloat mipBias = 0.0;\r\n\t\t\tvec3 envMapReflectedColor;\r\n\t\t\tvec3 envMapDiffuseColor;\r\n\r\n\t\t\t#if defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0)\r\n\t\t\t\tvec3 reflectedColor0 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor1 = vec3(0.0);\r\n\t\t\t\tvec3 reflectedColor2 = vec3(0.0);\r\n\t\t\t\tvec3 vEyeReflect_VS = reflect(eyeVector_VS, normal_VS );\r\n\t\t\t\t//Cube map reflection\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 sampleUV;\r\n\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( vReflect_WS.x, vReflect_WS.yz);\r\n\t\t\t\t\tmipBias = roughnessValue * 6.0;\r\n\t\t\t\t\treflectedColor0 = textureCube( environmentMapCube_0, sampleUV, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 3.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = textureCube( environmentMapCube_1, sampleUV, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 sampleUV;\r\n\t\t\t\t\t//Sphere map reflection\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 4 )\r\n\t\t\t\t\t\tvec3 reflect_SS = vEyeReflect_VS;\r\n\t\t\t\t\t\treflect_SS.z += 1.0;\r\n\t\t\t\t\t\tfloat temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));\r\n\t\t\t\t\t\treflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);\r\n\t\t\t\t\t\treflect_SS.y = 1.0 - reflect_SS.y;\r\n\t\t\t\t\t\tsampleUV.xy = reflect_SS.xy;\r\n\t\t\t\t\t//Equirectangular reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5 )\r\n\t\t\t\t\t\tvec3 vReflect_WS = (vec4(vEyeReflect_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( vReflect_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( vReflect_WS.z, vReflect_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\t\t\t\t\t//Planar reflection\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 6 )\r\n\t\t\t\t\t\tvec2 distort = vec4( normal_VS - vNormal_VS.xyz, 0.0 ).xy * -0.01;\r\n\t\t\t\t\t\tsampleUV.xy = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw + distort;\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tmipBias = roughnessValue * 10.0;\r\n\t\t\t\t\treflectedColor0 = texture2D( environmentMap2D_0, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\tmipBias = max(mipBias - 5.0, 0.0);\r\n\t\t\t\t\treflectedColor1 = texture2D( environmentMap2D_1, sampleUV.xy, mipBias).xyz;\r\n\t\t\t\t\treflectedColor2 = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\r\n\t\t\t\tenvMapReflectedColor = getReflectionFromRoughness(reflectedColor0, reflectedColor1, reflectedColor2, roughnessValue);\r\n\r\n\t\t\t\t//Cube map diffuse illumination\r\n\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 3 )\r\n\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\tsampleUV = vec3( normal_WS.x, normal_WS.yz);\r\n\t\t\t\t\tenvMapDiffuseColor = textureCube( environmentMapCube_2, sampleUV).xyz;\r\n\t\t\t\t#else\r\n\t\t\t\t\t// Diffuse illumination from classic light map\r\n\t\t\t\t\t#if ( ENVIRONMENT_MAP_PROJECTION == 1)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.xy;\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 2)\r\n\t\t\t\t\t\tsampleUV.xy = vUv.zw;\r\n\t\t\t\t\t//Equirectangular diffuse illumination\r\n\t\t\t\t\t#elif ( ENVIRONMENT_MAP_PROJECTION == 5)\r\n\t\t\t\t\t\tvec3 normal_WS = (vec4(normal_VS, 0.0) * viewMatrix).xyz;\r\n\t\t\t\t\t\tsampleUV.y = clamp( normal_WS.y * -0.5 + 0.5, 0.0, 1.0);\r\n\t\t      \tsampleUV.x = atan( normal_WS.z, normal_WS.x ) * 0.15915494309189533576888376337251 + 0.5; // reciprocal( 2 PI ) + 0.5\r\n\r\n\t\t\t\t\t#endif\r\n\t\t\t\t\tenvMapDiffuseColor = texture2D( environmentMap2D_2, sampleUV.xy).xyz;\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\tbaseColor = baseAlbedo;\r\n\r\n\t\t#if defined(USE_COLOR) && defined(ALBEDO)\r\n\t\t\tbaseColor *= vColor;\r\n\t\t#endif\r\n\r\n\t\t#if defined(SPECULAR_COLOR) && defined(SPECULAR_MAP)\r\n\t\tvec3 specularColorValue = specularTex.xyz * specularColor;\r\n\t\t#elif defined(SPECULAR_MAP)\r\n\t\t\tvec3 specularColorValue = specularTex.xyz;\r\n\t\t#elif defined(SPECULAR_COLOR)\r\n\t\t\tvec3 specularColorValue = specularColor;\r\n\t\t#else\r\n\t\t\tvec3 specularColorValue = vec3(1.0);\r\n\t\t#endif\r\n\r\n\t#endif //(#if !defined( DEPTH_PASS ))\r\n\t#if defined(BASE_ALBEDO) && defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz * baseColor;\r\n\t#elif defined(ALBEDO_MAP)\r\n\t\tvec3 albedoColorValue = albedoTex.xyz;\r\n\t#else\r\n\t\tvec3 albedoColorValue = baseColor;\r\n\t#endif\r\n\t#ifdef ALPHA_BLEND_MODE\r\n\t\tfloat finalAlpha = opacity;\r\n\t\t#ifdef USE_ALPHA_FROM_ALBEDO_MAP\r\n\t\t\tfloat textureAlpha = albedoTex.a;\r\n\t\t#elif defined(ALPHA_MAP)\r\n\t\t\t#ifdef ALPHA_MAP_UV_CHANNEL\r\n\t\t\t\t#if (ALPHA_MAP_UV_CHANNEL == 0)\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t\t#else\r\n\t\t\t\t\tvec2 vAlphaUv = vUv.zw;\r\n\t\t\t\t#endif\r\n\t\t\t#else\r\n\t\t\t\tvec2 vAlphaUv = vUv.xy;\r\n\t\t\t#endif\r\n\t\t\tfloat textureAlpha = texture2D(alphaMap, vAlphaUv).x;\r\n\t\t#else\r\n\t\t\tfloat textureAlpha = 1.0;\r\n\t\t#endif\r\n\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t#elif (ALPHA_BLEND_MODE == 1)\r\n\t\t\talbedoColorValue = mix(baseColor, albedoColorValue.xyz, textureAlpha);\r\n\t\t#elif (ALPHA_BLEND_MODE == 2)\r\n\t\t\tfinalAlpha *= textureAlpha;\r\n\t\t\t#if defined(ALPHATEST)\r\n\t\t\t\tif ( finalAlpha < float(ALPHATEST) ) discard;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\t#else\r\n\t\tfloat finalAlpha = 1.0;\r\n\t#endif\r\n\t#if defined(DEPTH_PASS )\r\n\t\tgl_FragColor = pack_depth( gl_FragCoord.z );\r\n\r\n\t#else\r\n\r\n\t\t#ifdef SCATTERING\r\n\t\t\t#ifdef SSS_TEXTURE\r\n\t\t\t\tvec3 scatterColorValue = scatterColor * sssTex;\r\n\t\t\t#else\r\n\t\t\t\tvec3 scatterColorValue = scatterColor;\r\n\t\t\t#endif\r\n\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\tscatterColorValue *= scatterLocalScale * 0.5;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#ifdef METALNESS\r\n\t\t\t#ifdef SPECULAR\r\n\t\t\t\tr0Value = mix(r0Value, 1.0, metalnessValue);\r\n\t\t\t#endif\r\n\t\t\tspecularColorValue = mix(specularColorValue, albedoColorValue, metalnessValue);\r\n\t\t\talbedoColorValue *= 1.0 - metalnessValue;\r\n\t\t#endif\r\n\r\n\t\t#ifdef USE_SCENE_LIGHTS\r\n\r\n\t\t\t// point lights\r\n\r\n\t\t\t#if NUM_POINT_LIGHTS > 0\r\n\r\n\t\t\t\tvec3 pointDiffuse;\r\n\r\n\t\t\t\tfor ( int p = 0; p < NUM_POINT_LIGHTS; p ++ ) {\r\n\r\n\t\t\t\t\tvec3 pointVector_VS = pointLightPosition[ p ] - vPosition_VS.xyz;\r\n\t\t\t\t\tfloat pointVecLength = length( pointVector_VS );\r\n\t\t\t\t\tfloat pointDistance = pow( saturate( -pointVecLength / pointLightDistance[p] + 1.0 ), 2.0 );\r\n\r\n\t\t\t\t\tpointDiffuse = vec3( 0.0 );\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, pointVector_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( pointVector_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\t\t\t\t\t#elif defined( TRANSLUCENT_SCATTERING )\r\n\t\t\t\t\t\tfloat scatterWeight = 1.0;//scatterScale;\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = clamp( NdotL, 0.0, 1.0 );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t    #if defined( PHONG_SPECULAR )\r\n\t\t\t   \t\tvec3 h = pointVector_VS + eyeVector_VS;\r\n\t\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t    \t\tpointDiffuse = albedoWeight;\r\n\t\t    \t#endif\r\n\r\n\t\t\t\t\t#if defined( SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue + pointDiffuse;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t\t\tfloat HdotL = dot( H, pointVector_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\t\t\t\t\t\ttotalSpecular = pointLightColor[ p ] * specWeight * pointDistance + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\tpointDiffuse *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t    \tpointDiffuse *= pointDistance * pointLightColor[ p ];\r\n\r\n\t\t    \ttotalDiffuse += pointDiffuse;\r\n\r\n\t\t\t\t}\r\n\r\n\t\t\t#endif\r\n\r\n\r\n\t\t\t// directional lights\r\n\r\n\t\t\t#if NUM_DIR_LIGHTS > 0\r\n\r\n\t\t    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\r\n\r\n\t\t\t\t\tvec3 lightDirection_VS = directionalLightDirection[ i ].xyz;\r\n\r\n\t\t\t\t\tfloat albedoWeight;\r\n\r\n\t\t\t\t\tfloat NdotL = dot( normal_VS, lightDirection_VS );\r\n\t\t\t\t\tfloat NdotL_sat = clamp( NdotL, 0.0, 1.0);\r\n\r\n\t\t\t\t\t//CALC DIFFUSE\r\n\t\t\t\t\t#ifdef LOCAL_SCATTERING\r\n\t\t\t\t\t\tfloat scatterWeight;\r\n\t\t\t\t\t\tcalculateLocalScattering( lightDirection_VS, NdotL, albedoWeight, normal_Scatter, scatterWeight );\r\n\r\n\t\t\t\t\t#else\r\n\t\t\t\t\t\talbedoWeight = NdotL_sat;\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#if defined( LOCAL_SCATTERING )\r\n\t\t\t\t\t\ttotalScatter += scatterWeight * scatterColorValue * directionalLightColor[ i ];\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\tvec3 h = lightDirection_VS - eyeVector_VS;\r\n\t\t\t\t\tvec3 H = normalize( h );\r\n\t\t\t\t\tfloat NdotH = dot( normal_VS, H );\r\n\r\n\t\t\t\t\t#if defined(SPECULAR)\r\n\r\n\t\t\t\t\t\tfloat HdotL = dot( H, lightDirection_VS );\r\n\t\t\t\t\t\tvec3 specWeight = specularColorValue * SpecularFuncGGX( roughnessValue, NdotH, HdotL, NdotL, r0Value );\r\n\r\n\t\t\t\t\t\ttotalSpecular = (directionalLightColor[ i ]) * specWeight + totalSpecular;\r\n\t\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\t\talbedoWeight *= (1.0 - r0Value);\r\n\t\t\t\t\t\t#endif\r\n\t\t\t\t\t#endif\r\n\r\n\t\t\t\t\t#ifdef ALBEDO\r\n\t\t\t\t\t\tvec3 albedo = albedoWeight * directionalLightColor[ i ];\r\n\r\n\t\t\t\t\t\ttotalDiffuse += albedo;\r\n\t\t\t\t\t#endif\r\n\t\t    }\r\n\r\n\t\t\t#endif\r\n\r\n\t\t#endif//USE_SCENE_LIGHTS\r\n\r\n\t\t// TODO implement AO for IBL (blend to unblurred lightmap where AO is dark)\r\n\t\t#if defined(AO_MAP) && defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor * aoTex;\r\n\t\t#elif defined(USE_SCENE_LIGHTS)\r\n\t\t\ttotalDiffuse += ambientLightColor;\r\n\t\t#endif\r\n\r\n\t\t// Apply specular environment mapping\r\n\t\t#if defined(USE_ENVIRONMENT_MAP) && (defined(ENVIRONMENT_MAP_CUBE_0) || defined(ENVIRONMENT_MAP_2D_0))\r\n\t\t\t#if defined(SPECULAR)\r\n\t\t\t\t//Schlick-Fresnel - Reflectance Function\r\n\t\t\t\tfloat fresnel = clamp( (pow( 1.0 - NdotV, 5.0 )), 0.0, 1.0 ) * (1.0 - r0Value);\r\n\t\t\t\tfresnel = min(fresnel + r0Value, 1.0);\r\n\t\t\t\tvec3 reflectance_term = envMapReflectedColor.xyz * fresnel;\r\n\t\t\t\t#if !defined(METALNESS)\r\n\t\t\t\t\treflectance_term *= (1.0 - roughnessValue);\r\n\t\t\t\t#endif\r\n\t\t\t\ttotalSpecular += reflectance_term * specularColorValue;\r\n\r\n\t\t\t\t#ifdef ALPHA_BLEND_MODE\r\n\t\t\t\t\t#if (ALPHA_BLEND_MODE == 0)\r\n\t\t\t\t\t\ttotalDiffuse *= finalAlpha;\r\n\t\t\t\t\t\tfinalAlpha = clamp(finalAlpha + fresnel, 0.0, 1.0);\r\n\t\t\t\t\t#endif\r\n\t\t\t\t#endif\r\n\t\t\t#endif\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\ttotalDiffuse += envMapDiffuseColor;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\ttotalDiffuse *= albedoColorValue;\r\n\r\n\r\n\t\tvec3 finalColor = totalDiffuse;\r\n\r\n\t\t// Energy conservation. Whatever light is being reflected isn't being diffused\r\n\t\t#if defined(SPECULAR)\r\n\t\t\t#if defined(ALBEDO)\r\n\t\t\t\tfinalColor = totalDiffuse * max(vec3(1.0) - totalSpecular, 0.0) + totalSpecular;\r\n\t\t\t#else\r\n\t\t\t\tfinalColor = totalSpecular;\r\n\t\t\t#endif\r\n\t\t#endif\r\n\r\n\t\t#if defined( TRANSLUCENT_SCATTERING ) || defined( LOCAL_SCATTERING )\r\n\t\t\tfinalColor += totalScatter;\r\n\t\t#endif\r\n\r\n\t\t#ifdef EMISSIVE\r\n\t\t\tvec3 emissiveValue = vec3(emissiveIntensity);\r\n\t\t\t#ifdef EMISSIVE_MAP\r\n\t\t\t \temissiveValue *= emissiveTex.xyz;\r\n\t\t\t#endif\r\n\t\t\t#ifdef EMISSIVE_COLOR\r\n\t\t\t \temissiveValue *= emissiveColor;\r\n\t\t\t#endif\r\n\t\t\tfinalColor += emissiveValue;\r\n\t\t#endif\r\n\t\t// Convert from linear to sRGB\r\n\t\tfinalColor = sqrt( finalColor );\r\n\t\tgl_FragColor = vec4( finalColor, finalAlpha );\r\n\r\n\t\t#if defined( USE_FOG )\r\n\t\t\t#ifdef USE_LOGDEPTHBUF_EXT\r\n\t\t\t\thighp float depth = gl_FragDepthEXT / gl_FragCoord.w;\r\n\t\t\t#else\r\n\t\t\t\thighp float depth = gl_FragCoord.z / gl_FragCoord.w;\r\n\t\t\t#endif\r\n\t\t\t#ifdef FOG_EXP2\r\n\t\t\t\tconst highp float LOG2 = 1.442695;\r\n\t\t\t\thighp float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\r\n\t\t\t\t// float fogFactor = exp2( - depth * LOG2 );\r\n\t\t\t\tfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\r\n\t\t\t#else\r\n\t\t\t\thighp float fogFactor = smoothstep( fogNear, fogFar, depth );\r\n\t\t\t#endif\r\n\t\t\tgl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\r\n\t\t#endif\r\n\r\n\t#endif //#if !defined( DEPTH_PASS )\r\n}"
 
 /***/ },
-/* 161 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(158), __webpack_require__(159), __webpack_require__(160)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(156), __webpack_require__(157), __webpack_require__(158)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -99328,7 +98641,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 162 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
@@ -99354,7 +98667,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _APIUtilities = __webpack_require__(163);
+	var _APIUtilities = __webpack_require__(161);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
@@ -99493,7 +98806,7 @@
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 163 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -99567,7 +98880,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 164 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99592,7 +98905,7 @@
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _VideoAsset = __webpack_require__(147);
+	var _VideoAsset = __webpack_require__(145);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -99736,7 +99049,7 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 165 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99826,7 +99139,7 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 166 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100562,7 +99875,7 @@
 	exports.default = Box3DObject;
 
 /***/ },
-/* 167 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100579,7 +99892,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(166);
+	var _Box3DObject2 = __webpack_require__(164);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100687,32 +100000,32 @@
 	  near: {
 	    type: 'float',
 	    description: '',
-	    default: 1.0
+	    default: 0.1
 	  },
 	  far: {
 	    type: 'float',
 	    description: '',
-	    default: 120000.0
+	    default: 12000.0
 	  },
 	  right: {
 	    type: 'float',
 	    description: '',
-	    default: 100.0
+	    default: 10.0
 	  },
 	  left: {
 	    type: 'float',
 	    description: '',
-	    default: -100.0
+	    default: -10.0
 	  },
 	  top: {
 	    type: 'float',
 	    description: '',
-	    default: 100.0
+	    default: 10.0
 	  },
 	  bottom: {
 	    type: 'float',
 	    description: '',
-	    default: -100.0
+	    default: -10.0
 	  }
 	});
 	CameraObject.events = {};
@@ -100722,7 +100035,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 168 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100743,7 +100056,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(166);
+	var _Box3DObject2 = __webpack_require__(164);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101006,7 +100319,7 @@
 	  distance: {
 	    type: 'float',
 	    description: '',
-	    default: 1000.0
+	    default: 100.0
 	  },
 	  castShadow: {
 	    type: 'boolean',
@@ -101016,32 +100329,32 @@
 	  shadowCameraNear: {
 	    type: 'float',
 	    description: '',
-	    default: 1.4
+	    default: 0.1
 	  },
 	  shadowCameraFar: {
 	    type: 'float',
 	    description: '',
-	    default: 50.0
+	    default: 20.0
 	  },
 	  shadowCameraLeft: {
 	    type: 'float',
 	    description: '',
-	    default: -12.0
+	    default: -10.0
 	  },
 	  shadowCameraRight: {
 	    type: 'float',
 	    description: '',
-	    default: 12.0
+	    default: 10.0
 	  },
 	  shadowCameraTop: {
 	    type: 'float',
 	    description: '',
-	    default: 12.0
+	    default: 10.0
 	  },
 	  shadowCameraBottom: {
 	    type: 'float',
 	    description: '',
-	    default: -12.0
+	    default: -10.0
 	  },
 	  shadowBias: {
 	    type: 'float',
@@ -101056,7 +100369,7 @@
 	  shadowMapHeight: {
 	    type: 'integer',
 	    description: '',
-	    default: 102
+	    default: 1024
 	  }
 	});
 	LightObject.events = {
@@ -101100,7 +100413,7 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 169 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101119,7 +100432,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(170);
+	var _BaseMeshObject2 = __webpack_require__(168);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -101273,7 +100586,7 @@
 	exports.default = SkinnedMeshObject;
 
 /***/ },
-/* 170 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101298,7 +100611,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(166);
+	var _Box3DObject2 = __webpack_require__(164);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -102225,7 +101538,7 @@
 	exports.default = BaseMeshObject;
 
 /***/ },
-/* 171 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -102240,7 +101553,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(170);
+	var _BaseMeshObject2 = __webpack_require__(168);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -102290,7 +101603,7 @@
 	exports.default = StaticMeshObject;
 
 /***/ },
-/* 172 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -102303,7 +101616,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DObject2 = __webpack_require__(166);
+	var _Box3DObject2 = __webpack_require__(164);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -102380,7 +101693,7 @@
 	exports.default = ModelObject;
 
 /***/ },
-/* 173 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -102406,7 +101719,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 174 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';

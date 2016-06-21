@@ -12,9 +12,9 @@ function sceneEntities(prefix) {
         parentAssetId: 'SCENE_ID',
         properties: {
             position: {
-                x: 49.0,
-                y: 35.3,
-                z: 70.3
+                x: 0.49,
+                y: 0.353,
+                z: 0.703
             }, // Default position of camera
             quaternion: {
                 x: -0.185,
@@ -22,8 +22,8 @@ function sceneEntities(prefix) {
                 z: 0.058,
                 w: 0.936
             }, // Default position of camera
-            near: 1, // Camera near-plane distance
-            far: 600
+            near: 0.01, // Camera near-plane distance
+            far: 6
         },
         components: {
             // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.
@@ -34,8 +34,8 @@ function sceneEntities(prefix) {
             // An orbit controller for rotating around the 3D model, made for preview
             previewCameraController: {
                 componentData: {
-                    orbitDistanceMin: 2, // Minimum camera distance
-                    orbitDistanceMax: 300, // Maximum camera distance
+                    orbitDistanceMin: 0.02, // Minimum camera distance
+                    orbitDistanceMax: 3, // Maximum camera distance
                     useKeyboard: false,
                     enablePan: true
                 },

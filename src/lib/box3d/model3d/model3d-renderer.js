@@ -224,7 +224,7 @@ class Model3dRenderer extends Box3DRenderer {
             this.instances.push(instance);
 
             // Scale the instance to 100 units in size.
-            instance.scaleToSize(100);
+            instance.scaleToSize(1);
 
             // Center the instance.
             instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
@@ -290,13 +290,13 @@ class Model3dRenderer extends Box3DRenderer {
      */
     addHelpersToScene() {
         const scene = this.getScene().runtimeData;
-        this.grid = new THREE.GridHelper(50, 10, 0xaaaaaa, 0xaaaaaa);
+        this.grid = new THREE.GridHelper(0.5, 0.1, 0xaaaaaa, 0xaaaaaa);
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
         scene.add(this.grid);
         this.grid.visible = false;
 
-        this.axisDisplay = new THREE.AxisHelper(50);
+        this.axisDisplay = new THREE.AxisHelper(0.5);
         scene.add(this.axisDisplay);
         this.axisDisplay.visible = false;
     }
@@ -408,10 +408,10 @@ class Model3dRenderer extends Box3DRenderer {
                 switch (projection) {
                     case CAMERA_PROJECTION_ORTHOGRAPHIC:
                         camera.setProperties({
-                            top: 50,
-                            bottom: -50,
-                            left: -50 * aspect,
-                            right: 50 * aspect,
+                            top: 0.5,
+                            bottom: -0.5,
+                            left: -0.5 * aspect,
+                            right: 0.5 * aspect,
                             cameraType: 'orthographic'
                         });
                         break;

@@ -281,7 +281,7 @@ class Box3DRenderer extends EventEmitter {
 
         if (!this.vrControls) {
             this.vrControls = new THREE.VRControls(camera.runtimeData);
-            this.vrControls.scale = 70;
+            this.vrControls.scale = 1;
         }
 
         this.box3d.on('preUpdate', this.updateVrControls, this);
