@@ -18,7 +18,7 @@ import { createAssetUrlCreator, decodeKeydown } from '../util';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
-const PRESENTATION_VIEWER_NAME = 'Presentation';
+const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const PRESENTATION_MODE_STATE = {
@@ -27,6 +27,7 @@ const PRESENTATION_MODE_STATE = {
     CHANGING: 2,
     FULLSCREEN: 3
 };
+const PRESENTATION_VIEWER_NAME = 'Presentation';
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 
 @autobind
@@ -50,7 +51,7 @@ class DocBase extends Base {
 
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
-        this.loadTimeout = 60000;
+        this.loadTimeout = LOAD_TIMEOUT_MS;
 
         this.findBarEl = this.docEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);

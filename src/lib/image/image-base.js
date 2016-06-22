@@ -62,8 +62,8 @@ class ImageBase extends Base {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon', ICON_ZOOM_IN);
         this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-image-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-image-zoom-in-icon', ICON_ZOOM_IN);
     }
 
     /**

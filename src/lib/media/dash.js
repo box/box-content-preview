@@ -63,7 +63,7 @@ class Dash extends VideoBase {
 
         setTimeout(() => {
             if (!this.loaded) {
-                this.emit('error');
+                this.emit('error', new Error(__('error_timeout')));
             }
         }, 10000);
     }
