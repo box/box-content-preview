@@ -1,11 +1,15 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.62.0...HEAD)
+## [v0.63.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.63.0) (2016-06-23)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.62.0...v0.63.0)
 
 **Merged pull requests:**
 
+- Various SDK updates [\#434](https://gitenterprise.inside-box.net/Preview/Preview/pull/434) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Updating runtime with fixes for component script to properly register… [\#433](https://gitenterprise.inside-box.net/Preview/Preview/pull/433) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- New engine with texture-streaming fixes and temporary preview code to… [\#432](https://gitenterprise.inside-box.net/Preview/Preview/pull/432) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Update rendering of grid when settings menu opens or closes. Updated … [\#431](https://gitenterprise.inside-box.net/Preview/Preview/pull/431) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Update changelog to v0.62.0 [\#430](https://gitenterprise.inside-box.net/Preview/Preview/pull/430) ([tjin](https://gitenterprise.inside-box.net/tjin))
 - Fixing various Preview SDK bugs [\#429](https://gitenterprise.inside-box.net/Preview/Preview/pull/429) ([tjin](https://gitenterprise.inside-box.net/tjin))
 - Added a missing promise return [\#428](https://gitenterprise.inside-box.net/Preview/Preview/pull/428) ([mbond](https://gitenterprise.inside-box.net/mbond))
 - Forcing devicePixelRatio of 1.0 for 360 previews and fixing max textu… [\#424](https://gitenterprise.inside-box.net/Preview/Preview/pull/424) ([mbond](https://gitenterprise.inside-box.net/mbond))
