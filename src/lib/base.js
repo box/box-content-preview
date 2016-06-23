@@ -88,7 +88,7 @@ class Base extends EventEmitter {
     load() {
         setTimeout(() => {
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.emit('error');
+                this.emit('error', new Error(__('error_timeout')));
             }
         }, this.loadTimeout);
     }
