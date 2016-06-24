@@ -54,11 +54,16 @@ class Video360 extends Dash {
      */
     destroy() {
         super.destroy();
-        const box3d = this.renderer.box3d;
-        const scene = box3d.getEntityById('SCENE_ID');
-        const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
-        skybox.setSkyboxTexture(null);
-        this.textureAsset.destroy();
+        if (this.skybox) {
+            this.skybox.setAttribute('skyboxTexture', null);
+        }
+        if (this.textureAsset) {
+            this.textureAsset.destroy();
+        }
+        if (this.videoAsset) {
+            this.videoAsset.destroy();
+        }
+
         this.destroyControls();
         if (this.renderer) {
             // Remove event listeners from box3d, if any on it
@@ -121,7 +126,7 @@ class Video360 extends Dash {
      */
     create360Environment() {
         const scene = this.renderer.getBox3D().getEntityById('SCENE_ID');
-        const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
+        this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
         this.videoAsset = this.renderer.getBox3D().assetRegistry.createAsset({
             id: 'VIDEO_ID',
@@ -147,8 +152,8 @@ class Video360 extends Dash {
         });
         return new Promise((resolve) => {
             this.textureAsset.load(() => {
-                skybox.setAttribute('skyboxTexture', this.textureAsset.id);
-                skybox.enable();
+                this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
+                this.skybox.enable();
                 this.renderer.getBox3D().on('mouseDown', this.onCanvasMouseDown);
                 resolve();
             });
@@ -160,10 +165,7 @@ class Video360 extends Dash {
      */
     @autobind
     toggleFullscreen() {
-        const fullscreenEl = this.vrEnabled ? this.renderer.box3d.canvas : this.wrapperEl;
-        const vrDevice = this.vrEnabled ? this.renderer.vrDevice : null;
-
-        fullscreen.toggle(fullscreenEl, vrDevice);
+        fullscreen.toggle(this.wrapperEl);
     }
 
     /**
@@ -174,6 +176,8 @@ class Video360 extends Dash {
     handleEnableVr() {
         this.vrEnabled = true;
         this.renderer.enableVr();
+        this.vrEffect.scale = 0;
+        this.skybox.setAttribute('stereoEnabled', true);
     }
 
     /**
@@ -184,6 +188,7 @@ class Video360 extends Dash {
     handleDisableVr() {
         this.vrEnabled = false;
         this.renderer.disableVr();
+        this.skybox.setAttribute('stereoEnabled', false);
     }
 
     /**

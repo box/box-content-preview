@@ -200,6 +200,7 @@ class Model3d extends Box3D {
                 // Update controls ui
                 this.controls.handleSetRenderMode(defaults.defaultRenderMode);
                 this.showWrapper();
+                this.renderer.enableVrIfPresent();
             })
             .catch((error) => {
                 /* eslint-disable no-console */
@@ -212,6 +213,7 @@ class Model3d extends Box3D {
                 // Make sure to display the settings panel, but hide the save button
                 this.controls.addUi(false);
                 this.showWrapper();
+                this.renderer.enableVrIfPresent();
             });
     }
 

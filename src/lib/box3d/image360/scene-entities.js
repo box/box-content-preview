@@ -37,18 +37,6 @@ export default [{
             },
             enabled: true,
             scriptId: 'orbit_camera_controller'
-        },
-        previewVrController: {
-            componentData: {
-                cameraControllerName: 'Orbit Camera Controller'
-            },
-            enabled: false,
-            scriptId: 'preview_vr_controls'
-        },
-        vrDisplayController: {
-            componentData: {},
-            enabled: false,
-            scriptId: 'hmd_renderer_script'
         }
     }
 }, {
@@ -62,7 +50,7 @@ export default [{
     components: {
         skybox: {
             componentData: {
-                size: 1000
+                size: 100
             },
             enabled: false,
             scriptId: 'skybox_renderer'
@@ -80,7 +68,7 @@ export default [{
             componentData: {
                 antialias: !Browser.isMobile(),
                 renderOnDemand: true,
-                devicePixelRatio: 1.0,
+                devicePixelRatio: Browser.isMobile() ? 1.0 : undefined,
                 // Mobile fragment precision at mediump is often too low.
                 // TODO - investigate changing some values in shaders to highp
                 // to eliviate the problem while letting the rest default to mediump.

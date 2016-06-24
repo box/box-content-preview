@@ -1,6 +1,9 @@
-/* global Box3D, Box3DResourceLoader */
+/* global Box3D, Box3DResourceLoader, WEBVR, THREE */
 import EventEmitter from 'events';
 import Cache from '../cache';
+import WEBVR from './WebVR';
+import './VREffect';
+import './VRControls';
 import {
     CACHE_KEY_BOX3D,
     EVENT_SHOW_VR_BUTTON,
@@ -38,7 +41,7 @@ class Box3DRenderer extends EventEmitter {
         this.instances = [];
         this.assets = [];
         this.vrEnabled = false;
-        this.vrDevice = null;
+        this.vrEffect = null;
         this.box3d = null;
         this.boxSdk = boxSdk;
         this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
@@ -246,27 +249,11 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     * Handles entering fullscreen mode
-     * @returns {void}
-     */
-    enterFullscreen() {
-        // Nothing for now
-    }
-
-    /**
-     * Handles exiting fullscreen mode
-     * @returns {void}
-     */
-    exitFullscreen() {
-        this.disableVr();
-    }
-
-    /**
      * Enable the VR system (HMD)
      * @returns {void}
      */
     enableVr() {
-        if (!this.vrDevice || this.vrEnabled) {
+        if (this.vrEnabled) {
             return;
         }
 
@@ -276,11 +263,28 @@ class Box3DRenderer extends EventEmitter {
 
         const camera = this.getCamera();
 
-        const hmdComponent = camera.componentRegistry.getFirstByScriptId('hmd_renderer_script');
-        hmdComponent.enable();
+        if (!this.vrControls) {
+            this.vrControls = new THREE.VRControls(camera.runtimeData);
+            this.vrControls.scale = 1;
+        }
 
-        const vrControlsComponent = camera.componentRegistry.getFirstByScriptId('preview_vr_controls');
-        vrControlsComponent.enable();
+        this.box3d.on('preUpdate', this.updateVrControls, this);
+        const renderView = camera.componentRegistry.getFirstByScriptId('render_view_component');
+        renderView.effect = this.vrEffect;
+        this.vrEffect.requestPresent();
+
+        const renderer = this.box3d.getRenderer();
+        renderer.setAttribute('renderOnDemand', false);
+    }
+
+    /**
+     * Update the controls for VR when enabled
+     * @private
+     * @method updateVrControls
+     * @returns {void}
+     */
+    updateVrControls() {
+        this.vrControls.update();
     }
 
     /**
@@ -310,30 +314,35 @@ class Box3DRenderer extends EventEmitter {
      * @returns {void}
      */
     disableVr() {
-        if (!this.vrDevice || !this.vrEnabled) {
+        if (!this.vrEnabled) {
             return;
         }
 
         this.vrEnabled = false;
 
         this.enableCameraControls();
+        this.reset();
 
+        const renderViewId = 'render_view_component';
         const camera = this.getCamera();
-
-        const hmdComponent = camera.componentRegistry.getFirstByScriptId('hmd_renderer_script');
-        hmdComponent.disable();
-
-        const vrControlsComponent = camera.componentRegistry.getFirstByScriptId('preview_vr_controls');
-        vrControlsComponent.disable();
+        if (camera) {
+            const renderViewComponent = camera.componentRegistry.getFirstByScriptId(renderViewId);
+            renderViewComponent.effect = null;
+            this.box3d.off('preUpdate', this.updateVrControls, this);
+        }
+        this.vrEffect.exitPresent();
+        const renderer = this.box3d.getRenderer();
+        renderer.setAttribute('renderOnDemand', true);
+        this.box3d.needsRender = true;
     }
 
     /**
      * Enable the regular camera controls.
      * @returns {void}
      */
-    enableCameraControls() {
+    enableCameraControls(cameraControllerId = 'preview_camera_controller') {
         const camera = this.getCamera();
-        const cameraControls = camera.componentRegistry.getFirstByScriptId('preview_camera_controller');
+        const cameraControls = camera.componentRegistry.getFirstByScriptId(cameraControllerId);
         if (cameraControls) {
             cameraControls.enable();
         }
@@ -343,9 +352,9 @@ class Box3DRenderer extends EventEmitter {
      * Disable the regular camera controls. Useful when VR device is controlling camera.
      * @returns {void}
      */
-    disableCameraControls() {
+    disableCameraControls(cameraControllerId = 'preview_camera_controller') {
         const camera = this.getCamera();
-        const cameraControls = camera.componentRegistry.getFirstByScriptId('preview_camera_controller');
+        const cameraControls = camera.componentRegistry.getFirstByScriptId(cameraControllerId);
         if (cameraControls) {
             cameraControls.disable();
         }
@@ -356,13 +365,14 @@ class Box3DRenderer extends EventEmitter {
      * @returns {void}
      */
     enableVrIfPresent() {
-        // Get the vrDevice to pass to the fullscreen API
-        this.input = this.box3d.getApplication().componentRegistry.getFirstByScriptId('input_controller_component');
-        if (this.input) {
-            this.input.whenVrDeviceAvailable((device) => {
-                this.vrDevice = device;
-                this.emit(EVENT_SHOW_VR_BUTTON);
-            });
+        if (WEBVR.isLatestAvailable()) {
+            const renderer = this.box3d.getThreeRenderer();
+            if (!this.vrEffect) {
+                this.vrEffect = new THREE.VREffect(renderer);
+                const rendererSize = renderer.getSize();
+                this.vrEffect.setSize(rendererSize.width, rendererSize.height);
+            }
+            this.emit(EVENT_SHOW_VR_BUTTON);
         }
     }
 }
