@@ -105,14 +105,11 @@ class DocBase extends Base {
      * @returns {Promise} Promise to load a pdf
      */
     load(pdfUrl) {
-        // Disable worker in IE and Edge due to a CORS origin bug: https://goo.gl/G9iR54
-        if (Browser.getName() === 'Edge' || Browser.getName() === 'Explorer') {
-            PDFJS.disableWorker = true;
-        }
+        this.pdfUrl = pdfUrl;
 
         this.setupPdfjs();
-        this.initViewer(pdfUrl);
-        this.initPrint(pdfUrl);
+        this.initViewer(this.pdfUrl);
+        this.initPrint();
         this.initFind();
 
         super.load();
@@ -140,8 +137,9 @@ class DocBase extends Base {
      * @returns {void}
      */
     print() {
+        // Convert PDF to blob if needed
         if (!this.printBlob) {
-            // @TODO(tjin): Show a message here that the document isn't ready for printing
+            this.fetchPrintBlob(this.pdfUrl).then(this.print);
             return;
         }
 
@@ -171,7 +169,7 @@ class DocBase extends Base {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(this.pdfViewer.currentScale);
-            this._reRenderAnnotations = true;
+            this.reRenderAnnotations = true;
         }
 
         super.resize();
@@ -334,7 +332,7 @@ class DocBase extends Base {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(scale);
-            this._reRenderAnnotations = true;
+            this.reRenderAnnotations = true;
         }
 
         this.pdfViewer.currentScaleValue = scale;
@@ -450,6 +448,11 @@ class DocBase extends Base {
      * @private
      */
     setupPdfjs() {
+        // Disable worker in IE and Edge due to a CORS origin bug: https://goo.gl/G9iR54
+        if (Browser.getName() === 'Edge' || Browser.getName() === 'Explorer') {
+            PDFJS.disableWorker = true;
+        }
+
         // Set PDFJS worker & character maps
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.js');
@@ -506,39 +509,16 @@ class DocBase extends Base {
     }
 
     /**
-     * Initialize variables and elements for printing.
+     * Sets up print notification.
      *
-     * @param {String} pdfUrl The URL of the PDF to load
      * @returns {void}
      * @private
      */
-    initPrint(pdfUrl) {
-        // @TODO(tjin): Can we re-use the same blob used by PDF.js to render the content?
-        // Load blob for printing
-        fetch(pdfUrl, {
-            headers: this.appendAuthHeader()
-        })
-        .then((response) => response.blob())
-        .then((blob) => {
-            this.printBlob = blob;
-        });
-
+    initPrint() {
         const printNotificationEl = document.createElement('p');
         printNotificationEl.classList.add('box-preview-print-notification');
         printNotificationEl.textContent = __('print_notification');
         this.containerEl.appendChild(printNotificationEl);
-    }
-
-    /**
-     * Creates UI for preview controls.
-     *
-     * @returns {void}
-     * @private
-     */
-    loadUI() {
-        this.controls = new Controls(this.containerEl);
-        this.bindControlListeners();
-        this.initPageNumEl();
     }
 
     /**
@@ -597,6 +577,35 @@ class DocBase extends Base {
         // Keep reference to page number input and current page elements
         this.pageNumInputEl = pageNumEl.querySelector('.box-preview-doc-page-num-input');
         this.currentPageEl = pageNumEl.querySelector('.box-preview-doc-current-page');
+    }
+
+    /**
+     * Fetches PDF and converts to blob for printing.
+     *
+     * @param {String} pdfUrl URL to PDF
+     * @returns {Promise} Promise setting print blob
+     * @private
+     */
+    fetchPrintBlob(pdfUrl) {
+        return fetch(pdfUrl, {
+            headers: this.appendAuthHeader()
+        })
+        .then((response) => response.blob())
+        .then((blob) => {
+            this.printBlob = blob;
+        });
+    }
+
+    /**
+     * Creates UI for preview controls.
+     *
+     * @returns {void}
+     * @private
+     */
+    loadUI() {
+        this.controls = new Controls(this.containerEl);
+        this.bindControlListeners();
+        this.initPageNumEl();
     }
 
 	/**
@@ -670,10 +679,11 @@ class DocBase extends Base {
      * @protected
      */
     bindDOMListeners() {
-        // When page structure is initialized, set default zoom and load controls
+        // When page structure is initialized, set default zoom, load controls,
+        // and broadcast that preview has loaded
         this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
 
-        // When first page is rendered, message that preview has loaded
+        // When a page is rendered, rerender annotations if needed
         this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
 
         // When text layer is rendered, show annotations if enabled
@@ -793,6 +803,12 @@ class DocBase extends Base {
 
         // Set current page to previously opened page or first page
         this.setPage(this.getCachedPage());
+
+        // Broadcast that preview has loaded
+        if (!this.loaded) {
+            this.loaded = true;
+            this.emit('load');
+        }
     }
 
     /**
@@ -802,17 +818,10 @@ class DocBase extends Base {
      * @private
      */
     pagerenderedHandler() {
-        if (this.annotator && this._reRenderAnnotations) {
+        if (this.annotator && this.reRenderAnnotations) {
             this.annotator.renderAnnotations();
-            this._reRenderAnnotations = false;
+            this.reRenderAnnotations = false;
         }
-
-        if (this.loaded) {
-            return;
-        }
-
-        this.loaded = true;
-        this.emit('load');
     }
 
     /**
