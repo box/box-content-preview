@@ -37,10 +37,14 @@ class Image360Renderer extends Box3DRenderer {
     destroy() {
         this.cleanupTexture();
         this.disableVr();
-        if (this.rightEyeScene) {
-            this.rightEyeScene.destroy();
-            this.rightEyeCamera = undefined;
-            this.rightEyeScene = undefined;
+        if (this.skybox) {
+            this.skybox.setAttribute('skyboxTexture', null);
+        }
+        if (this.textureAsset) {
+            this.textureAsset.destroy();
+        }
+        if (this.imageAsset) {
+            this.imageAsset.destroy();
         }
         super.destroy();
     }
@@ -86,12 +90,13 @@ class Image360Renderer extends Box3DRenderer {
      */
     loadPanoramaFile(fileProperties) {
         const scene = this.box3d.getEntityById('SCENE_ID');
-        const skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
+        this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
         this.imageAsset = this.box3d.assetRegistry.createAsset({
             type: 'image',
             properties: {
-                // layout: 'stereo2dOverUnder'
+                // layout: 'stereo2dOverUnder',
+                stream: false
             },
             representations: []
         });
@@ -124,22 +129,36 @@ class Image360Renderer extends Box3DRenderer {
             this.textureAsset = this.box3d.assetRegistry.createAsset({
                 type: 'texture2D',
                 properties: {
-                    // layout: 'stereo2dOverUnder',
                     imageId: this.imageAsset.id,
-                    minFilter: 'linear',
-                    magFilter: 'linear',
                     uMapping: 'clamp',
                     vMapping: 'clamp'
                 }
             });
             return new Promise((resolve) => {
                 this.textureAsset.load(() => {
-                    skybox.enable();
-                    skybox.setAttribute('skyboxTexture', this.textureAsset.id);
+                    this.skybox.enable();
+                    this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                     resolve();
                 });
             });
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    enableVr() {
+        super.enableVr();
+        this.vrEffect.scale = 0;
+        this.skybox.setAttribute('stereoEnabled', true);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    disableVr() {
+        super.disableVr();
+        this.skybox.setAttribute('stereoEnabled', false);
     }
 
     /**

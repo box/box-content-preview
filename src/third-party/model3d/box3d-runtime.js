@@ -13491,7 +13491,7 @@
 	            entity.when(loadEvent, function () {
 	              resolve();
 	            });
-	            if (!entity.isLoaded()) {
+	            if (entity.isUnloaded()) {
 	              entity.load();
 	            }
 	          } else {
@@ -59258,6 +59258,7 @@
 	     * If the condition for specified event is met, immediately calls the callback. Otherwise,
 	     * listens for the event to be fired and then calls it. Useful for more concise code.
 	     * @method when
+	     * @public
 	     * @param {String} eventName The name of the event to listen for
 	     * @param {Function} callback The callback function to call when the event occurs
 	     * @param {Object} context The context that the callback will be called in
@@ -59405,7 +59406,7 @@
 	          if (_this5.isInstance()) {
 	            _this5._initPrefabBindings();
 	          }
-	          if (_this5.state[Box3DEntity.STATE_TYPE.BASE] <= Box3DEntity.STATE.SUCCEEDED) {
+	          if (_this5.state[Box3DEntity.STATE_TYPE.BASE] < Box3DEntity.STATE.SUCCEEDED) {
 	            _this5.markState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.SUCCEEDED);
 	          }
 	        });
@@ -59658,16 +59659,16 @@
 
 
 	    /**
-	     * Returns true iff the entity is completely unloaded.
+	     * Returns true iff the entity is unloaded (ignoring dependencies).
 	     * @method isUnloaded
 	     * @public
-	     * @return {Boolean} true iff the entity is completely unloaded.
+	     * @return {Boolean} true iff the entity is unloaded.
 	     */
 	    value: function isUnloaded() {
 	      var combinedState = Box3DEntity.STATE.PENDING;
-	      for (var i = 0; i < this.state.length; i++) {
-	        combinedState &= this.state[i];
-	      }
+	      combinedState &= this.state[Box3DEntity.STATE_TYPE.BASE];
+	      combinedState &= this.state[Box3DEntity.STATE_TYPE.CHILDREN];
+	      combinedState &= this.state[Box3DEntity.STATE_TYPE.COMPONENTS];
 	      return Box3DEntity.STATE.PENDING === combinedState;
 	    }
 
@@ -62979,6 +62980,17 @@
 	  }, {
 	    key: 'unload',
 	    value: function unload() {
+	      var _this3 = this;
+
+	      // Stop listening to texture load events
+	      var textures = this.getDependencies();
+	      Object.keys(textures).forEach(function (id) {
+	        var texture = _this3.getAssetById(id);
+	        if (texture) {
+	          _this3.stopListening(texture, 'load');
+	        }
+	      });
+
 	      if (this.runtimeData) {
 	        this.box3DRuntime.trigger('materialUnloaded', this.id);
 	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading material, ' + this.getName());
@@ -63300,16 +63312,20 @@
 	        // Listen to 'load' event on the image. This can happen multiple times if
 	        // the image is streaming or a properties change force a new version
 	        // to be downloaded.
-	        this.listenTo(imageAsset, 'load', function () {
-	          if (!imageAsset.runtimeData) {
+	        var onImageLoad = function onImageLoad(image) {
+	          if (!image.runtimeData) {
 	            handleImageFailure();
 	            return;
 	          }
-	          _this3.createTextureData(imageAsset.runtimeData);
+	          _this3.createTextureData(image.runtimeData);
 	          if (typeof callback === 'function') {
 	            callback.call(_this3);
 	          }
-	        });
+	        };
+	        this.listenTo(imageAsset, 'load', onImageLoad, this);
+	        if (imageAsset.isLoaded()) {
+	          onImageLoad.call(this, imageAsset);
+	        }
 	        if (imageAsset.isUnloaded()) {
 	          imageAsset.load();
 	        }
@@ -63347,6 +63363,11 @@
 	  }, {
 	    key: 'unload',
 	    value: function unload(options) {
+	      // Stop listening to image load events when this texture is unloaded.
+	      var imageAsset = this.getImage();
+	      if (imageAsset) {
+	        this.stopListening(imageAsset, 'load');
+	      }
 
 	      if (this.runtimeData) {
 	        this.box3DRuntime.trigger('textureUnloaded', this.id);
@@ -64209,9 +64230,10 @@
 	BaseImageAsset.LAYOUT = {
 	  normal: 101,
 	  stereo2dOverUnder: 102, // ABOVE-BELOW
-	  stereo2dLeftRight: 103, // PARALLEL-EYED
-	  stereo2dRightLeft: 104, // CROSS-EYED
-	  stereoCubeHorizontal: 105
+	  stereo2dUnderOver: 103, // BELOW-ABOVE
+	  stereo2dLeftRight: 104, // PARALLEL-EYED
+	  stereo2dRightLeft: 105, // CROSS-EYED
+	  stereoCubeHorizontal: 106
 	};
 	BaseImageAsset.FORMAT = {
 	  alpha: _three2.default.AlphaFormat,
@@ -68323,10 +68345,10 @@
 	        "min": 1,
 	        "max": 1000000
 	      },
-	      "leftEye": {
-	        "name": "leftEye",
+	      "stereoEnabled": {
+	        "name": "stereoEnabled",
 	        "type": "b",
-	        "default": true
+	        "default": false
 	      },
 	      "skyboxTexture": {
 	        "name": "skyboxTexture",
@@ -68339,52 +68361,14 @@
 	          "renderTextureCube": true
 	        },
 	        "default": "white_cube"
-	      },
-	      "skyboxFogPower": {
-	        "name": "skyboxFogPower",
-	        "type": "f",
-	        "description": "Controls the rate that fog decreases with height in the skybox.",
-	        "default": 0.8,
-	        "min": 0,
-	        "max": 1
-	      },
-	      "skyboxFogScale": {
-	        "name": "skyboxFogScale",
-	        "type": "f",
-	        "description": "Uniformly scales the amount of fog in the skybox.",
-	        "default": 0.5,
-	        "min": 0,
-	        "max": 1
 	      }
 	    },
 	    "attributesOrder": [
 	      "size",
-	      "leftEye",
-	      "skyboxTexture",
-	      "skyboxFogPower",
-	      "skyboxFogScale"
+	      "stereoEnabled",
+	      "skyboxTexture"
 	    ],
-	    "events": {
-	      "setSkyboxTexture": {
-	        "scope": "local",
-	        "name": "setSkyboxTexture",
-	        "action": true,
-	        "parameters": [
-	          {
-	            "name": "texture",
-	            "type": "asset",
-	            "filter": {
-	              "textureCube": true,
-	              "texture2D": true,
-	              "renderTexture2D": true,
-	              "renderTextureCube": true
-	            },
-	            "description": "The new skybox texture to use.",
-	            "default": null
-	          }
-	        ]
-	      }
-	    },
+	    "events": {},
 	    "externalDependencies": [],
 	    "filter": [
 	      "scene"
@@ -73015,13 +72999,6 @@
 	  }
 
 	  _createClass(InputController, [{
-	    key: 'editorInit',
-	    value: function editorInit() {
-	      this.listenTo(this.getRuntime(), 'preUpdate', this.preUpdate.bind(this));
-	      this.listenTo(this.getRuntime(), 'postUpdate', this.postUpdate.bind(this));
-	      this.init();
-	    }
-	  }, {
 	    key: 'init',
 	    value: function init() {
 	      this.canvas = this.getRuntime().canvas;
@@ -81186,28 +81163,27 @@
 	  }, {
 	    key: 'renderView',
 	    value: function renderView(scene, camera, options) {
-	      // var i = 0;
 	      var screenDimensions;
 	      options = options || {};
 	      if (camera) {
 	        if (options.enablePreRenderFunctions) {
 	          this.getRuntime().trigger('preRenderView', scene, camera, options);
 	        }
+	        var canvasStyle = this.getCanvas().style;
 	        if (options.opacity !== undefined && (!options.viewPort || options.viewPort.width === this.getWidth() && options.viewPort.height === this.getHeight())) {
-	          if (this.getCanvas().style.opacity != options.opacity) {
-	            this.getCanvas().style.opacity = options.opacity;
+	          if (canvasStyle.opacity != options.opacity) {
+	            canvasStyle.opacity = options.opacity;
 	          }
-	        } else if (this.getCanvas().style.opacity != 1) {
-	          this.getCanvas().style.opacity = 1.0;
+	        } else if (canvasStyle.opacity != 1) {
+	          canvasStyle.opacity = 1.0;
 	        }
 
 	        if (!options.renderTarget) {
 	          this.threeRenderer.setRenderTarget(null);
-	          this.threeRenderer.clear(options.clearColor, options.clearDepth, options.clearStencil);
 	        } else {
 	          this.threeRenderer.setRenderTarget(options.renderTarget);
-	          this.threeRenderer.clear(options.clearColor, options.clearDepth, options.clearStencil);
 	        }
+	        this.threeRenderer.clear(options.clearColor, options.clearDepth, options.clearStencil);
 
 	        if (options.viewPort) {
 	          screenDimensions = this.getAssetRegistry().Materials.sharedUniforms.screenDimensions;
@@ -81856,7 +81832,7 @@
 	 * @vcategory Rendering
 	 * @vfilter scene
 	 * @vattr Float size { 'default' : 100000, 'min' : 1.0, 'max' : 1000000.0 }
-	 * @vattr Boolean leftEye { 'default' : true }
+	 * @vattr Boolean stereoEnabled { 'default' : false }
 	 * @vattr Asset skyboxTexture {
 	 *   'description': '', 'type': 'asset',
 	 *   'filter': {
@@ -81866,25 +81842,6 @@
 	 *     'renderTextureCube': true
 	 *   },
 	 *   'default': 'white_cube'
-	 * }
-	 * @vattr Float skyboxFogPower { 'description': 'Controls the rate that fog decreases with height in the skybox.', 'default': 0.8, 'min': 0.0, 'max': 1.0 }
-	 * @vattr Float skyboxFogScale { 'description': 'Uniformly scales the amount of fog in the skybox.', 'default': 0.5, 'min': 0.0, 'max': 1.0 }
-	 * @vevent local setSkyboxTexture {
-	 *   action: true,
-	 *   parameters: [
-	 *     {
-	 *       name: 'texture',
-	 *       type: 'asset',
-	 *       filter: {
-	 *         textureCube: true,
-	 *         texture2D: true,
-	 *         renderTexture2D: true,
-	 *         renderTextureCube: true
-	 *       },
-	 *      description: 'The new skybox texture to use.',
-	 *      default: null
-	 *     }
-	 *   ]
 	 * }
 	 */
 	/* eslint-enable */
@@ -81900,17 +81857,9 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _lodash = __webpack_require__(3);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _Box3DComponent2 = __webpack_require__(24);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	var _BaseImageAsset = __webpack_require__(20);
-
-	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -81934,7 +81883,7 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkyboxRenderer).call(this));
 
-	    _this.skyboxScene = null;
+	    _this.currentTexLayout = null;
 	    _this.skyboxMesh = null;
 	    _this.skyboxGeometry = null;
 	    _this.skyboxMaterialCube = null;
@@ -81942,270 +81891,351 @@
 	    _this.skyboxUniforms = null;
 	    _this.skyboxVShader = null;
 	    _this.skyboxPShader = null;
-	    _this.renderer = null;
-
 	    _this.skyboxTexture = null;
-	    _this.size = 10000.0;
-	    _this.isEditor = false;
+	    _this.size = 100.0;
+	    _this.stereoEnabled = false;
 	    return _this;
 	  }
+
+	  /**
+	   * @inheritdoc
+	   */
+
 
 	  _createClass(SkyboxRenderer, [{
 	    key: 'init',
 	    value: function init() {
-
-	      this.renderer = this.getThreeRenderer();
-
-	      this.createGeometry();
-
-	      this.createMaterial();
-	      this.initTexture();
-
-	      this.mainScene = this.getEntity().getParentAsset();
-
+	      this.initMaterials();
 	      this.on('enable', this.onEnable, this);
 	      this.on('disable', this.onDisable, this);
-	      this.getEntity().on('setSkyboxTexture', this.setSkyboxTexture, this);
-	      this.getRuntime().on('rebuildMaterials', this.rebuildMaterials, this);
 	    }
+
+	    /**
+	     * @inheritdoc
+	     */
+
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
 	      this.off('enable', this.onEnable, this);
 	      this.off('disable', this.onDisable, this);
-	      this.getRuntime().off('rebuildMaterials', this.rebuildMaterials, this);
-	      this.getEntity().off('setSkyboxTexture', this.setSkyboxTexture, this);
-	      if (this.skyboxScene) {
-	        this.skyboxScene.remove(this.skyboxMesh);
-	      }
+	      this.onDisable();
 	      this.skyboxGeometry.dispose();
+	      this.skyboxGeometryRightEye.dispose();
 	      this.skyboxMaterialCube.dispose();
 	      this.skyboxMaterial2D.dispose();
-	      this.skyboxScene = null;
 	      this.skyboxMesh = null;
 	      this.skyboxGeometry = null;
+	      this.skyboxGeometryRightEye = null;
 	      this.skyboxMaterialCube = null;
 	      this.skyboxMaterial2D = null;
 	      this.skyboxUniforms = null;
 	      this.skyboxTexture = null;
+	      this.currentTexLayout = null;
 	    }
-	  }, {
-	    key: 'createScene',
-	    value: function createScene() {
-	      this.skyboxScene = this.getRuntimeData();
-	      // this.skyboxScene.matrixAutoUpdate = false;
-	    }
+
+	    /**
+	     * @inheritdoc
+	     */
+
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changed) {
-	      if (changed.indexOf('skyboxTexture') !== -1) {
-	        this.initTexture();
-	        this.skyboxMesh.material = this.currentMaterial;
+	      if (changed.indexOf('skyboxTexture') !== -1 || changed.indexOf('stereoEnabled') !== -1) {
+	        this.initSkybox();
 	      }
-	      if (changed.indexOf('color') !== -1) {
-	        this.skyboxUniforms.color.value = this.color;
-	      }
-	      if (changed.indexOf('skyboxFogScale') !== -1) {
-	        this.skyboxMaterialCube.uniforms.skyboxFogScale.value = this.skyboxFogScale;
-	        this.skyboxMaterial2D.uniforms.skyboxFogScale.value = this.skyboxFogScale;
-	      }
-	      if (changed.indexOf('skyboxFogPower') !== -1) {
-	        this.skyboxMaterialCube.uniforms.skyboxFogPower.value = this.skyboxFogPower;
-	        this.skyboxMaterial2D.uniforms.skyboxFogPower.value = this.skyboxFogPower;
-	      }
-	      if (this.skyboxScene && this.mainScene.runtimeData && this.mainScene.runtimeData.fog) {
-	        this.skyboxUniforms.fogColor.value = this.mainScene.runtimeData.fog.color;
-	      }
+
 	      if (changed.indexOf('size') !== -1) {
 	        if (this.skyboxMesh) {
-	          this.skyboxScene.remove(this.skyboxMesh);
-	          this.skyboxMesh.geometry = undefined;
-	          this.skyboxGeometry.dispose();
-	          this.createGeometry();
-	          this.createMesh();
+	          this.skyboxMesh.scale.set(this.size, this.size, this.size);
+	          this.skyboxMeshRightEye.scale.set(this.size, this.size, this.size);
 	        }
 	      }
-	      if (changed.indexOf('leftEye') !== -1 && this.skyboxTexture) {
-	        this.currentMaterial.defines.STEREO_EYE = this.leftEye ? 'STEREO_EYE_LEFT' : 'STEREO_EYE_RIGHT';
-	        this.currentMaterial.defines.LAYOUT = _BaseImageAsset2.default.LAYOUT[this.skyboxTexture.getLayout()];
-	        this.currentMaterial.needsUpdate = true;
-	      }
 	    }
+
+	    /**
+	     * Enable the skybox rendering.
+	     * @method onEnable
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'onEnable',
 	    value: function onEnable() {
-	      if (this.skyboxScene) {
-	        this.skyboxScene.add(this.skyboxMesh);
-	        if (this.skyboxTexture && !this.skyboxTexture.isLoaded()) {
+	      if (this.getRuntimeData()) {
+	        this.getRuntimeData().add(this.skyboxMesh);
+	        if (this.isStereo()) {
+	          this.getRuntimeData().add(this.skyboxMeshRightEye);
+	        }
+	        if (this.skyboxTexture && this.skyboxTexture.isUnloaded()) {
 	          this.skyboxTexture.load();
 	        }
 	      }
 	    }
+
+	    /**
+	     * Disable the skybox from rendering.
+	     * @method onDisable
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'onDisable',
 	    value: function onDisable() {
-	      if (this.skyboxScene) {
-	        this.skyboxScene.remove(this.skyboxMesh);
+	      if (this.getRuntimeData()) {
+	        this.getRuntimeData().remove(this.skyboxMesh);
+	        if (this.isStereo()) {
+	          this.getRuntimeData().remove(this.skyboxMeshRightEye);
+	        }
 	      }
 	    }
+
+	    /**
+	     * @inheritdoc
+	     */
+
 	  }, {
 	    key: 'entityCreated',
 	    value: function entityCreated() {
-	      this.createScene();
-	      this.createMesh();
-	      this.rebuildMaterials();
+	      this.initSkybox();
 	    }
+
+	    /**
+	     * Create the geometry for the skybox
+	     * @method initGeometry
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
-	    key: 'createGeometry',
-	    value: function createGeometry() {
-	      this.skyboxGeometry = new _three2.default.BoxGeometry(this.size, this.size, this.size, 32, 32, 32);
+	    key: 'initGeometry',
+	    value: function initGeometry() {
+	      if (this.skyboxGeometry) {
+	        this.skyboxGeometry.dispose();
+	        this.skyboxGeometryRightEye.dispose();
+	      }
+	      // TODO - this would be more efficient as a geodesic sphere...
+	      this.skyboxGeometry = new _three2.default.SphereBufferGeometry(1, 64, 64);
 	      this.skyboxGeometry.dynamic = false;
+
+	      this.skyboxGeometryRightEye = this.skyboxGeometry.clone();
 	    }
+
+	    /**
+	     * If the texture is stereoscopic, modify the UV's of the geometry to map the
+	     * texture correctly for each eye.
+	     * @method initStereoUvs
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
-	    key: 'createMesh',
-	    value: function createMesh() {
+	    key: 'initStereoUvs',
+	    value: function initStereoUvs() {
+	      if (this.skyboxTexture) {
+	        var leftEyeScale = new _three2.default.Vector2();
+	        var leftEyeBias = new _three2.default.Vector2();
+	        var rightEyeScale = new _three2.default.Vector2();
+	        var rightEyeBias = new _three2.default.Vector2();
+	        // Based on texture type and layout, init the UV's for the geometry.
+	        switch (this.skyboxTexture.getLayout()) {
+	          case 'stereo2dOverUnder':
+	            leftEyeScale.set(1.0, 0.5);
+	            leftEyeBias.set(0.0, 0.0);
+	            rightEyeScale.set(1.0, 0.5);
+	            rightEyeBias.set(0.0, 0.5);
+	            break;
+	          case 'stereo2dUnderOver':
+	            leftEyeScale.set(1.0, 0.5);
+	            leftEyeBias.set(0.0, 0.5);
+	            rightEyeScale.set(1.0, 0.5);
+	            rightEyeBias.set(0.0, 0.0);
+	            break;
+	          case 'stereo2dLeftRight':
+	            leftEyeScale.set(0.5, 1.0);
+	            leftEyeBias.set(0.0, 0.0);
+	            rightEyeScale.set(0.5, 1.0);
+	            rightEyeBias.set(0.5, 0.0);
+	            break;
+	          case 'stereo2dRightLeft':
+	            leftEyeScale.set(0.5, 1.0);
+	            leftEyeBias.set(0.5, 0.0);
+	            rightEyeScale.set(0.5, 1.0);
+	            rightEyeBias.set(0.0, 0.0);
+	            break;
+	          default:
+	            // If the layout of the texture isn't a stereo type, don't modify the
+	            // geometry UV's.
+	            return;
+	        }
+	        var uvsLeft = this.skyboxGeometry.getAttribute('uv').array;
+	        var uvsRight = this.skyboxGeometryRightEye.getAttribute('uv').array;
+	        for (var i = 0; i < uvsLeft.length; i += 2) {
+	          uvsLeft[i] *= leftEyeScale.x;
+	          uvsLeft[i + 1] *= leftEyeScale.y;
+	          uvsLeft[i] += leftEyeBias.x;
+	          uvsLeft[i + 1] += leftEyeBias.y;
+	          uvsRight[i] *= rightEyeScale.x;
+	          uvsRight[i + 1] *= rightEyeScale.y;
+	          uvsRight[i] += rightEyeBias.x;
+	          uvsRight[i + 1] += rightEyeBias.y;
+	        }
+	        this.skyboxGeometry.uvsNeedUpdate = true;
+	        this.skyboxGeometryRightEye.uvsNeedUpdate = true;
+	      }
+	    }
+
+	    /**
+	     * Create the mesh used to render the skybox
+	     * @method initMesh
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'initMesh',
+	    value: function initMesh() {
+	      if (this.skyboxMesh) {
+	        this.getRuntimeData().remove(this.skyboxMesh);
+	      }
+	      if (this.skyboxMeshRightEye) {
+	        this.getRuntimeData().remove(this.skyboxMeshRightEye);
+	      }
 	      this.skyboxMesh = new _three2.default.Mesh(this.skyboxGeometry, this.currentMaterial);
 	      this.skyboxMesh.frustumCulled = false;
 	      this.skyboxMesh.castShadow = false;
 	      this.skyboxMesh.receiveShadow = false;
 	      this.skyboxMesh.matrixAutoUpdate = true;
 	      this.skyboxMesh.name = 'Skybox';
+
+	      // Rotate the mesh so that the texture will appear with y-up.
+	      this.skyboxMesh.rotation.y = -Math.PI / 2;
+	      this.skyboxMesh.rotation.z = -Math.PI;
+
+	      // Duplicate skybox for right eye (only used for stereo textures)
+	      this.skyboxMeshRightEye = this.skyboxMesh.clone();
+	      this.skyboxMeshRightEye.geometry = this.skyboxGeometryRightEye;
+	      this.skyboxMeshRightEye.layers.set(2);
+
 	      if (this.isEnabled()) {
-	        this.skyboxScene.add(this.skyboxMesh);
+	        this.getRuntimeData().add(this.skyboxMesh);
 	        this.skyboxMesh.updateMatrix();
 	      }
 	    }
+
+	    /**
+	     * Based on the texture currently assigned, choose the appropriate material and initialize
+	     * or recreate the geometry and mesh if needed.
+	     * @method initSkybox
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
-	    key: 'initTexture',
-	    value: function initTexture() {
+	    key: 'initSkybox',
+	    value: function initSkybox() {
 	      var _this2 = this;
 
+	      this.currentMaterial = this.skyboxMaterial2D;
+	      this.currentMaterial.needsUpdate = true;
+
 	      if (!this.skyboxTexture) {
-	        this.currentMaterial = this.skyboxMaterialNoTex;
-	        this.currentMaterial.needsUpdate = true;
+	        this.skyboxMaterial2D.map = null;
+	      } else if (this.skyboxTexture.type === 'textureCube' || this.skyboxTexture.type === 'renderTextureCube') {
+	        this.currentMaterial = this.skyboxMaterialCube;
+	      }
+
+	      var layout = this.skyboxTexture ? this.skyboxTexture.getLayout() : 'normal';
+	      if (layout !== this.currentTexLayout) {
+	        this.currentTexLayout = layout;
+	        this.initGeometry();
+	        this.initMesh();
+	        this.initStereoUvs();
+	      }
+	      if (this.isStereo()) {
+	        this.skyboxMesh.layers.set(1);
+	        this.getRuntimeData().add(this.skyboxMeshRightEye);
 	      } else {
-	        if (this.skyboxTexture.type === 'textureCube' || this.skyboxTexture.type === 'renderTextureCube') {
-	          this.currentMaterial = this.skyboxMaterialCube;
-	        } else {
-	          this.currentMaterial = this.skyboxMaterial2D;
-	        }
+	        this.skyboxMesh.layers.set(0);
+	        this.getRuntimeData().remove(this.skyboxMeshRightEye);
+	      }
 
-	        if (_BaseImageAsset2.default.LAYOUT[this.skyboxTexture.getLayout()] !== this.currentMaterial.defines.LAYOUT) {
-	          // Based on the layout being used and the eye that this skybox represents, use only the
-	          // appropriate part of the texture.
-	          this.currentMaterial.defines.STEREO_EYE = this.leftEye ? 'STEREO_EYE_LEFT' : 'STEREO_EYE_RIGHT';
-	          this.currentMaterial.defines.LAYOUT = _BaseImageAsset2.default.LAYOUT[this.skyboxTexture.getLayout()];
-	          this.currentMaterial.needsUpdate = true;
-	        }
-
-	        this.skyboxTexture.when('load', function () {
-	          _this2.skyboxUniforms.environmentTexture.value = _this2.skyboxTexture.runtimeData;
+	      if (!this.skyboxTexture) {
+	        return;
+	      }
+	      this.skyboxTexture.when('load', function () {
+	        if (_this2.currentMaterial === _this2.skyboxMaterial2D) {
+	          _this2.currentMaterial.map = _this2.skyboxTexture.getThreeTexture();
 	          _this2.currentMaterial.needsUpdate = true;
-	        }, this);
-	        if (this.isEnabled()) {
-	          this.skyboxTexture.load();
+	        } else {
+	          _this2.skyboxUniforms.envMap.value = _this2.skyboxTexture.getThreeTexture();
 	        }
+	      }, this);
+	      if (this.isEnabled() && this.skyboxTexture.isUnloaded()) {
+	        this.skyboxTexture.load();
 	      }
 	    }
+
+	    /**
+	     * Returns true iff the texture layout is stereoscopic (i.e. contains left and right eye images)
+	     * @method isStereo
+	     * @public
+	     * @returns {Boolean} true iff the texture layout is stereoscopic
+	     */
+
 	  }, {
-	    key: 'setSkyboxTexture',
-	    value: function setSkyboxTexture(textureId) {
-	      this.skyboxTexture = this.getAssetRegistry().Textures.getAssetById(textureId);
-	      this.initTexture();
-	      this.skyboxMesh.material = this.currentMaterial;
+	    key: 'isStereo',
+	    value: function isStereo() {
+	      if (!this.skyboxTexture || !this.stereoEnabled) {
+	        return false;
+	      }
+	      switch (this.skyboxTexture.getLayout()) {
+	        case 'stereo2dOverUnder':
+	        case 'stereo2dUnderOver':
+	        case 'stereo2dLeftRight':
+	        case 'stereo2dRightLeft':
+	          return this.stereoEnabled;
+	        default:
+	          return false;
+	      }
 	    }
+
+	    /**
+	     * Create the materials needed to render the skybox
+	     * @method initMaterials
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
-	    key: 'rebuildMaterials',
-	    value: function rebuildMaterials() {
-	      if (this.skyboxMaterialCube) {
-	        this.skyboxMaterialCube.needsUpdate = true;
-	      }
-	      if (this.skyboxMaterial2D) {
-	        this.skyboxMaterial2D.needsUpdate = true;
-	      }
-	      if (this.skyboxMaterialNoTex) {
-	        this.skyboxMaterialNoTex.needsUpdate = true;
-	      }
-	    }
-	  }, {
-	    key: 'createMaterial',
-	    value: function createMaterial() {
-	      var _this3 = this;
+	    key: 'initMaterials',
+	    value: function initMaterials() {
 
 	      this.skyboxUniforms = _three2.default.UniformsUtils.merge([{
-	        fogColor: {
-	          type: 'c',
-	          value: new _three2.default.Color()
-	        }
-	      }, {
-	        skyboxFogPower: {
-	          type: 'f',
-	          value: this.skyboxFogPower
-	        }
-	      }, {
-	        skyboxFogScale: {
-	          type: 'f',
-	          value: this.skyboxFogScale
-	        }
-	      }, {
-	        environmentTexture: {
+	        envMap: {
 	          type: 't',
 	          value: null
 	        }
-	      }]), this.skyboxVShader = ['varying vec3 vCameraVector;', 'void main() {',
-	      // 'vec4 worldPosition = modelMatrix * vec4( position, 1.0 );',
-	      'vCameraVector = (modelMatrix * vec4( position, 1.0 )).xyz;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
+	      }]), this.skyboxVShader = ['varying vec3 vCameraVector;', 'void main() {', 'vCameraVector = (modelMatrix * vec4( position, 1.0 )).xyz;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
 
-	      this.skyboxPShader = ['#ifdef USE_CUBEMAP', 'uniform samplerCube environmentTexture;', '#elif defined(USE_2DMAP)', 'uniform sampler2D environmentTexture;', '#endif', 'const float PI = 3.14159265358979;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', '#ifdef USE_CUBEMAP', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', '#elif defined(USE_2DMAP)', 'vec2 sampleUV;', 'sampleUV = vec2(atan(cameraVecN.z, cameraVecN.x) + PI, acos(cameraVecN.y));', 'sampleUV = sampleUV / vec2(2.0 * PI, PI);', '#if (LAYOUT == LAYOUT_STEREO2DOVERUNDER)', 'sampleUV.y *= 0.5;', '#if (STEREO_EYE != STEREO_EYE_LEFT)', 'sampleUV.y += 0.5;', '#endif', '#endif', 'vec4 environmentColor = texture2D( environmentTexture, sampleUV );', '#else', 'vec4 environmentColor = vec4(1.0);', '#endif', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );', '}'].join('\n');
+	      this.skyboxPShader = ['uniform samplerCube environmentTexture;', 'varying vec3 vCameraVector;', 'void main() {', 'vec3 cameraVecN = normalize( vCameraVector );', 'vec4 environmentColor = textureCube(environmentTexture,' + ' vec3(cameraVecN.x, cameraVecN.yz));', 'gl_FragColor = vec4( environmentColor.xyz, 1.0 );', '}'].join('\n');
 
 	      this.skyboxMaterialCube = new _three2.default.ShaderMaterial({
 	        vertexShader: this.skyboxVShader,
 	        fragmentShader: this.skyboxPShader,
 	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
+	        depthTest: true,
+	        depthWrite: false,
+	        side: _three2.default.BackSide
+	      });
+
+	      this.skyboxMaterial2D = new _three2.default.MeshBasicMaterial({
 	        depthTest: false,
 	        depthWrite: false,
-	        defines: {
-	          USE_CUBEMAP: ''
-	        }
+	        side: _three2.default.BackSide
 	      });
-
-	      this.skyboxMaterial2D = new _three2.default.ShaderMaterial({
-	        vertexShader: this.skyboxVShader,
-	        fragmentShader: this.skyboxPShader,
-	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
-	        depthTest: false,
-	        depthWrite: false,
-	        defines: {
-	          USE_2DMAP: ''
-	        }
-	      });
-
-	      _lodash2.default.each(_BaseImageAsset2.default.LAYOUT, function (value, name) {
-	        _this3.skyboxMaterialCube.defines['LAYOUT_' + name.toUpperCase()] = value;
-	        _this3.skyboxMaterial2D.defines['LAYOUT_' + name.toUpperCase()] = value;
-	      }, this);
-
-	      this.skyboxMaterial2D.defines.LAYOUT = 'LAYOUT_NORMAL';
-	      this.skyboxMaterialCube.defines.LAYOUT = 'LAYOUT_NORMAL';
-	      this.skyboxMaterial2D.defines.STEREO_EYE_LEFT = '1';
-	      this.skyboxMaterial2D.defines.STEREO_EYE_RIGHT = '2';
-	      this.skyboxMaterialCube.defines.STEREO_EYE_LEFT = '1';
-	      this.skyboxMaterialCube.defines.STEREO_EYE_RIGHT = '2';
-	      this.skyboxMaterial2D.defines.STEREO_EYE = 'STEREO_EYE_LEFT';
-	      this.skyboxMaterialCube.defines.STEREO_EYE = 'STEREO_EYE_LEFT';
-
-	      this.skyboxMaterialNoTex = new _three2.default.ShaderMaterial({
-	        vertexShader: this.skyboxVShader,
-	        fragmentShader: this.skyboxPShader,
-	        uniforms: this.skyboxUniforms,
-	        side: _three2.default.BackSide,
-	        depthTest: false,
-	        depthWrite: false
-	      });
-
-	      this.skyboxMaterialCube.precision = 'highp';
 	    }
 	  }]);
 
@@ -94950,11 +94980,11 @@
 	        this.box3DRuntime.trigger('imageUnloaded', this.id);
 
 	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading image, ' + this.getName());
+
+	        _get(Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
 	      }
 
 	      this.loadedBytes = 0;
-
-	      _get(Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /** @inheritdoc */

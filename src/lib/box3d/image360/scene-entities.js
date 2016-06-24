@@ -50,7 +50,7 @@ export default [{
     components: {
         skybox: {
             componentData: {
-                size: 1000
+                size: 100
             },
             enabled: false,
             scriptId: 'skybox_renderer'

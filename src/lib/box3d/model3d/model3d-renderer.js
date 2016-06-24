@@ -310,12 +310,16 @@ class Model3dRenderer extends Box3DRenderer {
      */
     cleanupHelpers() {
         const scene = this.getScene().runtimeData;
-        scene.remove(this.grid);
-        this.grid.material.dispose();
-        this.grid.geometry.dispose();
-        scene.remove(this.axisDisplay);
-        this.axisDisplay.material.dispose();
-        this.axisDisplay.geometry.dispose();
+        if (this.grid) {
+            scene.remove(this.grid);
+            this.grid.material.dispose();
+            this.grid.geometry.dispose();
+        }
+        if (this.axisDisplay) {
+            scene.remove(this.axisDisplay);
+            this.axisDisplay.material.dispose();
+            this.axisDisplay.geometry.dispose();
+        }
     }
 
     /**

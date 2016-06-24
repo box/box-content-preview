@@ -261,7 +261,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {void}
      */
     exitFullscreen() {
-        this.disableVr();
+        // Nothing for now
     }
 
     /**
@@ -337,6 +337,7 @@ class Box3DRenderer extends EventEmitter {
         this.vrEnabled = false;
 
         this.enableCameraControls();
+        this.reset();
 
         const renderViewId = 'render_view_component';
         const camera = this.getCamera();
