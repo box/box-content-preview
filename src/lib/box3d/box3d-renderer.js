@@ -249,22 +249,6 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     * Handles entering fullscreen mode
-     * @returns {void}
-     */
-    enterFullscreen() {
-        // Nothing for now
-    }
-
-    /**
-     * Handles exiting fullscreen mode
-     * @returns {void}
-     */
-    exitFullscreen() {
-        // Nothing for now
-    }
-
-    /**
      * Enable the VR system (HMD)
      * @returns {void}
      */
