@@ -64,7 +64,9 @@ class PreviewError extends Base {
         }
 
         this.loaded = true;
-        this.emit('load');
+        this.emit('load', {
+            error: message
+        });
     }
 
     /**
