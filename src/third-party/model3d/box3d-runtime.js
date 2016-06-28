@@ -59406,7 +59406,7 @@
 	          if (_this5.isInstance()) {
 	            _this5._initPrefabBindings();
 	          }
-	          if (_this5.state[Box3DEntity.STATE_TYPE.BASE] < Box3DEntity.STATE.SUCCEEDED) {
+	          if (_this5.state[Box3DEntity.STATE_TYPE.BASE] <= Box3DEntity.STATE.SUCCEEDED) {
 	            _this5.markState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.SUCCEEDED);
 	          }
 	        });
@@ -95005,6 +95005,7 @@
 	      var loadLowResImage = Promise.resolve();
 	      var textureParams = {
 	        maxResolution: 64,
+	        priority: 2,
 	        channels: this.isHdr() ? ['red', 'green', 'blue', 'exponent'] : undefined,
 	        compression: this.getCompressionFormat(),
 	        xhrKey: this.id
@@ -95026,6 +95027,7 @@
 	        var height = _this2.getHeight();
 	        _this2.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.INPROGRESS);
 	        textureParams.maxResolution = Math.max(width, height);
+	        textureParams.priority = 8;
 	        return loader.load(_this2, textureParams, onImageLoadProgress);
 	      }).then(this.onImageLoad.bind(this)).catch(this.onImageLoadError.bind(this)).then(function () {
 	        if (typeof callback === 'function') {
@@ -95550,7 +95552,7 @@
 	        callback();
 	      };
 
-	      this.box3DRuntime.resourceLoader.load(this, { size: 1, xhrKey: this.id }, onBufferProgress).then(onGeometryLoaded).catch(onGeometryLoadError);
+	      this.box3DRuntime.resourceLoader.load(this, { size: 1, xhrKey: this.id, priority: 1 }, onBufferProgress).then(onGeometryLoaded).catch(onGeometryLoadError);
 	    }
 
 	    /**
