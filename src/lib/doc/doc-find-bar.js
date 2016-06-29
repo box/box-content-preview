@@ -296,6 +296,12 @@ class DocFindBar extends EventEmitter {
                 event.stopPropagation();
                 event.preventDefault();
                 break;
+            case 'Shift++':
+            case 'Shift+_':
+            case '[':
+            case ']':
+                event.stopPropagation();
+                break;
             default:
                 break;
         }
