@@ -204,6 +204,8 @@ class Base extends EventEmitter {
      * Emits a generic viewer event
      *
      * @protected
+     * @param {String} event Event name
+     * @param {Object} data Event data
      * @returns {void}
      */
     emit(event, data) {

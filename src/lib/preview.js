@@ -597,7 +597,7 @@ class Preview extends EventEmitter {
                     this.show(this.file.id, this.previewOptions);
                     break;
                 case 'load':
-                    this.finishLoading();
+                    this.finishLoading(data.data);
                     break;
                 case 'notification':
                     this.emit('notification', data.data);
@@ -612,9 +612,10 @@ class Preview extends EventEmitter {
      * Final tasks to finish loading a viewer.
      *
      * @private
+     * @param {Object} [data] Load event data
      * @returns {void}
      */
-    finishLoading() {
+    finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
         this.showAnnotateButton();
 
@@ -643,6 +644,11 @@ class Preview extends EventEmitter {
             file: this.file
         });
 
+        // If there wasn't an error, use Events API to log a preview
+        if (typeof data.error !== 'string') {
+            this.logPreviewEvent();
+        }
+
         // Hookup for phantom JS health check
         if (typeof window.callPhantom === 'function') {
             window.callPhantom(1);
@@ -650,6 +656,29 @@ class Preview extends EventEmitter {
 
         // Prefetch other files
         this.prefetch();
+    }
+
+    /**
+     * Logs 'preview' event via the Events API. This is used for logging that a
+     * preview happened for access stats, unlike the Logger, which logs preview
+     * errors and performance metrics.
+     *
+     * @returns {void}
+     * @private
+     */
+    logPreviewEvent() {
+        fetch(`${this.options.api}/2.0/events`, {
+            method: 'POST',
+            headers: getHeaders({}, this.options.token),
+            body: JSON.stringify({
+                event_type: 'preview',
+                source: {
+                    type: 'file',
+                    id: this.file.id
+                }
+            })
+        })
+        .catch(() => {});
     }
 
     /**
