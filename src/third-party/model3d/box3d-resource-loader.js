@@ -76,6 +76,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var NUM_PRIORITIES = 10;
+	var DEFAULT_PRIORITY = 5;
+	var MAX_CONCURRENT_LOADS = 4;
+
 	var Box3DResourceLoader = function (_EventEmitter) {
 	  _inherits(Box3DResourceLoader, _EventEmitter);
 
@@ -114,27 +118,98 @@
 	    // delegate all notifcations to the external application
 	    _this.loader.on('missingAsset', _this.onMissingAsset.bind(_this));
 
+	    // The buckets for keeping track of pending downloads by priority.
+	    _this.priorityBuckets = [];
+	    _this.currentNumLoading = 0;
+	    _this.maxConcurrentLoads = opts.maxConcurrentLoads ? opts.maxConcurrentLoads : MAX_CONCURRENT_LOADS;
 	    return _this;
 	  }
 
 	  /**
-	   * Load the specified Box3DAsset.
-	   * @method load
-	   * @param {Box3DAsset} asset The Box3DAsset that is being loaded
-	   * @param {Object} params The criteria for determining which representation to load
-	   * @param {Function} progress The progress callback
-	   * @returns {Promise} a promise that resolves the asset data
+	   * Called when a asset load is complete. Handles starting the next load, if one is
+	   * waiting.
+	   * @private
+	   * @method loadFinished
+	   * @returns {void}
 	   */
 
 
 	  _createClass(Box3DResourceLoader, [{
+	    key: 'loadFinished',
+	    value: function loadFinished() {
+	      this.currentNumLoading--;
+	      // Look through the list and find the next asset to load, if any.
+	      for (var i = 0; i < this.priorityBuckets.length; i++) {
+	        if (this.priorityBuckets[i]) {
+	          var keys = Object.keys(this.priorityBuckets[i]);
+	          if (keys.length) {
+	            this.priorityBuckets[i][keys[0]]();
+	            // Remove the asset from the queue and return.
+	            delete this.priorityBuckets[i][keys[0]];
+	            return;
+	          }
+	        }
+	      }
+	    }
+
+	    /**
+	     * Return a promise that loads the asset and
+	     * @private
+	     * @method loadAndResolve
+	     * @param  {Object} asset    The asset to load
+	     * @param  {Object} params   Options
+	     * @param  {Function} progress Progress function
+	     * @param  {Function} resolve  Promise resolve function
+	     * @param  {Function} reject   Promise reject function
+	     * @returns {Promise} The promise that is resolved after the asset loads
+	     */
+
+	  }, {
+	    key: 'loadAndResolve',
+	    value: function loadAndResolve(asset, params, progress, resolve, reject) {
+	      var _this2 = this;
+
+	      this.currentNumLoading++;
+	      return this.loader.loadAsset(asset, params, progress).then(function (data) {
+	        _this2.loadFinished();
+	        resolve(data);
+	      }).catch(reject);
+	    }
+
+	    /**
+	     * Load the specified Box3DAsset.
+	     * @method load
+	     * @param {Box3DAsset} asset The Box3DAsset that is being loaded
+	     * @param {Object} params The criteria for determining which representation to load
+	     * @param {Function} progress The progress callback
+	     * @returns {Promise} a promise that resolves the asset data
+	     */
+
+	  }, {
 	    key: 'load',
 	    value: function load(asset) {
+	      var _this3 = this;
+
 	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	      var progress = arguments[2];
 
 
-	      return this.loader.loadAsset(asset, params, progress);
+	      return new Promise(function (resolve, reject) {
+	        // If we haven't hit the maximum number of simultaneous downloads yet, just
+	        // load the file.
+	        if (_this3.currentNumLoading < _this3.maxConcurrentLoads) {
+	          return _this3.loadAndResolve(asset, params, progress, resolve, reject);
+	        } else {
+	          // Figure out the priority and then add the asset to the queue in the appropriate
+	          // priority location.
+	          var priority = Math.max(Math.min(params.priority ? params.priority : DEFAULT_PRIORITY, NUM_PRIORITIES), 0);
+	          if (!_this3.priorityBuckets[priority]) {
+	            _this3.priorityBuckets[priority] = {};
+	          }
+	          // Add the asset loading function to the queue and wait to be called
+	          _this3.priorityBuckets[priority][asset.id] = _this3.loadAndResolve.bind(_this3, asset, params, progress, resolve, reject);
+	        }
+	      });
 	    }
 
 	    /**
@@ -1984,7 +2059,7 @@
 	    key: 'modifyImagePath',
 	    value: function modifyImagePath(url) {
 	      // This code assumes that url is actually the fully qualified path.
-	      // Convert V2 relative src to runmode path
+	      // Convert V2 src to runmode path
 	      // (e.g., images/1024/0.jpg -> 3dcg_image_1024_jpg/0.jpg)
 	      var urlTokens = url.match(/images\/(\d+)\/(\d+)\.(.+)$/);
 	      if (!urlTokens) {
