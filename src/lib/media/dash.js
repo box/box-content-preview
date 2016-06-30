@@ -9,6 +9,7 @@ import { CLASS_PREVIEW_LOADED } from '../constants';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
+const LOAD_TIMEOUT_MS = 60000; // 1m
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 
@@ -65,7 +66,7 @@ class Dash extends VideoBase {
             if (!this.loaded) {
                 this.emit('error', new Error(__('error_timeout')));
             }
-        }, 10000);
+        }, LOAD_TIMEOUT_MS);
     }
 
     /**
