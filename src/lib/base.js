@@ -14,7 +14,7 @@ import {
     SELECTOR_BOX_PREVIEW
 } from './constants';
 
-const LOAD_TIMEOUT_MS = 20000; // 20s
+const LOAD_TIMEOUT_MS = 60000; // 1m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 const OPTIONS = {
     ui: true
@@ -88,7 +88,7 @@ class Base extends EventEmitter {
     load() {
         setTimeout(() => {
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.emit('error');
+                this.emit('error', new Error(__('error_timeout')));
             }
         }, this.loadTimeout);
     }
@@ -204,6 +204,8 @@ class Base extends EventEmitter {
      * Emits a generic viewer event
      *
      * @protected
+     * @param {String} event Event name
+     * @param {Object} data Event data
      * @returns {void}
      */
     emit(event, data) {
