@@ -7,6 +7,7 @@
 import AnnotationDialog from '../annotation/annotation-dialog';
 import autobind from 'autobind-decorator';
 import * as annotatorUtil from '../annotation/annotator-util';
+import * as imageAnnotatorUtil from './image-annotator-util';
 
 const PAGE_PADDING_TOP = 15;
 
@@ -24,17 +25,15 @@ class ImagePointDialog extends AnnotationDialog {
      * @returns {void}
      */
     position() {
-        const imageEl = this._annotatedElement;
-        const browserX = this._location.x;
-        const browserY = this._location.y;
+        const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
 
         // Show dialog so we can get width
-        imageEl.appendChild(this._element);
+        this._annotatedElement.appendChild(this._element);
         annotatorUtil.showElement(this._element);
         const dialogDimensions = this._element.getBoundingClientRect();
         const dialogWidth = dialogDimensions.width;
-        const imageDimensions = imageEl.getBoundingClientRect();
-        const imageWidth = imageDimensions.width;
+        const wrapperDimensions = this._annotatedElement.getBoundingClientRect();
+        const wrapperWidth = wrapperDimensions.width;
 
         // Center middle of dialog with point - this coordinate is with respect to the page
         let dialogLeftX = browserX - dialogWidth / 2;
@@ -43,9 +42,9 @@ class ImagePointDialog extends AnnotationDialog {
         // further - this coordinate is with respect to the page
         const dialogTopY = browserY + 7;
 
-        // Reposition to avoid sides - left side of page is 0px, right side is ${imageWidth}px
+        // Reposition to avoid sides - left side of page is 0px, right side is ${wrapperWidth}px
         const dialogPastLeft = dialogLeftX < 0;
-        const dialogPastRight = dialogLeftX + dialogWidth > imageWidth;
+        const dialogPastRight = dialogLeftX + dialogWidth > wrapperWidth;
 
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
@@ -61,12 +60,12 @@ class ImagePointDialog extends AnnotationDialog {
         // Fix the dialog and move caret appropriately
         } else if (dialogPastRight && !dialogPastLeft) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
-            const caretRightX = Math.max(10, imageWidth - browserX);
+            const caretRightX = Math.max(10, wrapperWidth - browserX);
 
             // We set the 'left' property even when we have caretRightX for IE10/11
             annotationCaretEl.style.left = `${dialogWidth - caretRightX}px`;
 
-            dialogLeftX = imageWidth - dialogWidth;
+            dialogLeftX = wrapperWidth - dialogWidth;
 
         // Reset caret to center
         } else {

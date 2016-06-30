@@ -8,6 +8,7 @@ import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation/annotation-thread';
 import ImagePointDialog from './image-point-dialog';
 import * as annotatorUtil from '../annotation/annotator-util';
+import * as imageAnnotatorUtil from './image-annotator-util';
 import * as constants from '../annotation/annotation-constants';
 
 const POINT_ANNOTATION_ICON_WIDTH = 18;
@@ -26,14 +27,12 @@ class ImagePointThread extends AnnotationThread {
      * @returns {void}
      */
     show() {
-        const wrapperEl = this._annotatedElement;
-        const browserX = this._location.x;
-        const browserY = this._location.y;
+        const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
 
         // Position and append to page
         this._element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-        this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
-        wrapperEl.appendChild(this._element);
+        this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 8}px`;
+        this._annotatedElement.appendChild(this._element);
 
         annotatorUtil.showElement(this._element);
 

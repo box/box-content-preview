@@ -60,15 +60,20 @@ class ImageAnnotator extends Annotator {
             return location;
         }
 
-        const wrapperDimensions = wrapperEl.getBoundingClientRect();
+        // Location based only on image position
         const imageDimensions = imageEl.getBoundingClientRect();
-        const browserCoordinates = [event.clientX - wrapperDimensions.left, event.clientY - wrapperDimensions.top];
-        const [x, y] = browserCoordinates;
+        let [x, y] = [(event.clientX - imageDimensions.left), (event.clientY - imageDimensions.top)];
 
-        // If click is outside image area
-        if (x > imageDimensions.right || x < imageDimensions.left || y > imageDimensions.bottom || y < imageDimensions.top) {
+        // If click isn't in image area, ignore
+        if (event.clientX > imageDimensions.right || event.clientX < imageDimensions.left ||
+            event.clientY > imageDimensions.bottom || event.clientY < imageDimensions.top) {
             return location;
         }
+
+        // Scale location coordinates according to natural image size
+        const scale = annotatorUtil.getScale(this._annotatedElement);
+        x /= scale;
+        y /= scale;
 
         // We save the dimensions of the annotated element so we can
         // compare to the element being rendered on and scale as appropriate

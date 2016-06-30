@@ -275,9 +275,7 @@ class Image extends Base {
         // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
         // for the dimension that was cleared out.
-
         switch (type) {
-
             case 'in':
                 if (modifyWidthInsteadOfHeight) {
                     newWidth = width + 100;
@@ -309,7 +307,6 @@ class Image extends Base {
                 return;
 
             default:
-
                 // If the image is overflowing the viewport, figure out by how much
                 // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
                 if (width > viewport.width || height > viewport.height) {
@@ -341,6 +338,9 @@ class Image extends Base {
             const temp = newWidth;
             newWidth = newHeight;
             newHeight = temp;
+
+            // TODO(@spramod): make sure to swap height/width calculations when
+            // image is rotated
         }
 
         // Set the new dimensions. This ignores rotates, hence we need to swap the dimensions above.
@@ -355,6 +355,10 @@ class Image extends Base {
 
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
+
+        const scale = newWidth ? (newWidth / this.imageEl.naturalWidth) : (newHeight / this.imageEl.naturalHeight);
+        this.annotator.setScale(scale);
+        this.annotator.renderAnnotations();
     }
 
     /**
@@ -441,7 +445,7 @@ class Image extends Base {
         }
 
         const togglePointModeHandler = (event = {}) => {
-            this.isZoomable = false;
+            // this.isZoomable = false;
             this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
             this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
             this.annotator.togglePointModeHandler(event);
