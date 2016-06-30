@@ -57120,11 +57120,16 @@
 	        delete this.objects[x];
 	      }
 	    }
+
+	    /**
+	     * @inheritdoc
+	     */
+
 	  }, {
 	    key: 'load',
 	    value: function load(callback) {
 	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'load', this).call(this, callback);
-	      if (!this.isDependenciesLoaded()) {
+	      if (this.isDependenciesUnloaded()) {
 	        this.loadDependencies();
 	      }
 	    }
@@ -57260,18 +57265,19 @@
 
 	    /**
 	     * Returns the object with the provided Id, if it exists in the current asset.
+	     * If the objectId is the ID of this asset, returns this asset.
 	     * @method getObjectById
-	     * @param  {String} objectID The ID of the object
+	     * @param  {String} objectId The ID of the object
 	     * @return {Object} The object or null if not found.
 	     */
 
 	  }, {
 	    key: 'getObjectById',
-	    value: function getObjectById(objectID) {
+	    value: function getObjectById(objectId) {
 
-	      if (this.objects[objectID]) {
-	        return this.objects[objectID];
-	      } else if (objectID === this.id) {
+	      if (this.objects[objectId]) {
+	        return this.objects[objectId];
+	      } else if (objectId === this.id) {
 	        return this;
 	      }
 
@@ -57761,6 +57767,7 @@
 	    _this.sharedData = jsonDesc;
 	    _this.ownDependencies = {};
 	    _this.dependencies = {};
+	    _this.numChildrenLoaded = 0;
 	    return _this;
 	  }
 
@@ -57771,18 +57778,36 @@
 	      this._buildParamDependencies();
 	    }
 	  }, {
-	    key: 'markState',
-	    value: function markState(stateType, state) {
+	    key: 'setState',
+
+
+	    /**
+	     * Marks the loading state of the entity and updates any other entity's state if appropriate.
+	     * e.g. If an entity is loaded, the parent entity may need its children state set to loaded.
+	     * @private
+	     * @method setState
+	     * @param  {Integer} stateType The state type to mark. Values are from Box3DEntity.STATE_TYPE.
+	     * @param  {Integer} state     The state to set. Values are from Box3DEntity.STATE.
+	     * @return {void}
+	     */
+	    value: function setState(stateType, state) {
 	      if (!state) {
 	        return;
 	      }
+	      var wasPreviouslyLoaded = this.isLoaded();
 	      this.state[stateType] = state;
 	      var parent = this.getParentObject();
 	      switch (state) {
 	        case Box3DEntity.STATE.PENDING:
 	          //If the parent's children are not unloaded or destroyed, mark them as in-progress
-	          if (parent && parent.state[Box3DEntity.STATE_TYPE.CHILDREN] > Box3DEntity.STATE.PENDING) {
-	            parent.markState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.INPROGRESS);
+	          if (parent) {
+	            if (parent.state[Box3DEntity.STATE_TYPE.CHILDREN] > Box3DEntity.STATE.PENDING) {
+	              parent.setState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.INPROGRESS);
+	            }
+	            // If we were previously in a loaded state, decrement the parent's counter.
+	            if (wasPreviouslyLoaded) {
+	              parent.numChildrenLoaded--;
+	            }
 	          }
 	          if (this.isUnloaded()) {
 	            this.trigger('unload', this);
@@ -57794,9 +57819,14 @@
 	          }
 	        // Fallthrough
 	        case Box3DEntity.STATE.PARTIAL:
-	          // Set parent's children state to INPROGRESS
+
 	          if (parent) {
-	            parent.markState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.INPROGRESS);
+	            // If we were previously in a loaded state, decrement the parent's counter.
+	            if (wasPreviouslyLoaded) {
+	              parent.numChildrenLoaded--;
+	            }
+	            // Set parent's children state to INPROGRESS
+	            parent.setState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.INPROGRESS);
 	          }
 	          break;
 	        case Box3DEntity.STATE.SUCCEEDED:
@@ -57820,17 +57850,24 @@
 	          // If this entity isn't finished loading then it won't affect the parent's state.
 	          if (!this.isLoaded()) {
 	            return;
-	          } else {
-	            this.trigger('load', this);
 	          }
+
+	          this.trigger('load', this);
+
 	          if (!parent) {
 	            break;
 	          }
-	          // Otherwise, if parent's other children are loaded, then update child state of parent
-	          if (parent.checkIfChildrenLoaded()) {
+
+	          // If the state has changed from an unloaded state, increment the counter on the parent
+	          // to track the number of children loaded.
+	          if (!wasPreviouslyLoaded) {
+	            parent.numChildrenLoaded++;
+	          }
+	          // If parent's other children are loaded, then update child state of parent
+	          if (parent.getChildIds().length === parent.numChildrenLoaded) {
 	            // Don't overwrite the state if it was already something that needs to be recorded.
 	            if (state >= parent.state[Box3DEntity.STATE_TYPE.CHILDREN]) {
-	              parent.markState(Box3DEntity.STATE_TYPE.CHILDREN, state);
+	              parent.setState(Box3DEntity.STATE_TYPE.CHILDREN, state);
 	            }
 	          }
 	      }
@@ -57996,7 +58033,7 @@
 	        this.dependencies[assetId] = { count: 1 };
 	        // A new dependency was added so make sure that our state isn't 'loaded' anymore.
 	        if (this.isDependenciesLoaded()) {
-	          this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.INPROGRESS);
+	          this.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.INPROGRESS);
 	        }
 	        asset = this.box3DRuntime.assetRegistry.getAssetById(assetId);
 	        // When each dependency is loaded, check if we're done and mark dependencies as
@@ -58004,7 +58041,7 @@
 	        if (asset) {
 	          asset.when('loadBase', function () {
 	            if (this.checkIfOwnDependenciesLoaded()) {
-	              this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
+	              this.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
 	            }
 	          }, this);
 	        }
@@ -58092,7 +58129,7 @@
 	            };
 	            // A new dependency was added so make sure that our state isn't 'loaded' anymore.
 	            if (_this3.isDependenciesLoaded()) {
-	              _this3.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.INPROGRESS);
+	              _this3.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.INPROGRESS);
 	            }
 	            if (!_this3.isUnloaded() && asset.isUnloaded()) {
 	              asset.load();
@@ -58101,7 +58138,7 @@
 	            // finished if we are done.
 	            asset.when('loadBase', function () {
 	              if (this.checkIfOwnDependenciesLoaded()) {
-	                this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
+	                this.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
 	              }
 	            }, _this3);
 	            asset.on('change:dependency', dependencies[assetId].onSubDependencyChange, _this3);
@@ -58571,7 +58608,9 @@
 	      // Resize the array.
 	      this.sharedData.children.splice(0, removed);
 	      for (i = 0; i < newChildren.length; i++) {
-	        this.sharedData.children[i] = newChildren[i];
+	        if (newChildren[i] !== this.id) {
+	          this.sharedData.children[i] = newChildren[i];
+	        }
 	      }
 	      if (!options || !options.silent) {
 	        addedChildren = [];
@@ -59261,7 +59300,8 @@
 	     * @public
 	     * @param {String} eventName The name of the event to listen for
 	     * @param {Function} callback The callback function to call when the event occurs
-	     * @param {Object} context The context that the callback will be called in
+	     * @param {RuntimeEvents} context The context that the callback will be called in. This needs
+	     * to be another Box3DEntity or something that inherits from RuntimeEvents.
 	     */
 
 	  }, {
@@ -59271,7 +59311,11 @@
 	        if (eventName === 'load' && this.isLoaded() || eventName === 'loadBase' && this.isBaseLoaded() || eventName === 'loadChildren' && this.isChildrenLoaded() || eventName === 'loadDependencies' && this.isDependenciesLoaded() || eventName === 'loadComponents' && this.isComponentsLoaded()) {
 	          callback.call(context, this);
 	        } else {
-	          this.once(eventName, callback, context);
+	          if (context) {
+	            context.listenToOnce(this, eventName, callback, context);
+	          } else {
+	            this.once(eventName, callback, context);
+	          }
 	        }
 	      }
 	    }
@@ -59311,7 +59355,7 @@
 	      this.loadChildren();
 
 	      if (this.checkIfOwnDependenciesLoaded()) {
-	        this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
+	        this.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
 	      }
 	    }
 	  }, {
@@ -59394,7 +59438,7 @@
 	      } else if (this.isBaseUnloaded()) {
 	        this.once('loadBase', callback, this);
 
-	        this.markState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.INPROGRESS);
+	        this.setState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.INPROGRESS);
 
 	        this.componentRegistry.loadComponents();
 
@@ -59407,7 +59451,7 @@
 	            _this5._initPrefabBindings();
 	          }
 	          if (_this5.state[Box3DEntity.STATE_TYPE.BASE] <= Box3DEntity.STATE.SUCCEEDED) {
-	            _this5.markState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.SUCCEEDED);
+	            _this5.setState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.SUCCEEDED);
 	          }
 	        });
 	      }
@@ -59442,7 +59486,7 @@
 	        parent.remove(this.runtimeData);
 	      }
 
-	      this.markState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.PENDING);
+	      this.setState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.PENDING);
 
 	      this.loadBase(function () {
 	        // Add the new runtimeData to the parent.
@@ -59475,9 +59519,13 @@
 	      if (_lodash2.default.isFunction(callback)) {
 	        this.once('loadDependencies', callback, this);
 	      }
-	      this.box3DRuntime.loadEntities(dependencyKeys, function () {
-	        _this7.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
-	      });
+	      // Only start loading the dependencies if they aren't loading yet.
+	      if (this.isDependenciesUnloaded()) {
+	        this.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.INPROGRESS);
+	        this.box3DRuntime.loadEntities(dependencyKeys, function () {
+	          _this7.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.SUCCEEDED);
+	        });
+	      }
 	    }
 
 	    /**
@@ -59587,12 +59635,12 @@
 
 	      if (this.isChildrenLoaded()) {
 	        // Make sure we trigger the appropriate events
-	        this.markState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.SUCCEEDED);
+	        this.setState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.SUCCEEDED);
 	        if (_lodash2.default.isFunction(callback)) {
 	          callback(this);
 	        }
 	      } else {
-	        this.markState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.INPROGRESS);
+	        this.setState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.INPROGRESS);
 	        this.once('loadChildren', callback, this);
 
 	        //Record a list of the child hierarchies to load so that we can know
@@ -59637,10 +59685,10 @@
 	          }
 	        });
 	      }
-	      this.markState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.PENDING);
-	      this.markState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.PENDING);
-	      this.markState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.PENDING);
-	      this.markState(Box3DEntity.STATE_TYPE.COMPONENTS, Box3DEntity.STATE.PENDING);
+	      this.setState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.PENDING);
+	      this.setState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.PENDING);
+	      this.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.PENDING);
+	      this.setState(Box3DEntity.STATE_TYPE.COMPONENTS, Box3DEntity.STATE.PENDING);
 	      this.runtimeData = null;
 	    }
 
@@ -59880,24 +59928,23 @@
 	    }
 
 	    /**
-	     * Go through the children of this entity and check if they are all loaded
-	     * @method checkIfChildrenLoaded
+	     * Go through the children of this entity and count the ones that are loaded
+	     * @method getLoadedChildCount
 	     * @private
-	     * @return {Boolean} True iff all children are loaded.
+	     * @return {Integer} The number of children that are finished loading.
 	     */
 
 	  }, {
-	    key: 'checkIfChildrenLoaded',
-	    value: function checkIfChildrenLoaded() {
+	    key: 'getLoadedChildCount',
+	    value: function getLoadedChildCount() {
+	      var count = 0;
 	      var children = this.getChildren();
 	      for (var i = 0; i < children.length; i++) {
-	        if (children.id !== this.id) {
-	          if (!children[i].isLoaded()) {
-	            return false;
-	          }
+	        if (children[i].isLoaded()) {
+	          count++;
 	        }
 	      }
-	      return true;
+	      return count;
 	    }
 
 	    /**
@@ -60074,67 +60121,51 @@
 	    value: function _childrenChanged(addedChildren, removedChildren) {
 	      var _this8 = this;
 
-	      if (this.isUnloaded()) {
-	        return;
-	      }
+	      // Count the loaded children and mark state appropriately
+	      this.numChildrenLoaded = this.getLoadedChildCount();
 
+	      // Remove the children specified
 	      for (var i = 0; i < removedChildren.length; i++) {
-	        //Remove the child
 	        var child = removedChildren[i];
 	        if (child) {
 	          if (this.isBaseLoaded()) {
 	            this.runtimeData.remove(child.runtimeData);
-	            if (child.type === 'light') {
-	              _log2.default.info('A light was removed from object, ' + this.id + ', so we\'ll rebuild all shaders.');
-	              this.box3DRuntime.trigger('rebuildMaterials');
-	            }
-	          }
-	          if (!this.isChildrenLoaded()) {
-	            if (this.checkIfChildrenLoaded()) {
-	              this.markState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.SUCCEEDED);
-	            }
 	          }
 	        }
 	      }
 
-	      //Now, add children that should be added.
-	      Promise.all(addedChildren.map(function (child) {
-	        return new Promise(function (resolve) {
-	          //Setting the parent id because this might not exist yet.
-	          child.set('parentId', _this8.id, { silent: true });
-	          if (_this8.isChildrenLoaded()) {
-	            _this8.markState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.INPROGRESS);
+	      // Now, add children that should be added.
+	      for (var _i = 0; _i < addedChildren.length; _i++) {
+	        var _child = addedChildren[_i];
+	        // Setting the parent id because this might not exist yet.
+	        _child.set('parentId', this.id, { silent: true });
+	        if (!_child.isLoaded()) {
+	          if (!this.isChildrenUnloaded()) {
+	            this.setState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.INPROGRESS);
 	          }
-	          child.when('loadBase', function (newChild) {
-	            _this8.when('loadBase', function () {
-	              _this8.runtimeData.add(newChild.runtimeData);
-	              _this8.box3DRuntime.needsRender = true;
-	            });
-	            if (newChild.type === 'light') {
-	              _this8.box3DRuntime.trigger('rebuildMaterials');
-	            }
-	          });
-	          child.when('load', resolve);
-	          // Only load the child if it's not already loading and this entity's hierarchy
-	          // is being or has been loaded.
-	          if (!_this8.isChildrenUnloaded() && child.isBaseUnloaded()) {
-	            child.load();
-	            child.loadDependencies();
-	          }
-	        });
-	      })).then(function () {
-	        if (_this8.isDestroyed()) {
-	          return;
 	        }
-	        if (!_this8.isChildrenUnloaded()) {
+	        // Add the child when both this object and the child are loaded
+	        _child.when('loadBase', function (newChild) {
 	          _this8.when('loadBase', function () {
-	            // TODO: this should go through the children and look for the highest state value
-	            // so that we pass states like FAILED and ABORTED up the hierarchy rather than just
-	            // SUCCEEDED
-	            _this8.markState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.SUCCEEDED);
-	          }, _this8);
+	            _this8.runtimeData.add(newChild.runtimeData);
+	            _this8.box3DRuntime.needsRender = true;
+	          });
+	        });
+	        // Only load the child if it's not already loading and this entity's hierarchy
+	        // is being or has been loaded.
+	        if (!this.isChildrenUnloaded() && _child.isBaseUnloaded()) {
+	          _child.load();
+	          _child.loadDependencies();
 	        }
-	      }).catch(_log2.default.warn.bind(_log2.default));
+	      }
+	      // If all of the children are already loaded then mark the hierarchy as loaded. Otherwise
+	      // the children will handle that when they load.
+	      if (this.numChildrenLoaded === this.getChildIds().length) {
+	        // TODO: this should go through the children and look for the highest state value
+	        // so that we pass states like FAILED and ABORTED up the hierarchy rather than just
+	        // SUCCEEDED
+	        this.setState(Box3DEntity.STATE_TYPE.CHILDREN, Box3DEntity.STATE.SUCCEEDED);
+	      }
 	    }
 
 	    //Called when the prefab asset changes and the instance object needs to be
@@ -61470,7 +61501,7 @@
 	        var comp = _this13.components[id];
 	        _this13.loadComponent(comp);
 	      });
-	      this.box3DEntity.markState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
+	      this.box3DEntity.setState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
 	    }
 	  }]);
 
@@ -62798,31 +62829,34 @@
 	                    this.stopListening(prevTex, 'load', onTexLoaded);
 	                  }
 	                }
-	                //Unbind before binding to catch cases where this texture is already bound.
-	                //This probably shouldn't be needed but will require a bit of a refactor to avoid.
+	                // Unbind before binding to catch cases where this texture is already bound.
+	                // This probably shouldn't be needed but will require a bit of a refactor to avoid.
 	                this.stopListening(tex, 'load', onTexLoaded);
 	                this.listenTo(tex, 'load', onTexLoaded);
-	                if (!tex.isLoaded()) {
-	                  //Assign the missing texture so that this material can render cleanly until
-	                  //the real texture loads.
-	                  var standinTex = void 0;
-	                  if (!shaderParams[key].textureUsage) {
-	                    if (!shaderParams[key].textureType) {
-	                      standinTex = MaterialAsset.STANDIN_TEXTURE_WHITE;
-	                    } else {
-	                      standinTex = MaterialAsset.STANDIN_TEXTURE_WHITE_CUBE;
-	                    }
-	                  } else if (shaderParams[key].textureUsage === 'normal') {
-	                    standinTex = MaterialAsset.STANDIN_TEXTURE_NORMAL;
-	                  } else if (shaderParams[key].textureUsage === 'bump') {
-	                    standinTex = MaterialAsset.STANDIN_TEXTURE_BLACK;
+
+	                // Assign the missing texture so that this material can render cleanly until
+	                // the real texture loads.
+	                var standinTex = void 0;
+	                if (!shaderParams[key].textureUsage) {
+	                  if (!shaderParams[key].textureType) {
+	                    standinTex = MaterialAsset.STANDIN_TEXTURE_WHITE;
+	                  } else {
+	                    standinTex = MaterialAsset.STANDIN_TEXTURE_WHITE_CUBE;
 	                  }
-	                  this.setUniform(key, this.registry.getStandInTexture(standinTex));
-	                  this.box3DRuntime.needsRender = true;
-	                  tex.load();
-	                } else {
-	                  onTexLoaded.call(this, tex);
+	                } else if (shaderParams[key].textureUsage === 'normal') {
+	                  standinTex = MaterialAsset.STANDIN_TEXTURE_NORMAL;
+	                } else if (shaderParams[key].textureUsage === 'bump') {
+	                  standinTex = MaterialAsset.STANDIN_TEXTURE_BLACK;
 	                }
+	                this.setUniform(key, this.registry.getStandInTexture(standinTex));
+	                this.box3DRuntime.needsRender = true;
+	                // If the texture is completely unloaded, load it.
+	                if (tex.isUnloaded()) {
+	                  tex.load();
+	                  // Otherwise, if the texture load is already completed, call the callback directly
+	                } else if (tex.isLoaded()) {
+	                    onTexLoaded.call(this, tex);
+	                  }
 	              } else if (!tex) {
 	                this.setUniform(key, null);
 	              }
@@ -63301,7 +63335,7 @@
 
 	      var handleImageFailure = function handleImageFailure() {
 	        _this3.runtimeData = _this3.registry.getMissingTexture();
-	        _this3.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
+	        _this3.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
 	        _this3.trigger('loadProgress', _this3);
 	        if (typeof callback === 'function') {
 	          callback.call(_this3);
@@ -95025,7 +95059,7 @@
 	        // Now load the high-res version of the image.
 	        var width = _this2.getWidth();
 	        var height = _this2.getHeight();
-	        _this2.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.INPROGRESS);
+	        _this2.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.INPROGRESS);
 	        textureParams.maxResolution = Math.max(width, height);
 	        textureParams.priority = 8;
 	        return loader.load(_this2, textureParams, onImageLoadProgress);
@@ -95074,7 +95108,7 @@
 	    value: function onImageLoadError(err) {
 	      _log2.default.error('There was an error loading the image, ' + this.getName(), err);
 
-	      this.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
+	      this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
 
 	      this.loadedBytes = this.getDataSizeDownload();
 	      this.trigger('loadProgress', this);
@@ -98706,7 +98740,7 @@
 	      if (!category) {
 	        this.setProperty('category', 'User Defined');
 	      }
-	      this.markState(_Box3DEntity2.default.STATE_TYPE.CHILDREN, _Box3DEntity2.default.STATE.SUCCEEDED);
+	      this.setState(_Box3DEntity2.default.STATE_TYPE.CHILDREN, _Box3DEntity2.default.STATE.SUCCEEDED);
 	    }
 	  }, {
 	    key: 'uninitialize',
@@ -98716,7 +98750,7 @@
 	  }, {
 	    key: 'initializeComponents',
 	    value: function initializeComponents() {
-	      this.markState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
+	      this.setState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
 	      return;
 	    }
 	  }, {
@@ -98728,7 +98762,7 @@
 	    key: 'loadBase',
 	    value: function loadBase() {
 	      if (this.isBaseLoaded()) {
-	        this.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
+	        this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
 	      } else {
 	        var externalDependencies = [];
 
@@ -98737,7 +98771,7 @@
 	        }, this);
 
 	        _APIUtilities2.default.loadExtensions(externalDependencies, _lodash2.default.bind(function () {
-	          this.markState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
+	          this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
 	        }, this));
 	      }
 	    }
