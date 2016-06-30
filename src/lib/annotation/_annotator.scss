@@ -62,12 +62,10 @@ $avatar-color-9: #f22c44;
 }
 
 .box-preview-btn-plain {
-    &.box-preview-btn-annotate:hover svg,
     &.box-preview-btn-annotate.box-preview-is-active svg {
         fill: $box-blue;
     }
 
-    &.box-preview-btn-highlight:hover svg,
     &.box-preview-btn-highlight.box-preview-is-active svg {
         fill: $highlight-yellow;
     }
