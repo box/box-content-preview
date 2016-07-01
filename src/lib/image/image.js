@@ -1,12 +1,13 @@
 import './image.scss';
 import autobind from 'autobind-decorator';
 import AnnotationService from '../annotation/annotation-service';
+import * as annotatorUtil from '../annotation/annotator-util';
 import ImageAnnotator from './image-annotator';
 import Browser from '../browser';
 import Base from './image-base';
 import { get } from '../util';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../icons/icons';
-import { CLASS_INVISIBLE } from '../constants';
+import { CLASS_INVISIBLE, SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../constants';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -32,6 +33,7 @@ class Image extends Base {
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_IMAGE;
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
+        this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
 
         // hides image tag until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
@@ -244,8 +246,21 @@ class Image extends Base {
     rotateLeft() {
         const angle = this.currentRotationAngle - 90;
         this.currentRotationAngle = (angle === -3600) ? 0 : angle;
+        const rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.imageEl.setAttribute('data-rotation-angle', rotationAngle);
         this.imageEl.style.transform = `rotate(${this.currentRotationAngle}deg)`;
         this.emit('rotate');
+        this.annotator.renderAnnotations();
+
+        // Hide create annotations button if image is rotated
+        // TODO(@spramod) actually adjust getLocationFromEvent method in annotator to get correct location rather than disabling the creation of annotations on rotated images
+        if (rotationAngle !== 0) {
+            annotatorUtil.hideElement(this.annotateButton);
+            this.annotator.hideAllAnnotations();
+        } else {
+            annotatorUtil.showElement(this.annotateButton);
+            this.annotator.showAllAnnotations();
+        }
     }
 
     /**

@@ -7,6 +7,7 @@ import autobind from 'autobind-decorator';
 import Annotator from '../annotation/annotator';
 import ImagePointThread from './image-point-thread';
 import * as annotatorUtil from '../annotation/annotator-util';
+import * as imageAnnotatorUtil from './image-annotator-util';
 import * as constants from '../annotation/annotation-constants';
 
 @autobind
@@ -72,8 +73,8 @@ class ImageAnnotator extends Annotator {
 
         // Scale location coordinates according to natural image size
         const scale = annotatorUtil.getScale(this._annotatedElement);
-        x /= scale;
-        y /= scale;
+        const rotation = Number(imageEl.getAttribute('data-rotation-angle'));
+        [x, y] = imageAnnotatorUtil.getLocationWithoutRotation(x / scale, y / scale, rotation, imageDimensions, scale);
 
         // We save the dimensions of the annotated element so we can
         // compare to the element being rendered on and scale as appropriate
@@ -116,6 +117,20 @@ class ImageAnnotator extends Annotator {
 
         this.addThreadToMap(thread);
         return thread;
+    }
+
+    hideAllAnnotations() {
+        const annotations = this._annotatedElement.getElementsByClassName('box-preview-point-annotation-btn');
+        for (let i = 0; i < annotations.length; i++) {
+            annotatorUtil.hideElement(annotations[i]);
+        }
+    }
+
+    showAllAnnotations() {
+        const annotations = this._annotatedElement.getElementsByClassName('box-preview-point-annotation-btn');
+        for (let i = 0; i < annotations.length; i++) {
+            annotatorUtil.showElement(annotations[i]);
+        }
     }
 }
 
