@@ -103,19 +103,11 @@ class DocFindBar extends EventEmitter {
      */
     destroy() {
         this.currentMatch = 0;
-
         this.unbindDOMListeners();
 
-        // Clean up the find buttons
-        this.findPreviousButtonEl.parentNode.removeChild(this.findPreviousButtonEl);
-        this.findNextButtonEl.parentNode.removeChild(this.findNextButtonEl);
-        this.findCloseButtonEl.parentNode.removeChild(this.findCloseButtonEl);
-        this.findButtonContainerEl.parentNode.removeChild(this.findButtonContainerEl);
-
-        // Clean up find bar and controller object
-        this.findResultsCountEl.parentNode.removeChild(this.findResultsCountEl);
-        this.findFieldEl.parentNode.removeChild(this.findFieldEl);
-        this.bar.parentNode.removeChild(this.bar);
+        if (this.bar && this.bar.parentNode) {
+            this.bar.parentNode.removeChild(this.bar);
+        }
     }
 
     /**
