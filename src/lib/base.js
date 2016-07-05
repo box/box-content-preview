@@ -80,13 +80,27 @@ class Base extends EventEmitter {
 
     /**
      * Loads content.
-     * Sets a timeout for loading.
      *
      * @protected
      * @returns {void}
      */
     load() {
-        setTimeout(() => {
+        this.resetLoadTimeout();
+    }
+
+    /**
+     * Sets a timeout for loading.
+     *
+     * @protected
+     * @returns {void}
+     */
+    resetLoadTimeout() {
+        clearTimeout(this.loadTimeoutId);
+        this.loadTimeoutId = setTimeout(() => {
+            if (document.hidden) {
+                this.resetLoadTimeout();
+                return;
+            }
             if (!this.isLoaded() && !this.isDestroyed()) {
                 this.emit('error', new Error(__('error_timeout')));
             }

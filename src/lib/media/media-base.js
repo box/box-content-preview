@@ -52,6 +52,7 @@ class MediaBase extends Base {
                 this.mediaEl.removeEventListener('pause', this.pauseHandler);
                 this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
                 this.mediaEl.removeEventListener('seeked', this.removeLoadingIcon);
+                this.mediaEl.removeEventListener('loadedmetadata', this.loadedmetadataHandler);
 
                 this.mediaEl.removeAttribute('src');
                 this.mediaEl.load();
