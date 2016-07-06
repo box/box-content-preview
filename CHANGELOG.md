@@ -2,10 +2,34 @@
 
 ## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
 
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.64.0...HEAD)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.66.0...HEAD)
 
 **Merged pull requests:**
 
+- Adding visibility change to preview loading timeout [\#451](https://gitenterprise.inside-box.net/Preview/Preview/pull/451) ([phora](https://gitenterprise.inside-box.net/phora))
+- Remove GPU acceleration hack [\#447](https://gitenterprise.inside-box.net/Preview/Preview/pull/447) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
+## [v0.66.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.66.0) (2016-07-01)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.65.0...v0.66.0)
+
+**Merged pull requests:**
+
+- Fix find bar cleanup [\#450](https://gitenterprise.inside-box.net/Preview/Preview/pull/450) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
+## [v0.65.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.65.0) (2016-06-30)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.64.0...v0.65.0)
+
+**Merged pull requests:**
+
+- Update annotation button hover behavior [\#449](https://gitenterprise.inside-box.net/Preview/Preview/pull/449) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- PDFJS v1.5.312 [\#448](https://gitenterprise.inside-box.net/Preview/Preview/pull/448) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix rep status error messaging [\#446](https://gitenterprise.inside-box.net/Preview/Preview/pull/446) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Increasing DASH timeout to 60s [\#445](https://gitenterprise.inside-box.net/Preview/Preview/pull/445) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Disable Safari range request & modify chunk size [\#444](https://gitenterprise.inside-box.net/Preview/Preview/pull/444) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Log 'preview' event from Preview SDK [\#443](https://gitenterprise.inside-box.net/Preview/Preview/pull/443) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- COXP 2131: Don't trigger keyboard shortcuts while find controller is open [\#442](https://gitenterprise.inside-box.net/Preview/Preview/pull/442) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Updating loader and runtime with load limits and priority queue and r… [\#441](https://gitenterprise.inside-box.net/Preview/Preview/pull/441) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Update changelog to v0.64.0 [\#440](https://gitenterprise.inside-box.net/Preview/Preview/pull/440) ([tjin](https://gitenterprise.inside-box.net/tjin))
 - Fixing image timeout test [\#439](https://gitenterprise.inside-box.net/Preview/Preview/pull/439) ([tjin](https://gitenterprise.inside-box.net/tjin))
 
 ## [v0.64.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.64.0) (2016-06-24)
