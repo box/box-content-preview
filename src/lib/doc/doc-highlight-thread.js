@@ -262,8 +262,8 @@ class DocHighlightThread extends AnnotationThread {
      */
     bindCustomListenersOnDialog() {
         // Annotation created
-        this._dialog.addListener('annotationcreate', () => {
-            this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, '');
+        this._dialog.addListener('annotationcreate', (data) => {
+            this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, data ? data.text : '');
         });
 
         // Annotation deleted

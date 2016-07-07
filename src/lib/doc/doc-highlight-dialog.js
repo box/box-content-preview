@@ -9,9 +9,10 @@ import autobind from 'autobind-decorator';
 import AnnotationDialog from '../annotation/annotation-dialog';
 import * as annotatorUtil from '../annotation/annotator-util';
 import * as docAnnotatorUtil from './doc-annotator-util';
-import { CLASS_HIDDEN } from '../constants';
+import { CLASS_HIDDEN, CLASS_ACTIVE } from '../constants';
+import * as constants from '../annotation/annotation-constants.js';
 import { decodeKeydown } from '../util.js';
-import { ICON_DELETE, ICON_HIGHLIGHT } from '../icons/icons';
+import { ICON_DELETE, ICON_HIGHLIGHT, ICON_ANNOTATION } from '../icons/icons';
 
 const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
 const PAGE_PADDING_BOTTOM = 15;
@@ -137,20 +138,89 @@ class DocHighlightDialog extends AnnotationDialog {
      * @protected
      */
     setup(annotations) {
+        // console.log(annotations);
+        this.emit('annotationcreate');
         this._element = document.createElement('div');
         this._element.classList.add('box-preview-highlight-dialog');
         this._element.innerHTML = `
             <div class="box-preview-annotation-caret"></div>
-            <button class="box-preview-btn-plain box-preview-add-highlight-btn ${annotations.length ? CLASS_HIDDEN : ''}"
-                data-type="add-highlight-btn">
-                ${ICON_HIGHLIGHT}
-            </button>
-            <button class="box-preview-btn-plain box-preview-delete-highlight-btn ${annotations.length ? '' : CLASS_HIDDEN}"
-                data-type="delete-highlight-btn">
-                ${ICON_DELETE}
-            </button>`.trim();
+            <div class="box-preview-annotation-highlight-dialog">
+                <button class="box-preview-btn-plain box-preview-add-highlight-btn ${annotations.length ? CLASS_HIDDEN : ''}"
+                    data-type="add-highlight-btn">
+                    ${ICON_HIGHLIGHT}
+                </button>
+                <button class="box-preview-btn-plain box-preview-add-highlight-btn"
+                    data-type="add-highlight-comment-btn">
+                    ${ICON_ANNOTATION}
+                </button>
+                <button class="box-preview-btn-plain box-preview-delete-highlight-btn ${annotations.length ? '' : CLASS_HIDDEN}"
+                    data-type="delete-highlight-btn">
+                    ${ICON_DELETE}
+                </button>
+            </div>
+            <div class="annotation-container ${CLASS_HIDDEN}">
+                <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
+                    <textarea class="box-preview-textarea annotation-textarea ${CLASS_ACTIVE}"
+                        placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
+                    <div class="button-container">
+                        <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
+                            ${__('annotation_cancel')}
+                        </button>
+                        <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-annotation-btn">
+                            ${__('annotation_post')}
+                        </button>
+                    </div>
+                </section>
+                <section class="${annotations.length ? '' : CLASS_HIDDEN}" data-section="show">
+                    <div class="annotation-comments"></div>
+                    <div class="reply-container">
+                        <textarea class="box-preview-textarea reply-textarea"
+                            placeholder="${__('annotation_reply_placeholder')}" data-type="reply-textarea"></textarea>
+                        <div class="button-container ${CLASS_HIDDEN}">
+                            <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-reply-btn">
+                                ${__('annotation_cancel')}
+                            </button>
+                            <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-reply-btn">
+                                ${__('annotation_post')}
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </section>`.trim();
+
+        // Add annotation elements
+        annotations.forEach((annotation) => {
+            this._addAnnotationElement(annotation);
+        });
 
         this.bindDOMListeners();
+    }
+
+    toggleHighlightDialogs() {
+        const buttonsDialog = this._element.querySelector('.box-preview-annotation-highlight-dialog');
+        const commentsDialog = this._element.querySelector('.annotation-container');
+
+        // Displays comments dialog and hides highlight annotations button
+        if (commentsDialog.classList.contains(CLASS_HIDDEN)) {
+            // moves up the position of the comments dialog to be in place of the buttons dialog
+
+            console.log('comments dialog is hidden');
+            this._element.classList.remove('box-preview-highlight-dialog');
+            buttonsDialog.classList.add(CLASS_HIDDEN);
+
+            this._element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+            commentsDialog.classList.remove(CLASS_HIDDEN);
+        } else { // Displays annotations delete button and hides comment dialog
+            console.log('comments dialog is NOT hidden');
+            this._element.classList.remove(constants.CLASS_ANNOTATION_DIALOG);
+            commentsDialog.classList.add(CLASS_HIDDEN);
+
+            this._element.classList.add('box-preview-highlight-dialog');
+            buttonsDialog.classList.remove(CLASS_HIDDEN);
+
+            // swap listeners
+            super.unbindDOMListeners();
+        }
     }
 
     /**
@@ -164,6 +234,13 @@ class DocHighlightDialog extends AnnotationDialog {
         this._element.addEventListener('mousedown', this._mousedownHandler);
         this._element.addEventListener('mouseup', this._mouseupHandler);
         this._element.addEventListener('keydown', this._mousedownHandler);
+
+        // super.bindDOMListeners();
+        this._element.addEventListener('keydown', super.keydownHandler);
+        this._element.addEventListener('click', this._clickHandler);
+        this._element.addEventListener('mouseup', super._mouseupHandler);
+        this._element.addEventListener('mouseenter', super._mouseenterHandler);
+        this._element.addEventListener('mouseleave', super._mouseleaveHandler);
     }
 
     /**
@@ -177,6 +254,13 @@ class DocHighlightDialog extends AnnotationDialog {
         this._element.removeEventListener('mousedown', this._mousedownHandler);
         this._element.removeEventListener('mouseup', this._mouseupHandler);
         this._element.removeEventListener('keydown', this._mousedownHandler);
+
+        // super.unbindDOMListeners();
+        this._element.removeEventListener('keydown', this.keydownHandler);
+        this._element.removeEventListener('click', this._clickHandler);
+        this._element.removeEventListener('mouseup', this._mouseupHandler);
+        this._element.removeEventListener('mouseenter', this._mouseenterHandler);
+        this._element.removeEventListener('mouseleave', this._mouseleaveHandler);
     }
 
     /**
@@ -215,6 +299,13 @@ class DocHighlightDialog extends AnnotationDialog {
                 this._addHighlight();
                 break;
 
+            // Clicking 'Highlight' button to create a highlight
+            case 'add-highlight-comment-btn':
+                this._addHighlight();
+                this.toggleHighlightDialogs();
+                // this.show();
+                break;
+
             // Clicking 'Trash' button to delete the highlight
             case 'delete-highlight-btn':
                 this._deleteHighlight();
@@ -243,6 +334,33 @@ class DocHighlightDialog extends AnnotationDialog {
      */
     _deleteHighlight() {
         this.emit('annotationdelete');
+    }
+
+    /**
+     * Broadcasts message to delete an annotation.
+     *
+     * @param {String} annotationID ID of annotation to delete
+     * @returns {void}
+     * @private
+     */
+    _deleteAnnotation(annotationID) {
+        super._deleteAnnotation(annotationID);
+
+        // If no other comments exist on the thread
+        if (!this._hasAnnotations) {
+            this.toggleHighlightDialogs();
+            this.show();
+        }
+    }
+
+    _deactivateReply() {
+        super._deactivateReply();
+
+        // If no other comments exist on the thread
+        if (!this._hasAnnotations) {
+            this.toggleHighlightDialogs();
+            this.show();
+        }
     }
 }
 

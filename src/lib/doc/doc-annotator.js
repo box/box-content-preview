@@ -239,6 +239,11 @@ class DocAnnotator extends Annotator {
         let thread;
 
         if (type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
+            // Set existing thread ID if created with annotations
+            // if (annotations.length > 0) {
+            //     threadParams.threadID = annotations[0].threadID;
+            // }
+
             thread = new DocHighlightThread({
                 annotatedElement: this._annotatedElement,
                 annotations,
@@ -501,6 +506,7 @@ class DocAnnotator extends Annotator {
         // If in highlight mode, save highlight immediately
         if (this.isInHighlightMode()) {
             thread.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, '');
+            thread.show();
             // saveAnnotation() shows the annotation afterwards
         } else {
             thread.show();

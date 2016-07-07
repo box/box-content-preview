@@ -47,6 +47,7 @@ $avatar-color-9: #f22c44;
 // Icon buttons
 .box-preview-add-highlight-btn,
 .box-preview-delete-highlight-btn,
+.box-preview-highlight-comment-btn,
 .delete-comment-btn {
     svg {
         fill: lighten($better-black, 15%);
@@ -57,7 +58,8 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-add-highlight-btn:hover svg {
+.box-preview-add-highlight-btn:hover svg,
+.box-preview-highlight-comment-btn:hover svg {
     fill: $highlight-yellow;
 }
 
@@ -302,10 +304,8 @@ $avatar-color-9: #f22c44;
     z-index: 9999;
 }
 
-.box-preview-add-highlight-btn,
-.box-preview-add-highlight-btn:hover,
-.box-preview-delete-highlight-btn,
-.box-preview-delete-highlight-btn:hover {
+.box-preview-annotation-highlight-dialog,
+.box-preview-annotation-highlight-dialog:hover {
     background-color: $white;
     border: 1px solid $seesee;
     border-radius: 2px;

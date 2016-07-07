@@ -126,6 +126,7 @@ class AnnotationDialog extends EventEmitter {
      * @returns {void}
      */
     addAnnotation(annotation) {
+        console.log(annotation);
         // Show new section if needed
         if (!this._hasAnnotations) {
             const createSectionEl = this._element.querySelector('[data-section="create"]');
@@ -441,6 +442,7 @@ class AnnotationDialog extends EventEmitter {
         }
 
         this.emit('annotationcreate', { text });
+        console.log('annotationcreate');
         annotationTextEl.value = '';
     }
 
@@ -452,6 +454,7 @@ class AnnotationDialog extends EventEmitter {
      */
     _cancelAnnotation() {
         this.emit('annotationcancel');
+        console.log('annotationcancel');
     }
 
     /**
