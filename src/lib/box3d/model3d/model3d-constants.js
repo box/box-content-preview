@@ -8,6 +8,10 @@ export const EVENT_SET_RENDER_MODE = 'setRenderMode';
 export const EVENT_SET_CAMERA_PROJECTION = 'setCameraProjection';
 export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 
+// 3D Scene Params
+export const GRID_SECTIONS = 10;
+export const GRID_SIZE = 5;
+
 // CSS
 export const CSS_CLASS_OVERLAY = 'box-preview-overlay-panel';
 export const CSS_CLASS_PULLUP = 'box-preview-pullup';
