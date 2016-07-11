@@ -359,6 +359,12 @@ class Image extends Base {
         this.imageEl.style.width = newWidth ? `${newWidth}px` : '';
         this.imageEl.style.height = newHeight ? `${newHeight}px` : '';
 
+        // Adjust image position after transformations
+        const [leftPadding, topPadding] = this.getImageZoomPadding();
+
+        this.imageEl.style.left = `${leftPadding}px`;
+        this.imageEl.style.top = `${topPadding}px`;
+
         // Fix the scroll position of the image to be centered
         this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
         this.wrapperEl.scrollTop = (this.wrapperEl.scrollHeight - viewport.height) / 2;
@@ -477,10 +483,38 @@ class Image extends Base {
 
     /**
      * Determines if Image file has been rotated 90 or 270 degrees to the left
+     *
      * @return {Boolean} Whether image has been rotated -90 or -270 degrees
      */
     isRotated() {
         return Math.abs(this.currentRotationAngle) % 180 === 90;
+    }
+
+    /**
+     * Determines the left and right padding for the image file on zoom
+     *
+     * @return {number[]} [left padding, top padding]
+     * @private
+     */
+    getImageZoomPadding() {
+        let leftPadding = 0;
+        let topPadding = 0;
+        let largerWidth = 0;
+        let largerHeight = 0;
+        const wrapperDimensions = this.wrapperEl.getBoundingClientRect();
+
+        if (this.isRotated()) {
+            largerWidth = (wrapperDimensions.width > this.imageEl.clientHeight) ? wrapperDimensions.width : this.imageEl.clientHeight;
+            largerHeight = (wrapperDimensions.height > this.imageEl.clientWidth) ? wrapperDimensions.height : this.imageEl.clientWidth;
+        } else {
+            largerWidth = (wrapperDimensions.width > this.imageEl.clientWidth) ? wrapperDimensions.width : this.imageEl.clientWidth;
+            largerHeight = (wrapperDimensions.height > this.imageEl.clientHeight) ? wrapperDimensions.height : this.imageEl.clientHeight;
+        }
+
+        leftPadding = (largerWidth - this.imageEl.clientWidth) / 2;
+        topPadding = (largerHeight - this.imageEl.clientHeight) / 2;
+
+        return [leftPadding, topPadding];
     }
 }
 
