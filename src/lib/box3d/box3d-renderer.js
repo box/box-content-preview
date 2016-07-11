@@ -383,15 +383,13 @@ class Box3DRenderer extends EventEmitter {
     enableVrIfPresent() {
         if (WEBVR.isLatestAvailable()) {
             navigator.getVRDisplays().then((devices) => {
-                let vrDevice;
                 devices.forEach((device) => {
                     if (device.capabilities.hasPosition) {
                         this.vrDeviceHasPosition = true;
                     }
-                    vrDevice = device;
                 });
                 // Only enable the VR button if we found a device that we can use.
-                if (vrDevice) {
+                if (devices.length) {
                     // const camera = this.getCamera();
                     // Create the VR Effect object that handles rendering left and right views.
                     const threeRenderer = this.box3d.getThreeRenderer();

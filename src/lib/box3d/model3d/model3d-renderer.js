@@ -484,6 +484,9 @@ class Model3dRenderer extends Box3DRenderer {
         super.enableVr();
         // Scale the instance for VR
         this.modelSize = 1.5;
+        if (!this.instance) {
+            return;
+        }
         this.instance.scaleToSize(this.modelSize);
         if (this.vrDeviceHasPosition) {
             this.instance.alignToPosition(ORIGIN_VECTOR, FLOOR_VECTOR);
@@ -526,6 +529,9 @@ class Model3dRenderer extends Box3DRenderer {
      */
     onVrZoom(delta) {
         this.modelSize += delta * 0.05;
+        if (!this.instance) {
+            return;
+        }
         this.instance.scaleToSize(this.modelSize);
         this.instance.alignToPosition(ORIGIN_VECTOR, FLOOR_VECTOR);
     }
