@@ -669,7 +669,7 @@ class Preview extends EventEmitter {
     logPreviewEvent() {
         fetch(`${this.options.api}/2.0/events`, {
             method: 'POST',
-            headers: getHeaders({}, this.options.token),
+            headers: getHeaders({}, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword),
             body: JSON.stringify({
                 event_type: 'preview',
                 source: {
