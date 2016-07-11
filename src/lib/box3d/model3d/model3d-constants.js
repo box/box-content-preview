@@ -11,6 +11,7 @@ export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 // 3D Scene Params
 export const GRID_SECTIONS = 10;
 export const GRID_SIZE = 5;
+export const GRID_COLOR = 0xaaaaaa;
 
 // CSS
 export const CSS_CLASS_OVERLAY = 'box-preview-overlay-panel';

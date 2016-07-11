@@ -9,7 +9,8 @@ import {
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
     GRID_SIZE,
-    GRID_SECTIONS
+    GRID_SECTIONS,
+    GRID_COLOR
 } from './model3d-constants';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
@@ -288,7 +289,7 @@ class Model3dRenderer extends Box3DRenderer {
      */
     addHelpersToScene() {
         const scene = this.getScene().runtimeData;
-        this.grid = new THREE.GridHelper(GRID_SIZE, GRID_SECTIONS, 0xaaaaaa, 0xaaaaaa);
+        this.grid = new THREE.GridHelper(GRID_SIZE, GRID_SECTIONS, GRID_COLOR, GRID_COLOR);
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
         scene.add(this.grid);
