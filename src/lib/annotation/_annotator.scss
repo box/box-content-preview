@@ -371,8 +371,7 @@ $avatar-color-9: #f22c44;
 .box-preview-point-annotation-mode .page,
 .box-preview-point-annotation-mode .box-preview-annotation-layer,
 .box-preview-point-annotation-mode .textLayer > div {
-    // We use a .cur file since they embed click origin information
-    cursor: url('../annotation/point.cur'), crosshair;
+    cursor: crosshair;
 }
 
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
@@ -396,8 +395,7 @@ $avatar-color-9: #f22c44;
 .ie.box-preview-point-annotation-mode .page,
 .ie.box-preview-point-annotation-mode .box-preview-annotation-layer,
 .ie.box-preview-point-annotation-mode .textLayer > div {
-    // We use a .cur file since they embed click origin information
-    cursor: url('//cdn01.boxcdn.net/content-experience/0.56.0/third-party/doc/cursors/point.cur'), crosshair;
+    cursor: crosshair;
 }
 
 // scss-lint:disable UrlFormat
