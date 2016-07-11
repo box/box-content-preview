@@ -29,7 +29,7 @@ class ImagePointThread extends AnnotationThread {
     show() {
         const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
 
-        // Position and append to page
+        // Position and append to image
         this._element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
         this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_WIDTH / 8}px`;
         this._annotatedElement.appendChild(this._element);
@@ -42,7 +42,7 @@ class ImagePointThread extends AnnotationThread {
     }
 
     /**
-     * Creates the document point annotation dialog for the thread.
+     * Creates the image point annotation dialog for the thread.
      *
      * @override
      * @returns {void}

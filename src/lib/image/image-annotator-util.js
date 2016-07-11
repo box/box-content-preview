@@ -6,9 +6,9 @@
 import * as annotatorUtil from '../annotation/annotator-util';
 
 const IMAGE_PADDING = 15;
-const ONCE = -90;
-const TWICE = -180;
-const THRICE = -270;
+const ROTATION_ONCE_DEG = -90;
+const ROTATION_TWICE_DEG = -180;
+const ROTATION_THRICE_DEG = -270;
 
 /**
  * Adjust initial annotation location according to current image rotation
@@ -20,14 +20,17 @@ const THRICE = -270;
  * @returns {Number[]} [x,y] browser coordinates
  */
 export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
-    const [height, width] = [imageDimensions.height, imageDimensions.width];
+    const { height, width } = imageDimensions;
 
-    if (rotation === ONCE) {
-        return [y, height / scale - x];
-    } else if (rotation === TWICE) {
-        return [width / scale - x, height / scale - y];
-    } else if (rotation === THRICE) {
-        return [width / scale - y, x];
+    switch (rotation) {
+        case ROTATION_ONCE_DEG:
+            return [y, height / scale - x];
+        case ROTATION_TWICE_DEG:
+            return [width / scale - x, height / scale - y];
+        case ROTATION_THRICE_DEG:
+            return [width / scale - y, x];
+        default:
+            break;
     }
     return [x, y];
 }
@@ -42,14 +45,17 @@ export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
  * @returns {Number[]} [x,y] browser coordinates
  */
 export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scale) {
-    const [height, width] = [imageDimensions.height, imageDimensions.width];
+    const { height, width } = imageDimensions;
 
-    if (rotation === ONCE) {
-        return [width / scale - y, x];
-    } else if (rotation === TWICE) {
-        return [width / scale - x, height / scale - y];
-    } else if (rotation === THRICE) {
-        return [y, height / scale - x];
+    switch (rotation) {
+        case ROTATION_ONCE_DEG:
+            return [width / scale - y, x];
+        case ROTATION_TWICE_DEG:
+            return [width / scale - x, height / scale - y];
+        case ROTATION_THRICE_DEG:
+            return [y, height / scale - x];
+        default:
+            break;
     }
     return [x, y];
 }
@@ -88,7 +94,7 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
 
     if (topPadding >= 0) {
         y += topPadding;
-    } else if (rotation === TWICE) {
+    } else if (rotation === ROTATION_TWICE_DEG) {
         y -= topImagePadding;
     }
 

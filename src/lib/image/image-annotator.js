@@ -33,12 +33,10 @@ class ImageAnnotator extends Annotator {
     //--------------------------------------------------------------------------
 
     /**
-     * Returns an annotation location on a document from the DOM event or null
+     * Returns an annotation location on an image from the DOM event or null
      * if no correct annotation location can be inferred from the event. For
-     * point annotations, we return the (x, y) coordinates and page the
-     * point is on in PDF units with the lower left corner of the document as
-     * the origin. For highlight annotations, we return the PDF quad points
-     * as defined by the PDF spec and page the highlight is on.
+     * point annotations, we return the (x, y) coordinates for the point
+     * with the top left corner of the image as the origin.
      *
      * @override
      * @param {Event} event DOM event
