@@ -100,6 +100,14 @@ class Box3D extends Base {
         }
     }
 
+    @autobind
+    resize() {
+        super.resize();
+        if (this.renderer) {
+            this.renderer.resize();
+        }
+    }
+
     /**
      * Called on preview destroy
      * @returns {void}

@@ -67,12 +67,7 @@ export default [{
         rendererComponent: {
             componentData: {
                 antialias: !Browser.isMobile(),
-                renderOnDemand: true,
-                devicePixelRatio: Browser.isMobile() ? 1.0 : undefined,
-                // Mobile fragment precision at mediump is often too low.
-                // TODO - investigate changing some values in shaders to highp
-                // to eliviate the problem while letting the rest default to mediump.
-                precision: Browser.isMobile() ? 'highp' : 'mediump'
+                renderOnDemand: true
             },
             scriptId: 'box3d_renderer',
             isBuiltIn: true,
