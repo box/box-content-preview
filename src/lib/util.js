@@ -354,3 +354,47 @@ export function decodeKeydown(event) {
 
     return modifier + key;
 }
+
+
+/**
+ * Find location information about a script include
+ *
+ * @public
+ * @param {string} name script name
+ * @returns {void}
+ */
+export function findScriptLocation(name) {
+    const scriptSrc = document.querySelector(`script[src*="${name}"]`).src;
+
+    if (!scriptSrc) {
+        throw new Error('Missing or malformed preview library inclusion');
+    }
+
+    const anchor = document.createElement('a');
+    anchor.href = scriptSrc;
+
+    const pathname = anchor.pathname;
+    const pathFragments = pathname.split('/');
+    const fragmentLength = pathFragments.length;
+    const fileName = pathFragments[fragmentLength - 1];
+    const locale = pathFragments[fragmentLength - 2];
+    const version = pathFragments[fragmentLength - 3];
+    const query = anchor.search;
+    const baseURI = anchor.href.replace(fileName, '').replace(query, '');
+    const staticBaseURI = baseURI.replace(`${locale}/`, '');
+
+    return {
+        origin: anchor.origin,
+        host: anchor.host,
+        hostname: anchor.hostname,
+        search: query,
+        protocol: anchor.protocol,
+        port: anchor.port,
+        href: anchor.href,
+        pathname,
+        locale,
+        version,
+        baseURI,
+        staticBaseURI
+    };
+}

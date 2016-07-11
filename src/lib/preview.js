@@ -9,7 +9,7 @@ import loaders from './loaders';
 import cache from './cache';
 import RepStatus from './rep-status';
 import ErrorLoader from './error/error-loader';
-import { decodeKeydown, insertTemplate, openUrlInsideIframe, getHeaders } from './util';
+import { decodeKeydown, insertTemplate, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import throttle from 'lodash.throttle';
 import shellTemplate from 'raw!./shell.html';
 
@@ -82,50 +82,10 @@ class Preview extends EventEmitter {
         // Default list of loaders for viewers
         this.loaders = loaders;
 
-        // Determine the location of preview.js since all
-        // other files are relative to it.
-        this.determinePreviewLocation();
-    }
-
-    /**
-     * All preview assets are relative to preview.js. Here we create a location
-     * object that mimics the window location object and points to where
-     * preview.js is loaded from, by the browser.
-     * @returns {void}
-     */
-    determinePreviewLocation() {
-        const scriptSrc = document.querySelector('script[src*="preview.js"]').src;
-
-        if (!scriptSrc) {
-            throw new Error('Missing or malformed preview library inclusion');
-        }
-
-        const anchor = document.createElement('a');
-        anchor.href = scriptSrc;
-
-        const pathname = anchor.pathname;
-        const pathFragments = pathname.split('/');
-        const fragmentLength = pathFragments.length;
-        const fileName = pathFragments[fragmentLength - 1];
-        const locale = pathFragments[fragmentLength - 2];
-        const version = pathFragments[fragmentLength - 3];
-        const baseURI = anchor.href.replace(fileName, '');
-        const staticBaseURI = baseURI.replace(`${locale}/`, '');
-
-        this.location = {
-            origin: anchor.origin,
-            host: anchor.host,
-            hostname: anchor.hostname,
-            search: anchor.search,
-            protocol: anchor.protocol,
-            port: anchor.port,
-            href: anchor.href,
-            pathname,
-            locale,
-            version,
-            baseURI,
-            staticBaseURI
-        };
+        // All preview assets are relative to preview.js. Here we create a location
+        // object that mimics the window location object and points to where
+        // preview.js is loaded from, by the browser.
+        this.location = findScriptLocation('preview.js');
     }
 
     /**
