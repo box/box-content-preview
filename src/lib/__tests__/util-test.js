@@ -13,7 +13,8 @@ import {
     prefetchAssets,
     loadStylesheets,
     loadScripts,
-    decodeKeydown
+    decodeKeydown,
+    findScriptLocation
 } from '../util';
 
 describe('util', () => {
@@ -170,6 +171,23 @@ describe('util', () => {
                 const head = document.getElementsByTagName('head')[0];
                 assert.ok(head.querySelector('script[src="foo"]') instanceof HTMLScriptElement);
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);
+            });
+        });
+
+        describe('findScriptLocation()', () => {
+            it('should return location info for the script', () => {
+                const loc = findScriptLocation('file.js');
+                assert.equal(loc.origin, 'https://hostname:100');
+                assert.equal(loc.host, 'hostname:100');
+                assert.equal(loc.hostname, 'hostname');
+                assert.equal(loc.search, '?search');
+                assert.equal(loc.protocol, 'https:');
+                assert.equal(loc.port, '100');
+                assert.equal(loc.href, 'https://hostname:100/path/version/locale/file.js?search');
+                assert.equal(loc.pathname, '/path/version/locale/file.js');
+                assert.equal(loc.version, 'version');
+                assert.equal(loc.baseURI, 'https://hostname:100/path/version/locale/');
+                assert.equal(loc.staticBaseURI, 'https://hostname:100/path/version/');
             });
         });
     });
