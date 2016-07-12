@@ -4,7 +4,6 @@ var commonConfig = require('./webpack.common.config');
 var path = require('path');
 var RsyncPlugin = require('./build/RsyncPlugin');
 var thirdParty = path.join(__dirname, 'src/third-party');
-var img = path.join(__dirname, 'src/img');
 
 // Check if webpack was run with a production flag that signifies a release build
 var isRelease = process.env.BUILD_PROD === '1';
@@ -57,7 +56,6 @@ module.exports = languages.map(function(language, index) {
     // Copy over image and 3rd party
     if (index === 0) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
-        config.plugins.push(new RsyncPlugin(img, staticFolder));
     }
 
     // If this is not a release build
