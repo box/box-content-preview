@@ -96,7 +96,7 @@ class Preview extends EventEmitter {
      * @returns {String} API url
      */
     createUrl(id) {
-        return `${this.options.api}/2.0/files/${id}?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,representations`;
+        return `${this.options.api}/2.0/files/${id}?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,representations,watermark_info`;
     }
 
     /**

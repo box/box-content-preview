@@ -470,6 +470,10 @@ class DocBase extends Base {
         // Disable range requests for Safari, see: https://github.com/mozilla/pdf.js/issues/4927
         PDFJS.disableRange = PDFJS.disableRange || Browser.getName() === 'Safari';
 
+        // Disable range requests for watermarked files since they are streamed
+        PDFJS.disableRange = PDFJS.disableRange ||
+            (this.options.file.watermark_info && this.options.file.watermark_info.is_watermarked);
+
         // Disable text layer if user doesn't have download permissions
         PDFJS.disableTextLayer = this.options.file && this.options.file.permissions ?
             !this.options.file.permissions.can_download :
