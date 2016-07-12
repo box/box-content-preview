@@ -272,23 +272,22 @@ class DocHighlightThread extends AnnotationThread {
             return;
         }
 
-        const quadPoints = this._location.quadPoints;
-        const pageEl = this._getPageEl();
-        const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-        const scaleFactor = docAnnotatorUtil.getDimensionScaleFactor(this._location, pageEl);
+        const pageDimensions = this._getPageEl().getBoundingClientRect();
+        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const zoomScale = annotatorUtil.getScale(this._annotatedElement);
+        const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location, pageDimensions, zoomScale);
 
-        quadPoints.forEach((quadPoint) => {
+        this._location.quadPoints.forEach((quadPoint) => {
+            let browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, zoomScale);
+
             // If needed, scale quad points comparing current dimensions with saved dimensions
-            let scaledQuadPoint = quadPoint;
-            if (scaleFactor) {
-                scaledQuadPoint = quadPoint.map((val, index) => {
-                    return index % 2 ? val * scaleFactor.y : val * scaleFactor.x;
+            if (dimensionScale) {
+                browserQuadPoint = browserQuadPoint.map((val, index) => {
+                    return index % 2 ? val * dimensionScale.y : val * dimensionScale.x;
                 });
             }
 
-            const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
-
             context.fillStyle = fillStyle;
             context.beginPath();
             context.moveTo(x1, y1);
@@ -321,18 +320,28 @@ class DocHighlightThread extends AnnotationThread {
      * @private
      */
     _isInHighlight(event) {
-        const dimensions = this._getPageEl().getBoundingClientRect();
-        const pageHeight = dimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-        const pageTop = dimensions.top + PAGE_PADDING_TOP;
+        const pageEl = this._getPageEl();
+        const pageDimensions = pageEl.getBoundingClientRect();
+        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
+        const zoomScale = annotatorUtil.getScale(this._annotatedElement);
+        const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location, pageDimensions, zoomScale);
 
         // DOM coordinates with respect to the page
-        const x = event.clientX - dimensions.left;
+        const x = event.clientX - pageDimensions.left;
         const y = event.clientY - pageTop;
 
         return this._location.quadPoints.some((quadPoint) => {
-            const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, annotatorUtil.getScale(this._annotatedElement));
-            const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
+            let browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, zoomScale);
 
+            // If needed, scale quad points comparing current dimensions with saved dimensions
+            if (dimensionScale) {
+                browserQuadPoint = browserQuadPoint.map((val, index) => {
+                    return index % 2 ? val * dimensionScale.y : val * dimensionScale.x;
+                });
+            }
+
+            const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
             return docAnnotatorUtil.isPointInPolyOpt([
                 [x1, y1],
                 [x2, y2],

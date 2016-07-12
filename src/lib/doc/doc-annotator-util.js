@@ -161,56 +161,58 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
 }
 
 /**
- * Returns x, y scale factor calculated from comparing current page dimensions
- * with page dimensions when annotations were created
+ * Returns dimension scale multiplier for x and y axes calculated from comparing
+ * the current page dimensions scaled to 100% with page dimensions when
+ * annotations were created.
  *
  * @param {Object} location Annotation location object
- * @param {HTMLElement} pageEl Page element
- * @returns {Object|null} {x, y} scale if scaling is needed, null otherwise
+ * @param {Object} pageDimensions Current page dimensions
+ * @param {Number} zoomScale Zoom scale
+ * @returns {Object|null} {x, y} dimension scale if needed, null otherwise
  */
-export function getDimensionScaleFactor(location, pageEl) {
-    let scaleFactor = null;
+export function getDimensionScale(location, pageDimensions, zoomScale) {
+    let dimensionScale = null;
 
     // Scale comparing current dimensions with saved dimensions if needed
     const dimensions = location.dimensions;
     if (dimensions && dimensions.x !== undefined && dimensions.y !== undefined) {
-        const pageDimensions = pageEl.getBoundingClientRect();
-        const height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-        const width = pageDimensions.width;
+        const pageWidth = pageDimensions.width / zoomScale;
+        const pageHeight = (pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM) / zoomScale;
 
-        if (width !== dimensions.x || height !== dimensions.y) {
-            scaleFactor = {
-                x: width / dimensions.x,
-                y: height / dimensions.y
+        // Ignore sub-pixel variations that could result from float math
+        if (Math.abs(pageWidth - dimensions.x) > 1 || Math.abs(pageHeight !== dimensions.y) > 1) {
+            dimensionScale = {
+                x: pageWidth / dimensions.x,
+                y: pageHeight / dimensions.y
             };
         }
     }
 
-    return scaleFactor;
+    return dimensionScale;
 }
 
 /**
- * Returns browser coordinates given an annotation location object and
- * the HTML element being annotated on.
+ * Returns browser coordinates given an annotation location object and the HTML
+ * element being annotated on.
  * @param {Object} location Annotation location object
  * @param {HTMLElement} annotatedElement HTML element being annotated on
  * @returns {Number[]} [x,y] browser coordinates
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
-    let x = location.x;
-    let y = location.y;
+    const pageDimensions = pageEl.getBoundingClientRect();
+    const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+    const zoomScale = annotatorUtil.getScale(annotatedElement);
+    const browserCoordinates = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, zoomScale);
 
     // If needed, scale coords comparing current dimensions with saved dimensions
-    const scaleFactor = getDimensionScaleFactor(location, pageEl);
-    if (scaleFactor) {
-        x *= scaleFactor.x;
-        y *= scaleFactor.y;
+    const dimensionScale = getDimensionScale(location, pageDimensions, zoomScale);
+    if (dimensionScale) {
+        browserCoordinates.x *= dimensionScale.x;
+        browserCoordinates.y *= dimensionScale.y;
     }
 
-    const pageHeight = pageEl.getBoundingClientRect().height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-    const scale = annotatorUtil.getScale(annotatedElement);
-    return convertPDFSpaceToDOMSpace([x, y], pageHeight, scale);
+    return browserCoordinates;
 }
 
 /**
