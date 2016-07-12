@@ -278,16 +278,17 @@ class DocHighlightThread extends AnnotationThread {
         const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location, pageDimensions, zoomScale);
 
         this._location.quadPoints.forEach((quadPoint) => {
-            let browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, zoomScale);
-
             // If needed, scale quad points comparing current dimensions with saved dimensions
+            let scaledQuadPoint = quadPoint;
             if (dimensionScale) {
-                browserQuadPoint = browserQuadPoint.map((val, index) => {
+                scaledQuadPoint = quadPoint.map((val, index) => {
                     return index % 2 ? val * dimensionScale.y : val * dimensionScale.x;
                 });
             }
 
+            const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, zoomScale);
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
+
             context.fillStyle = fillStyle;
             context.beginPath();
             context.moveTo(x1, y1);
@@ -332,16 +333,17 @@ class DocHighlightThread extends AnnotationThread {
         const y = event.clientY - pageTop;
 
         return this._location.quadPoints.some((quadPoint) => {
-            let browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(quadPoint, pageHeight, zoomScale);
-
             // If needed, scale quad points comparing current dimensions with saved dimensions
+            let scaledQuadPoint = quadPoint;
             if (dimensionScale) {
-                browserQuadPoint = browserQuadPoint.map((val, index) => {
+                scaledQuadPoint = quadPoint.map((val, index) => {
                     return index % 2 ? val * dimensionScale.y : val * dimensionScale.x;
                 });
             }
 
+            const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, zoomScale);
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
+
             return docAnnotatorUtil.isPointInPolyOpt([
                 [x1, y1],
                 [x2, y2],

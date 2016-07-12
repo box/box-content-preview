@@ -203,16 +203,17 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const pageDimensions = pageEl.getBoundingClientRect();
     const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
     const zoomScale = annotatorUtil.getScale(annotatedElement);
-    const browserCoordinates = convertPDFSpaceToDOMSpace([location.x, location.y], pageHeight, zoomScale);
+    let x = location.x;
+    let y = location.y;
 
     // If needed, scale coords comparing current dimensions with saved dimensions
     const dimensionScale = getDimensionScale(location, pageDimensions, zoomScale);
     if (dimensionScale) {
-        browserCoordinates.x *= dimensionScale.x;
-        browserCoordinates.y *= dimensionScale.y;
+        x *= dimensionScale.x;
+        y *= dimensionScale.y;
     }
 
-    return browserCoordinates;
+    return convertPDFSpaceToDOMSpace([x, y], pageHeight, zoomScale);
 }
 
 /**
