@@ -8,8 +8,7 @@ import {
     CACHE_KEY_BOX3D,
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
-    EVENT_TRIGGER_RENDER,
-    EVENT_TRIGGER_RESIZE
+    EVENT_TRIGGER_RENDER
 } from './box3d-constants';
 
 const INPUT_SETTINGS = {
@@ -45,7 +44,6 @@ class Box3DRenderer extends EventEmitter {
         this.box3d = null;
         this.boxSdk = boxSdk;
         this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
-        this.on(EVENT_TRIGGER_RESIZE, this.handleOnResize);
     }
 
     /**
@@ -78,7 +76,6 @@ class Box3DRenderer extends EventEmitter {
         this.box3d.resourceLoader.destroy();
 
         this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
-        this.removeListener(EVENT_TRIGGER_RESIZE, this.handleOnResize);
     }
 
     /**
@@ -261,18 +258,32 @@ class Box3DRenderer extends EventEmitter {
 
         this.disableCameraControls();
 
+        // Create the controls every time we enter VR mode so that we're always using the current
+        // camera.
         const camera = this.getCamera();
+        this.vrControls = new THREE.VRControls(camera.runtimeData);
+        this.vrControls.scale = 1;
+        this.vrControls.standing = true;
+        this.vrControls.userHeight = 1;
+        window.vrControls = this.vrControls;
 
-        if (!this.vrControls) {
-            this.vrControls = new THREE.VRControls(camera.runtimeData);
-            this.vrControls.scale = 1;
-        }
-
-        this.box3d.on('preUpdate', this.updateVrControls, this);
         const renderView = camera.componentRegistry.getFirstByScriptId('render_view_component');
         renderView.effect = this.vrEffect;
-        this.vrEffect.requestPresent();
 
+        // Start doing updates of the VR controls.
+        this.box3d.on('preUpdate', this.updateVrControls, this);
+
+        // Start rendering to the VR device.
+        setTimeout(() => {
+            // Because of a current bug in Chromium, we need to update the controls before
+            // presenting so that device.getPose() is called before device.submitFrame().
+            // Otherwise, crashes ensue. We need the setTimeout so that the controls have a
+            // chance to receive the vr device list from the browser.
+            this.vrControls.update();
+            this.vrEffect.requestPresent();
+        }, 100);
+
+        // Render every frame to make sure that we're as responsive as possible.
         const renderer = this.box3d.getRenderer();
         renderer.setAttribute('renderOnDemand', false);
     }
@@ -302,11 +313,11 @@ class Box3DRenderer extends EventEmitter {
      * Call the onResize of the engine
      * @returns {void}
      */
-    handleOnResize() {
+    resize() {
         if (!this.box3d) {
             return;
         }
-        this.box3d.onResize();
+        this.box3d.trigger('resize');
     }
 
     /**
@@ -320,6 +331,9 @@ class Box3DRenderer extends EventEmitter {
 
         this.vrEnabled = false;
 
+        this.vrControls.dispose();
+        this.vrControls = undefined;
+
         this.enableCameraControls();
         this.reset();
 
@@ -328,12 +342,14 @@ class Box3DRenderer extends EventEmitter {
         if (camera) {
             const renderViewComponent = camera.componentRegistry.getFirstByScriptId(renderViewId);
             renderViewComponent.effect = null;
-            this.box3d.off('preUpdate', this.updateVrControls, this);
         }
-        this.vrEffect.exitPresent();
-        const renderer = this.box3d.getRenderer();
-        renderer.setAttribute('renderOnDemand', true);
-        this.box3d.needsRender = true;
+        this.box3d.off('preUpdate', this.updateVrControls, this);
+
+        this.vrEffect.exitPresent().then(() => {
+            const renderer = this.box3d.getRenderer();
+            renderer.setAttribute('renderOnDemand', true);
+            this.box3d.needsRender = true;
+        });
     }
 
     /**
@@ -366,13 +382,22 @@ class Box3DRenderer extends EventEmitter {
      */
     enableVrIfPresent() {
         if (WEBVR.isLatestAvailable()) {
-            const renderer = this.box3d.getThreeRenderer();
-            if (!this.vrEffect) {
-                this.vrEffect = new THREE.VREffect(renderer);
-                const rendererSize = renderer.getSize();
-                this.vrEffect.setSize(rendererSize.width, rendererSize.height);
-            }
-            this.emit(EVENT_SHOW_VR_BUTTON);
+            navigator.getVRDisplays().then((devices) => {
+                this.vrDeviceHasPosition = devices.some((device) => device.capabilities.hasPosition);
+
+                // Only enable the VR button if we found a device that we can use.
+                if (devices.length) {
+                    // Create the VR Effect object that handles rendering left and right views.
+                    const threeRenderer = this.box3d.getThreeRenderer();
+                    if (!this.vrEffect) {
+                        this.vrEffect = new THREE.VREffect(threeRenderer);
+                        const rendererSize = threeRenderer.getSize();
+                        this.vrEffect.setSize(rendererSize.width, rendererSize.height);
+                    }
+
+                    this.emit(EVENT_SHOW_VR_BUTTON);
+                }
+            });
         }
     }
 }

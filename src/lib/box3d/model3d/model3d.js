@@ -20,8 +20,7 @@ import {
 
 import {
     CSS_CLASS_INVISIBLE,
-    EVENT_LOAD,
-    EVENT_TRIGGER_RESIZE
+    EVENT_LOAD
 } from '../box3d-constants';
 
 const Box = global.Box || {};
@@ -232,7 +231,6 @@ class Model3d extends Box3D {
      */
     showWrapper() {
         this.wrapperEl.classList.remove(CSS_CLASS_INVISIBLE);
-        this.renderer.emit(EVENT_TRIGGER_RESIZE);
     }
 
     /**

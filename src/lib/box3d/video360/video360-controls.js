@@ -3,6 +3,9 @@ import {
     EVENT_ENABLE_VR,
     EVENT_DISABLE_VR
 } from '../box3d-constants';
+import {
+    ICON_3D_VR
+} from '../../icons/icons';
 
 const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
 
@@ -38,10 +41,9 @@ class Video360Controls extends EventEmitter {
         // Create the VR toggle button and then hide it.
         this.vrButton = mediaControlsEl.appendChild(document.createElement('button'));
         this.vrButton.classList.add('box-preview-media-controls-btn');
-        this.vrButton.classList.add('box-preview-controls-vr');
         this.vrButton.title = 'Enable VR Mode';
         this.vrButtonSpan = this.vrButton.appendChild(document.createElement('span'));
-        this.vrButtonSpan.classList.add('box-preview-vr-toggle-icon');
+        this.vrButtonSpan.innerHTML = ICON_3D_VR;
         this.vrButton.classList.add(CSS_CLASS_HIDDEN);
     }
 

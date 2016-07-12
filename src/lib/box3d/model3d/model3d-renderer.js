@@ -7,10 +7,14 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_MISSING_ASSET,
     CAMERA_PROJECTION_PERSPECTIVE,
-    CAMERA_PROJECTION_ORTHOGRAPHIC
+    CAMERA_PROJECTION_ORTHOGRAPHIC,
+    GRID_SIZE,
+    GRID_SECTIONS,
+    GRID_COLOR
 } from './model3d-constants';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
+const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };
 
 /**
  * Model3dRenderer
@@ -36,6 +40,7 @@ class Model3dRenderer extends Box3DRenderer {
         this.grid = null;
         this.axisDisplay = null;
         this.isRotating = false;
+        this.modelSize = 1.0;
     }
 
     /**
@@ -217,7 +222,7 @@ class Model3dRenderer extends Box3DRenderer {
             this.instances.push(instance);
 
             // Scale the instance to 100 units in size.
-            instance.scaleToSize(1);
+            instance.scaleToSize(this.modelSize);
 
             // Center the instance.
             instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
@@ -264,6 +269,7 @@ class Model3dRenderer extends Box3DRenderer {
         // Unload the intermediate HDR maps that are no longer needed.
         this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
         super.onSceneLoad();
+        this.resize();
     }
 
     /**
@@ -283,7 +289,7 @@ class Model3dRenderer extends Box3DRenderer {
      */
     addHelpersToScene() {
         const scene = this.getScene().runtimeData;
-        this.grid = new THREE.GridHelper(0.5, 0.1, 0xaaaaaa, 0xaaaaaa);
+        this.grid = new THREE.GridHelper(GRID_SIZE, GRID_SECTIONS, GRID_COLOR, GRID_COLOR);
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
         scene.add(this.grid);
@@ -466,6 +472,80 @@ class Model3dRenderer extends Box3DRenderer {
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
         this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    enableVr() {
+        if (this.vrEnabled) {
+            return;
+        }
+        super.enableVr();
+        // Scale the instance for VR
+        this.modelSize = 1.5;
+        if (!this.instance) {
+            return;
+        }
+        this.instance.scaleToSize(this.modelSize);
+        if (this.vrDeviceHasPosition) {
+            this.instance.alignToPosition(ORIGIN_VECTOR, FLOOR_VECTOR);
+            this.box3d.on('mouseScroll', this.onVrZoom, this);
+        } else {
+            // Enable position-less camera controls
+            this.box3d.on('update', this.updateModel3dVrControls, this);
+            this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    disableVr() {
+        if (!this.vrEnabled) {
+            return;
+        }
+
+        this.modelSize = 1.0;
+        if (this.instance) {
+            this.instance.scaleToSize(this.modelSize);
+            this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+        }
+
+        if (this.vrDeviceHasPosition) {
+            this.box3d.off('mouseScroll', this.onVrZoom, this);
+        } else {
+            // Disable position-less camera controls
+            this.box3d.off('update', this.updateModel3dVrControls, this);
+        }
+
+        super.disableVr();
+    }
+
+    /**
+     * Grow and shrink the model in VR using mouse scrolling
+     * @param  {float} delta Amount of scrolling
+     * @return {void}
+     */
+    onVrZoom(delta) {
+        this.modelSize += delta * 0.05;
+        if (!this.instance) {
+            return;
+        }
+        this.instance.scaleToSize(this.modelSize);
+        this.instance.alignToPosition(ORIGIN_VECTOR, FLOOR_VECTOR);
+    }
+
+    /**
+     * Update the controls for VR when enabled
+     * @private
+     * @method updateVrControls
+     * @returns {void}
+     */
+    updateModel3dVrControls() {
+        const camera = this.getCamera().runtimeData;
+        camera.position.set(0, 0, 1.0);
+        camera.position.applyQuaternion(camera.quaternion);
     }
 }
 
