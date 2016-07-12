@@ -141,6 +141,7 @@ class DocAnnotator extends Annotator {
      */
     getLocationFromEvent(event, annotationType) {
         let location = null;
+        const zoomScale = annotatorUtil.getScale(this._annotatedElement);
 
         if (annotationType === constants.ANNOTATION_TYPE_POINT) {
             // If there is a selection, ignore
@@ -163,18 +164,18 @@ class DocAnnotator extends Annotator {
 
             // Store coordinates at 100% scale in PDF space in PDF units
             const pageDimensions = pageEl.getBoundingClientRect();
-            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
             const pageWidth = pageDimensions.width;
-            const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
-            const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageTop];
-            const pdfCoordinates = docAnnotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, annotatorUtil.getScale(this._annotatedElement));
+            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+            const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageDimensions.top - PAGE_PADDING_TOP];
+            const pdfCoordinates = docAnnotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, zoomScale);
             const [x, y] = pdfCoordinates;
 
-            // We save the dimensions of the annotated element so we can
-            // compare to the element being rendered on and scale as appropriate
+            // We save the dimensions of the annotated element scaled to 100%
+            // so we can compare to the annotated element during render time
+            // and scale if needed (in case the representation changes size)
             const dimensions = {
-                x: pageWidth,
-                y: pageHeight
+                x: pageWidth / zoomScale,
+                y: pageHeight / zoomScale
             };
 
             location = { x, y, page, dimensions };
@@ -207,14 +208,15 @@ class DocAnnotator extends Annotator {
             this._removeRangyHighlight(highlight);
             rangy.restoreSelection(savedSelection);
 
-            // We save the dimensions of the annotated element so we can
-            // compare to the element being rendered on and scale as appropriate
+            // We save the dimensions of the annotated element scaled to 100%
+            // so we can compare to the annotated element during render time
+            // and scale if needed (in case the representation changes size)
             const pageDimensions = pageEl.getBoundingClientRect();
-            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
             const pageWidth = pageDimensions.width;
+            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
             const dimensions = {
-                x: pageWidth,
-                y: pageHeight
+                x: pageWidth / zoomScale,
+                y: pageHeight / zoomScale
             };
 
             location = { page, quadPoints, dimensions };
