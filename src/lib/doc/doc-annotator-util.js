@@ -165,16 +165,15 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
  * the current page dimensions scaled to 100% with page dimensions when
  * annotations were created.
  *
- * @param {Object} location Annotation location object
+ * @param {Object} dimensions Dimensions saved in annotation
  * @param {Object} pageDimensions Current page dimensions
  * @param {Number} zoomScale Zoom scale
  * @returns {Object|null} {x, y} dimension scale if needed, null otherwise
  */
-export function getDimensionScale(location, pageDimensions, zoomScale) {
+export function getDimensionScale(dimensions, pageDimensions, zoomScale) {
     let dimensionScale = null;
 
     // Scale comparing current dimensions with saved dimensions if needed
-    const dimensions = location.dimensions;
     if (dimensions && dimensions.x !== undefined && dimensions.y !== undefined) {
         const pageWidth = pageDimensions.width / zoomScale;
         const pageHeight = (pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM) / zoomScale;
@@ -207,7 +206,7 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     let y = location.y;
 
     // If needed, scale coords comparing current dimensions with saved dimensions
-    const dimensionScale = getDimensionScale(location, pageDimensions, zoomScale);
+    const dimensionScale = getDimensionScale(location.dimensions, pageDimensions, zoomScale);
     if (dimensionScale) {
         x *= dimensionScale.x;
         y *= dimensionScale.y;

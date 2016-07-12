@@ -275,7 +275,7 @@ class DocHighlightThread extends AnnotationThread {
         const pageDimensions = this._getPageEl().getBoundingClientRect();
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const zoomScale = annotatorUtil.getScale(this._annotatedElement);
-        const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location, pageDimensions, zoomScale);
+        const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale);
 
         this._location.quadPoints.forEach((quadPoint) => {
             // If needed, scale quad points comparing current dimensions with saved dimensions
@@ -326,7 +326,7 @@ class DocHighlightThread extends AnnotationThread {
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
         const zoomScale = annotatorUtil.getScale(this._annotatedElement);
-        const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location, pageDimensions, zoomScale);
+        const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale);
 
         // DOM coordinates with respect to the page
         const x = event.clientX - pageDimensions.left;
