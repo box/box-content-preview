@@ -93,9 +93,17 @@ class DocHighlightDialog extends AnnotationDialog {
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageWidth = pageDimensions.width;
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-        const scale = annotatorUtil.getScale(this._annotatedElement);
-        const coordinates = docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
-        const [browserX, browserY] = docAnnotatorUtil.convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale);
+        const zoomScale = annotatorUtil.getScale(this._annotatedElement);
+        let [x, y] = docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
+
+        // If needed, scale coords comparing current dimensions with saved dimensions
+        const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location, pageDimensions, zoomScale);
+        if (dimensionScale) {
+            x *= dimensionScale.x;
+            y *= dimensionScale.y;
+        }
+
+        const [browserX, browserY] = docAnnotatorUtil.convertPDFSpaceToDOMSpace([x, y], pageHeight, zoomScale);
 
         // Make sure button dialog doesn't go off the page
         let dialogX = browserX - 19; // Center 38px button
