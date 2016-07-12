@@ -163,8 +163,13 @@ class DocBase extends Base {
      * @returns {void}
      */
     resize() {
+        // Save page and return after resize
+        const currentPageNumber = this.pdfViewer.currentPageNumber;
+
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
+
+        this.setPage(currentPageNumber);
 
         // Redraw annotations if needed
         if (this.annotator) {
