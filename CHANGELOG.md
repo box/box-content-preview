@@ -1,11 +1,21 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.66.0...HEAD)
+## [v0.67.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.67.0) (2016-07-13)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.66.0...v0.67.0)
 
 **Merged pull requests:**
 
+- Restore current page after resizing PPT [\#464](https://gitenterprise.inside-box.net/Preview/Preview/pull/464) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Disable PDFJS range requests for watermarked files [\#463](https://gitenterprise.inside-box.net/Preview/Preview/pull/463) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Fixing dimension scaling [\#462](https://gitenterprise.inside-box.net/Preview/Preview/pull/462) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Removing old icons [\#461](https://gitenterprise.inside-box.net/Preview/Preview/pull/461) ([phora](https://gitenterprise.inside-box.net/phora))
+- moving location info gathering to util [\#460](https://gitenterprise.inside-box.net/Preview/Preview/pull/460) ([phora](https://gitenterprise.inside-box.net/phora))
+- Fixing VR issues on HTC Vive. Also updating three.js and enabling .bo… [\#459](https://gitenterprise.inside-box.net/Preview/Preview/pull/459) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- PDFJS v1.5.336 [\#458](https://gitenterprise.inside-box.net/Preview/Preview/pull/458) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding sharedLink header when logging preview event [\#457](https://gitenterprise.inside-box.net/Preview/Preview/pull/457) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Replacing point annotation cursor with crosshair [\#456](https://gitenterprise.inside-box.net/Preview/Preview/pull/456) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Update README.md [\#453](https://gitenterprise.inside-box.net/Preview/Preview/pull/453) ([phora](https://gitenterprise.inside-box.net/phora))
+- Changelog [\#452](https://gitenterprise.inside-box.net/Preview/Preview/pull/452) ([phora](https://gitenterprise.inside-box.net/phora))
 - Adding visibility change to preview loading timeout [\#451](https://gitenterprise.inside-box.net/Preview/Preview/pull/451) ([phora](https://gitenterprise.inside-box.net/phora))
 - Remove GPU acceleration hack [\#447](https://gitenterprise.inside-box.net/Preview/Preview/pull/447) ([tjin](https://gitenterprise.inside-box.net/tjin))
 
