@@ -237,36 +237,23 @@ class DocAnnotator extends Annotator {
      */
     createAnnotationThread(annotations, location, type) {
         let thread;
+        const threadParams = {
+            annotatedElement: this._annotatedElement,
+            annotations,
+            annotationService: this._annotationService,
+            fileVersionID: this._fileVersionID,
+            location,
+            type
+        };
+
+        // Set existing thread ID if created with annotations
+        if (annotations.length > 0) {
+            threadParams.threadID = annotations[0].threadID;
+        }
 
         if (type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
-            // Set existing thread ID if created with annotations
-            // if (annotations.length > 0) {
-            //     threadParams.threadID = annotations[0].threadID;
-            // }
-
-            thread = new DocHighlightThread({
-                annotatedElement: this._annotatedElement,
-                annotations,
-                annotationService: this._annotationService,
-                fileVersionID: this._fileVersionID,
-                location,
-                type
-            });
+            thread = new DocHighlightThread(threadParams);
         } else {
-            const threadParams = {
-                annotatedElement: this._annotatedElement,
-                annotations,
-                annotationService: this._annotationService,
-                fileVersionID: this._fileVersionID,
-                location,
-                type
-            };
-
-            // Set existing thread ID if created with annotations
-            if (annotations.length > 0) {
-                threadParams.threadID = annotations[0].threadID;
-            }
-
             thread = new DocPointThread(threadParams);
         }
 

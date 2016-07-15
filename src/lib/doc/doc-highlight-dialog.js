@@ -59,12 +59,16 @@ class DocHighlightDialog extends AnnotationDialog {
      * @override
      * @returns {void}
      */
-    addAnnotation() {
-        // Switch add button to delete button
-        const addButtonEl = this._element.querySelector('.box-preview-add-highlight-btn');
-        const deleteButtonEl = this._element.querySelector('.box-preview-delete-highlight-btn');
-        annotatorUtil.hideElement(addButtonEl);
-        annotatorUtil.showElement(deleteButtonEl);
+    addAnnotation(annotation) {
+        if (annotation) {
+            super.addAnnotation(annotation);
+        } else {
+            // Switch add button to delete button
+            const addButtonEl = this._element.querySelector('.box-preview-add-highlight-btn');
+            const deleteButtonEl = this._element.querySelector('.box-preview-delete-highlight-btn');
+            annotatorUtil.hideElement(addButtonEl);
+            annotatorUtil.showElement(deleteButtonEl);
+        }
     }
 
     /**
@@ -138,7 +142,6 @@ class DocHighlightDialog extends AnnotationDialog {
      * @protected
      */
     setup(annotations) {
-        // console.log(annotations);
         this.emit('annotationcreate');
         this._element = document.createElement('div');
         this._element.classList.add('box-preview-highlight-dialog');
@@ -204,14 +207,12 @@ class DocHighlightDialog extends AnnotationDialog {
         if (commentsDialog.classList.contains(CLASS_HIDDEN)) {
             // moves up the position of the comments dialog to be in place of the buttons dialog
 
-            console.log('comments dialog is hidden');
             this._element.classList.remove('box-preview-highlight-dialog');
             buttonsDialog.classList.add(CLASS_HIDDEN);
 
             this._element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
             commentsDialog.classList.remove(CLASS_HIDDEN);
         } else { // Displays annotations delete button and hides comment dialog
-            console.log('comments dialog is NOT hidden');
             this._element.classList.remove(constants.CLASS_ANNOTATION_DIALOG);
             commentsDialog.classList.add(CLASS_HIDDEN);
 
@@ -301,9 +302,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
             // Clicking 'Highlight' button to create a highlight
             case 'add-highlight-comment-btn':
-                this._addHighlight();
                 this.toggleHighlightDialogs();
-                // this.show();
                 break;
 
             // Clicking 'Trash' button to delete the highlight
@@ -349,7 +348,6 @@ class DocHighlightDialog extends AnnotationDialog {
         // If no other comments exist on the thread
         if (!this._hasAnnotations) {
             this.toggleHighlightDialogs();
-            this.show();
         }
     }
 
@@ -359,7 +357,6 @@ class DocHighlightDialog extends AnnotationDialog {
         // If no other comments exist on the thread
         if (!this._hasAnnotations) {
             this.toggleHighlightDialogs();
-            this.show();
         }
     }
 }

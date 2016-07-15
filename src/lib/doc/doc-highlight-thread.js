@@ -264,11 +264,13 @@ class DocHighlightThread extends AnnotationThread {
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
             this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, data ? data.text : '');
+            this.reset();
         });
 
         // Annotation deleted
         this._dialog.addListener('annotationdelete', () => {
             this.deleteAnnotation(this._annotations[0].annotationID);
+            this.reset();
         });
     }
 
