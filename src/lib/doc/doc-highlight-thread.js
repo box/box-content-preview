@@ -90,6 +90,21 @@ class DocHighlightThread extends AnnotationThread {
 
         // @TODO(tjin): Remove _canDelete when highlights get comments
         this._canDelete = true;
+        this._state = constants.ANNOTATION_STATE_ACTIVE;
+        return promise;
+    }
+
+    /**
+     * Deletes an annotation.
+     *
+     * @override
+     * @param {String} annotationID ID of annotation to delete
+     * @param {Boolean} [useServer] Whether or not to delete on server, default true
+     * @returns {void}
+     */
+    deleteAnnotation(annotationID, useServer = true) {
+        super.deleteAnnotation(annotationID, useServer);
+        this._state = constants.ANNOTATION_STATE_ACTIVE;
     }
 
     /**
@@ -264,13 +279,13 @@ class DocHighlightThread extends AnnotationThread {
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
             this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, data ? data.text : '');
-            this.reset();
+            this.show();
         });
 
         // Annotation deleted
         this._dialog.addListener('annotationdelete', () => {
             this.deleteAnnotation(this._annotations[0].annotationID);
-            this.reset();
+            this.show();
         });
     }
 

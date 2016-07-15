@@ -78,7 +78,11 @@ class DocHighlightDialog extends AnnotationDialog {
      * @override
      * @returns {void}
      */
-    removeAnnotation() {}
+    removeAnnotation(annotationID) {
+        if (annotationID) {
+            super.removeAnnotation(annotationID);
+        }
+    }
 
     //--------------------------------------------------------------------------
     // Abstract Implementations
