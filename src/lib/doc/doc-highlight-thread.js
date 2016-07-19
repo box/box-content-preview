@@ -25,6 +25,21 @@ class DocHighlightThread extends AnnotationThread {
     //--------------------------------------------------------------------------
 
     /**
+     * [constructor]
+     *
+     * @override
+     * @param {AnnotationThreadData} data Data for constructing thread
+     * @returns {AnnotationThread} Annotation thread instance
+     */
+    constructor(data) {
+        super(data);
+
+        // @TODO(tjin): Remove _canDelete when highlights get comments
+        const annotation = this._annotations[0];
+        this._canDelete = annotation && annotation.permissions && annotation.permissions.can_delete;
+    }
+
+    /**
      * [destructor]
      *
      * @override
@@ -67,12 +82,14 @@ class DocHighlightThread extends AnnotationThread {
      * @override
      * @param {String} type Type of annotation
      * @param {String} text Text of annotation to save
-     * @returns {Promise} Promise
+     * @returns {void}
      */
     saveAnnotation(type, text) {
-        const promise = super.saveAnnotation(type, text);
+        super.saveAnnotation(type, text);
         window.getSelection().removeAllRanges();
-        return promise;
+
+        // @TODO(tjin): Remove _canDelete when highlights get comments
+        this._canDelete = true;
     }
 
     /**
@@ -103,6 +120,11 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {Boolean} Whether click was in a non-pending highlight
      */
     onClick(event, consumed) {
+        // @TODO(tjin): Remove _canDelete when highlights get comments
+        if (!this._canDelete) {
+            return false;
+        }
+
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
         if (!consumed && (this._state === constants.ANNOTATION_STATE_HOVER ||
@@ -129,7 +151,8 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
-        if (this._state === constants.ANNOTATION_STATE_PENDING) {
+        // @TODO(tjin): Remove _canDelete when highlights get comments
+        if (this._state === constants.ANNOTATION_STATE_PENDING || !this._canDelete) {
             return false;
         }
 
@@ -186,10 +209,16 @@ class DocHighlightThread extends AnnotationThread {
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
             case constants.ANNOTATION_STATE_ACTIVE:
-            case constants.ANNOTATION_STATE_ACTIVE_HOVER:
+            case constants.ANNOTATION_STATE_ACTIVE_HOVER: {
+                // @TODO(tjin): Remove _canDelete when highlights get comments
+                if (!this._canDelete) {
+                    return;
+                }
+
                 this._dialog.show();
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
+            }
             default:
                 break;
         }

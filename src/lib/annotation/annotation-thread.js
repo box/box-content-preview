@@ -138,6 +138,10 @@ class AnnotationThread extends EventEmitter {
         const tempAnnotationID = AnnotationService.generateID();
         const tempAnnotationData = annotationData;
         tempAnnotationData.annotationID = tempAnnotationID;
+        tempAnnotationData.permissions = {
+            can_edit: true,
+            can_delete: true
+        };
         tempAnnotationData.created = (new Date()).getTime();
         tempAnnotationData.modified = tempAnnotationData.created;
         const tempAnnotation = new Annotation(tempAnnotationData);
@@ -175,8 +179,14 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     deleteAnnotation(annotationID, useServer = true) {
+        // Ignore if no corresponding annotation exists in thread or user doesn't have permissions
+        const annotation = this._annotations.find((annot) => annot.annotationID === annotationID);
+        if (!annotation || (annotation.permissions && !annotation.permissions.can_delete)) {
+            return;
+        }
+
         // Delete annotation on client
-        this._annotations = this._annotations.filter((annotation) => annotation.annotationID !== annotationID);
+        this._annotations = this._annotations.filter((annot) => annot.annotationID !== annotationID);
 
         // If this annotation was the last one in the thread, destroy the thread
         if (this._annotations.length === 0) {
