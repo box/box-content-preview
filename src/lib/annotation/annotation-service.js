@@ -93,7 +93,13 @@ class AnnotationService {
             .then((response) => response.json())
             .then((data) => {
                 if (data.type !== 'error' && data.id) {
-                    const createdAnnotation = this._createAnnotation(data);
+                    // @TODO(tjin): Remove this when response has permissions
+                    const tempData = data;
+                    tempData.permissions = {
+                        can_edit: true,
+                        can_delete: true
+                    };
+                    const createdAnnotation = this._createAnnotation(tempData);
 
                     // Set user if not set already
                     if (this._user.id === 0) {
@@ -119,7 +125,7 @@ class AnnotationService {
      */
     read(fileVersionID) {
         return new Promise((resolve, reject) => {
-            fetch(`${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}`, {
+            fetch(`${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}&fields=item,details,message,created_by,created_at,modified_at,permissions`, {
                 headers: this._headers
             })
             .then((response) => response.json())
@@ -299,6 +305,7 @@ class AnnotationService {
                 name: data.created_by.name,
                 avatarUrl: data.created_by.profile_image
             },
+            permissions: data.permissions,
             created: data.created_at,
             modified: data.modified_at
         });

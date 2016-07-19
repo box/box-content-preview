@@ -23,6 +23,7 @@ class Annotation {
      * @property {String} text Annotation text
      * @property {Object} location Location object
      * @property {Object} user User creating/that created this annotation
+     * @property {Object} permissions Permissions user has
      * @property {Number} created Created timestamp
      * @property {Number} modified Modified timestamp
      */
@@ -45,6 +46,7 @@ class Annotation {
         this._text = data.text;
         this._location = data.location;
         this._user = data.user;
+        this._permissions = data.permissions;
         this._created = data.created;
         this._modified = data.modified;
     }
@@ -114,6 +116,15 @@ class Annotation {
      */
     get user() {
         return this._user;
+    }
+
+    /**
+     * Gets permissions.
+     *
+     * @returns {Object} permissions
+     */
+    get permissions() {
+        return this._permissions;
     }
 
     /**

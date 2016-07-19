@@ -26,6 +26,10 @@ class LocalStorageAnnotationService extends AnnotationService {
         return new Promise((resolve) => {
             const annotationData = annotation;
             annotationData.annotationID = AnnotationService.generateID();
+            annotationData.permissions = {
+                can_edit: true,
+                can_delete: true
+            };
             annotationData.created = (new Date()).getTime();
             annotationData.modified = annotationData.created;
             const createdAnnotation = new Annotation(annotationData);
@@ -151,6 +155,7 @@ class LocalStorageAnnotationService extends AnnotationService {
                 text: annotation._text,
                 location: annotation._location,
                 user: annotation._user,
+                permissions: annotation._permissions,
                 created: annotation._created,
                 modified: annotation._modified
             });
