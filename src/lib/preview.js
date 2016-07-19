@@ -454,11 +454,12 @@ class Preview extends EventEmitter {
             // Get exiting cache before updating it to latest version
             const cached = cache.get(file.id);
 
-            // Cache the new file object
-            cache.set(file.id, file);
+            // Cache the new file object if not watermarked
+            if (!file.watermark_info || !file.watermark_info.is_watermarked) {
+                cache.set(file.id, file);
+            }
 
             // Finally load the viewer if file sha mismatches
-            // @TODO add watermark check also here
             if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
                 this.logger.setCacheStale();
                 this.loadViewer();
