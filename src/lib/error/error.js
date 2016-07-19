@@ -102,6 +102,8 @@ class PreviewError extends Base {
         if (this.downloadBtnEl) {
             this.downloadBtnEl.removeEventListener('click', this.download);
         }
+
+        super.destroy();
     }
 }
 
