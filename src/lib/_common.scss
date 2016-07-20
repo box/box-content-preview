@@ -1,4 +1,7 @@
 @import 'node_modules/box-ui/src/common/variables';
+@import 'node_modules/box-ui/src/components/notifications/scss/notifications';
+
+// @TOOD(tjin): Remove _boxui.scss
 @import 'boxui';
 
 $header-height: 48px;
@@ -113,4 +116,8 @@ $header-height: 48px;
     margin-right: 10px;
     padding-left: 10px;
     vertical-align: middle;
+}
+
+.box-preview-has-header .notifications-wrapper {
+    top: 48px;
 }

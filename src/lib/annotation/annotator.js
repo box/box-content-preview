@@ -13,6 +13,7 @@ import autobind from 'autobind-decorator';
 import Browser from '../browser';
 import EventEmitter from 'events';
 import LocalStorageAnnotationService from './localstorage-annotation-service';
+import Notification from '../notification';
 import * as constants from './annotation-constants';
 import { CLASS_ACTIVE } from '../constants';
 
@@ -47,6 +48,8 @@ class Annotator extends EventEmitter {
         this._annotatedElement = data.annotatedElement;
         this._annotationService = data.annotationService || new LocalStorageAnnotationService();
         this._fileVersionID = data.fileVersionID;
+
+        this.notification = new Notification(this._annotatedElement);
     }
 
     /**
@@ -158,6 +161,8 @@ class Annotator extends EventEmitter {
 
         // Otherwise, enable annotation mode
         } else {
+            this.notification.show(__('notification_annotation_mode'));
+
             this.emit('pointmodeenter');
             this._annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {

@@ -12,7 +12,7 @@ import EventEmitter from 'events';
 import * as annotatorUtil from './annotator-util';
 import * as constants from './annotation-constants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
-import { decodeKeydown } from '../util.js';
+import { decodeKeydown } from '../util';
 import { ICON_DELETE } from '../icons/icons';
 
 const DIALOG_HIDE_TIMEOUT = 500;
