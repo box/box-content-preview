@@ -967,20 +967,24 @@ class Preview extends EventEmitter {
             return;
         }
 
-        const leftNavigation = this.container.querySelector(SELECTOR_NAVIGATION_LEFT);
-        const rightNavigation = this.container.querySelector(SELECTOR_NAVIGATION_RIGHT);
+        const leftNavEl = this.container.querySelector(SELECTOR_NAVIGATION_LEFT);
+        const rightNavEl = this.container.querySelector(SELECTOR_NAVIGATION_RIGHT);
 
         // If show navigation was called when shell is not ready then return
-        if (!leftNavigation || !rightNavigation) {
+        if (!leftNavEl || !rightNavEl) {
             return;
         }
 
-        // Hide the arrows by default
-        leftNavigation.classList.add(CLASS_HIDDEN);
-        rightNavigation.classList.add(CLASS_HIDDEN);
+        // Set titles
+        leftNavEl.title = __('previous_file');
+        rightNavEl.title = __('next_file');
 
-        leftNavigation.removeEventListener('click', this.navigateLeft);
-        rightNavigation.removeEventListener('click', this.navigateRight);
+        // Hide the arrows by default
+        leftNavEl.classList.add(CLASS_HIDDEN);
+        rightNavEl.classList.add(CLASS_HIDDEN);
+
+        leftNavEl.removeEventListener('click', this.navigateLeft);
+        rightNavEl.removeEventListener('click', this.navigateRight);
         this.contentContainer.removeEventListener('mousemove', this.getGlobalMousemoveHandler());
 
         // Don't show navigation when there is no need
@@ -988,19 +992,19 @@ class Preview extends EventEmitter {
             return;
         }
 
-        leftNavigation.addEventListener('click', this.navigateLeft);
-        rightNavigation.addEventListener('click', this.navigateRight);
+        leftNavEl.addEventListener('click', this.navigateLeft);
+        rightNavEl.addEventListener('click', this.navigateRight);
         this.contentContainer.addEventListener('mousemove', this.getGlobalMousemoveHandler());
 
         // Selectively show or hide the navigation arrows
         const index = this.collection.indexOf(this.file.id);
 
         if (index > 0) {
-            leftNavigation.classList.remove(CLASS_HIDDEN);
+            leftNavEl.classList.remove(CLASS_HIDDEN);
         }
 
         if (index < this.collection.length - 1) {
-            rightNavigation.classList.remove(CLASS_HIDDEN);
+            rightNavEl.classList.remove(CLASS_HIDDEN);
         }
     }
 
