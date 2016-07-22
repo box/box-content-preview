@@ -124,7 +124,7 @@ export function isElementInViewport(element) {
  */
 export function getAvatarHtml(avatarUrl, userId, userName) {
     if (avatarUrl !== '') {
-        return `<img src=${avatarUrl} alt="${__('annotation_profile_alt')}">`.trim();
+        return `<img src="${avatarUrl}" alt="${__('annotation_profile_alt')}">`.trim();
     }
 
     let initials = '';
@@ -132,10 +132,7 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
         // http://stackoverflow.com/questions/8133630/spliting-the-first-character-of-the-words
         initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
     }
-    return `
-        <div class="box-preview-annotation-profile avatar-color-${userId % AVATAR_COLOR_COUNT}">
-            ${initials}
-        </div>`.trim();
+    return `<div class="box-preview-annotation-profile avatar-color-${userId % AVATAR_COLOR_COUNT}">${initials}</div>`.trim();
 }
 
 /**
