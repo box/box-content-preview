@@ -10,6 +10,7 @@ const PAGE_PADDING_TOP = 15;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
+const HIGHLIGHT_DIALOG_WIDTH = 282;
 
 //------------------------------------------------------------------------------
 // DOM Utils
@@ -291,4 +292,42 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
         Math.max(x1, x2, x3, x4),
         Math.min(y1, y2, y3, y4)
     ];
+}
+
+/**
+ * Gets coordinates representing lower center point of the annotation
+ * represented by the provided quad points. We define lower center point
+ * as the bottom center corner of the rectangle representing the bottom-most
+ * annotation. Note that these coordinates are in PDF default user space, with
+ * the origin at the bottom left corner of the document.
+ * @param {Number[]} quadPoints Quad points of annotation to get lower
+ * right corner for in PDF space in PDF units
+ * @returns {Number[]} [x,y] of lower right corner of quad points in PDF
+ * space in PDF units
+ */
+export function getLowerCenterPoint(quadPoints) {
+    let [maxX, minX, y] = [0, 99999, 99999];
+    quadPoints.forEach((quadPoint) => {
+        const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
+
+        // If this rectangle is lower than previously recorded lowest,
+        // use the right edge of this rectangle
+        const tempMaxX = Math.max(x1, x2, x3, x4);
+        const tempMinX = Math.min(x1, x2, x3, x4);
+        const tempY = Math.min(y1, y2, y3, y4);
+
+        if (tempMinX < minX) {
+            minX = tempMinX;
+        }
+        if (tempMaxX > maxX) {
+            maxX = tempMaxX;
+        }
+
+        if (tempY <= y) {
+            y = tempY;
+        }
+    });
+
+    const x = (minX + maxX) / 2 - HIGHLIGHT_DIALOG_WIDTH / 2;
+    return [x, y];
 }

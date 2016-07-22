@@ -63,6 +63,10 @@ $avatar-color-9: #f22c44;
     fill: $highlight-yellow;
 }
 
+.box-preview-add-highlight-btn.box-preview-text-highlighted svg {
+    fill: $highlight-yellow;
+}
+
 .box-preview-btn-plain {
     &.box-preview-btn-annotate.box-preview-is-active svg {
         fill: $box-blue;

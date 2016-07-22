@@ -126,7 +126,6 @@ class AnnotationDialog extends EventEmitter {
      * @returns {void}
      */
     addAnnotation(annotation) {
-        console.log(annotation);
         // Show new section if needed
         if (!this._hasAnnotations) {
             const createSectionEl = this._element.querySelector('[data-section="create"]');
@@ -282,6 +281,11 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _addAnnotationElement(annotation) {
+        // If annotation text is blank, don't add to the comments dialog
+        if (!annotation.text) {
+            return;
+        }
+
         const userId = parseInt(annotatorUtil.htmlEscape(annotation.user.id || 0), 10);
 
         // Temporary until annotation user API is available

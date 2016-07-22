@@ -91,7 +91,12 @@ class DocHighlightThread extends AnnotationThread {
         // @TODO(tjin): Remove _canDelete when highlights get comments
         this._canDelete = true;
         this._state = constants.ANNOTATION_STATE_ACTIVE;
-        return promise;
+
+        // if the highlight was initially created without any comments, remove
+        // the blank annotation from the thread
+        if (this._annotations.length > 1 && this._annotations[0].text === '') {
+            this.deleteAnnotation(this._annotations[0].annotationID);
+        }
     }
 
     /**
@@ -282,10 +287,19 @@ class DocHighlightThread extends AnnotationThread {
             this.show();
         });
 
+        // Annotation canceled
+        this._dialog.addListener('annotationcancel', () => {
+            this.destroy();
+        });
+
         // Annotation deleted
         this._dialog.addListener('annotationdelete', () => {
             this.deleteAnnotation(this._annotations[0].annotationID);
-            this.show();
+
+            // Show comments dialog if annotations remain in thread
+            if (this._annotations.length) {
+                this.show();
+            }
         });
     }
 
