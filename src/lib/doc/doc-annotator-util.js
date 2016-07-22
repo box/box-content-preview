@@ -279,34 +279,6 @@ export function getQuadPoints(element, pageEl, scale) {
 }
 
 /**
- * Gets coordinates representing lower right corner of the annotation
- * represented by the provided quad points. We define lower right corner
- * as the bottom right corner of the rectangle representing the bottom-most
- * annotation. Note that these coordinates are in PDF default user space, with
- * the origin at the bottom left corner of the document.
- * @param {Number[]} quadPoints Quad points of annotation to get lower
- * right corner for in PDF space in PDF units
- * @returns {Number[]} [x,y] of lower right corner of quad points in PDF
- * space in PDF units
- */
-export function getLowerRightCorner(quadPoints) {
-    let [x, y] = [0, 99999];
-    quadPoints.forEach((quadPoint) => {
-        const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
-
-        // If this rectangle is lower than previously recorded lowest,
-        // use the right edge of this rectangle
-        const tempY = Math.min(y1, y2, y3, y4);
-        if (tempY <= y) {
-            x = Math.max(x1, x2, x3, x4);
-            y = tempY;
-        }
-    });
-
-    return [x, y];
-}
-
-/**
  * Returns the lower right corner of the last quad point. This should provide
  * the same location the add highlight button is shown at given that the
  * quad points are stored in the correct order, ie left to right, top to bottom.
