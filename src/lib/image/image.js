@@ -179,7 +179,7 @@ class Image extends Base {
      * @returns {void}
      */
     updatePannability() {
-        if (!this.imageEl || this.annotator.isInPointMode()) {
+        if (!this.imageEl || (this.annotator && this.annotator.isInPointMode())) {
             return;
         }
         this.isPannable = this.imageEl.clientWidth > this.wrapperEl.clientWidth || this.imageEl.clientHeight > this.wrapperEl.clientHeight;
