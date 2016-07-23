@@ -304,6 +304,8 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
  * right corner for in PDF space in PDF units
  * @returns {Number[]} [x,y] of lower right corner of quad points in PDF
  * space in PDF units
+ * @param {Number[]} quadPoints Quad points in PDF space in PDF units
+ * @returns {Number[]} [x,y] of lower right corner of last quad point
  */
 export function getLowerCenterPoint(quadPoints) {
     let [maxX, minX, y] = [0, 99999, 99999];

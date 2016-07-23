@@ -92,24 +92,14 @@ class DocHighlightThread extends AnnotationThread {
         this._canDelete = true;
         this._state = constants.ANNOTATION_STATE_ACTIVE;
 
-        // if the highlight was initially created without any comments, remove
+        // If the highlight was initially created without any comments, remove
         // the blank annotation from the thread
+        //
+        // TODO (@spramod): Remove if decision is made on highlights without
+        // comments
         if (this._annotations.length > 1 && this._annotations[0].text === '') {
             this.deleteAnnotation(this._annotations[0].annotationID);
         }
-    }
-
-    /**
-     * Deletes an annotation.
-     *
-     * @override
-     * @param {String} annotationID ID of annotation to delete
-     * @param {Boolean} [useServer] Whether or not to delete on server, default true
-     * @returns {void}
-     */
-    deleteAnnotation(annotationID, useServer = true) {
-        super.deleteAnnotation(annotationID, useServer);
-        this._state = constants.ANNOTATION_STATE_ACTIVE;
     }
 
     /**
@@ -295,11 +285,6 @@ class DocHighlightThread extends AnnotationThread {
         // Annotation deleted
         this._dialog.addListener('annotationdelete', () => {
             this.deleteAnnotation(this._annotations[0].annotationID);
-
-            // Show comments dialog if annotations remain in thread
-            if (this._annotations.length) {
-                this.show();
-            }
         });
     }
 

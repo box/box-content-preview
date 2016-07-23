@@ -446,6 +446,8 @@ class AnnotationDialog extends EventEmitter {
         }
 
         this.emit('annotationcreate', { text });
+
+        // TODO: @spramod remove print statement
         console.log('annotationcreate');
         annotationTextEl.value = '';
     }
@@ -458,6 +460,8 @@ class AnnotationDialog extends EventEmitter {
      */
     _cancelAnnotation() {
         this.emit('annotationcancel');
+
+        // TODO: @spramod remove print statement
         console.log('annotationcancel');
     }
 
@@ -478,7 +482,7 @@ class AnnotationDialog extends EventEmitter {
      * Deactivate reply textarea.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
     _deactivateReply() {
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
