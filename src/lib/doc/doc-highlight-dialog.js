@@ -14,7 +14,8 @@ import * as constants from '../annotation/annotation-constants.js';
 import { decodeKeydown } from '../util.js';
 import { ICON_HIGHLIGHT, ICON_ANNOTATION_HIGHLIGHT_COMMENT } from '../icons/icons';
 
-const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
+const HIGHLIGHT_DIALOG_WIDTH = 81;
+const HIGHLIGHT_DIALOG_HEIGHT = 38;
 const HIGHLIGHT_BORDER_TOP = 20;
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
@@ -39,7 +40,9 @@ class DocHighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * Saves an annotation with the associated text or blank if only highlighting
+     * Saves an annotation with the associated text or blank if only
+     * highlighting. Only adds an annotation to the dialog if it contains text.
+     * The annotation is still added to the thread on the server side.
      *
      * @override
      * @param {string} [annotationID] Optional annotationID to remove
@@ -58,10 +61,11 @@ class DocHighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * No-op when removing an annotation since highlights only have one
-     * annotation.
+     * Removes annotation indicated by annotationID if provided, else no-op since
+     * plain highlights only have one annotation.
      *
      * @override
+     * @param {string} [annotationID] Optional annotationID to delete
      * @returns {void}
      */
     removeAnnotation(annotationID) {
@@ -102,21 +106,25 @@ class DocHighlightDialog extends AnnotationDialog {
         const [browserX, browserY] = docAnnotatorUtil.convertPDFSpaceToDOMSpace([x, y], pageHeight, zoomScale);
 
         // Make sure button dialog doesn't go off the page
-        let dialogX = browserX - 19; // Center 38px button
+        let dialogX = browserX - HIGHLIGHT_DIALOG_WIDTH / 2; // Center 81px button
         let dialogY = browserY + 10; // Caret + some padding
         if (dialogX < 0) {
             dialogX = 0;
-        } else if (dialogX + HIGHLIGHT_DIALOG_DIMENSIONS > pageWidth) {
-            dialogX = pageWidth - HIGHLIGHT_DIALOG_DIMENSIONS;
+        } else if (dialogX + HIGHLIGHT_DIALOG_WIDTH > pageWidth) {
+            dialogX = pageWidth - HIGHLIGHT_DIALOG_WIDTH;
         }
 
         if (dialogY < 0) {
             dialogY = 0;
-        } else if (dialogY + HIGHLIGHT_DIALOG_DIMENSIONS > pageHeight) {
-            dialogY = pageHeight - HIGHLIGHT_DIALOG_DIMENSIONS;
+        } else if (dialogY + HIGHLIGHT_DIALOG_HEIGHT > pageHeight) {
+            dialogY = pageHeight - HIGHLIGHT_DIALOG_HEIGHT;
         }
 
-        this._element.style.borderTop = this._hasComments ? 0 : HIGHLIGHT_BORDER_TOP;
+        // Remove extra transparent border top if showing comments dialog
+        if (this._hasComments) {
+            dialogY -= HIGHLIGHT_BORDER_TOP;
+        }
+
         this._element.style.left = `${dialogX}px`;
         this._element.style.top = `${dialogY + PAGE_PADDING_TOP}px`;
         pageEl.appendChild(this._element);
@@ -146,11 +154,13 @@ class DocHighlightDialog extends AnnotationDialog {
             <div class="box-preview-annotation-caret"></div>
             <div class="box-preview-annotation-highlight-dialog ${this._hasComments ? CLASS_HIDDEN : ''}">
                 <button class="box-preview-btn-plain box-preview-add-highlight-btn ${annotations.length ? constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED : ''}"
-                    data-type="highlight-btn">
+                    data-type="highlight-btn"
+                    title="${__('annotation_highlight_toggle')}">
                     ${ICON_HIGHLIGHT}
                 </button>
-                <button class="box-preview-btn-plain box-preview-add-highlight-btn"
-                    data-type="add-highlight-comment-btn">
+                <button class="box-preview-btn-plain box-preview-highlight-comment-btn"
+                    data-type="add-highlight-comment-btn"
+                    title="${__('annotation_highlight_comment')}">
                     ${ICON_ANNOTATION_HIGHLIGHT_COMMENT}
                 </button>
             </div>

@@ -45,8 +45,8 @@ $avatar-color-9: #f22c44;
 }
 
 // Icon buttons
+.box-preview-add-highlight-btn,
 .box-preview-delete-highlight-btn,
-.box-preview-highlight-comment-btn,
 .delete-comment-btn {
     svg {
         fill: lighten($better-black, 15%);
@@ -57,24 +57,26 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-add-highlight-btn {
+.box-preview-annotation-highlight-dialog .box-preview-btn-plain {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.box-preview-highlight-comment-btn {
     .icon {
         fill: lighten($better-black, 15%);
     }
 
     &:hover .icon {
-        fill: $highlight-yellow;
+        fill: $box-blue;
     }
 
 }
 
-.box-preview-add-highlight-btn:hover svg,
-.box-preview-highlight-comment-btn:hover svg {
-    fill: $highlight-yellow;
-}
-
-.box-preview-add-highlight-btn.box-preview-text-highlighted svg {
-    fill: $highlight-yellow;
+.box-preview-add-highlight-btn.box-preview-text-highlighted {
+    svg {
+        fill: $highlight-yellow;
+    }
 }
 
 .box-preview-btn-plain {

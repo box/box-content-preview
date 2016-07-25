@@ -446,23 +446,17 @@ class AnnotationDialog extends EventEmitter {
         }
 
         this.emit('annotationcreate', { text });
-
-        // TODO: @spramod remove print statement
-        console.log('annotationcreate');
         annotationTextEl.value = '';
     }
 
     /**
      * Cancels posting an annotation.
-     *
+ *
      * @returns {void}
      * @private
      */
     _cancelAnnotation() {
         this.emit('annotationcancel');
-
-        // TODO: @spramod remove print statement
-        console.log('annotationcancel');
     }
 
     /**
