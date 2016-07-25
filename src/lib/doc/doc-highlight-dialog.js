@@ -12,7 +12,7 @@ import * as docAnnotatorUtil from './doc-annotator-util';
 import { CLASS_HIDDEN, CLASS_ACTIVE } from '../constants';
 import * as constants from '../annotation/annotation-constants.js';
 import { decodeKeydown } from '../util.js';
-import { ICON_HIGHLIGHT, ICON_ANNOTATION } from '../icons/icons';
+import { ICON_HIGHLIGHT, ICON_ANNOTATION_HIGHLIGHT_COMMENT } from '../icons/icons';
 
 const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
 const PAGE_PADDING_BOTTOM = 15;
@@ -149,7 +149,7 @@ class DocHighlightDialog extends AnnotationDialog {
                 </button>
                 <button class="box-preview-btn-plain box-preview-add-highlight-btn"
                     data-type="add-highlight-comment-btn">
-                    ${ICON_ANNOTATION}
+                    ${ICON_ANNOTATION_HIGHLIGHT_COMMENT}
                 </button>
             </div>
             <div class="annotation-container ${this._hasComments ? '' : CLASS_HIDDEN}">
