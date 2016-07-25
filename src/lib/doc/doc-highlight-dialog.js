@@ -15,6 +15,7 @@ import { decodeKeydown } from '../util.js';
 import { ICON_HIGHLIGHT, ICON_ANNOTATION_HIGHLIGHT_COMMENT } from '../icons/icons';
 
 const HIGHLIGHT_DIALOG_DIMENSIONS = 38;
+const HIGHLIGHT_BORDER_TOP = 20;
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 
@@ -80,7 +81,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * @returns {void}
      */
     position() {
-        // Position it below lower right corner of the highlight - we need
+        // Position it below lower right corner or center of the highlight - we need
         // to reposition every time since the DOM could have changed from
         // zooming
         const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`);
@@ -115,6 +116,7 @@ class DocHighlightDialog extends AnnotationDialog {
             dialogY = pageHeight - HIGHLIGHT_DIALOG_DIMENSIONS;
         }
 
+        this._element.style.borderTop = this._hasComments ? 0 : HIGHLIGHT_BORDER_TOP;
         this._element.style.left = `${dialogX}px`;
         this._element.style.top = `${dialogY + PAGE_PADDING_TOP}px`;
         pageEl.appendChild(this._element);

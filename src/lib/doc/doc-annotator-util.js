@@ -330,6 +330,6 @@ export function getLowerCenterPoint(quadPoints) {
         }
     });
 
-    const x = (minX + maxX) / 2 - HIGHLIGHT_DIALOG_WIDTH / 2;
+    const x = minX + (maxX - minX) / 2 - HIGHLIGHT_DIALOG_WIDTH / 4;
     return [x, y];
 }
