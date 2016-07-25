@@ -40,7 +40,7 @@ class Cache {
      * @returns {void}
      */
     unset(key) {
-        if (localStorage && typeof localStorage.removeItem === 'function') {
+        if (this.localStorageAvailable()) {
             localStorage.removeItem(this.generateKey(key));
         }
 
@@ -105,31 +105,38 @@ class Cache {
      * @returns {Boolean} Whether the cache has key
      */
     inLocalStorage(key) {
-        if (localStorage && typeof localStorage.getItem === 'function') {
-            const value = localStorage.getItem(this.generateKey(key));
-            if (value) {
-                return true;
-            }
+        if (!this.localStorageAvailable()) {
+            return false;
         }
-        return false;
+
+        return !!localStorage.getItem(this.generateKey(key));
     }
 
     /**
      * Checks whether localStorage is available or not, derived from
      * https://goo.gl/XE10Gu.
      *
+     * @NOTE(tjin): This check is cached to not have to write/read from disk
+     * every time this check is needed, but this will not catch instances where
+     * localStorage was available the first time this is called, but becomes
+     * unavailable at a later time.
+     *
      * @returns {Boolean} Whether or not localStorage is available or not.
      * @private
      */
     localStorageAvailable() {
-        try {
-            const x = '__storage_test__';
-            localStorage.setItem(x, x);
-            localStorage.removeItem(x);
-            return true;
-        } catch (e) {
-            return false;
+        if (this.available === undefined) {
+            try {
+                const x = '__storage_test__';
+                localStorage.setItem(x, x);
+                localStorage.removeItem(x);
+                this.available = true;
+            } catch (e) {
+                this.available = false;
+            }
         }
+
+        return this.available;
     }
 
     /**
