@@ -37,11 +37,11 @@ class DocPointDialog extends AnnotationDialog {
         const pageWidth = pageDimensions.width;
 
         // Center middle of dialog with point - this coordinate is with respect to the page
-        let dialogLeftX = browserX - dialogWidth / 2;
+        let dialogLeftX = browserX - dialogWidth / 2 + 3;
 
-        // Position 7px below location and transparent border pushes it down
+        // Position 17px below location and transparent border pushes it down
         // further - this coordinate is with respect to the page
-        const dialogTopY = browserY + 7;
+        const dialogTopY = browserY + 17;
 
         // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
         const dialogPastLeft = dialogLeftX < 0;
@@ -66,7 +66,7 @@ class DocPointDialog extends AnnotationDialog {
             // We set the 'left' property even when we have caretRightX for IE10/11
             annotationCaretEl.style.left = `${dialogWidth - caretRightX}px`;
 
-            dialogLeftX = pageWidth - dialogWidth;
+            dialogLeftX = pageWidth - dialogWidth + 3;
 
         // Reset caret to center
         } else {

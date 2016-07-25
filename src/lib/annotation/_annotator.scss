@@ -241,19 +241,21 @@ $avatar-color-9: #f22c44;
 }
 
 .box-preview-point-annotation-btn {
-    background-color: fade-out($box-blue, .3);
-    border-radius: 50%; // Circle
+    background-color: transparent;
     border-style: none;
     cursor: pointer;
-    height: 18px;
     padding: 0;
     position: absolute;
-    -webkit-transition: background-color .5s;
-    transition: background-color .5s;
-    width: 18px;
+    width: 24px;
 
-    &:hover {
-        background-color: $box-blue;
+    svg {
+        fill: fade-out($box-blue, .35);
+        -webkit-transition: fill .5s;
+        transition: fill .5s;
+    }
+
+    &:hover svg {
+        fill: $box-blue;
     }
 }
 

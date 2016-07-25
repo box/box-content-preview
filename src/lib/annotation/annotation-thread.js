@@ -15,6 +15,7 @@ import AnnotationService from './annotation-service';
 import EventEmitter from 'events';
 import * as annotatorUtil from './annotator-util';
 import * as constants from '../annotation/annotation-constants';
+import { ICON_PLACED_ANNOTATION } from '../icons/icons.js';
 
 @autobind
 class AnnotationThread extends EventEmitter {
@@ -387,6 +388,7 @@ class AnnotationThread extends EventEmitter {
         const indicatorEl = document.createElement('button');
         indicatorEl.classList.add('box-preview-point-annotation-btn');
         indicatorEl.setAttribute('data-type', 'annotation-indicator');
+        indicatorEl.innerHTML = ICON_PLACED_ANNOTATION;
         return indicatorEl;
     }
 
