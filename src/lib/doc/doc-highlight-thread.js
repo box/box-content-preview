@@ -101,7 +101,7 @@ class DocHighlightThread extends AnnotationThread {
         // If the highlight was initially created without any comments, remove
         // the blank annotation from the thread
         //
-        // TODO (@spramod): Remove if decision is made on highlights without
+        // @TODO(spramod): Remove if decision is made on highlights without
         // comments
         if (this._annotations.length > 1 && this._annotations[0].text === '') {
             this.deleteAnnotation(this._annotations[0].annotationID);
@@ -280,11 +280,16 @@ class DocHighlightThread extends AnnotationThread {
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
             this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, data ? data.text : '');
+            this._dialog._toggleHighlightCommentsReply(this._annotations.length);
         });
 
         // Annotation canceled
         this._dialog.addListener('annotationcancel', () => {
-            this.destroy();
+            if (this._annotations.length && this._annotations[0].text === '') {
+                this._dialog._toggleHighlightDialogs();
+            } else {
+                this.destroy();
+            }
         });
 
         // Annotation deleted

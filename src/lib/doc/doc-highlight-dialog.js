@@ -203,42 +203,6 @@ class DocHighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * Toggles between the highlight annotations buttons dialog and the
-     * highlight comments dialog. Dialogs are toggled based on whether the
-     * highlight annotation has text comments or not.
-     *
-     * @return {void}
-     */
-    _toggleHighlightDialogs() {
-        const highlightDialogEl = this._element.querySelector('.box-preview-annotation-highlight-dialog');
-        const commentsDialogEl = this._element.querySelector('.annotation-container');
-        const commentsDialogIsHidden = commentsDialogEl.classList.contains(CLASS_HIDDEN);
-
-        // Displays comments dialog and hides highlight annotations button
-        if (commentsDialogIsHidden) {
-            this._element.classList.remove('box-preview-highlight-dialog');
-            highlightDialogEl.classList.add(CLASS_HIDDEN);
-
-            this._element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
-            commentsDialogEl.classList.remove(CLASS_HIDDEN);
-            this._hasComments = true;
-
-        // Displays the highlight and comment buttons dialog and hides the
-        // comments dialog
-        } else {
-            this._element.classList.remove(constants.CLASS_ANNOTATION_DIALOG);
-            commentsDialogEl.classList.add(CLASS_HIDDEN);
-
-            this._element.classList.add('box-preview-highlight-dialog');
-            highlightDialogEl.classList.remove(CLASS_HIDDEN);
-            this._hasComments = false;
-        }
-
-        // Reposition dialog
-        this.position();
-    }
-
-    /**
      * Binds DOM event listeners.
      *
      * @override
@@ -311,6 +275,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
             // Clicking 'Highlight' button to create a highlight
             case 'add-highlight-comment-btn':
+                this._toggleHighlightCommentsReply(false);
                 this._toggleHighlightDialogs();
                 break;
 
@@ -339,6 +304,69 @@ class DocHighlightDialog extends AnnotationDialog {
             addButtonEl.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             this.emit('annotationdelete');
         }
+    }
+
+    /**
+     * Toggles between the highlight annotations buttons dialog and the
+     * highlight comments dialog. Dialogs are toggled based on whether the
+     * highlight annotation has text comments or not.
+     *
+     * @return {void}
+     * @private
+     */
+    _toggleHighlightDialogs() {
+        const highlightDialogEl = this._element.querySelector('.box-preview-annotation-highlight-dialog');
+        const commentsDialogEl = this._element.querySelector('.annotation-container');
+        const commentsDialogIsHidden = commentsDialogEl.classList.contains(CLASS_HIDDEN);
+
+        // Displays comments dialog and hides highlight annotations button
+        if (commentsDialogIsHidden) {
+            this._element.classList.remove('box-preview-highlight-dialog');
+            highlightDialogEl.classList.add(CLASS_HIDDEN);
+
+            this._element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+            commentsDialogEl.classList.remove(CLASS_HIDDEN);
+            this._hasComments = true;
+
+        // Displays the highlight and comment buttons dialog and hides the
+        // comments dialog
+        } else {
+            this._element.classList.remove(constants.CLASS_ANNOTATION_DIALOG);
+            commentsDialogEl.classList.add(CLASS_HIDDEN);
+
+            this._element.classList.add('box-preview-highlight-dialog');
+            highlightDialogEl.classList.remove(CLASS_HIDDEN);
+            this._hasComments = false;
+        }
+
+        // Reposition dialog
+        this.position();
+    }
+
+    /**
+     * Toggles between the "Add a comment here" and "Reply" text areas in the
+     * comments dialog. This accounts for when a blank highlight is created and
+     * then the user tries to add a comment after the fact.
+     *
+     * @TODO(spramod): Remove if decision is made on highlights without comments
+     * @return {void}
+     * @private
+     */
+    _toggleHighlightCommentsReply(hasAnnotations) {
+        const commentsDialogEl = this._element.querySelector('.annotation-container');
+        const replyTextEl = commentsDialogEl.querySelector("[data-section='create']");
+        const commentTextEl = commentsDialogEl.querySelector("[data-section='show']");
+
+        if (hasAnnotations) {
+            replyTextEl.classList.add(CLASS_HIDDEN);
+            commentTextEl.classList.remove(CLASS_HIDDEN);
+        } else {
+            commentTextEl.classList.add(CLASS_HIDDEN);
+            replyTextEl.classList.remove(CLASS_HIDDEN);
+        }
+
+        // Reposition dialog
+        this.position();
     }
 }
 
