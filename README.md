@@ -48,20 +48,42 @@ Usage
 </html>
 ```
 
-Clone and compile
 =================
-1. Fork the preview repo `https://gitenterprise.inside-box.net/Preview/Preview`
-1. Clone your own fork `git clone git@gitenterprise.inside-box.net:YOURLDAP/Preview.git`
-2. `cd Preview`
-3. `npm install`
-4. `npm run build` (builds resource bundles and does a clean build)
+*Note: Do not sudo node/npm stuff below. If you did it previously nuke the ~/.npm folder and node_modules and do npm install again*
 
-*Note: If you get a rsync error while running the build for the 1st time, it probably failed to copy the built assets to your dev VM. In that case go to your dev VM and manually create the folder `/box/www/assets/content-experience` and give it 777 permissions. This folder acts as your static server for local development.*
+1. Make sure you have Node version 4 or higher.
+2. Fork the upstream repo `https://gitenterprise.inside-box.net/Preview/Preview` under your LDAP account.
+3. Then clone your fork `git clone git@gitenterprise.inside-box.net:YOURLDAP/Preview.git`. This will be your origin.
+4. `cd Preview`
+5. Add the upstream repo via `git remote add upstream https://gitenterprise.inside-box.net/Preview/Preview`.
+6. Verify repos via `git remote -v`. You will always pull from `upstream` and push to `origin`.
+7. `npm install`
+8. `npm run build`
+
+*Note: If you get a rsync error while running the build for the 1st time, it probably failed to copy the built assets to your dev VM. In that case go to your dev VM and manually create the folder `/box/www/assets` and give it 777 permissions via `chmod 777 assets`. This folder acts as your static server for local development.*
+
+**Update webapp conf override (developers only)**
+
+In order for the webapp to use your static assets from your dev VM, you will need to add entries for yourself in `preview.conf` which can be found in the webapp codebase at `https://dev-scm-ro.dev.box.net/cgit/scm/tree/conf/override/preview.conf`. If you are a developer, you would want an entry in there pointing to your dev VM with version set to `dev`. If you are not a developer, then you do not need to modify this file and it will automatically use the version thats deployed to our live CDNs.
 
 
 While developing
 ================
 Install SCSS linter `gem install scss_lint` for linting SCSS files.
+
+Install the following plugins in Sublime
+
+* babel (then set JS files to use babel)
+* editorconfig
+* sublime linter
+* sublime linter contrib eslint
+* sublime linter contrib scss
+ 
+Similar counterparts for atom.
+
+
+NPM commands
+============
 
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
