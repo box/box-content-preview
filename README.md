@@ -48,6 +48,7 @@ Usage
 </html>
 ```
 
+Setup
 =================
 *Note: Do not sudo node/npm stuff below. If you did it previously nuke the ~/.npm folder and node_modules and do npm install again*
 
@@ -68,7 +69,7 @@ In order for the webapp to use your static assets from your dev VM, you will nee
 
 
 While developing
-================
+----------------
 Install SCSS linter `gem install scss_lint` for linting SCSS files.
 
 Install the following plugins in Sublime
@@ -83,7 +84,7 @@ Similar counterparts for atom.
 
 
 NPM commands
-============
+------------
 
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
@@ -94,12 +95,12 @@ NPM commands
 *For more script commands see `package.json`*
 
 Release build
-=============
+-------------
 `npm run release` does a release build.
 
 
 Change log
-===========
+----------
 Generate using `github_changelog_generator --github-site https://gitenterprise.inside-box.net --github-api https://gitenterprise.inside-box.net/api/v3 --token 0c280723f1ceb4dd83f934f1dc117b9f0a15a2df Preview/Preview`
 
 
