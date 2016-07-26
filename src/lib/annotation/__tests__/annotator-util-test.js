@@ -19,7 +19,7 @@ describe('annotator-util', () => {
     });
 
     beforeEach(() => {
-        fixture.load('__tests__/annotation/annotator-util-test.html');
+        fixture.load('annotation/__tests__/annotator-util-test.html');
 
         childEl = document.querySelector('.child');
         parentEl = document.querySelector('.parent');

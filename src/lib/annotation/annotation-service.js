@@ -6,6 +6,7 @@
 
 import autobind from 'autobind-decorator';
 import Annotation from './annotation';
+import fetch from 'isomorphic-fetch';
 import { getHeaders } from '../util';
 
 const ANONYMOUS_USER = {
@@ -108,11 +109,11 @@ class AnnotationService {
 
                     resolve(createdAnnotation);
                 } else {
-                    reject('Could not create annotation');
+                    reject(new Error('Could not create annotation'));
                 }
             })
             .catch(() => {
-                reject('Could not create annotation');
+                reject(new Error('Could not create annotation'));
             });
         });
     }
@@ -131,7 +132,7 @@ class AnnotationService {
             .then((response) => response.json())
             .then((data) => {
                 if (data.type === 'error') {
-                    reject('Could not create annotation');
+                    reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
                 }
 
                 if (data.entries) {
@@ -142,11 +143,11 @@ class AnnotationService {
                     });
                     resolve(annotations);
                 } else {
-                    reject(`Could not read annotations from file version with ID ${fileVersionID}`);
+                    reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
                 }
             })
             .catch(() => {
-                reject(`Could not read annotations from file version with ID ${fileVersionID}`);
+                reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
             });
         });
     }
@@ -164,7 +165,7 @@ class AnnotationService {
         return new Promise((resolve, reject) => {
             // @TODO(tjin): Call to annotations update API with annotationData
 
-            reject(`Could not update annotation with ID ${annotationID}`);
+            reject(new Error(`Could not update annotation with ID ${annotationID}`));
         });
     }
 
@@ -184,11 +185,11 @@ class AnnotationService {
                 if (response.status === 204) {
                     resolve();
                 } else {
-                    reject(`Could not delete annotation with ID ${annotationID}`);
+                    reject(new Error(`Could not delete annotation with ID ${annotationID}`));
                 }
             })
             .catch(() => {
-                reject(`Could not delete annotation with ID ${annotationID}`);
+                reject(new Error(`Could not delete annotation with ID ${annotationID}`));
             });
         });
     }
@@ -223,11 +224,11 @@ class AnnotationService {
                         name: data.name
                     });
                 } else {
-                    reject('Could not get annotation user');
+                    reject(new Error('Could not get annotation user'));
                 }
             })
             .catch(() => {
-                reject('Could not get annotation user');
+                reject(new Error('Could not get annotation user'));
             });
         });
     }
