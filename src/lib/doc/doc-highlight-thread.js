@@ -25,21 +25,6 @@ class DocHighlightThread extends AnnotationThread {
     //--------------------------------------------------------------------------
 
     /**
-     * [constructor]
-     *
-     * @override
-     * @param {AnnotationThreadData} data Data for constructing thread
-     * @returns {AnnotationThread} Annotation thread instance
-     */
-    constructor(data) {
-        super(data);
-
-        // @TODO(tjin): Remove _canDelete when highlights get comments
-        const annotation = this._annotations[0];
-        this._canDelete = annotation && annotation.permissions && annotation.permissions.can_delete;
-    }
-
-    /**
      * [destructor]
      *
      * @override
@@ -88,9 +73,6 @@ class DocHighlightThread extends AnnotationThread {
         super.saveAnnotation(type, text);
         window.getSelection().removeAllRanges();
 
-        // @TODO(tjin): Remove _canDelete when highlights get comments
-        this._canDelete = true;
-
         // Hide annotations dialog if only a highlight was created
         if (text === '') {
             this._state = constants.ANNOTATION_STATE_INACTIVE;
@@ -136,11 +118,6 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {Boolean} Whether click was in a non-pending highlight
      */
     onClick(event, consumed) {
-        // @TODO(tjin): Remove _canDelete when highlights get comments
-        if (!this._canDelete) {
-            return false;
-        }
-
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
         if (!consumed && (this._state === constants.ANNOTATION_STATE_HOVER ||
@@ -167,8 +144,7 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
-        // @TODO(tjin): Remove _canDelete when highlights get comments
-        if (this._state === constants.ANNOTATION_STATE_PENDING || !this._canDelete) {
+        if (this._state === constants.ANNOTATION_STATE_PENDING) {
             return false;
         }
 
@@ -190,10 +166,14 @@ class DocHighlightThread extends AnnotationThread {
         } else if (this._state === constants.ANNOTATION_STATE_ACTIVE) {
             // No-op
 
-        // If mouse is not in highlight and state is not active, reset
-        } else {
+        // If mouse is not in highlight and state is not already inactive, reset
+        } else if (this._state !== constants.ANNOTATION_STATE_INACTIVE) {
             this.reset();
-            return false; // Do not delay reset draws
+            return false;
+
+        // If state is already inactive, don't delay or reset
+        } else {
+            return false;
         }
 
         return true;
@@ -215,26 +195,20 @@ class DocHighlightThread extends AnnotationThread {
     show() {
         switch (this._state) {
             case constants.ANNOTATION_STATE_PENDING:
-                this._dialog.show();
+                this.showDialog();
                 break;
             case constants.ANNOTATION_STATE_INACTIVE:
-                this._dialog.hide();
+                this.hideDialog();
                 this._draw(HIGHLIGHT_NORMAL_FILL_STYLE);
                 break;
             case constants.ANNOTATION_STATE_HOVER:
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
             case constants.ANNOTATION_STATE_ACTIVE:
-            case constants.ANNOTATION_STATE_ACTIVE_HOVER: {
-                // @TODO(tjin): Remove _canDelete when highlights get comments
-                if (!this._canDelete) {
-                    return;
-                }
-
-                this._dialog.show();
+            case constants.ANNOTATION_STATE_ACTIVE_HOVER:
+                this.showDialog();
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
-            }
             default:
                 break;
         }
@@ -280,13 +254,13 @@ class DocHighlightThread extends AnnotationThread {
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
             this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, data ? data.text : '');
-            this._dialog._toggleHighlightCommentsReply(this._annotations.length);
+            this._dialog.toggleHighlightCommentsReply(this._annotations.length);
         });
 
         // Annotation canceled
         this._dialog.addListener('annotationcancel', () => {
             if (this._annotations.length && this._annotations[0].text === '') {
-                this._dialog._toggleHighlightDialogs();
+                this._dialog.toggleHighlightDialogs();
             } else {
                 this.destroy();
             }

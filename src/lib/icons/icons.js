@@ -24,7 +24,7 @@ import CLOSE from 'raw!./close.svg';
 import SEARCH from 'raw!./search.svg';
 
 export const ICON_ANNOTATION = ANNOTATION;
-export const ICON_ANNOTATION_HIGHLIGHT_COMMENT = ANNOTATION_HIGHLIGHT_COMMENT;
+export const ICON_HIGHLIGHT_COMMENT = ANNOTATION_HIGHLIGHT_COMMENT;
 export const ICON_DROP_DOWN = DROP_DOWN;
 export const ICON_DROP_UP = DROP_UP;
 export const ICON_DELETE = DELETE;

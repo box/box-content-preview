@@ -228,10 +228,10 @@ class AnnotationDialog extends EventEmitter {
      */
     bindDOMListeners() {
         this._element.addEventListener('keydown', this.keydownHandler);
-        this._element.addEventListener('click', this._clickHandler);
-        this._element.addEventListener('mouseup', this._mouseupHandler);
-        this._element.addEventListener('mouseenter', this._mouseenterHandler);
-        this._element.addEventListener('mouseleave', this._mouseleaveHandler);
+        this._element.addEventListener('click', this.clickHandler);
+        this._element.addEventListener('mouseup', this.mouseupHandler);
+        this._element.addEventListener('mouseenter', this.mouseenterHandler);
+        this._element.addEventListener('mouseleave', this.mouseleaveHandler);
     }
 
     /**
@@ -242,10 +242,10 @@ class AnnotationDialog extends EventEmitter {
      */
     unbindDOMListeners() {
         this._element.removeEventListener('keydown', this.keydownHandler);
-        this._element.removeEventListener('click', this._clickHandler);
-        this._element.removeEventListener('mouseup', this._mouseupHandler);
-        this._element.removeEventListener('mouseenter', this._mouseenterHandler);
-        this._element.removeEventListener('mouseleave', this._mouseleaveHandler);
+        this._element.removeEventListener('click', this.clickHandler);
+        this._element.removeEventListener('mouseup', this.mouseupHandler);
+        this._element.removeEventListener('mouseenter', this.mouseenterHandler);
+        this._element.removeEventListener('mouseleave', this.mouseleaveHandler);
     }
 
     /**
@@ -266,6 +266,103 @@ class AnnotationDialog extends EventEmitter {
             if (dataType === 'reply-textarea') {
                 this._activateReply();
             }
+        }
+    }
+
+    /**
+     * Mouseup handler. Stops propagation of mouseup, which may be used by
+     * other annotation classes.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     * @protected
+     */
+    mouseupHandler(event) {
+        event.stopPropagation();
+    }
+
+    /**
+     * Mouseenter handler. Clears hide timeout.
+     *
+     * @returns {void}
+     * @protected
+     */
+    mouseenterHandler() {
+        // Reset hide timeout handler
+        clearTimeout(this._timeoutHandler);
+        this._timeoutHandler = null;
+    }
+
+    /**
+     * Mouseleave handler. Hides dialog if we aren't creating the first one.
+     *
+     * @returns {void}
+     * @protected
+     */
+    mouseleaveHandler() {
+        if (this._hasAnnotations) {
+            this.hide();
+        }
+    }
+
+    /**
+     * Click handler on dialog.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     * @protected
+     */
+    clickHandler(event) {
+        event.stopPropagation();
+
+        const eventTarget = event.target;
+        const dataType = annotatorUtil.findClosestDataType(eventTarget);
+        const annotationID = annotatorUtil.findClosestDataType(eventTarget, 'data-annotation-id');
+
+        switch (dataType) {
+            // Clicking 'Post' button to create an annotation
+            case 'post-annotation-btn':
+                this._postAnnotation();
+                break;
+
+            // Clicking 'Cancel' button to cancel the annotation
+            case 'cancel-annotation-btn':
+                this._cancelAnnotation();
+                break;
+
+            // Clicking inside reply text area
+            case 'reply-textarea':
+                this._activateReply();
+                break;
+
+            // Canceling a reply
+            case 'cancel-reply-btn':
+                this._deactivateReply();
+                break;
+
+            // Clicking 'Post' button to create a reply annotation
+            case 'post-reply-btn':
+                this._postReply();
+                break;
+
+            // Clicking trash icon to initiate deletion
+            case 'delete-btn':
+                this._showDeleteConfirmation(annotationID);
+                break;
+
+            // Clicking 'Cancel' button to cancel deletion
+            case 'cancel-delete-btn':
+                this._hideDeleteConfirmation(annotationID);
+                break;
+
+            // Clicking 'Delete' button to confirm deletion
+            case 'confirm-delete-btn': {
+                this._deleteAnnotation(annotationID);
+                break;
+            }
+
+            default:
+                break;
         }
     }
 
@@ -336,103 +433,6 @@ class AnnotationDialog extends EventEmitter {
     }
 
     /**
-     * Mouseup handler. Stops propagation of mouseup, which may be used by
-     * other annotation classes.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     * @private
-     */
-    _mouseupHandler(event) {
-        event.stopPropagation();
-    }
-
-    /**
-     * Mouseenter handler. Clears hide timeout.
-     *
-     * @returns {void}
-     * @private
-     */
-    _mouseenterHandler() {
-        // Reset hide timeout handler
-        clearTimeout(this._timeoutHandler);
-        this._timeoutHandler = null;
-    }
-
-    /**
-     * Mouseleave handler. Hides dialog if we aren't creating the first one.
-     *
-     * @returns {void}
-     * @private
-     */
-    _mouseleaveHandler() {
-        if (this._hasAnnotations) {
-            this.hide();
-        }
-    }
-
-    /**
-     * Click handler on dialog.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     * @private
-     */
-    _clickHandler(event) {
-        event.stopPropagation();
-
-        const eventTarget = event.target;
-        const dataType = annotatorUtil.findClosestDataType(eventTarget);
-        const annotationID = annotatorUtil.findClosestDataType(eventTarget, 'data-annotation-id');
-
-        switch (dataType) {
-            // Clicking 'Post' button to create an annotation
-            case 'post-annotation-btn':
-                this._postAnnotation();
-                break;
-
-            // Clicking 'Cancel' button to cancel the annotation
-            case 'cancel-annotation-btn':
-                this._cancelAnnotation();
-                break;
-
-            // Clicking inside reply text area
-            case 'reply-textarea':
-                this._activateReply();
-                break;
-
-            // Canceling a reply
-            case 'cancel-reply-btn':
-                this._deactivateReply();
-                break;
-
-            // Clicking 'Post' button to create a reply annotation
-            case 'post-reply-btn':
-                this._postReply();
-                break;
-
-            // Clicking trash icon to initiate deletion
-            case 'delete-btn':
-                this._showDeleteConfirmation(annotationID);
-                break;
-
-            // Clicking 'Cancel' button to cancel deletion
-            case 'cancel-delete-btn':
-                this._hideDeleteConfirmation(annotationID);
-                break;
-
-            // Clicking 'Delete' button to confirm deletion
-            case 'confirm-delete-btn': {
-                this._deleteAnnotation(annotationID);
-                break;
-            }
-
-            default:
-                break;
-        }
-    }
-
-    /**
      * Posts an annotation in the dialog.
      *
      * @returns {void}
@@ -451,7 +451,7 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * Cancels posting an annotation.
- *
+     *
      * @returns {void}
      * @private
      */
