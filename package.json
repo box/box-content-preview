@@ -89,6 +89,7 @@
   "scripts": {
     "test": "karma start karma.dev.conf.js",
     "test-file": "./build/test.sh",
+    "test-cleanup": "./build/test_cleanup.sh",
     "debug-file": "./build/debug.sh",
     "coverage": "COVERAGE=1 karma start karma.dev.conf.js",
     "sync": "./build/push_to_dev.sh",

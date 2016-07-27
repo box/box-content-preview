@@ -15,7 +15,7 @@ describe('doc-annotator-util', () => {
     });
 
     beforeEach(() => {
-        fixture.load('__tests__/doc/doc-annotator-util-test.html');
+        fixture.load('doc/__tests__/doc-annotator-util-test.html');
     });
 
     afterEach(() => {
