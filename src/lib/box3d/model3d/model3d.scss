@@ -1,11 +1,5 @@
 @import 'node_modules/box-ui/src/common/variables';
 
-$box-blue-light: #48b6f3;
-$box-blue-dark: #0f92da;
-$threeb: #3B3B3B;
-$c-five : #C5C5C5;
-$seven-six: #767676;
-
 $arrow-top-bottom: 4px solid transparent;
 
 @mixin arrow-left($color) {
@@ -47,7 +41,7 @@ $arrow-top-bottom: 4px solid transparent;
     }
 
     .box-preview-settings-panel-label {
-        color: $seven-six;
+        color: $seventy-sixers;
         margin-bottom: 4px;
         line-height: 1;
         white-space: nowrap;
@@ -101,29 +95,30 @@ $arrow-top-bottom: 4px solid transparent;
 
     .box3d-settings-axis-widget {
         border: 1px solid #CACCD0;
+        border-bottom-width: 2px;
         border-radius: 2px;
         display: inline;
         margin-right: 6px;
         padding-bottom: 10px;
+
+        &.box3d-settings-axis-widget-x {
+            border-bottom-color: #E33D55;
+        }
+
+        &.box3d-settings-axis-widget-y {
+            border-bottom-color: #26C281;
+        }
+
+        &.box3d-settings-axis-widget-z {
+            border-bottom-color: #22A7F0;
+        }
 
         span {
             display: inline;
         }
 
         .box3d-settings-axis-label {
-            text-shadow: 1px 1px 1px $seven-six;
-        }
-
-        .box3d-settings-axis-label-x {
-            color: #ff4500;
-        }
-
-        .box3d-settings-axis-label-y {
-            color: #92d020;
-        }
-
-        .box3d-settings-axis-label-z {
-            color: #1e90ff;
+            color: $fours;
         }
 
         .box3d-setting-axis-rotate {
@@ -145,27 +140,27 @@ $arrow-top-bottom: 4px solid transparent;
         }
 
         .box3d-setting-axis-rotate-left:after {
-            @include arrow-left($box-blue);
+            @include arrow-left($fours);
             left: 10px;
         }
 
         .box3d-setting-axis-rotate-right:after {
-            @include arrow-right($box-blue);
+            @include arrow-right($fours);
             right: 10px;
         }
 
         .box3d-setting-axis-rotate-left:hover::after {
-            @include arrow-left($box-blue-light);
+            @include arrow-left($eights);
         }
         .box3d-setting-axis-rotate-right:hover::after {
-            @include arrow-right($box-blue-light);
+            @include arrow-right($eights);
         }
 
         .box3d-setting-axis-rotate-left:active::after {
-            @include arrow-left($box-blue-dark);
+            @include arrow-left($twos);
         }
         .box3d-setting-axis-rotate-right:active::after {
-            @include arrow-right($box-blue-dark);
+            @include arrow-right($twos);
         }
     }
 }

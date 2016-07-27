@@ -55,9 +55,11 @@ class Video360 extends Dash {
         if (this.skybox) {
             this.skybox.setAttribute('skyboxTexture', null);
         }
+
         if (this.textureAsset) {
             this.textureAsset.destroy();
         }
+
         if (this.videoAsset) {
             this.videoAsset.destroy();
         }
@@ -138,6 +140,7 @@ class Video360 extends Dash {
             type: 'video',
             properties: {
                 // layout: 'stereo2dOverUnder',
+                loop: false,
                 generateMipmaps: false,
                 querySelector: `.${this.mediaContainerEl.className} video`,
                 autoPlay: false

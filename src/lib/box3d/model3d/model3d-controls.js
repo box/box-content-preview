@@ -70,7 +70,7 @@ class Model3dControls extends Box3DControls {
      * @returns {void}
      */
     handleToggleRenderModes() {
-        this.setElementVisibility(this.settingsPanelEl, false);
+        this.settingsPullup.hide();
     }
 
     /**
@@ -79,7 +79,7 @@ class Model3dControls extends Box3DControls {
      */
     handleToggleSettings() {
         this.emit(EVENT_TOGGLE_HELPERS);
-        this.toggleElementVisibility(this.settingsPanelEl);
+        this.settingsPullup.toggle();
     }
 
     /**
@@ -116,7 +116,7 @@ class Model3dControls extends Box3DControls {
      */
     handleCloseUi() {
         this.emit(EVENT_TOGGLE_HELPERS, false);
-        this.setElementVisibility(this.settingsPanelEl, false);
+        this.settingsPullup.hide();
     }
 
     /**
