@@ -65,7 +65,7 @@ Setup
 
 **Update webapp conf override (developers only)**
 
-In order for the webapp to use your static assets from your dev VM, you will need to add entries for yourself in `preview.conf` which can be found in the webapp codebase at `https://dev-scm-ro.dev.box.net/cgit/scm/tree/conf/override/preview.conf`. If you are a developer, you would want an entry in there pointing to your dev VM with version set to `dev`. If you are not a developer, then you do not need to modify this file and it will automatically use the version thats deployed to our live CDNs.
+In order for the webapp to use your static assets from your dev VM, you will need to add entries for yourself in `preview.conf` which requires an appconf push to dev. Follow instructions here `https://confluence.inside-box.net/display/ETO/Appconf+User+Guide#AppconfUserGuide-DevWorkflow`. If you are a developer, you would want an entry in there pointing to your dev VM with version set to `dev`. If you are not a developer, then you do not need to modify this file and it will automatically use the version thats deployed to our live CDNs.
 
 
 While developing
