@@ -1,6 +1,6 @@
-var merge = require('deepmerge');
-var path = require('path');
-var commonConfig = require('./webpack.common.config');
+const merge = require('deepmerge');
+const path = require('path');
+const commonConfig = require('./webpack.common.config');
 
 module.exports = merge(commonConfig('en-US'), {
 

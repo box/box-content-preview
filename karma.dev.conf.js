@@ -1,19 +1,18 @@
 require('babel-polyfill');
 
-var baseConf = require('./karma.base.conf');
-var webpackConfig = require('./webpack.karma.config');
-var ispartaConfig = require('./isparta.config');
-var coverage = process.env.COVERAGE === '1';
+const baseConf = require('./karma.base.conf');
+const webpackConfig = require('./webpack.karma.config');
+const ispartaConfig = require('./isparta.config');
+const coverage = process.env.COVERAGE === '1';
 
-module.exports = function(config) {
-
-    var devConf = {
-
+module.exports = function karmaDevConf(config) {
+    // Dev conf
+    const devConf = {
         logLevel: config.LOG_INFO,
 
-        reporters: [ 'mocha' ],
+        reporters: ['mocha'],
 
-        browsers: [ 'Chrome_without_security' ],
+        browsers: ['Chrome_without_security'],
 
         webpack: webpackConfig,
 
@@ -25,12 +24,11 @@ module.exports = function(config) {
         },
 
         singleRun: false
-
     };
 
     if (coverage) {
         devConf.reporters.push('coverage', 'threshold');
-        devConf.browsers = [ 'PhantomJS' ];
+        devConf.browsers = ['PhantomJS'];
         devConf.singleRun = true;
         devConf.webpack.module.preLoaders.push(ispartaConfig);
     }

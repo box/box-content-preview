@@ -1,16 +1,16 @@
 require('babel-polyfill');
 
-var baseConf = require('./karma.base.conf');
-var webpackConfig = require('./webpack.karma.config');
-var ispartaConfig = require('./isparta.config');
+const baseConf = require('./karma.base.conf');
+const webpackConfig = require('./webpack.karma.config');
+const ispartaConfig = require('./isparta.config');
 
-module.exports = function(config) {
-
-    var releaseConf = {
+module.exports = function karmaReleaseConf(config) {
+    // Karma release conf
+    const releaseConf = {
 
         logLevel: config.LOG_INFO,
 
-        browsers: [ 'PhantomJS' ],
+        browsers: ['PhantomJS'],
 
         webpack: webpackConfig,
 
@@ -24,9 +24,7 @@ module.exports = function(config) {
             outputFile: 'webapp-client-test-results.xml'
         },
 
-        logLevel: config.LOG_INFO,
-
-        reporters: [ 'dots', 'junit', 'coverage', 'threshold' ],
+        reporters: ['dots', 'junit', 'coverage', 'threshold'],
 
         singleRun: true
 
