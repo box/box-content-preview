@@ -96,7 +96,12 @@ class Image extends Base {
             if (this.destroyed) {
                 return;
             }
+
             this.imageEl.src = URL.createObjectURL(img);
+        }).catch((err) => {
+            /* eslint-disable no-console */
+            console.log(err);
+            /* eslint-enable no-console */
         });
 
         super.load();

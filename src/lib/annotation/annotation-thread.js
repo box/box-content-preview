@@ -322,6 +322,10 @@ class AnnotationThread extends EventEmitter {
      * @protected
      */
     bindDOMListeners() {
+        if (!this._element) {
+            return;
+        }
+
         this._element.addEventListener('click', this.showDialog);
         this._element.addEventListener('mouseover', this.showDialog);
         this._element.addEventListener('mouseout', this._mouseoutHandler);
@@ -334,6 +338,10 @@ class AnnotationThread extends EventEmitter {
      * @protected
      */
     unbindDOMListeners() {
+        if (!this._element) {
+            return;
+        }
+
         this._element.removeEventListener('click', this.showDialog);
         this._element.removeEventListener('mouseover', this.showDialog);
         this._element.removeEventListener('mouseout', this._mouseoutHandler);
@@ -346,6 +354,10 @@ class AnnotationThread extends EventEmitter {
      * @protected
      */
     bindCustomListenersOnDialog() {
+        if (!this._dialog) {
+            return;
+        }
+
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
             this.saveAnnotation(constants.ANNOTATION_TYPE_POINT, data.text);
@@ -369,9 +381,13 @@ class AnnotationThread extends EventEmitter {
      * @protected
      */
     unbindCustomListenersOnDialog() {
-        this.removeAllListeners('annotationcreate');
-        this.removeAllListeners('annotationcancel');
-        this.removeAllListeners('annotationdelete');
+        if (!this._dialog) {
+            return;
+        }
+
+        this._dialog.removeAllListeners('annotationcreate');
+        this._dialog.removeAllListeners('annotationcancel');
+        this._dialog.removeAllListeners('annotationdelete');
     }
 
     //--------------------------------------------------------------------------

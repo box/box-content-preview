@@ -517,9 +517,9 @@ class DocBase extends Base {
                 linkService.setViewer(this.pdfViewer);
             }
         }).catch((err) => {
-            /*eslint-disable*/
-            console.error(err);
-            /*eslint-enable*/
+            /* eslint-disable no-console */
+            console.log(err);
+            /* eslint-enable no-console */
             this.emit('error', err);
         });
 
