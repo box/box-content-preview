@@ -1,51 +1,76 @@
 require('babel-polyfill');
 
-var commonConfig = require('./webpack.common.config');
-var path = require('path');
-var RsyncPlugin = require('./build/RsyncPlugin');
-var thirdParty = path.join(__dirname, 'src/third-party');
+const commonConfig = require('./webpack.common.config');
+const path = require('path');
+const RsyncPlugin = require('./build/RsyncPlugin');
+
+const lib = path.join(__dirname, 'src/lib');
+const thirdParty = path.join(__dirname, 'src/third-party');
 
 // Check if webpack was run with a production flag that signifies a release build
-var isRelease = process.env.BUILD_PROD === '1';
+const isRelease = process.env.BUILD_PROD === '1';
 
 // Check if webpack was run with a CI flag that signifies a CI build
-var isCI = process.env.BUILD_CI === '1';
+const isCI = process.env.BUILD_CI === '1';
 
 // Get the version from package.json
-var version = (isRelease || isCI) ? require('./package.json').version : 'dev';
+const version = (isRelease || isCI) ? require('./package.json').version : 'dev';
 
-var languages = isRelease ? [
-    "en-AU",
-    "en-CA",
-    "en-GB",
-    "en-US",
-    "da-DK",
-    "de-DE",
-    "es-ES",
-    "fi-FI",
-    "fr-CA",
-    "fr-FR",
-    "it-IT",
-    "ja-JP",
-    "ko-KR",
-    "nb-NO",
-    "nl-NL",
-    "pl-PL",
-    "pt-BR",
-    "ru-RU",
-    "sv-SE",
-    "tr-TR",
-    "zh-CN",
-    "zh-TW"
-] : [ 'en-US' ]; // Only 1 language needed for dev
+const languages = isRelease ? [
+    'en-AU',
+    'en-CA',
+    'en-GB',
+    'en-US',
+    'da-DK',
+    'de-DE',
+    'es-ES',
+    'fi-FI',
+    'fr-CA',
+    'fr-FR',
+    'it-IT',
+    'ja-JP',
+    'ko-KR',
+    'nb-NO',
+    'nl-NL',
+    'pl-PL',
+    'pt-BR',
+    'ru-RU',
+    'sv-SE',
+    'tr-TR',
+    'zh-CN',
+    'zh-TW'
+] : ['en-US']; // Only 1 language needed for dev
 
-module.exports = languages.map(function(language, index) {
-
+module.exports = languages.map((language, index) => {
     // Static output path
-    var staticFolder = path.join(__dirname, 'dist', version);
+    const staticFolder = path.join(__dirname, 'dist', version);
 
     // Get the common config
-    var config = commonConfig(language);
+    const config = commonConfig(language);
+
+    // Add entries
+    /* eslint-disable key-spacing */
+    config.entry = {
+        preview:        [`${lib}/preview.js`],
+        image:          [`${lib}/image/image.js`],
+        'multi-image':  [`${lib}/image/multi-image.js`],
+        swf:            [`${lib}/swf/swf.js`],
+        text:           [`${lib}/text/text.js`],
+        csv:            [`${lib}/text/csv.js`],
+        document:       [`${lib}/doc/document.js`],
+        presentation:   [`${lib}/doc/presentation.js`],
+        markdown:       [`${lib}/text/markdown.js`],
+        mp4:            [`${lib}/media/mp4.js`],
+        mp3:            [`${lib}/media/mp3.js`],
+        dash:           [`${lib}/media/dash.js`],
+        error:          [`${lib}/error/error.js`],
+        box3d:          [`${lib}/box3d/box3d.js`],
+        model3d:        [`${lib}/box3d/model3d/model3d.js`],
+        image360:       [`${lib}/box3d/image360/image360.js`],
+        video360:       [`${lib}/box3d/video360/video360.js`],
+        iframe:         [`${lib}/iframe/iframe.js`]
+    };
+    /* eslint-enable key-spacing */
 
     // Add output path
     config.output = {

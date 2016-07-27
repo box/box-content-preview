@@ -2,7 +2,7 @@ module.exports = {
 
     basePath: '',
 
-    frameworks: [ 'mocha', 'sinon-stub-promise', 'chai-sinon', 'chai-as-promised', 'chai', 'sinon', 'fixture', 'source-map-support' ],
+    frameworks: ['mocha', 'sinon-stub-promise', 'chai-sinon', 'chai-as-promised', 'chai', 'sinon', 'fixture', 'source-map-support'],
 
     files: [
         'src/lib/**/*-test.js',
@@ -13,11 +13,11 @@ module.exports = {
     exclude: [],
 
     preprocessors: {
-        'src/lib/**/*-test.js': [ 'webpack', 'sourcemap' ],
-        'src/lib/**/*-test.html': [ 'html2js' ]
+        'src/lib/**/*-test.js': ['webpack', 'sourcemap'],
+        'src/lib/**/*-test.html': ['html2js']
     },
 
-    reporters: [ 'mocha', 'coverage', 'threshold' ],
+    reporters: ['mocha', 'coverage', 'threshold'],
 
     webpackMiddleware: {
         noInfo: true
@@ -25,7 +25,7 @@ module.exports = {
 
     coverageReporter: {
         type: 'html',
-        dir: 'reports/coverage',
+        dir: 'reports/coverage'
     },
 
     thresholdReporter: {
@@ -41,7 +41,7 @@ module.exports = {
 
     autoWatch: false,
 
-    browsers: [ 'Chrome_without_security' ],
+    browsers: ['Chrome_without_security'],
 
     customLaunchers: {
         Chrome_without_security: {

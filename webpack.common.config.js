@@ -1,39 +1,15 @@
-var path = require('path');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var I18nPlugin = require('i18n-webpack-plugin');
-var RsyncPlugin = require('./build/RsyncPlugin');
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const I18nPlugin = require('i18n-webpack-plugin');
+const i18n = path.join(__dirname, 'src/i18n/json');
 
-var lib = path.join(__dirname, 'src/lib');
-var i18n = path.join(__dirname, 'src/i18n/json');
-
-module.exports = function(language) {
-
+module.exports = function commonConfig(language) {
     // Language json
-    var langJson = require(i18n + '/' + language + '.json');
+    /* eslint-disable global-require */
+    const langJson = require(`${i18n}/${language}.json`);
+    /* eslint-enable global-require */
 
     return {
-
-        entry: {
-            preview:        [ lib + '/preview.js' ],
-            image:          [ lib + '/image/image.js' ],
-            'multi-image':  [ lib + '/image/multi-image.js' ],
-            swf:            [ lib + '/swf/swf.js' ],
-            text:           [ lib + '/text/text.js' ],
-            csv:            [ lib + '/text/csv.js' ],
-            'document':     [ lib + '/doc/document.js' ],
-            presentation:   [ lib + '/doc/presentation.js' ],
-            markdown:       [ lib + '/text/markdown.js' ],
-            mp4:            [ lib + '/media/mp4.js' ],
-            mp3:            [ lib + '/media/mp3.js' ],
-            dash:           [ lib + '/media/dash.js' ],
-            error:          [ lib + '/error/error.js' ],
-            box3d:          [ lib + '/box3d/box3d.js' ],
-            model3d:        [ lib + '/box3d/model3d/model3d.js' ],
-            image360:       [ lib + '/box3d/image360/image360.js' ],
-            video360:       [ lib + '/box3d/video360/video360.js' ],
-            iframe:         [ lib + '/iframe/iframe.js' ]
-        },
-
         module: {
             loaders: [
                 {
