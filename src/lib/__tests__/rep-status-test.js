@@ -1,11 +1,10 @@
-import '../polyfill';
+import * as util from '../util';
 import RepStatus from '../rep-status';
-import fetchMock from 'fetch-mock';
 
 const sandbox = sinon.sandbox.create();
 let repStatus;
 
-describe('Logger', () => {
+describe('RepStatus', () => {
     beforeEach(() => {
         const rep = {
             links: {
@@ -22,19 +21,16 @@ describe('Logger', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
-        fetchMock.restore();
     });
 
     describe('updateStatus()', () => {
         it('should fetch latest status', () => {
-            fetchMock.mock('https://info', {
-                body: {
-                    status: 'success',
-                    files: [
-                        'foo'
-                    ]
-                }
-            });
+            sandbox.stub(util, 'get').returns(Promise.resolve({
+                status: 'success',
+                files: [
+                    'foo'
+                ]
+            }));
 
             const spy = sandbox.spy(repStatus, 'handleResponse');
 

@@ -1,7 +1,7 @@
 import './image.scss';
 import autobind from 'autobind-decorator';
 import Base from './image-base';
-import fetch from 'isomorphic-fetch';
+import { get } from '../util';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../icons/icons';
 import { CLASS_INVISIBLE } from '../constants';
 
@@ -77,10 +77,7 @@ class Image extends Base {
             }
         });
 
-        fetch(imageUrl, {
-            headers: this.appendAuthHeader()
-        })
-        .then((response) => response.blob())
+        get(imageUrl, this.appendAuthHeader(), 'blob')
         .then((img) => {
             if (this.destroyed) {
                 return;

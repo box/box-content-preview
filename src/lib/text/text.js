@@ -1,9 +1,8 @@
 import './text.scss';
 import autobind from 'autobind-decorator';
-import fetch from 'isomorphic-fetch';
 import TextBase from './text-base';
 import Browser from '../browser';
-import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../util';
+import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../util';
 
 const Box = global.Box || {};
 
@@ -32,10 +31,7 @@ class PlainText extends TextBase {
      * @returns {Promise} Promise to load a text file
      */
     load(textUrl) {
-        fetch(textUrl, {
-            headers: this.appendAuthHeader()
-        })
-        .then((response) => response.text())
+        get(textUrl, this.appendAuthHeader(), 'text')
         .then((txt) => {
             if (this.destroyed) {
                 return;

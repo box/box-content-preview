@@ -1,4 +1,5 @@
-import '../polyfill';
+import 'isomorphic-fetch';
+import fetchMock from 'fetch-mock';
 import {
     openContentInsideIframe,
     openUrlInsideIframe,
@@ -14,10 +15,213 @@ import {
     loadStylesheets,
     loadScripts,
     decodeKeydown,
-    findScriptLocation
+    findScriptLocation,
+    get,
+    post,
+    del,
+    put
 } from '../util';
 
 describe('util', () => {
+    describe('xhr()', () => {
+        afterEach(() => {
+            fetchMock.restore();
+        });
+
+        it('should call get on URL', (done) => {
+            const url = 'foo?bar=bum';
+
+            fetchMock.get('foo?bar=bum', {
+                body: {
+                    foo: 'bar'
+                }
+            });
+
+            get(url).then(() => {
+                /* eslint-disable no-unused-expressions */
+                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call get on URL but fail with 404', (done) => {
+            const url = 'foo?bar=bum';
+
+            fetchMock.get('foo?bar=bum', {
+                body: {
+                    foo: 'bar'
+                },
+                status: 404
+            });
+
+            get(url).then(() => {
+                done('Should have failed');
+            }).catch((err) => {
+                /* eslint-disable no-unused-expressions */
+                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+                expect(err.response.status).to.equal(404);
+                expect(err.response.statusText).to.equal('Not Found');
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call get on URL with headers', (done) => {
+            const url = 'foo?bar=bum';
+            const headers = { baz: 'but' };
+
+            fetchMock.get('foo?bar=bum', {
+                body: {
+                    foo: 'bar'
+                }
+            });
+
+            // Don't know how to check headers
+            get(url, headers).then(() => {
+                /* eslint-disable no-unused-expressions */
+                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+                expect(fetchMock.lastOptions('foo?bar=bum').headers).to.deep.equal(headers);
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call get on URL with headers and type text', (done) => {
+            const url = 'foo?bar=bum';
+            const headers = { baz: 'but' };
+
+            fetchMock.get('foo?bar=bum', {
+                body: 'texttext',
+                sendAsJson: false
+            });
+
+            // Don't know how to check headers
+            get(url, headers, 'text').then((response) => {
+                /* eslint-disable no-unused-expressions */
+                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+                expect(response).to.equal('texttext');
+                expect(fetchMock.lastOptions('foo?bar=bum').headers).to.deep.equal(headers);
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call get on URL with type blob', (done) => {
+            const url = 'foo?bar=bum';
+            const blob = new Blob(['text'], { type: 'text/plain' });
+
+            fetchMock.get('foo?bar=bum', {
+                body: blob,
+                sendAsJson: false
+            });
+
+            get(url, 'blob').then((response) => {
+                /* eslint-disable no-unused-expressions */
+                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+                expect(response).to.equal(blob);
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call get on URL with type text', (done) => {
+            const url = 'foo?bar=bum';
+
+            fetchMock.get('foo?bar=bum', {
+                body: 'texttext',
+                sendAsJson: false
+            });
+
+            // Don't know how to check headers
+            get(url, 'text').then((response) => {
+                /* eslint-disable no-unused-expressions */
+                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+                expect(response).to.equal('texttext');
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call get on URL with type any', (done) => {
+            const url = 'foo?bar=bum';
+
+            fetchMock.get('foo?bar=bum', {
+                body: 'texttext',
+                sendAsJson: false
+            });
+
+            // Don't know how to check headers
+            get(url, 'any').then((response) => {
+                /* eslint-disable no-unused-expressions */
+                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+                expect(response).to.be.an('object');
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call post on URL', (done) => {
+            const url = 'foo';
+            const data = { bar: 'bum' };
+            const headers = { baz: 'but' };
+
+            fetchMock.post('foo', {
+                body: {
+                    foo: 'bar'
+                }
+            });
+
+            post(url, headers, data).then(() => {
+                /* eslint-disable no-unused-expressions */
+                expect(JSON.parse(fetchMock.lastOptions('foo').body)).to.deep.equal(data);
+                expect(fetchMock.lastOptions('foo').headers).to.deep.equal(headers);
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call put on URL', (done) => {
+            const url = 'foo';
+            const data = { bar: 'bum' };
+            const headers = { baz: 'but' };
+
+            fetchMock.put('foo', {
+                body: {
+                    foo: 'bar'
+                }
+            });
+
+            put(url, headers, data).then(() => {
+                /* eslint-disable no-unused-expressions */
+                expect(JSON.parse(fetchMock.lastOptions('foo').body)).to.deep.equal(data);
+                expect(fetchMock.lastOptions('foo').headers).to.deep.equal(headers);
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+
+        it('should call delete on URL', (done) => {
+            const url = 'foo';
+            const data = { bar: 'bum' };
+            const headers = { baz: 'but' };
+
+            fetchMock.delete('foo', {
+                body: {
+                    foo: 'bar'
+                }
+            });
+
+            del(url, headers, data).then(() => {
+                /* eslint-disable no-unused-expressions */
+                expect(JSON.parse(fetchMock.lastOptions('foo').body)).to.deep.equal(data);
+                expect(fetchMock.lastOptions('foo').headers).to.deep.equal(headers);
+                /* eslint-enable no-unused-expressions */
+                done();
+            });
+        });
+    });
+
     describe('openUrlInsideIframe()', () => {
         it('should return a download iframe with correct source', () => {
             const iframe = openUrlInsideIframe('foo');

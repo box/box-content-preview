@@ -1,12 +1,11 @@
 import './csv.scss';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
-import fetch from 'isomorphic-fetch';
 import Browser from '../browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Table, Column, Cell } from 'fixed-data-table';
-import { createAssetUrlCreator } from '../util';
+import { createAssetUrlCreator, get } from '../util';
 
 const Box = global.Box || {};
 
@@ -39,8 +38,7 @@ class CSV extends TextBase {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.js');
 
-        fetch(papaWorkerUrl)
-        .then((response) => response.blob())
+        get(papaWorkerUrl, 'blob')
         .then((papaWorkerBlob) => {
             Papa.SCRIPT_PATH = URL.createObjectURL(papaWorkerBlob);
             Papa.parse(csvUrl, {

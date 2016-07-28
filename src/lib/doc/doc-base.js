@@ -14,7 +14,7 @@ import DocAnnotator from './doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../fullscreen';
 import { CLASS_BOX_PREVIEW_FIND_BAR } from '../constants';
-import { createAssetUrlCreator, decodeKeydown } from '../util';
+import { get, createAssetUrlCreator, decodeKeydown } from '../util';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -599,10 +599,7 @@ class DocBase extends Base {
      * @private
      */
     fetchPrintBlob(pdfUrl) {
-        return fetch(pdfUrl, {
-            headers: this.appendAuthHeader()
-        })
-        .then((response) => response.blob())
+        return get(pdfUrl, this.appendAuthHeader(), 'blob')
         .then((blob) => {
             this.printBlob = blob;
         });
