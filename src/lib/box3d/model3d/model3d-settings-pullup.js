@@ -27,7 +27,10 @@ import {
     ROTATION_STEP
 } from './model3d-constants';
 
-import { CLASS_BOX_PREVIEW_OVERLAY_WRAPPER } from '../../constants';
+import {
+    CLASS_BOX_PREVIEW_OVERLAY_WRAPPER,
+    CLASS_IS_VISIBLE
+} from '../../constants';
 
 // For registering events on elements
 const RENDER_MODES = [
@@ -73,8 +76,6 @@ const PROJECTION_MODES = [
         args: [CAMERA_PROJECTION_ORTHOGRAPHIC]
     }
 ];
-
-const CSS_CLASS_IS_VISIBLE = 'is-visible';
 
 /**
  * The UI and events system necessary to run the Settings Panel
@@ -150,11 +151,11 @@ class Model3DSettingsPullup extends EventEmitter {
         this.projectionModeListEl = projectionListEl;
 
         this.uiRegistry.registerUiItem('settings-render-mode-selector-label', this.renderModeEl, 'click', () => {
-            projectionListEl.classList.remove(CSS_CLASS_IS_VISIBLE);
+            projectionListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
         this.uiRegistry.registerUiItem('settings-projection-mode-selector-label', this.projectionModeEl, 'click', () => {
-            renderModeListEl.classList.remove(CSS_CLASS_IS_VISIBLE);
+            renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
         // Axis Rotation Icons
@@ -306,8 +307,8 @@ class Model3DSettingsPullup extends EventEmitter {
      */
     hide() {
         this.pullupEl.classList.add(CSS_CLASS_HIDDEN);
-        this.projectionModeListEl.classList.remove(CSS_CLASS_IS_VISIBLE);
-        this.renderModeListEl.classList.remove(CSS_CLASS_IS_VISIBLE);
+        this.projectionModeListEl.classList.remove(CLASS_IS_VISIBLE);
+        this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
     }
 
     /**
@@ -315,8 +316,8 @@ class Model3DSettingsPullup extends EventEmitter {
      */
     toggle() {
         this.pullupEl.classList.toggle(CSS_CLASS_HIDDEN);
-        this.projectionModeListEl.classList.remove(CSS_CLASS_IS_VISIBLE);
-        this.renderModeListEl.classList.remove(CSS_CLASS_IS_VISIBLE);
+        this.projectionModeListEl.classList.remove(CLASS_IS_VISIBLE);
+        this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
     }
 
     /**
