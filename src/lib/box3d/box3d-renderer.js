@@ -150,15 +150,7 @@ class Box3DRenderer extends EventEmitter {
             return Promise.reject(new Error('Missing file version'));
         }
 
-        const opts = {
-            token: options.token,
-            apiBase: options.api,
-            parentId: options.file.parent ? options.file.parent.id : null,
-            boxSdk: this.boxSdk
-        };
-
-        const resourceLoader = new Box3DResourceLoader(options.file.id, options.file.file_version.id, opts);
-
+        const resourceLoader = new Box3DResourceLoader(this.boxSdk);
 
         return this.createBox3d(resourceLoader, options);
     }

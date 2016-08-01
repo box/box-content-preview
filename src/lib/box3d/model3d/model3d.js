@@ -8,7 +8,6 @@ import {
     EVENT_CLOSE_UI,
     EVENT_METADATA_UPDATE_FAILURE,
     EVENT_METADATA_UPDATE_SUCCESS,
-    EVENT_MISSING_ASSET,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SET_RENDER_MODE,
     EVENT_TOGGLE_HELPERS,
@@ -25,7 +24,6 @@ import {
 
 const Box = global.Box || {};
 
-const MISSING_MAX = 4;
 const DEFAULT_AXIS_UP = '+Y';
 const DEFAULT_AXIS_FORWARD = '+Z';
 
@@ -48,7 +46,6 @@ class Model3d extends Box3D {
 
         this.wrapperEl.classList.add(CSS_CLASS_INVISIBLE);
 
-        this.missingAssets = null;
         this.loadTimeout = 100000;
         this.instances = [];
         this.assets = [];
@@ -81,7 +78,6 @@ class Model3d extends Box3D {
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         }
-        this.renderer.on(EVENT_MISSING_ASSET, this.handleMissingAsset);
         this.renderer.on(EVENT_CLOSE_UI, this.handleCloseUi);
     }
 
@@ -98,7 +94,6 @@ class Model3d extends Box3D {
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         }
-        this.renderer.removeListener(EVENT_MISSING_ASSET, this.handleMissingAsset);
         this.renderer.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
     }
 
@@ -107,37 +102,6 @@ class Model3d extends Box3D {
      */
     destroy() {
         super.destroy();
-
-        if (this.missingAssets) {
-            this.missingAssets.length = 0;
-        }
-    }
-
-    /**
-     * Emit a message with a list of assets that are unavailable
-     * @returns {void}
-     */
-    notifyAssetsMissing() {
-        this.emit(EVENT_MISSING_ASSET, this.missingAssets);
-    }
-
-    /**
-     * Build up the list of missing assets
-     * @param {Object} data The error response for missing assets, contains the name and path of the asset
-     * @returns {void}
-     */
-    @autobind
-    handleMissingAsset(data) {
-        this.missingAssets = this.missingAssets || [];
-
-        // Only store MISSING_MAX missing assets
-        if (Object.keys(this.missingAssets).length >= MISSING_MAX) {
-            return;
-        }
-
-        // Storing in a dictionary due to progressive texture loading using the same name for different resolutions
-        const key = data.fileName || data.assetName;
-        this.missingAssets[key] = this.missingAssets[key] || data;
     }
 
     /**
@@ -167,7 +131,6 @@ class Model3d extends Box3D {
      */
     @autobind
     handleSceneLoaded() {
-        this.notifyAssetsMissing();
         this.emit(EVENT_LOAD);
         this.loaded = true;
 

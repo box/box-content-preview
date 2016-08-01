@@ -60,89 +60,168 @@
 
 	var _v2Loader2 = _interopRequireDefault(_v2Loader);
 
-	var _runmodeLoader = __webpack_require__(8);
+	var _runmodeLoader = __webpack_require__(7);
 
 	var _runmodeLoader2 = _interopRequireDefault(_runmodeLoader);
-
-	var _events = __webpack_require__(7);
-
-	var _events2 = _interopRequireDefault(_events);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 	var NUM_PRIORITIES = 10;
 	var DEFAULT_PRIORITY = 5;
 	var MAX_CONCURRENT_LOADS = 4;
 
-	var Box3DResourceLoader = function (_EventEmitter) {
-	  _inherits(Box3DResourceLoader, _EventEmitter);
-
+	var Box3DResourceLoader = function () {
 	  /**
-	  * Abstraction of Box asset loading for Box3D
-	  * @param {string} fileId The file id of the model we are viewing
-	  * @param {string} fileVersionId The file version id of the model we are viewing
-	  * @param {object} opts Additional properties to add to the loader.
-	  *  {BoxSDK} boxSdk and {string} apiBase can be added. If {string} token is provided
-	  *  V2 API will be accessible
-	  * @returns {void}
-	  */
+	   * Abstraction of Box asset loading for Box3D.
+	   * @constructor
+	   * @param {BoxSDK} boxSdk An instance of BoxSDK.
+	   * @param {Object} [options] Loading options.
+	   * @param {Integer} [options.maxConcurrentLoads] The maximum number of concurrent loads.
+	   */
 
-	  function Box3DResourceLoader(fileId, fileVersionId) {
-	    var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	  function Box3DResourceLoader(boxSdk) {
+	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	    _classCallCheck(this, Box3DResourceLoader);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DResourceLoader).call(this));
-
-	    if (opts.hasOwnProperty('boxSdk') && opts.boxSdk) {
-	      _this.boxSdk = opts.boxSdk;
-	    } else {
-	      opts.boxSdk = _this.boxSdk = new BoxSDK(opts);
+	    if (!boxSdk) {
+	      throw new Error('Missing argument: boxSdk');
 	    }
 
-	    _this.loader = null;
+	    this.boxSdk = boxSdk;
 
-	    if (opts.hasOwnProperty('token')) {
-	      _this.loader = new _v2Loader2.default(fileId, fileVersionId, opts);
+	    if (this.boxSdk.token) {
+	      this.loader = new _v2Loader2.default(this.boxSdk);
 	    } else {
-	      // create runmode loader
-	      _this.loader = new _runmodeLoader2.default(fileId, fileVersionId, opts);
+	      this.loader = new _runmodeLoader2.default(this.boxSdk);
 	    }
-
-	    // delegate all notifcations to the external application
-	    _this.loader.on('missingAsset', _this.onMissingAsset.bind(_this));
 
 	    // The buckets for keeping track of pending downloads by priority.
-	    _this.priorityBuckets = [];
-	    _this.currentNumLoading = 0;
-	    _this.maxConcurrentLoads = opts.maxConcurrentLoads ? opts.maxConcurrentLoads : MAX_CONCURRENT_LOADS;
-	    return _this;
+	    this.priorityBuckets = [];
+	    this.currentNumLoading = 0;
+	    this.maxConcurrentLoads = options.maxConcurrentLoads !== undefined ? options.maxConcurrentLoads : MAX_CONCURRENT_LOADS;
 	  }
 
 	  /**
-	   * Called when a asset load is complete. Handles starting the next load, if one is
-	   * waiting.
-	   * @private
-	   * @method loadFinished
+	   * Abort the XHR request with the specified key.
+	   * @method abortRequest
+	   * @public
+	   * @param {String} key The key of the XHR to abort. This is the same as the xhrKey option passed
+	   * to load().
 	   * @returns {void}
 	   */
 
 
 	  _createClass(Box3DResourceLoader, [{
-	    key: 'loadFinished',
-	    value: function loadFinished() {
-	      this.currentNumLoading--;
+	    key: 'abortRequest',
+	    value: function abortRequest(key) {
+	      this.loader.abortRequest(key);
+	    }
+
+	    /**
+	     * Abort all active requests.
+	     * @method abortRequests
+	     * @public
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'abortRequests',
+	    value: function abortRequests() {
+	      this.loader.abortRequests();
+	    }
+
+	    /**
+	     * Free resources used by this loader. After calling this method, the loader can no longer be
+	     * used.
+	     * @method destroy
+	     * @public
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'destroy',
+	    value: function destroy() {
+	      this.loader.destroy();
+	      this.loader = null;
+	      this.boxSdk = null;
+	    }
+
+	    /**
+	     * Load the specified Box3DAsset.
+	     * @method load
+	     * @public
+	     * @param {Box3DAsset} asset The Box3DAsset to load.
+	     * @param {Object} [options] Loading options.
+	     * @param {Integer} [options.priority] The loading priority, where lower numbers indicate higher
+	     * priority. Must be greater than or equal to 0.
+	     * @param {Integer} [options.maxSize] The maximum texture size.
+	     * @param {Array} [options.channels] The preferred texture channel layout.
+	     * @param {String} [options.compression] The preferred texture compression.
+	     * @param {String} [options.xhrKey] The ID of the request.
+	     * @param {Function} [progressFn] Called with progress events.
+	     * @returns {Promise} A promise that resolves to the asset data.
+	     */
+
+	  }, {
+	    key: 'load',
+	    value: function load(asset) {
+	      var _this = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progressFn = arguments[2];
+
+	      // Figure out the priority and then add the asset to the queue in the appropriate priority
+	      // location.
+	      var priority = Math.max(Math.min(options.priority !== undefined ? options.priority : DEFAULT_PRIORITY, NUM_PRIORITIES), 0);
+
+	      if (!this.priorityBuckets[priority]) {
+	        this.priorityBuckets[priority] = {};
+	      }
+
+	      return new Promise(function (resolve, reject) {
+	        // Add the asset loading function to the queue and wait to be called.
+	        _this.priorityBuckets[priority][asset.id] = function () {
+	          _this.currentNumLoading++;
+
+	          _this.loader.loadAsset(asset, options, progressFn).then(function (data) {
+	            _this.currentNumLoading--;
+	            _this.loadNext();
+	            resolve(data);
+	          }).catch(function (err) {
+	            _this.currentNumLoading--;
+	            _this.loadNext();
+	            reject(err);
+	          });
+	        };
+
+	        _this.loadNext();
+	      });
+	    }
+
+	    /**
+	     * Begin loading the next asset, if there are any waiting and if the maximum number of concurrent
+	     * downloads has not been reached.
+	     * @method loadNext
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'loadNext',
+	    value: function loadNext() {
+	      // Make sure we haven't reached the maximum number of concurrent downloads.
+	      if (this.currentNumLoading >= this.maxConcurrentLoads) {
+	        return;
+	      }
+
 	      // Look through the list and find the next asset to load, if any.
 	      for (var i = 0; i < this.priorityBuckets.length; i++) {
 	        if (this.priorityBuckets[i]) {
 	          var keys = Object.keys(this.priorityBuckets[i]);
-	          if (keys.length) {
+	          if (keys.length > 0) {
 	            this.priorityBuckets[i][keys[0]]();
 	            // Remove the asset from the queue and return.
 	            delete this.priorityBuckets[i][keys[0]];
@@ -151,122 +230,10 @@
 	        }
 	      }
 	    }
-
-	    /**
-	     * Return a promise that loads the asset and
-	     * @private
-	     * @method loadAndResolve
-	     * @param  {Object} asset    The asset to load
-	     * @param  {Object} params   Options
-	     * @param  {Function} progress Progress function
-	     * @param  {Function} resolve  Promise resolve function
-	     * @param  {Function} reject   Promise reject function
-	     * @returns {Promise} The promise that is resolved after the asset loads
-	     */
-
-	  }, {
-	    key: 'loadAndResolve',
-	    value: function loadAndResolve(asset, params, progress, resolve, reject) {
-	      var _this2 = this;
-
-	      this.currentNumLoading++;
-	      return this.loader.loadAsset(asset, params, progress).then(function (data) {
-	        _this2.loadFinished();
-	        resolve(data);
-	      }).catch(reject);
-	    }
-
-	    /**
-	     * Load the specified Box3DAsset.
-	     * @method load
-	     * @param {Box3DAsset} asset The Box3DAsset that is being loaded
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @param {Function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the asset data
-	     */
-
-	  }, {
-	    key: 'load',
-	    value: function load(asset) {
-	      var _this3 = this;
-
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	      var progress = arguments[2];
-
-
-	      return new Promise(function (resolve, reject) {
-	        // If we haven't hit the maximum number of simultaneous downloads yet, just
-	        // load the file.
-	        if (_this3.currentNumLoading < _this3.maxConcurrentLoads) {
-	          return _this3.loadAndResolve(asset, params, progress, resolve, reject);
-	        } else {
-	          // Figure out the priority and then add the asset to the queue in the appropriate
-	          // priority location.
-	          var priority = Math.max(Math.min(params.priority ? params.priority : DEFAULT_PRIORITY, NUM_PRIORITIES), 0);
-	          if (!_this3.priorityBuckets[priority]) {
-	            _this3.priorityBuckets[priority] = {};
-	          }
-	          // Add the asset loading function to the queue and wait to be called
-	          _this3.priorityBuckets[priority][asset.id] = _this3.loadAndResolve.bind(_this3, asset, params, progress, resolve, reject);
-	        }
-	      });
-	    }
-
-	    /**
-	    * Interface with BoxSDK to halt a single request
-	    * @method abortRequest
-	    * @param {string} key The key of the XHR that we want to abort
-	    * @returns {void}
-	    */
-
-	  }, {
-	    key: 'abortRequest',
-	    value: function abortRequest(key) {
-
-	      this.loader.abortRequest(key);
-	    }
-
-	    /**
-	    * Interface with BoxSDK to halt all requests currently loading
-	    * @method abortRequests
-	    * @returns {void}
-	    */
-
-	  }, {
-	    key: 'abortRequests',
-	    value: function abortRequests() {
-
-	      this.loader.abortRequests();
-	    }
-
-	    /**
-	     * Tell the application using this that an asset is missing
-	     * @param {object} assetDescription A descriptor for the missing asset.
-	     * See base-loader.js onAssetNotFound()
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'onMissingAsset',
-	    value: function onMissingAsset(assetDescription) {
-
-	      // As of right now, not modifying the outgoing data
-	      this.emit('missingAsset', assetDescription);
-	    }
-	  }, {
-	    key: 'destroy',
-	    value: function destroy() {
-
-	      // loader calls box SDK destroy
-	      this.loader.destroy();
-	      this.removeAllListeners();
-	      this.loader = null;
-	      this.boxSdk = null;
-	    }
 	  }]);
 
 	  return Box3DResourceLoader;
-	}(_events2.default);
+	}();
 
 	global.Box3DResourceLoader = Box3DResourceLoader;
 	module.exports = Box3DResourceLoader;
@@ -286,11 +253,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _lie = __webpack_require__(3);
-
-	var _lie2 = _interopRequireDefault(_lie);
-
-	var _baseLoader = __webpack_require__(6);
+	var _baseLoader = __webpack_require__(3);
 
 	var _baseLoader2 = _interopRequireDefault(_baseLoader);
 
@@ -301,79 +264,43 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * V2 API Resource Loader for Box3D
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               **/
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Concrete sub-class of BaseLoader that loads assets using the V2 API.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 
 	var V2Loader = function (_BaseLoader) {
 	  _inherits(V2Loader, _BaseLoader);
 
 	  /**
-	  * Used for loading Box3D Representations from Box V2 Content API
-	  * @param {string} fileId The file id of the model we are viewing
-	  * @param {string} fileVersionId The file version id of the model we are viewing
-	  * @param {object} opts Additional properties to add to the loader.
-	  *   {BoxSDK} boxSdk and {string} apiBase can be added and {string} parentId is used
-	  *   for file search. {string} token MUST be added
-	  * @returns {void}
-	  */
+	   * Used for loading Box3D assets with the Box V2 Content API.
+	   * @constructor
+	   * @param {BoxSDK} boxSdk An instance of BoxSDK.
+	   */
 
-	  function V2Loader(fileId, fileVersionId) {
-	    var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
+	  function V2Loader(boxSdk) {
 	    _classCallCheck(this, V2Loader);
 
-	    if (!opts.hasOwnProperty('token')) {
-	      throw new Error('No Token Provided for V2 Loader!');
-	    }
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(V2Loader).call(this, fileId, fileVersionId, opts));
-
-	    _this.token = opts.token;
-	    _this.parentId = opts.parentId;
-
-	    return _this;
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(V2Loader).call(this, boxSdk));
 	  }
 
-	  /**
-	   * Override for getting gzipped length, with credentials passing disabled
-	   * @param {object} xhr The response xhr with the appropriate headers
-	   * @param {string} url The key to store the total size at
-	   * @returns {int} The byte size of the asset, with applied compression factor
-	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(V2Loader, [{
+	    key: 'getCredentialOptions',
+	    value: function getCredentialOptions(external) {
+	      return {
+	        sendToken: !external,
+	        withCredentials: false
+	      };
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
 	    key: 'getGzippedLength',
 	    value: function getGzippedLength(xhr, url) {
-
 	      return _get(Object.getPrototypeOf(V2Loader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: false });
-	    }
-
-	    /**
-	     * @inheritdoc
-	     */
-
-	  }, {
-	    key: 'getBaseUrl',
-	    value: function getBaseUrl(fileId, fileVersionId, validator) {
-
-	      return this.sdkLoader.getRepresentationUrl(fileId, validator).then(function (url) {
-	        // Chop off entities.json
-	        // TODO - this really assumes that we're loading the '3d'
-	        // representation, doesn't it?...
-	        return _lie2.default.resolve(url.replace('entities.json', ''));
-	      });
-	    }
-
-	    /**
-	     * @inheritdoc
-	     */
-
-	  }, {
-	    key: 'getCredentialOptions',
-	    value: function getCredentialOptions(isPathRelative) {
-	      return { sendToken: isPathRelative, withCredentials: false };
 	    }
 	  }]);
 
@@ -386,8 +313,601 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _lie = __webpack_require__(4);
+
+	var _lie2 = _interopRequireDefault(_lie);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var COMPRESSION_FACTORS = {
+	  'application/vnd.box.box3d+bin': 1.0
+	};
+
+	var COMPRESSION_TYPE = {
+	  DXT: 'dxt',
+	  DXT1: 'dxt1',
+	  DXT5: 'dxt5',
+	  JPEG: 'jpeg',
+	  ZIP: 'zip'
+	};
+
+	var DEFAULT_CHANNELS = ['red', 'green', 'blue'];
+
+	var MAX_IMAGE_SIZE = 16384;
+
+	var BaseLoader = function () {
+	  /**
+	   * Base class for loading Box3D assets.
+	   * @constructor
+	   * @param {BoxSDK} boxSdk An instance of BoxSDK.
+	   */
+
+	  function BaseLoader(boxSdk) {
+	    _classCallCheck(this, BaseLoader);
+
+	    this.boxSdk = boxSdk;
+	    this.sdkLoader = this.boxSdk.representationLoader;
+
+	    this.cache = {};
+	    this.progressListeners = {}; // for tracking progress callbacks
+	    this.gzipSizes = {}; // for caching gzipped asset sizes
+	  }
+
+	  /**
+	   * Load data for the specified asset.
+	   * @method loadAsset
+	   * @public
+	   * @param {Box3DAsset} asset The asset to load.
+	   * @param {Object} options Loading options (@see Box3DResourceLoader.prototype.load()).
+	   * @param {Function} [progressFn] The progress callback.
+	   * @returns {Promise} A promise that resolves the asset data.
+	   */
+
+
+	  _createClass(BaseLoader, [{
+	    key: 'loadAsset',
+	    value: function loadAsset(asset) {
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progressFn = arguments[2];
+
+	      var loadFn = this.getLoadFunction(asset.type);
+	      if (!loadFn) {
+	        return _lie2.default.reject('Unsupported asset type: ' + asset.type);
+	      }
+
+	      return loadFn.bind(this)(asset, options, progressFn);
+	    }
+
+	    /**
+	     * Returns the loading function for the specified asset type.
+	     * @method getLoadFunction
+	     * @private
+	     * @param {String} assetType The Box3DAsset's type.
+	     * @returns {Function} The loading function.
+	     */
+
+	  }, {
+	    key: 'getLoadFunction',
+	    value: function getLoadFunction(assetType) {
+	      switch (assetType) {
+	        case 'buffer':
+	          return this.loadBuffer;
+
+	        case 'image':
+	          return this.loadImage;
+	      }
+	    }
+
+	    /**
+	     * Called on progress events.
+	     * @method onLoadProgress
+	     * @private
+	     * @param {Object} status The status object containing the XHR and loading progress.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'onLoadProgress',
+	    value: function onLoadProgress(status) {
+	      var _this = this;
+
+	      var target = status.xhr.target || status.xhr.srcElement;
+	      var info = target.info;
+
+	      if (!info) {
+	        return;
+	      }
+
+	      // Get the URL from the XHR request.
+	      var url = info.url;
+	      var encoding = target.getResponseHeader('Content-Encoding');
+
+	      // Notify progress listeners.
+	      if (encoding && encoding.indexOf('gzip') > -1) {
+	        this.getGzippedLength(target, url).then(function (total) {
+	          status.total = total;
+	          _this.notifyProgressListeners(url, status);
+	        });
+	      } else {
+	        this.notifyProgressListeners(url, status);
+	      }
+	    }
+
+	    /**
+	     * Registers a progress callback for the given URL. Multiple listeners per URL are allowed.
+	     * @method addProgressListener
+	     * @private
+	     * @param {String} url The URL to register the listener with.
+	     * @param {Function} callback Called on progress events.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'addProgressListener',
+	    value: function addProgressListener(url, callback) {
+	      if (!this.progressListeners.hasOwnProperty(url)) {
+	        this.progressListeners[url] = [];
+	      }
+
+	      this.progressListeners[url].push(callback);
+	    }
+
+	    /**
+	     * Remove all progress listeners for a given URL.
+	     * @method removeProgressListeners
+	     * @private
+	     * @param {String} url The URL that the listeners are registered with.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'removeProgressListeners',
+	    value: function removeProgressListeners(url) {
+	      if (this.progressListeners.hasOwnProperty(url)) {
+	        delete this.progressListeners[url];
+	      }
+	    }
+
+	    /**
+	     * Notify progress listeners of progress.
+	     * @private
+	     * @param {String} url The URL associated with loading callback to call.
+	     * @param {Object} status The status object to send to listeners.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'notifyProgressListeners',
+	    value: function notifyProgressListeners(url, status) {
+	      if (this.progressListeners.hasOwnProperty(url)) {
+	        this.progressListeners[url].forEach(function (callback) {
+	          callback(status);
+	        });
+	      }
+	    }
+
+	    /**
+	     * Get the required credentials for an XHR, taking into account whether the URL is external to the
+	     * representation. Sub-classes should override this method if needed.
+	     * @method getCredentialOptions
+	     * @protected
+	     * @param {Boolean} external Whether or not the URL is external to the representation.
+	     * @returns {Object} The credentials to use.
+	     */
+
+	  }, {
+	    key: 'getCredentialOptions',
+	    value: function getCredentialOptions() /* external */{
+	      return {};
+	    }
+
+	    /**
+	     * Get the content length of a gzipped asset.
+	     * @method getGzippedLength
+	     * @protected
+	     * @param {Object} xhr The response XHR with the appropriate headers.
+	     * @param {String} url The key to store the total size at.
+	     * @param {Object} options XHR request options (@see XHR.prototype.makeRequest() in BoxSDK).
+	     * @returns {Integer} The byte size of the asset, with applied compression factor.
+	     */
+
+	  }, {
+	    key: 'getGzippedLength',
+	    value: function getGzippedLength(xhr, url, options) {
+	      var _this2 = this;
+
+	      if (!this.gzipSizes[url]) {
+	        this.gzipSizes[url] = new _lie2.default(function (resolve, reject) {
+	          // Check type to see if we need to apply a compression factor
+	          var contentType = xhr.getResponseHeader('Content-Type');
+	          var factor = COMPRESSION_FACTORS[contentType] || 1;
+
+	          // make the HEAD request for content length
+	          _this2.sdkLoader.xhr.makeRequest(xhr.responseURL, 'HEAD', null, null, options).then(function (resp) {
+	            var total = resp.getResponseHeader('Content-Length');
+	            resolve(total ? total * factor : 0);
+	          }).catch(reject);
+	        });
+	      }
+
+	      return this.gzipSizes[url];
+	    }
+
+	    /**
+	     * Sub-classes may override this method to modify the buffer URL prior to the request being made.
+	     * @method modifyBufferUrl
+	     * @protected
+	     * @param {String} url The URL defined in the representation.
+	     * @returns {String} The fully qualified URL for the representation.
+	     * @throws {Error} The error that occurs when modifying the URL.
+	     */
+
+	  }, {
+	    key: 'modifyBufferUrl',
+	    value: function modifyBufferUrl(url) {
+	      return url;
+	    }
+
+	    /**
+	     * Sub-classes may override this method to modify the image URL prior to the request being made.
+	     * @method modifyImageUrl
+	     * @protected
+	     * @param {String} url The URL defined in the representation.
+	     * @returns {String} The fully qualified URL for the representation.
+	     * @throws {Error} The error that occurs when modifying the URL.
+	     */
+
+	  }, {
+	    key: 'modifyImageUrl',
+	    value: function modifyImageUrl(url) {
+	      return url;
+	    }
+
+	    /**
+	     * Load a buffer asset.
+	     * @method loadBuffer
+	     * @private
+	     * @param {Box3DAsset} asset The asset to load.
+	     * @param {Object} options Not used.
+	     * @param {Function} [progressFn] The progress callback.
+	     * @returns {Promise} A promise that resolves the ArrayBuffer.
+	     */
+
+	  }, {
+	    key: 'loadBuffer',
+	    value: function loadBuffer(asset) {
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var progressFn = arguments[2];
+
+	      var url = void 0;
+	      try {
+	        url = this.modifyBufferUrl(asset.getProperty('src'));
+	      } catch (err) {
+	        return _lie2.default.reject(err);
+	      }
+
+	      var requestOpts = Object.assign({
+	        responseType: 'arraybuffer'
+	      }, this.getCredentialOptions(false));
+
+	      return this.loadResourceFromUrl(url, requestOpts, function (response) {
+	        return _lie2.default.resolve({
+	          data: response,
+	          properties: {}
+	        });
+	      }, progressFn);
+	    }
+
+	    /**
+	     * Load an image asset.
+	     * @method loadImage
+	     * @private
+	     * @param {Box3DAsset} asset The asset to load.
+	     * @param {Object} options Loading options (@see Box3DResourceLoader.prototype.load()).
+	     * @param {Function} [progressFn] The progress callback.
+	     * @returns {Promise} A promise that resolves the image data.
+	     */
+
+	  }, {
+	    key: 'loadImage',
+	    value: function loadImage(asset, options, progressFn) {
+	      var _this3 = this;
+
+	      var representation = this.findImageRepresentation(asset, options);
+	      if (!representation) {
+	        return _lie2.default.reject(new Error('No matching representations found'));
+	      }
+
+	      var responseType = this.getImageResponseType(representation.compression);
+	      var credentials = this.getCredentialOptions(representation.isExternal);
+	      var requestOptions = Object.assign({ responseType: responseType }, credentials);
+
+	      if (representation.isExternal) {
+	        return this.sdkLoader.xhr.get(representation.src, progressFn, requestOptions).then(function (xhr) {
+	          return _this3.processImage(xhr.response, representation);
+	        });
+	      }
+
+	      var url = void 0;
+
+	      try {
+	        url = this.modifyImageUrl(representation.src);
+	      } catch (err) {
+	        return _lie2.default.reject(err);
+	      }
+
+	      return this.loadResourceFromUrl(url, requestOptions, function (response) {
+	        return _this3.processImage(response, representation);
+	      }, progressFn);
+	    }
+
+	    /**
+	     * Returns a promise that loads data from the specified URL.
+	     * @method loadResourceFromUrl
+	     * @private
+	     * @param {String} url The URL to load.
+	     * @param {Object} options Loading options (@see Box3DResourceLoader.prototype.load()).
+	     * @param {Function} processFn Called with the XmlHttpRequest response for post-processing.
+	     * @param {Function} [progressFn] The progress callback.
+	     * @returns {Promise} A promise that resolves with the loaded data.
+	     */
+
+	  }, {
+	    key: 'loadResourceFromUrl',
+	    value: function loadResourceFromUrl(url) {
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var _this4 = this;
+
+	      var processFn = arguments[2];
+	      var progressFn = arguments[3];
+
+	      if (progressFn) {
+	        this.addProgressListener(url, progressFn);
+	      }
+
+	      var optionsEx = Object.assign({ url: url }, options);
+
+	      // If the representation is cached, return the cached data; otherwise, get
+	      // the representation.
+	      if (!this.cache.hasOwnProperty(url)) {
+	        this.cache[url] = this.sdkLoader.getRepresentation(url, this.onLoadProgress.bind(this), optionsEx).then(function (xhr) {
+	          _this4.removeProgressListeners(url);
+	          return processFn(xhr.response);
+	        }).catch(function (err) {
+	          _this4.removeProgressListeners(url);
+	          return _lie2.default.reject(err);
+	        });
+	      }
+
+	      return this.cache[url];
+	    }
+
+	    /**
+	     * Given a compression type for a representation (e.g. 'jpeg', 'dxt', etc.),
+	     * return the response type that is expected (e.g. 'blob' or 'arraybuffer').
+	     * @method getImageResponseType
+	     * @public
+	     * @param {String} compression The compression type for the representation ('jpeg', 'dxt', etc.).
+	     * @returns {String} Either 'blob' or 'arraybuffer'.
+	     */
+
+	  }, {
+	    key: 'getImageResponseType',
+	    value: function getImageResponseType(compression) {
+	      switch (compression) {
+	        case COMPRESSION_TYPE.DXT:
+	        case COMPRESSION_TYPE.DXT1:
+	        case COMPRESSION_TYPE.DXT5:
+	          return 'arraybuffer';
+	      }
+
+	      return 'blob';
+	    }
+
+	    /**
+	     * Find the image representation that best matches the specified criteria.
+	     * @method findImageRepresentation
+	     * @private
+	     * @param {Box3DAsset} asset The image asset.
+	     * @param {Object} options Loading options (@see Box3DResourceLoader.prototype.load()).
+	     * @returns {Object} the representation that best matches the search criteria or null if none were
+	     * found.
+	     */
+
+	  }, {
+	    key: 'findImageRepresentation',
+	    value: function findImageRepresentation(asset) {
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var representations = asset.get('representations');
+	      if (!representations || representations.length === 0) {
+	        return null;
+	      }
+
+	      var optionsEx = Object.assign({ maxSize: MAX_IMAGE_SIZE }, options);
+
+	      // Get closest match for compression param. Compression will either match exactly or fall back
+	      // to 'none'.
+	      var compressionMatches = representations.filter(function (image) {
+	        if (image.compression === optionsEx.compression) {
+	          return true;
+	        }
+
+	        switch (image.compression) {
+	          case COMPRESSION_TYPE.ZIP:
+	          case COMPRESSION_TYPE.JPEG:
+	            return !optionsEx.compression;
+
+	          case COMPRESSION_TYPE.DXT:
+	          case COMPRESSION_TYPE.DXT1:
+	          case COMPRESSION_TYPE.DXT5:
+	            return optionsEx.compression === COMPRESSION_TYPE.DXT;
+	        }
+
+	        return false;
+	      });
+
+	      // If no matches for the supplied compression exist, try to find the regular images (png or
+	      // jpg).
+	      if (compressionMatches.length === 0) {
+	        compressionMatches = representations.filter(function (image) {
+	          return image.compression === COMPRESSION_TYPE.ZIP || image.compression === COMPRESSION_TYPE.JPEG;
+	        });
+	      }
+
+	      var formatMatches = compressionMatches.filter(function (image) {
+	        var channels = image.channels || DEFAULT_CHANNELS;
+	        return !optionsEx.channels || channels.toString() === optionsEx.channels.toString();
+	      });
+
+	      if (formatMatches.length === 0) {
+	        formatMatches = compressionMatches;
+	      }
+
+	      // For each match, compute the difference between its size and the max size.
+	      var sizeDiffs = formatMatches.map(function (image) {
+	        return optionsEx.maxSize - Math.max(image.width || 1, image.height || 1);
+	      });
+
+	      // Find the index of the minimum, *positive* “diff”. This is equivalent to the largest image
+	      // that is less than or equal to the max specified.
+	      var bestIdx = sizeDiffs.reduce(function (bestIdx, currentDiff, currentIdx) {
+	        var bestDiff = bestIdx >= 0 ? sizeDiffs[bestIdx] : Number.MAX_VALUE;
+	        return currentDiff >= 0 && currentDiff < bestDiff ? currentIdx : bestIdx;
+	      }, -1);
+
+	      // Locate the match.
+	      return bestIdx >= 0 ? formatMatches[bestIdx] : null;
+	    }
+
+	    /**
+	     * Post-processes an image response, resolving to an object that contains an
+	     * Image or an ArrayBuffer.
+	     * @method processImage
+	     * @private
+	     * @param {Object} response An XHR response object.
+	     * @param {Object} representation The image representation that was loaded.
+	     * @returns {Promise} A promise that resolves the image data.
+	     */
+
+	  }, {
+	    key: 'processImage',
+	    value: function processImage(response, representation) {
+	      return new _lie2.default(function (resolve, reject) {
+	        var data = {
+	          properties: {
+	            compression: representation.compression,
+	            channels: representation.channels || DEFAULT_CHANNELS
+	          }
+	        };
+
+	        if (response instanceof ArrayBuffer) {
+	          data.data = response;
+	          data.properties.width = representation.width;
+	          data.properties.height = representation.height;
+	          return resolve(data);
+	        }
+
+	        if (response instanceof Blob) {
+	          try {
+	            (function () {
+	              var url = URL.createObjectURL(response);
+	              var img = new Image();
+
+	              img.onload = function () {
+	                data.data = img;
+	                data.properties.width = img.width;
+	                data.properties.height = img.height;
+	                return resolve(data);
+	              };
+
+	              img.src = url;
+	            })();
+	          } catch (err) {
+	            return reject(err);
+	          }
+	        } else {
+	          return reject(new Error('Image data has unexpected type'));
+	        }
+	      });
+	    }
+
+	    /**
+	     * Abort all requests associated with the specified key.
+	     * @method abortRequest
+	     * @public
+	     * @param {String} key The key of the XHR to abort.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'abortRequest',
+	    value: function abortRequest(key) {
+	      this.removeProgressListeners(key);
+	      this.sdkLoader.xhr.abortRequest(key);
+	    }
+
+	    /**
+	     * Abort all requests.
+	     * @method abortRequests
+	     * @public
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'abortRequests',
+	    value: function abortRequests() {
+	      var _this5 = this;
+
+	      // Clear all progress listeners.
+	      Object.keys(this.progressListeners).forEach(function (key) {
+	        _this5.removeProgressListeners(key);
+	      });
+
+	      this.sdkLoader.xhr.abortRequests();
+	    }
+
+	    /**
+	     * Free resources used by this loader. After calling this method, the loader can no longer be
+	     * used.
+	     * @method destroy
+	     * @public
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'destroy',
+	    value: function destroy() {
+	      this.abortRequests();
+	      delete this.sdkLoader;
+	      delete this.boxSdk;
+	      delete this.cache;
+	      delete this.gzipSizes;
+	    }
+	  }]);
+
+	  return BaseLoader;
+	}();
+
+	exports.default = BaseLoader;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-	var immediate = __webpack_require__(5);
+	var immediate = __webpack_require__(6);
 
 	/* istanbul ignore next */
 	function INTERNAL() {}
@@ -432,7 +952,7 @@
 	  var promise = new this.constructor(INTERNAL);
 	  /* istanbul ignore else */
 	  if (!process.browser) {
-	    if (this.handled === UNHANDLED) {
+	    if (typeof onRejected === 'function' && this.handled === UNHANDLED) {
 	      this.handled = null;
 	    }
 	  }
@@ -665,10 +1185,10 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -765,7 +1285,7 @@
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {'use strict';
@@ -842,1139 +1362,10 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(4)))
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _lie = __webpack_require__(3);
-
-	var _lie2 = _interopRequireDefault(_lie);
-
-	var _events = __webpack_require__(7);
-
-	var _events2 = _interopRequireDefault(_events);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var CompressionFactors = {
-	  'application/vnd.box.box3d+bin': 1.0
-	};
-
-	var DEFAULT_CHANNELS = ['red', 'green', 'blue'];
-	var MAX_IMAGE_RESOLUTION = 16384;
-	var COMPRESSION_TYPE = {
-	  DXT: 'dxt',
-	  DXT1: 'dxt1',
-	  DXT5: 'dxt5',
-	  JPEG: 'jpeg',
-	  ZIP: 'zip'
-	};
-
-	var BaseLoader = function (_EventEmitter) {
-	  _inherits(BaseLoader, _EventEmitter);
-
-	  /**
-	  * Provides base functionality for all loaders that need to load assets from Box
-	  * That need to work with the Box3DRuntime
-	  * @param {string} fileId The file id of the model we are viewing
-	  * @param {string} fileVersionId The file version id of the model we are viewing
-	  * @param {object} opts Additional properties to add to the loader.
-	  *   {BoxSDK} boxSdk and {string} apiBase can be added
-	  * @returns {void}
-	  */
-
-	  function BaseLoader(fileId, fileVersionId) {
-	    var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-	    _classCallCheck(this, BaseLoader);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseLoader).call(this));
-
-	    if (opts.boxSdk) {
-	      _this.boxSdk = opts.boxSdk;
-	    } else {
-	      throw new Error('No Box SDK Provided to Loader!');
-	    }
-
-	    _this.sdkLoader = _this.boxSdk.representationLoader;
-
-	    _this.fileId = fileId;
-	    _this.fileVersionId = fileVersionId;
-
-	    _this.cache = {};
-	    //for tracking progress callbacks
-	    _this.progressListeners = {};
-	    //for caching gzipped asset sizes
-	    _this.gzipSizes = {};
-
-	    _this.apiBase = opts.apiBase !== undefined ? opts.apiBase : undefined;
-
-	    return _this;
-	  }
-
-	  /**
-	   * Load the data for a given Box3DAsset.
-	   * @method loadAsset
-	   * @param {Box3DAsset} asset The asset that is being loaded
-	   * @param {Object} params The criteria for determining which representation to load
-	   * @param {Function} progress The progress callback
-	   * @returns {Promise} a promise that resolves the asset data
-	   */
-
-
-	  _createClass(BaseLoader, [{
-	    key: 'loadAsset',
-	    value: function loadAsset(asset) {
-	      var _this2 = this;
-
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	      var progress = arguments[2];
-
-
-	      var loadFunc = this.getAssetLoadingMethod(asset);
-
-	      if (!loadFunc) {
-	        return _lie2.default.reject('Asset not supported for loading: ' + asset.type);
-	      }
-
-	      loadFunc = loadFunc.bind(this);
-	      var fileIdPromise = this.getFileIdPromise(asset);
-	      var prefixUrl = true;
-	      var validator = validator = function validator(entry) {
-	        return entry.representation === '3d';
-	      };
-
-	      switch (asset.type) {
-
-	        case 'image':
-	          {
-	            // All images should have paths already specified with the correct prefix.
-	            prefixUrl = false;
-	            var resource = void 0;
-	            try {
-	              resource = this.findImageResource(asset, params);
-	            } catch (err) {
-	              return _lie2.default.reject(err);
-	            }
-	            params.resource = resource;
-
-	            // FIXME - when we support 3d reps for images, remove this and always use the 3d rep.
-	            validator = function validator(entry) {
-	              if (params.resource.compression === 'zip' && entry.representation === 'png') {
-	                return true;
-	              } else if (params.resource.compression === 'jpeg' && entry.representation === 'jpg') {
-	                return true;
-	              }
-	              return false;
-	            };
-	          }
-	          break;
-
-	        case 'document':
-	          break;
-	      }
-
-	      // Load the representation.
-	      return new _lie2.default(function (resolve, reject) {
-	        // Get the file ID for the asset.
-	        fileIdPromise.then(function (fileIds) {
-
-	          // If we're loading from another Box file, get the base url.
-	          // Also get the base url if we still need to prefix the url that we have.
-	          if (fileIds.fileId !== _this2.fileId || prefixUrl) {
-
-	            // Get the base representation url for fileId and fileVersionId
-	            return _this2.getBaseUrl(fileIds.fileId, fileIds.fileVersionId, validator).then(function (baseUrl) {
-	              if (!baseUrl) {
-	                reject(new Error('No 3d representation available for: ' + fileIds.fileId));
-	              }
-	              // Load the data using our selected loading function
-	              return loadFunc(baseUrl, params, progress);
-	            });
-	          }
-	          return loadFunc('', params, progress);
-	        }).then(resolve).catch(function (err) {
-	          _this2.onAssetNotFound(asset);
-	          reject(err);
-	        });
-	      });
-	    }
-
-	    /**
-	     * Get the base url for a representation.
-	     * @param  {String} fileId        Box file Id
-	     * @param  {String} fileVersionId Box file version Id
-	     * @param  {Function} validator   Function called for every representation found and finds one
-	     * to fetch the url for.
-	     * @returns {String}               The base url for the representation
-	     */
-
-	  }, {
-	    key: 'getBaseUrl',
-	    value: function getBaseUrl() /* fileId, fileVersionId, validator*/{
-	      throw new Error('getBaseUrl not implemented!');
-	    }
-
-	    /**
-	     * Get a method of loading a texture
-	     * @param {Object} box3dAsset The Box3DAsset to load
-	     * @returns {Function} The loading function needed to load the asset
-	     */
-
-	  }, {
-	    key: 'getAssetLoadingMethod',
-	    value: function getAssetLoadingMethod(box3dAsset) {
-	      var loadFunc = void 0;
-
-	      switch (box3dAsset.type) {
-	        case 'image':
-	          loadFunc = this.loadImage;
-	          break;
-	        case 'video':
-	          loadFunc = this.loadVideo;
-	          break;
-	        case 'animation':
-	        /*fall-through*/
-	        case 'meshGeometry':
-	          loadFunc = this.loadGeometry;
-	          break;
-	        case 'document':
-	          loadFunc = this.loadDocument;
-	          break;
-	      }
-
-	      return loadFunc;
-	    }
-
-	    /**
-	     * Check to see if a Box3D Asset already has provided file ids
-	     * @param {Object} box3dAsset The Box3DAsset we are checking for IDs
-	     * @param {Object} params Additional params to be passed to the SDK search method
-	     * @returns {Promise} A promise that resolves in FileID and FileVersionID
-	     */
-
-	  }, {
-	    key: 'getFileIdPromise',
-	    value: function getFileIdPromise(box3dAsset) {
-	      var fileId = box3dAsset.getProperty('fileId');
-	      var fileVersionId = box3dAsset.getProperty('fileVersionId');
-	      var idPromise = void 0;
-
-	      if (fileId) {
-	        idPromise = _lie2.default.resolve({
-	          fileId: fileId,
-	          fileVersionId: fileVersionId
-	        });
-	      } else {
-	        idPromise = _lie2.default.resolve({
-	          fileId: this.fileId,
-	          fileVersionId: this.fileVersionId
-	        });
-	      }
-
-	      return idPromise;
-	    }
-
-	    /**
-	     * Called when an asset cannot be resolved to a Box fileVersionId.
-	     * @method onAssetNotFound
-	     * @param {Box3DAsset} asset The asset that failed to resolve
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'onAssetNotFound',
-	    value: function onAssetNotFound(asset) {
-
-	      var filename = '';
-
-	      switch (asset.type) {
-	        case 'image':
-	          filename = asset.getProperty('filename');
-	          break;
-	      }
-	      // Broadcast that the asset is missing.
-	      this.emit('missingAsset', {
-	        assetName: asset.getName(),
-	        fileName: filename,
-	        type: asset.type,
-	        asset: asset
-	      });
-	    }
-
-	    /**
-	    * Update all registered progress listeners
-	    * @private
-	    * @param {string} url The url associated with loading callback to call
-	    * @param {object} status The status object to propogate to listeners
-	    * @returns {void}
-	    */
-
-	  }, {
-	    key: 'updateLoadProgress',
-	    value: function updateLoadProgress(url, status) {
-
-	      if (this.progressListeners.hasOwnProperty(url)) {
-	        this.progressListeners[url].forEach(function (progress) {
-	          progress(status);
-	        });
-	      }
-	    }
-
-	    /**
-	    * Get the content length of a gzipped asset
-	    * @param {object} xhr The response xhr with the appropriate headers
-	    * @param {string} url The key to store the total size at
-	    * @param {object} params Additional parameters to configure the XHR request
-	    * @returns {int} The byte size of the asset, with applied compression factor
-	    */
-
-	  }, {
-	    key: 'getGzippedLength',
-	    value: function getGzippedLength(xhr, url, params) {
-	      var _this3 = this;
-
-	      if (!this.gzipSizes[url]) {
-	        this.gzipSizes[url] = new _lie2.default(function (resolve, reject) {
-	          // Check type to see if we need to apply a compression factor
-	          var factor = CompressionFactors[xhr.getResponseHeader('Content-Type')] || 1;
-
-	          // make the HEAD request for content length
-	          _this3.sdkLoader.xhr.makeRequest(xhr.responseURL, 'HEAD', null, null, params).then(function (resp) {
-	            var total = resp.getResponseHeader('Content-Length');
-	            resolve(total ? total * factor : 0);
-	          }).catch(reject);
-	        });
-	      }
-
-	      return this.gzipSizes[url];
-	    }
-
-	    /**
-	    * On a progress event, we need to update progressListeners
-	    * @method onAssetLoadProgress
-	    * @private
-	    * @param {object} status The status object containing the XHR and loading progress
-	    * of the XHR request
-	    * @returns {void}
-	    */
-
-	  }, {
-	    key: 'onAssetLoadProgress',
-	    value: function onAssetLoadProgress(status) {
-	      var _this4 = this;
-
-	      var target = status.xhr.target || status.xhr.srcElement;
-	      var info = target.info;
-
-	      if (!info) {
-	        return;
-	      }
-	      // get url from xhr request
-	      var url = info.url;
-	      var encoding = target.getResponseHeader('Content-Encoding');
-
-	      if (encoding && encoding.indexOf('gzip') > -1) {
-	        this.getGzippedLength(target, url).then(function (total) {
-	          status.total = total;
-	          _this4.updateLoadProgress(url, status);
-	        });
-	      } else {
-	        this.updateLoadProgress(url, status);
-	      }
-	    }
-
-	    /**
-	    * Registers a progress callback for the given URL. If multiple listeners are registered
-	    * to the same URL, each one will recieve updates.
-	    * @method addProgressListener
-	    * @private
-	    * @param {string} url The url to register the callback with
-	    * @param {function} progress The callback to call when recieving updates
-	    * @returns {void}
-	    */
-
-	  }, {
-	    key: 'addProgressListener',
-	    value: function addProgressListener(url, progress) {
-
-	      if (!this.progressListeners.hasOwnProperty(url)) {
-	        this.progressListeners[url] = [];
-	      }
-
-	      this.progressListeners[url].push(progress);
-	    }
-
-	    /**
-	    * Remove all progress listeners for a given url
-	    * @method removeProgressListeners
-	    * @private
-	    * @param {string} url The url that the listeners are registered with
-	    * @returns {void}
-	    */
-
-	  }, {
-	    key: 'removeProgressListeners',
-	    value: function removeProgressListeners(url) {
-	      if (this.progressListeners.hasOwnProperty(url)) {
-	        delete this.progressListeners[url];
-	      }
-	    }
-
-	    /**
-	     * Get the required credentials to load a file, taking into account whether the url
-	     * is absolute or relative.
-	     * This will be overridden if needed.
-	     * @method getCredentialOptions
-	     * @param {Boolean} isPathRelative Is the url defined relative to the base content url
-	     * @returns {Object} The credentials to use.
-	     */
-
-	  }, {
-	    key: 'getCredentialOptions',
-	    value: function getCredentialOptions() /*isPathRelative*/{
-	      return {};
-	    }
-
-	    /**
-	     * Get loader-specific options for file searching, if any.
-	     * @method getFileSearchOptions
-	     * @returns {Object} Object containing file search params.
-	     */
-
-	  }, {
-	    key: 'getFileSearchOptions',
-	    value: function getFileSearchOptions() {
-	      return {};
-	    }
-
-	    /**
-	     * Use the base url and the relative url and construct a useable full url for the current loader
-	     * This will be overridden if needed.
-	     * @method modifyImagePath
-	     * @param  {String} url     The url defined in the representation
-	     * @returns {String}         The fully qualified url for the representation
-	     */
-
-	  }, {
-	    key: 'modifyImagePath',
-	    value: function modifyImagePath(url) {
-	      // By default, don't modify image paths.
-	      return url;
-	    }
-
-	    /**
-	     * Use the base url and the relative url and construct a useable full url for the current loader
-	     * This will be overridden if needed.
-	     * @method modifyGeometryPath
-	     * @param  {String} baseUrl The base content url
-	     * @param  {String} url     The relative url of the representation
-	     * @returns {String}         The fully qualified url for the representation
-	     */
-
-	  }, {
-	    key: 'modifyGeometryPath',
-	    value: function modifyGeometryPath(baseUrl, url) {
-	      return baseUrl + url;
-	    }
-
-	    /**
-	     * Use the base url and the relative url and construct a useable full url for the current loader
-	     * This will be overridden if needed.
-	     * @method modifyDocumentPath
-	     * @param  {String} baseUrl The base content url
-	     * @param  {String} url     The relative url of the representation
-	     * @returns {String}         The fully qualified url for the representation
-	     */
-
-	  }, {
-	    key: 'modifyDocumentPath',
-	    value: function modifyDocumentPath(baseUrl, url) {
-	      return baseUrl + url;
-	    }
-
-	    /**
-	     * Load a JSON file and return a JavaScript Object.
-	     * @method loadDocument
-	     * @param {string} baseUrl The representation url for the Box file
-	     * @param {Object} params The criteria for determining which representation to load
-	     * @param {Function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the JSON data
-	     */
-
-	  }, {
-	    key: 'loadDocument',
-	    value: function loadDocument(baseUrl) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	      var progress = arguments[2];
-
-
-	      var url = this.modifyDocumentPath(baseUrl, 'entities.json');
-
-	      return this.loadResourceFromUrl(url, { responseType: 'json' }, function (response) {
-	        return _lie2.default.resolve({
-	          data: response.response,
-	          properties: {}
-	        });
-	      }, progress);
-	    }
-
-	    /**
-	     * Load an image representation from a Box3D package.
-	     * @method loadImage
-	     * @param {string} baseUrl The representation url for the Box file
-	     * @param {object} params The criteria for determining which representation to load
-	     * @param {function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the image data
-	     */
-
-	  }, {
-	    key: 'loadImage',
-	    value: function loadImage(baseUrl, params, progress) {
-	      var _this5 = this;
-
-	      var resource = params.resource;
-	      if (!resource) {
-	        return _lie2.default.reject(new Error('No valid representation found.'));
-	      }
-	      var responseType = this.getImageResponseType(resource.compression);
-
-	      var resourceUrl = resource.src;
-	      var isRepresentation = !resource.isExternal;
-	      if (isRepresentation) {
-	        // The path is for a proper representation. Modify it if needed.
-	        resourceUrl = this.modifyImagePath(resourceUrl);
-	      }
-
-	      // Get the representation URL.
-	      return this.loadResourceFromUrl(resourceUrl, Object.assign({ responseType: responseType }, this.getCredentialOptions(isRepresentation)), function (response) {
-	        return _this5.parseImage(response, resource);
-	      }, progress);
-	    }
-
-	    /**
-	     * Load the binary file that contains the geometry and return an array buffer.
-	     * @method loadGeometry
-	     * @param {string} baseUrl The representation url for the Box file
-	     * @param {object} params The criteria for determining which representation to load.
-	     * @param {function} progress The progress callback
-	     * @returns {Promise} a promise that resolves the array buffer
-	     */
-
-	  }, {
-	    key: 'loadGeometry',
-	    value: function loadGeometry(baseUrl) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	      var progress = arguments[2];
-
-
-	      // Because 3d representation is only entities.json, we'll remove it,
-	      // and add geometry.bin
-	      var url = this.modifyGeometryPath(baseUrl, 'geometry.bin');
-
-	      return this.loadResourceFromUrl(url, { responseType: 'arraybuffer' }, function (response) {
-	        return _lie2.default.resolve({
-	          data: response.response,
-	          properties: {}
-	        });
-	      }, progress);
-	    }
-
-	    /**
-	     * Returns a promise that loads a file from a given URL.
-	     * @method loadResourceFromUrl
-	     * @private
-	     * @param  {String} url        The file to load.
-	     * @param  {Object} params     Optional parameters to pass when loading representation.
-	     * @param  {Function} processResponse Optional function to do something with the reponse before
-	     * completion.
-	     * @param  {Function} onProgress Optional progress function.
-	     * @returns {Promise}            The promise for loading the file.
-	     */
-
-	  }, {
-	    key: 'loadResourceFromUrl',
-	    value: function loadResourceFromUrl(url) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-	      var _this6 = this;
-
-	      var processResponse = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
-	      var onProgress = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
-
-	      if (onProgress) {
-	        this.addProgressListener(url, onProgress);
-	      }
-	      var repParams = Object.assign({ url: url }, params);
-	      // If the representation is cached, return the cached data; otherwise,
-	      // get the representation.
-	      if (!this.cache.hasOwnProperty(url)) {
-	        this.cache[url] = this.sdkLoader.getRepresentation(url, this.onAssetLoadProgress.bind(this), repParams).then(function (response) {
-	          if (processResponse) {
-	            return processResponse(response);
-	          }
-	          return _lie2.default.resolve(response);
-	        }).then(function (data) {
-	          _this6.removeProgressListeners(url);
-	          return _lie2.default.resolve(data);
-	        }).catch(function (err) {
-	          _this6.removeProgressListeners(url);
-	          return _lie2.default.reject(err);
-	        });
-	      }
-	      return this.cache[url];
-	    }
-
-	    /**
-	     * Given a compression type for a representation (e.g. 'jpeg', 'dxt', etc.), return
-	     * the responseType that is expected (e.g. 'blob' or 'arraybuffer')
-	     * @method getImageResponseType
-	     * @public
-	     * @param  {String} compression The compression type for the representation ('jpeg', 'dxt', etc.)
-	     * @returns {String}             Either 'blob' or 'arraybuffer'
-	     */
-
-	  }, {
-	    key: 'getImageResponseType',
-	    value: function getImageResponseType(compression) {
-	      var responseType = void 0;
-	      switch (compression) {
-	        case COMPRESSION_TYPE.DXT:
-	        case COMPRESSION_TYPE.DXT1:
-	        case COMPRESSION_TYPE.DXT5:
-	          responseType = 'arraybuffer';
-	          break;
-	        default:
-	          responseType = 'blob';
-	          break;
-	      }
-	      return responseType;
-	    }
-
-	    /**
-	     * Finds an image resource based on the specified criteria.
-	     * @method findImageResource
-	     * @param {Box3DAsset} asset The asset that is being loaded
-	     * @param {object} params The criteria for determining which representation to load
-	     * @returns {object} the resource that best matches the search criteria
-	     */
-
-	  }, {
-	    key: 'findImageResource',
-	    value: function findImageResource(asset) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-
-	      var representations = asset.get('representations');
-	      if (!representations || representations.length === 0) {
-	        throw new Error('Box3DAsset has no resources: ' + asset.getName());
-	      }
-
-	      var match = this.findBestMatchImage(representations, params);
-	      if (!match) {
-	        throw new Error('Unable to find match for given image description');
-	      }
-
-	      return match;
-	    }
-
-	    /**
-	     * Finds an image from a list that best matches the specified criteria.
-	     * @method findBestMatchImage
-	     * @param {array} representations The list of representations to search through.
-	     * @param {object} params The criteria for determining which representation to load
-	     * @returns {object} the representation that best matches the search criteria
-	     */
-
-	  }, {
-	    key: 'findBestMatchImage',
-	    value: function findBestMatchImage(representations) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-	      var repParams = Object.assign({
-	        maxResolution: MAX_IMAGE_RESOLUTION }, params);
-
-	      if (!representations || !(representations instanceof Array)) {
-	        throw new Error('Invalid sourceFiles list for image. Must specify a "regular" image.');
-	      }
-
-	      // Get closest match for compression param. Compression will either match exactly or
-	      // fall back to 'none'
-	      var compressionMatches = representations.filter(function (image) {
-	        if (image.compression === repParams.compression) {
-	          return true;
-	        }
-	        switch (image.compression) {
-	          case COMPRESSION_TYPE.ZIP:
-	          case COMPRESSION_TYPE.JPEG:
-	            return !repParams.compression;
-	          case COMPRESSION_TYPE.DXT:
-	          case COMPRESSION_TYPE.DXT1:
-	          case COMPRESSION_TYPE.DXT5:
-	            return repParams.compression === COMPRESSION_TYPE.DXT;
-	        }
-	        return false;
-	      });
-	      // If no matches for the supplied compression exist, try to find the regular images (png or jpg)
-	      if (compressionMatches.length === 0) {
-	        compressionMatches = representations.filter(function (image) {
-	          return image.compression === COMPRESSION_TYPE.ZIP || image.compression === COMPRESSION_TYPE.JPEG;
-	        });
-	      }
-
-	      var formatMatches = compressionMatches.filter(function (image) {
-	        var channels = image.channels || DEFAULT_CHANNELS;
-	        return !repParams.channels || channels.toString() === repParams.channels.toString();
-	      });
-
-	      if (formatMatches.length === 0) {
-	        formatMatches = compressionMatches;
-	      }
-
-	      // For each match, compute the difference between its size and the max size.
-	      var sizeDiffs = formatMatches.map(function (image) {
-	        return repParams.maxResolution - Math.max(image.width || 1, image.height || 1);
-	      });
-
-	      // Find the index of the minimum, *positive* “diff”.
-	      // This is equivalent to the largest image that is less than or equal to the max specified.
-	      var bestIdx = sizeDiffs.reduce(function (bestIdx, currentDiff, currentIdx) {
-	        var bestDiff = bestIdx >= 0 ? sizeDiffs[bestIdx] : Number.MAX_VALUE;
-	        return currentDiff >= 0 && currentDiff < bestDiff ? currentIdx : bestIdx;
-	      }, -1);
-
-	      // Locate the match.
-	      return bestIdx >= 0 ? formatMatches[bestIdx] : undefined;
-	    }
-
-	    /**
-	     * Parses the response and resolves with the correct image tag and image properties.
-	     * @method parseImage
-	     * @param {object} response A response with the requested image data
-	     * @param {object} representation The descriptor for the representation that was loaded
-	     * @returns {Promise} a promise that resolves the image data
-	     */
-
-	  }, {
-	    key: 'parseImage',
-	    value: function parseImage(response, representation) {
-	      return new _lie2.default(function (resolve, reject) {
-
-	        var data = {
-	          properties: {
-	            compression: representation.compression,
-	            channels: representation.channels || DEFAULT_CHANNELS
-	          }
-	        };
-
-	        if (response.response instanceof ArrayBuffer) {
-	          data.data = response.response;
-	          data.properties.width = representation.width;
-	          data.properties.height = representation.height;
-	          return resolve(data);
-	        } else if (response.response instanceof Blob) {
-	          try {
-	            (function () {
-	              var url = URL.createObjectURL(response.response),
-	                  img = new Image();
-
-	              img.onload = function () {
-	                data.data = img;
-	                data.properties.width = img.width;
-	                data.properties.height = img.height;
-
-	                return resolve(data);
-	              };
-
-	              img.src = url;
-	            })();
-	          } catch (err) {
-	            return reject(err);
-	          }
-	        } else {
-	          return reject(new Error('data is not a valid format'));
-	        }
-	      });
-	    }
-
-	    /**
-	    * Interface with BoxSDK to halt a single request
-	    * @method abortRequest
-	    * @param {string} key The key of the XHR that we want to abort
-	    * @returns {void}
-	    */
-
-	  }, {
-	    key: 'abortRequest',
-	    value: function abortRequest(key) {
-
-	      var request = this.sdkLoader.xhr.abortRequest(key);
-	      // need to also kill listeners on this request
-	      if (request && request.srcElement.info) {
-	        this.removeAllListeners(request.srcElement.info.url);
-	      }
-	    }
-
-	    /**
-	    * Interface with BoxSDK to halt all requests currently loading
-	    * @method abortRequests
-	    * @returns {void}
-	    */
-
-	  }, {
-	    key: 'abortRequests',
-	    value: function abortRequests() {
-	      var _this7 = this;
-
-	      // clear all progress listeners
-	      Object.keys(this.progressListeners).forEach(function (key) {
-	        _this7.removeProgressListeners(key);
-	      });
-	      this.sdkLoader.xhr.abortRequests();
-	    }
-	  }, {
-	    key: 'destroy',
-	    value: function destroy() {
-
-	      this.removeAllListeners();
-	      this.abortRequests();
-	      this.boxSdk.destroy();
-	      delete this.sdkLoader;
-	      delete this.boxSdk;
-	      delete this.id;
-	      delete this.fileVersionId;
-	      delete this.cache;
-	      delete this.gzipSizes;
-	    }
-	  }]);
-
-	  return BaseLoader;
-	}(_events2.default);
-
-	exports.default = BaseLoader;
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(5)))
 
 /***/ },
 /* 7 */
-/***/ function(module, exports) {
-
-	// Copyright Joyent, Inc. and other Node contributors.
-	//
-	// Permission is hereby granted, free of charge, to any person obtaining a
-	// copy of this software and associated documentation files (the
-	// "Software"), to deal in the Software without restriction, including
-	// without limitation the rights to use, copy, modify, merge, publish,
-	// distribute, sublicense, and/or sell copies of the Software, and to permit
-	// persons to whom the Software is furnished to do so, subject to the
-	// following conditions:
-	//
-	// The above copyright notice and this permission notice shall be included
-	// in all copies or substantial portions of the Software.
-	//
-	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-	// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-	function EventEmitter() {
-	  this._events = this._events || {};
-	  this._maxListeners = this._maxListeners || undefined;
-	}
-	module.exports = EventEmitter;
-
-	// Backwards-compat with node 0.10.x
-	EventEmitter.EventEmitter = EventEmitter;
-
-	EventEmitter.prototype._events = undefined;
-	EventEmitter.prototype._maxListeners = undefined;
-
-	// By default EventEmitters will print a warning if more than 10 listeners are
-	// added to it. This is a useful default which helps finding memory leaks.
-	EventEmitter.defaultMaxListeners = 10;
-
-	// Obviously not all Emitters should be limited to 10. This function allows
-	// that to be increased. Set to zero for unlimited.
-	EventEmitter.prototype.setMaxListeners = function(n) {
-	  if (!isNumber(n) || n < 0 || isNaN(n))
-	    throw TypeError('n must be a positive number');
-	  this._maxListeners = n;
-	  return this;
-	};
-
-	EventEmitter.prototype.emit = function(type) {
-	  var er, handler, len, args, i, listeners;
-
-	  if (!this._events)
-	    this._events = {};
-
-	  // If there is no 'error' event listener then throw.
-	  if (type === 'error') {
-	    if (!this._events.error ||
-	        (isObject(this._events.error) && !this._events.error.length)) {
-	      er = arguments[1];
-	      if (er instanceof Error) {
-	        throw er; // Unhandled 'error' event
-	      }
-	      throw TypeError('Uncaught, unspecified "error" event.');
-	    }
-	  }
-
-	  handler = this._events[type];
-
-	  if (isUndefined(handler))
-	    return false;
-
-	  if (isFunction(handler)) {
-	    switch (arguments.length) {
-	      // fast cases
-	      case 1:
-	        handler.call(this);
-	        break;
-	      case 2:
-	        handler.call(this, arguments[1]);
-	        break;
-	      case 3:
-	        handler.call(this, arguments[1], arguments[2]);
-	        break;
-	      // slower
-	      default:
-	        args = Array.prototype.slice.call(arguments, 1);
-	        handler.apply(this, args);
-	    }
-	  } else if (isObject(handler)) {
-	    args = Array.prototype.slice.call(arguments, 1);
-	    listeners = handler.slice();
-	    len = listeners.length;
-	    for (i = 0; i < len; i++)
-	      listeners[i].apply(this, args);
-	  }
-
-	  return true;
-	};
-
-	EventEmitter.prototype.addListener = function(type, listener) {
-	  var m;
-
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  if (!this._events)
-	    this._events = {};
-
-	  // To avoid recursion in the case that type === "newListener"! Before
-	  // adding it to the listeners, first emit "newListener".
-	  if (this._events.newListener)
-	    this.emit('newListener', type,
-	              isFunction(listener.listener) ?
-	              listener.listener : listener);
-
-	  if (!this._events[type])
-	    // Optimize the case of one listener. Don't need the extra array object.
-	    this._events[type] = listener;
-	  else if (isObject(this._events[type]))
-	    // If we've already got an array, just append.
-	    this._events[type].push(listener);
-	  else
-	    // Adding the second element, need to change to array.
-	    this._events[type] = [this._events[type], listener];
-
-	  // Check for listener leak
-	  if (isObject(this._events[type]) && !this._events[type].warned) {
-	    if (!isUndefined(this._maxListeners)) {
-	      m = this._maxListeners;
-	    } else {
-	      m = EventEmitter.defaultMaxListeners;
-	    }
-
-	    if (m && m > 0 && this._events[type].length > m) {
-	      this._events[type].warned = true;
-	      console.error('(node) warning: possible EventEmitter memory ' +
-	                    'leak detected. %d listeners added. ' +
-	                    'Use emitter.setMaxListeners() to increase limit.',
-	                    this._events[type].length);
-	      if (typeof console.trace === 'function') {
-	        // not supported in IE 10
-	        console.trace();
-	      }
-	    }
-	  }
-
-	  return this;
-	};
-
-	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-	EventEmitter.prototype.once = function(type, listener) {
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  var fired = false;
-
-	  function g() {
-	    this.removeListener(type, g);
-
-	    if (!fired) {
-	      fired = true;
-	      listener.apply(this, arguments);
-	    }
-	  }
-
-	  g.listener = listener;
-	  this.on(type, g);
-
-	  return this;
-	};
-
-	// emits a 'removeListener' event iff the listener was removed
-	EventEmitter.prototype.removeListener = function(type, listener) {
-	  var list, position, length, i;
-
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  if (!this._events || !this._events[type])
-	    return this;
-
-	  list = this._events[type];
-	  length = list.length;
-	  position = -1;
-
-	  if (list === listener ||
-	      (isFunction(list.listener) && list.listener === listener)) {
-	    delete this._events[type];
-	    if (this._events.removeListener)
-	      this.emit('removeListener', type, listener);
-
-	  } else if (isObject(list)) {
-	    for (i = length; i-- > 0;) {
-	      if (list[i] === listener ||
-	          (list[i].listener && list[i].listener === listener)) {
-	        position = i;
-	        break;
-	      }
-	    }
-
-	    if (position < 0)
-	      return this;
-
-	    if (list.length === 1) {
-	      list.length = 0;
-	      delete this._events[type];
-	    } else {
-	      list.splice(position, 1);
-	    }
-
-	    if (this._events.removeListener)
-	      this.emit('removeListener', type, listener);
-	  }
-
-	  return this;
-	};
-
-	EventEmitter.prototype.removeAllListeners = function(type) {
-	  var key, listeners;
-
-	  if (!this._events)
-	    return this;
-
-	  // not listening for removeListener, no need to emit
-	  if (!this._events.removeListener) {
-	    if (arguments.length === 0)
-	      this._events = {};
-	    else if (this._events[type])
-	      delete this._events[type];
-	    return this;
-	  }
-
-	  // emit removeListener for all listeners on all events
-	  if (arguments.length === 0) {
-	    for (key in this._events) {
-	      if (key === 'removeListener') continue;
-	      this.removeAllListeners(key);
-	    }
-	    this.removeAllListeners('removeListener');
-	    this._events = {};
-	    return this;
-	  }
-
-	  listeners = this._events[type];
-
-	  if (isFunction(listeners)) {
-	    this.removeListener(type, listeners);
-	  } else if (listeners) {
-	    // LIFO order
-	    while (listeners.length)
-	      this.removeListener(type, listeners[listeners.length - 1]);
-	  }
-	  delete this._events[type];
-
-	  return this;
-	};
-
-	EventEmitter.prototype.listeners = function(type) {
-	  var ret;
-	  if (!this._events || !this._events[type])
-	    ret = [];
-	  else if (isFunction(this._events[type]))
-	    ret = [this._events[type]];
-	  else
-	    ret = this._events[type].slice();
-	  return ret;
-	};
-
-	EventEmitter.prototype.listenerCount = function(type) {
-	  if (this._events) {
-	    var evlistener = this._events[type];
-
-	    if (isFunction(evlistener))
-	      return 1;
-	    else if (evlistener)
-	      return evlistener.length;
-	  }
-	  return 0;
-	};
-
-	EventEmitter.listenerCount = function(emitter, type) {
-	  return emitter.listenerCount(type);
-	};
-
-	function isFunction(arg) {
-	  return typeof arg === 'function';
-	}
-
-	function isNumber(arg) {
-	  return typeof arg === 'number';
-	}
-
-	function isObject(arg) {
-	  return typeof arg === 'object' && arg !== null;
-	}
-
-	function isUndefined(arg) {
-	  return arg === void 0;
-	}
-
-
-/***/ },
-/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1987,11 +1378,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _lie = __webpack_require__(3);
-
-	var _lie2 = _interopRequireDefault(_lie);
-
-	var _baseLoader = __webpack_require__(6);
+	var _baseLoader = __webpack_require__(3);
 
 	var _baseLoader2 = _interopRequireDefault(_baseLoader);
 
@@ -2002,71 +1389,54 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Runode Resource Loader for Box3D
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               **/
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Concrete sub-class of BaseLoader that loads assets using run-modes.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 
 	var RunmodeLoader = function (_BaseLoader) {
 	  _inherits(RunmodeLoader, _BaseLoader);
 
 	  /**
-	  * Used for loading Box3D Representations from Box Runmodes
-	  * @param {string} fileId The file id of the model we are viewing
-	  * @param {string} fileVersionId The file version id of the model we are viewing
-	  * @param {object} opts Additional properties to add to the loader.
-	  *   {BoxSDK} boxSdk and {string} apiBase can be added
-	  * @returns {void}
-	  */
+	   * Used for loading Box3D assets with Box run-modes.
+	   * @constructor
+	   * @param {BoxSDK} boxSdk An instance of BoxSDK.
+	   */
 
-	  function RunmodeLoader(fileId, fileVersionId) {
-	    var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
+	  function RunmodeLoader(boxSdk) {
 	    _classCallCheck(this, RunmodeLoader);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RunmodeLoader).call(this, fileId, fileVersionId, opts));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RunmodeLoader).call(this, boxSdk));
 	  }
 
-	  /**
-	   * @inheritdoc
-	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(RunmodeLoader, [{
-	    key: 'getBaseUrl',
-	    value: function getBaseUrl(fileId, fileVersionId /*, validator*/) {
-	      // SDK requires that we pass something in as the 3rd param so we'll make it temporary.
-	      return this.sdkLoader.buildRepresentationUrl(fileId, fileVersionId, 'temp').then(function (url) {
-	        var tokens = url.match(/(.+)temp$/);
-	        return _lie2.default.resolve(tokens[1]);
-	      });
+	    key: 'modifyBufferUrl',
+	    value: function modifyBufferUrl(url) {
+	      var urlTokens = url.match(/^(.*)geometry.bin$/);
+	      if (!urlTokens) {
+	        throw new Error('Unexpected buffer URL format: ' + url);
+	      }
+
+	      var baseUrl = urlTokens[1];
+	      return baseUrl + '3dcg_bin.bin';
 	    }
 
-	    /**
-	     * @inheritdoc
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'getFileSearchOptions',
-	    value: function getFileSearchOptions() {
-	      return { looseMatch: true };
-	    }
-
-	    /**
-	     * @inheritdoc
-	     */
-
-	  }, {
-	    key: 'modifyImagePath',
-	    value: function modifyImagePath(url) {
+	    key: 'modifyImageUrl',
+	    value: function modifyImageUrl(url) {
 	      // This code assumes that url is actually the fully qualified path.
 	      // Convert V2 src to runmode path
 	      // (e.g., images/1024/0.jpg -> 3dcg_image_1024_jpg/0.jpg)
-	      var urlTokens = url.match(/images\/(\d+)\/(\d+)\.(.+)$/);
+	      var urlTokens = url.match(/^(.*)images\/(\d+)\/(\d+)\.(.+)$/);
 	      if (!urlTokens) {
 	        // Try to match this form - images/1024/rgbe/0.jpg
-	        urlTokens = url.match(/images\/(\d+)\/(\w+)\/(\d+)\.(.+)$/);
+	        urlTokens = url.match(/^(.*)images\/(\d+)\/(\w+)\/(\d+)\.(.+)$/);
 	        if (!urlTokens) {
-	          return _lie2.default.reject(new Error('Unexpected formatting in image representation src.'));
+	          throw new Error('Unexpected image URL format: ' + url);
 	        }
 	      }
 
@@ -2074,44 +1444,19 @@
 	      var filename = urlTokens[length - 2] + '.' + urlTokens[length - 1];
 	      var fileExtension = urlTokens[length - 1];
 
-	      var folder1 = urlTokens[1];
-	      var folder2 = urlTokens.length > 4 ? '_' + urlTokens[2] : '';
-	      // Attach the base of the given url back onto the modified path.
-	      var baseFolder = url.replace(urlTokens[0], '');
-	      return baseFolder + '3dcg_image_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
+	      var baseUrl = urlTokens[1];
+	      var folder1 = urlTokens[2];
+	      var folder2 = urlTokens.length > 5 ? '_' + urlTokens[3] : '';
+
+	      // Construct the runmode URL.
+	      return baseUrl + '3dcg_image_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
 	    }
 
-	    /**
-	     * @inheritdoc
-	     */
-
-	  }, {
-	    key: 'modifyGeometryPath',
-	    value: function modifyGeometryPath(baseUrl /*, url*/) {
-	      return baseUrl + '3dcg_bin.bin';
-	    }
-
-	    /**
-	     * @inheritdoc
-	     */
-
-	  }, {
-	    key: 'modifyDocumentPath',
-	    value: function modifyDocumentPath(baseUrl /*, url*/) {
-	      return baseUrl + '3dcg_json.json';
-	    }
-
-	    /**
-	    * Override of getGzippedLenght, with credentials passing enabled
-	    * @param {object} xhr The response xhr with the appropriate headers
-	    * @param {string} url The key to store the total size at
-	    * @returns {int} The byte size of the asset, with applied compression factor
-	    */
+	    /** @inheritdoc */
 
 	  }, {
 	    key: 'getGzippedLength',
 	    value: function getGzippedLength(xhr, url) {
-
 	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: true });
 	    }
 	  }]);
