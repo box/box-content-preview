@@ -5,7 +5,7 @@ import cache from '../cache';
 import fullscreen from '../fullscreen';
 import { createContentUrl, getHeaders } from '../util';
 import RepStatus from '../rep-status';
-import { CLASS_PREVIEW_LOADED } from '../constants';
+import { CLASS_PREVIEW_LOADED, CLASS_HIDDEN } from '../constants';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
@@ -336,6 +336,72 @@ class Dash extends VideoBase {
         }
 
         super.resize();
+    }
+
+    /**
+     * Removes the stats
+     *
+     * @private
+     * @returns {void}
+     */
+    removeStats() {
+        clearInterval(this.statsIntervalId);
+        this.statsIntervalId = undefined;
+        if (this.statsEl) {
+            this.statsEl.classList.add(CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Toggles the stats on or off
+     *
+     * @private
+     * @returns {void}
+     */
+    toggleStats() {
+        // If we were showing the stats, hide them
+        if (this.statsIntervalId) {
+            this.removeStats();
+            return;
+        }
+
+        // If no player object just return
+        if (!this.player) {
+            return;
+        }
+
+        // Create the stats element if it doesn't exist
+        if (!this.statsEl) {
+            this.statsEl = this.mediaContainerEl.appendChild(document.createElement('div'));
+            this.statsEl.className = 'box-preview-media-dash-stats';
+        }
+
+        // Unhide the stats element
+        this.statsEl.classList.remove(CLASS_HIDDEN);
+
+        this.statsIntervalId = setInterval(() => {
+            if (!this.player || !this.player.getStats) {
+                this.removeStats();
+                return;
+            }
+            this.statsEl.textContent = `${Math.round(this.player.getStats().estimatedBandwidth / 1000)}kbps`;
+        }, 1000);
+    }
+
+    /**
+     * Handles keyboard events for media
+     *
+     * @private
+     * @param {String} key keydown key
+     * @returns {Boolean} consumed or not
+     */
+    onKeydown(key) {
+        if (key === 'Shift+I' && this.player) {
+            this.toggleStats();
+            return true;
+        }
+
+        return super.onKeydown(key);
     }
 }
 
