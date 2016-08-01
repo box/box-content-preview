@@ -338,7 +338,7 @@ class MediaControls extends EventEmitter {
      * @returns {void}
      */
     show() {
-        if (!this.wrapperEl) {
+        if (!this.wrapperEl || !this.wrapperEl.parentNode) {
             return;
         }
 
@@ -362,7 +362,7 @@ class MediaControls extends EventEmitter {
             return;
         }
 
-        if (this.wrapperEl) {
+        if (this.wrapperEl && this.wrapperEl.parentNode) {
             this.wrapperEl.parentNode.classList.remove(SHOW_CONTROLS_CLASS);
         }
     }
