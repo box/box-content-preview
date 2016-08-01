@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import fetch from 'isomorphic-fetch';
+import { get } from './util';
 
 const STATUS_UPDATE_INTERVAL_IN_MILLIS = 2000;
 
@@ -34,10 +34,7 @@ class RepStatus {
      * @returns {void}
      */
     updateStatus() {
-        return fetch(this.representation.links.info.url, {
-            headers: this.headers
-        })
-        .then((response) => response.json())
+        return get(this.representation.links.info.url, this.headers)
         .then((info) => {
             clearTimeout(this.statusTimeout);
             this.representation.status = info.status;

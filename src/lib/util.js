@@ -1,3 +1,42 @@
+import fetch from 'isomorphic-fetch';
+
+const parseJSON = (response) => response.json();
+const parseText = (response) => response.text();
+const parseBlob = (response) => response.blob();
+const parseThrough = (response) => response;
+
+/**
+ * Helper function to convert HTTP status codes into throwable errors
+ *
+ * @param {Response} response - fetch's Response object
+ * @throws {Error} - Throws when the HTTP status is not 2XX
+ * @return {Response} - Pass-thru the response if ther are no errors
+ */
+function checkStatus(response) {
+    if (response.status >= 200 && response.status < 300) {
+        return response;
+    }
+
+    const error = new Error(response.statusText);
+    error.response = response;
+    throw error;
+}
+
+/**
+ * Wrapper function for XHR post put and delete
+ *
+ * @returns {Promise} xhr promise
+ */
+function xhr(method, url, headers = {}, data = {}) {
+    return fetch(url, {
+        headers,
+        method,
+        body: JSON.stringify(data)
+    })
+    .then(checkStatus)
+    .then(parseJSON);
+}
+
 /**
  * Creates an empty iframe or uses an existing one
  * for the purposes of downloading or printing
@@ -16,6 +55,91 @@ function createDownloadIframe() {
     // Clean the iframe up
     iframe.contentDocument.write('<head></head><body></body>');
     return iframe;
+}
+
+/**
+ * HTTP GETs a URL
+ * Usage:
+ *     get(url, headers, type)
+ *     get(url, headers)
+ *     get(url, type)
+ *     get(url)
+ *
+ * @param {String} url - The URL to fetch
+ * @param {Object} [headers] - Key-value map of headers
+ * @param {String} [type] - response type json (default), text, blob or any
+ * @returns {Promise} - HTTP response
+ */
+export function get(url, ...rest) {
+    let headers;
+    let type;
+
+    if (typeof rest[0] === 'string') {
+        type = rest[0];
+    } else {
+        headers = rest[0];
+        type = rest[1];
+    }
+
+    headers = headers || {};
+    type = type || 'json';
+
+    let parser;
+    switch (type) {
+        case 'text':
+            parser = parseText;
+            break;
+        case 'blob':
+            parser = parseBlob;
+            break;
+        case 'any':
+            parser = parseThrough;
+            break;
+        case 'json':
+        default:
+            parser = parseJSON;
+            break;
+    }
+
+    return fetch(url, { headers })
+        .then(checkStatus)
+        .then(parser);
+}
+
+/**
+ * HTTP POSTs a URL with JSON data
+ *
+ * @param {String} url - The URL to fetch
+ * @param {Object} headers - Key-value map of headers
+ * @param {Object} data - JS Object representation of JSON data to send
+ * @returns {Promise} - HTTP response
+ */
+export function post(...rest) {
+    return xhr('post', ...rest);
+}
+
+/**
+ * HTTP PUTs a URL with JSON data
+ *
+ * @param {String} url - The URL to fetch
+ * @param {Object} headers - Key-value map of headers
+ * @param {Object} data - JS Object representation of JSON data to send
+ * @returns {Promise} - HTTP response
+ */
+export function del(...rest) {
+    return xhr('delete', ...rest);
+}
+
+/**
+ * HTTP PUTs a URL with JSON data
+ *
+ * @param {String} url - The URL to fetch
+ * @param {Object} headers - Key-value map of headers
+ * @param {Object} data - JS Object representation of JSON data to send
+ * @returns {Promise} - HTTP response
+ */
+export function put(...rest) {
+    return xhr('put', ...rest);
 }
 
 /**

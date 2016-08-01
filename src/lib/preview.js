@@ -2,14 +2,13 @@ import './preview.scss';
 import './polyfill';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import fetch from 'isomorphic-fetch';
 import Browser from './browser';
 import Logger from './logger';
 import loaders from './loaders';
 import cache from './cache';
 import RepStatus from './rep-status';
 import ErrorLoader from './error/error-loader';
-import { decodeKeydown, insertTemplate, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
+import { get, post, decodeKeydown, insertTemplate, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import throttle from 'lodash.throttle';
 import shellTemplate from 'raw!./shell.html';
 
@@ -40,6 +39,8 @@ const RETRY_TIMEOUT = 500;
 const RETRY_COUNT = 5;
 const API = 'https://api.box.com';
 const IS_MOBILE = Browser.isMobile();
+const PERMISSION_DOWNLOAD = 'can_download';
+const PERMISSION_ANNOTATE = 'can_annotate';
 
 const Box = global.Box || {};
 
@@ -421,10 +422,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     loadFromServer() {
-        fetch(this.createUrl(this.file.id), {
-            headers: this.getRequestHeaders()
-        })
-        .then((response) => response.json())
+        get(this.createUrl(this.file.id), this.getRequestHeaders())
         .then(this.handleLoadResponse)
         .catch(this.triggerFetchError);
     }
@@ -628,16 +626,15 @@ class Preview extends EventEmitter {
      * @private
      */
     logPreviewEvent() {
-        fetch(`${this.options.api}/2.0/events`, {
-            method: 'POST',
-            headers: getHeaders({}, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword),
-            body: JSON.stringify({
-                event_type: 'preview',
-                source: {
-                    type: 'file',
-                    id: this.file.id
-                }
-            })
+        const { api, token, sharedLink, sharedLinkPassword } = this.options;
+        const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
+
+        post(`${api}/2.0/events`, headers, {
+            event_type: 'preview',
+            source: {
+                type: 'file',
+                id: this.file.id
+            }
         })
         .catch(() => {});
     }
@@ -741,28 +738,44 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Checks permission
+     *
+     * @private
+     * @param {operation} operation
+     * @returns {boolean} allowed or not
+     */
+    checkPermission(operation) {
+        return !!this.file && !!this.file.permissions && !!this.file.permissions[operation];
+    }
+
+    /**
+     * Checks feature
+     *
+     * @private
+     * @param {string} primary operation
+     * @param {string|void} [secondary] operation
+     * @returns {boolean} available or not
+     */
+    checkFeature(primary, secondary) {
+        const available = !IS_MOBILE && !!this.viewer && typeof this.viewer[primary] === 'function';
+        return available && (!secondary || this.viewer[primary](secondary));
+    }
+
+    /**
      * Shows the point annotate button if the viewers implement annotations
      *
-     * @returns {void}
      * @private
+     * @returns {void}
      */
     showAnnotateButton() {
-        // Permission check
-        if (!this.file || !this.file.permissions || !this.file.permissions.can_annotate) {
+        if (!this.checkPermission(PERMISSION_ANNOTATE) || !this.checkFeature('isAnnotatable', 'point')) {
             return;
         }
 
-        // Feature check
-        if (IS_MOBILE || !this.viewer ||
-            typeof this.viewer.isAnnotatable !== 'function' ||
-            !this.viewer.isAnnotatable('point')) {
-            return;
-        }
-
-        this.annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-        this.annotateButton.title = __('annotation_point_toggle');
-        this.annotateButton.classList.remove(CLASS_HIDDEN);
-        this.annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
+        const annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+        annotateButton.title = __('annotation_point_toggle');
+        annotateButton.classList.remove(CLASS_HIDDEN);
+        annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
 
         const dividerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DIVIDER);
         dividerEl.classList.remove(CLASS_HIDDEN);
@@ -771,26 +784,18 @@ class Preview extends EventEmitter {
     /**
      * Shows the highlight annotate button if the viewers implement annotations
      *
-     * @returns {void}
      * @private
+     * @returns {void}
      */
     showHighlightButton() {
-        // Permission check
-        if (!this.file || !this.file.permissions || !this.file.permissions.can_annotate) {
+        if (!this.checkPermission(PERMISSION_ANNOTATE) || !this.checkFeature('isAnnotatable', 'highlight')) {
             return;
         }
 
-        // Feature check
-        if (IS_MOBILE || !this.viewer ||
-            typeof this.viewer.isAnnotatable !== 'function' ||
-            !this.viewer.isAnnotatable('highlight')) {
-            return;
-        }
-
-        this.highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
-        this.highlightButton.title = __('annotation_highlight_toggle');
-        this.highlightButton.classList.remove(CLASS_HIDDEN);
-        this.highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
+        const highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
+        highlightButton.title = __('annotation_highlight_toggle');
+        highlightButton.classList.remove(CLASS_HIDDEN);
+        highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
     }
 
     /**
@@ -800,21 +805,14 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showPrintButton() {
-        // Permission check
-        if (!this.file || !this.file.permissions ||
-            !this.file.permissions.can_download) {
+        if (!this.checkPermission(PERMISSION_DOWNLOAD) || !this.checkFeature('print')) {
             return;
         }
 
-        // Feature check
-        if (IS_MOBILE || !this.viewer || typeof this.viewer.print !== 'function') {
-            return;
-        }
-
-        this.printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
-        this.printButton.title = __('print');
-        this.printButton.classList.remove(CLASS_HIDDEN);
-        this.printButton.addEventListener('click', this.print);
+        const printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
+        printButton.title = __('print');
+        printButton.classList.remove(CLASS_HIDDEN);
+        printButton.addEventListener('click', this.print);
     }
 
     /**
@@ -824,16 +822,14 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showDownloadButton() {
-        // Permission & feature check
-        if (IS_MOBILE || !this.file || !this.file.permissions ||
-            !this.file.permissions.can_download) {
+        if (!this.checkPermission(PERMISSION_DOWNLOAD)) {
             return;
         }
 
-        this.downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
-        this.downloadButton.title = __('download');
-        this.downloadButton.classList.remove(CLASS_HIDDEN);
-        this.downloadButton.addEventListener('click', this.download);
+        const downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
+        downloadButton.title = __('download');
+        downloadButton.classList.remove(CLASS_HIDDEN);
+        downloadButton.addEventListener('click', this.download);
     }
 
     /**
@@ -876,10 +872,7 @@ class Preview extends EventEmitter {
                 });
 
                 // Pre-fetch the file information
-                fetch(this.createUrl(id), {
-                    headers: this.getRequestHeaders(token)
-                })
-                .then((response) => response.json())
+                get(this.createUrl(id), this.getRequestHeaders(token))
                 .then((file) => {
                     this.handlePrefetchResponse(file, token);
                 })
@@ -1277,12 +1270,8 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     print() {
-        if (this.file && this.file.permissions &&
-            this.file.permissions.can_download &&
-            this.viewer && typeof this.viewer.print === 'function') {
+        if (this.checkPermission(PERMISSION_DOWNLOAD) && this.checkFeature('print')) {
             this.viewer.print();
-        } else {
-            throw new Error('Unsupported operation!');
         }
     }
 
@@ -1293,16 +1282,11 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     download() {
-        if (this.file && this.file.permissions && this.file.permissions.can_download) {
-            fetch(`${this.options.api}/2.0/files/${this.file.id}?fields=download_url`, {
-                headers: this.getRequestHeaders()
-            })
-            .then((response) => response.json())
+        if (this.checkPermission(PERMISSION_DOWNLOAD)) {
+            get(`${this.options.api}/2.0/files/${this.file.id}?fields=download_url`, this.getRequestHeaders())
             .then((data) => {
                 openUrlInsideIframe(data.download_url);
             });
-        } else {
-            throw new Error('Unsupported operation!');
         }
     }
 }

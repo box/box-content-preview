@@ -1,10 +1,9 @@
 import './text.scss';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
-import fetch from 'isomorphic-fetch';
 import marked from 'marked';
 import Browser from '../browser';
-import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../util';
+import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../util';
 import { CLASS_INVISIBLE } from '../constants';
 
 const Box = global.Box || {};
@@ -34,10 +33,7 @@ class MarkDown extends TextBase {
      * @returns {Promise} Promise to load a text file
      */
     load(textUrl) {
-        fetch(textUrl, {
-            headers: this.appendAuthHeader()
-        })
-        .then((response) => response.text())
+        get(textUrl, this.appendAuthHeader(), 'text')
         .then((txt) => {
             /* global hljs */
 

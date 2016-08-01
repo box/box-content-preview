@@ -6,7 +6,8 @@ import {
     loadStylesheets,
     loadScripts,
     createAssetUrlCreator,
-    getHeaders
+    getHeaders,
+    get
 } from './util';
 
 @autobind
@@ -135,9 +136,7 @@ class AssetLoader {
         }
 
         if (viewer.PREFETCH === 'xhr') {
-            fetch(representation.links.content.url, {
-                headers: getHeaders({}, token, sharedLink, sharedLinkPassword)
-            });
+            get(representation.links.content.url, getHeaders({}, token, sharedLink, sharedLinkPassword), 'any');
         } else {
             const img = document.createElement('img');
             img.crossOrigin = 'anonymous';
