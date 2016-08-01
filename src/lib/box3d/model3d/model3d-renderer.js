@@ -5,7 +5,6 @@ import sceneEntities from './scene-entities';
 import {
     EVENT_CLOSE_UI,
     EVENT_SET_RENDER_MODE,
-    EVENT_MISSING_ASSET,
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
     GRID_SIZE,
@@ -49,8 +48,6 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     destroy() {
-        this.unregisterMissingEvents(this.box3d.resourceLoader);
-
         this.box3d.canvas.removeEventListener('click', this.handleCanvasClick);
 
         this.cleanupScene();
@@ -83,41 +80,12 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
-     * Listen to the resource loader event system for missing assets
-     * @param {Object} eventBus The event bus that belongs to a system that loads Box3D Assets
-     * @returns {void}
-     */
-    registerMissingEvents(eventBus) {
-        eventBus.on(EVENT_MISSING_ASSET, this.handleMissingAsset.bind(this));
-    }
-
-    /**
-     * Kill all event listeners for missing assets and clean up missing asset list
-     * @param {Object} eventBus The event bus that belongs to a system that loads Box3D Assets
-     * @returns {void}
-     */
-    unregisterMissingEvents(eventBus) {
-        if (eventBus) {
-            eventBus.removeAllListeners();
-        }
-    }
-
-    /**
      * Handle the canvas being selected
      * @returns {void}
      */
     @autobind
     handleCanvasClick() {
         this.emit(EVENT_CLOSE_UI);
-    }
-
-    /**
-     * Handle missing asset event
-     * @param {Object} data Missing asset information
-     * @returns {void}
-     */
-    handleMissingAsset(data) {
-        this.emit(EVENT_MISSING_ASSET, data);
     }
 
     /**
@@ -128,7 +96,6 @@ class Model3dRenderer extends Box3DRenderer {
     loadBox3dFile(fileUrl) {
         const loader = new Box3D.JSONLoader(this.box3d);
 
-        this.registerMissingEvents(this.box3d.resourceLoader);
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
 
         // Set MatCap texture for the 'Shape' render mode
