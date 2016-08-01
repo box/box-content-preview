@@ -12,15 +12,15 @@ function sceneEntities(prefix) {
         parentAssetId: 'SCENE_ID',
         properties: {
             position: {
-                x: 0.49,
-                y: 0.353,
-                z: 0.703
+                x: -0.559,
+                y: 0.197,
+                z: 0.712
             }, // Default position of camera
             quaternion: {
-                x: -0.185,
-                y: 0.294,
-                z: 0.058,
-                w: 0.936
+                x: -0.101,
+                y: -0.325,
+                z: -0.035,
+                w: 0.940
             }, // Default position of camera
             near: 0.01, // Camera near-plane distance
             far: 6
@@ -78,10 +78,7 @@ function sceneEntities(prefix) {
                     renderOnDemand: true,
                     maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
-                    // Mobile fragment precision at mediump is often too low.
-                    // TODO - investigate changing some values in shaders to highp
-                    // to eliviate the problem while letting the rest default to mediump.
-                    precision: Browser.isMobile() ? 'highp' : 'mediump',
+                    devicePixelRatio: Browser.isMobile() ? 1 : undefined,
                     clearAlpha: 1.0,
                     clearColor: { r: 0.95, g: 0.95, b: 0.95 }
                 },
@@ -94,7 +91,44 @@ function sceneEntities(prefix) {
             },
             inputController: {
                 scriptId: 'input_controller_component',
-                enabled: true
+                enabled: true,
+                componentData: {
+                    mouseEvents: {
+                        enable: true,
+                        scroll: true,
+                        scroll_preventDefault: true,
+                        move: true,
+                        down: true,
+                        down_preventDefault: false,
+                        up: true,
+                        double_click: true,
+                        leave: true,
+                        contextMenu: true,
+                        contextMenu_preventDefault: true,
+                        dragBufferDistance: 12,
+                        eventHandler: true
+                    },
+                    touchEvents: {
+                        enable: true,
+                        start: true,
+                        start_preventDefault: false,
+                        end: true,
+                        doubleTap: true,
+                        cancel: true,
+                        leave: true,
+                        move: true,
+                        move_preventDefault: true,
+                        dragBufferDistance: 12,
+                        eventHandler: true
+                    },
+                    keyEvents: {
+                        enable: true,
+                        down: true,
+                        up: true,
+                        preventDefault: false,
+                        eventHandler: true
+                    }
+                }
             },
             renderModesComponent: {
                 componentData: {},
@@ -136,7 +170,8 @@ function sceneEntities(prefix) {
             isHdr: true,
             width: 1024,
             height: 512,
-            stream: false
+            stream: false,
+            encoding: 'linear'
         },
         representations: [{
             src: `${prefix}third-party/model3d/HDR_Env0.png`,
@@ -156,7 +191,8 @@ function sceneEntities(prefix) {
             isHdr: true,
             width: 512,
             height: 256,
-            stream: false
+            stream: false,
+            encoding: 'linear'
         },
         representations: [{
             src: `${prefix}third-party/model3d/HDR_Env1.png`,
@@ -176,7 +212,8 @@ function sceneEntities(prefix) {
             isHdr: true,
             width: 256,
             height: 128,
-            stream: false
+            stream: false,
+            encoding: 'linear'
         },
         representations: [{
             src: `${prefix}third-party/model3d/HDR_Env2.png`,

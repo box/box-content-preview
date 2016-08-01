@@ -952,7 +952,7 @@
 	  var promise = new this.constructor(INTERNAL);
 	  /* istanbul ignore else */
 	  if (!process.browser) {
-	    if (typeof onRejected === 'function' && this.handled === UNHANDLED) {
+	    if (this.handled === UNHANDLED) {
 	      this.handled = null;
 	    }
 	  }

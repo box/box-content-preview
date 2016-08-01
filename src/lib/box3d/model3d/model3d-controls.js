@@ -63,6 +63,8 @@ class Model3dControls extends Box3DControls {
         this.addFullscreenButton();
 
         this.handleSetRenderMode(RENDER_MODE_LIT);
+
+        window.toggleVr = this.handleToggleVr.bind(this);
     }
 
     /**
