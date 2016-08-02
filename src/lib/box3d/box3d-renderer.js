@@ -1,6 +1,8 @@
 /* global Box3D, Box3DResourceLoader, WEBVR, THREE */
+import Browser from '../browser';
 import EventEmitter from 'events';
 import Cache from '../cache';
+import '../../third-party/model3d/webvr-polyfill';
 import WEBVR from './WebVR';
 import './VREffect';
 import './VRControls';
@@ -10,6 +12,59 @@ import {
     EVENT_SCENE_LOADED,
     EVENT_TRIGGER_RENDER
 } from './box3d-constants';
+
+const WebVRConfig = window.WebVRConfig = {
+    // Forces availability of VR mode, even for non-mobile devices.
+    FORCE_ENABLE_VR: false,
+
+    // Complementary filter coefficient. 0 for accelerometer, 1 for gyro.
+    K_FILTER: 0.98,
+
+    // How far into the future to predict during fast motion (in seconds).
+    PREDICTION_TIME_S: 0.040,
+
+    // Flag to disable touch panner. In case you have your own touch controls.
+    TOUCH_PANNER_DISABLED: false,
+
+    // Flag to disabled the UI in VR Mode.
+    CARDBOARD_UI_DISABLED: false, // Default: false
+
+    // Flag to disable the instructions to rotate your device.
+    ROTATE_INSTRUCTIONS_DISABLED: false, // Default: false.
+
+    // Enable yaw panning only, disabling roll and pitch. This can be useful
+    // for panoramas with nothing interesting above or below.
+    YAW_ONLY: false,
+
+    // To disable keyboard and mouse controls, if you want to use your own
+    // implementation.
+    MOUSE_KEYBOARD_CONTROLS_DISABLED: true,
+
+    // Prevent the polyfill from initializing immediately. Requires the app
+    // to call InitializeWebVRPolyfill() before it can be used.
+    DEFER_INITIALIZATION: false,
+
+    // Enable the deprecated version of the API (navigator.getVRDevices).
+    ENABLE_DEPRECATED_API: false,
+
+    // Scales the recommended buffer size reported by WebVR, which can improve
+    // performance.
+    // UPDATE(2016-05-03): Setting this to 0.5 by default since 1.0 does not
+    // perform well on many mobile devices.
+    BUFFER_SCALE: 0.5,
+
+    // Allow VRDisplay.submitFrame to change gl bindings, which is more
+    // efficient if the application code will re-bind its resources on the
+    // next frame anyway. This has been seen to cause rendering glitches with
+    // THREE.js.
+    // Dirty bindings include: gl.FRAMEBUFFER_BINDING, gl.CURRENT_PROGRAM,
+    // gl.ARRAY_BUFFER_BINDING, gl.ELEMENT_ARRAY_BUFFER_BINDING,
+    // and gl.TEXTURE_BINDING_2D for texture unit 0.
+    DIRTY_SUBMIT_FRAME_BINDINGS: false
+};
+
+// Trickin' ESlint into thinking this global is being used here.
+WebVRConfig.FORCE_ENABLE_VR = false;
 
 const INPUT_SETTINGS = {
     mouseEvents: {
@@ -74,6 +129,8 @@ class Box3DRenderer extends EventEmitter {
         this.hideBox3d();
 
         this.box3d.resourceLoader.destroy();
+
+        window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange.bind(this));
 
         this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
     }
@@ -198,7 +255,7 @@ class Box3DRenderer extends EventEmitter {
      */
     onSceneLoad() {
         this.emit(EVENT_SCENE_LOADED);
-        this.enableVrIfPresent();
+        this.initVrIfPresent();
     }
 
     /**
@@ -245,8 +302,6 @@ class Box3DRenderer extends EventEmitter {
         if (this.vrEnabled) {
             return;
         }
-
-        this.vrEnabled = true;
 
         this.disableCameraControls();
 
@@ -321,8 +376,6 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        this.vrEnabled = false;
-
         this.vrControls.dispose();
         this.vrControls = undefined;
 
@@ -369,10 +422,23 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
+     * Callback for vrdisplaypresentchange event. On mobile, this is how we know the back button
+     * was pressed in VR mode so we can disable the VR controls and rendering effect.
+     * @return {void}
+     */
+    onVrPresentChange() {
+        // We only want to call disable when we're on mobile.
+        if (Browser.isMobile() && this.vrEnabled) {
+            this.disableVr();
+        }
+        this.vrEnabled = !this.vrEnabled;
+    }
+
+    /**
      * Enables VR if present
      * @returns {void}
      */
-    enableVrIfPresent() {
+    initVrIfPresent() {
         if (WEBVR.isLatestAvailable()) {
             navigator.getVRDisplays().then((devices) => {
                 this.vrDeviceHasPosition = devices.some((device) => device.capabilities.hasPosition);
@@ -385,6 +451,11 @@ class Box3DRenderer extends EventEmitter {
                         this.vrEffect = new THREE.VREffect(threeRenderer);
                         const rendererSize = threeRenderer.getSize();
                         this.vrEffect.setSize(rendererSize.width, rendererSize.height);
+                    }
+
+                    if (!this.vrInitialized) {
+                        window.addEventListener('vrdisplaypresentchange', this.onVrPresentChange.bind(this));
+                        this.vrInitialized = true;
                     }
 
                     this.emit(EVENT_SHOW_VR_BUTTON);

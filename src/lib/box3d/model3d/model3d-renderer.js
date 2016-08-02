@@ -11,6 +11,7 @@ import {
     GRID_SECTIONS,
     GRID_COLOR
 } from './model3d-constants';
+import Browser from '../../browser';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
 const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };
@@ -163,12 +164,24 @@ class Model3dRenderer extends Box3DRenderer {
         Object.keys(materials).forEach((id) => {
             const mat = materials[id];
             if (mat) {
-                mat.setProperty('useSceneLights', false);
-                mat.setProperty('useEnvironmentMap', true);
-                mat.setProperty('environmentMapProjection', 'cubeMap');
-                mat.setProperty('environmentMapCube_0', 'HDR_ENV_MAP_CUBE_0');
-                mat.setProperty('environmentMapCube_1', 'HDR_ENV_MAP_CUBE_1');
-                mat.setProperty('environmentMapCube_2', 'HDR_ENV_MAP_CUBE_2');
+                mat.setProperty('envMapIrradiance', 'HDR_ENV_MAP_CUBE_2');
+                mat.setProperty('envMapRadiance', 'HDR_ENV_MAP_CUBE_0');
+                if (!Browser.isMobile()) {
+                    mat.setProperty('envMapRadianceHalfGloss', 'HDR_ENV_MAP_CUBE_1');
+                }
+
+                // TODO: Temp optimizations for mobile. Replace this with dynamic optimization
+                // system.
+                if (Browser.isMobile()) {
+                    // Disable features for mobile
+                    if (mat.getProperty('aoMap')) {
+                        mat.setProperty('aoMap', null);
+                    }
+                    // Normal mapping produces artifacts on some mobile devices.
+                    if (mat.getProperty('normalMap')) {
+                        mat.setProperty('normalMap', null);
+                    }
+                }
             }
         });
     }
@@ -233,6 +246,7 @@ class Model3dRenderer extends Box3DRenderer {
     onSceneLoad() {
         // Reset the camera
         this.reset();
+
         // Unload the intermediate HDR maps that are no longer needed.
         this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
         super.onSceneLoad();
