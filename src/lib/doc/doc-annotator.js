@@ -20,7 +20,6 @@ import throttle from 'lodash.throttle';
 import * as annotatorUtil from '../annotation/annotator-util';
 import * as constants from '../annotation/annotation-constants';
 import * as docAnnotatorUtil from './doc-annotator-util';
-import { CLASS_ACTIVE } from '../constants';
 
 const IS_MOBILE = Browser.isMobile();
 const MOUSEMOVE_THROTTLE_MS = 50;
@@ -64,20 +63,6 @@ class DocAnnotator extends Annotator {
             document.getElementsByTagName('head')[0].appendChild(metaEl);
         }
         */
-
-        // If in highlight mode and we enter point mode, turn off highlight mode
-        this.addListener('pointmodeenter', () => {
-            if (this.isInHighlightMode()) {
-                this.toggleHighlightModeHandler();
-            }
-        });
-
-        // If in point mode and we enter highlight mode, turn off point mode
-        this.addListener('highlightmodeenter', () => {
-            if (this.isInPointMode()) {
-                this.togglePointModeHandler();
-            }
-        });
     }
 
     /**
@@ -97,29 +82,6 @@ class DocAnnotator extends Annotator {
         }
 
         this._destroyPendingThreads();
-
-        // If in highlight mode, turn it off
-        if (this.isInHighlightMode()) {
-            this.emit('highlightmodeexit');
-            this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
-            if (buttonEl) {
-                buttonEl.classList.remove(CLASS_ACTIVE);
-            }
-
-            this._unbindHighlightModeListeners(); // Disable highlight mode
-            this.bindDOMListeners(); // Re-enable other annotations
-
-        // Otherwise, enable highlight mode
-        } else {
-            this.emit('highlightmodeenter');
-            this._annotatedElement.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
-            if (buttonEl) {
-                buttonEl.classList.add(CLASS_ACTIVE);
-            }
-
-            this.unbindDOMListeners(); // Disable other annotations
-            this._bindHighlightModeListeners(); // Enable highlight mode
-        }
     }
 
     //--------------------------------------------------------------------------
@@ -339,16 +301,6 @@ class DocAnnotator extends Annotator {
         });
     }
 
-    /**
-     * Returns whether or not annotator is in highlight mode.
-     *
-     * @returns {Boolean} Whether or not in highlight mode
-     * @protected
-     */
-    isInHighlightMode() {
-        return this._annotatedElement.classList.contains(constants.CLASS_ANNOTATION_HIGHLIGHT_MODE);
-    }
-
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -458,7 +410,7 @@ class DocAnnotator extends Annotator {
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we're in highlight mode,
         // we trigger the create handler instad of the click handler
-        if (!IS_MOBILE && (this._didMouseMove || this.isInHighlightMode())) {
+        if (!IS_MOBILE && this._didMouseMove) {
             this._highlightCreateHandler(event);
         } else {
             this._highlightClickHandler(event);
@@ -475,6 +427,13 @@ class DocAnnotator extends Annotator {
     _highlightCreateHandler(event) {
         event.stopPropagation();
 
+        // Determine if any highlight threads are pending and ignore the
+        // creation of any new highlights
+        const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING);
+        if (pendingThreads.length) {
+            return;
+        }
+
         // Reset active highlight threads before creating new highlight
         const threads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_ACTIVE, constants.ANNOTATION_STATE_ACTIVE_HOVER);
         threads.forEach((thread) => {
@@ -490,14 +449,7 @@ class DocAnnotator extends Annotator {
         // Create and show pending annotation thread
         const thread = this.createAnnotationThread([], location, constants.ANNOTATION_TYPE_HIGHLIGHT);
 
-        // If in highlight mode, save highlight immediately
-        if (this.isInHighlightMode()) {
-            thread.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, '');
-            thread.show();
-            // saveAnnotation() shows the annotation afterwards
-        } else {
-            thread.show();
-        }
+        thread.show();
 
         // Bind events on thread
         this.bindCustomListenersOnThread(thread);
