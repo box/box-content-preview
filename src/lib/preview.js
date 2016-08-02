@@ -8,37 +8,16 @@ import loaders from './loaders';
 import cache from './cache';
 import RepStatus from './rep-status';
 import ErrorLoader from './error/error-loader';
-import { get, post, decodeKeydown, insertTemplate, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
+import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import throttle from 'lodash.throttle';
-import shellTemplate from 'raw!./shell.html';
+import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature } from './file';
+import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showAnnotateButton, showHighlightButton, showPrintButton, showNavigation } from './ui';
+import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
-import {
-    CLASS_NAVIGATION_VISIBILITY,
-    CLASS_HIDDEN,
-    CLASS_PREVIEW_LOADED,
-    CLASS_BOX_PREVIEW_HAS_HEADER,
-    CLASS_BOX_PREVIEW_HEADER,
-    SELECTOR_BOX_PREVIEW_CONTAINER,
-    SELECTOR_BOX_PREVIEW,
-    SELECTOR_NAVIGATION_LEFT,
-    SELECTOR_NAVIGATION_RIGHT,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
-    SELECTOR_BOX_PREVIEW_BTN_PRINT,
-    SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
-    COLOR_HEADER_LIGHT,
-    COLOR_HEADER_DARK,
-    COLOR_HEADER_BTN_LIGHT,
-    COLOR_HEADER_BTN_DARK
-} from './constants';
-
-const PREFETCH_COUNT = 3;
-const MOUSEMOVE_THROTTLE = 1500;
-const RETRY_TIMEOUT = 500;
-const RETRY_COUNT = 5;
-const API = 'https://api.box.com';
-const IS_MOBILE = Browser.isMobile();
-const PERMISSION_DOWNLOAD = 'can_download';
-const PERMISSION_ANNOTATE = 'can_annotate';
+const PREFETCH_COUNT = 3; // number of files to prefetch
+const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
+const RETRY_TIMEOUT = 500; // retry network request interval for a file
+const RETRY_COUNT = 5; // number of times to retry network request for a file
 
 const Box = global.Box || {};
 
@@ -88,17 +67,6 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Returns the box file content api url
-     *
-     * @private
-     * @param {String} id box file id
-     * @returns {String} API url
-     */
-    createUrl(id) {
-        return `${this.options.api}/2.0/files/${id}?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,representations,watermark_info`;
-    }
-
-    /**
      * Parses the preview options
      *
      * @private
@@ -111,6 +79,9 @@ class Preview extends EventEmitter {
 
         // Reset all options
         this.options = {};
+
+        // Container for preview
+        this.options.container = options.container;
 
         // Authorization token
         this.options.token = token[this.file.id];
@@ -137,7 +108,7 @@ class Preview extends EventEmitter {
         this.options.logoUrl = options.logoUrl || '';
 
         // Whether download button should be shown
-        this.options.showDownload = options.showDownload;
+        this.options.showDownload = !!options.showDownload;
 
         // Save the files to iterate through
         this.collection = options.collection || [];
@@ -229,97 +200,6 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Caches the preview header template with theme
-     *
-     * @private
-     * @returns {void}
-     */
-    setupTheme() {
-        if (this.shellTemplate) {
-            return;
-        }
-
-        // Theme the header
-        if (this.options.header === 'dark') {
-            this.shellTemplate = shellTemplate.replace(/\{COLOR_HEADER\}/g, COLOR_HEADER_DARK).replace(/\{COLOR_HEADER_BTN\}/g, COLOR_HEADER_BTN_LIGHT);
-        } else {
-            this.shellTemplate = shellTemplate.replace(/\{COLOR_HEADER\}/g, COLOR_HEADER_LIGHT).replace(/\{COLOR_HEADER_BTN\}/g, COLOR_HEADER_BTN_DARK);
-        }
-    }
-
-    /**
-     * Sets up the preview header.
-     *
-     * @returns {void}
-     * @private
-     */
-    setupHeader() {
-        // Add the header if needed
-        if (this.options.header !== 'none') {
-            const headerEl = this.container.firstElementChild;
-            headerEl.className = CLASS_BOX_PREVIEW_HEADER;
-            this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
-
-            // Set custom logo
-            if (this.options.logoUrl !== '') {
-                const defaultLogoEl = headerEl.querySelector('.box-preview-default-logo');
-                defaultLogoEl.classList.add(CLASS_HIDDEN);
-
-                const customLogoEl = headerEl.querySelector('.box-preview-custom-logo');
-                customLogoEl.src = this.options.logoUrl;
-                customLogoEl.classList.remove(CLASS_HIDDEN);
-            }
-        }
-    }
-
-    /**
-     * Initializes the container for preview.
-     *
-     * @private
-     * @returns {void}
-     */
-    setup() {
-        // box-preview-container's parent
-        let container = this.previewOptions.container;
-
-        if (typeof container === 'string') {
-            // Get the container dom element if a selector was passed instead.
-            container = document.querySelector(container);
-        } else if (!container) {
-            // Create the container if nothing was passed.
-            container = document.body;
-        }
-
-        // Clear the content
-        container.innerHTML = '';
-
-        // Theme the shell
-        this.setupTheme();
-
-        // Create the preview with absolute positioning inside a relative positioned container
-        // <box-preview-container>
-        //      <box-preview-header>
-        //      <box-preview>
-        //      <navigation>
-        // </box-preview-container>
-        insertTemplate(container, this.shellTemplate);
-
-        // Save a handle to the container for future references.
-        this.container = container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
-
-        // Save a handle to the preview content
-        this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
-
-        this.setupHeader();
-
-        // Show navigation if needed
-        this.showNavigation();
-
-        // Attach keyboard events
-        document.addEventListener('keydown', this.keydownHandler);
-    }
-
-    /**
      * Loads the preview for a file.
      *
      * @param {String|Object} file File to preview
@@ -377,7 +257,10 @@ class Preview extends EventEmitter {
         this.parseOptions(tokens);
 
         // Setup the UI before anything else.
-        this.setup();
+        this.container = setup(this.options, this.keydownHandler, this.navigateLeft, this.navigateRight, this.getGlobalMousemoveHandler());
+
+        // Update navigation
+        showNavigation(this.file.id, this.collection);
 
         // Cache the file
         cache.set(this.file.id, this.file);
@@ -423,7 +306,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     loadFromServer() {
-        get(this.createUrl(this.file.id), this.getRequestHeaders())
+        get(getURL(this.file.id, this.options.api), this.getRequestHeaders())
         .then(this.handleLoadResponse)
         .catch(this.triggerFetchError);
     }
@@ -454,7 +337,7 @@ class Preview extends EventEmitter {
             const cached = cache.get(file.id);
 
             // Cache the new file object if not watermarked
-            if (!file.watermark_info || !file.watermark_info.is_watermarked) {
+            if (!isWatermarked(file)) {
                 cache.set(file.id, file);
             }
 
@@ -484,12 +367,10 @@ class Preview extends EventEmitter {
         // If it was showing make sure to destroy it to do any cleanup.
         this.destroy();
 
-        if (this.container && this.contentContainer) {
-            this.contentContainer.classList.remove(CLASS_PREVIEW_LOADED);
-        }
+        showLoadingIndicator();
 
         // Check if preview permissions exist
-        if (!this.file.permissions.can_preview) {
+        if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
             throw new Error(__('error_permissions'));
         }
 
@@ -577,15 +458,25 @@ class Preview extends EventEmitter {
      */
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
-        this.showAnnotateButton();
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
+            showDownloadButton(this.download);
+            if (checkFeature(this.viewer, 'print')) {
+                showPrintButton(this.print);
+            }
+        }
 
-        this.showPrintButton();
-        this.showDownloadButton();
+        if (checkPermission(this.file, PERMISSION_ANNOTATE)) {
+            if (checkFeature(this.viewer, 'isAnnotatable', 'point')) {
+                showAnnotateButton(this.viewer.getPointModeClickHandler());
+            }
+
+            if (checkFeature(this.viewer, 'isAnnotatable', 'highlight')) {
+                showHighlightButton(this.viewer.getHighlightModeClickHandler());
+            }
+        }
 
         // Once the viewer loads, hide the loading indicator
-        if (this.contentContainer) {
-            this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
-        }
+        hideLoadingIndicator();
 
         // Bump up preview count
         this.count.success++;
@@ -692,13 +583,15 @@ class Preview extends EventEmitter {
             }));
 
             this.viewer.load('', reason);
-            this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+            hideLoadingIndicator();
 
             // Add listeners for viewer events
             this.attachViewerListeners();
 
             // Show the download button
-            this.showDownloadButton();
+            if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
+                showDownloadButton(this.download);
+            }
 
             // Bump up preview count
             this.count.error++;
@@ -729,81 +622,6 @@ class Preview extends EventEmitter {
             'X-Rep-Hints': `3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
         };
         return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
-    }
-
-    /**
-     * Checks permission
-     *
-     * @private
-     * @param {operation} operation
-     * @returns {boolean} allowed or not
-     */
-    checkPermission(operation) {
-        return !!this.file && !!this.file.permissions && !!this.file.permissions[operation];
-    }
-
-    /**
-     * Checks feature
-     *
-     * @private
-     * @param {string} primary operation
-     * @param {string|void} [secondary] operation
-     * @returns {boolean} available or not
-     */
-    checkFeature(primary, secondary) {
-        const available = !IS_MOBILE && !!this.viewer && typeof this.viewer[primary] === 'function';
-        return available && (!secondary || this.viewer[primary](secondary));
-    }
-
-    /**
-     * Shows the point annotate button if the viewers implement annotations
-     *
-     * @private
-     * @returns {void}
-     */
-    showAnnotateButton() {
-        if (!this.checkPermission(PERMISSION_ANNOTATE) || !this.checkFeature('isAnnotatable', 'point')) {
-            return;
-        }
-
-        const annotateButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-        annotateButton.title = __('annotation_point_toggle');
-        annotateButton.classList.remove(CLASS_HIDDEN);
-        annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
-    }
-
-    /**
-     * Shows the print button if the viewers implement print
-     *
-     * @private
-     * @returns {void}
-     */
-    showPrintButton() {
-        if (!this.checkPermission(PERMISSION_DOWNLOAD) || !this.options.showDownload || !this.checkFeature('print')) {
-            return;
-        }
-
-        const printButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
-        printButton.title = __('print');
-        printButton.classList.remove(CLASS_HIDDEN);
-        printButton.addEventListener('click', this.print);
-    }
-
-    /**
-     * Shows the print button if the viewers implement print
-     *
-     * @private
-     * @returns {void}
-     */
-    showDownloadButton() {
-        if (IS_MOBILE || !this.checkPermission(PERMISSION_DOWNLOAD) || !this.options.showDownload) {
-            return;
-        }
-
-        const downloadButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
-        downloadButton.title = __('download');
-        downloadButton.classList.remove(CLASS_HIDDEN);
-        downloadButton.addEventListener('click', this.download);
     }
 
     /**
@@ -846,7 +664,7 @@ class Preview extends EventEmitter {
                 });
 
                 // Pre-fetch the file information
-                get(this.createUrl(id), this.getRequestHeaders(token))
+                get(getURL(id, this.options.api), this.getRequestHeaders(token))
                 .then((file) => {
                     this.handlePrefetchResponse(file, token);
                 })
@@ -865,7 +683,7 @@ class Preview extends EventEmitter {
      */
     handlePrefetchResponse(file, token) {
         // Don't bother with non-files
-        if (file.type === 'file') {
+        if (file.type === 'file' && !isWatermarked(file)) {
             // Save the returned file
             cache.set(file.id, file);
 
@@ -918,61 +736,6 @@ class Preview extends EventEmitter {
         }, MOUSEMOVE_THROTTLE - 500, true);
 
         return this.throttledMousemoveHandler;
-    }
-
-    /**
-     * Shows navigation arrows if there is a need
-     *
-     * @private
-     * @returns {void}
-     */
-    showNavigation() {
-        // Before showing or updating navigation do some cleanup
-        // that may be needed if the collection changes
-
-        if (!this.container) {
-            return;
-        }
-
-        const leftNavEl = this.container.querySelector(SELECTOR_NAVIGATION_LEFT);
-        const rightNavEl = this.container.querySelector(SELECTOR_NAVIGATION_RIGHT);
-
-        // If show navigation was called when shell is not ready then return
-        if (!leftNavEl || !rightNavEl) {
-            return;
-        }
-
-        // Set titles
-        leftNavEl.title = __('previous_file');
-        rightNavEl.title = __('next_file');
-
-        // Hide the arrows by default
-        leftNavEl.classList.add(CLASS_HIDDEN);
-        rightNavEl.classList.add(CLASS_HIDDEN);
-
-        leftNavEl.removeEventListener('click', this.navigateLeft);
-        rightNavEl.removeEventListener('click', this.navigateRight);
-        this.contentContainer.removeEventListener('mousemove', this.getGlobalMousemoveHandler());
-
-        // Don't show navigation when there is no need
-        if (this.collection.length < 2) {
-            return;
-        }
-
-        leftNavEl.addEventListener('click', this.navigateLeft);
-        rightNavEl.addEventListener('click', this.navigateRight);
-        this.contentContainer.addEventListener('mousemove', this.getGlobalMousemoveHandler());
-
-        // Selectively show or hide the navigation arrows
-        const index = this.collection.indexOf(this.file.id);
-
-        if (index > 0) {
-            leftNavEl.classList.remove(CLASS_HIDDEN);
-        }
-
-        if (index < this.collection.length - 1) {
-            rightNavEl.classList.remove(CLASS_HIDDEN);
-        }
     }
 
     /**
@@ -1119,19 +882,11 @@ class Preview extends EventEmitter {
         // Destroy the viewer
         this.destroy();
 
-        if (this.contentContainer) {
-            this.contentContainer.removeEventListener('mousemove', this.getGlobalMousemoveHandler());
-        }
-
-        if (this.container) {
-            this.container.innerHTML = '';
-        }
+        // Clean the UI
+        cleanup();
 
         // Nuke the file
         this.file = undefined;
-
-        // Remove keyboard events
-        document.removeEventListener('keydown', this.keydownHandler);
     }
 
     /**
@@ -1144,7 +899,9 @@ class Preview extends EventEmitter {
         this.collection = Array.isArray(collection) ? collection : [];
         // Also update the original collection that was saved from the initial show
         this.previewOptions.collection = this.collection;
-        this.showNavigation();
+        if (this.file) {
+            showNavigation(this.file.id, this.collection);
+        }
     }
 
     /**
@@ -1192,7 +949,7 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Disables a viewer
+     * Disables one or more viewers
      *
      * @public
      * @param {String|Array} viewers destroys the container contents
@@ -1209,7 +966,7 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Disables a viewer
+     * Enables one or more viewers
      *
      * @public
      * @param {String|Array} viewers destroys the container contents
@@ -1244,7 +1001,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     print() {
-        if (this.checkPermission(PERMISSION_DOWNLOAD) && this.options.showDownload && this.checkFeature('print')) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print') && this.options.showDownload) {
             this.viewer.print();
         }
     }
@@ -1256,8 +1013,8 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     download() {
-        if (this.checkPermission(PERMISSION_DOWNLOAD) && this.options.showDownload) {
-            get(`${this.options.api}/2.0/files/${this.file.id}?fields=download_url`, this.getRequestHeaders())
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
+            get(getDownloadURL(this.file.id, this.options.api), this.getRequestHeaders() && this.options.showDownload)
             .then((data) => {
                 openUrlInsideIframe(data.download_url);
             });
