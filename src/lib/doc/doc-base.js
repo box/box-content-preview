@@ -510,8 +510,9 @@ class DocBase extends Base {
             httpHeaders: this.appendAuthHeader(),
             rangeChunkSize: 1048576 // 1MB chunk size
         }).then((doc) => {
-            const linkService = this.pdfViewer.linkService;
             this.pdfViewer.setDocument(doc);
+
+            const linkService = this.pdfViewer.linkService;
             if (linkService instanceof PDFJS.PDFLinkService) {
                 linkService.setDocument(doc, pdfUrl);
                 linkService.setViewer(this.pdfViewer);
