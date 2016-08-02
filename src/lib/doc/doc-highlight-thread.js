@@ -79,15 +79,6 @@ class DocHighlightThread extends AnnotationThread {
         } else {
             this._state = constants.ANNOTATION_STATE_ACTIVE;
         }
-
-        // If the highlight was initially created without any comments, remove
-        // the blank annotation from the thread
-        //
-        // @TODO(spramod): Remove if decision is made on highlights without
-        // comments
-        if (this._annotations.length > 1 && this._annotations[0].text === '') {
-            this.deleteAnnotation(this._annotations[0].annotationID);
-        }
     }
 
     /**
@@ -144,7 +135,7 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
-        if (this._state === constants.ANNOTATION_STATE_PENDING) {
+        if (this._state === constants.ANNOTATION_STATE_PENDING || this._state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
             return false;
         }
 
@@ -205,6 +196,7 @@ class DocHighlightThread extends AnnotationThread {
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
             case constants.ANNOTATION_STATE_ACTIVE:
+            case constants.ANNOTATION_STATE_PENDING_ACTIVE:
             case constants.ANNOTATION_STATE_ACTIVE_HOVER:
                 this.showDialog();
                 this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
@@ -251,10 +243,19 @@ class DocHighlightThread extends AnnotationThread {
      * @protected
      */
     bindCustomListenersOnDialog() {
+        // Annotation drawn
+        this._dialog.addListener('annotationdraw', () => {
+            this._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+            this.show();
+        });
+
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
             this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, data ? data.text : '');
-            this._dialog.toggleHighlightCommentsReply(this._annotations.length);
+
+            if (data) {
+                this._dialog.toggleHighlightCommentsReply(this._annotations.length);
+            }
         });
 
         // Annotation canceled
@@ -284,7 +285,9 @@ class DocHighlightThread extends AnnotationThread {
      * @protected
      */
     unbindCustomListenersOnDialog() {
+        this.removeAllListeners('annotationdraw');
         this.removeAllListeners('annotationcreate');
+        this.removeAllListeners('annotationcancel');
         this.removeAllListeners('annotationdelete');
     }
 

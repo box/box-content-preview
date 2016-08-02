@@ -30,5 +30,6 @@ export const ANNOTATION_STATE_ACTIVE_HOVER = 'active-hover'; // clicked and mous
 export const ANNOTATION_STATE_HOVER = 'hover'; // mouse is over
 export const ANNOTATION_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
 export const ANNOTATION_STATE_PENDING = 'pending'; // not saved
+export const ANNOTATION_STATE_PENDING_ACTIVE = 'pending-active'; // not saved and pending comment
 export const ANNOTATION_TYPE_POINT = 'point';
 export const ANNOTATION_TYPE_HIGHLIGHT = 'highlight';

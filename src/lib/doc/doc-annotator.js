@@ -409,7 +409,7 @@ class DocAnnotator extends Annotator {
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we're in highlight mode,
-        // we trigger the create handler instad of the click handler
+        // we trigger the create handler instead of the click handler
         if (!IS_MOBILE && this._didMouseMove) {
             this._highlightCreateHandler(event);
         } else {
@@ -429,7 +429,7 @@ class DocAnnotator extends Annotator {
 
         // Determine if any highlight threads are pending and ignore the
         // creation of any new highlights
-        const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING);
+        const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
         if (pendingThreads.length) {
             return;
         }

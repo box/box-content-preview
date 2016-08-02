@@ -29,23 +29,6 @@ class DocHighlightDialog extends AnnotationDialog {
     // Public
     //--------------------------------------------------------------------------
 
-
-    /**
-     * Positions and shows the dialog.
-     *
-     * @override
-     * @returns {void}
-     */
-    show() {
-        super.show();
-
-        // Focuses text area in comments dialog
-        const textAreaEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-        if (annotatorUtil.isElementInViewport(textAreaEl)) {
-            textAreaEl.focus();
-        }
-    }
-
     /**
      * Saves an annotation with the associated text or blank if only
      * highlighting. Only adds an annotation to the dialog if it contains text.
@@ -136,7 +119,6 @@ class DocHighlightDialog extends AnnotationDialog {
     toggleHighlightDialogs() {
         const highlightDialogEl = this._element.querySelector('.box-preview-annotation-highlight-dialog');
         const commentsDialogEl = this._element.querySelector('.annotation-container');
-        // @TODO(spramod) double check that this works
         const commentsDialogIsHidden = commentsDialogEl.classList.contains(CLASS_HIDDEN);
 
         // Displays comments dialog and hides highlight annotations button
@@ -168,7 +150,6 @@ class DocHighlightDialog extends AnnotationDialog {
      * comments dialog. This accounts for when a blank highlight is created and
      * then the user tries to add a comment after the fact.
      *
-     * @TODO(spramod): Remove if decision is made on highlights without comments
      * @return {void}
      */
     toggleHighlightCommentsReply(hasAnnotations) {
@@ -180,11 +161,19 @@ class DocHighlightDialog extends AnnotationDialog {
         if (hasAnnotations) {
             annotatorUtil.hideElement(replyTextEl);
             annotatorUtil.showElement(commentTextEl);
+            this._deactivateReply();
+
+            // Focuses text area in comments dialog
+            const textAreaEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            if (annotatorUtil.isElementInViewport(textAreaEl)) {
+                textAreaEl.focus();
+            }
 
         // Ensures that "Reply" text area is shown
         } else {
             annotatorUtil.hideElement(commentTextEl);
             annotatorUtil.showElement(replyTextEl);
+            this._activateReply();
         }
 
         // Reposition dialog
@@ -327,6 +316,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
             // Clicking 'Highlight' button to create a highlight
             case 'add-highlight-comment-btn':
+                this.emit('annotationdraw');
                 this.toggleHighlightCommentsReply(false);
                 this.toggleHighlightDialogs();
                 break;
