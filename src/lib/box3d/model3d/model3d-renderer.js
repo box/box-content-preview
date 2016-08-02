@@ -170,6 +170,8 @@ class Model3dRenderer extends Box3DRenderer {
                     mat.setProperty('envMapRadianceHalfGloss', 'HDR_ENV_MAP_CUBE_1');
                 }
 
+                // TODO: Temp optimizations for mobile. Replace this with dynamic optimization
+                // system.
                 if (Browser.isMobile()) {
                     // Disable features for mobile
                     if (mat.getProperty('aoMap')) {
@@ -246,7 +248,7 @@ class Model3dRenderer extends Box3DRenderer {
         this.reset();
 
         // Unload the intermediate HDR maps that are no longer needed.
-        // this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
+        this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
         super.onSceneLoad();
         this.resize();
     }
