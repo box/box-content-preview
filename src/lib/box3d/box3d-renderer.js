@@ -1,4 +1,5 @@
 /* global Box3D, Box3DResourceLoader, WEBVR, THREE */
+import Browser from '../browser';
 import EventEmitter from 'events';
 import Cache from '../cache';
 import '../../third-party/model3d/webvr-polyfill';
@@ -12,8 +13,7 @@ import {
     EVENT_TRIGGER_RENDER
 } from './box3d-constants';
 
-/* eslint-disable */
-WebVRConfig = {
+const WebVRConfig = window.WebVRConfig = {
     // Forces availability of VR mode, even for non-mobile devices.
     FORCE_ENABLE_VR: false,
 
@@ -61,8 +61,10 @@ WebVRConfig = {
     // gl.ARRAY_BUFFER_BINDING, gl.ELEMENT_ARRAY_BUFFER_BINDING,
     // and gl.TEXTURE_BINDING_2D for texture unit 0.
     DIRTY_SUBMIT_FRAME_BINDINGS: false
-}
-/* eslint-enable */
+};
+
+// Trickin' ESlint into thinking this global is being used here.
+WebVRConfig.FORCE_ENABLE_VR = false;
 
 const INPUT_SETTINGS = {
     mouseEvents: {
@@ -419,8 +421,14 @@ class Box3DRenderer extends EventEmitter {
         }
     }
 
+    /**
+     * Callback for vrdisplaypresentchange event. On mobile, this is how we know the back button
+     * was pressed in VR mode so we can disable the VR controls and rendering effect.
+     * @return {void}
+     */
     onVrPresentChange() {
-        if (!this.vrDeviceHasPosition && this.vrEnabled) {
+        // We only want to call disable when we're on mobile.
+        if (Browser.isMobile() && this.vrEnabled) {
             this.disableVr();
         }
         this.vrEnabled = !this.vrEnabled;
