@@ -495,7 +495,8 @@ class DocBase extends Base {
     initViewer(pdfUrl) {
         // Initialize PDF.js in container
         this.pdfViewer = new PDFJS.PDFViewer({
-            container: this.docEl
+            container: this.docEl,
+            linkService: new PDFJS.PDFLinkService()
         });
 
         // Overwrite scrollPageIntoView for presentations since we have custom pagination
@@ -510,6 +511,12 @@ class DocBase extends Base {
             rangeChunkSize: 1048576 // 1MB chunk size
         }).then((doc) => {
             this.pdfViewer.setDocument(doc);
+            //add null check for link service
+            var linkService = this.pdfViewer.linkService;
+            if (linkService instanceof PDFJS.PDFLinkService) {
+                linkService.setDocument(doc, pdfUrl);
+                linkService.setViewer(this.pdfViewer);
+            }
         }).catch((err) => {
             /*eslint-disable*/
             console.error(err);
