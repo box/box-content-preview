@@ -121,3 +121,33 @@ $header-height: 48px;
 .box-preview-has-header .notifications-wrapper {
     top: 48px;
 }
+
+.box-preview-toggle-overlay {
+
+    & > button {
+        margin-bottom: 0;
+        margin-left: 0;
+    }
+}
+
+.box-preview-overlay-wrapper {
+    display: inherit;
+    position: relative;
+
+    .box-preview-overlay {
+        margin-top: 5px;
+    }
+
+    &.box-preview-is-visible {
+
+        .box-preview-overlay {
+            opacity: 1;
+            pointer-events: all;
+            -webkit-transform: rotateY(0deg) rotateX(0deg);
+            transform: rotateY(0deg) rotateX(0deg);
+            -webkit-transition-delay: 0s;
+            transition-delay: 0s;
+            visibility: visible;
+        }
+    }
+}
