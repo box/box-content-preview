@@ -69,7 +69,7 @@ export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scal
  * @returns {Number[]} [x,y] browser coordinates
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
-    const imageEl = annotatedElement.getElementsByTagName('img')[0];
+    const imageEl = annotatedElement.querySelector('img');
     const wrapperDimensions = annotatedElement.getBoundingClientRect();
     const imageDimensions = imageEl.getBoundingClientRect();
     const scale = annotatorUtil.getScale(annotatedElement);

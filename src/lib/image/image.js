@@ -427,7 +427,6 @@ class Image extends Base {
             fileVersionID
         });
         this.annotator.init(this);
-        this.annotator.setScale(1);
 
         // Disable controls during point annotation mode
         this.annotator.addListener('pointmodeenter', () => {

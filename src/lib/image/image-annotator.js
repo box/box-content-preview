@@ -48,7 +48,7 @@ class ImageAnnotator extends Annotator {
         const wrapperEl = annotatorUtil.findClosestElWithClass(eventTarget, constants.CLASS_ANNOTATION_POINT_MODE);
 
         // Get image tag inside viewer
-        const imageEl = wrapperEl.getElementsByTagName('img')[0];
+        const imageEl = wrapperEl.querySelector('img');
         if (!imageEl) {
             return location;
         }
@@ -112,11 +112,14 @@ class ImageAnnotator extends Annotator {
         }
 
         const thread = new ImagePointThread(threadParams);
-
         this.addThreadToMap(thread);
         return thread;
     }
 
+    /**
+     * Hides all annotations on the image
+     * @returns {void}
+     */
     hideAllAnnotations() {
         const annotations = this._annotatedElement.getElementsByClassName('box-preview-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
@@ -124,6 +127,10 @@ class ImageAnnotator extends Annotator {
         }
     }
 
+    /**
+     * Shows all annotations on the image
+     * @returns {void}
+     */
     showAllAnnotations() {
         const annotations = this._annotatedElement.getElementsByClassName('box-preview-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
