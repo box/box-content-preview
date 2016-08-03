@@ -17,6 +17,7 @@ export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'box-preview-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'box-preview-toggle-overlay';
 export const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 export const CLASS_INVISIBLE = 'box-preview-is-invisible';
+export const CLASS_IS_VISIBLE = 'box-preview-is-visible';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;

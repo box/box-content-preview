@@ -226,33 +226,3 @@ li {
         }
     }
 }
-
-.box-preview-toggle-overlay {
-
-    & > button {
-        margin-bottom: 0;
-        margin-left: 0;
-    }
-}
-
-.box-preview-overlay-wrapper {
-    display: inherit;
-    position: relative;
-
-    .box-preview-overlay {
-        margin-top: 5px;
-    }
-
-    &.is-visible {
-
-        .box-preview-overlay {
-            opacity: 1;
-            pointer-events: all;
-            -webkit-transform: rotateY(0deg) rotateX(0deg);
-            transform: rotateY(0deg) rotateX(0deg);
-            -webkit-transition-delay: 0s;
-            transition-delay: 0s;
-            visibility: visible;
-        }
-    }
-}

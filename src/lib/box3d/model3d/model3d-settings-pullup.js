@@ -27,7 +27,10 @@ import {
     ROTATION_STEP
 } from './model3d-constants';
 
-import { CLASS_BOX_PREVIEW_OVERLAY_WRAPPER } from '../../constants';
+import {
+    CLASS_BOX_PREVIEW_OVERLAY_WRAPPER,
+    CLASS_IS_VISIBLE
+} from '../../constants';
 
 // For registering events on elements
 const RENDER_MODES = [
@@ -85,7 +88,9 @@ class Model3DSettingsPullup extends EventEmitter {
     constructor() {
         super();
         this.projectionModeEl = null;
+        this.projectionModeListEl = null;
         this.renderModeEl = null;
+        this.renderModeListEl = null;
         this.saveRowEl = null;
 
         this.uiRegistry = new UIRegistry();
@@ -141,14 +146,16 @@ class Model3DSettingsPullup extends EventEmitter {
         pullupEl.appendChild(projectionPanelRowEl);
 
         const renderModeListEl = renderModeDropdownEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
+        this.renderModeListEl = renderModeListEl;
         const projectionListEl = projectionPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
+        this.projectionModeListEl = projectionListEl;
 
         this.uiRegistry.registerUiItem('settings-render-mode-selector-label', this.renderModeEl, 'click', () => {
-            projectionListEl.classList.remove('is-visible');
+            projectionListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
         this.uiRegistry.registerUiItem('settings-projection-mode-selector-label', this.projectionModeEl, 'click', () => {
-            renderModeListEl.classList.remove('is-visible');
+            renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
         // Axis Rotation Icons
@@ -198,6 +205,7 @@ class Model3DSettingsPullup extends EventEmitter {
     createRotationAxis(axisLabel, minusIconCallback, plusIconCallback) {
         const axisEl = document.createElement('div');
         axisEl.classList.add('box3d-settings-axis-widget');
+        axisEl.classList.add(`box3d-settings-axis-widget-${axisLabel}`);
 
         const minusIconEl = document.createElement('span');
         minusIconEl.classList.add('box3d-setting-axis-rotate');
@@ -208,8 +216,6 @@ class Model3DSettingsPullup extends EventEmitter {
         // axis label
         const axisLabelEl = document.createElement('span');
         axisLabelEl.textContent = axisLabel.toUpperCase();
-        axisLabelEl.classList.add('box3d-settings-axis-label');
-        axisLabelEl.classList.add(`box3d-settings-axis-label-${axisLabel}`);
         axisEl.appendChild(axisLabelEl);
 
         const plusIconEl = document.createElement('span');
@@ -285,6 +291,33 @@ class Model3DSettingsPullup extends EventEmitter {
      */
     hideSaveButton() {
         this.saveRowEl.querySelector('button').classList.add(CSS_CLASS_HIDDEN);
+    }
+
+    /**
+     * Show the settings panel
+     * @returns {void}
+     */
+    show() {
+        this.pullupEl.classList.remove(CSS_CLASS_HIDDEN);
+    }
+
+    /**
+     * Hide the settings panel, and close inner dropdowns
+     * @returns {void}
+     */
+    hide() {
+        this.pullupEl.classList.add(CSS_CLASS_HIDDEN);
+        this.projectionModeListEl.classList.remove(CLASS_IS_VISIBLE);
+        this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
+    }
+
+    /**
+     * Toggle display of settings panel, make sure dropdowns are closed
+     */
+    toggle() {
+        this.pullupEl.classList.toggle(CSS_CLASS_HIDDEN);
+        this.projectionModeListEl.classList.remove(CLASS_IS_VISIBLE);
+        this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
     }
 
     /**
