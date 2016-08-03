@@ -40,7 +40,15 @@ describe('image.js', () => {
         fixture.load('image/__tests__/image-test.html');
         image = new Image('.container', {
             file: {
-                id: '1'
+                id: '1',
+                permissions: {
+                    can_annotate: true
+                }
+            },
+            viewers: {
+                Image: {
+                    annotations: true
+                }
             }
         });
     });

@@ -1,9 +1,13 @@
 import './image.scss';
 import autobind from 'autobind-decorator';
+import AnnotationService from '../annotation/annotation-service';
+import * as annotatorUtil from '../annotation/annotator-util';
+import ImageAnnotator from './image-annotator';
+import Browser from '../browser';
 import Base from './image-base';
 import { get } from '../util';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../icons/icons';
-import { CLASS_INVISIBLE } from '../constants';
+import { CLASS_INVISIBLE, SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../constants';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -32,6 +36,10 @@ class Image extends Base {
         // hides image tag until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
 
+        if (this.options.viewers.Image && this.options.viewers.Image.annotations) {
+            this.initAnnotations();
+        }
+
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
@@ -43,6 +51,12 @@ class Image extends Base {
      * @returns {void}
      */
     destroy() {
+        // Destroy the annotator
+        if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners('pointmodeenter');
+            this.annotator.destroy();
+        }
+
         // Remove listeners
         if (this.imageEl) {
             this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
@@ -67,11 +81,13 @@ class Image extends Base {
             if (this.destroyed) {
                 return;
             }
+
             URL.revokeObjectURL(this.imageEl.src);
             this.loaded = true;
             this.emit('load');
             this.zoom();
             this.imageEl.classList.remove(CLASS_INVISIBLE);
+
             if (this.options.ui !== false) {
                 this.loadUI();
             }
@@ -110,6 +126,11 @@ class Image extends Base {
      * @returns {void}
      */
     handleMouseUp(event) {
+        // Ignore zoom/pan mouse events if in annotation mode
+        if (this.annotator && this.annotator.isInPointMode()) {
+            return;
+        }
+
         // If this is not a left click, then ignore
         // If this is a CTRL or CMD click, then ignore
         if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
@@ -158,7 +179,7 @@ class Image extends Base {
      * @returns {void}
      */
     updatePannability() {
-        if (!this.imageEl) {
+        if (!this.imageEl || (this.annotator && this.annotator.isInPointMode())) {
             return;
         }
         this.isPannable = this.imageEl.clientWidth > this.wrapperEl.clientWidth || this.imageEl.clientHeight > this.wrapperEl.clientHeight;
@@ -226,8 +247,25 @@ class Image extends Base {
     rotateLeft() {
         const angle = this.currentRotationAngle - 90;
         this.currentRotationAngle = (angle === -3600) ? 0 : angle;
+        const rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.imageEl.setAttribute('data-rotation-angle', rotationAngle);
         this.imageEl.style.transform = `rotate(${this.currentRotationAngle}deg)`;
         this.emit('rotate');
+
+        if (this.canAnnotate) {
+            this.annotator.renderAnnotations();
+
+            // Hide create annotations button if image is rotated
+            // TODO(@spramod) actually adjust getLocationFromEvent method in annotator to get correct location rather than disabling the creation of annotations on rotated images
+            const annotateButton = this.containerEl.parentNode.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+            if (rotationAngle !== 0) {
+                annotatorUtil.hideElement(annotateButton);
+                this.annotator.hideAllAnnotations();
+            } else {
+                annotatorUtil.showElement(annotateButton);
+                this.annotator.showAllAnnotations();
+            }
+        }
     }
 
     /**
@@ -257,9 +295,7 @@ class Image extends Base {
         // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
         // for the dimension that was cleared out.
-
         switch (type) {
-
             case 'in':
                 if (modifyWidthInsteadOfHeight) {
                     newWidth = width + 100;
@@ -291,7 +327,6 @@ class Image extends Base {
                 return;
 
             default:
-
                 // If the image is overflowing the viewport, figure out by how much
                 // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
                 if (width > viewport.width || height > viewport.height) {
@@ -337,6 +372,12 @@ class Image extends Base {
 
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
+
+        if (this.canAnnotate) {
+            const scale = newWidth ? (newWidth / this.imageEl.naturalWidth) : (newHeight / this.imageEl.naturalHeight);
+            this.annotator.setScale(scale);
+            this.annotator.renderAnnotations();
+        }
     }
 
     /**
@@ -350,6 +391,83 @@ class Image extends Base {
         this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+
+        // Show existing annotations after image is rendered
+        this.annotator.showAnnotations();
+    }
+
+    /**
+     * Initializes annotations.
+     *
+     * @returns {void}
+     * @private
+     */
+    initAnnotations() {
+        // Users can currently only view annotations on mobile
+        const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
+        this.canAnnotate = canAnnotate;
+
+        // Doesn't initialize annotations if user doesn't have permissions
+        if (!this.canAnnotate) {
+            return;
+        }
+
+        const fileVersionID = this.options.file.file_version.id;
+        const annotationService = new AnnotationService({
+            api: this.options.api,
+            fileID: this.options.file.id,
+            token: this.options.token,
+            canAnnotate
+        });
+
+        // Construct and init annotator
+        this.annotator = new ImageAnnotator({
+            annotatedElement: this.wrapperEl,
+            annotationService,
+            fileVersionID
+        });
+        this.annotator.init(this);
+
+        // Disable controls during point annotation mode
+        this.annotator.addListener('pointmodeenter', () => {
+            if (this.controls) {
+                this.controls.disable();
+            }
+        });
+    }
+
+    /**
+     * Returns whether or not viewer is annotatable with the provided annotation
+     * type.
+     *
+     * @param {String} type Type of annotation
+     * @returns {Boolean} Whether or not viewer is annotatable
+     */
+    isAnnotatable(type) {
+        if (type !== 'point') {
+            return false;
+        }
+
+        const viewerName = this.options.viewerName;
+        return this.options.viewers && this.options.viewers[viewerName] &&
+            this.options.viewers[viewerName].annotations;
+    }
+
+    /**
+     * Returns click handler for toggling point annotation mode.
+     *
+     * @returns {Function|null} Click handler
+     */
+    getPointModeClickHandler() {
+        if (!this.isAnnotatable('point')) {
+            return null;
+        }
+
+        return (event = {}) => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            this.annotator.togglePointModeHandler(event);
+        };
     }
 }
 

@@ -370,7 +370,8 @@ $avatar-color-9: #f22c44;
 // scss-lint:disable SelectorFormat
 .box-preview-point-annotation-mode .page,
 .box-preview-point-annotation-mode .box-preview-annotation-layer,
-.box-preview-point-annotation-mode .textLayer > div {
+.box-preview-point-annotation-mode .textLayer > div,
+.box-preview-point-annotation-mode > img {
     cursor: crosshair;
 }
 
