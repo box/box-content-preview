@@ -394,7 +394,9 @@ $avatar-color-9: #f22c44;
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
 // that helps with text selection - we need to disable this since it interacts
 // badly with point annotations on non-text divs in non-Chrome browsers
-.box-preview-point-annotation-mode .textLayer .endOfContent {
+.box-preview-point-annotation-mode .textLayer > div,
+.box-preview-point-annotation-mode .textLayer .endOfContent,
+.box-preview-point-annotation-mode > img {
     pointer-events: none;
 }
 
