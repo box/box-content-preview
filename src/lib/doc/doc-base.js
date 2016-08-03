@@ -408,19 +408,6 @@ class DocBase extends Base {
     }
 
     /**
-     * Returns click handler for toggling highlight annotation mode.
-     *
-     * @returns {Function|null} Click handler
-     */
-    getHighlightModeClickHandler() {
-        if (!this.isAnnotatable('highlight')) {
-            return null;
-        }
-
-        return this.annotator.toggleHighlightModeHandler;
-    }
-
-    /**
      * Handles keyboard events for document viewer.
      *
      * @param {String} key keydown key

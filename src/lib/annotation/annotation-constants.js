@@ -1,7 +1,7 @@
 export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
 export const CLASS_ANNOTATION_DIALOG = 'box-preview-annotation-dialog';
-export const CLASS_ANNOTATION_HIGHLIGHT_MODE = 'box-preview-highlight-annotation-mode';
+export const CLASS_ANNOTATION_TEXT_HIGHLIGHTED = 'box-preview-is-text-highlighted';
 export const CLASS_ANNOTATION_POINT = 'box-preview-show-point-annotation-btn';
 export const CLASS_ANNOTATION_POINT_ICON = 'box-preview-point-annotation-icon';
 export const CLASS_ANNOTATION_POINT_MODE = 'box-preview-point-annotation-mode';
@@ -29,5 +29,6 @@ export const ANNOTATION_STATE_ACTIVE_HOVER = 'active-hover'; // clicked and mous
 export const ANNOTATION_STATE_HOVER = 'hover'; // mouse is over
 export const ANNOTATION_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
 export const ANNOTATION_STATE_PENDING = 'pending'; // not saved
+export const ANNOTATION_STATE_PENDING_ACTIVE = 'pending-active'; // not saved and pending comment
 export const ANNOTATION_TYPE_POINT = 'point';
 export const ANNOTATION_TYPE_HIGHLIGHT = 'highlight';

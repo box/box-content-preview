@@ -1,4 +1,5 @@
 import ANNOTATION from 'raw!./annotation_24px.svg';
+import ANNOTATION_HIGHLIGHT_COMMENT from 'raw!./annotation_highlight_comment_24px.svg';
 import DROP_DOWN from 'raw!./arrow_drop_down_24px.svg';
 import DROP_UP from 'raw!./arrow_drop_up_24px.svg';
 import DELETE from 'raw!./delete_24px.svg';
@@ -23,6 +24,7 @@ import CLOSE from 'raw!./close.svg';
 import SEARCH from 'raw!./search.svg';
 
 export const ICON_ANNOTATION = ANNOTATION;
+export const ICON_HIGHLIGHT_COMMENT = ANNOTATION_HIGHLIGHT_COMMENT;
 export const ICON_DROP_DOWN = DROP_DOWN;
 export const ICON_DROP_UP = DROP_UP;
 export const ICON_DELETE = DELETE;

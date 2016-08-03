@@ -57,8 +57,26 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-add-highlight-btn:hover svg {
-    fill: $highlight-yellow;
+.box-preview-annotation-highlight-dialog .box-preview-btn-plain {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.box-preview-highlight-comment-btn {
+    .icon {
+        fill: lighten($better-black, 15%);
+    }
+
+    &:hover .icon {
+        fill: $box-blue;
+    }
+
+}
+
+.box-preview-is-text-highlighted .box-preview-annotation-highlight-dialog {
+    .box-preview-btn-plain svg {
+        fill: $highlight-yellow;
+    }
 }
 
 .box-preview-btn-plain {
@@ -302,10 +320,8 @@ $avatar-color-9: #f22c44;
     z-index: 9999;
 }
 
-.box-preview-add-highlight-btn,
-.box-preview-add-highlight-btn:hover,
-.box-preview-delete-highlight-btn,
-.box-preview-delete-highlight-btn:hover {
+.box-preview-annotation-highlight-dialog,
+.box-preview-annotation-highlight-dialog:hover {
     background-color: $white;
     border: 1px solid $seesee;
     border-radius: 2px;
@@ -382,13 +398,6 @@ $avatar-color-9: #f22c44;
     pointer-events: none;
 }
 
-.box-preview-highlight-annotation-mode .page,
-.box-preview-highlight-annotation-mode .box-preview-annotation-layer,
-.box-preview-highlight-annotation-mode .textLayer > div {
-    // We use a .cur file since they embed click origin information
-    cursor: url('../annotation/highlight.cur'), text;
-}
-
 // IE10 and IE11 don't implement custom cursors correctly, see:
 // http://stackoverflow.com/questions/7419314/custom-cursor-image-doesnt-work-in-all-ies
 // To get around this, we use absolute URLs to the cursor hosted on Box's CDN
@@ -397,12 +406,4 @@ $avatar-color-9: #f22c44;
 .ie.box-preview-point-annotation-mode .box-preview-annotation-layer,
 .ie.box-preview-point-annotation-mode .textLayer > div {
     cursor: crosshair;
-}
-
-// scss-lint:disable UrlFormat
-.ie.box-preview-highlight-annotation-mode .page,
-.ie.box-preview-highlight-annotation-mode .box-preview-annotation-layer,
-.ie.box-preview-highlight-annotation-mode .textLayer > div {
-    // We use a .cur file since they embed click origin information
-    cursor: url('//cdn01.boxcdn.net/content-experience/0.56.0/third-party/doc/cursors/highlight.cur'), text;
 }

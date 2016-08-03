@@ -24,7 +24,6 @@ import {
     SELECTOR_NAVIGATION_RIGHT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
     SELECTOR_BOX_PREVIEW_BTN_DIVIDER,
-    SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     COLOR_HEADER_LIGHT,
@@ -578,13 +577,6 @@ class Preview extends EventEmitter {
         // Show or hide annotate/print/download buttons
         this.showAnnotateButton();
 
-        // We don't support creating highlights on mobile for now since the
-        // event we would listen to, selectionchange, fires continuously and
-        // is unreliable
-        if (!IS_MOBILE) {
-            this.showHighlightButton();
-        }
-
         this.showPrintButton();
         this.showDownloadButton();
 
@@ -779,23 +771,6 @@ class Preview extends EventEmitter {
 
         const dividerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DIVIDER);
         dividerEl.classList.remove(CLASS_HIDDEN);
-    }
-
-    /**
-     * Shows the highlight annotate button if the viewers implement annotations
-     *
-     * @private
-     * @returns {void}
-     */
-    showHighlightButton() {
-        if (!this.checkPermission(PERMISSION_ANNOTATE) || !this.checkFeature('isAnnotatable', 'highlight')) {
-            return;
-        }
-
-        const highlightButton = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
-        highlightButton.title = __('annotation_highlight_toggle');
-        highlightButton.classList.remove(CLASS_HIDDEN);
-        highlightButton.addEventListener('click', this.viewer.getHighlightModeClickHandler());
     }
 
     /**

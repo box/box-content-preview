@@ -228,10 +228,10 @@ class AnnotationDialog extends EventEmitter {
      */
     bindDOMListeners() {
         this._element.addEventListener('keydown', this.keydownHandler);
-        this._element.addEventListener('click', this._clickHandler);
-        this._element.addEventListener('mouseup', this._mouseupHandler);
-        this._element.addEventListener('mouseenter', this._mouseenterHandler);
-        this._element.addEventListener('mouseleave', this._mouseleaveHandler);
+        this._element.addEventListener('click', this.clickHandler);
+        this._element.addEventListener('mouseup', this.mouseupHandler);
+        this._element.addEventListener('mouseenter', this.mouseenterHandler);
+        this._element.addEventListener('mouseleave', this.mouseleaveHandler);
     }
 
     /**
@@ -242,10 +242,10 @@ class AnnotationDialog extends EventEmitter {
      */
     unbindDOMListeners() {
         this._element.removeEventListener('keydown', this.keydownHandler);
-        this._element.removeEventListener('click', this._clickHandler);
-        this._element.removeEventListener('mouseup', this._mouseupHandler);
-        this._element.removeEventListener('mouseenter', this._mouseenterHandler);
-        this._element.removeEventListener('mouseleave', this._mouseleaveHandler);
+        this._element.removeEventListener('click', this.clickHandler);
+        this._element.removeEventListener('mouseup', this.mouseupHandler);
+        this._element.removeEventListener('mouseenter', this.mouseenterHandler);
+        this._element.removeEventListener('mouseleave', this.mouseleaveHandler);
     }
 
     /**
@@ -269,76 +269,15 @@ class AnnotationDialog extends EventEmitter {
         }
     }
 
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
-
-    /**
-     * Adds an annotation to the dialog.
-     *
-     * @param {Annotation} annotation Annotation to add
-     * @returns {void}
-     * @private
-     */
-    _addAnnotationElement(annotation) {
-        const userId = parseInt(annotatorUtil.htmlEscape(annotation.user.id || 0), 10);
-
-        // Temporary until annotation user API is available
-        let userName;
-        if (userId === 0) {
-            userName = __('annotation_posting_message');
-        } else {
-            userName = annotatorUtil.htmlEscape(annotation.user.name || '');
-        }
-
-        const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
-        const avatarHtml = annotatorUtil.getAvatarHtml(avatarUrl, userId, userName);
-        const created = new Date(annotation.created).toLocaleDateString(
-            'en-US',
-            { hour: '2-digit', minute: '2-digit' }
-        );
-        const text = annotatorUtil.htmlEscape(annotation.text);
-
-        const annotationEl = document.createElement('div');
-        annotationEl.classList.add('annotation-comment');
-        annotationEl.setAttribute('data-annotation-id', annotation.annotationID);
-        annotationEl.innerHTML = `
-            <div class="profile-image-container">${avatarHtml}</div>
-            <div class="profile-container">
-                <div class="user-name">${userName}</div>
-                <div class="comment-date">${created}</div>
-            </div>
-            <div class="comment-text">${text}</div>
-            <button class="box-preview-btn-plain delete-comment-btn ${annotation.permissions.can_delete ? '' : 'box-preview-is-hidden'}" data-type="delete-btn" title="${__('annotation_delete_comment')}">
-                ${ICON_DELETE}
-            </button>
-            <div class="delete-confirmation ${CLASS_HIDDEN}">
-                <div class="delete-confirmation-message">
-                    ${__('annotation_delete_confirmation_message')}
-                </div>
-                <div class="button-container">
-                    <button class="box-preview-btn cancel-delete-btn" data-type="cancel-delete-btn">
-                        ${__('annotation_cancel')}
-                    </button>
-                    <button class="box-preview-btn box-preview-btn-primary confirm-delete-btn" data-type="confirm-delete-btn">
-                        ${__('annotation_delete')}
-                    </button>
-                </div>
-            </div>`.trim();
-
-        const annotationContainerEl = this._element.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
-        annotationContainerEl.appendChild(annotationEl);
-    }
-
     /**
      * Mouseup handler. Stops propagation of mouseup, which may be used by
      * other annotation classes.
      *
      * @param {Event} event DOM event
      * @returns {void}
-     * @private
+     * @protected
      */
-    _mouseupHandler(event) {
+    mouseupHandler(event) {
         event.stopPropagation();
     }
 
@@ -346,9 +285,9 @@ class AnnotationDialog extends EventEmitter {
      * Mouseenter handler. Clears hide timeout.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _mouseenterHandler() {
+    mouseenterHandler() {
         // Reset hide timeout handler
         clearTimeout(this._timeoutHandler);
         this._timeoutHandler = null;
@@ -358,9 +297,9 @@ class AnnotationDialog extends EventEmitter {
      * Mouseleave handler. Hides dialog if we aren't creating the first one.
      *
      * @returns {void}
-     * @private
+     * @protected
      */
-    _mouseleaveHandler() {
+    mouseleaveHandler() {
         if (this._hasAnnotations) {
             this.hide();
         }
@@ -371,9 +310,9 @@ class AnnotationDialog extends EventEmitter {
      *
      * @param {Event} event DOM event
      * @returns {void}
-     * @private
+     * @protected
      */
-    _clickHandler(event) {
+    clickHandler(event) {
         event.stopPropagation();
 
         const eventTarget = event.target;
@@ -425,6 +364,72 @@ class AnnotationDialog extends EventEmitter {
             default:
                 break;
         }
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * Adds an annotation to the dialog.
+     *
+     * @param {Annotation} annotation Annotation to add
+     * @returns {void}
+     * @private
+     */
+    _addAnnotationElement(annotation) {
+        // If annotation text is blank, don't add to the comments dialog
+        if (!annotation.text) {
+            return;
+        }
+
+        const userId = parseInt(annotatorUtil.htmlEscape(annotation.user.id || 0), 10);
+
+        // Temporary until annotation user API is available
+        let userName;
+        if (userId === 0) {
+            userName = __('annotation_posting_message');
+        } else {
+            userName = annotatorUtil.htmlEscape(annotation.user.name || '');
+        }
+
+        const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
+        const avatarHtml = annotatorUtil.getAvatarHtml(avatarUrl, userId, userName);
+        const created = new Date(annotation.created).toLocaleDateString(
+            'en-US',
+            { hour: '2-digit', minute: '2-digit' }
+        );
+        const text = annotatorUtil.htmlEscape(annotation.text);
+
+        const annotationEl = document.createElement('div');
+        annotationEl.classList.add('annotation-comment');
+        annotationEl.setAttribute('data-annotation-id', annotation.annotationID);
+        annotationEl.innerHTML = `
+            <div class="profile-image-container">${avatarHtml}</div>
+            <div class="profile-container">
+                <div class="user-name">${userName}</div>
+                <div class="comment-date">${created}</div>
+            </div>
+            <div class="comment-text">${text}</div>
+            <button class="box-preview-btn-plain delete-comment-btn ${annotation.permissions.can_delete ? '' : 'box-preview-is-hidden'}" data-type="delete-btn" title="${__('annotation_delete_comment')}">
+                ${ICON_DELETE}
+            </button>
+            <div class="delete-confirmation ${CLASS_HIDDEN}">
+                <div class="delete-confirmation-message">
+                    ${__('annotation_delete_confirmation_message')}
+                </div>
+                <div class="button-container">
+                    <button class="box-preview-btn cancel-delete-btn" data-type="cancel-delete-btn">
+                        ${__('annotation_cancel')}
+                    </button>
+                    <button class="box-preview-btn box-preview-btn-primary confirm-delete-btn" data-type="confirm-delete-btn">
+                        ${__('annotation_delete')}
+                    </button>
+                </div>
+            </div>`.trim();
+
+        const annotationContainerEl = this._element.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
+        annotationContainerEl.appendChild(annotationEl);
     }
 
     /**

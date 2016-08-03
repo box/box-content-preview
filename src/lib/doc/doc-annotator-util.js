@@ -292,3 +292,30 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
         Math.min(y1, y2, y3, y4)
     ];
 }
+
+/**
+ * Gets coordinates representing lower center point of the annotation
+ * represented by the provided quad points. We define lower center point
+ * as the bottom center of the rectangle representing the bottom-most
+ * annotation. Note that these coordinates are in PDF default user space, with
+ * the origin at the bottom left corner of the document.
+ * @param {Number[]} quadPoints Quad points of annotation to get lower
+ * center for in PDF space in PDF units
+ * @returns {Number[]} [x,y] of lower center of quad points in PDF
+ * space in PDF units
+ * @param {Number[]} quadPoints Quad points in PDF space in PDF units
+ * @returns {Number[]} [x,y] of lower center of last quad point
+ */
+export function getLowerCenterPoint(quadPoints) {
+    let [maxX, minX, minY] = [0, 99999, 99999];
+    quadPoints.forEach((quadPoint) => {
+        const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
+
+        maxX = Math.max(x1, x2, x3, x4, maxX);
+        minX = Math.min(x1, x2, x3, x4, minX);
+        minY = Math.min(y1, y2, y3, y4, minY);
+    });
+
+    const x = minX + (maxX - minX) / 2;
+    return [x, minY];
+}
