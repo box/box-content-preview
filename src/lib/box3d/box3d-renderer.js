@@ -2,7 +2,6 @@
 import Browser from '../browser';
 import EventEmitter from 'events';
 import Cache from '../cache';
-import '../../third-party/model3d/webvr-polyfill';
 import WEBVR from './WebVR';
 import './VREffect';
 import './VRControls';
