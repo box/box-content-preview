@@ -42,10 +42,9 @@ class DocHighlightDialog extends AnnotationDialog {
         if (annotation) {
             super.addAnnotation(annotation);
         } else {
-            const addButtonEl = this._element.querySelector('.box-preview-add-highlight-btn');
-            const isTextHighlighted = addButtonEl.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            const isTextHighlighted = this._element.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             if (!isTextHighlighted) {
-                addButtonEl.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+                this._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             }
         }
     }
@@ -199,10 +198,15 @@ class DocHighlightDialog extends AnnotationDialog {
         const dialogTypeClass = this._hasComments ? constants.CLASS_ANNOTATION_DIALOG : CLASS_HIGHLIGHT_DIALOG;
         this._element.classList.add(dialogTypeClass);
 
+        // Indicate that text is highlighted in the highlight buttons dialog
+        if (annotations.length) {
+            this._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+        }
+
         this._element.innerHTML = `
             <div class="box-preview-annotation-caret"></div>
             <div class="box-preview-annotation-highlight-dialog ${this._hasComments ? CLASS_HIDDEN : ''}">
-                <button class="box-preview-btn-plain box-preview-add-highlight-btn ${annotations.length ? constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED : ''}"
+                <button class="box-preview-btn-plain box-preview-add-highlight-btn"
                     data-type="highlight-btn"
                     title="${__('annotation_highlight_toggle')}">
                     ${ICON_HIGHLIGHT}
@@ -339,19 +343,18 @@ class DocHighlightDialog extends AnnotationDialog {
      * @private
      */
     _toggleHighlight() {
-        const addButtonEl = this._element.querySelector('.box-preview-add-highlight-btn');
-        const isTextHighlighted = addButtonEl.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+        const isTextHighlighted = this._element.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
 
         // Creates a blank highlight annotation
         if (!isTextHighlighted) {
             this._hasComments = false;
-            addButtonEl.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            this._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             this.emit('annotationcreate');
 
         // Deletes blank highlight annotation
         } else {
             this._hasComments = true;
-            addButtonEl.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            this._element.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             this.emit('annotationdelete');
         }
     }

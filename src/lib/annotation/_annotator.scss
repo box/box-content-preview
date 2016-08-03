@@ -73,8 +73,8 @@ $avatar-color-9: #f22c44;
 
 }
 
-.box-preview-add-highlight-btn.box-preview-is-text-highlighted {
-    svg {
+.box-preview-is-text-highlighted .box-preview-annotation-highlight-dialog {
+    .box-preview-btn-plain svg {
         fill: $highlight-yellow;
     }
 }
