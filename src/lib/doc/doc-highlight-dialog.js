@@ -85,10 +85,35 @@ class DocHighlightDialog extends AnnotationDialog {
         // Make sure button dialog doesn't go off the page
         let dialogX = browserX - highlightDialogWidth / 2; // Center 81px button
         let dialogY = browserY + 10; // Caret + some padding
-        if (dialogX < 0) {
+
+        // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
+        const dialogPastLeft = dialogX < 0;
+        const dialogPastRight = dialogX + highlightDialogWidth > pageWidth;
+
+        // Only reposition if one side is past page boundary - if both are,
+        // just center the dialog and cause scrolling since there is nothing
+        // else we can do
+        const annotationCaretEl = this._element.querySelector('.box-preview-annotation-caret');
+        if (dialogPastLeft && !dialogPastRight) {
+            // Leave a minimum of 10 pixels so caret doesn't go off edge
+            const caretLeftX = Math.max(10, browserX);
+            annotationCaretEl.style.left = `${caretLeftX}px`;
+
             dialogX = 0;
-        } else if (dialogX + highlightDialogWidth > pageWidth) {
+
+        // Fix the dialog and move caret appropriately
+        } else if (dialogPastRight && !dialogPastLeft) {
+            // Leave a minimum of 10 pixels so caret doesn't go off edge
+            const caretRightX = Math.max(10, pageWidth - browserX);
+
+            // We set the 'left' property even when we have caretRightX for IE10/11
+            annotationCaretEl.style.left = `${highlightDialogWidth - caretRightX}px`;
+
             dialogX = pageWidth - highlightDialogWidth;
+
+        // Reset caret to center
+        } else {
+            annotationCaretEl.style.left = '50%';
         }
 
         if (dialogY < 0) {
