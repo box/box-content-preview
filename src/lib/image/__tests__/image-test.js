@@ -41,6 +41,9 @@ describe('image.js', () => {
         image = new Image('.container', {
             file: {
                 id: '1',
+                file_version: {
+                    id: '1'
+                },
                 permissions: {
                     can_annotate: true
                 }
