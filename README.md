@@ -189,7 +189,7 @@ The name of the viewer. Can be one of the following `Document`, `Presentation`, 
 Other Methods
 =============
 
-`Box.Preview.hide(/* optional Boolean */ destroy)` hides the previewer. If destroy is true, then container's contents are also removed.
+`Box.Preview.hide()` hides the preview. 
 
 `Box.Preview.updateCollection(/* Array[file ids] */ collection)` updates the collection to navigate through. Assumes the currently visible file is part of this new collection.
 
