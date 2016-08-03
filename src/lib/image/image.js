@@ -393,7 +393,11 @@ class Image extends Base {
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
         // Show existing annotations after image is rendered
+        if (!this.annotator || this.annotationsLoaded) {
+            return;
+        }
         this.annotator.showAnnotations();
+        this.annotationsLoaded = true;
     }
 
     /**
@@ -406,11 +410,6 @@ class Image extends Base {
         // Users can currently only view annotations on mobile
         const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
         this.canAnnotate = canAnnotate;
-
-        // Doesn't initialize annotations if user doesn't have permissions
-        if (!this.canAnnotate) {
-            return;
-        }
 
         const fileVersionID = this.options.file.file_version.id;
         const annotationService = new AnnotationService({
@@ -432,6 +431,12 @@ class Image extends Base {
         this.annotator.addListener('pointmodeenter', () => {
             if (this.controls) {
                 this.controls.disable();
+            }
+        });
+
+        this.annotator.addListener('pointmodeexit', () => {
+            if (this.controls) {
+                this.controls.enable();
             }
         });
     }
