@@ -476,7 +476,7 @@ class AnnotationDialog extends EventEmitter {
      * Deactivate reply textarea.
      *
      * @returns {void}
-     * @protected
+     * @private
      */
     _deactivateReply() {
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
