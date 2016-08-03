@@ -346,8 +346,12 @@ class Annotator extends EventEmitter {
     pointClickHandler(event) {
         event.stopPropagation();
 
-        // Destroy any pending threads
-        this._destroyPendingThreads();
+        // Determine if a point annotation dialog is already open and close the
+        // current open dialog
+        const hasPendingThreads = this._destroyPendingThreads();
+        if (hasPendingThreads) {
+            return;
+        }
 
         // Get annotation location from click event, ignore click if location is invalid
         const location = this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_POINT);
@@ -394,17 +398,22 @@ class Annotator extends EventEmitter {
     /**
      * Destroys pending threads.
      *
-     * @returns {void}
+     * @returns {Boolean} Whether or not any pending threads existed on the
+     * current file
      * @private
      */
     _destroyPendingThreads() {
+        let hasPendingThreads = false;
         Object.keys(this._threads).forEach((page) => {
             this._threads[page]
-                .filter((thread) => thread.state === constants.ANNOTATION_STATE_PENDING)
                 .forEach((pendingThread) => {
-                    pendingThread.destroy();
+                    if (pendingThread.state === constants.ANNOTATION_STATE_PENDING) {
+                        hasPendingThreads = true;
+                        pendingThread.destroy();
+                    }
                 });
         });
+        return hasPendingThreads;
     }
 }
 
