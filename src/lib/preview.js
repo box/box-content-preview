@@ -23,7 +23,6 @@ import {
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
-    SELECTOR_BOX_PREVIEW_BTN_DIVIDER,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     COLOR_HEADER_LIGHT,
@@ -119,7 +118,7 @@ class Preview extends EventEmitter {
         // Save handle to the token fetcher as viewers might need it
         this.options.tokenFetcher = this.fetchTokens;
 
-        // Shared link header
+        // Shared link URL
         this.options.sharedLink = options.sharedLink;
 
         // Shared link password
@@ -136,6 +135,9 @@ class Preview extends EventEmitter {
 
         // Custom logo URL
         this.options.logoUrl = options.logoUrl || '';
+
+        // Whether download button should be shown
+        this.options.showDownload = options.showDownload;
 
         // Save the files to iterate through
         this.collection = options.collection || [];
@@ -768,9 +770,6 @@ class Preview extends EventEmitter {
         annotateButton.title = __('annotation_point_toggle');
         annotateButton.classList.remove(CLASS_HIDDEN);
         annotateButton.addEventListener('click', this.viewer.getPointModeClickHandler());
-
-        const dividerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DIVIDER);
-        dividerEl.classList.remove(CLASS_HIDDEN);
     }
 
     /**
@@ -780,7 +779,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showPrintButton() {
-        if (!this.checkPermission(PERMISSION_DOWNLOAD) || !this.checkFeature('print')) {
+        if (!this.checkPermission(PERMISSION_DOWNLOAD) || !this.options.showDownload || !this.checkFeature('print')) {
             return;
         }
 
@@ -797,7 +796,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showDownloadButton() {
-        if (!this.checkPermission(PERMISSION_DOWNLOAD)) {
+        if (!this.checkPermission(PERMISSION_DOWNLOAD) || !this.options.showDownload) {
             return;
         }
 
@@ -1245,7 +1244,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     print() {
-        if (this.checkPermission(PERMISSION_DOWNLOAD) && this.checkFeature('print')) {
+        if (this.checkPermission(PERMISSION_DOWNLOAD) && this.options.showDownload && this.checkFeature('print')) {
             this.viewer.print();
         }
     }
@@ -1257,7 +1256,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     download() {
-        if (this.checkPermission(PERMISSION_DOWNLOAD)) {
+        if (this.checkPermission(PERMISSION_DOWNLOAD) && this.options.showDownload) {
             get(`${this.options.api}/2.0/files/${this.file.id}?fields=download_url`, this.getRequestHeaders())
             .then((data) => {
                 openUrlInsideIframe(data.download_url);

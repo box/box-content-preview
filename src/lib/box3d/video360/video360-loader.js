@@ -15,7 +15,7 @@ const VIEWERS = [
             `${STATIC_URI}model3d/boxsdk.js`,
             `${STATIC_URI}model3d/box3d-resource-loader.js`,
             `${STATIC_URI}model3d/box3d-runtime.js`,
-            `${STATIC_URI}webvr-polyfill.js`,
+            `${STATIC_URI}model3d/webvr-polyfill.js`,
             'video360.js'
         ],
         STYLESHEETS: ['dash.css', 'video360.css'],

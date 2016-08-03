@@ -62,9 +62,7 @@ class PlainText extends TextBase {
         // Add our class after highlighting otherwise highlightjs doesnt work
         this.preEl.classList.add('box-preview-text');
 
-        if (this.options.ui !== false) {
-            this.loadUI();
-        }
+        this.loadUI();
 
         this.loaded = true;
         this.emit('load');

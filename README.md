@@ -79,7 +79,7 @@ Install the following plugins in Sublime
 * sublime linter
 * sublime linter contrib eslint
 * sublime linter contrib scss
- 
+
 Similar counterparts for atom.
 
 
@@ -124,22 +124,38 @@ preview.show(fileId, { options });
 
 ```javascript
 {
-    token: 'api auth token',          // either a string auth token or a token generator function, see below for more details
-    container: '.preview-container',  // optional dom node or selector where preview should be placed
-    api: 'https://api.box.com',       // optional api host like https://ldap.dev.box.net/api
-    collection: ['123', '234', ...],  // optional list of file ids for back and forth navigation
-    header: 'light',                  // optional string value of 'none' or 'dark' or 'light' that controls header visibility and theme
-    viewers: {                        // optional arguments to pass on to viewers
-        VIEWERNAME: {                     // name of the viewer, see below for more details
-            disabled: false,              // disables the viewer
-            annotations: false            // other args
-            controls: true                // disables the viewer controls
+    token: 'api auth token',
+    container: '.preview-container',
+    api: 'https://api.box.com',
+    sharedLink: 'https://cloud.box.com/v/chicken',
+    sharedLinkPassword: 'foo',
+    collection: ['123', '234', ...],
+    header: 'light',
+    logoUrl: 'http://i.imgur.com/xh8j3E2.png',
+    showDownload: true,
+    viewers: {
+        VIEWERNAME: {
+            disabled: true,
+            annotations: true
             ...
         },
         ...
     }
 }
 ```
+`token` (Required) Either a string auth token or a token generator function, see below for more details  
+`container` (Optional) DOM node or selector where Preview should be placed, default document body  
+`api` (Optional) Root API URL, default 'https://api.box.com'  
+`sharedLink` (Optional) Shared link URL, default no shared link  
+`sharedLinkPassword`  (Optional) Shared link password, default no password  
+`collection` (Optional) List of file IDs to preview over, default no collection  
+`header` (Optional) String value of 'none' or 'dark' or 'light' that controls header visibility and theme, default 'light'  
+`logoUrl` (Optional) URL of logo to show in header, default Box logo  
+`showDownload` (Optional) Whether download button is shown, default false  
+`viewers` (Optional) Arguments to pass on to viewers, default no arguments  
+`viewers.VIEWERNAME` Name of the viewer, see below for more details  
+`viewers.VIEWERNAME.disabled` Disables the viewer, default false  
+`viewers.VIEWERNAME.annotations` Enables annotations for this viewer, default false  
 
 Token
 =====
@@ -189,7 +205,7 @@ The name of the viewer. Can be one of the following `Document`, `Presentation`, 
 Other Methods
 =============
 
-`Box.Preview.hide()` hides the preview. 
+`Box.Preview.hide()` hides the preview.
 
 `Box.Preview.updateCollection(/* Array[file ids] */ collection)` updates the collection to navigate through. Assumes the currently visible file is part of this new collection.
 

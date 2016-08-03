@@ -59,9 +59,7 @@ class Model3d extends Box3D {
     * @inheritdoc
      */
     createSubModules() {
-        if (this.options.ui !== false) {
-            this.controls = new Model3dControls(this.wrapperEl);
-        }
+        this.controls = new Model3dControls(this.wrapperEl);
         this.renderer = new Model3dRenderer(this.wrapperEl, this.boxSdk);
     }
 

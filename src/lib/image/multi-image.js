@@ -65,9 +65,7 @@ class MultiImage extends ImageBase {
             this.loaded = true;
             this.emit('load');
             this.zoom();
-            if (this.options.ui !== false) {
-                this.loadUI();
-            }
+            this.loadUI();
         });
 
         this.imageUrls.forEach((imageUrl, index) => {

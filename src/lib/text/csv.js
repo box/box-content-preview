@@ -71,11 +71,7 @@ class CSV extends TextBase {
      */
     finishLoading() {
         this.renderCSV();
-
-        if (this.options.ui !== false) {
-            this.loadUI();
-        }
-
+        this.loadUI();
         this.loaded = true;
         this.emit('load');
     }
