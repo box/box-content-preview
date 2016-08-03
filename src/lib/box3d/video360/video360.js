@@ -85,7 +85,7 @@ class Video360 extends Dash {
             .then(() => {
                 super.loadedmetadataHandler();
                 this.createControls();
-                this.renderer.enableVrIfPresent();
+                this.renderer.initVrIfPresent();
             });
     }
 

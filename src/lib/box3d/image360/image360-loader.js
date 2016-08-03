@@ -7,7 +7,7 @@ const VIEWERS = [
         REPRESENTATION: 'original',
         EXTENSIONS: ['jpg', 'jpeg', 'png'],
         SCRIPTS: [`${STATIC_URI}boxsdk.js`, `${STATIC_URI}box3d-resource-loader.js`,
-            `${STATIC_URI}box3d-runtime.js`, 'image360.js'],
+            `${STATIC_URI}box3d-runtime.js`, `${STATIC_URI}webvr-polyfill.js`, 'image360.js'],
         STYLESHEETS: ['image360.css'],
         CONSTRUCTOR: 'Image360'
     },
@@ -15,7 +15,7 @@ const VIEWERS = [
         REPRESENTATION: 'png',
         EXTENSIONS: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff'],
         SCRIPTS: [`${STATIC_URI}boxsdk.js`, `${STATIC_URI}box3d-resource-loader.js`,
-            `${STATIC_URI}box3d-runtime.js`, 'image360.js'],
+            `${STATIC_URI}box3d-runtime.js`, `${STATIC_URI}webvr-polyfill.js`, 'image360.js'],
         STYLESHEETS: ['image360.css'],
         CONSTRUCTOR: 'Image360'
     }
