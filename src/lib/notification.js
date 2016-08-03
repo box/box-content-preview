@@ -54,6 +54,8 @@ class Notification {
 
         if (buttonText) {
             this.buttonEl.textContent = buttonText;
+        } else {
+            this.buttonEl.textContent = __('notification_button_default_text');
         }
 
         this.notificationEl.classList.remove(CLASS_HIDDEN);
