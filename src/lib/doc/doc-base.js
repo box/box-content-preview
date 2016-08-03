@@ -86,6 +86,11 @@ class DocBase extends Base {
             this.findBar.destroy();
         }
 
+        // Clean up PDF network requests
+        if (this.pdfLoadingTask) {
+            this.pdfLoadingTask.destroy();
+        }
+
         // Clean up viewer and PDF document object
         if (this.pdfViewer) {
             this.pdfViewer.cleanup();
@@ -505,11 +510,14 @@ class DocBase extends Base {
         }
 
         // Load PDF from representation URL
-        PDFJS.getDocument({
+        this.pdfLoadingTask = PDFJS.getDocument({
             url: pdfUrl,
             httpHeaders: this.appendAuthHeader(),
             rangeChunkSize: 1048576 // 1MB chunk size
-        }).then((doc) => {
+        });
+
+        // Set document for PDF.js
+        this.pdfLoadingTask.then((doc) => {
             this.pdfViewer.setDocument(doc);
 
             const linkService = this.pdfViewer.linkService;
