@@ -1,5 +1,39 @@
 # Change Log
 
+## [v0.68.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.68.0) (2016-08-04)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.67.0...v0.68.0)
+
+**Merged pull requests:**
+
+- Updating Preview SDK options and options documentation [\#496](https://gitenterprise.inside-box.net/Preview/Preview/pull/496) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing this.\_hasComments in doc-highlight-dialog to actually initialize as a boolean [\#495](https://gitenterprise.inside-box.net/Preview/Preview/pull/495) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Testing notification.js, bug fix. [\#494](https://gitenterprise.inside-box.net/Preview/Preview/pull/494) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Updated Readme [\#493](https://gitenterprise.inside-box.net/Preview/Preview/pull/493) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- COXP-2122: Disable text selection when you are in point comment mode [\#492](https://gitenterprise.inside-box.net/Preview/Preview/pull/492) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Fix bad function call in video360 and move webvr-polyfill to static i… [\#491](https://gitenterprise.inside-box.net/Preview/Preview/pull/491) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Ensuring that annotator is initialized when image is loaded [\#489](https://gitenterprise.inside-box.net/Preview/Preview/pull/489) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- COXP-2170 - Internal links not working in Documents [\#487](https://gitenterprise.inside-box.net/Preview/Preview/pull/487) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Adding webvr polyfill and updating material system with new shader code [\#485](https://gitenterprise.inside-box.net/Preview/Preview/pull/485) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- COXP-2121: First click outside comment box closes the comment box [\#484](https://gitenterprise.inside-box.net/Preview/Preview/pull/484) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Adding bandwidth stats for dash [\#483](https://gitenterprise.inside-box.net/Preview/Preview/pull/483) ([phora](https://gitenterprise.inside-box.net/phora))
+- COXP-2320 Preview - Update Box3D runtime [\#481](https://gitenterprise.inside-box.net/Preview/Preview/pull/481) ([ikerr](https://gitenterprise.inside-box.net/ikerr))
+- Util functions for XHR [\#480](https://gitenterprise.inside-box.net/Preview/Preview/pull/480) ([phora](https://gitenterprise.inside-box.net/phora))
+- Minor bugs and style updates [\#479](https://gitenterprise.inside-box.net/Preview/Preview/pull/479) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Cancel pending PDF network requests on destroy [\#478](https://gitenterprise.inside-box.net/Preview/Preview/pull/478) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing unit test performance and eslint errors [\#477](https://gitenterprise.inside-box.net/Preview/Preview/pull/477) ([phora](https://gitenterprise.inside-box.net/phora))
+- Unit tests for annotation-service [\#476](https://gitenterprise.inside-box.net/Preview/Preview/pull/476) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add guard for localStorage checks [\#475](https://gitenterprise.inside-box.net/Preview/Preview/pull/475) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for doc-annotator-util [\#474](https://gitenterprise.inside-box.net/Preview/Preview/pull/474) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for annotator-util [\#473](https://gitenterprise.inside-box.net/Preview/Preview/pull/473) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding comments to highlight annotations [\#471](https://gitenterprise.inside-box.net/Preview/Preview/pull/471) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Accessibility tweaks [\#470](https://gitenterprise.inside-box.net/Preview/Preview/pull/470) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add basic Box UI notification support [\#469](https://gitenterprise.inside-box.net/Preview/Preview/pull/469) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- \[Annotations\] Don't allow deletion if user doesn't have permissions [\#468](https://gitenterprise.inside-box.net/Preview/Preview/pull/468) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix error loader cleanup [\#467](https://gitenterprise.inside-box.net/Preview/Preview/pull/467) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Set cache stale if file is watermarked [\#466](https://gitenterprise.inside-box.net/Preview/Preview/pull/466) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update changelog to v0.67.0 [\#465](https://gitenterprise.inside-box.net/Preview/Preview/pull/465) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Image annotations [\#455](https://gitenterprise.inside-box.net/Preview/Preview/pull/455) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.67.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.67.0) (2016-07-13)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.66.0...v0.67.0)
 
