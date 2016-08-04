@@ -33,3 +33,9 @@ export const COLOR_HEADER_LIGHT = '#fff';
 export const COLOR_HEADER_DARK = '#000';
 export const COLOR_HEADER_BTN_LIGHT = '#fff';
 export const COLOR_HEADER_BTN_DARK = '#000';
+
+export const PERMISSION_DOWNLOAD = 'can_download';
+export const PERMISSION_ANNOTATE = 'can_annotate';
+export const PERMISSION_PREVIEW = 'can_preview';
+
+export const API = 'https://api.box.com';
