@@ -220,7 +220,7 @@ class DocHighlightDialog extends AnnotationDialog {
         this._element = document.createElement('div');
 
         // Determine if highlight buttons or comments dialog will display
-        this._hasComments = (annotations.length && annotations[0].text);
+        this._hasComments = !!(annotations.length && annotations[0].text);
         const dialogTypeClass = this._hasComments ? constants.CLASS_ANNOTATION_DIALOG : CLASS_HIGHLIGHT_DIALOG;
         this._element.classList.add(dialogTypeClass);
 
