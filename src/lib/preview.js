@@ -949,6 +949,20 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Prefetches the viewers
+     *
+     * @public
+     * @returns {void}
+     */
+    prefetchViewers() {
+        const viewers = this.getViewers();
+        const loader = this.loaders[0]; // use any loader
+        viewers.forEach((viewer) => {
+            loader.prefetchAssets(viewer, this.location);
+        });
+    }
+
+    /**
      * Disables one or more viewers
      *
      * @public
