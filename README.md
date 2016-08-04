@@ -67,7 +67,6 @@ Setup
 
 In order for the webapp to use your static assets from your dev VM, you will need to add entries for yourself in `preview.conf` which requires an appconf push to dev. Follow instructions here `https://confluence.inside-box.net/display/ETO/Appconf+User+Guide#AppconfUserGuide-DevWorkflow`. If you are a developer, you would want an entry in there pointing to your dev VM with version set to `dev`. If you are not a developer, then you do not need to modify this file and it will automatically use the version thats deployed to our live CDNs.
 
-
 While developing
 ----------------
 Install SCSS linter `gem install scss_lint` for linting SCSS files.
@@ -81,7 +80,6 @@ Install the following plugins in Sublime
 * sublime linter contrib scss
 
 Similar counterparts for atom.
-
 
 NPM commands
 ------------
@@ -98,16 +96,13 @@ Release build
 -------------
 `npm run release` does a release build.
 
-
 Change log
 ----------
 Generate using `github_changelog_generator --github-site https://gitenterprise.inside-box.net --github-api https://gitenterprise.inside-box.net/api/v3 --token 0c280723f1ceb4dd83f934f1dc117b9f0a15a2df Preview/Preview`
 
-
 Demo and testing local changes
 ==============================
 https://gitenterprise.inside-box.net/Preview/demo
-
 
 API
 ===
@@ -159,7 +154,6 @@ preview.show(fileId, { options });
 | viewers.VIEWERNAME.disabled |  | false | Disables the viewer |
 | viewers.VIEWERNAME.annotations |  | false | Enables annotations for the viewer |
 
-
 Token
 =====
 
@@ -204,7 +198,6 @@ VIEWERNAME
 
 The name of the viewer. Can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be discovered by calling `Box.Preview.getViewers()`.
 
-
 Other Methods
 =============
 
@@ -227,7 +220,6 @@ Other Methods
 `Box.Preview.download()` downloads the file if downloadable.
 
 `Box.Preview.resize()` resizes the current preview if applicable. This function only needs to be called when preview's viewport has changed while the window object has not. If the window is resizing, then preview will automatically resize itself.
-
 
 Events
 ======
