@@ -49,6 +49,15 @@ class DocHighlightDialog extends AnnotationDialog {
         }
     }
 
+    /**
+     * Provides the current dimensions of the highlight dialog in display
+     *
+     * @returns {DOMRect} dimensions of the highlight annotations dialog element
+     */
+    getDimensions() {
+        return this._element.getBoundingClientRect();
+    }
+
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -187,12 +196,6 @@ class DocHighlightDialog extends AnnotationDialog {
             annotatorUtil.hideElement(replyTextEl);
             annotatorUtil.showElement(commentTextEl);
             this._deactivateReply();
-
-            // Focuses text area in comments dialog
-            const textAreaEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-            if (annotatorUtil.isElementInViewport(textAreaEl)) {
-                textAreaEl.focus();
-            }
 
         // Ensures that "Reply" text area is shown
         } else {
