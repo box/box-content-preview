@@ -10,7 +10,6 @@ import {
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
-    SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
     COLOR_HEADER_LIGHT,
@@ -136,19 +135,6 @@ export function showAnnotateButton(handler) {
     annotateButton.title = __('annotation_point_toggle');
     annotateButton.classList.remove(CLASS_HIDDEN);
     annotateButton.addEventListener('click', handler);
-}
-
-/**
- * Shows the highlight annotate button if the viewers implement annotations
- *
- * @private
- * @returns {void}
- */
-export function showHighlightButton(handler) {
-    const highlightButton = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_HIGHLIGHT);
-    highlightButton.title = __('annotation_highlight_toggle');
-    highlightButton.classList.remove(CLASS_HIDDEN);
-    highlightButton.addEventListener('click', handler);
 }
 
 /**

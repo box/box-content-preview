@@ -11,7 +11,7 @@ import ErrorLoader from './error/error-loader';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import throttle from 'lodash.throttle';
 import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature } from './file';
-import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showAnnotateButton, showHighlightButton, showPrintButton, showNavigation } from './ui';
+import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
 const PREFETCH_COUNT = 3; // number of files to prefetch
@@ -468,10 +468,6 @@ class Preview extends EventEmitter {
         if (checkPermission(this.file, PERMISSION_ANNOTATE)) {
             if (checkFeature(this.viewer, 'isAnnotatable', 'point')) {
                 showAnnotateButton(this.viewer.getPointModeClickHandler());
-            }
-
-            if (checkFeature(this.viewer, 'isAnnotatable', 'highlight')) {
-                showHighlightButton(this.viewer.getHighlightModeClickHandler());
             }
         }
 
