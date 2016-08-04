@@ -96,10 +96,8 @@ class MediaBase extends Base {
         this.loaded = true;
         this.emit('load');
 
-        if (this.options.ui) {
-            this.loadUI();
-            this.resize();
-        }
+        this.loadUI();
+        this.resize();
     }
 
     /**

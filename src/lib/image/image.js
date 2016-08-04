@@ -88,9 +88,7 @@ class Image extends Base {
             this.zoom();
             this.imageEl.classList.remove(CLASS_INVISIBLE);
 
-            if (this.options.ui !== false) {
-                this.loadUI();
-            }
+            this.loadUI();
         });
 
         get(imageUrl, this.appendAuthHeader(), 'blob')

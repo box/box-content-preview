@@ -806,10 +806,7 @@ class DocBase extends Base {
             this.initAnnotations();
         }
 
-        if (this.options.ui !== false) {
-            this.loadUI();
-        }
-
+        this.loadUI();
         this.checkPaginationButtons();
 
         // Set current page to previously opened page or first page

@@ -48,9 +48,7 @@ class MarkDown extends TextBase {
 
             this.markDownEl.innerHTML = marked(txt);
 
-            if (this.options.ui !== false) {
-                this.loadUI();
-            }
+            this.loadUI();
 
             this.loaded = true;
             this.emit('load');

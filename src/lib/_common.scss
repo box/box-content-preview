@@ -109,22 +109,12 @@ $header-height: 48px;
     visibility: hidden;
 }
 
-.box-preview-btn-divider {
-    border-right: 1px solid $seesee;
-    display: inline-block;
-    height: 24px;
-    margin-right: 10px;
-    padding-left: 10px;
-    vertical-align: middle;
-}
-
 .box-preview-has-header .notifications-wrapper {
     top: 48px;
 }
 
 .box-preview-toggle-overlay {
-
-    & > button {
+    > button {
         margin-bottom: 0;
         margin-left: 0;
     }

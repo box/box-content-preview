@@ -28,9 +28,7 @@ class Image360 extends Box3D {
      * @inheritdoc
      */
     createSubModules() {
-        if (this.options.ui !== false) {
-            this.controls = new Box3DControls(this.wrapperEl);
-        }
+        this.controls = new Box3DControls(this.wrapperEl);
         this.renderer = new Image360Renderer(this.wrapperEl, this.boxSdk);
     }
 }

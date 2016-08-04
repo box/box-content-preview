@@ -16,9 +16,6 @@ import {
 
 const LOAD_TIMEOUT_MS = 60000; // 1m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
-const OPTIONS = {
-    ui: true
-};
 
 @autobind
 class Base extends EventEmitter {
@@ -33,7 +30,7 @@ class Base extends EventEmitter {
         super();
 
         // Save the options
-        this.options = Object.assign({}, OPTIONS, options) || OPTIONS;
+        this.options = options;
 
         // Get the container dom element if selector was passed
         let container = containerEl;
