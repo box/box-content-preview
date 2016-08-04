@@ -459,9 +459,9 @@ class DocBase extends Base {
         // Open links in new tab
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
 
-        // Disable range requests for files smaller than 5MB
+        // Disable range requests for files smaller than 2MB
         PDFJS.disableRange = this.options.file && this.options.file.size ?
-            this.options.file.size < 5242880 :
+            this.options.file.size < 2097152 :
             false;
 
         // Disable range requests for Safari, see: https://github.com/mozilla/pdf.js/issues/4927
@@ -500,7 +500,7 @@ class DocBase extends Base {
         this.pdfLoadingTask = PDFJS.getDocument({
             url: pdfUrl,
             httpHeaders: this.appendAuthHeader(),
-            rangeChunkSize: 1048576 // 1MB chunk size
+            rangeChunkSize: 524288 // 512KB chunk size
         });
 
         // Set document for PDF.js
