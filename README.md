@@ -143,19 +143,22 @@ preview.show(fileId, { options });
     }
 }
 ```
-`token` (Required) Either a string auth token or a token generator function, see below for more details  
-`container` (Optional) DOM node or selector where Preview should be placed, default document body  
-`api` (Optional) Root API URL, default 'https://api.box.com'  
-`sharedLink` (Optional) Shared link URL, default no shared link  
-`sharedLinkPassword`  (Optional) Shared link password, default no password  
-`collection` (Optional) List of file IDs to preview over, default no collection  
-`header` (Optional) String value of 'none' or 'dark' or 'light' that controls header visibility and theme, default 'light'  
-`logoUrl` (Optional) URL of logo to show in header, default Box logo  
-`showDownload` (Optional) Whether download button is shown, default false  
-`viewers` (Optional) Arguments to pass on to viewers, default no arguments  
-`viewers.VIEWERNAME` Name of the viewer, see below for more details  
-`viewers.VIEWERNAME.disabled` Disables the viewer, default false  
-`viewers.VIEWERNAME.annotations` Enables annotations for this viewer, default false  
+| Option | Optionality | Default | Description |
+| --- | --- | --- | --- |
+| token | Required |  | Either a string auth token or a token generator function, see below for more details |
+| container | Optional | document.body | DOM node or selector where Preview should be placed |
+| api | Optional | https://api.box.com | Root API URL |
+| sharedLink | Optional |  | Shared link URL |
+| sharedLinkPassword | Optional |  | Shared link password |
+| collection | Optional |  | List of file IDs to preview over |
+| header | Optional | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
+| logoUrl | Optional |  | URL of logo to show in header |
+| showDownload | Optional | false | Whether download button is shown |
+| viewers | Optional |  | Arguments to pass on to viewers |
+| viewers.VIEWERNAME |  |  | Name of the viewer, see below for more details |
+| viewers.VIEWERNAME.disabled |  | false | Disables the viewer |
+| viewers.VIEWERNAME.annotations |  | false | Enables annotations for the viewer |
+
 
 Token
 =====
