@@ -395,8 +395,7 @@ $avatar-color-9: #f22c44;
 // that helps with text selection - we need to disable this since it interacts
 // badly with point annotations on non-text divs in non-Chrome browsers
 .box-preview-point-annotation-mode .textLayer > div,
-.box-preview-point-annotation-mode .textLayer .endOfContent,
-.box-preview-point-annotation-mode > img {
+.box-preview-point-annotation-mode .textLayer .endOfContent {
     pointer-events: none;
 }
 
