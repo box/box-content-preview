@@ -796,7 +796,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     showDownloadButton() {
-        if (!this.checkPermission(PERMISSION_DOWNLOAD) || !this.options.showDownload) {
+        if (IS_MOBILE || !this.checkPermission(PERMISSION_DOWNLOAD) || !this.options.showDownload) {
             return;
         }
 
