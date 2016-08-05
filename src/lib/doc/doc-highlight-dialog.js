@@ -49,6 +49,15 @@ class DocHighlightDialog extends AnnotationDialog {
         }
     }
 
+    /**
+     * Provides the current dimensions of the highlight dialog in display
+     *
+     * @returns {DOMRect} dimensions of the highlight annotations dialog element
+     */
+    getDimensions() {
+        return this._element.getBoundingClientRect();
+    }
+
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -187,12 +196,6 @@ class DocHighlightDialog extends AnnotationDialog {
             annotatorUtil.hideElement(replyTextEl);
             annotatorUtil.showElement(commentTextEl);
             this._deactivateReply();
-
-            // Focuses text area in comments dialog
-            const textAreaEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-            if (annotatorUtil.isElementInViewport(textAreaEl)) {
-                textAreaEl.focus();
-            }
 
         // Ensures that "Reply" text area is shown
         } else {
@@ -335,6 +338,8 @@ class DocHighlightDialog extends AnnotationDialog {
      * @protected
      */
     mousedownHandler(event) {
+        // Prevent mousedown from focusing on button clicked
+        event.preventDefault();
         event.stopPropagation();
         const dataType = annotatorUtil.findClosestDataType(event.target);
 
@@ -349,6 +354,7 @@ class DocHighlightDialog extends AnnotationDialog {
                 this.emit('annotationdraw');
                 this.toggleHighlightCommentsReply(false);
                 this.toggleHighlightDialogs();
+                this._focusAnnotationsTextArea();
                 break;
 
             default:
@@ -382,6 +388,17 @@ class DocHighlightDialog extends AnnotationDialog {
             this._hasComments = true;
             this._element.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             this.emit('annotationdelete');
+        }
+    }
+
+    /**
+     * Focuses on "Add a comment" textarea in the annotations dialog
+     * @returns {void}
+     */
+    _focusAnnotationsTextArea() {
+        const textAreaEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        if (annotatorUtil.isElementInViewport(textAreaEl)) {
+            textAreaEl.focus();
         }
     }
 }
