@@ -1,14 +1,24 @@
 import AssetLoader from '../asset-loader';
 
-const VIEWER = {
+const VIEWERS = [{
     REPRESENTATION: 'original',
     EXTENSIONS: [],
     SCRIPTS: ['error.js'],
     STYLESHEETS: ['error.css'],
     CONSTRUCTOR: 'PreviewError'
-};
+}];
 
 class ErrorLoader extends AssetLoader {
+
+    /**
+     * Instantiates a loader errors.
+     * @constructor
+     * @returns {ErrorLoader} The error loader instance
+     */
+    constructor() {
+        super();
+        this.viewers = VIEWERS;
+    }
 
     /**
      * Determines if this loader can be used
@@ -27,7 +37,7 @@ class ErrorLoader extends AssetLoader {
      * @returns {Object} the viewer to use
      */
     determineViewer() {
-        return VIEWER;
+        return VIEWERS[0];
     }
 
     /**

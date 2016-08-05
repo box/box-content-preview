@@ -17,7 +17,7 @@ Latest version of the SDK hosted on Box's CDN
 * Version: 0.68.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.68.0/en-US/preview.js   
+https://cdn01.boxcdn.net/content-experience/0.68.0/en-US/preview.js
 https://cdn01.boxcdn.net/content-experience/0.68.0/en-US/preview.css
 
 Usage
@@ -220,6 +220,10 @@ Other Methods
 `Box.Preview.download()` downloads the file if downloadable.
 
 `Box.Preview.resize()` resizes the current preview if applicable. This function only needs to be called when preview's viewport has changed while the window object has not. If the window is resizing, then preview will automatically resize itself.
+
+`Box.Preview.getViewers()` lists all the available viewers.
+
+`Box.Preview.prefetchViewers()` prefetches the static assets for all the available viewers for browser to cache for performance.
 
 Events
 ======

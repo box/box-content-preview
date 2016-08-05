@@ -32,7 +32,7 @@ class AssetLoader {
      * @returns {Array} list of supported viewers
      */
     getViewers() {
-        return this.viewers;
+        return Array.isArray(this.viewers) ? this.viewers : [];
     }
 
     /**
@@ -99,7 +99,7 @@ class AssetLoader {
     }
 
     /**
-     * Prefetches assets
+     * Prefetches assets and reps
      *
      * @public
      * @param {Object} file box file
@@ -110,9 +110,6 @@ class AssetLoader {
      * @returns {void}
      */
     prefetch(file, token, location, sharedLink, sharedLinkPassword) {
-        // Create an asset path creator function
-        const assetUrlCreator = createAssetUrlCreator(location);
-
         // Determine the viewer to use
         const viewer = this.determineViewer(file);
 
@@ -123,10 +120,7 @@ class AssetLoader {
         }
 
         // Prefetch the stylesheets needed for this preview
-        prefetchAssets(viewer.STYLESHEETS.map(assetUrlCreator));
-
-        // Prefetch the scripts needed for this preview
-        prefetchAssets(viewer.SCRIPTS.map(assetUrlCreator));
+        this.prefetchAssets(viewer, location);
 
         if (sharedLink && file.shared_link) {
             // Prefer the file scoped shared link over the globally provided shared link
@@ -145,14 +139,22 @@ class AssetLoader {
     }
 
     /**
-     * An empty function that can be overriden just incase
-     * some loader wants to do some initialization stuff
+     * Prefetches assets
      *
      * @public
+     * @param {Object} viewer
+     * @param {Object} location asset location
      * @returns {void}
      */
-    preload() {
-        // empty
+    prefetchAssets(viewer, location) {
+        // Create an asset path creator function
+        const assetUrlCreator = createAssetUrlCreator(location);
+
+        // Prefetch the stylesheets needed for this preview
+        prefetchAssets(viewer.STYLESHEETS.map(assetUrlCreator));
+
+        // Prefetch the scripts needed for this preview
+        prefetchAssets(viewer.SCRIPTS.map(assetUrlCreator));
     }
 }
 
