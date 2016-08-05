@@ -88,7 +88,11 @@ class DocBase extends Base {
 
         // Clean up PDF network requests
         if (this.pdfLoadingTask) {
-            this.pdfLoadingTask.destroy();
+            try {
+                this.pdfLoadingTask.destroy();
+            } catch (e) {
+                // Ignore these errors
+            }
         }
 
         // Clean up viewer and PDF document object
