@@ -39,14 +39,13 @@ class DocHighlightDialog extends AnnotationDialog {
      * @returns {void}
      */
     addAnnotation(annotation) {
-        if (annotation) {
-            super.addAnnotation(annotation);
-        } else {
-            const isTextHighlighted = this._element.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
-            if (!isTextHighlighted) {
-                this._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
-            }
+        // If annotation is blank then display who highlighted the text
+        if (annotation.text === '') {
+            const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
+            highlightLabelEl.innerHTML = `${annotation.user.name} highlighted`.trim();
         }
+
+        super.addAnnotation(annotation);
     }
 
     /**
@@ -236,6 +235,7 @@ class DocHighlightDialog extends AnnotationDialog {
         this._element.innerHTML = `
             <div class="box-preview-annotation-caret"></div>
             <div class="box-preview-annotation-highlight-dialog ${this._hasComments ? CLASS_HIDDEN : ''}">
+                <span class="box-preview-annotation-highlight-label"></span>
                 <button class="box-preview-btn-plain box-preview-add-highlight-btn"
                     data-type="highlight-btn"
                     title="${__('annotation_highlight_toggle')}">
@@ -276,6 +276,11 @@ class DocHighlightDialog extends AnnotationDialog {
                     </div>
                 </section>
             </section>`.trim();
+
+        if (annotations.length === 1 && annotations[0].text === '') {
+            const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
+            highlightLabelEl.innerHTML = `${annotations[0].user.name} highlighted`.trim();
+        }
 
         // Add annotation elements
         annotations.forEach((annotation) => {
