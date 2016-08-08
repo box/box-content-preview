@@ -470,12 +470,11 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightClickHandler(event) {
-        // Determine if any highlight threads are pending and ignore the
-        // creation of any new highlights
+        // Destroy any pending highlights on on click outside the highlight
         const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
-        if (pendingThreads.length) {
-            return;
-        }
+        pendingThreads.forEach((thread) => {
+            thread.cancelComment();
+        });
 
         // We use this to prevent a mousedown from activating two different
         // highlights at the same time - this tracks whether a delegated
