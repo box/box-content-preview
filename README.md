@@ -150,9 +150,9 @@ preview.show(fileId, { options });
 | logoUrl | Optional |  | URL of logo to show in header |
 | showDownload | Optional | false | Whether download button is shown |
 | viewers | Optional |  | Arguments to pass on to viewers |
-| viewers.VIEWERNAME |  |  | Name of the viewer, see below for more details |
-| viewers.VIEWERNAME.disabled |  | false | Disables the viewer |
-| viewers.VIEWERNAME.annotations |  | false | Enables annotations for the viewer |
+| VIEWERNAME |  |  | Name of the viewer, see below for more details |
+| disabled |  | false | Disables the viewer |
+| annotations |  | false | Enables annotations for the viewer |
 
 Token
 =====
