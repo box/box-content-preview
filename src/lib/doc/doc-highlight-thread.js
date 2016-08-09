@@ -25,6 +25,19 @@ class DocHighlightThread extends AnnotationThread {
     //--------------------------------------------------------------------------
 
     /**
+     * Cancels the comment on the thread
+     *
+     * @returns {void}
+     */
+    cancelComment() {
+        if (this._annotations.length && this._annotations[0].text === '') {
+            this._dialog.toggleHighlightDialogs();
+        } else {
+            this.destroy();
+        }
+    }
+
+    /**
      * [destructor]
      *
      * @override
@@ -260,11 +273,7 @@ class DocHighlightThread extends AnnotationThread {
 
         // Annotation canceled
         this._dialog.addListener('annotationcancel', () => {
-            if (this._annotations.length && this._annotations[0].text === '') {
-                this._dialog.toggleHighlightDialogs();
-            } else {
-                this.destroy();
-            }
+            this.cancelComment();
         });
 
         // Annotation deleted
