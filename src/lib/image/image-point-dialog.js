@@ -10,6 +10,8 @@ import * as annotatorUtil from '../annotation/annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
 
 const PAGE_PADDING_TOP = 15;
+const POINT_ANNOTATION_ICON_HEIGHT = 31;
+const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
 @autobind
 class ImagePointDialog extends AnnotationDialog {
@@ -74,7 +76,7 @@ class ImagePointDialog extends AnnotationDialog {
 
         // Position the dialog
         this._element.style.left = `${dialogLeftX}px`;
-        this._element.style.top = `${dialogTopY + PAGE_PADDING_TOP}px`;
+        this._element.style.top = `${dialogTopY + PAGE_PADDING_TOP - POINT_ANNOTATION_ICON_HEIGHT + POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
     }
 }
 

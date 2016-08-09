@@ -38,10 +38,7 @@ class DocPointDialog extends AnnotationDialog {
 
         // Center middle of dialog with point - this coordinate is with respect to the page
         let dialogLeftX = browserX - dialogWidth / 2;
-
-        // Position 7px below location and transparent border pushes it down
-        // further - this coordinate is with respect to the page
-        const dialogTopY = browserY + 7;
+        const dialogTopY = browserY;
 
         // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
         const dialogPastLeft = dialogLeftX < 0;
