@@ -119,7 +119,7 @@ describe('util', () => {
             get(url, 'blob').then((response) => {
                 /* eslint-disable no-unused-expressions */
                 expect(fetchMock.called('foo?bar=bum')).to.be.true;
-                expect(response).to.equal(blob);
+                expect(response).to.deep.equal(blob);
                 /* eslint-enable no-unused-expressions */
                 done();
             });
@@ -155,7 +155,7 @@ describe('util', () => {
             get(url, 'any').then((response) => {
                 /* eslint-disable no-unused-expressions */
                 expect(fetchMock.called('foo?bar=bum')).to.be.true;
-                expect(response).to.be.an('object');
+                expect(typeof response === 'object').to.be.true;
                 /* eslint-enable no-unused-expressions */
                 done();
             });

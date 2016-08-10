@@ -45,12 +45,12 @@ describe('image.js', () => {
                     id: '1'
                 },
                 permissions: {
-                    can_annotate: true
+                    can_annotate: false
                 }
             },
             viewers: {
                 Image: {
-                    annotations: true
+                    annotations: false
                 }
             }
         });
