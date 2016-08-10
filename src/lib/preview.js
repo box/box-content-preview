@@ -10,7 +10,8 @@ import RepStatus from './rep-status';
 import ErrorLoader from './error/error-loader';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import throttle from 'lodash.throttle';
-import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature } from './file';
+import getTokens from './tokens';
+import { getURL, getDownloadURL, checkPermission, checkFeature } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
@@ -73,7 +74,7 @@ class Preview extends EventEmitter {
      * @param {Object} token auth token map
      * @returns {void}
      */
-    parseOptions(token) {
+    parseOptions(tokens) {
         // Grab the options from saved preview options
         const options = Object.assign({}, this.previewOptions);
 
@@ -84,10 +85,7 @@ class Preview extends EventEmitter {
         this.options.container = options.container;
 
         // Authorization token
-        this.options.token = token[this.file.id];
-
-        // Save handle to the token fetcher as viewers might need it
-        this.options.tokenFetcher = this.fetchTokens;
+        this.options.token = tokens[this.file.id];
 
         // Shared link URL
         this.options.sharedLink = options.sharedLink;
@@ -122,81 +120,6 @@ class Preview extends EventEmitter {
         // Iterate over all the viewer options and disable any viewer
         // that has an option disabled set to true
         this.disableViewers(Object.keys(this.options.viewers).filter((viewer) => !!this.options.viewers[viewer].disabled));
-    }
-
-    /**
-     * Grab the token from the saved preview options to parse it.
-     * The token can either be a simple string or a function that returns
-     * a promise which resolves to a key value map where key is the file
-     * id and value is the token. The function accepts either a simple id
-     * or an array of file ids
-     *
-     * @private
-     * @param {String|Array} [id] box file ids
-     * @returns {void}
-     */
-    fetchTokens(id) {
-        // By defaut we fetch the current file id token
-        let ids = [this.file.id];
-
-        // If instead id(s) were passed in, we fetch those
-        // This will be the use case for prefetch and viewers
-        // Normalize to an array so that we always deal with ids
-        if (id && Array.isArray(id)) {
-            ids = id;
-        } else if (id) {
-            ids = [id];
-        }
-
-        // Grab the auth token or token generator
-        const token = this.previewOptions.token;
-
-        // Create an error to throw if needed
-        const error = new Error('Missing Auth Token!');
-
-        // Auth token should be available
-        if (!token) {
-            throw error;
-        }
-
-        // Helper function to create token map used below
-        const tokenMapCreator = (authToken) => {
-            const tokenMap = {};
-            ids.forEach((fileId) => {
-                tokenMap[fileId] = authToken; // all files use the same token
-            });
-            return tokenMap;
-        };
-
-        return new Promise((resolve) => {
-            if (typeof token === 'function') {
-                // Token may be a function that returns a promise
-                token(ids).then((tokens) => {
-                    // Resolved tokens can either be a map of { id: token }
-                    // or it can just be a single string token that applies
-                    // to all the files irrespective of the id.
-                    if (typeof tokens === 'string') {
-                        // String token which is the same for all files
-                        resolve(tokenMapCreator(tokens));
-                    } else {
-                        // Iterate over all the requested file ids
-                        // and make sure we got them back otherwise
-                        // throw and error about missing tokens
-                        ids.forEach((fileId) => {
-                            if (!tokens[fileId]) {
-                                throw error;
-                            }
-                        });
-                        resolve(tokens);
-                    }
-                });
-            } else {
-                // Token may just be a string, create a map
-                // from id to token to normalize. In this case
-                // the value is going to be the same for all files
-                resolve(tokenMapCreator(token));
-            }
-        });
     }
 
     /**
@@ -240,7 +163,7 @@ class Preview extends EventEmitter {
         }
 
         // Fetch tokens before doing anything
-        this.fetchTokens()
+        getTokens(this.file.id, this.previewOptions.token)
         .then(this.fetchTokensResponse)
         .catch(this.triggerFetchError);
     }
@@ -325,10 +248,6 @@ class Preview extends EventEmitter {
         }
 
         try {
-            if (file.type !== 'file') {
-                throw new Error(__('error_box_file_fetch'));
-            }
-
             // Save reference to the file and update logger
             this.file = file;
             this.logger.setFile(file);
@@ -337,9 +256,7 @@ class Preview extends EventEmitter {
             const cached = cache.get(file.id);
 
             // Cache the new file object if not watermarked
-            if (!isWatermarked(file)) {
-                cache.set(file.id, file);
-            }
+            cache.set(file.id, file);
 
             // Finally load the viewer if file sha mismatches
             if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
@@ -641,55 +558,33 @@ class Preview extends EventEmitter {
         }
 
         // Get auth tokens for all files we should be prefetching
-        this.fetchTokens(filesToPrefetch)
+        getTokens(filesToPrefetch, this.previewOptions.token)
         .then((tokens) => {
-            // Some files may already be prefetched, filter them out
-            const filesNeedingPrefetch = filesToPrefetch.filter((id) => {
-                const cached = cache.get(id);
-                return !cached || !cached.representations; // @TODO need better check
-            });
-
-            // Iterate over all the files needed prefetch
-            filesNeedingPrefetch.forEach((id) => {
+            filesToPrefetch.forEach((id) => {
                 const token = tokens[id];
+                const cached = cache.get(id);
 
-                // Cache an empty file object to prevent further prefetches
-                cache.set(id, {
-                    id,
-                    representations: {}
-                });
+                if (cached && cached.representations) {
+                    return;
+                }
 
                 // Pre-fetch the file information
                 get(getURL(id, this.options.api), this.getRequestHeaders(token))
                 .then((file) => {
-                    this.handlePrefetchResponse(file, token);
+                    // Save the returned file
+                    cache.set(file.id, file);
+
+                    // Pre-fetch content if applicable so that the
+                    // Browser caches the content
+                    const loader = this.getLoader(file);
+                    if (loader && typeof loader.prefetch === 'function') {
+                        loader.prefetch(file, token, this.location, this.options.sharedLink, this.options.sharedLinkPassword);
+                    }
                 })
                 .catch(() => {});
             });
         })
         .catch(() => {});
-    }
-
-    /**
-     * Prefetches a file and preview assets
-     *
-     * @private
-     * @param {Object} file box file
-     * @returns {void}
-     */
-    handlePrefetchResponse(file, token) {
-        // Don't bother with non-files
-        if (file.type === 'file' && !isWatermarked(file)) {
-            // Save the returned file
-            cache.set(file.id, file);
-
-            // Pre-fetch content if applicable so that the
-            // Browser caches the content
-            const loader = this.getLoader(file);
-            if (loader && typeof loader.prefetch === 'function') {
-                loader.prefetch(file, token, this.location, this.options.sharedLink, this.options.sharedLinkPassword);
-            }
-        }
     }
 
     /**
