@@ -25,13 +25,14 @@ class DocHighlightThread extends AnnotationThread {
     //--------------------------------------------------------------------------
 
     /**
-     * Cancels the comment on the thread
+     * Cancels the first comment on the thread
      *
      * @returns {void}
      */
-    cancelComment() {
-        if (this._annotations.length && this._annotations[0].text === '') {
+    cancelFirstComment() {
+        if (this._annotations.length === 1 && this._annotations[0].text === '') {
             this._dialog.toggleHighlightDialogs();
+            this.reset();
         } else {
             this.destroy();
         }
@@ -273,7 +274,7 @@ class DocHighlightThread extends AnnotationThread {
 
         // Annotation canceled
         this._dialog.addListener('annotationcancel', () => {
-            this.cancelComment();
+            this.cancelFirstComment();
         });
 
         // Annotation deleted
