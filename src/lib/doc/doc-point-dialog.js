@@ -10,6 +10,7 @@ import * as annotatorUtil from '../annotation/annotator-util';
 import * as docAnnotatorUtil from './doc-annotator-util';
 
 const PAGE_PADDING_TOP = 15;
+const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
 @autobind
 class DocPointDialog extends AnnotationDialog {
@@ -38,7 +39,7 @@ class DocPointDialog extends AnnotationDialog {
 
         // Center middle of dialog with point - this coordinate is with respect to the page
         let dialogLeftX = browserX - dialogWidth / 2;
-        const dialogTopY = browserY;
+        const dialogTopY = browserY - POINT_ANNOTATION_ICON_DOT_HEIGHT / 2;
 
         // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
         const dialogPastLeft = dialogLeftX < 0;
