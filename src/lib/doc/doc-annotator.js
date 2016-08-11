@@ -29,21 +29,6 @@ const PAGE_PADDING_TOP = 15;
 @autobind
 class DocAnnotator extends Annotator {
 
-    //--------------------------------------------------------------------------
-    // Public
-    //--------------------------------------------------------------------------
-
-    /**
-     * [destructor]
-     *
-     * @override
-     * @returns {void}
-     */
-    destroy() {
-        super.destroy();
-        this.removeAllListeners('pointmodeenter');
-    }
-
     /**
      * Initializes annotator.
      *
@@ -63,25 +48,6 @@ class DocAnnotator extends Annotator {
             document.getElementsByTagName('head')[0].appendChild(metaEl);
         }
         */
-    }
-
-    /**
-     * Toggles highlight annotation mode on and off. When highlight mode is on,
-     * every selection becomes a highlight.
-     *
-     * @param {Event} event DOM event
-     * @returns {void}
-     */
-    toggleHighlightModeHandler(event = {}) {
-        // This unfortunately breaks encapsulation, but the header currently
-        // doesn't manage its own functionality
-        let buttonEl = event.target;
-        if (!buttonEl) {
-            const containerEl = document.querySelector('.box-preview-header');
-            buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-highlight') : null;
-        }
-
-        this._destroyPendingThreads();
     }
 
     //--------------------------------------------------------------------------
@@ -162,8 +128,7 @@ class DocAnnotator extends Annotator {
             const { highlight, highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this._highlighter, pageEl);
             const quadPoints = [];
             highlightEls.forEach((element) => {
-                quadPoints.push(docAnnotatorUtil.getQuadPoints(element, pageEl,
-                    annotatorUtil.getScale(this._annotatedElement)));
+                quadPoints.push(docAnnotatorUtil.getQuadPoints(element, pageEl, zoomScale));
             });
 
             // Remove rangy highlight and restore selection
