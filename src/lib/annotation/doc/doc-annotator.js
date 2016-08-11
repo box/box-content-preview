@@ -378,6 +378,18 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMouseupHandler(event) {
+        // Prevents creation of overlapping highlights, instead hovers on overlapped highlight
+        const hoverThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_ACTIVE_HOVER, constants.ANNOTATION_STATE_HOVER);
+        hoverThreads.forEach((thread) => {
+            thread.onMousemove(event);
+        });
+
+        // Unselects text and prevents click event on hovered highlight
+        if (hoverThreads.length) {
+            window.getSelection().removeAllRanges();
+            return;
+        }
+
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we're in highlight mode,
