@@ -121,7 +121,7 @@ describe('annotation-dialog', () => {
         it('should not do anything if the specified annotation does not exist', () => {
             const deactivateStub = sandbox.stub(annotationDialog, '_deactivateReply');
             annotationDialog.removeAnnotation('someID');
-            expect(deactivateStub).to.have.not.been.called;
+            expect(deactivateStub).to.not.have.been.called;
         });
     });
 
@@ -223,7 +223,7 @@ describe('annotation-dialog', () => {
 
             annotationDialog.mouseleaveHandler();
 
-            expect(hideStub).to.have.not.been.called;
+            expect(hideStub).to.not.have.been.called;
         });
 
         it('should hide dialog if there are annotations in the dialog', () => {
