@@ -7,7 +7,7 @@ import {
     getDimensionScale,
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint
-} from '../../doc/doc-annotator-util';
+} from '../doc-annotator-util';
 
 describe('doc-annotator-util', () => {
     before(() => {
