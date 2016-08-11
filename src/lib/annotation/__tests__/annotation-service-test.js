@@ -1,6 +1,6 @@
 import '../../polyfill';
-import Annotation from '../../annotation/annotation';
-import AnnotationService from '../../annotation/annotation-service';
+import Annotation from '../annotation';
+import AnnotationService from '../annotation-service';
 import fetchMock from 'fetch-mock';
 
 const API = 'https://app.box.com/api';

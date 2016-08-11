@@ -8,7 +8,7 @@ import {
     getAvatarHtml,
     getScale,
     htmlEscape
-} from '../../annotation/annotator-util';
+} from '../annotator-util';
 
 describe('annotator-util', () => {
     let childEl;

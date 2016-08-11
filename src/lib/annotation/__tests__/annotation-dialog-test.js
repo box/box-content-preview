@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import AnnotationDialog from '../../annotation/annotation-dialog';
-import * as annotatorUtil from '../../annotation/annotator-util';
-import * as constants from '../../annotation/annotation-constants';
+import AnnotationDialog from '../annotation-dialog';
+import * as annotatorUtil from '../annotator-util';
+import * as constants from '../annotation-constants';
 
 let annotationDialog;
 const sandbox = sinon.sandbox.create();

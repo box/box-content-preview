@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import AnnotationThread from '../../annotation/annotation-thread';
-import * as constants from '../../annotation/annotation-constants';
+import AnnotationThread from '../annotation-thread';
+import * as constants from '../annotation-constants';
 
 let annotationThread;
 const sandbox = sinon.sandbox.create();

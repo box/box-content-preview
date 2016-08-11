@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import Annotator from '../../annotation/annotator';
-import * as constants from '../../annotation/annotation-constants';
+import Annotator from '../annotator';
+import * as constants from '../annotation-constants';
 
 let annotator;
 const sandbox = sinon.sandbox.create();
