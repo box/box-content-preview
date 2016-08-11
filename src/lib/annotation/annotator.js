@@ -310,9 +310,10 @@ class Annotator extends EventEmitter {
      * @protected
      */
     unbindCustomListenersOnThread(thread) {
-        thread.removeAllListeners(['threaddeleted']);
-        thread.removeAllListeners(['annotationcreateerror']);
-        thread.removeAllListeners(['annotationdeleteerror']);
+        thread.removeAllListeners('threaddeleted');
+        thread.removeAllListeners('threadcleanup');
+        thread.removeAllListeners('annotationcreateerror');
+        thread.removeAllListeners('annotationdeleteerror');
     }
 
     /**
