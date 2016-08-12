@@ -5,10 +5,10 @@
  */
 
 import autobind from 'autobind-decorator';
-import AnnotationThread from '../annotation/annotation-thread';
+import AnnotationThread from '../annotation-thread';
 import DocHighlightDialog from './doc-highlight-dialog';
-import * as annotatorUtil from '../annotation/annotator-util';
-import * as constants from '../annotation/annotation-constants';
+import * as annotatorUtil from '../annotator-util';
+import * as constants from '../annotation-constants';
 import * as docAnnotatorUtil from './doc-annotator-util';
 
 const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';

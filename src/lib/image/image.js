@@ -2,7 +2,7 @@ import './image.scss';
 import autobind from 'autobind-decorator';
 import AnnotationService from '../annotation/annotation-service';
 import * as annotatorUtil from '../annotation/annotator-util';
-import ImageAnnotator from './image-annotator';
+import ImageAnnotator from '../annotation/image/image-annotator';
 import Browser from '../browser';
 import Base from './image-base';
 import { get } from '../util';

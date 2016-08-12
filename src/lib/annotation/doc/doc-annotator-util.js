@@ -3,7 +3,7 @@
  * @author tjin
  */
 
-import * as annotatorUtil from '../annotation/annotator-util';
+import * as annotatorUtil from '../annotator-util';
 
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;

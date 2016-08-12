@@ -5,8 +5,8 @@
  */
 
 import autobind from 'autobind-decorator';
-import Annotator from '../annotation/annotator';
-import Browser from '../browser';
+import Annotator from '../annotator';
+import Browser from '../../browser';
 import DocHighlightThread from './doc-highlight-thread';
 import DocPointThread from './doc-point-thread';
 import rangy from 'rangy';
@@ -17,8 +17,8 @@ import rangyHighlight from 'rangy/lib/rangy-highlighter';
 import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
-import * as annotatorUtil from '../annotation/annotator-util';
-import * as constants from '../annotation/annotation-constants';
+import * as annotatorUtil from '../annotator-util';
+import * as constants from '../annotation-constants';
 import * as docAnnotatorUtil from './doc-annotator-util';
 
 const IS_MOBILE = Browser.isMobile();

@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
-import Annotator from '../../annotation/annotator';
-import DocAnnotator from '../doc-annotator';
-import DocHighlightThread from '../doc-highlight-thread';
-import DocPointThread from '../doc-point-thread';
+import Annotator from '../../annotator';
+import DocAnnotator from '../../doc/doc-annotator';
+import DocHighlightThread from '../../doc/doc-highlight-thread';
+import DocPointThread from '../../doc/doc-point-thread';
 import rangy from 'rangy';
-import * as annotatorUtil from '../../annotation/annotator-util';
-import * as docAnnotatorUtil from '../doc-annotator-util';
+import * as annotatorUtil from '../../annotator-util';
+import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
 
 let annotator;
 const sandbox = sinon.sandbox.create();
@@ -16,7 +16,7 @@ describe('doc-annotator', () => {
     });
 
     beforeEach(() => {
-        fixture.load('doc/__tests__/doc-annotator-test.html');
+        fixture.load('annotation/__tests__/doc/doc-annotator-test.html');
 
         annotator = new DocAnnotator({
             annotatedElement: document.querySelector('.annotated-element'),
