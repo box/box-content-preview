@@ -249,9 +249,9 @@ describe('annotation-thread', () => {
 
             annotationThread.bindDOMListeners();
 
-            expect(addEventListenerStub).to.have.been.calledWith('click', sinon.match.any);
-            expect(addEventListenerStub).to.have.been.calledWith('mouseover', sinon.match.any);
-            expect(addEventListenerStub).to.have.been.calledWith('mouseout', sinon.match.any);
+            expect(addEventListenerStub).to.have.been.calledWith('click', sinon.match.func);
+            expect(addEventListenerStub).to.have.been.calledWith('mouseover', sinon.match.func);
+            expect(addEventListenerStub).to.have.been.calledWith('mouseout', sinon.match.func);
         });
     });
 
@@ -262,9 +262,9 @@ describe('annotation-thread', () => {
 
             annotationThread.unbindDOMListeners();
 
-            expect(removeEventListenerStub).to.have.been.calledWith('click', sinon.match.any);
-            expect(removeEventListenerStub).to.have.been.calledWith('mouseover', sinon.match.any);
-            expect(removeEventListenerStub).to.have.been.calledWith('mouseout', sinon.match.any);
+            expect(removeEventListenerStub).to.have.been.calledWith('click', sinon.match.func);
+            expect(removeEventListenerStub).to.have.been.calledWith('mouseover', sinon.match.func);
+            expect(removeEventListenerStub).to.have.been.calledWith('mouseout', sinon.match.func);
         });
     });
 
@@ -278,9 +278,9 @@ describe('annotation-thread', () => {
 
             annotationThread.bindCustomListenersOnDialog();
 
-            expect(addListenerStub).to.have.been.calledWith('annotationcreate', sinon.match.any);
-            expect(addListenerStub).to.have.been.calledWith('annotationcancel', sinon.match.any);
-            expect(addListenerStub).to.have.been.calledWith('annotationdelete', sinon.match.any);
+            expect(addListenerStub).to.have.been.calledWith('annotationcreate', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('annotationcancel', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('annotationdelete', sinon.match.func);
         });
     });
 

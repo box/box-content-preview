@@ -147,11 +147,11 @@ describe('annotation-dialog', () => {
             const addListenerStub = sandbox.stub(annotationDialog._element, 'addEventListener');
             annotationDialog.bindDOMListeners();
 
-            expect(addListenerStub).to.have.been.calledWith('keydown', sinon.match.any);
-            expect(addListenerStub).to.have.been.calledWith('click', sinon.match.any);
-            expect(addListenerStub).to.have.been.calledWith('mouseup', sinon.match.any);
-            expect(addListenerStub).to.have.been.calledWith('mouseenter', sinon.match.any);
-            expect(addListenerStub).to.have.been.calledWith('mouseleave', sinon.match.any);
+            expect(addListenerStub).to.have.been.calledWith('keydown', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('click', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('mouseup', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('mouseenter', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('mouseleave', sinon.match.func);
         });
     });
 
@@ -160,11 +160,11 @@ describe('annotation-dialog', () => {
             const removeListenerStub = sandbox.stub(annotationDialog._element, 'removeEventListener');
             annotationDialog.unbindDOMListeners();
 
-            expect(removeListenerStub).to.have.been.calledWith('keydown', sinon.match.any);
-            expect(removeListenerStub).to.have.been.calledWith('click', sinon.match.any);
-            expect(removeListenerStub).to.have.been.calledWith('mouseup', sinon.match.any);
-            expect(removeListenerStub).to.have.been.calledWith('mouseenter', sinon.match.any);
-            expect(removeListenerStub).to.have.been.calledWith('mouseleave', sinon.match.any);
+            expect(removeListenerStub).to.have.been.calledWith('keydown', sinon.match.func);
+            expect(removeListenerStub).to.have.been.calledWith('click', sinon.match.func);
+            expect(removeListenerStub).to.have.been.calledWith('mouseup', sinon.match.func);
+            expect(removeListenerStub).to.have.been.calledWith('mouseenter', sinon.match.func);
+            expect(removeListenerStub).to.have.been.calledWith('mouseleave', sinon.match.func);
         });
     });
 

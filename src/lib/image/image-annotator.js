@@ -14,21 +14,6 @@ import * as constants from '../annotation/annotation-constants';
 class ImageAnnotator extends Annotator {
 
     //--------------------------------------------------------------------------
-    // Public
-    //--------------------------------------------------------------------------
-
-    /**
-     * [destructor]
-     *
-     * @override
-     * @returns {void}
-     */
-    destroy() {
-        super.destroy();
-        this.removeAllListeners('pointmodeenter');
-    }
-
-    //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
 

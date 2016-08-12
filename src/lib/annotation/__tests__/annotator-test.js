@@ -201,10 +201,10 @@ describe('annotator', () => {
 
             annotator.bindCustomListenersOnThread(thread);
 
-            expect(thread.addListener).to.have.been.calledWith('threaddeleted', sinon.match.any);
-            expect(thread.addListener).to.have.been.calledWith('threadcleanup', sinon.match.any);
-            expect(thread.addListener).to.have.been.calledWith('annotationcreateerror', sinon.match.any);
-            expect(thread.addListener).to.have.been.calledWith('annotationdeleteerror', sinon.match.any);
+            expect(thread.addListener).to.have.been.calledWith('threaddeleted', sinon.match.func);
+            expect(thread.addListener).to.have.been.calledWith('threadcleanup', sinon.match.func);
+            expect(thread.addListener).to.have.been.calledWith('annotationcreateerror', sinon.match.func);
+            expect(thread.addListener).to.have.been.calledWith('annotationdeleteerror', sinon.match.func);
         });
     });
 

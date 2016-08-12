@@ -41,7 +41,7 @@ describe('doc-point-thread', () => {
             // in the prototype of the prototype of DocPointThread (ie
             // AnnotationThread's prototype) to be a stub
             Object.defineProperty(Object.getPrototypeOf(DocPointThread.prototype), 'showDialog', {
-                value: sinon.stub()
+                value: sandbox.stub()
             });
 
             pointThread.showDialog();
@@ -52,7 +52,7 @@ describe('doc-point-thread', () => {
         it('should call parent showDialog if user can\'t annotate', () => {
             pointThread._annotationService.canAnnotate = false;
             Object.defineProperty(Object.getPrototypeOf(DocPointThread.prototype), 'showDialog', {
-                value: sinon.stub()
+                value: sandbox.stub()
             });
 
             pointThread.showDialog();
@@ -64,7 +64,7 @@ describe('doc-point-thread', () => {
             pointThread._annotationService.canAnnotate = true;
             sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(false);
             Object.defineProperty(Object.getPrototypeOf(DocPointThread.prototype), 'showDialog', {
-                value: sinon.stub()
+                value: sandbox.stub()
             });
 
             pointThread.showDialog();
