@@ -10,7 +10,7 @@ import Base from '../base';
 import Browser from '../browser';
 import cache from '../cache';
 import Controls from '../controls';
-import DocAnnotator from './doc-annotator';
+import DocAnnotator from '../annotation/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../fullscreen';
 import { CLASS_BOX_PREVIEW_FIND_BAR } from '../constants';

@@ -3,7 +3,7 @@
  * @author spramod
  */
 
-import * as annotatorUtil from '../annotation/annotator-util';
+import * as annotatorUtil from '../annotator-util';
 
 const IMAGE_PADDING = 15;
 const ROTATION_ONCE_DEG = -90;

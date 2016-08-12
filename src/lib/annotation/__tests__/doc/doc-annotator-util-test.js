@@ -7,7 +7,7 @@ import {
     getDimensionScale,
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint
-} from '../doc-annotator-util';
+} from '../../doc/doc-annotator-util';
 
 describe('doc-annotator-util', () => {
     before(() => {
@@ -15,7 +15,7 @@ describe('doc-annotator-util', () => {
     });
 
     beforeEach(() => {
-        fixture.load('doc/__tests__/doc-annotator-util-test.html');
+        fixture.load('annotation/__tests__/doc/doc-annotator-util-test.html');
     });
 
     afterEach(() => {

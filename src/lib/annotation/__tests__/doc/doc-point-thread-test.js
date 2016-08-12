@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
-import DocPointDialog from '../doc-point-dialog';
-import DocPointThread from '../doc-point-thread';
-import AnnotationThread from '../../annotation/annotation-thread';
-import * as annotatorUtil from '../../annotation/annotator-util';
-import * as constants from '../../annotation/annotation-constants';
-import * as docAnnotatorUtil from '../doc-annotator-util';
+import DocPointDialog from '../../doc/doc-point-dialog';
+import DocPointThread from '../../doc/doc-point-thread';
+import AnnotationThread from '../../annotation-thread';
+import * as annotatorUtil from '../../annotator-util';
+import * as constants from '../../annotation-constants';
+import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
 
 let pointThread;
 const sandbox = sinon.sandbox.create();
@@ -15,7 +15,7 @@ describe('doc-point-thread', () => {
     });
 
     beforeEach(() => {
-        fixture.load('doc/__tests__/doc-point-thread-test.html');
+        fixture.load('annotation/__tests__/doc/doc-point-thread-test.html');
 
         pointThread = new DocPointThread({
             annotatedElement: document.querySelector('.annotated-element'),

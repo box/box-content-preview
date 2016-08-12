@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import DocPointDialog from '../doc-point-dialog';
-import * as annotatorUtil from '../../annotation/annotator-util';
-import * as docAnnotatorUtil from '../doc-annotator-util';
+import DocPointDialog from '../../doc/doc-point-dialog';
+import * as annotatorUtil from '../../annotator-util';
+import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
 
 let pointDialog;
 const sandbox = sinon.sandbox.create();
@@ -12,7 +12,7 @@ describe('doc-point-dialog', () => {
     });
 
     beforeEach(() => {
-        fixture.load('doc/__tests__/doc-point-dialog-test.html');
+        fixture.load('annotation/__tests__/doc/doc-point-dialog-test.html');
 
         pointDialog = new DocPointDialog({
             annotatedElement: document.querySelector('.annotated-element'),

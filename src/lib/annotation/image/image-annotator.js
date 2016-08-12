@@ -4,11 +4,11 @@
  */
 
 import autobind from 'autobind-decorator';
-import Annotator from '../annotation/annotator';
+import Annotator from '../annotator';
 import ImagePointThread from './image-point-thread';
-import * as annotatorUtil from '../annotation/annotator-util';
+import * as annotatorUtil from '../annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
-import * as constants from '../annotation/annotation-constants';
+import * as constants from '../annotation-constants';
 
 @autobind
 class ImageAnnotator extends Annotator {

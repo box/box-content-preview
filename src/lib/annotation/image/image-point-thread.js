@@ -5,11 +5,11 @@
  */
 
 import autobind from 'autobind-decorator';
-import AnnotationThread from '../annotation/annotation-thread';
+import AnnotationThread from '../annotation-thread';
 import ImagePointDialog from './image-point-dialog';
-import * as annotatorUtil from '../annotation/annotator-util';
+import * as annotatorUtil from '../annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
-import * as constants from '../annotation/annotation-constants';
+import * as constants from '../annotation-constants';
 
 const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;

@@ -6,13 +6,13 @@
  */
 
 import autobind from 'autobind-decorator';
-import AnnotationDialog from '../annotation/annotation-dialog';
-import * as annotatorUtil from '../annotation/annotator-util';
+import AnnotationDialog from '../annotation-dialog';
+import * as annotatorUtil from '../annotator-util';
 import * as docAnnotatorUtil from './doc-annotator-util';
-import { CLASS_HIDDEN, CLASS_ACTIVE } from '../constants';
-import * as constants from '../annotation/annotation-constants.js';
-import { decodeKeydown } from '../util.js';
-import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../icons/icons';
+import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../constants';
+import * as constants from '../annotation-constants.js';
+import { decodeKeydown } from '../../util.js';
+import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 
 const CLASS_HIGHLIGHT_DIALOG = 'box-preview-highlight-dialog';
 const HIGHLIGHT_COMMENTS_DIALOG_WIDTH = 282;

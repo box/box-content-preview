@@ -4,9 +4,9 @@
  * @author spramod
  */
 
-import AnnotationDialog from '../annotation/annotation-dialog';
+import AnnotationDialog from '../annotation-dialog';
 import autobind from 'autobind-decorator';
-import * as annotatorUtil from '../annotation/annotator-util';
+import * as annotatorUtil from '../annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
 
 const PAGE_PADDING_TOP = 15;
