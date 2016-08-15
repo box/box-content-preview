@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export NODE_PATH=$NODE_PATH:./node_modules
+export PATH=/box/www/devtools/bin:$PATH  # Add devtools to PATH so rpm-to-artifactory will work
 
 
 # Asset package name
@@ -83,7 +84,7 @@ push_to_github() {
 push_to_maven() {
 
     echo "----------------------------------------------------"
-    echo "Starting a Maven push for" $KIND-$VERSION
+    echo "Starting a Maven & Artifactory push for" $KIND-$VERSION
     echo "----------------------------------------------------"
 
 
@@ -103,6 +104,13 @@ push_to_maven() {
 
     echo "----------------------------------------------------"
     echo "Status of Maven push: $status"
+    echo "----------------------------------------------------"
+
+    REPO_NAME="box-rpm-releases" REPO_PATH='net/box' SERVICE_KIND=$KIND SERVICE_VERSION=$VERSION rpm-to-artifactory $rpmDir/$rpm
+    status=$?
+
+    echo "----------------------------------------------------"
+    echo "Status of Artifactory push: $status"
     echo "----------------------------------------------------"
 
     rm $rpmDir/$rpm || exit 1
