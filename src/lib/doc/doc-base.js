@@ -53,7 +53,7 @@ class DocBase extends Base {
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
-        this.findBarEl = this.docEl.appendChild(document.createElement('div'));
+        this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
 
         this.isPresentation = (this.options.viewerName === PRESENTATION_VIEWER_NAME);
