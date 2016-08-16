@@ -9,6 +9,7 @@ import ImagePointThread from './image-point-thread';
 import * as annotatorUtil from '../annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
 import * as constants from '../annotation-constants';
+import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../../constants';
 
 @autobind
 class ImageAnnotator extends Annotator {
@@ -102,24 +103,55 @@ class ImageAnnotator extends Annotator {
     }
 
     /**
-     * Hides all annotations on the image
+     * Hides all annotations on the image. Also hides button in header that
+     * enables point annotation mode
+     *
      * @returns {void}
      */
     hideAllAnnotations() {
+        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
         const annotations = this._annotatedElement.getElementsByClassName('box-preview-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.hideElement(annotations[i]);
         }
+        annotatorUtil.hideElement(annotateButton);
     }
 
     /**
-     * Shows all annotations on the image
+     * Shows all annotations on the image. Shows button in header that
+     * enables point annotation mode
+     *
      * @returns {void}
      */
     showAllAnnotations() {
+        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
         const annotations = this._annotatedElement.getElementsByClassName('box-preview-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.showElement(annotations[i]);
+        }
+        annotatorUtil.showElement(annotateButton);
+    }
+
+
+    /**
+     * Renders annotations from memory. Hides annotations if image is rotated
+     *
+     * @override
+     * @param {Number} [rotationAngle] current angle image is rotated
+     * @returns {void}
+     * @private
+     */
+    renderAnnotations(rotationAngle = 0) {
+        super.renderAnnotations();
+
+        // Hide create annotations button if image is rotated
+        // TODO(@spramod) actually adjust getLocationFromEvent method in
+        // annotator to get correct location rather than disabling the creation
+        // of annotations on rotated images
+        if (rotationAngle !== 0) {
+            this.hideAllAnnotations();
+        } else {
+            this.showAllAnnotations();
         }
     }
 }
