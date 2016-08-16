@@ -1,5 +1,49 @@
 # Change Log
 
+## [v0.71.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.71.0) (2016-08-15)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.70.0...v0.71.0)
+
+**Merged pull requests:**
+
+- Update release script to also push to Artifactory [\#522](https://gitenterprise.inside-box.net/Preview/Preview/pull/522) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
+## [v0.70.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.70.0) (2016-08-15)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.69.0...v0.70.0)
+
+**Merged pull requests:**
+
+- Highlight comments fixes [\#521](https://gitenterprise.inside-box.net/Preview/Preview/pull/521) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- COXP-2429 Annotation text is displayed outside textbox in image files [\#519](https://gitenterprise.inside-box.net/Preview/Preview/pull/519) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Unit tests for image point dialog [\#517](https://gitenterprise.inside-box.net/Preview/Preview/pull/517) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Unit tests for Image point thread [\#516](https://gitenterprise.inside-box.net/Preview/Preview/pull/516) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Unit tests for image annotator [\#515](https://gitenterprise.inside-box.net/Preview/Preview/pull/515) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Fix annotations folder structure [\#514](https://gitenterprise.inside-box.net/Preview/Preview/pull/514) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for doc annotator [\#513](https://gitenterprise.inside-box.net/Preview/Preview/pull/513) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for doc point dialog [\#512](https://gitenterprise.inside-box.net/Preview/Preview/pull/512) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for doc-point-thread [\#511](https://gitenterprise.inside-box.net/Preview/Preview/pull/511) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for annotator [\#510](https://gitenterprise.inside-box.net/Preview/Preview/pull/510) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Reposition doc point annotations to be created at click location [\#509](https://gitenterprise.inside-box.net/Preview/Preview/pull/509) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Unit tests for annotation dialog [\#508](https://gitenterprise.inside-box.net/Preview/Preview/pull/508) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for annotation thread [\#507](https://gitenterprise.inside-box.net/Preview/Preview/pull/507) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- COXP-2399: Destroy/close the comments dialog \(even w/o a comment\) when you click outside/highlight elsewhere [\#506](https://gitenterprise.inside-box.net/Preview/Preview/pull/506) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Changing point annotation icons [\#482](https://gitenterprise.inside-box.net/Preview/Preview/pull/482) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
+## [v0.69.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.69.0) (2016-08-05)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.68.0...v0.69.0)
+
+**Merged pull requests:**
+
+- Fix custom logo in IE since IE can't query select on svg elements [\#505](https://gitenterprise.inside-box.net/Preview/Preview/pull/505) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add try/catch around network cleanup [\#504](https://gitenterprise.inside-box.net/Preview/Preview/pull/504) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding ability to prefetch assets [\#503](https://gitenterprise.inside-box.net/Preview/Preview/pull/503) ([phora](https://gitenterprise.inside-box.net/phora))
+- Disable download on mobile [\#502](https://gitenterprise.inside-box.net/Preview/Preview/pull/502) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Showing/hiding dialogs on hover for highlight comments [\#501](https://gitenterprise.inside-box.net/Preview/Preview/pull/501) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Making sure crosshair shows up in image point annotations mode [\#500](https://gitenterprise.inside-box.net/Preview/Preview/pull/500) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- PDFJS v1.5.367 [\#499](https://gitenterprise.inside-box.net/Preview/Preview/pull/499) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Tweaking PDF.js performance [\#498](https://gitenterprise.inside-box.net/Preview/Preview/pull/498) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update changelog for v0.68.0 [\#497](https://gitenterprise.inside-box.net/Preview/Preview/pull/497) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Refactoring UI code out of preview [\#488](https://gitenterprise.inside-box.net/Preview/Preview/pull/488) ([phora](https://gitenterprise.inside-box.net/phora))
+
 ## [v0.68.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.68.0) (2016-08-04)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.67.0...v0.68.0)
 
