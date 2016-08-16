@@ -91,7 +91,7 @@ class DocHighlightThread extends AnnotationThread {
         if (text === '') {
             this._state = constants.ANNOTATION_STATE_INACTIVE;
         } else {
-            this._state = constants.ANNOTATION_STATE_ACTIVE;
+            this._state = constants.ANNOTATION_STATE_HOVER;
         }
     }
 
@@ -127,7 +127,7 @@ class DocHighlightThread extends AnnotationThread {
         // so we can skip the is in highlight calculation
         if (!consumed && (this._state === constants.ANNOTATION_STATE_HOVER ||
             this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER ||
-            this._isInHighlight(event))) {
+            this.isOnHighlight(event))) {
             this._state = constants.ANNOTATION_STATE_ACTIVE;
             return true;
         }
@@ -136,6 +136,18 @@ class DocHighlightThread extends AnnotationThread {
         // a previous event already activated a highlight, reset
         this.reset();
         return false;
+    }
+
+    /**
+     * Checks if Mouse event is either over the text highlight or the annotations
+     * dialog
+     *
+     * @param  {Event} event Mouse event
+     * @return {Boolean} Whether or not Mouse event is in highlight or over
+     * the annotations dialog
+     */
+    isOnHighlight(event) {
+        return this._isInHighlight(event) || this._isInDialog(event);
     }
 
     /**
@@ -155,7 +167,7 @@ class DocHighlightThread extends AnnotationThread {
         }
 
         // If mouse is in highlight, change state to hover or active-hover
-        if (this._isInHighlight(event) || this._isInDialog(event)) {
+        if (this.isOnHighlight(event)) {
             if (this._state === constants.ANNOTATION_STATE_ACTIVE ||
                 this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
                 this._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
