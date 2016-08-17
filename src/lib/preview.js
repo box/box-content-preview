@@ -378,7 +378,7 @@ class Preview extends EventEmitter {
         const loader = this.getLoader(this.file);
 
         // Determine the viewer to use
-        const viewer = loader.determineViewer(this.file);
+        const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
 
         // Log the type of file
         this.logger.setType(viewer.CONSTRUCTOR);
