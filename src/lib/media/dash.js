@@ -25,6 +25,10 @@ class Dash extends VideoBase {
     constructor(container, options) {
         super(container, options);
 
+        // stats
+        this.bandwidthHistory = [];
+        this.bufferingHistory = [];
+
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
     }
@@ -34,6 +38,10 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     destroy() {
+        // Log bandwidth history
+        this.emit('bandwidthHistory', this.bandwidthHistory);
+        this.emit('bufferingHistory', this.bufferingHistory);
+
         clearInterval(this.statsIntervalId);
         if (this.player) {
             this.player.destroy();
@@ -393,8 +401,15 @@ class Dash extends VideoBase {
                 return;
             }
 
-            const bandwidth = this.player.getStats().estimatedBandwidth;
-            this.emit('bandwidth', bandwidth);
+            const stats = this.player.getStats();
+            const bandwidth = stats.estimatedBandwidth;
+            const buffered = stats.bufferingHistory.length;
+            const stream = stats.streamStats.videoBandwidth;
+
+            this.bandwidthHistory.push({ bandwidth, stream });
+            if (buffered) {
+                this.bufferingHistory.push({ buffered, stream });
+            }
 
             if (this.statsEl) {
                 this.statsEl.textContent = `${Math.round(bandwidth / 1000)} kbps`;

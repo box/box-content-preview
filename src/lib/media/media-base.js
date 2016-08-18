@@ -52,7 +52,6 @@ class MediaBase extends Base {
                 this.mediaEl.removeEventListener('pause', this.pauseHandler);
                 this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
                 this.mediaEl.removeEventListener('seeked', this.hideLoadingIcon);
-                this.mediaEl.removeEventListener('stalled', this.stalledHandler);
                 this.mediaEl.removeEventListener('loadedmetadata', this.loadedmetadataHandler);
 
                 this.mediaEl.removeAttribute('src');
@@ -305,18 +304,6 @@ class MediaBase extends Base {
     }
 
     /**
-     * Logs some metrics when stalled
-     *
-     * @private
-     * @returns {void}
-     */
-    stalledHandler() {
-        if (this.mediaEl) {
-            this.emit('stalled', this.mediaEl.currentTime);
-        }
-    }
-
-    /**
      * Adds event listeners to the media element.
      * Makes changes to the media controls.
      *
@@ -331,7 +318,6 @@ class MediaBase extends Base {
         this.mediaEl.addEventListener('pause', this.pauseHandler);
         this.mediaEl.addEventListener('ended', this.resetPlayIcon);
         this.mediaEl.addEventListener('seeked', this.hideLoadingIcon);
-        this.mediaEl.addEventListener('stalled', this.stalledHandler);
     }
 
     /**
