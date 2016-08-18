@@ -324,8 +324,12 @@ class DocAnnotator extends Annotator {
         if (!this._throttledHighlightMousemoveHandler) {
             this._throttledHighlightMousemoveHandler = throttle((event) => {
                 // Determine if any highlight threads are pending and ignore the
-                // creation of any new highlights
-                const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
+                // hover events of other annotations
+                const pendingThreads = this._getHighlightThreadsWithStates(
+                    constants.ANNOTATION_STATE_PENDING,
+                    constants.ANNOTATION_STATE_PENDING_ACTIVE,
+                    constants.ANNOTATION_STATE_ACTIVE,
+                    constants.ANNOTATION_STATE_ACTIVE_HOVER);
                 if (pendingThreads.length) {
                     return;
                 }
@@ -345,6 +349,14 @@ class DocAnnotator extends Annotator {
                         if (shouldDelay) {
                             delayThreads.push(thread);
                         }
+                    });
+                }
+
+                // Hide all other threads that are open besides the one currently being hovered over
+                const pendingHideThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_INACTIVE);
+                if (delayThreads.length) {
+                    pendingHideThreads.forEach((thread) => {
+                        thread.hideDialog(true);
                     });
                 }
 
@@ -447,7 +459,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightClickHandler(event) {
-        // Destroy any pending highlights on on click outside the highlight
+        // Destroy any pending highlights on click outside the highlight
         const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
         pendingThreads.forEach((thread) => {
             thread.cancelFirstComment();
