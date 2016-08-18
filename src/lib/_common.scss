@@ -36,6 +36,7 @@ $header-height: 48px;
 
 .box-preview-header {
     align-items: center;
+    background-color: $white;
     border-bottom: 1px solid $seesee;
     display: -ms-flexbox;
     display: flex;
@@ -51,6 +52,10 @@ $header-height: 48px;
 
     .box-preview-custom-logo {
         max-height: 30px;
+    }
+
+    .box-preview-default-logo svg {
+        fill: $box-blue;
     }
 }
 
@@ -71,6 +76,33 @@ $header-height: 48px;
                 fill: $better-black;
             }
         }
+    }
+}
+
+// Dark theme for header
+.box-preview-theme-dark {
+    .box-preview-header {
+        background-color: fade-out($black, .15);
+        border-bottom: 0;
+    }
+
+    // scss-lint:disable SelectorDepth
+    .box-preview-header-btns button {
+        svg {
+            fill: fade-out($white, .1);
+        }
+
+        &:hover svg {
+            fill: $white;
+        }
+    }
+
+    .box-preview-default-logo svg {
+        fill: fade-out($white, .1);
+    }
+
+    .box-preview {
+        background-color: $sunset-grey;
     }
 }
 

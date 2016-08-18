@@ -4,6 +4,7 @@ import {
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_HAS_HEADER,
     CLASS_BOX_PREVIEW_HEADER,
+    CLASS_BOX_PREVIEW_THEME_DARK,
     CLASS_PREVIEW_LOADED,
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW,
@@ -11,14 +12,9 @@ import {
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     SELECTOR_NAVIGATION_LEFT,
-    SELECTOR_NAVIGATION_RIGHT,
-    COLOR_HEADER_LIGHT,
-    COLOR_HEADER_DARK,
-    COLOR_HEADER_BTN_LIGHT,
-    COLOR_HEADER_BTN_DARK
+    SELECTOR_NAVIGATION_RIGHT
 } from './constants';
 
-let shell;
 let container;
 let contentContainer;
 let leftHandler;
@@ -27,36 +23,22 @@ let mousemoveHandler;
 let keydownHandler;
 
 /**
- * Caches the preview header template with theme
- *
- * @private
- * @returns {void}
- */
-function getTemplate(header) {
-    if (shell) {
-        return shell;
-    }
-
-    // Theme the header
-    if (header === 'dark') {
-        shell = shellTemplate.replace(/\{COLOR_HEADER\}/g, COLOR_HEADER_DARK).replace(/\{COLOR_HEADER_BTN\}/g, COLOR_HEADER_BTN_LIGHT);
-    } else {
-        shell = shellTemplate.replace(/\{COLOR_HEADER\}/g, COLOR_HEADER_LIGHT).replace(/\{COLOR_HEADER_BTN\}/g, COLOR_HEADER_BTN_DARK);
-    }
-
-    return shell;
-}
-
-/**
  * Sets up the preview header.
  *
+ * @param {string} headerTheme Header theme - either 'light' or 'dark'
+ * @param {string} logoUrl URL of logo to use
  * @returns {void}
  * @private
  */
-function setupHeader(logoUrl) {
+function setupHeader(headerTheme, logoUrl) {
     const headerEl = container.firstElementChild;
     headerEl.className = CLASS_BOX_PREVIEW_HEADER;
     contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
+
+    // Setup theme, default is 'light'
+    if (headerTheme === 'dark') {
+        container.classList.add(CLASS_BOX_PREVIEW_THEME_DARK);
+    }
 
     // Set custom logo
     if (logoUrl) {
@@ -236,14 +218,14 @@ export function setup(options, keydown, navigateLeft, navigateRight, mousemove) 
     //      <box-preview>
     //      <navigation>
     // </box-preview-container>
-    insertTemplate(container, getTemplate(options.header));
+    insertTemplate(container, shellTemplate);
 
     container = container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
     contentContainer = container.querySelector(SELECTOR_BOX_PREVIEW);
 
-    // Setup the header and buttons
+    // Setup the header, buttons, and theme
     if (options.header !== 'none') {
-        setupHeader(options.logoUrl);
+        setupHeader(options.header, options.logoUrl);
     }
 
     // Attach keyboard events
