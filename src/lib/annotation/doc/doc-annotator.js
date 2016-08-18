@@ -371,10 +371,17 @@ class DocAnnotator extends Annotator {
                 }
 
                 // Delayed threads (threads that should be in active or hover
-                // state) should be drawn last
-                delayThreads.forEach((thread) => {
-                    thread.show();
-                });
+                // state) should be drawn last. If multiple highlights are
+                // hovered over at the same time, only the last highlight
+                // dialog will be displayed and the others will be hidden
+                // without delay
+                for (let i = 0; i < delayThreads.length; i++) {
+                    if (i === delayThreads.length - 1) {
+                        delayThreads[i].show();
+                    } else {
+                        delayThreads[i].hideDialog(true);
+                    }
+                }
             }, MOUSEMOVE_THROTTLE_MS);
         }
 
