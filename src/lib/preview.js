@@ -1011,7 +1011,7 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     print() {
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print') && this.options.showDownload) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print')) {
             this.viewer.print();
         }
     }
@@ -1024,7 +1024,7 @@ class Preview extends EventEmitter {
      */
     download() {
         if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            get(getDownloadURL(this.file.id, this.options.api), this.getRequestHeaders() && this.options.showDownload)
+            get(getDownloadURL(this.file.id, this.options.api), this.getRequestHeaders())
             .then((data) => {
                 openUrlInsideIframe(data.download_url);
             });
