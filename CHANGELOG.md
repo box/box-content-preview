@@ -1,5 +1,28 @@
 # Change Log
 
+## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
+
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.72.0...HEAD)
+
+**Merged pull requests:**
+
+- Finishing unit tests for image point dialog [\#534](https://gitenterprise.inside-box.net/Preview/Preview/pull/534) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Unit tests for image annotator util methods [\#532](https://gitenterprise.inside-box.net/Preview/Preview/pull/532) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- COXP-2386: Hide all other highlight dialogs when mouse hovers over a different highlight [\#523](https://gitenterprise.inside-box.net/Preview/Preview/pull/523) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
+## [v0.72.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.72.0) (2016-08-17)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.71.0...v0.72.0)
+
+**Merged pull requests:**
+
+- Unit tests for fullscreen [\#531](https://gitenterprise.inside-box.net/Preview/Preview/pull/531) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- COXP-2459: Point annotations show up on a rotated image when you zoom [\#530](https://gitenterprise.inside-box.net/Preview/Preview/pull/530) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Finish unit tests for asset-loader [\#529](https://gitenterprise.inside-box.net/Preview/Preview/pull/529) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Some unit tests for asset-loader [\#527](https://gitenterprise.inside-box.net/Preview/Preview/pull/527) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- COXP-2292 Moving find bar to correct location [\#526](https://gitenterprise.inside-box.net/Preview/Preview/pull/526) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Update changelog for v0.71.0 [\#525](https://gitenterprise.inside-box.net/Preview/Preview/pull/525) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding the new Office loader with file size and download permissions … [\#520](https://gitenterprise.inside-box.net/Preview/Preview/pull/520) ([jedwards](https://gitenterprise.inside-box.net/jedwards))
+
 ## [v0.71.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.71.0) (2016-08-15)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.70.0...v0.71.0)
 
