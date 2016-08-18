@@ -30,7 +30,7 @@ function createIdTokenMap(ids, token) {
 export default function getTokens(id, token) {
     // Auth token should be available
     if (!token || !id) {
-        throw error;
+        return Promise.reject(error);
     }
 
     let ids = [id];
@@ -42,7 +42,7 @@ export default function getTokens(id, token) {
         ids = id;
     }
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         if (typeof token === 'function') {
             // Token may be a function that returns a promise
             token(ids).then((tokens) => {
@@ -57,7 +57,7 @@ export default function getTokens(id, token) {
                     // and make sure we got them back otherwise
                     // throw and error about missing tokens
                     if (!ids.every((fileId) => !!tokens[fileId])) {
-                        throw error;
+                        reject(error);
                     }
                     resolve(tokens);
                 }
