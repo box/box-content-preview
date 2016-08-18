@@ -15,6 +15,7 @@ export const CLASS_BOX_PREVIEW_MOBILE = 'box-preview-is-mobile';
 export const CLASS_BOX_PREVIEW_OVERLAY = 'box-preview-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'box-preview-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'box-preview-toggle-overlay';
+export const CLASS_BOX_PREVIEW_THEME_DARK = 'box-preview-theme-dark';
 export const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 export const CLASS_INVISIBLE = 'box-preview-is-invisible';
 export const CLASS_IS_VISIBLE = 'box-preview-is-visible';
@@ -28,11 +29,6 @@ export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE = '.box-preview-btn-annotate';
 export const SELECTOR_BOX_PREVIEW_BTN_PRINT = '.box-preview-btn-print';
 export const SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD = '.box-preview-btn-download';
 export const SELECTOR_BOX_PREVIEW_HEADER = `.${CLASS_BOX_PREVIEW_HEADER}`;
-
-export const COLOR_HEADER_LIGHT = '#fff';
-export const COLOR_HEADER_DARK = '#000';
-export const COLOR_HEADER_BTN_LIGHT = '#fff';
-export const COLOR_HEADER_BTN_DARK = '#000';
 
 export const PERMISSION_DOWNLOAD = 'can_download';
 export const PERMISSION_ANNOTATE = 'can_annotate';
