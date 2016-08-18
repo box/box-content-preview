@@ -338,8 +338,6 @@ class DocHighlightDialog extends AnnotationDialog {
      * @protected
      */
     mousedownHandler(event) {
-        // Prevent mousedown from focusing on button clicked
-        event.preventDefault();
         event.stopPropagation();
         const dataType = annotatorUtil.findClosestDataType(event.target);
 
@@ -354,6 +352,9 @@ class DocHighlightDialog extends AnnotationDialog {
                 this.emit('annotationdraw');
                 this.toggleHighlightCommentsReply(false);
                 this.toggleHighlightDialogs();
+
+                // Prevent mousedown from focusing on button clicked
+                event.preventDefault();
                 this._focusAnnotationsTextArea();
                 break;
 
