@@ -8,14 +8,6 @@ const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`
 // representation but can fallback to using the pdf representation (for watermarked versions).
 const VIEWERS = [
     {
-        REPRESENTATION: 'original',
-        EXTENSIONS: ['pdf'],
-        SCRIPTS: SCRIPTS_DOCUMENT,
-        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
-        CONSTRUCTOR: 'Document',
-        PREFETCH: 'xhr'
-    },
-    {
         REPRESENTATION: 'pdf',
         EXTENSIONS: ['ppt', 'pptx'],
         SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'presentation.js'],
@@ -26,6 +18,14 @@ const VIEWERS = [
     {
         REPRESENTATION: 'pdf',
         EXTENSIONS: ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'csv', 'cxx', 'diff', 'doc', 'docx', 'erb', 'gdoc', 'groovy', 'gsheet', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'log', 'm', 'make', 'md', 'ml', 'mm', 'msg', 'odp', 'ods', 'odt', 'pdf', 'php', 'pl', 'plist', 'ppt', 'pptx', 'properties', 'py', 'rb', 'rst', 'rtf', 'sass', 'scala', 'scm', 'script', 'sh', 'sml', 'sql', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl', 'yaml'],
+        SCRIPTS: SCRIPTS_DOCUMENT,
+        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
+        CONSTRUCTOR: 'Document',
+        PREFETCH: 'xhr'
+    },
+    {
+        REPRESENTATION: 'original',
+        EXTENSIONS: ['pdf'],
         SCRIPTS: SCRIPTS_DOCUMENT,
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         CONSTRUCTOR: 'Document',
