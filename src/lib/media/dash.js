@@ -80,8 +80,6 @@ class Dash extends VideoBase {
             enableAdaptation: true
         });
         this.player.load(this.createDashSource());
-
-        window.player = this.player;
     }
 
     /**
@@ -264,7 +262,6 @@ class Dash extends VideoBase {
             return;
         }
 
-        this.handleQuality();
         this.calculateVideoDimensions();
         this.loadUI();
         this.loadFilmStrip();
@@ -272,6 +269,7 @@ class Dash extends VideoBase {
         this.showPlayButton();
         this.handleVolume();
         this.startBandwidthTracking();
+        this.handleQuality(); // should come after gettings rep ids
         this.loaded = true;
         this.emit('load');
     }
