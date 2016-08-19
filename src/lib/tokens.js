@@ -2,7 +2,8 @@
 const error = new Error('Missing Auth Token!');
 
 /**
- * Helper function to create token map used below
+ * Helper function to create token map used below.
+ * Maps the same token to multiple files.
  *
  * @param {Array} ids box file ids
  * @param {String} token

@@ -403,14 +403,26 @@ class Dash extends VideoBase {
 
             const stats = this.player.getStats();
             const bandwidth = stats.estimatedBandwidth;
-            const buffered = stats.bufferingHistory.length;
-            const stream = stats.streamStats.videoBandwidth;
 
-            this.bandwidthHistory.push({ bandwidth, stream });
-            if (buffered) {
+            // Streaming representation history
+            let stream;
+            if (stats.streamStats) {
+                stream = stats.streamStats.videoBandwidth;
+            }
+            if (stream) {
+                this.bandwidthHistory.push({ bandwidth, stream });
+            }
+
+            // Buffering history
+            let buffered = 0;
+            if (stats.bufferingHistory) {
+                buffered = stats.bufferingHistory.length;
+            }
+            if (buffered && stream) {
                 this.bufferingHistory.push({ buffered, stream });
             }
 
+            // If stats element exists then show it visually
             if (this.statsEl) {
                 this.statsEl.textContent = `${Math.round(bandwidth / 1000)} kbps`;
             }
