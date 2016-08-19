@@ -6,6 +6,7 @@ import {
     EVENT_ROTATE_ON_AXIS,
     EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_SET_CAMERA_PROJECTION,
+    EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
@@ -49,6 +50,7 @@ class Model3dControls extends Box3DControls {
         this.settingsPanelEl = this.settingsPullup.pullupEl;
         this.settingsPullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.addListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+        this.settingsPullup.addListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
         this.settingsPullup.addListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
 
@@ -102,6 +104,15 @@ class Model3dControls extends Box3DControls {
     }
 
     /**
+     * Handle change of render quality
+     * @param {string} mode The quality level to use
+     * @returns {void}
+     */
+    handleSetQualityLevel(level) {
+        this.emit(EVENT_SET_QUALITY_LEVEL, level);
+    }
+
+    /**
      * Handle rotation on axis
      * @param {Object} rotation Rotation axis description with axis and amount (in degrees)
      * @returns {void}
@@ -147,7 +158,7 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Set the current projection mode being used by the settings pullup
-     * @param {string} renderMode The projection mode to set on the pullup
+     * @param {string} mode The projection mode to set on the pullup
      * @returns {void}
      */
     setCurrentProjectionMode(mode) {
@@ -167,6 +178,7 @@ class Model3dControls extends Box3DControls {
 
         this.settingsPullup.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+        this.settingsPullup.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
         this.settingsPullup.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         this.settingsPullup.destroy();

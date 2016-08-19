@@ -12,6 +12,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_TOGGLE_HELPERS,
     EVENT_SET_CAMERA_PROJECTION,
+    EVENT_SET_QUALITY_LEVEL,
     EVENT_SAVE_SCENE_DEFAULTS,
     RENDER_MODE_LIT
 
@@ -46,7 +47,7 @@ class Model3d extends Box3D {
 
         this.wrapperEl.classList.add(CSS_CLASS_INVISIBLE);
 
-        this.loadTimeout = 100000;
+        this.loadTimeout = 180000; // 3 minutes
         this.instances = [];
         this.assets = [];
         this.axes = {
@@ -73,6 +74,7 @@ class Model3d extends Box3D {
             this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.on(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
             this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+            this.controls.on(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         }
@@ -89,6 +91,7 @@ class Model3d extends Box3D {
             this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.removeListener(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+            this.controls.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         }
@@ -100,6 +103,99 @@ class Model3d extends Box3D {
      */
     destroy() {
         super.destroy();
+    }
+
+    /**
+     * Sets the scale used to render the model. This is the size of the largest dimension of
+     * the model in meters. Default is 1.
+     * @method setModelScale
+     * @public
+     * @param {Float} newSize The size of the largest dimension of the model in metres.
+     * Default is 1 m.
+     * @returns {void}
+     */
+    setModelScale(newSize) {
+        if (!this.renderer) {
+            return;
+        }
+        this.renderer.modelSize = newSize;
+        if (!this.renderer.instance) {
+            return;
+        }
+        if (!this.renderer.vrEnabled) {
+            this.renderer.instance.scaleToSize(newSize);
+        }
+    }
+
+    /**
+     * Sets the scale used to render the model when in VR mode.
+     * @method setModelScaleVr
+     * @public
+     * @param {Float} newSize The size of the largest dimension of the model in metres.
+     * Default is 1 m.
+     * @returns {void}
+     */
+    setModelScaleVr(newSize) {
+        if (!this.renderer) {
+            return;
+        }
+        this.renderer.modelVrSize = newSize;
+        if (!this.renderer.instance) {
+            return;
+        }
+        if (this.renderer.vrEnabled) {
+            this.renderer.instance.scaleToSize(newSize);
+        }
+    }
+
+    /**
+     * Set the position of the model relative a point and the model's bounding box.
+     * @method setModelAlignment
+     * @public
+     * @param {Vector3} position        The position in world space to position the model
+     * relative to.
+     * @param {Vector3} alignmentVector An object of the form { x: x, y: y, z: z} where the
+     * values for x, y and z are between -1 and +1 and specify how the object is aligned to
+     * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
+     * object to the specified position.
+     * @returns {void}
+     */
+    setModelAlignment(position, alignmentVector) {
+        if (this.renderer) {
+            this.renderer.modelAlignmentPosition = position;
+            this.renderer.modelAlignmentVector = alignmentVector;
+            if (!this.renderer.instance) {
+                return;
+            }
+            if (!this.renderer.vrEnabled) {
+                this.renderer.instance.alignToPosition(position, alignmentVector);
+            }
+        }
+    }
+
+    /**
+     * Set the position of the model in VR mode relative a point and the model's bounding box.
+     * @method setModelAlignmentVr
+     * @public
+     * @param {Vector3} position        The position in world space to position the model
+     * relative to.
+     * @param {Vector3} alignmentVector An object of the form { x: x, y: y, z: z} where the
+     * values for x, y and z are between -1 and +1 and specify how the object is aligned to
+     * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
+     * object to the specified position.
+     * @returns {void}
+     */
+    setModelAlignmentVr(position, alignmentVector) {
+        if (this.renderer) {
+            this.renderer.modelVrAlignmentPosition = position;
+            this.renderer.modelVrAlignmentVector = alignmentVector;
+            if (!this.renderer.instance) {
+                return;
+            }
+            if (!this.renderer.vrEnabled) {
+                this.renderer.instance.alignToPosition(position, alignmentVector);
+            }
+        }
     }
 
     /**
@@ -149,7 +245,9 @@ class Model3d extends Box3D {
                 const permissions = this.options.file.permissions || {};
                 this.controls.addUi(permissions.can_upload && permissions.can_delete);
 
-                this.handleRotationAxisSet(defaults.upAxis, defaults.forwardAxis, false);
+                if (defaults.upAxis !== DEFAULT_AXIS_UP || defaults.forwardAxis !== DEFAULT_AXIS_FORWARD) {
+                    this.handleRotationAxisSet(defaults.upAxis, defaults.forwardAxis, false);
+                }
 
                 // Update settings ui
                 this.controls.setCurrentProjectionMode(defaults.cameraProjection);
@@ -267,6 +365,16 @@ class Model3d extends Box3D {
     @autobind
     handleSetCameraProjection(projection) {
         this.renderer.setCameraProjection(projection);
+    }
+
+    /**
+     * Handle setting quality level for rendering
+     * @private
+     * @returns {void}
+     */
+    @autobind
+    handleSetQualityLevel(level) {
+        this.renderer.setQualityLevel(level);
     }
 }
 

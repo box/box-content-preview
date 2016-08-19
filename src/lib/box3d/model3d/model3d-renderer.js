@@ -7,6 +7,7 @@ import {
     EVENT_SET_RENDER_MODE,
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
+    QUALITY_LEVEL_FULL,
     GRID_SIZE,
     GRID_SECTIONS,
     GRID_COLOR
@@ -15,6 +16,13 @@ import Browser from '../../browser';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
 const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };
+
+const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR = 33.333333; // 30 FPS
+const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE = 66.6; // 15 FPS
+const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR = 20.0; // 50 FPS
+const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR = 50; // 20 FPS
+const DEFAULT_MODEL_SIZE = 1;
+const DEFAULT_MODEL_VR_SIZE = 1.5;
 
 /**
  * Model3dRenderer
@@ -40,7 +48,13 @@ class Model3dRenderer extends Box3DRenderer {
         this.grid = null;
         this.axisDisplay = null;
         this.isRotating = false;
-        this.modelSize = 1.0;
+        this.modelSize = DEFAULT_MODEL_SIZE;
+        this.modelVrSize = DEFAULT_MODEL_VR_SIZE;
+        this.modelAlignmentPosition = ORIGIN_VECTOR;
+        this.modelAlignmentVector = ORIGIN_VECTOR;
+        this.modelVrAlignmentPosition = ORIGIN_VECTOR;
+        this.modelVrAlignmentVector = FLOOR_VECTOR;
+        this.dynamicOptimizerEnabled = true;
     }
 
     /**
@@ -166,21 +180,17 @@ class Model3dRenderer extends Box3DRenderer {
             if (mat) {
                 mat.setProperty('envMapIrradiance', 'HDR_ENV_MAP_CUBE_2');
                 mat.setProperty('envMapRadiance', 'HDR_ENV_MAP_CUBE_0');
-                if (!Browser.isMobile()) {
-                    mat.setProperty('envMapRadianceHalfGloss', 'HDR_ENV_MAP_CUBE_1');
+                mat.setProperty('envMapRadianceHalfGloss', 'HDR_ENV_MAP_CUBE_1');
+                if (mat.getProperty('roughness') <= 0.01 && !mat.getProperty('glossMap')) {
+                    mat.setProperty('envMapGlossVariance', false);
                 }
-
-                // TODO: Temp optimizations for mobile. Replace this with dynamic optimization
-                // system.
+                if (mat.getProperty('roughness') >= 0.99) {
+                    mat.setProperty('envMapGlossVariance', false);
+                    mat.enableFeature('specular', false);
+                }
+                // Normal maps don't work nicely on mobile right now.
                 if (Browser.isMobile()) {
-                    // Disable features for mobile
-                    if (mat.getProperty('aoMap')) {
-                        mat.setProperty('aoMap', null);
-                    }
-                    // Normal mapping produces artifacts on some mobile devices.
-                    if (mat.getProperty('normalMap')) {
-                        mat.setProperty('normalMap', null);
-                    }
+                    mat.enableFeature('normals', false);
                 }
             }
         });
@@ -205,7 +215,7 @@ class Model3dRenderer extends Box3DRenderer {
             instance.scaleToSize(this.modelSize);
 
             // Center the instance.
-            instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+            instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
 
             if (callback) {
                 callback(scene);
@@ -248,9 +258,45 @@ class Model3dRenderer extends Box3DRenderer {
         this.reset();
 
         // Unload the intermediate HDR maps that are no longer needed.
-        this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
         super.onSceneLoad();
+
+        // Should wait until all textures are fully loaded before trying to measure performance.
+        // Once they're loaded, start the dynamic optimizer.
+        const images = this.box3d.getEntitiesByType('image').filter((img) => img.isLoading());
+        const imagePromises = images.map((image) => new Promise((resolve) => {
+            image.when('load', resolve);
+        }));
+        Promise.all(imagePromises).then(() => {
+            this.startOptimizer();
+        });
+
         this.resize();
+    }
+
+    /**
+     * Start the component that measures performance and dynamically scales material and rendering
+     * quality to try to achieve a minimum framerate.
+     * @method startOptimizer
+     * @private
+     * @returns {void}
+     */
+    startOptimizer() {
+        this.dynamicOptimizer = this.box3d.getApplication().componentRegistry.getFirstByScriptId('dynamic_optimizer');
+        if (this.dynamicOptimizer) {
+            this.createRegularQualityChangeLevels();
+            this.createVrQualityChangeLevels();
+            if (this.dynamicOptimizerEnabled) {
+                this.dynamicOptimizer.enable();
+            } else {
+                this.dynamicOptimizer.disable();
+            }
+            this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
+            if (Browser.isMobile()) {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE);
+            } else {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR);
+            }
+        }
     }
 
     /**
@@ -413,6 +459,32 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
+     * Set the rendering quality being used. Called by UI event handlers.
+     * @method setQualityLevel
+     * @private
+     * @param {String} level Level name
+     */
+    setQualityLevel(level) {
+        if (!this.box3d) {
+            return;
+        }
+        switch (level) {
+            case QUALITY_LEVEL_FULL:
+                this.dynamicOptimizerEnabled = false;
+                if (this.dynamicOptimizer) {
+                    this.dynamicOptimizer.disable();
+                }
+                break;
+            default:
+                this.dynamicOptimizerEnabled = true;
+                if (this.dynamicOptimizer) {
+                    this.dynamicOptimizer.enable();
+                }
+                break;
+        }
+    }
+
+    /**
      * Rotates the loaded model on the provided axis
      * @param  {Object}  axis The axis
      * @returns {void}
@@ -421,7 +493,7 @@ class Model3dRenderer extends Box3DRenderer {
         if (this.instance && this.box3d && !this.isRotating) {
             this.isRotating = true;
             const postUpdate = () => {
-                this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+                this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
             };
 
             // Kick off rotation
@@ -452,7 +524,7 @@ class Model3dRenderer extends Box3DRenderer {
         // Save these values back to forward and up, for metadata save
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
-        this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+        this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
     }
 
     /**
@@ -464,18 +536,25 @@ class Model3dRenderer extends Box3DRenderer {
         }
         super.enableVr();
         // Scale the instance for VR
-        this.modelSize = 1.5;
         if (!this.instance) {
             return;
         }
-        this.instance.scaleToSize(this.modelSize);
+        if (this.dynamicOptimizer) {
+            this.dynamicOptimizer.setQualityChangeLevels(this.vrQualityChangeLevels);
+            if (Browser.isMobile()) {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR);
+            } else {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR);
+            }
+        }
+        this.instance.scaleToSize(this.modelVrSize);
         if (this.vrDeviceHasPosition) {
-            this.instance.alignToPosition(ORIGIN_VECTOR, FLOOR_VECTOR);
+            this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
             this.box3d.on('mouseScroll', this.onVrZoom, this);
         } else {
             // Enable position-less camera controls
             this.box3d.on('update', this.updateModel3dVrControls, this);
-            this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+            this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
         }
     }
 
@@ -487,10 +566,18 @@ class Model3dRenderer extends Box3DRenderer {
             return;
         }
 
-        this.modelSize = 1.0;
+        if (this.dynamicOptimizer) {
+            this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
+            if (Browser.isMobile()) {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR);
+            } else {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE);
+            }
+        }
+
         if (this.instance) {
             this.instance.scaleToSize(this.modelSize);
-            this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+            this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
         }
 
         if (this.vrDeviceHasPosition) {
@@ -506,15 +593,15 @@ class Model3dRenderer extends Box3DRenderer {
     /**
      * Grow and shrink the model in VR using mouse scrolling
      * @param  {float} delta Amount of scrolling
-     * @return {void}
+     * @returns {void}
      */
     onVrZoom(delta) {
-        this.modelSize += delta * 0.05;
+        this.modelVrSize += delta * 0.05;
         if (!this.instance) {
             return;
         }
-        this.instance.scaleToSize(this.modelSize);
-        this.instance.alignToPosition(ORIGIN_VECTOR, FLOOR_VECTOR);
+        this.instance.scaleToSize(this.modelVrSize);
+        this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
     }
 
     /**
@@ -527,6 +614,33 @@ class Model3dRenderer extends Box3DRenderer {
         const camera = this.getCamera().runtimeData;
         camera.position.set(0, 0, 1.0);
         camera.position.applyQuaternion(camera.quaternion);
+    }
+
+    createRegularQualityChangeLevels() {
+        this.regularQualityChangeLevels = [
+            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.5),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'glossMap', null),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapGlossVariance', false),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapRadianceHalfGloss', null),
+            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.75),
+            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 1.0)
+        ];
+    }
+
+    createVrQualityChangeLevels() {
+        this.vrQualityChangeLevels = [
+            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.5),
+            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.75),
+            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 1.0),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'aoMap', null),
+            // TODO - how to turn off lighting?
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapIrradiance', null),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'normalMap', null),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapRadiance', null),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'glossMap', null),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapGlossVariance', false),
+            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapRadianceHalfGloss', null)
+        ];
     }
 }
 

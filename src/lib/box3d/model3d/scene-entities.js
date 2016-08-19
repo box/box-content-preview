@@ -78,12 +78,16 @@ function sceneEntities(prefix) {
                     renderOnDemand: true,
                     maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
-                    devicePixelRatio: Browser.isMobile() ? 1 : undefined,
+                    precision: Browser.isMobile() ? 'highp' : 'mediump',
                     clearAlpha: 1.0,
                     clearColor: { r: 0.95, g: 0.95, b: 0.95 }
                 },
                 scriptId: 'box3d_renderer',
                 enabled: true
+            },
+            dynamicOptimizer: {
+                scriptId: 'dynamic_optimizer',
+                enabled: false
             },
             debugPerformance: {
                 scriptId: 'debug_performance',

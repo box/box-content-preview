@@ -5,6 +5,7 @@ export const EVENT_ROTATE_ON_AXIS = 'rotateOnAxis';
 export const EVENT_SAVE_SCENE_DEFAULTS = 'sceneSave';
 export const EVENT_SET_RENDER_MODE = 'setRenderMode';
 export const EVENT_SET_CAMERA_PROJECTION = 'setCameraProjection';
+export const EVENT_SET_QUALITY_LEVEL = 'setQualityLevel';
 export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 
 // 3D Scene Params
@@ -29,6 +30,8 @@ export const AXIS_Y = 'y';
 export const AXIS_Z = 'z';
 export const CAMERA_PROJECTION_PERSPECTIVE = 'Perspective';
 export const CAMERA_PROJECTION_ORTHOGRAPHIC = 'Orthographic';
+export const QUALITY_LEVEL_AUTO = 'autoQuality';
+export const QUALITY_LEVEL_FULL = 'fullQuality';
 export const RENDER_MODE_LIT = 'Lit';
 export const RENDER_MODE_UNLIT = 'Unlit';
 export const RENDER_MODE_NORMALS = 'Normals';

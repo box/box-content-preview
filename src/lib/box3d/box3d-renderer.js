@@ -447,7 +447,7 @@ class Box3DRenderer extends EventEmitter {
                     // Create the VR Effect object that handles rendering left and right views.
                     const threeRenderer = this.box3d.getThreeRenderer();
                     if (!this.vrEffect) {
-                        this.vrEffect = new THREE.VREffect(threeRenderer);
+                        this.vrEffect = new THREE.VREffect(threeRenderer, this.box3d.getRenderer());
                         const rendererSize = threeRenderer.getSize();
                         this.vrEffect.setSize(rendererSize.width, rendererSize.height);
                     }
