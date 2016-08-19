@@ -14,11 +14,11 @@ The browser needs to have the Promise API implimented. If not, it can be polyfil
 
 Latest version of the SDK hosted on Box's CDN
 ============================
-* Version: 0.72.0
+* Version: 0.73.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.72.0/en-US/preview.js  
-https://cdn01.boxcdn.net/content-experience/0.72.0/en-US/preview.css
+https://cdn01.boxcdn.net/content-experience/0.73.0/en-US/preview.js  
+https://cdn01.boxcdn.net/content-experience/0.73.0/en-US/preview.css
 
 Usage
 =====
@@ -33,8 +33,8 @@ Usage
     <script src="//cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js"></script>
 
     <!-- Latest version of Preview SDK for en-US locale -->
-    <script src="//cdn01.boxcdn.net/content-experience/0.72.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.72.0/en-US/preview.css" />
+    <script src="//cdn01.boxcdn.net/content-experience/0.73.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.73.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="width:500px; height:212px;"></div>
@@ -119,7 +119,7 @@ preview.show(fileId, { options });
 
 ```javascript
 {
-    token: 'api auth token',
+    token: 'AUTHTOKEN',
     container: '.preview-container',
     api: 'https://api.box.com',
     sharedLink: 'https://cloud.box.com/v/chicken',
@@ -140,7 +140,7 @@ preview.show(fileId, { options });
 ```
 | Option | Optionality | Default | Description |
 | --- | --- | --- | --- |
-| token | Required |  | Either a string auth token or a token generator function, see below for more details |
+| token | Required |  | Either a string auth token or a token generator function, see below for details |
 | container | Optional | document.body | DOM node or selector where Preview should be placed |
 | api | Optional | https://api.box.com | Root API URL |
 | sharedLink | Optional |  | Shared link URL |
@@ -157,15 +157,15 @@ preview.show(fileId, { options });
 Token
 =====
 
-In order for preview to work over the API it needs an auth token. The value passed in for the token option above can either be a string token or a token generator function. If passing in a string, it is assumed that the token never expires or changes. If however the token expires or changes over time, then a generator function should be passed in instead. The generator function should take in a file id or a list of file ids as the argument. It should return a `Promise` which should resolve to either a string token (for example when the same token is being used for all files) OR a json map of { file id: token } pairs. A sample implementation is below:
+The Preview SDK needs an authentication token to make Box Content API calls. The value passed in for the token option above can be either a string token or a token generator function. If a string is passed in, it is assumed that the token never expires or changes. If, however, the token expires or changes over time, then a generator function should be passed in instead. The generator function should take in a file id or a list of file ids as the argument. It should return a `Promise` which should resolve to either a string token (for example when the same token is being used for all files) or a JSON map of { file id: token } pairs. A sample implementation is below:
 
 ```javascript
 /**
- * Auth token fetcher
+ * Auth token generator function.
  * @param {String|Array} id File id or array of file ids
  * @returns {Promise} Promise to resolve to a map of ids and tokens or just a string token
  */
-function token(id) {
+function tokenGenerator(id) {
     // id can be a single file id or an array of ids
     const ids = Array.isArray(id) ? id : [id];
 
