@@ -1,11 +1,15 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.72.0...HEAD)
+## [v0.73.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.73.0) (2016-08-19)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.72.0...v0.73.0)
 
 **Merged pull requests:**
 
+- COXP-2447: Adding consecutive comments is broken in highlight comment annotations [\#540](https://gitenterprise.inside-box.net/Preview/Preview/pull/540) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Fixing hover for multiple dialogs with adjacent highlights [\#539](https://gitenterprise.inside-box.net/Preview/Preview/pull/539) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Dark theme for preview [\#538](https://gitenterprise.inside-box.net/Preview/Preview/pull/538) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix download and print [\#537](https://gitenterprise.inside-box.net/Preview/Preview/pull/537) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update changelog for v0.72.0 [\#535](https://gitenterprise.inside-box.net/Preview/Preview/pull/535) ([tjin](https://gitenterprise.inside-box.net/tjin))
 - Finishing unit tests for image point dialog [\#534](https://gitenterprise.inside-box.net/Preview/Preview/pull/534) ([spramod](https://gitenterprise.inside-box.net/spramod))
 - Unit tests for image annotator util methods [\#532](https://gitenterprise.inside-box.net/Preview/Preview/pull/532) ([spramod](https://gitenterprise.inside-box.net/spramod))
 - COXP-2386: Hide all other highlight dialogs when mouse hovers over a different highlight [\#523](https://gitenterprise.inside-box.net/Preview/Preview/pull/523) ([spramod](https://gitenterprise.inside-box.net/spramod))
