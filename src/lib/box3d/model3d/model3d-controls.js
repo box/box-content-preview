@@ -104,8 +104,8 @@ class Model3dControls extends Box3DControls {
     }
 
     /**
-     * Handle change of camera projection
-     * @param {string} mode The projection mode to use
+     * Handle change of render quality
+     * @param {string} mode The quality level to use
      * @returns {void}
      */
     handleSetQualityLevel(level) {

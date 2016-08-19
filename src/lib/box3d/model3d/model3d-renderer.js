@@ -50,6 +50,10 @@ class Model3dRenderer extends Box3DRenderer {
         this.isRotating = false;
         this.modelSize = DEFAULT_MODEL_SIZE;
         this.modelVrSize = DEFAULT_MODEL_VR_SIZE;
+        this.modelAlignmentPosition = ORIGIN_VECTOR;
+        this.modelAlignmentVector = ORIGIN_VECTOR;
+        this.modelVrAlignmentPosition = ORIGIN_VECTOR;
+        this.modelVrAlignmentVector = FLOOR_VECTOR;
         this.dynamicOptimizerEnabled = true;
     }
 
@@ -211,7 +215,7 @@ class Model3dRenderer extends Box3DRenderer {
             instance.scaleToSize(this.modelSize);
 
             // Center the instance.
-            instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+            instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
 
             if (callback) {
                 callback(scene);
@@ -254,42 +258,45 @@ class Model3dRenderer extends Box3DRenderer {
         this.reset();
 
         // Unload the intermediate HDR maps that are no longer needed.
-        // this.unloadAssets(['HDR_ENV_MAP_0', 'HDR_ENV_MAP_1', 'HDR_ENV_MAP_2']);
         super.onSceneLoad();
 
-        this.startOptimizer();
+        // Should wait until all textures are fully loaded before trying to measure performance.
+        // Once they're loaded, start the dynamic optimizer.
+        const images = this.box3d.getEntitiesByType('image').filter((img) => img.isLoading());
+        const imagePromises = images.map((image) => new Promise((resolve) => {
+            image.when('load', resolve);
+        }));
+        Promise.all(imagePromises).then(() => {
+            this.startOptimizer();
+        });
 
         this.resize();
     }
 
+    /**
+     * Start the component that measures performance and dynamically scales material and rendering
+     * quality to try to achieve a minimum framerate.
+     * @method startOptimizer
+     * @private
+     * @return {void}
+     */
     startOptimizer() {
-        // Should wait until all textures are fully loaded before trying to measure performance.
-        const images = this.box3d.getEntitiesByType('image').filter((img) => {
-            return img.isLoading();
-        });
-        const imagePromises = images.map((img) => {
-            return new Promise((resolve) => {
-                img.when('load', resolve);
-            });
-        });
-        Promise.all(imagePromises).then(() => {
-            this.dynamicOptimizer = this.box3d.getApplication().componentRegistry.getFirstByScriptId('dynamic_optimizer');
-            if (this.dynamicOptimizer) {
-                this.createRegularQualityChangeLevels();
-                this.createVrQualityChangeLevels();
-                if (this.dynamicOptimizerEnabled) {
-                    this.dynamicOptimizer.enable();
-                } else {
-                    this.dynamicOptimizer.disable();
-                }
-                this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
-                if (Browser.isMobile()) {
-                    this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE);
-                } else {
-                    this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR);
-                }
+        this.dynamicOptimizer = this.box3d.getApplication().componentRegistry.getFirstByScriptId('dynamic_optimizer');
+        if (this.dynamicOptimizer) {
+            this.createRegularQualityChangeLevels();
+            this.createVrQualityChangeLevels();
+            if (this.dynamicOptimizerEnabled) {
+                this.dynamicOptimizer.enable();
+            } else {
+                this.dynamicOptimizer.disable();
             }
-        });
+            this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
+            if (Browser.isMobile()) {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE);
+            } else {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR);
+            }
+        }
     }
 
     /**
@@ -451,22 +458,29 @@ class Model3dRenderer extends Box3DRenderer {
         }
     }
 
+    /**
+     * Set the rendering quality being used. Called by UI event handlers.
+     * @method setQualityLevel
+     * @private
+     * @param {String} level Level name
+     */
     setQualityLevel(level) {
-        if (this.box3d) {
-            switch (level) {
-                case QUALITY_LEVEL_FULL:
-                    this.dynamicOptimizerEnabled = false;
-                    if (this.dynamicOptimizer) {
-                        this.dynamicOptimizer.disable();
-                    }
-                    break;
-                default:
-                    this.dynamicOptimizerEnabled = true;
-                    if (this.dynamicOptimizer) {
-                        this.dynamicOptimizer.enable();
-                    }
-                    break;
-            }
+        if (!this.box3d) {
+            return;
+        }
+        switch (level) {
+            case QUALITY_LEVEL_FULL:
+                this.dynamicOptimizerEnabled = false;
+                if (this.dynamicOptimizer) {
+                    this.dynamicOptimizer.disable();
+                }
+                break;
+            default:
+                this.dynamicOptimizerEnabled = true;
+                if (this.dynamicOptimizer) {
+                    this.dynamicOptimizer.enable();
+                }
+                break;
         }
     }
 
@@ -479,7 +493,7 @@ class Model3dRenderer extends Box3DRenderer {
         if (this.instance && this.box3d && !this.isRotating) {
             this.isRotating = true;
             const postUpdate = () => {
-                this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+                this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
             };
 
             // Kick off rotation
@@ -510,7 +524,7 @@ class Model3dRenderer extends Box3DRenderer {
         // Save these values back to forward and up, for metadata save
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
-        this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+        this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
     }
 
     /**
@@ -535,12 +549,12 @@ class Model3dRenderer extends Box3DRenderer {
         }
         this.instance.scaleToSize(this.modelVrSize);
         if (this.vrDeviceHasPosition) {
-            this.instance.alignToPosition(ORIGIN_VECTOR, FLOOR_VECTOR);
+            this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
             this.box3d.on('mouseScroll', this.onVrZoom, this);
         } else {
             // Enable position-less camera controls
             this.box3d.on('update', this.updateModel3dVrControls, this);
-            this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+            this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
         }
     }
 
@@ -563,7 +577,7 @@ class Model3dRenderer extends Box3DRenderer {
 
         if (this.instance) {
             this.instance.scaleToSize(this.modelSize);
-            this.instance.alignToPosition(ORIGIN_VECTOR, ORIGIN_VECTOR);
+            this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
         }
 
         if (this.vrDeviceHasPosition) {
@@ -587,7 +601,7 @@ class Model3dRenderer extends Box3DRenderer {
             return;
         }
         this.instance.scaleToSize(this.modelVrSize);
-        this.instance.alignToPosition(ORIGIN_VECTOR, FLOOR_VECTOR);
+        this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
     }
 
     /**
