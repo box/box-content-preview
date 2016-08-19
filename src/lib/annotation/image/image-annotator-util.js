@@ -80,6 +80,7 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const leftPadding = imageDimensions.left - wrapperDimensions.left;
 
     // Adjust annotation location if image is rotated
+    // todo(@spramod): Fix annotation locations on zoom when rotated
     const rotation = Number(imageEl.getAttribute('data-rotation-angle'));
     let [x, y] = getRotatedLocation(location.x, location.y, rotation, imageDimensions, scale);
 

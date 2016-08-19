@@ -324,8 +324,12 @@ class DocAnnotator extends Annotator {
         if (!this._throttledHighlightMousemoveHandler) {
             this._throttledHighlightMousemoveHandler = throttle((event) => {
                 // Determine if any highlight threads are pending and ignore the
-                // creation of any new highlights
-                const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
+                // hover events of other annotations
+                const pendingThreads = this._getHighlightThreadsWithStates(
+                    constants.ANNOTATION_STATE_PENDING,
+                    constants.ANNOTATION_STATE_PENDING_ACTIVE,
+                    constants.ANNOTATION_STATE_ACTIVE,
+                    constants.ANNOTATION_STATE_ACTIVE_HOVER);
                 if (pendingThreads.length) {
                     return;
                 }
@@ -348,6 +352,14 @@ class DocAnnotator extends Annotator {
                     });
                 }
 
+                // Hide all other threads that are open besides the one currently being hovered over
+                const pendingHideThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_INACTIVE);
+                if (delayThreads.length) {
+                    pendingHideThreads.forEach((thread) => {
+                        thread.hideDialog(true);
+                    });
+                }
+
                 // If we are hovering over a highlight, we should use a hand cursor
                 if (delayThreads.some((thread) => {
                     return thread.state === constants.ANNOTATION_STATE_HOVER ||
@@ -359,10 +371,17 @@ class DocAnnotator extends Annotator {
                 }
 
                 // Delayed threads (threads that should be in active or hover
-                // state) should be drawn last
-                delayThreads.forEach((thread) => {
-                    thread.show();
-                });
+                // state) should be drawn last. If multiple highlights are
+                // hovered over at the same time, only the last highlight
+                // dialog will be displayed and the others will be hidden
+                // without delay
+                for (let i = 0; i < delayThreads.length; i++) {
+                    if (i === delayThreads.length - 1) {
+                        delayThreads[i].show();
+                    } else {
+                        delayThreads[i].hideDialog(true);
+                    }
+                }
             }, MOUSEMOVE_THROTTLE_MS);
         }
 
@@ -447,7 +466,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightClickHandler(event) {
-        // Destroy any pending highlights on on click outside the highlight
+        // Destroy any pending highlights on click outside the highlight
         const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
         pendingThreads.forEach((thread) => {
             thread.cancelFirstComment();

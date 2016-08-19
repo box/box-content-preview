@@ -68,7 +68,8 @@ module.exports = languages.map((language, index) => {
         model3d:        [`${lib}/box3d/model3d/model3d.js`],
         image360:       [`${lib}/box3d/image360/image360.js`],
         video360:       [`${lib}/box3d/video360/video360.js`],
-        iframe:         [`${lib}/iframe/iframe.js`]
+        iframe:         [`${lib}/iframe/iframe.js`],
+        office:         [`${lib}/office/office.js`]
     };
     /* eslint-enable key-spacing */
 

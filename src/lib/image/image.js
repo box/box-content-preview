@@ -1,13 +1,12 @@
 import './image.scss';
 import autobind from 'autobind-decorator';
 import AnnotationService from '../annotation/annotation-service';
-import * as annotatorUtil from '../annotation/annotator-util';
 import ImageAnnotator from '../annotation/image/image-annotator';
 import Browser from '../browser';
 import Base from './image-base';
 import { get } from '../util';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../icons/icons';
-import { CLASS_INVISIBLE, SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../constants';
+import { CLASS_INVISIBLE } from '../constants';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -256,18 +255,7 @@ class Image extends Base {
         this.emit('rotate');
 
         if (this.canAnnotate) {
-            this.annotator.renderAnnotations();
-
-            // Hide create annotations button if image is rotated
-            // TODO(@spramod) actually adjust getLocationFromEvent method in annotator to get correct location rather than disabling the creation of annotations on rotated images
-            const annotateButton = this.containerEl.parentNode.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-            if (rotationAngle !== 0) {
-                annotatorUtil.hideElement(annotateButton);
-                this.annotator.hideAllAnnotations();
-            } else {
-                annotatorUtil.showElement(annotateButton);
-                this.annotator.showAllAnnotations();
-            }
+            this.annotator.renderAnnotations(rotationAngle);
         }
     }
 
@@ -378,8 +366,9 @@ class Image extends Base {
 
         if (this.canAnnotate) {
             const scale = newWidth ? (newWidth / this.imageEl.naturalWidth) : (newHeight / this.imageEl.naturalHeight);
+            const rotationAngle = this.currentRotationAngle % 3600 % 360;
             this.annotator.setScale(scale);
-            this.annotator.renderAnnotations();
+            this.annotator.renderAnnotations(rotationAngle);
         }
     }
 

@@ -3,7 +3,7 @@
 Box Javascript Preview SDK
 ===========
 
-The Box Javascript Preview SDK makes it easy for developers to preview Box files in a web application. The SDK fetches representations through the Box Content API, chooses the appropriate viewer for the file type, and finally renders the preview client-side. The library also allows navigation between previews of multiple files.
+The Box Javascript Preview SDK makes it easy for developers to embed previews of Box files in a web application. The SDK fetches information about the file and its converted representations through the Box Content API, chooses the appropriate viewer for the file type, dynamically loads the static assets and file representations needed, and finally renders the preview client-side. The SDK also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
 Browser Support
 ===============
@@ -14,11 +14,11 @@ The browser needs to have the Promise API implimented. If not, it can be polyfil
 
 Latest version of the SDK hosted on Box's CDN
 ============================
-* Version: 0.68.0
+* Version: 0.72.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.68.0/en-US/preview.js  
-https://cdn01.boxcdn.net/content-experience/0.68.0/en-US/preview.css
+https://cdn01.boxcdn.net/content-experience/0.72.0/en-US/preview.js  
+https://cdn01.boxcdn.net/content-experience/0.72.0/en-US/preview.css
 
 Usage
 =====
@@ -32,9 +32,9 @@ Usage
     <!-- Polyfill promise API if using Internet Explorer -->
     <script src="//cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js"></script>
 
-    <!-- Latest version of preview library for en-US locale -->
-    <script src="//cdn01.boxcdn.net/content-experience/0.68.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.68.0/en-US/preview.css" />
+    <!-- Latest version of Preview SDK for en-US locale -->
+    <script src="//cdn01.boxcdn.net/content-experience/0.72.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.72.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="width:500px; height:212px;"></div>
@@ -50,7 +50,7 @@ Usage
 
 Setup
 =================
-*Note: Do not sudo node/npm stuff below. If you did it previously nuke the ~/.npm folder and node_modules and do npm install again*
+*Note: Do not use sudo for the commands below below. If you did, delete the ~/.npm and node_module folders and run npm install again without sudo.*
 
 1. Make sure you have Node version 4 or higher.
 2. Fork the upstream repo `https://gitenterprise.inside-box.net/Preview/Preview` under your LDAP account.

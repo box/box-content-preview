@@ -117,11 +117,12 @@ class AnnotationThread extends EventEmitter {
     /**
      * Hides the appropriate annotation dialog for this thread.
      *
+     * @param {Boolean} [noDelay] Whether or not to have a timeout delay
      * @returns {void}
      */
-    hideDialog() {
+    hideDialog(noDelay = false) {
         if (this._dialog) {
-            this._dialog.hide();
+            this._dialog.hide(noDelay);
         }
     }
 
