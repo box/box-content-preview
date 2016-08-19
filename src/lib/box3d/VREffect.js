@@ -10,7 +10,7 @@
  *
  */
 
-THREE.VREffect = function ( renderer, onError ) {
+THREE.VREffect = function ( renderer, boxRenderer, onError ) {
 
     var isWebVR1 = true;
 
@@ -354,14 +354,22 @@ THREE.VREffect = function ( renderer, onError ) {
 
 
             // render left eye
-            renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
             renderer.setScissor( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
-            renderer.render( scene, cameraL, renderTarget, forceClear );
+            boxRenderer.renderView(scene, cameraL, {
+                renderTarget: renderTarget,
+                clearDepth: true,
+                clearColor: true,
+                viewPort: renderRectL
+            });
 
             // render right eye
-            renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
             renderer.setScissor( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
-            renderer.render( scene, cameraR, renderTarget, forceClear );
+            boxRenderer.renderView(scene, cameraR, {
+                renderTarget: renderTarget,
+                clearDepth: true,
+                clearColor: true,
+                viewPort: renderRectR
+            })
 
             renderer.setScissorTest( false );
 

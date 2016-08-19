@@ -76,75 +76,75 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _EffectComposer = __webpack_require__(64);
+	var _EffectComposer = __webpack_require__(66);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(65);
+	var _BloomPass = __webpack_require__(67);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(66);
+	var _BokehPass = __webpack_require__(68);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(67);
+	var _DotScreenPass = __webpack_require__(69);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(68);
+	var _FilmPass = __webpack_require__(70);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(69);
+	var _MaskPass = __webpack_require__(71);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(70);
+	var _RenderPass = __webpack_require__(72);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(71);
+	var _SavePass = __webpack_require__(73);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(72);
+	var _ShaderPass = __webpack_require__(74);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(111);
+	var _TexturePass = __webpack_require__(113);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(112);
+	var _AdaptiveToneMappingPass = __webpack_require__(114);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(113);
+	var _AnimationAsset = __webpack_require__(115);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(114);
+	var _ApplicationAsset = __webpack_require__(116);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(115);
+	var _AudioAsset = __webpack_require__(117);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _BufferAsset = __webpack_require__(116);
+	var _BufferAsset = __webpack_require__(118);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
-	var _DocumentAsset = __webpack_require__(117);
+	var _DocumentAsset = __webpack_require__(119);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
 
-	var _ImageAsset = __webpack_require__(147);
+	var _ImageAsset = __webpack_require__(149);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _VideoAsset = __webpack_require__(148);
+	var _VideoAsset = __webpack_require__(150);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -152,83 +152,83 @@
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(149);
+	var _MeshGeometryAsset = __webpack_require__(151);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(151);
+	var _PrimitiveGeometryAsset = __webpack_require__(153);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(152);
+	var _PrefabAsset = __webpack_require__(154);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(153);
+	var _RenderTexture2DAsset = __webpack_require__(155);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(155);
+	var _RenderTextureCubeAsset = __webpack_require__(157);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _SceneAsset = __webpack_require__(156);
+	var _SceneAsset = __webpack_require__(158);
 
 	var _SceneAsset2 = _interopRequireDefault(_SceneAsset);
 
-	var _ShaderAsset = __webpack_require__(157);
+	var _ShaderAsset = __webpack_require__(159);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _ScriptAsset = __webpack_require__(163);
+	var _ScriptAsset = __webpack_require__(164);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _Texture2DAsset = __webpack_require__(165);
+	var _Texture2DAsset = __webpack_require__(166);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(166);
+	var _TextureCubeAsset = __webpack_require__(167);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _Box3DObject = __webpack_require__(167);
+	var _Box3DObject = __webpack_require__(168);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(168);
+	var _CameraObject = __webpack_require__(169);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(169);
+	var _LightObject = __webpack_require__(170);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _SkinnedMeshObject = __webpack_require__(170);
+	var _SkinnedMeshObject = __webpack_require__(171);
 
 	var _SkinnedMeshObject2 = _interopRequireDefault(_SkinnedMeshObject);
 
-	var _StaticMeshObject = __webpack_require__(172);
+	var _StaticMeshObject = __webpack_require__(173);
 
 	var _StaticMeshObject2 = _interopRequireDefault(_StaticMeshObject);
 
-	var _ModelObject = __webpack_require__(173);
+	var _ModelObject = __webpack_require__(174);
 
 	var _ModelObject2 = _interopRequireDefault(_ModelObject);
 
-	var _APIUtilities = __webpack_require__(164);
+	var _APIUtilities = __webpack_require__(165);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(174);
+	var _DOMUtilities = __webpack_require__(175);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(118);
+	var _JSONLoader = __webpack_require__(120);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(175);
+	var _DevResourceLoader = __webpack_require__(176);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
 
@@ -13084,7 +13084,7 @@
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(61);
+	var _raf = __webpack_require__(63);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -13160,6 +13160,10 @@
 	    _this.caps = {};
 	    _this.entities = {};
 	    _this.initTimeoutId = undefined;
+
+	    // A mapping of SIDs to runtime names (@see getRuntimeName()).
+	    _this.runtimeNames = {};
+	    _this.nextRuntimeName = 1;
 	    return _this;
 	  }
 
@@ -13596,6 +13600,63 @@
 	    }
 
 	    /**
+	     * Returns the first entity that is selected by the provided function.
+	     * @method getEntity
+	     * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
+	     * which entity to return.
+	     * @return {Object}        The first object that matches the querry
+	     */
+
+	  }, {
+	    key: 'getEntity',
+	    value: function getEntity(predicate) {
+	      var _this6 = this;
+
+	      var all = typeof predicate !== 'function';
+	      return Object.keys(this.entities).find(function (id) {
+	        return all || predicate(_this6.entities[id]);
+	      });
+	    }
+
+	    /**
+	     * Returns all entities that are selected by the provided function.
+	     * @method getEntity
+	     * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
+	     * which entities to return.
+	     * @return {Array}        Array of entities that matches the querry
+	     */
+
+	  }, {
+	    key: 'getEntities',
+	    value: function getEntities(predicate) {
+	      var _this7 = this;
+
+	      var all = typeof predicate !== 'function';
+	      var entities = Object.keys(this.entities).filter(function (id) {
+	        return all || predicate(_this7.entities[id]);
+	      });
+	      for (var i = 0; i < entities.length; i++) {
+	        entities[i] = this.getEntityById(entities[i]);
+	      }
+	      return entities;
+	    }
+
+	    /**
+	     * Returns all entities with the provided type.
+	     * @method getEntitiesByType
+	     * @param  {String} type The type of the entity (e.g. 'material', 'scene', etc.)
+	     * @return {Array} An array of matching entities
+	     */
+
+	  }, {
+	    key: 'getEntitiesByType',
+	    value: function getEntitiesByType(type) {
+	      return this.getEntities(function (entity) {
+	        return entity.type === type;
+	      });
+	    }
+
+	    /**
 	     * @method getAudioContext
 	     * @return {AudioContext}
 	     */
@@ -13618,6 +13679,27 @@
 	      }
 
 	      return this.audioContext;
+	    }
+
+	    /**
+	     * Get the runtime name for the specified SID. This method returns a unique name for each unique
+	     * SID. The returned name is guaranteed to be compatible with the runtime's animation system,
+	     * which requires object names to contain "word" characters (i.e., [a-zA-Z0-9] and '_'.
+	     * @method getRuntimeName
+	     * @public
+	     * @param {String} sid The SID to return a runtime name for.
+	     * @returns {String} The runtime name.
+	     */
+
+	  }, {
+	    key: 'getRuntimeName',
+	    value: function getRuntimeName(sid) {
+	      if (!this.runtimeNames.hasOwnProperty(sid)) {
+	        this.runtimeNames[sid] = this.nextRuntimeName.toString();
+	        this.nextRuntimeName++;
+	      }
+
+	      return this.runtimeNames[sid];
 	    }
 	  }, {
 	    key: 'onRequestEngine',
@@ -13692,7 +13774,7 @@
 	  }, {
 	    key: 'update',
 	    value: function update() {
-	      var _this6 = this;
+	      var _this8 = this;
 
 	      // Remember to put visible check.
 	      if (this.paused) {
@@ -13700,7 +13782,7 @@
 	      }
 
 	      this.animationRequestID = (0, _raf2.default)(function () {
-	        _this6.update();
+	        _this8.update();
 	      });
 
 	      if (!this.documentVisible) {
@@ -57140,10 +57222,9 @@
 	    }
 
 	    /**
-	     * Returns the first object inside this asset that matches one or more of the
-	     * provided filters.
+	     * Returns the first object inside this asset that is validated by the provided function.
 	     * @method getObject
-	     * @param  {Object} predicate A function which returns 'true' or 'false', used to determine
+	     * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
 	     * which entities to return.
 	     * @return {Object}        The first object that matches the querry
 	     */
@@ -59864,11 +59945,7 @@
 
 	  }, {
 	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes /*, reason*/) {
-	      if (changes.hasOwnProperty('name') && this.runtimeData && this.runtimeData.hasOwnProperty('name')) {
-	        this.runtimeData.name = this.getProperty('name');
-	      }
-	    }
+	    value: function _applyPropertiesLoaded() /*changes, reason*/{}
 
 	    //Update the settings for the object that don't require the Three.JS data to exist.
 	    //This method is called after loading an object and whenever there is a
@@ -60641,6 +60718,15 @@
 	            component.awake();
 	          }
 	        }
+
+	        // Call attributesChanged() on each component that was just added
+	        for (var _i = 0; _i < keys.length; _i++) {
+	          var _component = _this2.getById(keys[_i]);
+	          if (typeof _component.attributesChanged === 'function') {
+	            var attributes = _component.getAttributes();
+	            _component.attributesChanged(Object.keys(attributes));
+	          }
+	        }
 	      }).catch(function (err) {
 	        _log2.default.error('Failed to initialize component registry.', err);
 	      });
@@ -61052,17 +61138,25 @@
 	        });
 	      }
 	      // Call awake() on each component that was just added
-	      for (var _i = 0; _i < addedComponentIds.length; _i++) {
-	        var component = this.getById(addedComponentIds[_i]);
+	      for (var _i2 = 0; _i2 < addedComponentIds.length; _i2++) {
+	        var component = this.getById(addedComponentIds[_i2]);
 	        if (typeof component.awake === 'function') {
 	          component.awake();
+	        }
+	      }
+	      // Call attributesChanged() on each component that was just added
+	      for (var _i3 = 0; _i3 < addedComponentIds.length; _i3++) {
+	        var _component2 = this.getById(addedComponentIds[_i3]);
+	        if (typeof _component2.attributesChanged === 'function') {
+	          var attributes = _component2.getAttributes();
+	          _component2.attributesChanged(Object.keys(attributes));
 	        }
 	      }
 	      //If the object is already loaded when the component is created,
 	      //explicitly load the component
 	      if (!this.box3DEntity.isComponentsUnloaded()) {
-	        for (var _i2 = 0; _i2 < addedComponentIds.length; _i2++) {
-	          this.loadComponent(addedComponentIds[_i2]);
+	        for (var _i4 = 0; _i4 < addedComponentIds.length; _i4++) {
+	          this.loadComponent(addedComponentIds[_i4]);
 	        }
 	      }
 	    }
@@ -61495,6 +61589,21 @@
 	    key: 'getAssetsByType',
 	    value: function getAssetsByType(type) {
 	      return this.box3DRuntime.assetRegistry.getAssetsByType.call(this, type, this.assets);
+	    }
+
+	    /**
+	     * Returns the first asset found with the provided name, if it exists.
+	     * Note: Care should be taken when calling this function often (such as every frame)
+	     * because it is not build for high performance.
+	     * @method getAssetByName
+	     * @param  {String} assetName The name of the asset
+	     * @return {Object} The asset, if found, or null if not found.
+	     */
+
+	  }, {
+	    key: 'getAssetByName',
+	    value: function getAssetByName(assetName) {
+	      return this.getAssetsByName(assetName)[0];
 	    }
 	  }, {
 	    key: 'getAssetsByName',
@@ -62219,22 +62328,22 @@
 	      for (var i in condition) {
 	        if (condition.hasOwnProperty(i)) {
 	          switch (i) {
-	            case 'equal':
+	            case 'equals':
 	              if (value !== condition[i]) {
 	                return false;
 	              }
 	              break;
-	            case 'notEqual':
+	            case 'notEquals':
 	              if (value === condition[i]) {
 	                return false;
 	              }
 	              break;
-	            case 'equalDefault':
+	            case 'equalsDefault':
 	              if (value !== shaderParams[param].default) {
 	                return false;
 	              }
 	              break;
-	            case 'notEqualDefault':
+	            case 'notEqualsDefault':
 	              if (value === shaderParams[param].default) {
 	                return false;
 	              }
@@ -62439,6 +62548,7 @@
 	                material.fragmentShader = shaderAsset.runtimeData.fragmentShader;
 	                material.vertexShader = shaderAsset.runtimeData.vertexShader;
 	                material.uniforms = _three2.default.UniformsUtils.clone(shaderAsset.runtimeData.uniforms);
+	                this._addSharedUniforms(material.uniforms);
 
 	                for (var key in shaderAsset.runtimeData.renderParams) {
 	                  if (this.runtimeData[x].hasOwnProperty(key)) {
@@ -62466,7 +62576,7 @@
 	        })();
 	      } else if (changes.hasOwnProperty('enabledFeatures')) {
 	        this._updateMaterialDefines();
-	        this._updateShaderParameters(changes);
+	        this._updateShaderParameters(this.getProperties());
 	        this._updateTransparency();
 	        this._updateDerivatives();
 	        this.box3DRuntime.needsRender = true;
@@ -62846,7 +62956,7 @@
 	              this.onTextureLoaded.call(this, tex);
 	              valueNeedsSetting = false;
 	            }
-	          } else if (!tex) {
+	          } else {
 	            value = null;
 	          }
 	          break;
@@ -63108,7 +63218,7 @@
 	  shader: {
 	    type: 'id',
 	    description: '',
-	    default: 'box3d_pbr_spec_gloss_shader'
+	    default: 'box3d_pbr_shader'
 	  },
 	  enabledFeatures: {
 	    type: 'object',
@@ -64420,11 +64530,6 @@
 	    description: 'The type of compression used for the original image file.',
 	    default: 'zip'
 	  },
-	  colorspace: {
-	    type: 'string',
-	    description: 'The colorspace of the original image file.',
-	    default: 'srgb'
-	  },
 	  depth: {
 	    type: 'integer',
 	    description: 'The bit-depth of each channel in the original image file.',
@@ -64618,9 +64723,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(25),__webpack_require__(43),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(23),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60) 
+	  __webpack_require__(25),__webpack_require__(44),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(23),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(62) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
-	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPMREMGenerator,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
+	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPMREMGenerator,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
 	   Box3D.ScriptRegistry.registerScript({
 	  "id": "audio_listener",
@@ -64763,8 +64868,8 @@
 	  "properties": {
 	    "name": "Cube-Map Capture",
 	    "attributes": {
-	      "cubeTexture": {
-	        "name": "cubeTexture",
+	      "captureTexture": {
+	        "name": "captureTexture",
 	        "type": "asset",
 	        "description": "The RenderTextureCube to render the reflection to.",
 	        "filter": {
@@ -64776,13 +64881,13 @@
 	        "name": "near",
 	        "type": "f",
 	        "description": "The closest distance to this object to render. Adjust this to avoid   rendering local geometry to the texture.",
-	        "default": 0.25
+	        "default": 0.01
 	      },
 	      "far": {
 	        "name": "far",
 	        "type": "f",
 	        "description": "The furthest distance from this object to render.",
-	        "default": 1600
+	        "default": 16
 	      },
 	      "updateFrameInterval": {
 	        "name": "updateFrameInterval",
@@ -64825,10 +64930,16 @@
 	        "type": "b",
 	        "description": "Render this side of the cube.",
 	        "default": true
+	      },
+	      "debugView": {
+	        "name": "debugView",
+	        "type": "b",
+	        "description": "Render the camera helpers on the cube capture.",
+	        "default": false
 	      }
 	    },
 	    "attributesOrder": [
-	      "cubeTexture",
+	      "captureTexture",
 	      "near",
 	      "far",
 	      "updateFrameInterval",
@@ -64837,7 +64948,8 @@
 	      "renderPosY",
 	      "renderNegY",
 	      "renderPosZ",
-	      "renderNegZ"
+	      "renderNegZ",
+	      "debugView"
 	    ],
 	    "events": {},
 	    "externalDependencies": [],
@@ -65287,6 +65399,45 @@
 	    "path": "Box3DRuntime/Components/BuiltIn/DefaultFilters"
 	  }
 	}, ComponentDefaultFilters);  Box3D.ScriptRegistry.registerScript({
+	  "id": "dynamic_optimizer",
+	  "sid": "Dynamic Performance Optimizer",
+	  "properties": {
+	    "name": "Dynamic Performance Optimizer",
+	    "attributes": {
+	      "frameTimeThreshold": {
+	        "name": "frameTimeThreshold",
+	        "type": "f",
+	        "description": "The average time that a frame can take to render before the optimizer drops a   quality level. Default threshold is 30 FPS = 1000 ms / 30 frames",
+	        "default": 33.333333333333
+	      },
+	      "testInterval": {
+	        "name": "testInterval",
+	        "type": "f",
+	        "description": "The amount of elapsed time (in ms) to average the frame time over.   i.e. an optimization decision can be made every time this interval elapses.",
+	        "default": 2000
+	      }
+	    },
+	    "attributesOrder": [
+	      "frameTimeThreshold",
+	      "testInterval"
+	    ],
+	    "events": {},
+	    "externalDependencies": [],
+	    "filter": [
+	      "Application"
+	    ],
+	    "category": "Rendering",
+	    "parsedComments": true,
+	    "flags": {
+	      "addremove": true,
+	      "disable": true,
+	      "persist": true,
+	      "unique": false,
+	      "display": true
+	    },
+	    "path": "Box3DRuntime/Components/BuiltIn/DynamicOptimizer"
+	  }
+	}, ComponentDynamicOptimizer);  Box3D.ScriptRegistry.registerScript({
 	  "id": "environment",
 	  "sid": "Environment",
 	  "properties": {
@@ -66168,9 +66319,9 @@
 	  }
 	}, ComponentInputController);  Box3D.ScriptRegistry.registerScript({
 	  "id": "animation",
-	  "sid": "Keyframe Animation",
+	  "sid": "Animation",
 	  "properties": {
-	    "name": "Keyframe Animation",
+	    "name": "Animation",
 	    "attributes": {
 	      "autoPlay": {
 	        "name": "autoPlay",
@@ -66216,12 +66367,11 @@
 	          "animation": true
 	        }
 	      },
-	      "take": {
-	        "name": "take",
-	        "type": "ddfn",
-	        "description": "The name of the animation take",
-	        "default": null,
-	        "optionsFn": "getTakes"
+	      "clipId": {
+	        "name": "clipId",
+	        "type": "i",
+	        "description": "The animation clip ID",
+	        "default": null
 	      }
 	    },
 	    "attributesOrder": [
@@ -66231,12 +66381,12 @@
 	      "startTime",
 	      "weight",
 	      "asset",
-	      "take"
+	      "clipId"
 	    ],
 	    "events": {
-	      "playKeyframeAnimation": {
+	      "playAnimation": {
 	        "scope": "local",
-	        "name": "playKeyframeAnimation",
+	        "name": "playAnimation",
 	        "action": true,
 	        "category": "Animation",
 	        "parameters": [
@@ -66250,9 +66400,9 @@
 	            }
 	          },
 	          {
-	            "name": "take",
+	            "name": "clipId",
 	            "type": "s",
-	            "description": "The animation take to play.",
+	            "description": "The ID of the clip to play.",
 	            "default": null
 	          },
 	          {
@@ -66278,31 +66428,38 @@
 	          }
 	        ]
 	      },
-	      "endKeyframeAnimation": {
+	      "pauseAnimation": {
 	        "scope": "local",
-	        "name": "endKeyframeAnimation",
+	        "name": "pauseAnimation",
+	        "action": true,
+	        "category": "Animation",
+	        "parameters": []
+	      },
+	      "stopAnimation": {
+	        "scope": "local",
+	        "name": "stopAnimation",
+	        "action": true,
+	        "category": "Animation",
+	        "parameters": []
+	      },
+	      "toggleAnimation": {
+	        "scope": "local",
+	        "name": "toggleAnimation",
+	        "action": true,
+	        "category": "Animation",
+	        "parameters": []
+	      },
+	      "animationLoaded": {
+	        "scope": "local",
+	        "name": "animationLoaded",
 	        "action": false,
 	        "category": "Animation",
 	        "parameters": []
 	      },
-	      "pauseKeyframeAnimation": {
+	      "endAnimation": {
 	        "scope": "local",
-	        "name": "pauseKeyframeAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "stopKeyframeAnimation": {
-	        "scope": "local",
-	        "name": "stopKeyframeAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "toggleKeyframeAnimation": {
-	        "scope": "local",
-	        "name": "toggleKeyframeAnimation",
-	        "action": true,
+	        "name": "endAnimation",
+	        "action": false,
 	        "category": "Animation",
 	        "parameters": []
 	      }
@@ -66369,6 +66526,54 @@
 	    "path": "Box3DRuntime/Components/BuiltIn/LookAtTarget"
 	  }
 	}, ComponentLookAtTarget);  Box3D.ScriptRegistry.registerScript({
+	  "id": "reflection_capture_planar",
+	  "sid": "Reflection Capture Plane",
+	  "properties": {
+	    "name": "Reflection Capture Plane",
+	    "attributes": {
+	      "captureTexture": {
+	        "name": "captureTexture",
+	        "type": "asset",
+	        "description": "The RenderTexture2D to render the reflection to.",
+	        "filter": {
+	          "renderTexture2D": true
+	        }
+	      },
+	      "clipBias": {
+	        "name": "clipBias",
+	        "type": "f",
+	        "description": "Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.",
+	        "default": 0.01
+	      },
+	      "updateFrameInterval": {
+	        "name": "updateFrameInterval",
+	        "type": "i",
+	        "description": "The number of frames to skip in between updates of the reflection. Default is 0.",
+	        "default": 0
+	      }
+	    },
+	    "attributesOrder": [
+	      "captureTexture",
+	      "clipBias",
+	      "updateFrameInterval"
+	    ],
+	    "events": {},
+	    "externalDependencies": [],
+	    "filter": [
+	      "Object"
+	    ],
+	    "category": "Rendering",
+	    "parsedComments": true,
+	    "flags": {
+	      "addremove": true,
+	      "disable": true,
+	      "persist": true,
+	      "unique": false,
+	      "display": true
+	    },
+	    "path": "Box3DRuntime/Components/BuiltIn/MaterialCapture"
+	  }
+	}, ComponentMaterialCapture);  Box3D.ScriptRegistry.registerScript({
 	  "id": "normal_map_generator_component",
 	  "sid": "Normal Map Generator",
 	  "properties": {
@@ -67532,8 +67737,8 @@
 	  "properties": {
 	    "name": "Reflection Capture Plane",
 	    "attributes": {
-	      "reflectionTexture": {
-	        "name": "reflectionTexture",
+	      "captureTexture": {
+	        "name": "captureTexture",
 	        "type": "asset",
 	        "description": "The RenderTexture2D to render the reflection to.",
 	        "filter": {
@@ -67554,7 +67759,7 @@
 	      }
 	    },
 	    "attributesOrder": [
-	      "reflectionTexture",
+	      "captureTexture",
 	      "clipBias",
 	      "updateFrameInterval"
 	    ],
@@ -68521,7 +68726,7 @@
 	      "size": {
 	        "name": "size",
 	        "type": "f",
-	        "default": 100000,
+	        "default": 1000,
 	        "min": 1,
 	        "max": 1000000
 	      },
@@ -68671,42 +68876,82 @@
 
 	/* eslint-disable */
 	/**
-	 * @vid object_picker
-	 * @vname Object Picker
-	 * @vfilter Scene
-	 * @vcategory General
-	 * @vattr Dropdown pickTrigger {
-	 *   description: 'What mouse action will trigger the pick?',
-	 *   default: 'leftMouseClick',
-	 *   options: {
-	 *     'Left Mouse Click': 'leftMouseClick',
-	 *     'Middle Mouse Click': 'middleMouseClick',
-	 *     'Right Mouse Click': 'rightMouseClick',
-	 *     'Left Mouse Down': 'leftMouseDown',
-	 *     'Middle Mouse Down': 'middleMouseDown',
-	 *     'Right Mouse Down': 'rightMouseDown',
-	 *     'Left Mouse Up': 'leftMouseUp',
-	 *     'Middle Mouse Up': 'middleMouseUp',
-	 *     'Right Mouse Up': 'rightMouseUp'
-	 *   }
+	 * @vid object_animator_component
+	 * @vname Object Animator
+	 * @vcategory Animation
+	 * @vfilter Object
+	 * @vevent local playAnimateAlongCurve {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'curve', 'type' : 'object', 'componentFilter': { 'Curve' : true }},
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'orientation', 'description': 'Orient the object following the curve to either the direction of the curve or to the objects defining the curve.', 'type': 'opt', 'default': 'toCurve', 'options' : { 'None': 'None', 'To Curve' : 'toCurve', 'To Nodes' : 'toNode'}},
+	 *     {name: 'loop', 'type' : 'b', 'description': '', 'default': false}
+	 *   ]
 	 * }
-	 * @vattr Boolean enableHoverByDefault {
-	 *   default: false,
-	 *   advanced: true,
-	 *   description: 'Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact.'
+	 * @vevent local playAnimateToObject {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'object', 'type' : 'object', 'default': null},
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Total time that the animation will take. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'update orientation', 'type' : 'b', 'default': true}
+	 *   ]
 	 * }
-	 * @vattr Integer hoverFrameSkip {
-	 *   description: 'Skip this many frames inbetween hover checks.',
-	 *   default: 1,
-	 *   min: 0,
-	 *   max: 60
+	 * @vevent local playAnimateTranslation {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -1.0, 'max': 1.0},
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s position represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *   ]
 	 * }
-	 * @vevent other pick { action: false, category: 'General', parameters: [] }
-	 * @vevent other beginHover { action: false, category: 'General', parameters: [] }
-	 * @vevent other endHover { action: false, category: 'General', parameters: []}
+	 * @vevent local playAnimateRotation {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'angularVelocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -100.0, 'max': 100.0},
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s rotation represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *     {name: 'axisOrder', 'type' : 'opt', 'description': 'Specify the axis order that the angular velocity will be applied in.', 'default': 'YXZ', 'options': {
+	 *       'XYZ': 'XYZ',
+	 *       'YXZ': 'YXZ',
+	 *       'ZXY': 'ZXY',
+	 *       'XZY': 'XZY',
+	 *       'YZX': 'YZX',
+	 *       'ZYX': 'ZYX'}
+	 *     }
+	 *   ]
+	 * }
+	 * @vevent local playAnimateScale {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -10.0, 'max': 10.0},
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s scale represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *   ]
+	 * }
+	 * @vevent local pauseCurveAnimation { 'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local stopCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local unpauseCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local endAnimateAlongCurve {'action': false, 'category': 'Animation', 'parameters': []}
+	 * @vevent local endAnimateToObject {'action': false, 'category': 'Animation', 'parameters': []}
+	 * @vevent lcoal endAnimateTranslation {'action': false, 'category': 'Animation', 'parameters': []}
 	 */
-	/* eslint-enable */
-	/* global Box3D */
+	/* eslint-enable*/
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -68715,13 +68960,13 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
-
-	var _lodash = __webpack_require__(3);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
 
 	var _Box3DComponent2 = __webpack_require__(24);
 
@@ -68735,521 +68980,568 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ObjectPicker = function (_Box3DComponent) {
-	  _inherits(ObjectPicker, _Box3DComponent);
+	var ObjectAnimator = function (_Box3DComponent) {
+	  _inherits(ObjectAnimator, _Box3DComponent);
 
-	  function ObjectPicker() {
-	    _classCallCheck(this, ObjectPicker);
+	  function ObjectAnimator() {
+	    _classCallCheck(this, ObjectAnimator);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectPicker).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectAnimator).call(this));
 
-	    _this.pickingMaterialDef = undefined;
-	    _this.meshRegistry = {};
-	    _this.meshList = [];
-	    _this.pickingTexture = undefined;
-	    _this.currentHoverObject = undefined;
-	    _this.currentFrame = 0;
-
-	    _this.enableHoverByDefault = false;
-	    _this.pickTrigger = null;
-	    _this.hoverEnabled = false;
+	    _this.playingCurveAnimation = false;
+	    _this.curveAnim = undefined;
 	    return _this;
 	  }
 
-	  _createClass(ObjectPicker, [{
-	    key: 'awake',
-	    value: function awake() {
-	      this.getRuntime().once('endHover:bound', this._enableHover, this);
-	      this.getRuntime().once('beginHover:bound', this._enableHover, this);
-	    }
-	    /**
-	     * Called immediately after after component creation
-	     */
+	  /**
+	   * Called immediately after after component creation
+	   */
 
-	  }, {
+
+	  _createClass(ObjectAnimator, [{
 	    key: 'init',
 	    value: function init() {
-	      // this.box3DEntity is available
-	      this.getRuntime().on('resize', this.resize, this);
+	      this.getEntity().on('playAnimateAlongCurve', this.animateAlongCurve, this);
+	      this.getEntity().on('playAnimateToObject', this.animateToObject, this);
+	      this.getEntity().on('playAnimateTranslation', this.animateTranslation, this);
+	      this.getEntity().on('playAnimateRotation', this.animateRotation, this);
+	      this.getEntity().on('playAnimateScale', this.animateScale, this);
+	      this.getEntity().on('pauseCurveAnimation', this.onPauseCurveAnimation, this);
+	      this.getEntity().on('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
+	      this.getEntity().on('stopCurveAnimation', this.stopCurveAnimation, this);
 
-	      this.initPickingEvents();
-	      this.initPickingMaterial();
-	      this.initMeshRegistry();
-
-	      //listen to register objects
-	      this.getGlobalEvents().on('registerPickingObject', this.registerObject, this);
-	      this.getGlobalEvents().on('unregisterPickingObject', this.unregisterObject, this);
-
-	      this.resize();
+	      this.on('disable', this.onDisable, this);
 	    }
-
-	    /**
-	     * Called when a verold object is destroyed or this component is removed
-	     * from a verold object.
-	     */
-
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
-	      // make sure to clean up any events or other bindings that you have created
-	      // to avoid memory leaks
-	      this.uninitPickingEvents();
+	      this.getEntity().off('playAnimateAlongCurve', this.animateAlongCurve, this);
+	      this.getEntity().off('playAnimateToObject', this.animateToObject, this);
+	      this.getEntity().off('playAnimateTranslation', this.animateTranslation, this);
+	      this.getEntity().off('playAnimateRotation', this.animateRotation, this);
+	      this.getEntity().off('playAnimateScale', this.animateScale, this);
+	      this.getEntity().off('pauseCurveAnimation', this.onPauseCurveAnimation, this);
+	      this.getEntity().off('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
+	      this.getEntity().off('stopCurveAnimation', this.stopCurveAnimation, this);
 
-	      this.getRuntime().off('resize', this.resize, this);
-	      this.getGlobalEvents().off('registerPickingObject', this.registerObject, this);
-	      this.getGlobalEvents().off('unregisterPickingObject', this.unregisterObject, this);
-
-	      var parentAsset = this.getEntity().getParentAsset();
-	      parentAsset.off('meshLoaded', this.registerMesh, this);
-	      parentAsset.off('meshUnloaded', this.unregisterMesh, this);
-	      if (this.pickingTexture) {
-	        this.pickingTexture.dispose();
-	        this.pickingTexture = undefined;
-	      }
-	      for (var x in this.meshRegistry) {
-	        if (this.meshRegistry[x].pickingMaterial) {
-	          this.meshRegistry[x].pickingMaterial.dispose();
-	        }
-	      }
-	      this.meshRegistry = {};
-	      this.meshList = [];
+	      this.off('disable', this.onDisable, this);
 	    }
 	  }, {
-	    key: 'initPickingEvents',
-	    value: function initPickingEvents() {
-	      if (this.pickTrigger.substr(-2) === 'Up') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchEnd', this.touchPick, this);
-	        } else {
-	          this.getRuntime().on('mouseUp', this.pick, this);
-	        }
-	      } else if (this.pickTrigger.substr(-4) === 'Down') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchStart', this.touchPick, this);
-	        } else {
-	          this.getRuntime().on('mouseDown', this.pick, this);
-	        }
-	      } else if (this.pickTrigger.substr(-5) === 'Click') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchEnd', this.touchPickNoDrag, this);
-	        } else {
-	          this.getRuntime().on('mouseUp', this.pickNoDrag, this);
-	        }
-	      }
-
-	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
-	        this._enableHover();
-	      }
+	    key: 'onDisable',
+	    value: function onDisable() {
+	      this.getRuntimeData().position.copy(this.getEntity().getPosition());
+	      this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
+	      this.getRuntimeData().scale.copy(this.getEntity().getScale());
 	    }
 	  }, {
-	    key: 'uninitPickingEvents',
-	    value: function uninitPickingEvents() {
-	      if (this.pickTrigger.substr(-2) === 'Up') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().off('touchEnd', this.touchPick, this);
-	        } else {
-	          this.getRuntime().off('mouseUp', this.pick, this);
-	        }
-	      } else {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().off('touchStart', this.touchPick, this);
-	        } else {
-	          this.getRuntime().off('mouseDown', this.pick, this);
-	        }
-	      }
-
-	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
-	        this.getRuntime().off('postRender', this.hoverUpdate, this);
-	      }
+	    key: 'stopCurveAnimation',
+	    value: function stopCurveAnimation() {
+	      this.getRuntime().off('update', this.curveAnim, this);
+	      this.curveAnim = undefined;
 	    }
 	  }, {
-	    key: 'initPickingMaterial',
-	    value: function initPickingMaterial() {
-	      this.pickingMaterialDef = {
+	    key: 'animateAlongCurve',
+	    value: function animateAlongCurve(curveObjectId, animationTime, easeIn, easeOut, orientation, loop) {
 
-	        depthTest: true,
-	        depthWrite: true,
-	        transparent: false,
-	        side: _three2.default.DoubleSide,
-
-	        uniforms: {
-	          color: {
-	            type: 'c',
-	            value: 0xff0000
-	          }
-	        },
-
-	        vertexShader: [_three2.default.ShaderChunk['skinning_pars_vertex'], _three2.default.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', _three2.default.ShaderChunk['skinbase_vertex'], _three2.default.ShaderChunk['skinnormal_vertex'], _three2.default.ShaderChunk['defaultnormal_vertex'], _three2.default.ShaderChunk['skinning_vertex'], _three2.default.ShaderChunk['project_vertex'], _three2.default.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
-
-	        fragmentShader: ['uniform vec3 color;', _three2.default.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', _three2.default.ShaderChunk['logdepthbuf_fragment'], 'gl_FragColor = vec4( color, 1.0 );', '}'].join('\n')
-
-	      };
-	    }
-	  }, {
-	    key: 'initMeshRegistry',
-	    value: function initMeshRegistry() {
-	      var parentAsset = this.getEntity().getParentAsset();
-	      parentAsset.on('meshLoaded', this.registerMesh, this);
-	      parentAsset.on('meshUnloaded', this.unregisterMesh, this);
-
-	      var that = this;
-	      parentAsset.traverse(function (obj) {
-	        if (obj.type === 'mesh' || obj.type === 'skinnedMesh') {
-	          that.registerMesh(obj);
-	        }
-	      });
-	    }
-	  }, {
-	    key: '_enableHover',
-	    value: function _enableHover() {
-	      if (!this.hoverEnabled && !Box3D.isMobile()) {
-	        this.getRuntime().on('postRender', this.hoverUpdate, this);
-	        this.hoverEnabled = true;
-	      }
-	    }
-
-	    /**
-	    * reset the size of the texture used to test against geometry picking parameters
-	    * @method resize
-	    */
-
-	  }, {
-	    key: 'resize',
-	    value: function resize() {
-	      var oldPickingTexture = this.pickingTexture;
-	      var width = this.getRenderer().getWidth();
-	      var height = this.getRenderer().getHeight();
-	      this.pickingTexture = new _three2.default.WebGLRenderTarget(Math.floor(width / 4.0), Math.floor(height / 4.0), {
-	        minFilter: _three2.default.LinearFilter
-	      });
-	      this.pickingTexture.texture.generateMipmaps = false;
-	      if (oldPickingTexture) {
-	        oldPickingTexture.dispose();
-	      }
-	    }
-	  }, {
-	    key: 'registerObject',
-	    value: function registerObject(box3DObject, runtimeData) {
-
-	      if (!this.meshRegistry[runtimeData.id]) {
-	        this.meshRegistry[runtimeData.id] = {
-	          box3DEntity: box3DObject,
-	          runtimeData: runtimeData,
-	          prevMaterial: null,
-	          pickingMaterial: new _three2.default.ShaderMaterial(this.pickingMaterialDef)
-	        };
-	        //Array for fast iteration
-	        this.meshList.push(this.meshRegistry[runtimeData.id]);
-	        this.meshRegistry[runtimeData.id].index = this.meshList.length - 1;
-	        var material = this.meshRegistry[runtimeData.id].pickingMaterial;
-	        material.uniforms = _three2.default.UniformsUtils.clone(this.pickingMaterialDef.uniforms);
-	        material.uniforms.color.value = new _three2.default.Color(runtimeData.id);
-
-	        if (runtimeData instanceof _three2.default.SkinnedMesh) {
-	          material.skinning = true;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'unregisterObject',
-	    value: function unregisterObject(box3DObject, runtimeData) {
-	      if (runtimeData) {
-	        //remove the enitity data from the pick history, if it's there
-	        this.removeFromHistory(runtimeData.id);
-	        //The meshUnloaded event should fire just before the runtimeData is deleted.
-	        if (this.meshRegistry[runtimeData.id]) {
-	          this.meshRegistry[runtimeData.id].box3DEntity = null;
-	          this.meshRegistry[runtimeData.id].pickingMaterial.dispose();
-	          this.meshList.splice(this.meshRegistry[runtimeData.id].index, 1);
-	          delete this.meshRegistry[runtimeData.id];
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'registerMesh',
-	    value: function registerMesh(veroldMesh) {
-	      //When the THREE.Mesh is created, register it so that it can be selected.
-	      veroldMesh.when('loadBase', function (mesh) {
-	        this.registerObject(mesh, mesh.runtimeData);
-	      }, this);
-	    }
-	  }, {
-	    key: 'unregisterMesh',
-	    value: function unregisterMesh(veroldMesh) {
-	      if (veroldMesh) {
-	        this.unregisterObject(veroldMesh.runtimeData);
-	      }
-	    }
-	  }, {
-	    key: 'getThreeObjects',
-	    value: function getThreeObjects(objects) {
-	      var sceneObjects = [];
-	      _lodash2.default.each(objects, function (object) {
-	        if (object && object.runtimeData) {
-	          sceneObjects.push(object.runtimeData);
-	        }
-	      });
-
-	      return sceneObjects;
-	    }
-	  }, {
-	    key: 'touchPickNoDrag',
-	    value: function touchPickNoDrag(event, callback) {
-	      //Check drag state
-	      if (!this.getInput().touchDragStatePrevious) {
-	        this.touchPick(event, callback);
-	      }
-	    }
-	  }, {
-	    key: 'touchPick',
-	    value: function touchPick(event, callback) {
-
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-
-	      // if ( this.getInput().touchPosition.x ) {
-	      var x = this.getInput().touchPosition.x;
-	      var y = this.getInput().touchPosition.y;
-
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh) {
-
-	        mesh.trigger('pick');
-	        var parent = mesh.getParentObject();
-	        while (parent) {
-	          parent.trigger('pick');
-	          parent = parent.getParentObject();
-	        }
-	        if (_lodash2.default.isFunction(callback)) {
-	          callback(mesh);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'pickNoDrag',
-	    value: function pickNoDrag(event, callback) {
-	      //Check drag state
-	      if (!this.getInput().mouseDragStatePrevious[event.button]) {
-	        this.pick(event, callback);
-	      }
-	    }
-	  }, {
-	    key: 'pick',
-	    value: function pick(event, callback) {
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-	      if (this.pickTrigger.substr(0, 4) === 'left') {
-	        if (event.button !== 0) {
+	      function curveAnim(delta) {
+	        if (!this.box3DEntity || !this.isEnabled()) {
+	          engine.off('update', this.curveAnim, this);
+	          this.curveAnim = undefined;
 	          return;
 	        }
-	      } else if (this.pickTrigger.substr(0, 4) === 'right') {
-	        if (event.button !== 2) {
-	          return;
-	        }
-	      } else if (event.button !== 1) {
-	        return;
-	      }
-	      var x = event.clientX;
-	      var y = event.clientY;
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh) {
-	        mesh.trigger('pick');
-	        var parent = mesh.getParentObject();
-	        while (parent) {
-	          parent.trigger('pick');
-	          parent = parent.getParentObject();
-	        }
-	        if (_lodash2.default.isFunction(callback)) {
-	          callback(mesh);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'hoverUpdate',
-	    value: function hoverUpdate() {
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-	      if (this.currentFrame < this.hoverFrameSkip) {
-	        this.currentFrame++;
-	        return;
-	      }
-	      this.currentFrame = 0;
-	      var x = this.getInput().mousePosition.x;
-	      var y = this.getInput().mousePosition.y;
-	      var parent;
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh !== this.currentHoverObject) {
-	        if (this.currentHoverObject) {
-
-	          this.currentHoverObject.trigger('endHover');
-	          parent = this.currentHoverObject.getParentObject();
-	          while (parent) {
-	            parent.trigger('endHover');
-	            parent = parent.getParentObject();
+	        if (curveComponent && this.playingCurveAnimation) {
+	          this.getRuntime().needsRender = true;
+	          currentTime += delta;
+	          var currentTimePercent = currentTime / animationTime;
+	          if (currentTimePercent >= 1.0) {
+	            currentTimePercent -= 1.0;
 	          }
-	        }
-	        if (mesh) {
-	          this.currentHoverObject = mesh;
+	          var easeOutStart = 1 - easeOut;
 
-	          mesh.trigger('beginHover');
-	          parent = mesh.getParentObject();
-	          while (parent) {
-	            parent.trigger('beginHover');
-	            parent = parent.getParentObject();
+	          //Ease in
+	          if (easeIn && currentTimePercent < easeIn) {
+	            var easeInProgress = currentTimePercent / easeIn;
+	            curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	          } else if (easeOut && currentTimePercent > easeOutStart) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	          } else {
+	            //Full speed animation
+	            curveProgressPercent += delta * fullSpeed / animationTime;
 	          }
-	        } else {
-	          this.currentHoverObject = null;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'pickMesh',
-	    value: function pickMesh(x, y) {
 
-	      var that = this;
-	      var scenes = this.getRuntime().assetRegistry.getAssetsByType('scene');
-	      var i;
-	      var pickedMesh = null;
-	      _lodash2.default.each(scenes, function (scene) {
-	        var cameras = scene.getObjectsByType('camera');
+	          //If the animation is finished
+	          if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
+	            curveProgressPercent %= 1.0;
+	            currentTime = 0.0;
+	            if (!loop) {
+	              curveProgressPercent = 0.99999999;
+	              this.playingCurveAnimation = false;
 
-	        var renderViews = [];
-	        _lodash2.default.each(cameras, function (camera) {
-	          var renderViewComponents = camera.getByScriptId('render_view_component');
-	          _lodash2.default.each(renderViewComponents, function (renderViewComponent) {
-	            if (renderViewComponent.isEnabled()) {
-	              if (renderViews.length > 0) {
-	                for (i = 0; i < renderViews.length; i++) {
-	                  var renderView = renderViews[i];
-	                  if (renderViewComponent.renderGroup >= renderView.renderGroup) {
-	                    renderViews.splice(i, 0, renderViewComponent);
-	                    break;
-	                  }
-	                }
+	              this.getRuntime().off('update', this.curveAnim, this);
+	              this.curveAnim = undefined;
+	            }
+	            this.getEntity().trigger('endAnimateAlongCurve');
+	          }
+
+	          var curve = curveComponent.curve;
+	          var curveProgress_NodeRelative = curve.getUtoTmapping(curveProgressPercent);
+	          runtimeData.position.copy(curve.getPoint(curveProgress_NodeRelative));
+
+	          if (orientation === 'toCurve') {
+	            var tangent = curve.getTangent(curveProgress_NodeRelative);
+	            tempVector1.set(0, -1, 0);
+	            tempVector2.crossVectors(tangent, tempVector1);
+	            tempVector3.crossVectors(tangent, tempVector2);
+	            tempVector1.copy(runtimeData.position);
+	            tempVector1.add(tangent);
+	            tempMatrix.lookAt(runtimeData.position, tempVector1, tempVector3);
+	            runtimeData.quaternion.setFromRotationMatrix(tempMatrix);
+	          } else if (orientation === 'toNode') {
+	            var curveSegments;
+	            if (curveComponent.closed) {
+	              curveSegments = curve.points.length;
+	            } else {
+	              curveSegments = curve.points.length - 1;
+	            }
+	            var prevNode = Math.floor(curveProgress_NodeRelative * curveSegments);
+	            var nextNode = Math.ceil(curveProgress_NodeRelative * curveSegments) % curve.points.length;
+
+	            if (prevNode !== currentPrevNode) {
+	              if (prevNode > 0) {
+	                curveComponent.controlPoints[prevNode].getQuaternionInWorldSpace(prevQuaternion);
 	              } else {
-	                renderViews.push(renderViewComponent);
+	                curveComponent.controlPoints[0].getQuaternionInWorldSpace(prevQuaternion);
 	              }
 	            }
-	          });
-	        }, this);
-
-	        for (i = 0; i < renderViews.length; i++) {
-	          var renderView = renderViews[i];
-	          var canvas_height = that.getRenderer().getHeight();
-	          var viewport_offset = canvas_height - renderView._height - renderView._y;
-	          //Get the percentage x,y positions of the mouse on the viewport
-	          var mouseX = (x - renderView._x) / renderView._width;
-	          var mouseY = (y - viewport_offset) / renderView._height;
-
-	          // pickedMesh = this.doRaycastPick( scene, renderView.box3DEntity, mouseX, mouseY );
-	          pickedMesh = this.doGPUPick(scene, renderView.box3DEntity, mouseX, mouseY);
-	          if (pickedMesh) {
-	            return;
+	            if (nextNode !== currentNextNode) {
+	              if (nextNode > 0) {
+	                curveComponent.controlPoints[nextNode].getQuaternionInWorldSpace(nextQuaternion);
+	              } else {
+	                curveComponent.controlPoints[0].getQuaternionInWorldSpace(nextQuaternion);
+	              }
+	            }
+	            var interp = curveProgress_NodeRelative * curveSegments - prevNode;
+	            runtimeData.quaternion.copy(prevQuaternion);
+	            runtimeData.quaternion.slerp(nextQuaternion, interp);
 	          }
 	        }
-	      }, this);
+	      }
+	      var that = this;
+	      var curveComponent;
+	      var curveObject;
 
-	      return pickedMesh;
+	      if (curveObjectId) {
+	        curveObject = this.getRuntime().getEntityById(curveObjectId);
+	        curveComponent = curveObject.getFirstByScriptId('curve_component');
+	      }
+	      if (!curveComponent) {
+	        return;
+	      }
+
+	      var runtimeData = this.getRuntimeData();
+	      var engine = this.getRuntime();
+	      var currentTime = 0;
+	      var curveProgressPercent = 0.0;
+
+	      var tempVector1 = new _three2.default.Vector3();
+	      var tempVector2 = new _three2.default.Vector3();
+	      var tempVector3 = new _three2.default.Vector3();
+	      var tempMatrix = new _three2.default.Matrix4();
+	      var prevQuaternion = new _three2.default.Quaternion();
+	      var nextQuaternion = new _three2.default.Quaternion();
+
+	      if (easeIn + easeOut > 1.0) {
+	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
+	      }
+
+	      var fullSpeedTime = 1.0 - easeIn - easeOut;
+	      var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
+
+	      if (animationTime > 0) {
+	        this.playingCurveAnimation = true;
+	        var currentPrevNode = -1;
+	        var currentNextNode = -1;
+	        if (curveComponent.isCurveInit()) {
+
+	          this.curveAnim = curveAnim;
+	          this.getRuntime().on('update', this.curveAnim, this);
+	        } else {
+	          curveComponent.on('curveInit', function () {
+	            this.curveAnim = curveAnim;
+	            that.getRuntime().on('update', this.curveAnim, that);
+	          }, this);
+	        }
+	      }
 	    }
 	  }, {
-	    key: 'doRaycastPick',
-	    value: function doRaycastPick(scene, camera, mouseX, mouseY) {
-	      var x = mouseX * 2 - 1;
-	      var y = -mouseY * 2 + 1;
+	    key: 'onPauseCurveAnimation',
+	    value: function onPauseCurveAnimation() {
+	      this.playingCurveAnimation = false;
+	    }
+	  }, {
+	    key: 'onUnpauseCurveAnimation',
+	    value: function onUnpauseCurveAnimation() {
+	      this.playingCurveAnimation = true;
+	    }
+	  }, {
+	    key: 'animateToObject',
+	    value: function animateToObject(objectId, animationTime, easeIn, easeOut, orientation) {
+	      var that = this;
+	      var engine = this.getRuntime();
 
-	      var vector = new _three2.default.Vector3(x, y, 0.5);
+	      function _animateTo(threeObject) {
 
-	      vector.unproject(camera.runtimeData);
+	        var entity_data = that.getRuntimeData();
+	        var tempMatrix = new _three2.default.Matrix4();
+	        var currTime = 0;
+	        var curveProgressPercent = 0.0;
 
-	      var raycaster = new _three2.default.Raycaster(camera.runtimeData.position, vector.sub(camera.runtimeData.position).normalize());
+	        if (easeIn + easeOut > 1.0) {
+	          _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	          easeIn = 0.5;
+	          easeOut = 0.5;
+	        }
 
-	      var sceneObjects = this.getThreeObjects(scene.getObjects());
-	      var intersections = raycaster.intersectObjects(sceneObjects, false);
+	        var fullSpeedTime = 1.0 - easeIn - easeOut;
+	        var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
+	        //var easeInDistance = easeIn * fullSpeed / 2.0;
+	        //var easeOutDistance = easeOut * fullSpeed / 2.0;
 
-	      if (intersections.length > 0) {
-	        for (var i = 0; i < intersections.length; i++) {
-	          var parent = intersections[i].object.parent;
-	          var entityId = intersections[i].object.id;
-	          var isVisible = true;
-	          if (!intersections[i].object.visible) {
-	            isVisible = false;
-	            continue;
-	          }
-	          while (parent) {
+	        var startPos = new _three2.default.Vector3();
+	        var startQuat;
+	        startPos.copy(entity_data.position);
 
-	            if (!parent.visible) {
-	              isVisible = false;
-	              break;
+	        var targetPosition = threeObject.position;
+	        var targetQuaternion = threeObject.quaternion;
+
+	        if (targetQuaternion && orientation) {
+	          startQuat = new _three2.default.Quaternion();
+	          startQuat.copy(entity_data.quaternion);
+	        }
+	        threeObject.updateMatrixWorld();
+	        targetPosition.setFromMatrixPosition(threeObject.matrixWorld);
+	        tempMatrix.extractRotation(threeObject.matrixWorld);
+	        targetQuaternion.setFromRotationMatrix(tempMatrix);
+
+	        if (animationTime > 0) {
+	          that.getRuntime().on('update', function objAnim(delta) {
+	            if (!this.box3DEntity || !this.isEnabled()) {
+	              engine.off('update', objAnim, this);
+	              return;
+	            }
+	            that.getRuntime().needsRender = true;
+	            currTime += delta;
+	            var currentTimePercent = currTime / animationTime;
+	            var easeOutStart = 1 - easeOut;
+
+	            if (easeIn && currentTimePercent < easeIn) {
+	              //Ease in
+	              var easeInProgress = currentTimePercent / easeIn;
+	              curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	            } else if (easeOut && currentTimePercent > easeOutStart) {
+	              //Ease out
+	              var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	              curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	            } else {
+	              //Full speed animation
+	              curveProgressPercent += delta * fullSpeed / animationTime;
+	            }
+	            //clamp at 1
+	            curveProgressPercent = Math.min(curveProgressPercent, 1.0);
+
+	            if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
+	              that.getRuntime().off('update', objAnim, that);
+	              that.getEntity().trigger('endAnimateToObject');
 	            }
 
-	            parent = parent.parent;
+	            entity_data.position.copy(startPos);
+	            entity_data.position.lerp(targetPosition, curveProgressPercent);
+	            if (targetQuaternion && orientation) {
+	              entity_data.quaternion.copy(startQuat);
+	              entity_data.quaternion.slerp(targetQuaternion, curveProgressPercent);
+	            }
+	          }, that);
+	        } else {
+	          entity_data.position.copy(targetPosition);
+	          if (targetQuaternion) {
+	            entity_data.quaternion.copy(targetQuaternion);
 	          }
 
-	          if (isVisible) {
-	            return this.meshRegistry[entityId].box3DEntity;
-	          }
+	          //complete
+	          that.getEntity().trigger('endAnimateToObject');
 	        }
 	      }
-	      return null;
+
+	      var object = this.getRuntime().getEntityById(objectId);
+	      if (object.runtimeData) {
+	        _animateTo(object.runtimeData);
+	      } else {
+	        object.once('loadBase', function () {
+	          _animateTo(object.runtimeData);
+	        }, this);
+	        object.load();
+	      }
 	    }
 	  }, {
-	    key: 'doGPUPick',
-	    value: function doGPUPick(scene, camera, mouseX, mouseY) {
+	    key: 'animateTranslation',
+	    value: function animateTranslation(animationTime, easeIn, easeOut, velocity, objectUsage) {
 
-	      if (mouseX < 0.0 || mouseY < 0.0 || mouseX > 1.0 || mouseY > 1.0) {
-	        return null;
+	      var runtimeData = this.getRuntimeData();
+	      runtimeData.position.copy(this.getEntity().getPosition());
+	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	      runtimeData.scale.copy(this.getEntity().getScale());
+
+	      var currTime = 0;
+	      var engine = this.getRuntime();
+
+	      if (easeIn + easeOut > 1.0) {
+	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
 	      }
 
-	      var i = 0;
-	      var material;
-	      for (i = 0; i < this.meshList.length; i++) {
-	        if (this.meshList[i].runtimeData) {
-	          material = this.meshList[i].runtimeData.material;
-	          this.meshList[i].prevMaterial = material;
-	          this.meshList[i].runtimeData.material = this.meshList[i].pickingMaterial;
+	      var easeInTime = animationTime * easeIn;
+	      // var easeOutTime = animationTime * easeOut;
+
+	      var currentVelocity = new _three2.default.Vector3();
+	      var direction = new _three2.default.Vector3();
+	      direction.copy(velocity);
+	      var speed = direction.length();
+	      runtimeData.updateMatrixWorld();
+	      // runtimeData.updateMatrix();
+	      direction.applyQuaternion(runtimeData.quaternion);
+	      direction.normalize();
+
+	      if (objectUsage) {
+	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	        //Based on the object usage, set the original position so that the
+	        //animation plays forward from there...
+	        if (objectUsage === 'middle') {
+	          //postiion - velocity * time * 0.5
+	          currentVelocity.copy(velocity);
+	          currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	          runtimeData.position.add(currentVelocity);
+	        } else if (objectUsage === 'end') {
+	          currentVelocity.copy(velocity);
+	          currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	          runtimeData.position.add(currentVelocity);
 	        }
 	      }
-	      var renderer = this.getThreeRenderer();
-	      var currentShadowMapEnabled = renderer.shadowMap.enabled;
-	      renderer.shadowMap.enabled = false;
-	      // renderer.enableScissorTest( true );
-	      renderer.setViewport(0, 0, this.pickingTexture.width, this.pickingTexture.height);
-	      //render the picking scene off-screen
-	      var gl = renderer.getContext();
-	      renderer.render(scene.runtimeData, camera.runtimeData, this.pickingTexture, true);
 
-	      //Return materials to their previous state
-	      for (i = 0; i < this.meshList.length; i++) {
-	        if (this.meshList[i].runtimeData) {
-	          this.meshList[i].runtimeData.material = this.meshList[i].prevMaterial;
+	      if (animationTime > 0) {
+	        this.getRuntime().on('update', function objAnim(delta) {
+	          if (!this.box3DEntity || !this.isEnabled()) {
+	            engine.off('update', objAnim, this);
+	            return;
+	          }
+	          currentVelocity.copy(direction);
+
+	          this.getRuntime().needsRender = true;
+	          currTime += delta;
+	          var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
+	          var easeOutStart = 1.0 - easeOut;
+	          var easeOutStartTime = animationTime * easeOutStart;
+
+	          if (easeIn && currTime < easeInTime) {
+	            //Ease in
+	            var easeInProgress = currentTimePercent / easeIn;
+	            currentVelocity.multiplyScalar(delta * speed * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
+	          } else if (easeOut && currTime > easeOutStartTime) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            currentVelocity.multiplyScalar(delta * speed * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
+	          } else {
+	            //Full speed animation
+	            currentVelocity.multiplyScalar(delta * speed);
+	          }
+
+	          if (currTime >= animationTime) {
+	            this.getRuntime().off('update', objAnim, this);
+	            this.getEntity().trigger('endAnimateTranslation');
+	          }
+
+	          runtimeData.position.add(currentVelocity);
+	        }, this);
+	      }
+	    }
+	  }, {
+	    key: 'animateRotation',
+	    value: function animateRotation(animationTime, easeIn, easeOut, velocity, objectUsage, axisOrder) {
+
+	      var runtimeData = this.getRuntimeData();
+	      runtimeData.position.copy(this.getEntity().getPosition());
+	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	      runtimeData.scale.copy(this.getEntity().getScale());
+
+	      var currTime = 0;
+	      var engine = this.getRuntime();
+
+	      if (easeIn + easeOut > 1.0) {
+	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
+	      }
+
+	      var easeInTime = animationTime * easeIn;
+	      // var easeOutTime = animationTime * easeOut;
+	      var currentVelocity = new _three2.default.Quaternion();
+	      var fullSpeedQuat = new _three2.default.Quaternion();
+
+	      var tempVector1 = new _three2.default.Vector3();
+	      var eulerVelocity = new _three2.default.Euler(axisOrder);
+	      eulerVelocity.set(velocity.x, velocity.y, velocity.z);
+	      //Convert the euler angles to quaternion
+	      currentVelocity.setFromEuler(eulerVelocity);
+	      fullSpeedQuat.copy(currentVelocity);
+
+	      runtimeData.updateMatrixWorld();
+
+	      if (objectUsage) {
+	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	        //Based on the object usage, set the original rotation so that the
+	        //animation plays forward from there...
+	        if (objectUsage === 'middle') {
+	          //postiion - velocity * time * 0.5
+	          tempVector1.copy(velocity);
+	          tempVector1.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	          eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
+	          currentVelocity.setFromEuler(eulerVelocity);
+	          runtimeData.quaternion.multiply(currentVelocity);
+	        } else if (objectUsage === 'end') {
+	          tempVector1.copy(velocity);
+	          tempVector1.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	          eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
+	          currentVelocity.setFromEuler(eulerVelocity);
+	          runtimeData.quaternion.multiply(currentVelocity);
 	        }
 	      }
 
-	      var pixelBuffer = new Uint8Array(4);
-	      //read the pixel under the mouse from the texture
-	      gl.readPixels(mouseX * this.pickingTexture.width, this.pickingTexture.height * (1.0 - mouseY), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
+	      if (animationTime > 0) {
+	        this.getRuntime().on('update', function objAnim(delta) {
+	          if (!this.box3DEntity || !this.isEnabled()) {
+	            engine.off('update', objAnim, this);
+	            return;
+	          }
+	          var speed = 1.0;
 
-	      //interpret the pixel as an ID
-	      var id = pixelBuffer[0] << 16 | pixelBuffer[1] << 8 | pixelBuffer[2];
+	          this.getRuntime().needsRender = true;
+	          currTime += delta;
+	          var currentTimePercent = Math.min(currTime / animationTime, 1.0);
+	          var easeOutStart = 1.0 - easeOut;
+	          var easeOutStartTime = animationTime * easeOutStart;
 
-	      renderer.shadowMap.enabled = currentShadowMapEnabled;
-	      renderer.setRenderTarget(null);
+	          if (easeIn && currTime < easeInTime) {
+	            //Ease in
+	            var easeInProgress = currentTimePercent / easeIn;
+	            speed *= delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	          } else if (easeOut && currTime > easeOutStartTime) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            speed *= delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	          } else {
+	            //Full speed animation
+	            speed *= delta;
+	          }
 
-	      if (this.meshRegistry[id]) {
-	        var entityId = this.meshRegistry[id].box3DEntity.id;
-	        return this.getRuntime().getEntityById(entityId);
+	          if (currTime >= animationTime) {
+	            this.getRuntime().off('update', objAnim, this);
+	            this.getEntity().trigger('endAnimateTranslation');
+	          }
+	          currentVelocity.set(0.0, 0.0, 0.0, 1.0);
+	          currentVelocity.slerp(fullSpeedQuat, speed);
+	          runtimeData.quaternion.multiply(currentVelocity);
+	        }, this);
 	      }
-	      return null;
+	    }
+	  }, {
+	    key: 'animateScale',
+	    value: function animateScale(animationTime, easeIn, easeOut, velocity, objectUsage) {
+
+	      var runtimeData = this.getRuntimeData();
+	      runtimeData.position.copy(this.getEntity().getPosition());
+	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	      runtimeData.scale.copy(this.getEntity().getScale());
+
+	      var currTime = 0;
+	      var engine = this.getRuntime();
+
+	      if (easeIn + easeOut > 1.0) {
+	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
+	      }
+
+	      var easeInTime = animationTime * easeIn;
+	      // var easeOutTime = animationTime * easeOut;
+
+	      var currentVelocity = new _three2.default.Vector3();
+	      runtimeData.updateMatrixWorld();
+
+	      if (objectUsage) {
+	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	        //Based on the object usage, set the original scale so that the
+	        //animation plays forward from there...
+	        if (objectUsage === 'middle') {
+	          //postiion - velocity * time * 0.5
+	          currentVelocity.copy(velocity);
+	          currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	          runtimeData.scale.add(currentVelocity);
+	        } else if (objectUsage === 'end') {
+	          currentVelocity.copy(velocity);
+	          currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	          runtimeData.scale.add(currentVelocity);
+	        }
+	      }
+
+	      if (animationTime > 0) {
+	        this.getRuntime().on('update', function objAnim(delta) {
+	          if (!this.box3DEntity || !this.isEnabled()) {
+	            engine.off('update', objAnim, this);
+	            return;
+	          }
+	          currentVelocity.copy(velocity);
+
+	          this.getRuntime().needsRender = true;
+	          currTime += delta;
+	          var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
+	          var easeOutStart = 1.0 - easeOut;
+	          var easeOutStartTime = animationTime * easeOutStart;
+
+	          if (easeIn && currTime < easeInTime) {
+	            //Ease in
+	            var easeInProgress = currentTimePercent / easeIn;
+	            currentVelocity.multiplyScalar(delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
+	          } else if (easeOut && currTime > easeOutStartTime) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            currentVelocity.multiplyScalar(delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
+	          } else {
+	            //Full speed animation
+	            currentVelocity.multiplyScalar(delta);
+	          }
+
+	          if (currTime >= animationTime) {
+	            this.getRuntime().off('update', objAnim, this);
+	            this.getEntity().trigger('endAnimateTranslation');
+	          }
+
+	          runtimeData.scale.add(currentVelocity);
+	        }, this);
+	      }
 	    }
 	  }]);
 
-	  return ObjectPicker;
+	  return ObjectAnimator;
 	}(_Box3DComponent3.default);
 
-	exports.default = ObjectPicker;
+	exports.default = ObjectAnimator;
 
 /***/ },
 /* 24 */
@@ -69262,10 +69554,6 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
 
 	var _lodash = __webpack_require__(3);
 
@@ -69539,12 +69827,6 @@
 	  }, {
 	    key: 'getEntity',
 	    value: function getEntity() {
-	      return this.box3DEntity;
-	    }
-	  }, {
-	    key: 'getObject',
-	    value: function getObject() {
-	      _log2.default.warn('Box3DComponent.getObject() is deprecated. Please use Box3DComponent.getEntity().');
 	      return this.box3DEntity;
 	    }
 
@@ -70000,7 +70282,7 @@
 	 * @vcategory Rendering
 	 * @vreserved
 	 * @vfilter Object
-	 * @vattr Asset cubeTexture {
+	 * @vattr Asset captureTexture {
 	 *   description: 'The RenderTextureCube to render the reflection to.',
 	 *   filter: { renderTextureCube: true },
 	 *   default: null
@@ -70008,11 +70290,11 @@
 	 * @vattr Float near {
 	 *   description: 'The closest distance to this object to render. Adjust this to avoid
 	 *   rendering local geometry to the texture.',
-	 *   default: 0.25
+	 *   default: 0.01
 	 * }
 	 * @vattr Float far {
 	 *   description: 'The furthest distance from this object to render.',
-	 *   default: 1600.00
+	 *   default: 16.00
 	 *  }
 	 * @vattr Integer updateFrameInterval {
 	 *   description: 'The number of frames to skip in between updates of the reflection.
@@ -70042,6 +70324,10 @@
 	 * @vattr Boolean renderNegZ {
 	 *   description: 'Render this side of the cube.',
 	 *   default: true
+	 * }
+	 * @vattr Boolean debugView {
+	 *   description: 'Render the camera helpers on the cube capture.',
+	 *   default: false
 	 * }
 	 */
 	'use strict';
@@ -70090,136 +70376,37 @@
 
 	    _this.cubeMaterial = undefined;
 	    _this.tempRenderTexture = undefined;
-
-	    _this.cubeMaterialDef = {
-
-	      uniforms: {
-	        tCube: {
-	          type: 't',
-	          value: null
-	        },
-	        tFlip: {
-	          type: 'f',
-	          value: 1
-	        }
-	      },
-
-	      vertexShader: ['varying vec3 vWorldPosition;', _three2.default.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', ' vec4 worldPosition = vec4( position, 1.0 );', ' vWorldPosition = worldPosition.xyz;', ' gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', _three2.default.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
-
-	      fragmentShader: ['uniform samplerCube tCube;', 'uniform float tFlip;', 'varying vec3 vWorldPosition;', _three2.default.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', ' gl_FragColor = textureCube( tCube, vec3( tFlip * vWorldPosition.x, ', '   vWorldPosition.yz ) );', _three2.default.ShaderChunk['logdepthbuf_fragment'], '}'].join('\n')
-
-	    };
 	    return _this;
 	  }
+
+	  /** @inheritdoc */
+
 
 	  _createClass(CubeMapCapture, [{
 	    key: 'init',
 	    value: function init() {
-
 	      this.initCameras();
 	    }
-	  }, {
-	    key: 'editorInit',
-	    value: function editorInit() {
-	      this.isEditor = true;
-	      this.init();
-	      this.box3DEntity.getParentAsset().once('load', this.initEditorObject, this);
-	      if (this.box3DEntity.isBaseLoaded()) {
-	        this.box3DEntity.load();
-	      }
-	      this.getRuntime().on('preRender', this.preRender, this);
-	      // this.getRuntime().on( 'postUpdate', this.postUpdate, this );
-	      this.getEntity().on('editorSelected', this.onSelected, this);
-	      this.getEntity().on('editorUnselected', this.onUnselected, this);
-	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
-	      var that = this;
-	      this.cubeCamera.traverse(function (obj) {
-	        if (obj instanceof _three2.default.PerspectiveCamera) {
-	          if (obj.cameraHelper) {
-	            that.getThreeScene().remove(obj.cameraHelper);
-	            obj.cameraHelper.dispose();
-	            obj.cameraHelper = undefined;
-	          }
-	        }
-	      });
 	      this.getThreeScene().remove(this.cubeCamera);
 	      this.getThreeObject().remove(this.boxMesh);
 	      this.boxMesh.geometry.dispose();
 	      this.boxMesh.material.dispose();
 	      this.boxMesh = undefined;
 	    }
-	  }, {
-	    key: 'editorShutdown',
-	    value: function editorShutdown() {
 
-	      this.getEntity().off('editorSelected', this.onSelected, this);
-	      this.getEntity().off('editorUnselected', this.onUnselected, this);
-	      this.getRuntime().off('preRender', this.preRender, this);
-	      // this.getRuntime().off( 'postUpdate', this.postUpdate, this );
-	      this.shutdown();
-	    }
-	  }, {
-	    key: 'onSelected',
-	    value: function onSelected() {
-	      var that = this;
-	      this.cubeCamera.traverse(function (obj) {
-	        if (obj instanceof _three2.default.PerspectiveCamera) {
-	          if (!obj.cameraHelper) {
-	            obj.cameraHelper = new _three2.default.CameraHelper(obj);
-	            // obj.cameraHelper.matrixAutoUpdate = true;
-	            that.getThreeScene().add(obj.cameraHelper);
-	          }
-	          obj.cameraHelper.visible = true;
-	        }
-	      });
-	    }
-	  }, {
-	    key: 'onUnselected',
-	    value: function onUnselected() {
-	      this.cubeCamera.traverse(function (obj) {
-	        if (obj instanceof _three2.default.PerspectiveCamera) {
-	          if (obj.cameraHelper) {
-	            obj.cameraHelper.visible = false;
-	          }
-	        }
-	      });
-	    }
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'entityLoaded',
 	    value: function entityLoaded() {
-
-	      var threeScene = this.getThreeScene();
-	      threeScene.add(this.cubeCamera);
-	      this.cubeCamera.matrix = this.getRuntimeData().matrixWorld;
-	      this.cubeCamera.matrixAutoUpdate = false;
-	    }
-	  }, {
-	    key: 'initEditorObject',
-	    value: function initEditorObject() {
-	      this.entityLoaded();
-
-	      this.boxGeometry = new _three2.default.BoxGeometry(25, 25, 25, 1, 1, 1);
-
-	      this.boxGeometry.dynamic = true;
-	      this.boxMesh = new _three2.default.Mesh(this.boxGeometry);
-	      this.boxMesh.castShadow = false;
-	      this.boxMesh.receiveShadow = false;
-	      this.boxMesh.name = 'CubeMapCapturePlane';
-	      this.getThreeObject().add(this.boxMesh);
-	      this.getRuntime().globalEvents.trigger('studioApp::registerPickingObject', this.getEntity(), this.boxMesh);
-
-	      if (!this.cubeTexture) {
-	        this.createTempRenderTexture();
-	      } else {
-	        this.cubeTexture.load();
-	      }
-
-	      this.cubeMaterialDef.uniforms['tCube'].value = this.cubeTexture ? this.cubeTexture.runtimeData : this.tempRenderTexture.runtimeData;
-	      this.cubeMaterial = new _three2.default.ShaderMaterial(this.cubeMaterialDef);
-	      this.boxMesh.material = this.cubeMaterial;
+	      var threeData = this.getRuntimeData();
+	      threeData.add(this.cubeCamera);
 	    }
 	  }, {
 	    key: 'createTempRenderTexture',
@@ -70236,41 +70423,26 @@
 	      });
 	      this.tempRenderTexture.load();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.indexOf('cubeTexture') !== -1) {
-	        if (this.cubeTexture) {
-	          var that = this;
-	          this.cubeTexture.when('load', function () {
-	            if (that.tempRenderTexture) {
-	              that.tempRenderTexture.unload();
-	            }
-	            var pars = {
-	              format: that.cubeTexture.runtimeData.format,
-	              minFilter: that.cubeTexture.runtimeData.minFilter,
-	              magFilter: that.cubeTexture.runtimeData.magFilter
-	            };
-	            pars.type = that.cubeTexture.runtimeData.type;
+	      var _this2 = this;
 
-	            var renderTarget = new _three2.default.WebGLRenderTarget(that.cubeTexture.getWidth(), that.cubeTexture.getHeight(), pars);
-	            renderTarget.name = that.getEntity().getName() + ': Reflection Capture Render Buffer';
-	            if (!that.composer) {
-	              that.composer = new _three2.default.EffectComposer(that.getThreeRenderer(), renderTarget);
-	              that.gammaPass = new _three2.default.ShaderPass(_three2.default.GammaShader);
-	              that.gammaPass.renderToScreen = true;
-	              that.composer.addPass(that.gammaPass);
-	            } else {
-	              that.composer.reset(renderTarget);
+	      if (changes.indexOf('captureTexture') !== -1) {
+	        if (this.captureTexture) {
+	          this.captureTexture.when('load', function () {
+	            if (_this2.tempRenderTexture) {
+	              _this2.tempRenderTexture.unload();
 	            }
-	            that.composer.enabled = true;
-	            that.composer.renderPassesNeedUpdate = true;
-	            that.cubeMaterial.uniforms['tCube'].value = that.cubeTexture.runtimeData;
 	          });
-	          this.cubeTexture.load();
+	          if (this.captureTexture.isBaseUnloaded()) {
+	            this.captureTexture.load();
+	          }
 	        } else if (!this.tempRenderTexture) {
 	          this.createTempRenderTexture();
-	          this.cubeMaterial.uniforms['tCube'].value = this.tempRenderTexture.runtimeData;
 	        }
 	      }
 	      if (changes.indexOf('near') !== -1 || changes.indexOf('far') !== -1) {
@@ -70292,11 +70464,15 @@
 	        this.cameraNZ.near = this.near;
 	        this.cameraNZ.far = this.far;
 	        this.cameraNZ.updateProjectionMatrix();
+	      }
+	      if (changes.indexOf('debugView') !== -1) {
 	        this.cubeCamera.traverse(function (obj) {
 	          if (obj instanceof _three2.default.PerspectiveCamera) {
-	            if (obj.cameraHelper) {
-	              obj.cameraHelper.update();
+	            if (!obj.cameraHelper) {
+	              obj.cameraHelper = new _three2.default.CameraHelper(obj);
+	              _this2.getThreeScene().add(obj.cameraHelper);
 	            }
+	            obj.cameraHelper.visible = !!_this2.debugView;
 	          }
 	        });
 	      }
@@ -70352,95 +70528,87 @@
 	      this.cubeCamera.add(this.cameraNZ);
 	    }
 
-	    // postUpdate( delta ) {
-	    //   if ( this.cubeCamera && this.hasThreeData() && this.isEnabled() ) {
-	    //     this.cubeCamera.position.setFromMatrixPosition( this.getThreeObject().matrixWorld );
-	    //   }
-	    // };
+	    /**
+	     * Render the scene to the texture.
+	     * @method captureScene
+	     * @public
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'captureScene',
+	    value: function captureScene() {
+	      var _this3 = this;
+
+	      var renderer = this.getRenderer();
+	      var scene = this.getThreeScene();
+	      var renderTarget = this.captureTexture ? this.captureTexture.runtimeData : this.tempRenderTexture.runtimeData;
+
+	      if (renderTarget) {
+	        (function () {
+	          var generateMipmaps = renderTarget.texture.generateMipmaps;
+	          var cameras = [];
+	          var faces = [];
+	          renderTarget.texture.generateMipmaps = false;
+
+	          if (_this3.renderPosX) {
+	            faces.push(0);
+	            cameras.push(_this3.cameraPX);
+	          }
+
+	          if (_this3.renderNegX) {
+	            faces.push(1);
+	            cameras.push(_this3.cameraNX);
+	          }
+
+	          if (_this3.renderPosY) {
+	            faces.push(2);
+	            cameras.push(_this3.cameraPY);
+	          }
+
+	          if (_this3.renderNegY) {
+	            faces.push(3);
+	            cameras.push(_this3.cameraNY);
+	          }
+
+	          if (_this3.renderPosZ) {
+	            faces.push(4);
+	            cameras.push(_this3.cameraPZ);
+	          }
+
+	          if (_this3.renderNegZ) {
+	            faces.push(5);
+	            cameras.push(_this3.cameraNZ);
+	          }
+
+	          cameras.forEach(function (camera, idx) {
+	            if (idx === cameras.length - 1) {
+	              renderTarget.texture.generateMipmaps = generateMipmaps;
+	            }
+	            renderTarget.activeCubeFace = faces[idx];
+	            renderer.renderView(scene, camera, {
+	              renderTarget: renderTarget,
+	              clearColor: true
+	            });
+	          });
+	          renderTarget.needsUpdate = true;
+	        })();
+	      }
+	    }
+
+	    /** @inheritdoc */
 
 	  }, {
 	    key: 'preRender',
 	    value: function preRender() {
+	      var scene = this.getScene();
+	      if (!scene.isLoaded()) {
+	        return;
+	      }
 	      this.framesElapsed++;
 	      if (this.framesElapsed >= this.updateFrameInterval && this.isEnabled()) {
 	        this.framesElapsed = 0.0;
-	        var renderer = this.getRenderer();
-	        var scene = this.getScene().runtimeData;
-
-	        if (this.cubeTexture || this.tempRenderTexture) {
-
-	          var renderTarget = this.cubeTexture ? this.cubeTexture.runtimeData : this.tempRenderTexture.runtimeData;
-	          var generateMipmaps = renderTarget.generateMipmaps;
-
-	          renderTarget.texture.generateMipmaps = false;
-
-	          if (this.renderPosX) {
-	            renderTarget.activeCubeFace = 0;
-	            renderer.renderView(scene, this.cameraPX, {
-	              renderTarget: renderTarget,
-	              clearColor: true,
-	              composer: this.getThreeRenderer().gammaOutput ? null : this.composer
-	            });
-	          }
-
-	          if (this.renderNegX) {
-	            renderTarget.activeCubeFace = 1;
-	            renderer.renderView(scene, this.cameraNX, {
-	              renderTarget: renderTarget,
-	              clearColor: true,
-	              composer: this.getThreeRenderer().gammaOutput ? null : this.composer
-	            });
-	          }
-
-	          if (this.renderPosY) {
-	            renderTarget.activeCubeFace = 2;
-	            renderer.renderView(scene, this.cameraPY, {
-	              renderTarget: renderTarget,
-	              clearColor: true,
-	              composer: this.getThreeRenderer().gammaOutput ? null : this.composer
-	            });
-	          }
-
-	          if (this.renderNegY) {
-	            renderTarget.activeCubeFace = 3;
-	            renderer.renderView(scene, this.cameraNY, {
-	              renderTarget: renderTarget,
-	              clearColor: true,
-	              composer: this.getThreeRenderer().gammaOutput ? null : this.composer
-	            });
-	          }
-
-	          if (this.renderPosZ) {
-	            renderTarget.activeCubeFace = 4;
-	            renderer.renderView(scene, this.cameraPZ, {
-	              renderTarget: renderTarget,
-	              clearColor: true,
-	              composer: this.getThreeRenderer().gammaOutput ? null : this.composer
-	            });
-	          }
-
-	          renderTarget.texture.generateMipmaps = generateMipmaps;
-
-	          if (this.renderNegZ) {
-	            renderTarget.activeCubeFace = 5;
-	            renderer.renderView(scene, this.cameraNZ, {
-	              renderTarget: renderTarget,
-	              clearColor: true,
-	              composer: this.getThreeRenderer().gammaOutput ? null : this.composer
-	            });
-	          }
-	          renderTarget.needsUpdate = true;
-	        }
-	      }
-	      if (this.isEditor) {
-	        this.cubeCamera.matrixWorldNeedsUpdate = true;
-	        this.cubeCamera.traverse(function (obj) {
-	          if (obj instanceof _three2.default.PerspectiveCamera) {
-	            if (obj.cameraHelper && obj.cameraHelper.visible) {
-	              obj.cameraHelper.matrixWorldNeedsUpdate = true;
-	            }
-	          }
-	        });
+	        this.captureScene();
 	      }
 	    }
 	  }]);
@@ -71653,6 +71821,393 @@
 
 	/* eslint-disable */
 	/**
+	 * @vid dynamic_optimizer
+	 * @vname Dynamic Performance Optimizer
+	 * @vreserved
+	 * @vcategory Rendering
+	 * @vfilter Application
+	 * @vattr Float frameTimeThreshold {
+	 *   description: 'The average time that a frame can take to render before the optimizer drops a
+	 *   quality level. Default threshold is 30 FPS = 1000 ms / 30 frames',
+	 *   default : 33.333333333333
+	 * }
+	 * @vattr Float testInterval {
+	 *   description: 'The amount of elapsed time (in ms) to average the frame time over.
+	 *   i.e. an optimization decision can be made every time this interval elapses.',
+	 *   default: 2000.0
+	 * }
+	 */
+	/* eslint-enable */
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _Box3DComponent2 = __webpack_require__(24);
+
+	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function QualityChangeLevel(targetEntityType, targetComponentName, propertyName, targetValue) {
+	  this.targetEntityType = targetEntityType;
+	  this.targetComponentName = targetComponentName;
+	  this.propertyName = propertyName;
+	  this.targetValue = targetValue;
+
+	  this.previousValues = {};
+	  this.previousTimeSavings = 0.0;
+	  this.lastTimeSavings = 0;
+	}
+
+	// A percentage used to prevent jumping back and forth between performance levels.
+	// We must achieve a frame time equal to this constant multiplied by our frameTimeTheshold
+	//  minus the performance savings from the last quality drop before we step back up a
+	//  quality level.
+	var STEP_UP_BUFFER_PERCENTAGE = 0.8;
+
+	/**
+	 * DynamicOptimizer
+	 * This class controls the dynamic down-stepping of rendering features in an
+	 * attempt to achieve goal performance.
+	 * @class
+	 */
+
+	var DynamicOptimizer = function (_Box3DComponent) {
+	  _inherits(DynamicOptimizer, _Box3DComponent);
+
+	  /**
+	   * Creates the dynamic optimizer
+	   * @returns {DynamicOptimizer} DynamicOptimizer instance
+	   */
+	  function DynamicOptimizer() {
+	    _classCallCheck(this, DynamicOptimizer);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DynamicOptimizer).call(this));
+
+	    _this.frameTimeThreshold = 33.333333333; // Attribute defined above
+	    _this.testInterval = 2000.0; // Attribute defined above
+	    _this.qualityChangeLevels = [];
+	    _this.currentLevel = _this.qualityChangeLevels.length;
+	    _this.elapsedRenderTime = 0.0;
+	    _this.framesRecorded = 0;
+	    _this.justStarted = true;
+	    _this.justAutoSteppedDown = false;
+	    _this.autoOptimize = true;
+
+	    _this.QualityChangeLevel = QualityChangeLevel;
+	    return _this;
+	  }
+
+	  /** @inheritdoc */
+
+
+	  _createClass(DynamicOptimizer, [{
+	    key: 'shutdown',
+	    value: function shutdown() {}
+
+	    /**
+	     * Assign the descriptions of the quality levels to be used by the optimizer.
+	     * @method setQualityChangeLevels
+	     * @public
+	     * @param {Array} qualityLevels Array of DynamicOptimizer.QualityChangeLevel objects in order
+	     * from loweset quality level to highest.
+	     */
+
+	  }, {
+	    key: 'setQualityChangeLevels',
+	    value: function setQualityChangeLevels(qualityLevels) {
+	      // First, set the quality back to the top to reset all changed values.
+	      this.setMaxQuality();
+	      this.qualityChangeLevels = qualityLevels;
+	      this.currentLevel = this.qualityChangeLevels.length;
+	      if (this.isEnabled()) {
+	        this.autoOptimize = true;
+	      }
+	    }
+
+	    /**
+	     * Set the length of frame, above which we will drop a quality level. i.e. if the frametime
+	     * is above this threshold, the performance is considered poor enough that we will try to
+	     * disable features to improve it.
+	     * @method setFrameTimeThreshold
+	     * @public
+	     * @param {Float} threshold The length of a frame above which we will move down a quality level.
+	     */
+
+	  }, {
+	    key: 'setFrameTimeThreshold',
+	    value: function setFrameTimeThreshold(threshold) {
+	      this.frameTimeThreshold = threshold;
+	    }
+
+	    /**
+	     * Set the time interval over which we will average the performance measurement.
+	     * @method setTestInterval
+	     * @public
+	     * @param {Float} interval The time interval in milliseconds.
+	     */
+
+	  }, {
+	    key: 'setTestInterval',
+	    value: function setTestInterval(interval) {
+	      this.testInterval = interval;
+	      this.elapsedRenderTime = 0.0;
+	      this.framesRecorded = 0;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'preRender',
+	    value: function preRender() {
+	      this.startTime = (performance || Date).now();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'preUpdate',
+	    value: function preUpdate() {
+	      if (!this.startTime) {
+	        return;
+	      }
+	      this.endTime = (performance || Date).now();
+	      var frameTime = this.endTime - this.startTime;
+	      this.elapsedRenderTime += frameTime;
+	      this.framesRecorded++;
+	      this.startTime = 0.0;
+
+	      if (this.elapsedRenderTime < this.testInterval) {
+	        return;
+	      }
+	      // When the given amount of rendering time has passed, make a decision
+	      // about whether to take action based on the current performance
+	      this.lastAvgFrameTime = this.elapsedRenderTime / this.framesRecorded;
+	      this.elapsedRenderTime = 0.0;
+	      this.framesRecorded = 0;
+	      if (this.justAutoSteppedDown && this.currentLevel < this.qualityChangeLevels.length) {
+	        var info = this.qualityChangeLevels[this.currentLevel];
+	        info.lastTimeSavings = info.frameTimeAtDrop - this.lastAvgFrameTime;
+	        this.justAutoSteppedDown = false;
+	      }
+
+	      // If this is the first recorded interval, don't do anything.
+	      // This lets the browser settle (after doing its own optimization) and
+	      // all GPU data to finish uploading to the device.
+	      if (this.justStarted || !this.autoOptimize || !this.qualityChangeLevels.length) {
+	        this.justStarted = false;
+	        return;
+	      }
+	      // If the average time it takes to render a frame is larger than our threshold
+	      // step the rendering quality down.
+	      if (this.lastAvgFrameTime > this.frameTimeThreshold) {
+	        // Step down
+	        this.stepRenderingQualityDown();
+	        this.justAutoSteppedDown = true;
+	        // Otherwise, if the average frame time is less than the threshold minus the
+	        // last frame time savings, bump up the rendering quality.
+	      } else if (this.qualityChangeLevels[this.currentLevel] && this.lastAvgFrameTime < STEP_UP_BUFFER_PERCENTAGE * (this.frameTimeThreshold - this.qualityChangeLevels[this.currentLevel].lastTimeSavings)) {
+	        this.stepRenderingQualityUp();
+	      }
+	    }
+
+	    /**
+	     * Move to the next lower quality level that actually has an impact. i.e. if the defined
+	     * quality change isn't applicable to the current scene, we'll skip it and move on.
+	     * @method stepRenderingQualityDown
+	     * @public
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'stepRenderingQualityDown',
+	    value: function stepRenderingQualityDown() {
+	      var needsStep = true;
+	      while (needsStep && this.currentLevel > 0) {
+	        this.currentLevel = this.currentLevel > 1 ? this.currentLevel - 1 : 0;
+	        needsStep = !this.stepRenderingQuality(false);
+	      }
+	      // Record frame time at time of step down. Only if we actually did a step.
+	      if (!needsStep) {
+	        this.qualityChangeLevels[this.currentLevel].frameTimeAtDrop = this.lastAvgFrameTime;
+	      }
+	    }
+
+	    /**
+	     * Move to the next higher quality level that actually has an impact. i.e. if the defined
+	     * quality change isn't applicable to the current scene, we'll skip it and move on.
+	     * @method stepRenderingQualityUp
+	     * @public
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'stepRenderingQualityUp',
+	    value: function stepRenderingQualityUp() {
+	      var needsStep = true;
+	      while (needsStep && this.currentLevel < this.qualityChangeLevels.length) {
+	        needsStep = !this.stepRenderingQuality(true);
+	        this.currentLevel = Math.min(this.currentLevel + 1, this.qualityChangeLevels.length);
+	      }
+	    }
+	  }, {
+	    key: 'valuesApproximatelyEqual',
+	    value: function valuesApproximatelyEqual(value1, value2) {
+	      return !value1 && !value2 || value1 === value2;
+	    }
+
+	    /**
+	     * Get the next value to set on an entity/component, given the current quality level.
+	     * @method stepValue
+	     * @private
+	     * @param  {Object} qualityLevel     The quality level change to consider.
+	     * @param  {String} id           The ID of the Box3DEntity or Box3DComponent to change.
+	     * @param  {Mixed} currentValue The current value of the property/attribute
+	     * @param  {Boolean} stepUp     True if we're stepping up a performance level
+	     * @return {Mixed}              The next value of the property/attribute
+	     */
+
+	  }, {
+	    key: 'stepValue',
+	    value: function stepValue(qualityLevel, id, currentValue, stepUp) {
+	      if (stepUp) {
+	        return qualityLevel.previousValues[id];
+	      }
+	      qualityLevel.previousValues[id] = currentValue;
+	      return qualityLevel.targetValue;
+	    }
+
+	    /**
+	     * Using a quality level definition, set the appropriate values on the entity, depending
+	     * whether we're dropping a quality level or going up a level.
+	     * @param  {Box3DEntity} entity   The entity to apply the changes to.
+	     * @param  {QualityChangeLevel} qualityLevel The description of the quality changes for this
+	     * level
+	     * @param  {Boolean} stepUp   True if we're stepping up a quality level. Otherwise, we're
+	     * stepping down.
+	     * @return {Boolean}          True if applying the quality change actually had an affect. That
+	     * is, the quality settings actually resulted in changes to the entity.
+	     */
+
+	  }, {
+	    key: 'applyLevelToEntity',
+	    value: function applyLevelToEntity(entity, qualityLevel, stepUp) {
+	      var _this2 = this;
+
+	      var stepSuccess = false;
+	      // If the component name is defined, we're modifying a component attribute.
+	      if (qualityLevel.targetComponentName) {
+	        (function () {
+	          var components = entity.componentRegistry.getByScriptName(qualityLevel.targetComponentName);
+	          Object.keys(components).forEach(function (compId) {
+	            var component = components[compId];
+	            var currentValue = component.getAttribute(qualityLevel.propertyName);
+	            var newValue = _this2.stepValue(qualityLevel, compId, currentValue, stepUp);
+	            // If the current and new values are the same, skip setting it.
+	            if (currentValue !== newValue) {
+	              component.setAttribute(qualityLevel.propertyName, newValue);
+	              stepSuccess = true;
+	            }
+	          });
+	          // Otherwise, we're modifying a property of an entity.
+	        })();
+	      } else {
+	        var currentValue = entity.getProperty(qualityLevel.propertyName);
+	        var newValue = this.stepValue(qualityLevel, entity.id, currentValue, stepUp);
+	        // If the current and new values are the same, skip setting it.
+	        if (currentValue !== newValue) {
+	          entity.setProperty(qualityLevel.propertyName, newValue);
+	          stepSuccess = true;
+	        }
+	      }
+	      return stepSuccess;
+	    }
+
+	    /**
+	     * Apply the next step in the rendering quality.
+	     * @private
+	     * @method stepRenderingQuality
+	     * @param  {Boolean} stepUp True if we want to step the quality up. Otherwise, we step down.
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'stepRenderingQuality',
+	    value: function stepRenderingQuality(stepUp) {
+	      var _this3 = this;
+
+	      // Find the target entities that we'll apply the quality change to.
+	      var qualityLevel = this.qualityChangeLevels[this.currentLevel];
+	      var entities = this.getRuntime().getEntitiesByType(qualityLevel.targetEntityType);
+	      var stepSuccess = false;
+	      // For each entity, make the change.
+	      entities.forEach(function (entity) {
+	        if (_this3.applyLevelToEntity(entity, qualityLevel, stepUp)) {
+	          stepSuccess = true;
+	        }
+	      });
+	      return stepSuccess;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'enable',
+	    value: function enable() {
+	      _get(Object.getPrototypeOf(DynamicOptimizer.prototype), 'enable', this).call(this);
+	      this.autoOptimize = true;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'disable',
+	    value: function disable() {
+	      _get(Object.getPrototypeOf(DynamicOptimizer.prototype), 'disable', this).call(this);
+	      this.autoOptimize = false;
+	      this.setMaxQuality();
+	    }
+
+	    /**
+	     * Turn off the auto-optimization and turn all disabled rendering features back on.
+	     * @method setMaxQuality
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'setMaxQuality',
+	    value: function setMaxQuality() {
+	      this.autoOptimize = false;
+	      while (this.currentLevel < this.qualityChangeLevels.length) {
+	        this.stepRenderingQualityUp();
+	      }
+	    }
+	  }]);
+
+	  return DynamicOptimizer;
+	}(_Box3DComponent3.default);
+
+	exports.default = DynamicOptimizer;
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* eslint-disable */
+	/**
 	 * @vid environment
 	 * @vname Environment
 	 * @vcategory Rendering
@@ -71764,7 +72319,7 @@
 	exports.default = Environment;
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71925,7 +72480,7 @@
 	exports.default = EventHandler;
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72185,7 +72740,7 @@
 	exports.default = Exploder;
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72758,7 +73313,7 @@
 	exports.default = FreeCamera;
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72883,7 +73438,7 @@
 	exports.default = Fullscreen;
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73927,13 +74482,13 @@
 	exports.default = InputController;
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
 	/**
 	 * @vid animation
-	 * @vname Keyframe Animation
+	 * @vname Animation
 	 * @vfilter object
 	 * @vcategory Animation
 	 * @vattr Boolean autoPlay  {
@@ -73966,12 +74521,11 @@
 	 *   default: null,
 	 *   filter: { animation: true }
 	 * }
-	 * @vattr ddfn take {
-	 *   description: 'The name of the animation take',
+	 * @vattr Integer clipId {
+	 *   description: 'The animation clip ID',
 	 *   default: null,
-	 *   optionsFn: 'getTakes'
 	 * }
-	 * @vevent local playKeyframeAnimation {
+	 * @vevent local playAnimation {
 	 *  scope: 'local',
 	 *  action: true,
 	 *  category: 'Animation',
@@ -73982,9 +74536,9 @@
 	 *    default: null,
 	 *    filter: { 'animation': true }
 	 *  }, {
-	 *    name: 'take',
+	 *    name: 'clipId',
 	 *    type: 's',
-	 *    description: 'The animation take to play.',
+	 *    description: 'The ID of the clip to play.',
 	 *    default: null
 	 *  }, {
 	 *    name: 'loop',
@@ -74006,32 +74560,39 @@
 	 *    min: 0.0
 	 *  }]
 	 * }
-	 * @vevent local endKeyframeAnimation {
-	 *   'scope': 'local',
-	 *   'action': false,
-	 *   'category': 'Animation',
-	 *   'parameters': []
-	 * }
-	 * @vevent local pauseKeyframeAnimation {
+	 * @vevent local pauseAnimation {
 	 *   'scope': 'local',
 	 *   'action': true,
 	 *   'category': 'Animation',
 	 *   'parameters': []
 	 * }
-	 * @vevent local stopKeyframeAnimation {
+	 * @vevent local stopAnimation {
 	 *   scope: 'local',
 	 *   action: true,
 	 *   category: 'Animation',
 	 *   'parameters': []
 	 * }
-	 * @vevent local toggleKeyframeAnimation {
+	 * @vevent local toggleAnimation {
 	 *   scope: 'local',
 	 *   action: true,
 	 *   category: 'Animation',
 	 *   parameters: []
 	 * }
+	 * @vevent local animationLoaded {
+	 *   'scope': 'local',
+	 *   'action': false,
+	 *   'category': 'Animation',
+	 *   'parameters': []
+	 * }
+	 * @vevent local endAnimation {
+	 *   'scope': 'local',
+	 *   'action': false,
+	 *   'category': 'Animation',
+	 *   'parameters': []
+	 * }
 	 */
 	/* eslint-enable */
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -74039,6 +74600,14 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
 
 	var _Box3DComponent2 = __webpack_require__(24);
 
@@ -74060,307 +74629,275 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Animation).call(this));
 
-	    _this.state = 'stopped';
+	    _this.dirty = true;
+	    _this.paused = false;
 	    return _this;
 	  }
 
+	  /**
+	   * Called when the Three.JS object data is available.
+	   * @method entityCreated
+	   * @public
+	   * @returns {void}
+	   */
+
+
 	  _createClass(Animation, [{
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
-	      if (changes.indexOf('asset') !== -1) {
-	        this.getScene().unregisterAnimation(this.getPreviousAttribute('asset'));
-	        if (this.asset) {
-	          this.getScene().registerAnimation(this.asset.id);
-	        }
-	        // Reload the animation while resetting the play state and current time.
-	        this.reload(true);
-	      }
-	    }
-	  }, {
-	    key: 'editorInit',
-	    value: function editorInit() {
-	      this.init();
+	    key: 'entityCreated',
+	    value: function entityCreated() {
+	      var _this2 = this;
 
-	      if (this.getEntity().isChildrenLoaded()) {
-	        this.entityLoaded();
-	      } else {
-	        this.getEntity().once('loadChildren', this.entityLoaded, this);
-	      }
-
-	      this.getRuntime().on('update', this.update, this);
-	    }
-	  }, {
-	    key: 'editorShutdown',
-	    value: function editorShutdown() {
-	      this.getRuntime().off('update', this.update, this);
-	      this.shutdown();
-	    }
-
-	    /**
-	     * Returns the currently assigned animation asset.
-	     * @method getAsset
-	     * @return {Object} The currently assigned animation asset.
-	     */
-
-	  }, {
-	    key: 'getAsset',
-	    value: function getAsset() {
-	      return this.asset;
-	    }
-
-	    /**
-	     * Returns the animation speed.
-	     * @method getSpeed
-	     * @return {Number} The animation speed.
-	     */
-
-	  }, {
-	    key: 'getSpeed',
-	    value: function getSpeed() {
-	      return this.speed;
-	    }
-
-	    /**
-	     * Returns the currently assigned animation take.
-	     * @method getTake
-	     * @return {String} The animation take.
-	     */
-
-	  }, {
-	    key: 'getTake',
-	    value: function getTake() {
-	      return this.take;
-	    }
-
-	    /**
-	     * Returns a dictionary of all take names.
-	     * @method getTakes
-	     * @return {Object} The take dictionary.
-	     */
-
-	  }, {
-	    key: 'getTakes',
-	    value: function getTakes() {
-	      var takeDict = {};
-
-	      if (this.asset) {
-	        var takeNames = this.asset.getTakeNames();
-
-	        for (var idx in takeNames) {
-	          var takeName = takeNames[idx];
-	          takeDict[takeName] = takeName;
-	        }
-	      }
-
-	      return takeDict;
+	      // TODO: Use loadEntity() instead of entityCreated() when it gets fixed.
+	      // https://jira.inside-box.net/browse/COXP-2389
+	      this.getEntity().when('loadChildren', function () {
+	        _this2.mixer = new _three2.default.AnimationMixer(_this2.getRuntimeData());
+	        _this2.mixer.addEventListener('finished', function (event) {
+	          return _this2.onMixerEvent(event);
+	        });
+	      });
 	    }
 
 	    /**
 	     * Returns the animation time.
 	     * @method getTime
-	     * @return {Number} The animation time.
+	     * @returns {Number} The animation time.
 	     */
 
 	  }, {
 	    key: 'getTime',
 	    value: function getTime() {
-	      if (this.animation) {
-	        return this.animation.currentTime;
+	      if (this.action) {
+	        return this.action.time;
 	      }
 
 	      return 0.0;
 	    }
 
 	    /**
-	     * Returns the animation weight.
-	     * @method getWeight
-	     * @return {Number} The animation weight.
-	     */
-
-	  }, {
-	    key: 'getWeight',
-	    value: function getWeight() {
-	      return this.weight;
-	    }
-
-	    /**
-	     * Called as soon as the Box3DEntity begins to load.
+	     * Called when the Box3DEntity begins to load.
+	     * @method init
+	     * @public
+	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'init',
 	    value: function init() {
 	      // Listen to changes on the animation asset.
-	      this.onAssetChanged = function () {
-	        this.reload();
-	      }.bind(this);
-
 	      if (this.asset) {
 	        this.listenTo(this.asset, 'propertyChanges', this.onAssetChanged);
-	        this.getScene().registerAnimation(this.asset.id);
 	      }
 
-	      // this.box3DEntity is available here but the Three.JS data isn't loaded yet
-	      this.getEntity().on('playKeyframeAnimation', this.playKeyframeAnimation, this);
-	      this.getEntity().on('pauseKeyframeAnimation', this.pause, this);
-	      this.getEntity().on('stopKeyframeAnimation', this.stop, this);
-	      this.getEntity().on('toggleKeyframeAnimation', this.toggle, this);
-	    }
-
-	    /**
-	     * Returns true if the animation is enabled; otherwise, returns false. When
-	     * disabled, an animation does not have any effect on the scene. In contrast, a
-	     * paused or stopped (but enabled) animation may still be blended with other
-	     * animations. Animations are initially disabled, until the first call to
-	     * `play`. Use `stop` to disable an animation. Disabling unneeded animations
-	     * may have performance benefits.
-	     * @method isEnabled
-	     * @return {Boolean} true if looping is enabled; otherwise, false.
-	     */
-
-	  }, {
-	    key: 'isEnabled',
-	    value: function isEnabled() {
-	      return this.animation && this.animation.isPlaying;
-	    }
-
-	    /**
-	     * Returns true if looping is enabled; otherwise, returns false.
-	     * @method isLoop
-	     * @return {Boolean} true if looping is enabled; otherwise, false.
-	     */
-
-	  }, {
-	    key: 'isLoop',
-	    value: function isLoop() {
-	      return this.loop;
-	    }
-
-	    /**
-	     * Returns true if the animation is paused; otherwise, returns false.
-	     * @method isPaused
-	     * @return {Boolean} true if the animation is paused; otherwise, false.
-	     */
-
-	  }, {
-	    key: 'isPaused',
-	    value: function isPaused() {
-	      return this.state === 'paused';
+	      // this.box3DEntity is available here but the Three.JS data isn't loaded yet.
+	      this.getEntity().on('playAnimation', this.playAnimation, this);
+	      this.getEntity().on('pauseAnimation', this.pause, this);
+	      this.getEntity().on('stopAnimation', this.stop, this);
+	      this.getEntity().on('toggleAnimation', this.toggle, this);
 	    }
 
 	    /**
 	     * Returns true if the animation is playing; otherwise, returns false.
 	     * @method isPlaying
-	     * @return {Boolean} true if the animation is playing; otherwise, false.
+	     * @public
+	     * @returns {Boolean} true if the animation is playing; otherwise, false.
 	     */
 
 	  }, {
 	    key: 'isPlaying',
 	    value: function isPlaying() {
-	      return this.state === 'playing';
+	      return this.action && this.action.isScheduled() && !this.paused;
 	    }
 
 	    /**
-	     * Returns true if the animation is stopped; otherwise, returns false.
-	     * @method isStopped
-	     * @return {Boolean} true if the animation is stopped; otherwise, false.
+	     * Load the currently assigned animation asset and clip and reset playback. Use this method to
+	     * preload the animation asset prior to calling play(); otherwise, playback might be delayed.
+	     * @method load
+	     * @public
+	     * @param {Function} [callback] Called when the animation is loaded or an error occurs.
+	     * @returns {void}
 	     */
 
 	  }, {
-	    key: 'isStopped',
-	    value: function isStopped() {
-	      return this.state === 'stopped';
-	    }
+	    key: 'load',
+	    value: function load(callback) {
+	      var _this3 = this;
 
-	    /**
-	     * Called once the hierarchy is loaded.
-	     */
-
-	  }, {
-	    key: 'entityLoaded',
-	    value: function entityLoaded() {
-	      this.reload(true);
-	    }
-
-	    /**
-	     * Play the currently assigned animation asset and take.
-	     * @method play
-	     * @param {Function} fn Callback function that is triggered when the take finishes playing
-	     */
-
-	  }, {
-	    key: 'play',
-	    value: function play(fn) {
-	      if (this.animation) {
-	        if (this.state !== 'playing') {
-	          this.animation.timeScale = this.speed;
-	          this.animation.play(this.animation.currentTime, this.animation.weight);
-	          this.state = 'playing';
+	      if (!this.mixer) {
+	        if (callback) {
+	          callback(new Error('Mixer is not initialized'));
 	        }
 
-	        this.onAnimationEnd = fn;
+	        return;
+	      }
+
+	      // Release the current animation (if there is one).
+	      this.release();
+
+	      // Make sure an animation asset is set.
+	      if (!this.asset) {
+	        if (callback) {
+	          callback(new Error('No asset assigned'));
+	        }
+
+	        return;
+	      }
+
+	      this.asset.when('load', function () {
+	        // Get the THREE.AnimationClip from the asset.
+	        var clip = _this3.asset.getAnimationClip(_this3.clipId);
+	        if (!clip) {
+	          if (callback) {
+	            callback(new Error('Failed to get animation clip "' + _this3.clipId + '"'));
+	          }
+
+	          return;
+	        }
+
+	        // Create a THREE.AnimationAction.
+	        _this3.action = _this3.mixer.clipAction(clip);
+	        if (!_this3.action) {
+	          if (callback) {
+	            callback(new Error('Failed to create THREE.AnimationAction'));
+	          }
+
+	          return;
+	        }
+
+	        _this3.action.setLoop(_this3.loop ? _three2.default.LoopRepeat : _three2.default.LoopOnce, Infinity);
+	        _this3.action.timeScale = _this3.speed;
+	        _this3.action.time = _this3.startTime;
+	        _this3.action.weight = _this3.weight;
+	        _this3.action.clampWhenFinished = true;
+	        _this3.action.paused = _this3.paused;
+
+	        _this3.dirty = false;
+
+	        _this3.getEntity().trigger('animationLoaded');
+
+	        if (callback) {
+	          callback(null, _this3);
+	        }
+	      });
+
+	      if (this.asset.isUnloaded()) {
+	        this.asset.load();
 	      }
 	    }
 
 	    /**
-	     * Play the specified animation, with the given playback settings.
-	     * @method playKeyframeAnimation
-	     * @param {String} assetId The ID of the animation asset
-	     * @param {String} take The name of the take
-	     * @param {Boolean} loop Whether or not to loop the animation
-	     * @param {Number} speed The playback speed
-	     * @param {Number} startTime The time offset to start the animation at
+	     * Called when the animation asset's properties change.
+	     * @method onAssetChanged
+	     * @private
+	     * @returns {void}
 	     */
 
 	  }, {
-	    key: 'playKeyframeAnimation',
-	    value: function playKeyframeAnimation(assetId, take, loop, speed, startTime) {
-	      var playAnimation = function (animation) {
-	        if (animation) {
-	          loop = loop !== undefined ? loop : this.isLoop();
-	          speed = speed !== undefined ? speed : this.getSpeed();
-	          startTime = startTime !== undefined ? startTime : this.getTime();
+	    key: 'onAssetChanged',
+	    value: function onAssetChanged() {
+	      this.dirty = true;
+	    }
 
-	          this.setLoop(loop);
-	          this.setSpeed(speed);
-	          this.setTime(startTime);
+	    /**
+	     * Called when mixer events occur.
+	     * @method onMixerEvent
+	     * @private
+	     * @param {Object} event The mixer event.
+	     * @returns {void}
+	     */
 
-	          this.play();
-	        }
-	      }.bind(this);
-
-	      if (assetId !== undefined || take !== undefined) {
-	        var asset = assetId ? this.getRuntime().getEntityById(assetId) : this.asset;
-	        take = take ? take : this.take;
-
-	        this.setAsset(asset, false);
-	        this.setTake(take, false);
-
-	        this.reload(false, function (err, animation) {
-	          playAnimation(animation);
-	        });
-	      } else {
-	        playAnimation(this.animation);
+	  }, {
+	    key: 'onMixerEvent',
+	    value: function onMixerEvent(event) {
+	      if (event.action === this.action && event.type === 'finished') {
+	        this.getEntity().trigger('endAnimation');
 	      }
 	    }
 
 	    /**
 	     * Pause the animation, without resetting the playhead.
 	     * @method pause
+	     * @public
+	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'pause',
 	    value: function pause() {
-	      if (this.animation && this.state === 'playing') {
-	        this.animation.timeScale = 0;
-	        this.state = 'paused';
+	      this.paused = true;
+
+	      if (this.action) {
+	        this.action.paused = this.paused;
 	      }
+	    }
+
+	    /**
+	     * Play the currently assigned animation asset and clip.
+	     * @method play
+	     * @public
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'play',
+	    value: function play() {
+	      var _this4 = this;
+
+	      this.paused = false;
+
+	      if (this.dirty) {
+	        this.load(function (err) {
+	          if (err) {
+	            _log2.default.error('Error playing animation: ', err.toString());
+	            return;
+	          }
+
+	          _this4.play();
+	        });
+
+	        return;
+	      }
+
+	      if (this.action) {
+	        this.action.play();
+	        this.action.paused = this.paused;
+	      }
+	    }
+
+	    /**
+	     * Play the specified animation, with the given playback settings.
+	     * @method playAnimation
+	     * @public
+	     * @param {String} assetId The ID of the animation asset.
+	     * @param {String} clipId The ID of the clip to play.
+	     * @param {Boolean} loop Whether or not to loop the animation.
+	     * @param {Number} speed The playback speed.
+	     * @param {Number} startTime The time offset to start the animation at.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'playAnimation',
+	    value: function playAnimation(assetId, clipId, loop, speed, startTime) {
+	      if (assetId !== undefined) {
+	        this.setAsset(this.getRuntime().getEntityById(assetId));
+	      }
+
+	      if (clipId !== undefined) {
+	        this.setClipId(clipId);
+	      }
+
+	      this.loop = loop !== undefined ? loop : this.loop;
+	      this.speed = speed !== undefined ? speed : this.speed;
+	      this.startTime = startTime !== undefined ? startTime : this.startTime;
+
+	      this.play();
 	    }
 
 	    /**
 	     * Stop and release the current animation.
 	     * @method release
+	     * @public
+	     * @returns {void}
 	     */
 
 	  }, {
@@ -74368,86 +74905,63 @@
 	    value: function release() {
 	      this.stop();
 
-	      if (this.animation) {
-	        this.animation.stop();
-	        this.animation = undefined;
-	      }
-	    }
-
-	    /**
-	     * Reload the currently assigned animation asset and take. This should be called
-	     * when changes are made to the asset or take, for example.
-	     * @method reload
-	     * @param {Boolean} reset Reset the playhead and play state
-	     * @param {Function} fn Callback function when asset loading completes
-	     */
-
-	  }, {
-	    key: 'reload',
-	    value: function reload(reset, fn) {
-	      var time = reset ? this.startTime : this.getTime(),
-	          isPlaying = reset ? this.autoPlay : this.isPlaying();
-
-	      // Release the current animation (if there is one).
-	      this.release();
-
-	      // Load and create a new animation.
-	      if (this.asset && this.take) {
-	        this.asset.load(function () {
-	          this.animation = this.asset.createAnimation(this.box3DEntity, this.take);
-
-	          if (this.animation) {
-	            this.animation.loop = this.loop;
-	            this.animation.timeScale = this.speed;
-	            this.animation.currentTime = time;
-	            this.animation.weight = this.weight;
-
-	            if (isPlaying) {
-	              this.play();
-	            }
-	          }
-
-	          if (fn) {
-	            fn(null, this.animation);
-	          }
-	        }.bind(this));
-	      } else if (fn) {
-	        fn(null, null);
+	      if (this.action) {
+	        this.action.stop();
+	        this.action = undefined;
 	      }
 	    }
 
 	    /**
 	     * Set the current animation asset.
 	     * @method setAsset
-	     * @param {Object} asset The animation asset or null to unset the asset
-	     * @param {Boolean} reload Whether or not to reload the animation
-	     * @param {Function} fn Callback function when asset loading completes
+	     * @param {AnimationAsset|null} asset The animation asset or null to unset the asset.
+	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'setAsset',
-	    value: function setAsset(asset, reload, fn) {
+	    value: function setAsset(asset) {
+	      if (this.asset === asset) {
+	        return;
+	      }
+
 	      // Remove old change listener from the animation asset.
 	      if (this.asset) {
 	        this.stopListening(this.asset, 'propertyChanges', this.onAssetChanged);
 	      }
 
 	      this.asset = asset;
+	      this.dirty = true;
 
 	      // Add new change listener to the animation asset.
 	      if (this.asset) {
 	        this.listenTo(this.asset, 'propertyChanges', this.onAssetChanged);
 	      }
+	    }
 
-	      if (reload === undefined || reload) {
-	        this.reload(false, fn);
+	    /**
+	     * Set the current animation clip.
+	     * @method setClipId
+	     * @param {String} clipId The ID of the clip.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'setClipId',
+	    value: function setClipId(clipId) {
+	      if (this.clipId === clipId) {
+	        return;
 	      }
+
+	      this.clipId = clipId;
+	      this.dirty = true;
 	    }
 
 	    /**
 	     * Enable or disable looping.
 	     * @method setLoop
-	     * @param {Boolean} loop The loop state
+	     * @param {Boolean} loop Whether or not looping is enabled.
+	     * @returns {void}
 	     */
 
 	  }, {
@@ -74455,15 +74969,16 @@
 	    value: function setLoop(loop) {
 	      this.loop = loop;
 
-	      if (this.animation) {
-	        this.animation.loop = this.loop;
+	      if (this.action) {
+	        this.action.setLoop(this.loop ? _three2.default.LoopRepeat : _three2.default.LoopOnce, Infinity);
 	      }
 	    }
 
 	    /**
 	     * Set the animation speed.
 	     * @method setSpeed
-	     * @param {Number} speed The animation speed
+	     * @param {Number} speed The animation speed.
+	     * @returns {void}
 	     */
 
 	  }, {
@@ -74471,51 +74986,31 @@
 	    value: function setSpeed(speed) {
 	      this.speed = speed;
 
-	      // Only update the animation's timeScale when the animation is playing since
-	      // the timeScale is also used to pause and stop the animation. In those cases,
-	      // the timeScale will be updated on the next call to `play`.
-	      if (this.isPlaying()) {
-	        this.animation.timeScale = this.speed;
-	      }
-	    }
-
-	    /**
-	     * Set the current animation take.
-	     * @method setTake
-	     * @param {String} take The take name
-	     * @param {Boolean} reload Whether or not to reload the animation
-	     * @param {Function} fn Callback function when asset loading completes
-	     */
-
-	  }, {
-	    key: 'setTake',
-	    value: function setTake(take, reload, fn) {
-	      this.take = take;
-
-	      if (reload === undefined || reload) {
-	        this.reload(false, fn);
+	      if (this.action) {
+	        this.action.timeScale = speed;
 	      }
 	    }
 
 	    /**
 	     * Set the animation time.
 	     * @method setTime
-	     * @param {Number} time The animation time
+	     * @param {Number} time The animation time.
+	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'setTime',
 	    value: function setTime(time) {
-	      if (this.animation) {
-	        this.animation.currentTime = time;
-	        this.animation.reset();
+	      if (this.action) {
+	        this.action.time = time;
 	      }
 	    }
 
 	    /**
 	     * Set the animation weight.
 	     * @method setWeight
-	     * @param {Number} weight The animation weight
+	     * @param {Number} weight The animation weight.
+	     * @returns {void}
 	     */
 
 	  }, {
@@ -74523,14 +75018,15 @@
 	    value: function setWeight(weight) {
 	      this.weight = weight;
 
-	      if (this.animation) {
-	        this.animation.weight = this.weight;
+	      if (this.action) {
+	        this.action.weight = this.weight;
 	      }
 	    }
 
 	    /**
 	     * Called when the Box3DEntity is unloaded or this component is removed.
 	     * @method shutdown
+	     * @returns {void}
 	     */
 
 	  }, {
@@ -74544,74 +75040,56 @@
 	      // Release the animation.
 	      this.release();
 
-	      this.getEntity().off('playKeyframeAnimation', this.playKeyframeAnimation, this);
-	      this.getEntity().off('pauseKeyframeAnimation', this.pause, this);
-	      this.getEntity().off('stopKeyframeAnimation', this.stop, this);
-	      this.getEntity().off('toggleKeyframeAnimation', this.toggle, this);
+	      this.getEntity().off('playAnimation', this.playAnimation, this);
+	      this.getEntity().off('pauseAnimation', this.pause, this);
+	      this.getEntity().off('stopAnimation', this.stop, this);
+	      this.getEntity().off('toggleAnimation', this.toggle, this);
 	    }
 
 	    /**
-	     * Stop the animation, resetting the playhead to 0, and optionally disable it.
-	     * When disabled, an animation has no effect on the scene, whereas a stopped
-	     * (but enabled) animation could still be blended with another animation. Before
-	     * the first call to `play`, an animation is disabled. Once disabled, an
-	     * animation remains disabled until `play` is called again. Disabling unneeded
-	     * animations may have performance benefits.
+	     * Stop the animation and reset the playhead to 0.
 	     * @method stop
-	     * @param disable {Boolean} disable Cease updating the animation
+	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'stop',
-	    value: function stop(disable) {
-	      if (this.animation) {
-	        if (this.state !== 'stopped') {
-	          this.animation.timeScale = 0;
-	          this.state = 'stopped';
-	        }
-
-	        this.setTime(0);
-
-	        if (disable) {
-	          this.animation.stop();
-	        }
+	    value: function stop() {
+	      if (this.action) {
+	        this.action.stop();
 	      }
 	    }
+
+	    /**
+	     * Toggle between the play and paused state.
+	     * @method toggle
+	     * @public
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'toggle',
 	    value: function toggle() {
-	      if (this.animation) {
-	        if (this.state === 'playing') {
-	          this.pause();
-	        } else {
-	          this.play();
-	        }
+	      if (this.isPlaying()) {
+	        this.pause();
+	      } else {
+	        this.play();
 	      }
 	    }
 
 	    /**
 	     * Called per Box3DRuntime update (once per frame).
 	     * @method update
-	     * @param {Number} delta The number of seconds since the last call to `update`
+	     * @param {Number} deltaTime The number of seconds since the last call to `update`.
+	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'update',
-	    value: function update() {
-	      if (!this.loop && this.animation && this.animation.currentTime >= this.animation.data.length) {
-
-	        this.stop(true);
-
-	        if (this.onAnimationEnd) {
-	          // Store the callback, then clear it so that it's not called twice.
-	          var fn = this.onAnimationEnd;
-	          this.onAnimationEnd = undefined;
-
-	          // Invoke the callback.
-	          fn(this);
-	        }
-
-	        this.getEntity().trigger('endKeyframeAnimation');
+	    value: function update(deltaTime) {
+	      if (this.mixer) {
+	        this.mixer.update(deltaTime);
+	        this.getRuntime().needsRender = true;
 	      }
 	    }
 	  }]);
@@ -74622,7 +75100,7 @@
 	exports.default = Animation;
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74794,7 +75272,286 @@
 	exports.default = LookAt;
 
 /***/ },
-/* 41 */
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* eslint-disable */
+	/**
+	 * @vid reflection_capture_planar
+	 * @vname Reflection Capture Plane
+	 * @vfilter Object
+	 * @vcategory Rendering
+	 * @vreserved
+	 * @vattr Asset captureTexture {
+	 *   description: 'The RenderTexture2D to render the reflection to.',
+	 *   filter: { renderTexture2D: true }
+	 * }
+	 * @vattr Float clipBias {
+	 *   description: 'Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.',
+	 *   default: 0.01
+	 * }
+	 * @vattr Integer updateFrameInterval {
+	 *   description: 'The number of frames to skip in between updates of the reflection. Default is 0.',
+	 *   default: 0
+	 * }
+	 */
+	/* eslint-enable */
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DComponent2 = __webpack_require__(24);
+
+	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ReflectionCapture = function (_Box3DComponent) {
+	  _inherits(ReflectionCapture, _Box3DComponent);
+
+	  function ReflectionCapture() {
+	    _classCallCheck(this, ReflectionCapture);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ReflectionCapture).call(this));
+
+	    _this.framesElapsed = 0;
+	    _this.perspectiveCamera = null;
+	    _this.orthoCamera = null;
+	    _this.reflectionNormal = new _three2.default.Vector3(0, 1, 0);
+	    _this.reflectionPlane = new _three2.default.Plane();
+	    _this.clipPlane = new _three2.default.Vector4();
+
+	    _this.reflectionPosition = new _three2.default.Vector3();
+	    _this.cameraWorldPosition = new _three2.default.Vector3();
+	    _this.rotationMatrix = new _three2.default.Matrix4();
+	    _this.lookAtPosition = new _three2.default.Vector3(0, 0, -1);
+	    _this.up = new _three2.default.Vector3(0, 1, 0);
+	    return _this;
+	  }
+
+	  /** @inheritdoc */
+
+
+	  _createClass(ReflectionCapture, [{
+	    key: 'entityCreated',
+	    value: function entityCreated() {
+	      this.initCameras();
+	      this.initTexture();
+	    }
+	  }, {
+	    key: 'createTempRenderTexture',
+	    value: function createTempRenderTexture() {
+	      this.tempRenderTexture = this.getAssetRegistry().createAsset({
+	        type: 'renderTexture2D',
+	        id: 'render_tex_reflection',
+	        properties: {
+	          width: 512,
+	          height: 512,
+	          format: _three2.default.RGBAFormat,
+	          type: _three2.default.UnsignedByteType
+	        }
+	      });
+	      this.tempRenderTexture.load();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'attributesChanged',
+	    value: function attributesChanged(changes) {
+	      if (changes.indexOf('captureTexture') !== -1) {
+	        this.initTexture();
+	      }
+	    }
+	  }, {
+	    key: 'initTexture',
+	    value: function initTexture() {
+	      if (this.captureTexture) {
+	        var that = this;
+
+	        this.captureTexture.when('load', function () {
+	          if (that.tempRenderTexture) {
+	            that.tempRenderTexture.unload();
+	          }
+	        });
+	        if (this.captureTexture.isBaseUnloaded()) {
+	          this.captureTexture.load();
+	        }
+	      } else {
+	        this.createTempRenderTexture();
+	      }
+	    }
+
+	    /**
+	     * Called immediately after after component creation
+	     */
+
+	  }, {
+	    key: 'initCameras',
+	    value: function initCameras() {
+	      if (this.captureTexture) {
+	        this.captureTexture.load();
+	      }
+
+	      this.perspectiveCamera = new _three2.default.PerspectiveCamera();
+	      this.orthoCamera = new _three2.default.OrthographicCamera();
+	    }
+	  }, {
+	    key: 'updateReflection',
+	    value: function updateReflection(camera) {
+	      if (this.isEnabled()) {
+	        var sign = function sign(num) {
+	          return num < 0 ? -1 : 1;
+	        };
+	        this.box3DEntity.runtimeData.updateMatrixWorld();
+	        camera.updateMatrixWorld();
+
+	        this.reflectionPosition.setFromMatrixPosition(this.box3DEntity.runtimeData.matrixWorld);
+	        this.cameraWorldPosition.setFromMatrixPosition(camera.matrixWorld);
+
+	        this.rotationMatrix.extractRotation(this.box3DEntity.runtimeData.matrixWorld);
+
+	        this.reflectionNormal.set(0, 1, 0);
+	        this.reflectionNormal.applyMatrix4(this.rotationMatrix);
+
+	        var view = this.reflectionPosition.clone().sub(this.cameraWorldPosition);
+	        var reflectView = view.reflect(this.reflectionNormal).negate();
+	        reflectView.add(this.reflectionPosition);
+
+	        this.rotationMatrix.extractRotation(camera.matrixWorld);
+
+	        this.lookAtPosition.set(0, 0, -1);
+	        this.lookAtPosition.applyMatrix4(this.rotationMatrix);
+	        this.lookAtPosition.add(this.cameraWorldPosition);
+
+	        var target = this.reflectionPosition.clone().sub(this.lookAtPosition);
+	        var reflectTarget = target.reflect(this.reflectionNormal).negate();
+	        reflectTarget.add(this.reflectionPosition);
+
+	        this.up.set(0, -1, 0);
+	        this.up.applyMatrix4(this.rotationMatrix);
+	        var reflectUp = this.up.reflect(this.reflectionNormal).negate();
+
+	        if (camera instanceof _three2.default.PerspectiveCamera && this.perspectiveCamera) {
+	          this.perspectiveCamera.aspect = camera.aspect;
+	          this.perspectiveCamera.fov = camera.fov;
+	          this.perspectiveCamera.near = camera.near;
+	          this.perspectiveCamera.far = camera.far;
+	          this.reflectionCamera = this.perspectiveCamera;
+	        } else if (this.orthoCamera) {
+	          this.orthoCamera.left = camera.left;
+	          this.orthoCamera.right = camera.right;
+	          this.orthoCamera.top = camera.top;
+	          this.orthoCamera.bottom = camera.bottom;
+	          this.orthoCamera.near = camera.near;
+	          this.orthoCamera.far = camera.far;
+	          this.reflectionCamera = this.orthoCamera;
+	        } else {
+	          return;
+	        }
+	        this.reflectionCamera.position.copy(reflectView);
+	        this.reflectionCamera.up = reflectUp;
+	        this.reflectionCamera.lookAt(reflectTarget);
+
+	        this.reflectionCamera.updateProjectionMatrix();
+	        this.reflectionCamera.updateMatrixWorld();
+	        this.reflectionCamera.matrixWorldInverse.getInverse(this.reflectionCamera.matrixWorld);
+
+	        // Now update projection matrix with new clip plane, implementing code
+	        // from: http://www.terathon.com/code/oblique.html
+	        // Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
+	        this.reflectionPlane.setFromNormalAndCoplanarPoint(this.reflectionNormal, this.reflectionPosition);
+	        this.reflectionPlane.applyMatrix4(this.reflectionCamera.matrixWorldInverse);
+
+	        this.clipPlane.set(this.reflectionPlane.normal.x, this.reflectionPlane.normal.y, this.reflectionPlane.normal.z, this.reflectionPlane.constant);
+
+	        var q = new _three2.default.Vector4();
+	        var projectionMatrix = this.reflectionCamera.projectionMatrix;
+
+	        q.x = (sign(this.clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
+	        q.y = (sign(this.clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
+	        q.z = -1.0;
+	        q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
+
+	        // Calculate the scaled plane vector
+	        var c = new _three2.default.Vector4();
+	        c = this.clipPlane.multiplyScalar(2.0 / this.clipPlane.dot(q));
+
+	        // Replacing the third row of the projection matrix
+	        projectionMatrix.elements[2] = c.x;
+	        projectionMatrix.elements[6] = c.y;
+	        projectionMatrix.elements[10] = c.z + 1.0 - this.clipBias;
+	        projectionMatrix.elements[14] = c.w;
+	      }
+	    }
+
+	    /**
+	     * Render the scene to the texture.
+	     * @method captureScene
+	     * @public
+	     * @param {Object} camera The camera that the reflection will be rendered relative to (since
+	     * reflections are dependent on view)
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'captureScene',
+	    value: function captureScene(camera) {
+	      if (!camera) {
+	        throw new Error('Call to ReflectionCapture.captureScene without specifying a camera.');
+	      }
+	      var scene = this.getThreeScene();
+	      this.updateReflection(camera);
+	      // Render the mirrored view of the current scene into the target texture
+	      var threeTexture = this.captureTexture ? this.captureTexture.runtimeData : null;
+	      var target = threeTexture ? threeTexture : this.tempRenderTexture.runtimeData;
+	      this.getRenderer().renderView(scene, this.reflectionCamera, {
+	        renderTarget: target,
+	        clearDepth: true,
+	        enableShadows: false,
+	        enablePreRenderFunctions: false
+	      });
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'preRenderView',
+	    value: function preRenderView(scene, camera) {
+	      if (this.isEnabled()) {
+	        if (this.framesElapsed >= this.updateFrameInterval) {
+	          this.updateReflection(camera);
+	          //render reflection
+	          this.captureScene(camera);
+	          this.framesElapsed = 0;
+	        } else {
+	          this.framesElapsed++;
+	        }
+	      }
+	    }
+	  }]);
+
+	  return ReflectionCapture;
+	}(_Box3DComponent3.default);
+
+	exports.default = ReflectionCapture;
+
+/***/ },
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74991,680 +75748,7 @@
 	exports.default = NormalMapGenerator;
 
 /***/ },
-/* 42 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* eslint-disable */
-	/**
-	 * @vid object_animator_component
-	 * @vname Object Animator
-	 * @vcategory Animation
-	 * @vfilter Object
-	 * @vevent local playAnimateAlongCurve {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'curve', 'type' : 'object', 'componentFilter': { 'Curve' : true }},
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'orientation', 'description': 'Orient the object following the curve to either the direction of the curve or to the objects defining the curve.', 'type': 'opt', 'default': 'toCurve', 'options' : { 'None': 'None', 'To Curve' : 'toCurve', 'To Nodes' : 'toNode'}},
-	 *     {name: 'loop', 'type' : 'b', 'description': '', 'default': false}
-	 *   ]
-	 * }
-	 * @vevent local playAnimateToObject {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'object', 'type' : 'object', 'default': null},
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Total time that the animation will take. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'update orientation', 'type' : 'b', 'default': true}
-	 *   ]
-	 * }
-	 * @vevent local playAnimateTranslation {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -1.0, 'max': 1.0},
-	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s position represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *   ]
-	 * }
-	 * @vevent local playAnimateRotation {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'angularVelocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -100.0, 'max': 100.0},
-	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s rotation represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *     {name: 'axisOrder', 'type' : 'opt', 'description': 'Specify the axis order that the angular velocity will be applied in.', 'default': 'YXZ', 'options': {
-	 *       'XYZ': 'XYZ',
-	 *       'YXZ': 'YXZ',
-	 *       'ZXY': 'ZXY',
-	 *       'XZY': 'XZY',
-	 *       'YZX': 'YZX',
-	 *       'ZYX': 'ZYX'}
-	 *     }
-	 *   ]
-	 * }
-	 * @vevent local playAnimateScale {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -10.0, 'max': 10.0},
-	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s scale represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *   ]
-	 * }
-	 * @vevent local pauseCurveAnimation { 'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local stopCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local unpauseCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local endAnimateAlongCurve {'action': false, 'category': 'Animation', 'parameters': []}
-	 * @vevent local endAnimateToObject {'action': false, 'category': 'Animation', 'parameters': []}
-	 * @vevent lcoal endAnimateTranslation {'action': false, 'category': 'Animation', 'parameters': []}
-	 */
-	/* eslint-enable*/
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DComponent2 = __webpack_require__(24);
-
-	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ObjectAnimator = function (_Box3DComponent) {
-	  _inherits(ObjectAnimator, _Box3DComponent);
-
-	  function ObjectAnimator() {
-	    _classCallCheck(this, ObjectAnimator);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectAnimator).call(this));
-
-	    _this.playingCurveAnimation = false;
-	    _this.curveAnim = undefined;
-	    return _this;
-	  }
-
-	  /**
-	   * Called immediately after after component creation
-	   */
-
-
-	  _createClass(ObjectAnimator, [{
-	    key: 'init',
-	    value: function init() {
-	      this.getEntity().on('playAnimateAlongCurve', this.animateAlongCurve, this);
-	      this.getEntity().on('playAnimateToObject', this.animateToObject, this);
-	      this.getEntity().on('playAnimateTranslation', this.animateTranslation, this);
-	      this.getEntity().on('playAnimateRotation', this.animateRotation, this);
-	      this.getEntity().on('playAnimateScale', this.animateScale, this);
-	      this.getEntity().on('pauseCurveAnimation', this.onPauseCurveAnimation, this);
-	      this.getEntity().on('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
-	      this.getEntity().on('stopCurveAnimation', this.stopCurveAnimation, this);
-
-	      this.on('disable', this.onDisable, this);
-	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
-	      this.getEntity().off('playAnimateAlongCurve', this.animateAlongCurve, this);
-	      this.getEntity().off('playAnimateToObject', this.animateToObject, this);
-	      this.getEntity().off('playAnimateTranslation', this.animateTranslation, this);
-	      this.getEntity().off('playAnimateRotation', this.animateRotation, this);
-	      this.getEntity().off('playAnimateScale', this.animateScale, this);
-	      this.getEntity().off('pauseCurveAnimation', this.onPauseCurveAnimation, this);
-	      this.getEntity().off('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
-	      this.getEntity().off('stopCurveAnimation', this.stopCurveAnimation, this);
-
-	      this.off('disable', this.onDisable, this);
-	    }
-	  }, {
-	    key: 'onDisable',
-	    value: function onDisable() {
-	      this.getRuntimeData().position.copy(this.getEntity().getPosition());
-	      this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
-	      this.getRuntimeData().scale.copy(this.getEntity().getScale());
-	    }
-	  }, {
-	    key: 'stopCurveAnimation',
-	    value: function stopCurveAnimation() {
-	      this.getRuntime().off('update', this.curveAnim, this);
-	      this.curveAnim = undefined;
-	    }
-	  }, {
-	    key: 'animateAlongCurve',
-	    value: function animateAlongCurve(curveObjectId, animationTime, easeIn, easeOut, orientation, loop) {
-
-	      function curveAnim(delta) {
-	        if (!this.box3DEntity || !this.isEnabled()) {
-	          engine.off('update', this.curveAnim, this);
-	          this.curveAnim = undefined;
-	          return;
-	        }
-	        if (curveComponent && this.playingCurveAnimation) {
-	          this.getRuntime().needsRender = true;
-	          currentTime += delta;
-	          var currentTimePercent = currentTime / animationTime;
-	          if (currentTimePercent >= 1.0) {
-	            currentTimePercent -= 1.0;
-	          }
-	          var easeOutStart = 1 - easeOut;
-
-	          //Ease in
-	          if (easeIn && currentTimePercent < easeIn) {
-	            var easeInProgress = currentTimePercent / easeIn;
-	            curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	          } else if (easeOut && currentTimePercent > easeOutStart) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	          } else {
-	            //Full speed animation
-	            curveProgressPercent += delta * fullSpeed / animationTime;
-	          }
-
-	          //If the animation is finished
-	          if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
-	            curveProgressPercent %= 1.0;
-	            currentTime = 0.0;
-	            if (!loop) {
-	              curveProgressPercent = 0.99999999;
-	              this.playingCurveAnimation = false;
-
-	              this.getRuntime().off('update', this.curveAnim, this);
-	              this.curveAnim = undefined;
-	            }
-	            this.getEntity().trigger('endAnimateAlongCurve');
-	          }
-
-	          var curve = curveComponent.curve;
-	          var curveProgress_NodeRelative = curve.getUtoTmapping(curveProgressPercent);
-	          runtimeData.position.copy(curve.getPoint(curveProgress_NodeRelative));
-
-	          if (orientation === 'toCurve') {
-	            var tangent = curve.getTangent(curveProgress_NodeRelative);
-	            tempVector1.set(0, -1, 0);
-	            tempVector2.crossVectors(tangent, tempVector1);
-	            tempVector3.crossVectors(tangent, tempVector2);
-	            tempVector1.copy(runtimeData.position);
-	            tempVector1.add(tangent);
-	            tempMatrix.lookAt(runtimeData.position, tempVector1, tempVector3);
-	            runtimeData.quaternion.setFromRotationMatrix(tempMatrix);
-	          } else if (orientation === 'toNode') {
-	            var curveSegments;
-	            if (curveComponent.closed) {
-	              curveSegments = curve.points.length;
-	            } else {
-	              curveSegments = curve.points.length - 1;
-	            }
-	            var prevNode = Math.floor(curveProgress_NodeRelative * curveSegments);
-	            var nextNode = Math.ceil(curveProgress_NodeRelative * curveSegments) % curve.points.length;
-
-	            if (prevNode !== currentPrevNode) {
-	              if (prevNode > 0) {
-	                curveComponent.controlPoints[prevNode].getQuaternionInWorldSpace(prevQuaternion);
-	              } else {
-	                curveComponent.controlPoints[0].getQuaternionInWorldSpace(prevQuaternion);
-	              }
-	            }
-	            if (nextNode !== currentNextNode) {
-	              if (nextNode > 0) {
-	                curveComponent.controlPoints[nextNode].getQuaternionInWorldSpace(nextQuaternion);
-	              } else {
-	                curveComponent.controlPoints[0].getQuaternionInWorldSpace(nextQuaternion);
-	              }
-	            }
-	            var interp = curveProgress_NodeRelative * curveSegments - prevNode;
-	            runtimeData.quaternion.copy(prevQuaternion);
-	            runtimeData.quaternion.slerp(nextQuaternion, interp);
-	          }
-	        }
-	      }
-	      var that = this;
-	      var curveComponent;
-	      var curveObject;
-
-	      if (curveObjectId) {
-	        curveObject = this.getRuntime().getEntityById(curveObjectId);
-	        curveComponent = curveObject.getFirstByScriptId('curve_component');
-	      }
-	      if (!curveComponent) {
-	        return;
-	      }
-
-	      var runtimeData = this.getRuntimeData();
-	      var engine = this.getRuntime();
-	      var currentTime = 0;
-	      var curveProgressPercent = 0.0;
-
-	      var tempVector1 = new _three2.default.Vector3();
-	      var tempVector2 = new _three2.default.Vector3();
-	      var tempVector3 = new _three2.default.Vector3();
-	      var tempMatrix = new _three2.default.Matrix4();
-	      var prevQuaternion = new _three2.default.Quaternion();
-	      var nextQuaternion = new _three2.default.Quaternion();
-
-	      if (easeIn + easeOut > 1.0) {
-	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
-	      }
-
-	      var fullSpeedTime = 1.0 - easeIn - easeOut;
-	      var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
-
-	      if (animationTime > 0) {
-	        this.playingCurveAnimation = true;
-	        var currentPrevNode = -1;
-	        var currentNextNode = -1;
-	        if (curveComponent.isCurveInit()) {
-
-	          this.curveAnim = curveAnim;
-	          this.getRuntime().on('update', this.curveAnim, this);
-	        } else {
-	          curveComponent.on('curveInit', function () {
-	            this.curveAnim = curveAnim;
-	            that.getRuntime().on('update', this.curveAnim, that);
-	          }, this);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'onPauseCurveAnimation',
-	    value: function onPauseCurveAnimation() {
-	      this.playingCurveAnimation = false;
-	    }
-	  }, {
-	    key: 'onUnpauseCurveAnimation',
-	    value: function onUnpauseCurveAnimation() {
-	      this.playingCurveAnimation = true;
-	    }
-	  }, {
-	    key: 'animateToObject',
-	    value: function animateToObject(objectId, animationTime, easeIn, easeOut, orientation) {
-	      var that = this;
-	      var engine = this.getRuntime();
-
-	      function _animateTo(threeObject) {
-
-	        var entity_data = that.getRuntimeData();
-	        var tempMatrix = new _three2.default.Matrix4();
-	        var currTime = 0;
-	        var curveProgressPercent = 0.0;
-
-	        if (easeIn + easeOut > 1.0) {
-	          _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	          easeIn = 0.5;
-	          easeOut = 0.5;
-	        }
-
-	        var fullSpeedTime = 1.0 - easeIn - easeOut;
-	        var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
-	        //var easeInDistance = easeIn * fullSpeed / 2.0;
-	        //var easeOutDistance = easeOut * fullSpeed / 2.0;
-
-	        var startPos = new _three2.default.Vector3();
-	        var startQuat;
-	        startPos.copy(entity_data.position);
-
-	        var targetPosition = threeObject.position;
-	        var targetQuaternion = threeObject.quaternion;
-
-	        if (targetQuaternion && orientation) {
-	          startQuat = new _three2.default.Quaternion();
-	          startQuat.copy(entity_data.quaternion);
-	        }
-	        threeObject.updateMatrixWorld();
-	        targetPosition.setFromMatrixPosition(threeObject.matrixWorld);
-	        tempMatrix.extractRotation(threeObject.matrixWorld);
-	        targetQuaternion.setFromRotationMatrix(tempMatrix);
-
-	        if (animationTime > 0) {
-	          that.getRuntime().on('update', function objAnim(delta) {
-	            if (!this.box3DEntity || !this.isEnabled()) {
-	              engine.off('update', objAnim, this);
-	              return;
-	            }
-	            that.getRuntime().needsRender = true;
-	            currTime += delta;
-	            var currentTimePercent = currTime / animationTime;
-	            var easeOutStart = 1 - easeOut;
-
-	            if (easeIn && currentTimePercent < easeIn) {
-	              //Ease in
-	              var easeInProgress = currentTimePercent / easeIn;
-	              curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	            } else if (easeOut && currentTimePercent > easeOutStart) {
-	              //Ease out
-	              var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	              curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	            } else {
-	              //Full speed animation
-	              curveProgressPercent += delta * fullSpeed / animationTime;
-	            }
-	            //clamp at 1
-	            curveProgressPercent = Math.min(curveProgressPercent, 1.0);
-
-	            if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
-	              that.getRuntime().off('update', objAnim, that);
-	              that.getEntity().trigger('endAnimateToObject');
-	            }
-
-	            entity_data.position.copy(startPos);
-	            entity_data.position.lerp(targetPosition, curveProgressPercent);
-	            if (targetQuaternion && orientation) {
-	              entity_data.quaternion.copy(startQuat);
-	              entity_data.quaternion.slerp(targetQuaternion, curveProgressPercent);
-	            }
-	          }, that);
-	        } else {
-	          entity_data.position.copy(targetPosition);
-	          if (targetQuaternion) {
-	            entity_data.quaternion.copy(targetQuaternion);
-	          }
-
-	          //complete
-	          that.getEntity().trigger('endAnimateToObject');
-	        }
-	      }
-
-	      var object = this.getRuntime().getEntityById(objectId);
-	      if (object.runtimeData) {
-	        _animateTo(object.runtimeData);
-	      } else {
-	        object.once('loadBase', function () {
-	          _animateTo(object.runtimeData);
-	        }, this);
-	        object.load();
-	      }
-	    }
-	  }, {
-	    key: 'animateTranslation',
-	    value: function animateTranslation(animationTime, easeIn, easeOut, velocity, objectUsage) {
-
-	      var runtimeData = this.getRuntimeData();
-	      runtimeData.position.copy(this.getEntity().getPosition());
-	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	      runtimeData.scale.copy(this.getEntity().getScale());
-
-	      var currTime = 0;
-	      var engine = this.getRuntime();
-
-	      if (easeIn + easeOut > 1.0) {
-	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
-	      }
-
-	      var easeInTime = animationTime * easeIn;
-	      // var easeOutTime = animationTime * easeOut;
-
-	      var currentVelocity = new _three2.default.Vector3();
-	      var direction = new _three2.default.Vector3();
-	      direction.copy(velocity);
-	      var speed = direction.length();
-	      runtimeData.updateMatrixWorld();
-	      // runtimeData.updateMatrix();
-	      direction.applyQuaternion(runtimeData.quaternion);
-	      direction.normalize();
-
-	      if (objectUsage) {
-	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	        //Based on the object usage, set the original position so that the
-	        //animation plays forward from there...
-	        if (objectUsage === 'middle') {
-	          //postiion - velocity * time * 0.5
-	          currentVelocity.copy(velocity);
-	          currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	          runtimeData.position.add(currentVelocity);
-	        } else if (objectUsage === 'end') {
-	          currentVelocity.copy(velocity);
-	          currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	          runtimeData.position.add(currentVelocity);
-	        }
-	      }
-
-	      if (animationTime > 0) {
-	        this.getRuntime().on('update', function objAnim(delta) {
-	          if (!this.box3DEntity || !this.isEnabled()) {
-	            engine.off('update', objAnim, this);
-	            return;
-	          }
-	          currentVelocity.copy(direction);
-
-	          this.getRuntime().needsRender = true;
-	          currTime += delta;
-	          var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
-	          var easeOutStart = 1.0 - easeOut;
-	          var easeOutStartTime = animationTime * easeOutStart;
-
-	          if (easeIn && currTime < easeInTime) {
-	            //Ease in
-	            var easeInProgress = currentTimePercent / easeIn;
-	            currentVelocity.multiplyScalar(delta * speed * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
-	          } else if (easeOut && currTime > easeOutStartTime) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            currentVelocity.multiplyScalar(delta * speed * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
-	          } else {
-	            //Full speed animation
-	            currentVelocity.multiplyScalar(delta * speed);
-	          }
-
-	          if (currTime >= animationTime) {
-	            this.getRuntime().off('update', objAnim, this);
-	            this.getEntity().trigger('endAnimateTranslation');
-	          }
-
-	          runtimeData.position.add(currentVelocity);
-	        }, this);
-	      }
-	    }
-	  }, {
-	    key: 'animateRotation',
-	    value: function animateRotation(animationTime, easeIn, easeOut, velocity, objectUsage, axisOrder) {
-
-	      var runtimeData = this.getRuntimeData();
-	      runtimeData.position.copy(this.getEntity().getPosition());
-	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	      runtimeData.scale.copy(this.getEntity().getScale());
-
-	      var currTime = 0;
-	      var engine = this.getRuntime();
-
-	      if (easeIn + easeOut > 1.0) {
-	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
-	      }
-
-	      var easeInTime = animationTime * easeIn;
-	      // var easeOutTime = animationTime * easeOut;
-	      var currentVelocity = new _three2.default.Quaternion();
-	      var fullSpeedQuat = new _three2.default.Quaternion();
-
-	      var tempVector1 = new _three2.default.Vector3();
-	      var eulerVelocity = new _three2.default.Euler(axisOrder);
-	      eulerVelocity.set(velocity.x, velocity.y, velocity.z);
-	      //Convert the euler angles to quaternion
-	      currentVelocity.setFromEuler(eulerVelocity);
-	      fullSpeedQuat.copy(currentVelocity);
-
-	      runtimeData.updateMatrixWorld();
-
-	      if (objectUsage) {
-	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	        //Based on the object usage, set the original rotation so that the
-	        //animation plays forward from there...
-	        if (objectUsage === 'middle') {
-	          //postiion - velocity * time * 0.5
-	          tempVector1.copy(velocity);
-	          tempVector1.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	          eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
-	          currentVelocity.setFromEuler(eulerVelocity);
-	          runtimeData.quaternion.multiply(currentVelocity);
-	        } else if (objectUsage === 'end') {
-	          tempVector1.copy(velocity);
-	          tempVector1.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	          eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
-	          currentVelocity.setFromEuler(eulerVelocity);
-	          runtimeData.quaternion.multiply(currentVelocity);
-	        }
-	      }
-
-	      if (animationTime > 0) {
-	        this.getRuntime().on('update', function objAnim(delta) {
-	          if (!this.box3DEntity || !this.isEnabled()) {
-	            engine.off('update', objAnim, this);
-	            return;
-	          }
-	          var speed = 1.0;
-
-	          this.getRuntime().needsRender = true;
-	          currTime += delta;
-	          var currentTimePercent = Math.min(currTime / animationTime, 1.0);
-	          var easeOutStart = 1.0 - easeOut;
-	          var easeOutStartTime = animationTime * easeOutStart;
-
-	          if (easeIn && currTime < easeInTime) {
-	            //Ease in
-	            var easeInProgress = currentTimePercent / easeIn;
-	            speed *= delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	          } else if (easeOut && currTime > easeOutStartTime) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            speed *= delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	          } else {
-	            //Full speed animation
-	            speed *= delta;
-	          }
-
-	          if (currTime >= animationTime) {
-	            this.getRuntime().off('update', objAnim, this);
-	            this.getEntity().trigger('endAnimateTranslation');
-	          }
-	          currentVelocity.set(0.0, 0.0, 0.0, 1.0);
-	          currentVelocity.slerp(fullSpeedQuat, speed);
-	          runtimeData.quaternion.multiply(currentVelocity);
-	        }, this);
-	      }
-	    }
-	  }, {
-	    key: 'animateScale',
-	    value: function animateScale(animationTime, easeIn, easeOut, velocity, objectUsage) {
-
-	      var runtimeData = this.getRuntimeData();
-	      runtimeData.position.copy(this.getEntity().getPosition());
-	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	      runtimeData.scale.copy(this.getEntity().getScale());
-
-	      var currTime = 0;
-	      var engine = this.getRuntime();
-
-	      if (easeIn + easeOut > 1.0) {
-	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
-	      }
-
-	      var easeInTime = animationTime * easeIn;
-	      // var easeOutTime = animationTime * easeOut;
-
-	      var currentVelocity = new _three2.default.Vector3();
-	      runtimeData.updateMatrixWorld();
-
-	      if (objectUsage) {
-	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	        //Based on the object usage, set the original scale so that the
-	        //animation plays forward from there...
-	        if (objectUsage === 'middle') {
-	          //postiion - velocity * time * 0.5
-	          currentVelocity.copy(velocity);
-	          currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	          runtimeData.scale.add(currentVelocity);
-	        } else if (objectUsage === 'end') {
-	          currentVelocity.copy(velocity);
-	          currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	          runtimeData.scale.add(currentVelocity);
-	        }
-	      }
-
-	      if (animationTime > 0) {
-	        this.getRuntime().on('update', function objAnim(delta) {
-	          if (!this.box3DEntity || !this.isEnabled()) {
-	            engine.off('update', objAnim, this);
-	            return;
-	          }
-	          currentVelocity.copy(velocity);
-
-	          this.getRuntime().needsRender = true;
-	          currTime += delta;
-	          var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
-	          var easeOutStart = 1.0 - easeOut;
-	          var easeOutStartTime = animationTime * easeOutStart;
-
-	          if (easeIn && currTime < easeInTime) {
-	            //Ease in
-	            var easeInProgress = currentTimePercent / easeIn;
-	            currentVelocity.multiplyScalar(delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
-	          } else if (easeOut && currTime > easeOutStartTime) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            currentVelocity.multiplyScalar(delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
-	          } else {
-	            //Full speed animation
-	            currentVelocity.multiplyScalar(delta);
-	          }
-
-	          if (currTime >= animationTime) {
-	            this.getRuntime().off('update', objAnim, this);
-	            this.getEntity().trigger('endAnimateTranslation');
-	          }
-
-	          runtimeData.scale.add(currentVelocity);
-	        }, this);
-	      }
-	    }
-	  }]);
-
-	  return ObjectAnimator;
-	}(_Box3DComponent3.default);
-
-	exports.default = ObjectAnimator;
-
-/***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76061,7 +76145,593 @@
 	exports.default = AudioSource;
 
 /***/ },
-/* 44 */
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* eslint-disable */
+	/**
+	 * @vid object_picker
+	 * @vname Object Picker
+	 * @vfilter Scene
+	 * @vcategory General
+	 * @vattr Dropdown pickTrigger {
+	 *   description: 'What mouse action will trigger the pick?',
+	 *   default: 'leftMouseClick',
+	 *   options: {
+	 *     'Left Mouse Click': 'leftMouseClick',
+	 *     'Middle Mouse Click': 'middleMouseClick',
+	 *     'Right Mouse Click': 'rightMouseClick',
+	 *     'Left Mouse Down': 'leftMouseDown',
+	 *     'Middle Mouse Down': 'middleMouseDown',
+	 *     'Right Mouse Down': 'rightMouseDown',
+	 *     'Left Mouse Up': 'leftMouseUp',
+	 *     'Middle Mouse Up': 'middleMouseUp',
+	 *     'Right Mouse Up': 'rightMouseUp'
+	 *   }
+	 * }
+	 * @vattr Boolean enableHoverByDefault {
+	 *   default: false,
+	 *   advanced: true,
+	 *   description: 'Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact.'
+	 * }
+	 * @vattr Integer hoverFrameSkip {
+	 *   description: 'Skip this many frames inbetween hover checks.',
+	 *   default: 1,
+	 *   min: 0,
+	 *   max: 60
+	 * }
+	 * @vevent other pick { action: false, category: 'General', parameters: [] }
+	 * @vevent other beginHover { action: false, category: 'General', parameters: [] }
+	 * @vevent other endHover { action: false, category: 'General', parameters: []}
+	 */
+	/* eslint-enable */
+	/* global Box3D */
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _lodash = __webpack_require__(3);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _Box3DComponent2 = __webpack_require__(24);
+
+	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ObjectPicker = function (_Box3DComponent) {
+	  _inherits(ObjectPicker, _Box3DComponent);
+
+	  function ObjectPicker() {
+	    _classCallCheck(this, ObjectPicker);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectPicker).call(this));
+
+	    _this.pickingMaterialDef = undefined;
+	    _this.meshRegistry = {};
+	    _this.meshList = [];
+	    _this.pickingTexture = undefined;
+	    _this.currentHoverObject = undefined;
+	    _this.currentFrame = 0;
+
+	    _this.enableHoverByDefault = false;
+	    _this.pickTrigger = null;
+	    _this.hoverEnabled = false;
+	    return _this;
+	  }
+
+	  _createClass(ObjectPicker, [{
+	    key: 'awake',
+	    value: function awake() {
+	      this.getRuntime().once('endHover:bound', this._enableHover, this);
+	      this.getRuntime().once('beginHover:bound', this._enableHover, this);
+	    }
+	    /**
+	     * Called immediately after after component creation
+	     */
+
+	  }, {
+	    key: 'init',
+	    value: function init() {
+	      // this.box3DEntity is available
+	      this.getRuntime().on('resize', this.resize, this);
+
+	      this.initPickingEvents();
+	      this.initPickingMaterial();
+	      this.initMeshRegistry();
+
+	      //listen to register objects
+	      this.getGlobalEvents().on('registerPickingObject', this.registerObject, this);
+	      this.getGlobalEvents().on('unregisterPickingObject', this.unregisterObject, this);
+
+	      this.resize();
+	    }
+
+	    /**
+	     * Called when a verold object is destroyed or this component is removed
+	     * from a verold object.
+	     */
+
+	  }, {
+	    key: 'shutdown',
+	    value: function shutdown() {
+	      // make sure to clean up any events or other bindings that you have created
+	      // to avoid memory leaks
+	      this.uninitPickingEvents();
+
+	      this.getRuntime().off('resize', this.resize, this);
+	      this.getGlobalEvents().off('registerPickingObject', this.registerObject, this);
+	      this.getGlobalEvents().off('unregisterPickingObject', this.unregisterObject, this);
+
+	      var parentAsset = this.getEntity().getParentAsset();
+	      parentAsset.off('meshLoaded', this.registerMesh, this);
+	      parentAsset.off('meshUnloaded', this.unregisterMesh, this);
+	      if (this.pickingTexture) {
+	        this.pickingTexture.dispose();
+	        this.pickingTexture = undefined;
+	      }
+	      for (var x in this.meshRegistry) {
+	        if (this.meshRegistry[x].pickingMaterial) {
+	          this.meshRegistry[x].pickingMaterial.dispose();
+	        }
+	      }
+	      this.meshRegistry = {};
+	      this.meshList = [];
+	    }
+	  }, {
+	    key: 'initPickingEvents',
+	    value: function initPickingEvents() {
+	      if (this.pickTrigger.substr(-2) === 'Up') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchEnd', this.touchPick, this);
+	        } else {
+	          this.getRuntime().on('mouseUp', this.pick, this);
+	        }
+	      } else if (this.pickTrigger.substr(-4) === 'Down') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchStart', this.touchPick, this);
+	        } else {
+	          this.getRuntime().on('mouseDown', this.pick, this);
+	        }
+	      } else if (this.pickTrigger.substr(-5) === 'Click') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchEnd', this.touchPickNoDrag, this);
+	        } else {
+	          this.getRuntime().on('mouseUp', this.pickNoDrag, this);
+	        }
+	      }
+
+	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
+	        this._enableHover();
+	      }
+	    }
+	  }, {
+	    key: 'uninitPickingEvents',
+	    value: function uninitPickingEvents() {
+	      if (this.pickTrigger.substr(-2) === 'Up') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().off('touchEnd', this.touchPick, this);
+	        } else {
+	          this.getRuntime().off('mouseUp', this.pick, this);
+	        }
+	      } else {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().off('touchStart', this.touchPick, this);
+	        } else {
+	          this.getRuntime().off('mouseDown', this.pick, this);
+	        }
+	      }
+
+	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
+	        this.getRuntime().off('postRender', this.hoverUpdate, this);
+	      }
+	    }
+	  }, {
+	    key: 'initPickingMaterial',
+	    value: function initPickingMaterial() {
+	      this.pickingMaterialDef = {
+
+	        depthTest: true,
+	        depthWrite: true,
+	        transparent: false,
+	        side: _three2.default.DoubleSide,
+
+	        uniforms: {
+	          color: {
+	            type: 'c',
+	            value: 0xff0000
+	          }
+	        },
+
+	        vertexShader: [_three2.default.ShaderChunk['skinning_pars_vertex'], _three2.default.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', _three2.default.ShaderChunk['skinbase_vertex'], _three2.default.ShaderChunk['skinnormal_vertex'], _three2.default.ShaderChunk['defaultnormal_vertex'], _three2.default.ShaderChunk['skinning_vertex'], _three2.default.ShaderChunk['project_vertex'], _three2.default.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
+
+	        fragmentShader: ['uniform vec3 color;', _three2.default.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', _three2.default.ShaderChunk['logdepthbuf_fragment'], 'gl_FragColor = vec4( color, 1.0 );', '}'].join('\n')
+
+	      };
+	    }
+	  }, {
+	    key: 'initMeshRegistry',
+	    value: function initMeshRegistry() {
+	      var parentAsset = this.getEntity().getParentAsset();
+	      parentAsset.on('meshLoaded', this.registerMesh, this);
+	      parentAsset.on('meshUnloaded', this.unregisterMesh, this);
+
+	      var that = this;
+	      parentAsset.traverse(function (obj) {
+	        if (obj.type === 'mesh' || obj.type === 'skinnedMesh') {
+	          that.registerMesh(obj);
+	        }
+	      });
+	    }
+	  }, {
+	    key: '_enableHover',
+	    value: function _enableHover() {
+	      if (!this.hoverEnabled && !Box3D.isMobile()) {
+	        this.getRuntime().on('postRender', this.hoverUpdate, this);
+	        this.hoverEnabled = true;
+	      }
+	    }
+
+	    /**
+	    * reset the size of the texture used to test against geometry picking parameters
+	    * @method resize
+	    */
+
+	  }, {
+	    key: 'resize',
+	    value: function resize() {
+	      var oldPickingTexture = this.pickingTexture;
+	      var width = this.getRenderer().getWidth();
+	      var height = this.getRenderer().getHeight();
+	      this.pickingTexture = new _three2.default.WebGLRenderTarget(Math.floor(width / 4.0), Math.floor(height / 4.0), {
+	        minFilter: _three2.default.LinearFilter
+	      });
+	      this.pickingTexture.texture.generateMipmaps = false;
+	      if (oldPickingTexture) {
+	        oldPickingTexture.dispose();
+	      }
+	    }
+	  }, {
+	    key: 'registerObject',
+	    value: function registerObject(box3DObject, runtimeData) {
+
+	      if (!this.meshRegistry[runtimeData.id]) {
+	        this.meshRegistry[runtimeData.id] = {
+	          box3DEntity: box3DObject,
+	          runtimeData: runtimeData,
+	          prevMaterial: null,
+	          pickingMaterial: new _three2.default.ShaderMaterial(this.pickingMaterialDef)
+	        };
+	        //Array for fast iteration
+	        this.meshList.push(this.meshRegistry[runtimeData.id]);
+	        this.meshRegistry[runtimeData.id].index = this.meshList.length - 1;
+	        var material = this.meshRegistry[runtimeData.id].pickingMaterial;
+	        material.uniforms = _three2.default.UniformsUtils.clone(this.pickingMaterialDef.uniforms);
+	        material.uniforms.color.value = new _three2.default.Color(runtimeData.id);
+
+	        if (runtimeData instanceof _three2.default.SkinnedMesh) {
+	          material.skinning = true;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'unregisterObject',
+	    value: function unregisterObject(box3DObject, runtimeData) {
+	      if (runtimeData) {
+	        //remove the enitity data from the pick history, if it's there
+	        this.removeFromHistory(runtimeData.id);
+	        //The meshUnloaded event should fire just before the runtimeData is deleted.
+	        if (this.meshRegistry[runtimeData.id]) {
+	          this.meshRegistry[runtimeData.id].box3DEntity = null;
+	          this.meshRegistry[runtimeData.id].pickingMaterial.dispose();
+	          this.meshList.splice(this.meshRegistry[runtimeData.id].index, 1);
+	          delete this.meshRegistry[runtimeData.id];
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'registerMesh',
+	    value: function registerMesh(veroldMesh) {
+	      //When the THREE.Mesh is created, register it so that it can be selected.
+	      veroldMesh.when('loadBase', function (mesh) {
+	        this.registerObject(mesh, mesh.runtimeData);
+	      }, this);
+	    }
+	  }, {
+	    key: 'unregisterMesh',
+	    value: function unregisterMesh(veroldMesh) {
+	      if (veroldMesh) {
+	        this.unregisterObject(veroldMesh.runtimeData);
+	      }
+	    }
+	  }, {
+	    key: 'getThreeObjects',
+	    value: function getThreeObjects(objects) {
+	      var sceneObjects = [];
+	      _lodash2.default.each(objects, function (object) {
+	        if (object && object.runtimeData) {
+	          sceneObjects.push(object.runtimeData);
+	        }
+	      });
+
+	      return sceneObjects;
+	    }
+	  }, {
+	    key: 'touchPickNoDrag',
+	    value: function touchPickNoDrag(event, callback) {
+	      //Check drag state
+	      if (!this.getInput().touchDragStatePrevious) {
+	        this.touchPick(event, callback);
+	      }
+	    }
+	  }, {
+	    key: 'touchPick',
+	    value: function touchPick(event, callback) {
+
+	      if (!this.isEnabled()) {
+	        return;
+	      }
+
+	      // if ( this.getInput().touchPosition.x ) {
+	      var x = this.getInput().touchPosition.x;
+	      var y = this.getInput().touchPosition.y;
+
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh) {
+
+	        mesh.trigger('pick');
+	        var parent = mesh.getParentObject();
+	        while (parent) {
+	          parent.trigger('pick');
+	          parent = parent.getParentObject();
+	        }
+	        if (_lodash2.default.isFunction(callback)) {
+	          callback(mesh);
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'pickNoDrag',
+	    value: function pickNoDrag(event, callback) {
+	      //Check drag state
+	      if (!this.getInput().mouseDragStatePrevious[event.button]) {
+	        this.pick(event, callback);
+	      }
+	    }
+	  }, {
+	    key: 'pick',
+	    value: function pick(event, callback) {
+	      if (!this.isEnabled()) {
+	        return;
+	      }
+	      if (this.pickTrigger.substr(0, 4) === 'left') {
+	        if (event.button !== 0) {
+	          return;
+	        }
+	      } else if (this.pickTrigger.substr(0, 4) === 'right') {
+	        if (event.button !== 2) {
+	          return;
+	        }
+	      } else if (event.button !== 1) {
+	        return;
+	      }
+	      var x = event.clientX;
+	      var y = event.clientY;
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh) {
+	        mesh.trigger('pick');
+	        var parent = mesh.getParentObject();
+	        while (parent) {
+	          parent.trigger('pick');
+	          parent = parent.getParentObject();
+	        }
+	        if (_lodash2.default.isFunction(callback)) {
+	          callback(mesh);
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'hoverUpdate',
+	    value: function hoverUpdate() {
+	      if (!this.isEnabled()) {
+	        return;
+	      }
+	      if (this.currentFrame < this.hoverFrameSkip) {
+	        this.currentFrame++;
+	        return;
+	      }
+	      this.currentFrame = 0;
+	      var x = this.getInput().mousePosition.x;
+	      var y = this.getInput().mousePosition.y;
+	      var parent;
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh !== this.currentHoverObject) {
+	        if (this.currentHoverObject) {
+
+	          this.currentHoverObject.trigger('endHover');
+	          parent = this.currentHoverObject.getParentObject();
+	          while (parent) {
+	            parent.trigger('endHover');
+	            parent = parent.getParentObject();
+	          }
+	        }
+	        if (mesh) {
+	          this.currentHoverObject = mesh;
+
+	          mesh.trigger('beginHover');
+	          parent = mesh.getParentObject();
+	          while (parent) {
+	            parent.trigger('beginHover');
+	            parent = parent.getParentObject();
+	          }
+	        } else {
+	          this.currentHoverObject = null;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'pickMesh',
+	    value: function pickMesh(x, y) {
+
+	      var that = this;
+	      var scenes = this.getRuntime().assetRegistry.getAssetsByType('scene');
+	      var i;
+	      var pickedMesh = null;
+	      _lodash2.default.each(scenes, function (scene) {
+	        var cameras = scene.getObjectsByType('camera');
+
+	        var renderViews = [];
+	        _lodash2.default.each(cameras, function (camera) {
+	          var renderViewComponents = camera.getByScriptId('render_view_component');
+	          _lodash2.default.each(renderViewComponents, function (renderViewComponent) {
+	            if (renderViewComponent.isEnabled()) {
+	              if (renderViews.length > 0) {
+	                for (i = 0; i < renderViews.length; i++) {
+	                  var renderView = renderViews[i];
+	                  if (renderViewComponent.renderGroup >= renderView.renderGroup) {
+	                    renderViews.splice(i, 0, renderViewComponent);
+	                    break;
+	                  }
+	                }
+	              } else {
+	                renderViews.push(renderViewComponent);
+	              }
+	            }
+	          });
+	        }, this);
+
+	        for (i = 0; i < renderViews.length; i++) {
+	          var renderView = renderViews[i];
+	          var canvas_height = that.getRenderer().getHeight();
+	          var viewport_offset = canvas_height - renderView._height - renderView._y;
+	          //Get the percentage x,y positions of the mouse on the viewport
+	          var mouseX = (x - renderView._x) / renderView._width;
+	          var mouseY = (y - viewport_offset) / renderView._height;
+
+	          // pickedMesh = this.doRaycastPick( scene, renderView.box3DEntity, mouseX, mouseY );
+	          pickedMesh = this.doGPUPick(scene, renderView.box3DEntity, mouseX, mouseY);
+	          if (pickedMesh) {
+	            return;
+	          }
+	        }
+	      }, this);
+
+	      return pickedMesh;
+	    }
+	  }, {
+	    key: 'doRaycastPick',
+	    value: function doRaycastPick(scene, camera, mouseX, mouseY) {
+	      var x = mouseX * 2 - 1;
+	      var y = -mouseY * 2 + 1;
+
+	      var vector = new _three2.default.Vector3(x, y, 0.5);
+
+	      vector.unproject(camera.runtimeData);
+
+	      var raycaster = new _three2.default.Raycaster(camera.runtimeData.position, vector.sub(camera.runtimeData.position).normalize());
+
+	      var sceneObjects = this.getThreeObjects(scene.getObjects());
+	      var intersections = raycaster.intersectObjects(sceneObjects, false);
+
+	      if (intersections.length > 0) {
+	        for (var i = 0; i < intersections.length; i++) {
+	          var parent = intersections[i].object.parent;
+	          var entityId = intersections[i].object.id;
+	          var isVisible = true;
+	          if (!intersections[i].object.visible) {
+	            isVisible = false;
+	            continue;
+	          }
+	          while (parent) {
+
+	            if (!parent.visible) {
+	              isVisible = false;
+	              break;
+	            }
+
+	            parent = parent.parent;
+	          }
+
+	          if (isVisible) {
+	            return this.meshRegistry[entityId].box3DEntity;
+	          }
+	        }
+	      }
+	      return null;
+	    }
+	  }, {
+	    key: 'doGPUPick',
+	    value: function doGPUPick(scene, camera, mouseX, mouseY) {
+
+	      if (mouseX < 0.0 || mouseY < 0.0 || mouseX > 1.0 || mouseY > 1.0) {
+	        return null;
+	      }
+
+	      var i = 0;
+	      var material;
+	      for (i = 0; i < this.meshList.length; i++) {
+	        if (this.meshList[i].runtimeData) {
+	          material = this.meshList[i].runtimeData.material;
+	          this.meshList[i].prevMaterial = material;
+	          this.meshList[i].runtimeData.material = this.meshList[i].pickingMaterial;
+	        }
+	      }
+	      var renderer = this.getThreeRenderer();
+	      var currentShadowMapEnabled = renderer.shadowMap.enabled;
+	      renderer.shadowMap.enabled = false;
+	      // renderer.enableScissorTest( true );
+	      renderer.setViewport(0, 0, this.pickingTexture.width, this.pickingTexture.height);
+	      //render the picking scene off-screen
+	      var gl = renderer.getContext();
+	      renderer.render(scene.runtimeData, camera.runtimeData, this.pickingTexture, true);
+
+	      //Return materials to their previous state
+	      for (i = 0; i < this.meshList.length; i++) {
+	        if (this.meshList[i].runtimeData) {
+	          this.meshList[i].runtimeData.material = this.meshList[i].prevMaterial;
+	        }
+	      }
+
+	      var pixelBuffer = new Uint8Array(4);
+	      //read the pixel under the mouse from the texture
+	      gl.readPixels(mouseX * this.pickingTexture.width, this.pickingTexture.height * (1.0 - mouseY), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
+
+	      //interpret the pixel as an ID
+	      var id = pixelBuffer[0] << 16 | pixelBuffer[1] << 8 | pixelBuffer[2];
+
+	      renderer.shadowMap.enabled = currentShadowMapEnabled;
+	      renderer.setRenderTarget(null);
+
+	      if (this.meshRegistry[id]) {
+	        var entityId = this.meshRegistry[id].box3DEntity.id;
+	        return this.getRuntime().getEntityById(entityId);
+	      }
+	      return null;
+	    }
+	  }]);
+
+	  return ObjectPicker;
+	}(_Box3DComponent3.default);
+
+	exports.default = ObjectPicker;
+
+/***/ },
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -76210,6 +76880,8 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var MAX_FRAME_TIME = 0.1; //10 fps
 
 	var OrbitCamera = function (_Box3DComponent) {
 	  _inherits(OrbitCamera, _Box3DComponent);
@@ -76490,6 +77162,10 @@
 	  }, {
 	    key: 'preUpdate',
 	    value: function preUpdate(delta) {
+
+	      // Don't let frame delta being used for camera behaviour drop below a certain frame rate.
+	      // This will mitigate all sorts of potential issues if there are momentary spikes in frame time.
+	      delta = Math.min(MAX_FRAME_TIME, delta);
 
 	      if (this.hasThreeData() && this.isEnabled()) {
 
@@ -77058,7 +77734,7 @@
 	exports.default = OrbitCamera;
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -77324,7 +78000,7 @@
 	exports.default = PMREMGenerator;
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -77519,7 +78195,7 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77924,7 +78600,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78076,6 +78752,9 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var ORIGIN_VEC = new _three2.default.Vector3();
+	var ORTHO_ZOOM_MAX = 2.5;
+	var ORTHO_ZOOM_MIN = 0.05;
+	var ORTHO_ZOOM_SPEED = 0.1;
 
 	_three2.default.Quaternion.prototype.fuzzyEquals = function (quat, epsilon) {
 	  epsilon = epsilon || 0.001;
@@ -78487,10 +79166,10 @@
 	          this.currentOrbitDistance = targetDistance;
 	        } else {
 	          var camera = this.getRuntimeData();
-	          var change = this.currentZoomSpeed * 0.1;
+	          var change = this.currentZoomSpeed * ORTHO_ZOOM_SPEED;
 	          var aspect = camera.right / camera.top;
-	          var maxHeight = 2.5;
-	          var minHeight = 0.05;
+	          var maxHeight = ORTHO_ZOOM_MAX;
+	          var minHeight = ORTHO_ZOOM_MIN;
 	          camera.top += change;
 	          camera.bottom -= change;
 	          camera.top = Math.max(Math.min(camera.top, maxHeight), minHeight);
@@ -78925,7 +79604,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79199,7 +79878,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79209,7 +79888,7 @@
 	 * @vfilter Object
 	 * @vcategory Rendering
 	 * @vreserved
-	 * @vattr Asset reflectionTexture {
+	 * @vattr Asset captureTexture {
 	 *   description: 'The RenderTexture2D to render the reflection to.',
 	 *   filter: { renderTexture2D: true }
 	 * }
@@ -79234,10 +79913,6 @@
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
 
 	var _Box3DComponent2 = __webpack_require__(24);
 
@@ -79274,112 +79949,13 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(ReflectionCapture, [{
-	    key: 'init',
-	    value: function init() {}
-	  }, {
-	    key: 'editorInit',
-	    value: function editorInit() {
-
-	      this.box3DEntity.getParentAsset().when('load', this.sceneLoadedEditor, this);
-	      this.box3DEntity.when('loadBase', this.objectCreatedEditor, this);
-
-	      this.getRuntime().on('preRenderView', this.preRenderView, this);
-	      this.inEditor = true;
-	      this.init();
-	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
-	      // this.getRuntime().off( 'resize', this.resizeCamera, this );
-	    }
-	  }, {
-	    key: 'editorShutdown',
-	    value: function editorShutdown() {
-
-	      this.getRuntime().off('preRenderView', this.preRenderView, this);
-	      var renderer = this.getThreeRenderer();
-	      if (renderer) {
-	        if (this.reflectionTexture && this.reflectionTexture.runtimeData) {
-	          this.getThreeRenderer().setRenderTarget(this.reflectionTexture.runtimeData);
-	          this.getThreeRenderer().clear();
-	        } else if (this.tempRenderTexture && this.tempRenderTexture.runtimeData) {
-	          this.getThreeRenderer().setRenderTarget(this.tempRenderTexture.runtimeData);
-	          this.getThreeRenderer().clear();
-	        }
-	      }
-	      if (this.tempRenderTexture) {
-	        this.tempRenderTexture.destroy();
-	      }
-	      if (this.reflectionMaterial) {
-	        this.reflectionMaterial.destroy();
-	      }
-	      this.shutdown();
-	    }
-
-	    /**
-	     * Called once the data is available is available
-	     */
-
-	  }, {
-	    key: 'sceneLoadedEditor',
-	    value: function sceneLoadedEditor() {
-	      var that = this;
-
-	      window.verold.veroldEvents.trigger('studioApp::getCurrentCamera', function (camera) {
-	        _log2.default.log('Reflection Actor - Assigning editor camera to be used. ', camera);
-	        that.editorCamera = camera;
-	        that.initCameras();
-	      });
-	    }
-	  }, {
 	    key: 'entityCreated',
 	    value: function entityCreated() {
 	      this.initCameras();
-	      this.initTexture();
-	    }
-	  }, {
-	    key: 'objectCreatedEditor',
-	    value: function objectCreatedEditor() {
-	      this.initEditorObject();
-	    }
-	  }, {
-	    key: 'initEditorObject',
-	    value: function initEditorObject() {
-	      var mat;
-	      this.planeGeometry = new _three2.default.PlaneBufferGeometry(50, 50, 1, 1);
-	      this.planeGeometry.applyMatrix(new _three2.default.Matrix4().makeRotationX(-Math.PI / 2));
-	      this.planeGeometry.computeVertexNormals();
-	      this.planeGeometry.dynamic = true;
-	      this.planeMesh = new _three2.default.Mesh(this.planeGeometry);
-	      this.planeMesh.castShadow = false;
-	      this.planeMesh.receiveShadow = false;
-	      this.planeMesh.name = 'ReflectionCapturePlane';
-
-	      this.getThreeObject().add(this.planeMesh);
-	      this.getRuntime().globalEvents.trigger('studioApp::registerPickingObject', this.getEntity(), this.planeMesh);
-
-	      if (!this.reflectionTexture) {
-	        this.createTempRenderTexture();
-	      }
-
-	      mat = this.getAssetRegistry().createAsset({
-	        type: 'material',
-	        id: 'reflection_material',
-	        properties: {
-	          materialType: 'Simple',
-	          diffuseColor: 0x000000,
-	          gloss: 1.0,
-	          environmentTexture2D: this.reflectionTexture ? this.reflectionTexture.id : this.tempRenderTexture.id,
-	          reflectionBias: 1
-	        }
-	      });
-	      mat.load();
-	      mat.enableFeature('Reflections', true);
-	      mat.setProperty('environmentMappingType', 2);
-
-	      this.reflectionMaterial = mat;
-	      this.planeMesh.material = mat.runtimeData.static;
 	      this.initTexture();
 	    }
 	  }, {
@@ -79397,52 +79973,32 @@
 	      });
 	      this.tempRenderTexture.load();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (changes.indexOf('reflectionTexture') !== -1) {
+	      if (changes.indexOf('captureTexture') !== -1) {
 	        this.initTexture();
 	      }
 	    }
 	  }, {
 	    key: 'initTexture',
 	    value: function initTexture() {
-	      if (this.reflectionTexture) {
+	      if (this.captureTexture) {
 	        var that = this;
 
-	        this.reflectionTexture.when('load', function () {
+	        this.captureTexture.when('load', function () {
 	          if (that.tempRenderTexture) {
 	            that.tempRenderTexture.unload();
 	          }
-	          var pars = {
-	            format: that.reflectionTexture.runtimeData.format,
-	            minFilter: that.reflectionTexture.runtimeData.minFilter,
-	            magFilter: that.reflectionTexture.runtimeData.magFilter
-	          };
-	          pars.type = that.reflectionTexture.runtimeData.type;
-
-	          var renderTarget = new _three2.default.WebGLRenderTarget(that.reflectionTexture.getWidth(), that.reflectionTexture.getHeight(), pars);
-	          renderTarget.name = that.getEntity().getName() + ': Reflection Capture Render Buffer';
-	          if (!that.composer) {
-	            that.composer = new _three2.default.EffectComposer(that.getThreeRenderer(), renderTarget);
-	            that.gammaPass = new _three2.default.ShaderPass(_three2.default.GammaShader);
-	            that.gammaPass.renderToScreen = true;
-	            that.composer.customPasses = [];
-	            that.composer.customPasses.push(that.gammaPass);
-	          } else {
-	            that.composer.reset(renderTarget);
-	          }
-	          that.composer.enabled = true;
-	          that.composer.renderPassesNeedUpdate = true;
-	          if (that.planeMesh) {
-	            that.planeMesh.material.uniforms.environmentTexture2D.value = that.reflectionTexture.runtimeData;
-	          }
 	        });
+	        if (this.captureTexture.isBaseUnloaded()) {
+	          this.captureTexture.load();
+	        }
 	      } else {
 	        this.createTempRenderTexture();
-	        if (this.planeMesh) {
-	          this.planeMesh.material.uniforms.environmentTexture2D.value = this.tempRenderTexture.runtimeData;
-	        }
 	      }
 	    }
 
@@ -79453,8 +80009,8 @@
 	  }, {
 	    key: 'initCameras',
 	    value: function initCameras() {
-	      if (this.reflectionTexture) {
-	        this.reflectionTexture.load();
+	      if (this.captureTexture) {
+	        this.captureTexture.load();
 	      }
 
 	      this.perspectiveCamera = new _three2.default.PerspectiveCamera();
@@ -79462,13 +80018,13 @@
 	    }
 	  }, {
 	    key: 'updateReflection',
-	    value: function updateReflection(scene, camera) {
+	    value: function updateReflection(camera) {
 	      if (this.isEnabled()) {
 	        var sign = function sign(num) {
 	          return num < 0 ? -1 : 1;
 	        };
 	        this.box3DEntity.runtimeData.updateMatrixWorld();
-	        // this.sceneCamera.runtimeData.updateMatrixWorld();
+	        camera.updateMatrixWorld();
 
 	        this.reflectionPosition.setFromMatrixPosition(this.box3DEntity.runtimeData.matrixWorld);
 	        this.cameraWorldPosition.setFromMatrixPosition(camera.matrixWorld);
@@ -79548,47 +80104,45 @@
 	        projectionMatrix.elements[14] = c.w;
 	      }
 	    }
+
+	    /**
+	     * Render the scene to the texture.
+	     * @method captureScene
+	     * @public
+	     * @param {Object} camera The camera that the reflection will be rendered relative to (since
+	     * reflections are dependent on view)
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'captureScene',
+	    value: function captureScene(camera) {
+	      if (!camera) {
+	        throw new Error('Call to ReflectionCapture.captureScene without specifying a camera.');
+	      }
+	      var scene = this.getThreeScene();
+	      this.updateReflection(camera);
+	      // Render the mirrored view of the current scene into the target texture
+	      var threeTexture = this.captureTexture ? this.captureTexture.runtimeData : null;
+	      var target = threeTexture ? threeTexture : this.tempRenderTexture.runtimeData;
+	      this.getRenderer().renderView(scene, this.reflectionCamera, {
+	        renderTarget: target,
+	        clearDepth: true,
+	        enableShadows: false,
+	        enablePreRenderFunctions: false
+	      });
+	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'preRenderView',
 	    value: function preRenderView(scene, camera) {
 	      if (this.isEnabled()) {
 	        if (this.framesElapsed >= this.updateFrameInterval) {
-	          this.updateReflection(scene, camera);
+	          this.updateReflection(camera);
 	          //render reflection
-	          // Render the mirrored view of the current scene into the target texture
-	          if (scene && camera) {
-	            if (this.reflectionTexture && this.reflectionTexture.runtimeData) {
-	              this.getRenderer().renderView(scene, this.reflectionCamera, {
-	                viewPort: {
-	                  x: 0,
-	                  y: 0,
-	                  width: this.reflectionTexture.getWidth(),
-	                  height: this.reflectionTexture.getHeight()
-	                },
-	                renderTarget: this.reflectionTexture.runtimeData,
-	                clearColor: true,
-	                clearDepth: true,
-	                composer: this.getThreeRenderer().gammaOutput ? this.composer : null,
-	                enableShadows: false,
-	                enablePreRenderFunctions: false
-	              });
-	            } else if (this.tempRenderTexture) {
-	              this.getRenderer().renderView(scene, this.reflectionCamera, {
-	                viewPort: {
-	                  x: 0,
-	                  y: 0,
-	                  width: this.tempRenderTexture.getWidth(),
-	                  height: this.tempRenderTexture.getHeight()
-	                },
-	                renderTarget: this.tempRenderTexture.runtimeData,
-	                clearColor: true,
-	                clearDepth: true,
-	                composer: this.getThreeRenderer().gammaOutput ? null : this.composer,
-	                enableShadows: false,
-	                enablePreRenderFunctions: false
-	              });
-	            }
-	          }
+	          this.captureScene(camera);
 	          this.framesElapsed = 0;
 	        } else {
 	          this.framesElapsed++;
@@ -79603,7 +80157,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79867,6 +80421,9 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
+	      if (!this.getEntity().isComponentsLoaded()) {
+	        return;
+	      }
 	      this.updateFilters(changes);
 	    }
 	  }, {
@@ -80165,7 +80722,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80476,13 +81033,15 @@
 	      var _this2 = this;
 
 	      if (changes.indexOf('shapeTexture') !== -1) {
-	        this.shapeTexture.when('load', function (tex) {
-	          var material = _this2.renderModes.Shape.perMeshOverrideMaterial;
-	          material.static.uniforms.matCapTexture.value = tex.runtimeData;
-	          material.skinned.uniforms.matCapTexture.value = tex.runtimeData;
-	        });
-	        if (this.shapeTexture.isBaseUnloaded()) {
-	          this.shapeTexture.load();
+	        if (this.shapeTexture) {
+	          this.shapeTexture.when('load', function (tex) {
+	            var material = _this2.renderModes.Shape.perMeshOverrideMaterial;
+	            material.static.uniforms.matCapTexture.value = tex.runtimeData;
+	            material.skinned.uniforms.matCapTexture.value = tex.runtimeData;
+	          });
+	          if (this.shapeTexture.isBaseUnloaded()) {
+	            this.shapeTexture.load();
+	          }
 	        }
 	      }
 	    }
@@ -80815,7 +81374,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81168,7 +81727,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81434,7 +81993,9 @@
 	      }
 	      if (changes.indexOf('shadowType') !== -1) {
 	        this.shadowType = parseInt(this.shadowType, 10);
-	        _log2.default.warn('TODO - need to recreate the shadow maps if the shadow' + ' filtering has changed because PCFSoftShadowMap reuires the shadowmap' + ' to be rendered with no filtering.');
+	        // TODO - need to recreate the shadow maps if the shadow
+	        // filtering has changed because PCFSoftShadowMap reuires the shadowmap
+	        // to be rendered with no filtering.
 	        rebuildMaterials = true;
 	      }
 	      if (changes.indexOf('devicePixelRatio') !== -1) {
@@ -81700,12 +82261,32 @@
 	  }, {
 	    key: 'resize',
 	    value: function resize() {
+	      var _this2 = this;
 
 	      if (this.canvas.parentElement) {
-	        var w = this.canvas.parentElement.clientWidth;
-	        var h = this.canvas.parentElement.clientHeight;
-	        this.threeRenderer.setPixelRatio(this.devicePixelRatio);
-	        this.threeRenderer.setSize(w, h, true);
+	        (function () {
+	          var w = _this2.canvas.parentElement.clientWidth;
+	          var h = _this2.canvas.parentElement.clientHeight;
+	          _this2.threeRenderer.setPixelRatio(_this2.devicePixelRatio);
+
+	          if (Box3D.isIOS()) {
+	            (function () {
+	              // This hack works around a canvas resize related bug in iOS
+	              var canvas = _this2.canvas;
+
+	              _this2.threeRenderer.setSize(w, h, false);
+
+	              canvas.style.width = w + 1 + 'px';
+	              canvas.style.height = h + 1 + 'px';
+	              setTimeout(function () {
+	                canvas.style.width = w + 'px';
+	                canvas.style.height = h + 'px';
+	              }, 100);
+	            })();
+	          } else {
+	            _this2.threeRenderer.setSize(w, h, true);
+	          }
+	        })();
 	      }
 	    }
 	  }]);
@@ -81716,7 +82297,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81938,7 +82519,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82046,7 +82627,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82275,7 +82856,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82284,7 +82865,7 @@
 	 * @vname Skybox
 	 * @vcategory Rendering
 	 * @vfilter scene
-	 * @vattr Float size { 'default' : 100000, 'min' : 1.0, 'max' : 1000000.0 }
+	 * @vattr Float size { 'default' : 1000, 'min' : 1.0, 'max' : 1000000.0 }
 	 * @vattr Boolean stereoEnabled { 'default' : false }
 	 * @vattr Asset skyboxTexture {
 	 *   'description': '', 'type': 'asset',
@@ -82393,6 +82974,9 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changed) {
+	      if (!this.getEntity().isComponentsLoaded()) {
+	        return;
+	      }
 	      if (changed.indexOf('skyboxTexture') !== -1 || changed.indexOf('stereoEnabled') !== -1) {
 	        this.initSkybox();
 	      }
@@ -82698,7 +83282,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82901,7 +83485,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -83143,10 +83727,10 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(62)
+	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(64)
 	  , root = typeof window === 'undefined' ? global : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -83222,7 +83806,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -83258,14 +83842,13 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(63)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
 
 /***/ },
-/* 63 */
+/* 65 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
-
 	var process = module.exports = {};
 
 	// cached from whatever global is present so that test runners that stub it
@@ -83277,21 +83860,63 @@
 	var cachedClearTimeout;
 
 	(function () {
-	  try {
-	    cachedSetTimeout = setTimeout;
-	  } catch (e) {
-	    cachedSetTimeout = function () {
-	      throw new Error('setTimeout is not defined');
+	    try {
+	        cachedSetTimeout = setTimeout;
+	    } catch (e) {
+	        cachedSetTimeout = function () {
+	            throw new Error('setTimeout is not defined');
+	        }
 	    }
-	  }
-	  try {
-	    cachedClearTimeout = clearTimeout;
-	  } catch (e) {
-	    cachedClearTimeout = function () {
-	      throw new Error('clearTimeout is not defined');
+	    try {
+	        cachedClearTimeout = clearTimeout;
+	    } catch (e) {
+	        cachedClearTimeout = function () {
+	            throw new Error('clearTimeout is not defined');
+	        }
 	    }
-	  }
 	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+
+
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+
+
+
+	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -83316,7 +83941,7 @@
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = cachedSetTimeout.call(null, cleanUpNextTick);
+	    var timeout = runTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -83333,7 +83958,7 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    cachedClearTimeout.call(null, timeout);
+	    runClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -83345,7 +83970,7 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        cachedSetTimeout.call(null, drainQueue, 0);
+	        runTimeout(drainQueue);
 	    }
 	};
 
@@ -83386,7 +84011,7 @@
 
 
 /***/ },
-/* 64 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83552,7 +84177,7 @@
 
 
 /***/ },
-/* 65 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83734,7 +84359,7 @@
 
 
 /***/ },
-/* 66 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83841,7 +84466,7 @@
 
 
 /***/ },
-/* 67 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83909,7 +84534,7 @@
 
 
 /***/ },
-/* 68 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83988,7 +84613,7 @@
 
 
 /***/ },
-/* 69 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84082,7 +84707,7 @@
 
 
 /***/ },
-/* 70 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84148,7 +84773,7 @@
 
 
 /***/ },
-/* 71 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84218,13 +84843,11 @@
 
 
 /***/ },
-/* 72 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)
-		, __webpack_require__(92)
-		, __webpack_require__(74)
-		, __webpack_require__(75)
+		, __webpack_require__(94)
 		, __webpack_require__(76)
 		, __webpack_require__(77)
 		, __webpack_require__(78)
@@ -84241,9 +84864,9 @@
 		, __webpack_require__(89)
 		, __webpack_require__(90)
 		, __webpack_require__(91)
-		, __webpack_require__(73)
+		, __webpack_require__(92)
 		, __webpack_require__(93)
-		, __webpack_require__(94)
+		, __webpack_require__(75)
 		, __webpack_require__(95)
 		, __webpack_require__(96)
 		, __webpack_require__(97)
@@ -84259,7 +84882,9 @@
 		, __webpack_require__(107)
 		, __webpack_require__(108)
 		, __webpack_require__(109)
-		, __webpack_require__(110)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(110)
+		, __webpack_require__(111)
+		, __webpack_require__(112)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -84344,7 +84969,7 @@
 
 
 /***/ },
-/* 73 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84450,7 +85075,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 74 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84523,7 +85148,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 75 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84594,7 +85219,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 76 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84652,7 +85277,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 77 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84784,7 +85409,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 78 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85170,7 +85795,7 @@
 
 
 /***/ },
-/* 79 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85235,7 +85860,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 80 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85290,7 +85915,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 81 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85346,7 +85971,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 82 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85454,7 +86079,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85507,7 +86132,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 84 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85561,7 +86186,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 85 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85626,7 +86251,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 86 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85701,7 +86326,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 87 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85802,7 +86427,7 @@
 
 
 /***/ },
-/* 88 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85895,7 +86520,7 @@
 
 
 /***/ },
-/* 89 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86006,7 +86631,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 90 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86104,7 +86729,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 91 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86186,7 +86811,7 @@
 
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86224,7 +86849,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86309,7 +86934,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86378,7 +87003,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86450,7 +87075,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86526,7 +87151,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86594,7 +87219,7 @@
 
 
 /***/ },
-/* 98 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86675,7 +87300,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 99 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86741,7 +87366,7 @@
 
 
 /***/ },
-/* 100 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86801,7 +87426,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 101 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86865,7 +87490,7 @@
 
 
 /***/ },
-/* 102 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86928,7 +87553,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 103 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87225,7 +87850,7 @@
 
 
 /***/ },
-/* 104 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87310,7 +87935,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 105 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87463,7 +88088,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 106 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87527,7 +88152,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 107 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87627,7 +88252,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 108 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87696,7 +88321,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87768,7 +88393,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 110 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87839,7 +88464,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87894,7 +88519,7 @@
 
 
 /***/ },
-/* 112 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88522,7 +89147,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 113 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88532,8 +89157,6 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _log = __webpack_require__(6);
 
@@ -88560,7 +89183,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	/**
-	 * An object that holds animation data for animating models
+	 * An asset that holds animation data: clips, layers and channels.
 	 * @class AnimationAsset
 	 * @constructor
 	 */
@@ -88570,201 +89193,141 @@
 	  function AnimationAsset(json) {
 	    _classCallCheck(this, AnimationAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationAsset).call(this, json));
+
+	    _this.clips = {};
+	    return _this;
 	  }
 
 	  _createClass(AnimationAsset, [{
-	    key: 'getDataSizeAnimationDownload',
-	    value: function getDataSizeAnimationDownload() {
-	      return 1;
-	    }
-	  }, {
-	    key: 'getDataSizeAnimationInMemory',
-	    value: function getDataSizeAnimationInMemory() {
-	      return 1;
-	    }
-	  }, {
-	    key: '_getCurvesForObjectsInLayer',
-	    value: function _getCurvesForObjectsInLayer(objects, layer, curves) {
-	      var curvesByName,
-	          filtered = {};
+	    key: 'createClip',
 
-	      _lodash2.default.each(objects, function (object) {
-	        filtered[object.name] = [];
-	      });
 
-	      curvesByName = _lodash2.default.indexBy(curves, 'name');
+	    /**
+	     * Create a THREE.AnimationClip for a clip.
+	     * @method createClip
+	     * @private
+	     * @param {String} clipId The clip ID.
+	     * @returns {THREE.AnimationClip} A THREE.AnimationClip.
+	     */
+	    value: function createClip(clipId) {
+	      var _this2 = this;
 
-	      _lodash2.default.each(layer.curves, function (curveName) {
-	        if (curvesByName.hasOwnProperty(curveName)) {
-	          var curve = curvesByName[curveName],
-	              objectName = curve.object;
-
-	          if (filtered.hasOwnProperty(objectName)) {
-	            filtered[objectName].push(curve);
-	          }
-	        }
-	      });
-
-	      return filtered;
-	    }
-	  }, {
-	    key: '_getKeyframes',
-	    value: function _getKeyframes(objects, curves, startTime, stopTime) {
-	      var curveTypes = {},
-	          keyframes = {};
-
-	      // Supported channels and their corresponding THREE.js name.
-	      curveTypes.position = 'pos';
-	      curveTypes.rotation = 'rot';
-	      curveTypes.scale = 'scl';
-
-	      _lodash2.default.each(objects, function (object) {
-	        var mergedKeys,
-	            objectCurves = curves[object.name],
-	            objectKeys = [];
-
-	        // Create a single array of keys for the object, merging all channels.
-	        _lodash2.default.each(objectCurves, function (curve) {
-	          var keys = this.runtimeData.keyframes[curve.name],
-	              step = curve.channelCount + 1;
-
-	          _lodash2.default.each(curveTypes, function (property, type) {
-	            var idx = 0,
-	                key,
-	                pt0,
-	                pt1,
-	                time;
-
-	            if (curve.property === type) {
-	              // Find the first frame of the animation (time >= startTime).
-	              while (idx * step < keys.length && keys[idx * step] < startTime) {
-	                idx++;
-	              }
-
-	              // If the first frame is beyond startTime, create a new frame at
-	              // startTime.
-	              if (idx * step < keys.length) {
-	                time = keys[idx * step];
-
-	                if (time > startTime) {
-	                  key = {
-	                    time: 0
-	                  };
-
-	                  if (idx > 0) {
-	                    pt0 = keys.subarray((idx - 1) * step, idx * step), pt1 = keys.subarray(idx * step, (idx + 1) * step);
-	                    key[property] = this._interpolateKeys(pt0, pt1, startTime);
-	                  } else {
-	                    // Copy the first keyframe (const interpolation).
-	                    key[property] = keys.subarray(1, step);
-	                  }
-
-	                  objectKeys.push(key);
-	                }
-	              } else if (keys.length > 0) {
-	                // We did not find a keyframe with time >= startTime, so copy
-	                // the last keyframe (const interpolation).
-	                key = {
-	                  time: 0
-	                };
-	                key[property] = keys.subarray(-step + 1);
-	                objectKeys.push(key);
-	              }
-
-	              // Add the middle frames (startTime <= time <= stopTime).
-	              while (idx * step < keys.length && keys[idx * step] <= stopTime) {
-	                key = {
-	                  time: keys[idx * step] - startTime
-	                };
-	                key[property] = keys.subarray(idx * step + 1, (idx + 1) * step);
-	                objectKeys.push(key);
-	                idx++;
-	              }
-
-	              // If the final frame is beyond stopTime, create a new frame at
-	              // stopTime.
-	              if (idx * step < keys.length) {
-	                time = keys[idx * step];
-
-	                if (time > stopTime) {
-	                  key = {
-	                    time: stopTime - startTime
-	                  };
-
-	                  if (idx > 0) {
-	                    pt0 = keys.subarray((idx - 1) * step, idx * step), pt1 = keys.subarray(idx * step, (idx + 1) * step);
-	                    key[property] = this._interpolateKeys(pt0, pt1, stopTime);
-	                  } else {
-	                    // Copy the first keyframe (const interpolation).
-	                    key[property] = keys.subarray(1, step);
-	                  }
-
-	                  objectKeys.push(key);
-	                }
-	              } else if (keys.length > 0) {
-	                // Copy the final keyframe (const interpolation).
-	                key = {
-	                  time: stopTime - startTime
-	                };
-	                key[property] = keys.subarray(keys.length - step + 1, keys.length);
-	                objectKeys.push(key);
-	              }
-	            }
-	          }, this);
-	        }, this);
-
-	        // If there aren't any keys, skip the object.
-	        if (objectKeys.length > 0) {
-	          // Sort the keys by time.
-	          objectKeys.sort(function (a, b) {
-	            return a.time - b.time;
-	          });
-
-	          // Merge keys with identical time values.
-	          mergedKeys = [objectKeys[0]];
-
-	          for (var iKey = 1; iKey < objectKeys.length; iKey += 1) {
-	            var key = objectKeys[iKey],
-	                lastKey = mergedKeys[mergedKeys.length - 1];
-
-	            if (key.time === lastKey.time) {
-	              for (var type in curveTypes) {
-	                var property = curveTypes[type];
-	                if (key.hasOwnProperty(property)) {
-	                  lastKey[property] = key[property];
-	                }
-	              }
-	            } else {
-	              mergedKeys.push(key);
-	            }
-	          }
-
-	          keyframes[object.name] = mergedKeys;
-	        }
-	      }, this);
-
-	      return keyframes;
-	    }
-	  }, {
-	    key: '_interpolateKeys',
-	    value: function _interpolateKeys(key1, key2, time) {
-	      var t0 = key1[0],
-	          t1 = key2[0],
-	          result = [],
-	          alpha;
-
-	      if (t1 - t0 === 0) {
-	        alpha = 0.5;
-	      } else {
-	        alpha = (time - t0) / (t1 - t0);
+	      var clip = this.getClip(clipId);
+	      if (!clip) {
+	        throw new Error('Invalid argument: clip "' + clipId + '" not found');
 	      }
 
-	      for (var idx = 1; idx < key1.length; idx += 1) {
-	        result.push(key1[idx] + (key2[idx] - key1[idx]) * alpha);
+	      if (clip.layers.length > 1) {
+	        _log2.default.warn('Clip "' + clipId + '" contains multiple layers, but ' + 'AnimationAsset.prototype.createAnimation() only supports a single layer.');
 	      }
 
-	      return result;
+	      // Get channels that belong to the first layer.
+	      var layer = this.getLayer(clip.layers[0]);
+	      var channels = layer ? layer.channels.map(function (channelId) {
+	        return _this2.getChannel(channelId);
+	      }) : [];
+
+	      // Create a keyframe track for each channel.
+	      var tracks = channels.map(function (channel) {
+	        return _this2.createKeyframeTrack(channel, clip.start, clip.stop);
+	      });
+
+	      return new _three2.default.AnimationClip(clip.name, clip.stop - clip.start, tracks);
+	    }
+
+	    /**
+	     * Create a THREE.AnimationClip for each clip.
+	     * @method createClips
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'createClips',
+	    value: function createClips() {
+	      var _this3 = this;
+
+	      var clipIds = this.getClipIds();
+	      clipIds.forEach(function (clipId) {
+	        _this3.clips[clipId] = _this3.createClip(clipId);
+	      });
+	    }
+
+	    /**
+	     * Create a THREE.KeyframeTrack for the specified channel.
+	     * @method createKeyframeTrack
+	     * @private
+	     * @param {Object} channel The channel object (@see getChannel()).
+	     * @param {Number} startTime The track's start time (in seconds).
+	     * @param {Number} stopTime The track's stop time (in seconds).
+	     * @returns {THREE.KeyframeTrack} A THREE.KeyframeTrack.
+	     */
+
+	  }, {
+	    key: 'createKeyframeTrack',
+	    value: function createKeyframeTrack(channel, startTime, stopTime) {
+	      var _this4 = this;
+
+	      var timeTokens = channel.times.split('#');
+	      var timeBufferId = timeTokens[0];
+	      var timeAccessorName = timeTokens[1];
+	      var timeBuffer = this.box3DRuntime.getEntityById(timeBufferId);
+	      if (!timeBuffer) {
+	        throw new Error(this.box3DRuntime.engineName + ' - AnimationAsset: BufferAsset not found, ' + timeBufferId);
+	      }
+
+	      var timeAccessor = timeBuffer.getAccessor(timeAccessorName);
+	      var times = timeBuffer.getArray(timeAccessorName);
+	      if (!timeAccessor || !times) {
+	        throw new Error(this.box3DRuntime.engineName + ' - AnimationAsset: Accessor not found, ' + timeAccessorName);
+	      }
+
+	      var valueTokens = channel.values.split('#');
+	      var valueBufferId = valueTokens[0];
+	      var valueAccessorName = valueTokens[1];
+	      var valueBuffer = this.box3DRuntime.getEntityById(valueBufferId);
+	      if (!valueBuffer) {
+	        throw new Error(this.box3DRuntime.engineName + ' - AnimationAsset: BufferAsset not found, ' + valueBufferId);
+	      }
+
+	      var valueAccessor = valueBuffer.getAccessor(valueAccessorName);
+	      var values = valueBuffer.getArray(valueAccessorName);
+	      if (!valueAccessor || !values) {
+	        throw new Error(this.box3DRuntime.engineName + ' - AnimationAsset: Accessor not found, ' + valueAccessorName);
+	      }
+
+	      var runtimeNames = channel.targetObject.map(function (sid) {
+	        return _this4.box3DRuntime.getRuntimeName(sid);
+	      });
+	      var target = runtimeNames.join('/') + '.' + channel.targetProperty;
+	      var TrackType = channel.targetProperty === 'quaternion' ? _three2.default.QuaternionKeyframeTrack : _three2.default.VectorKeyframeTrack;
+
+	      // Crop the time and value arrays by [startTime, stopTime] so that only the keyframes in that
+	      // time range are included in the track.
+	      var firstTimeNo = _lodash2.default.findIndex(times, function (time) {
+	        return time >= startTime;
+	      });
+	      var lastTimeNo = _lodash2.default.findLastIndex(times, function (time) {
+	        return time <= stopTime;
+	      });
+	      var begin = firstTimeNo >= 0 ? firstTimeNo : 0;
+	      var end = lastTimeNo >= 0 ? lastTimeNo + 1 : times.length;
+
+	      var valueSize = valueBuffer.getTypeSize(valueAccessor.type);
+	      var croppedTimes = times.subarray(begin, end);
+	      var croppedValues = values.subarray(begin * valueSize, end * valueSize);
+
+	      // Shift the time values by -startTime.
+	      var shiftedTimes = croppedTimes;
+	      if (startTime !== 0) {
+	        shiftedTimes = croppedTimes.slice();
+	        for (var i = 0; i < shiftedTimes.length; ++i) {
+	          shiftedTimes[i] -= startTime;
+	        }
+	      }
+
+	      return new TrackType(target, shiftedTimes, croppedValues);
 	    }
 
 	    /** @inheritdoc */
@@ -88772,332 +89335,209 @@
 	  }, {
 	    key: 'createRuntimeData',
 	    value: function createRuntimeData(callback) {
-	      var _this2 = this;
+	      var _this5 = this;
 
-	      var onProgress = function onProgress(progressObj) {
-	        _this2.loadedBytes = progressObj.loaded;
-	        _this2.trigger('loadProgress', _this2);
-	      };
-
-	      this.box3DRuntime.resourceLoader.load(this, { xhrKey: this.id }, onProgress).then(function (result) {
-	        _this2.runtimeData = {
-	          keyframes: {}
-	        };
-
-	        var curves = _this2.getProperty('curves');
-	        curves.forEach(function (curve) {
-	          _this2.runtimeData.keyframes[curve.name] = new Float32Array(result.data, curve.keyframeFileOffset, curve.keyframeCount * curve.channelCount);
+	      this.when('loadDependencies', function () {
+	        var dependencies = _this5.getDependencies();
+	        var loadFailed = Object.keys(dependencies).some(function (id) {
+	          var asset = _this5.box3DRuntime.assetRegistry.getAssetById(id);
+	          return !asset || asset.isLoadFailed();
 	        });
 
-	        _this2.loadedBytes = _this2.getDataSizeDownload();
+	        if (!loadFailed) {
+	          _this5.createClips();
+	        }
+
 	        callback();
-	      }).catch(function (err) {
-	        _log2.default.debug('Error loading animation', err);
-	        callback();
-	      });
+	      }, this);
 	    }
 
 	    /**
-	     * Add a new take to the asset.
-	     * @method addTake
-	     * @param  {Object} take The take data
-	     * @return {Boolean} true on success; otherwise, false
+	     * Get the THREE.AnimationClip for the clip with the specified ID.
+	     * @method getAnimationClip
+	     * @param {String} id The clip ID.
+	     * @returns {THREE.AnimationClip} A THREE.AnimationClip.
 	     */
 
 	  }, {
-	    key: 'addTake',
-	    value: function addTake(take) {
-	      var takes = _lodash2.default.clone(this.getProperty('takes'));
-
-	      if (this.getTakeNames().indexOf(take.name) !== -1) {
-	        _log2.default.warn('Failed to add new take because its name is not unique.');
-	        return false;
-	      }
-
-	      takes.push(take);
-	      this.setProperty('takes', takes);
-
-	      return true;
+	    key: 'getAnimationClip',
+	    value: function getAnimationClip(id) {
+	      return this.clips[id];
 	    }
 
 	    /**
-	     * Create a THREE.Animation for the object and take.
-	     * @method createAnimation
-	     * @param  {Object} root The object hierarchy
-	     * @param  {String} takeName The take name
-	     * @return {Object} The THREE.Animation object on success; otherwise false.
+	     * Get the channel with the specified ID.
+	     * @method getChannels
+	     * @public
+	     * @param {String} id The channel ID.
+	     * @returns {Object|undefined} The channel or undefined if the channel does not exist.
 	     */
 
 	  }, {
-	    key: 'createAnimation',
-	    value: function createAnimation(root, takeName) {
-	      var animation = {},
-	          curves = this.getProperty('curves'),
-	          hierarchy = [],
-	          keyframes,
-	          layer,
-	          objects,
-	          take,
-	          uniqueName = takeName + root.id + this.id;
-
-	      if (!root || !root.runtimeData || !takeName) {
-	        _log2.default.warn('AnimationAsset: Invalid parameter passed to createAnimation.');
-	        return null;
-	      }
-
-	      if (!this.runtimeData) {
-	        _log2.default.warn('AnimationAsset: Asset not loaded before call to createAnimation.');
-	        return null;
-	      }
-
-	      take = this.getTakeByName(takeName);
-
-	      if (!take) {
-	        _log2.default.warn('AnimationAsset: Take does not exist: ' + takeName);
-	        return null;
-	      }
-
-	      if (!take.layers || take.layers.length <= 0) {
-	        return null;
-	      }
-
-	      if (take.layers.length > 1) {
-	        _log2.default.warn('Take contains multiple layers, but we only support a single layer.');
-	      }
-
-	      // Parse the object hierarchy.
-	      objects = _three2.default.AnimationHandler.parse(root.runtimeData);
-
-	      // Get curves for objects in the hierarchy.
-	      layer = this.getLayerByName(take.layers[0]);
-	      curves = this._getCurvesForObjectsInLayer(objects, layer, curves);
-
-	      // Get keyframes for each object.
-	      keyframes = this._getKeyframes(objects, curves, take.start, take.stop);
-
-	      // Create the THREE.js animation.
-	      _lodash2.default.each(objects, function (object) {
-	        hierarchy.push({
-	          keys: keyframes[object.name] || []
-	        });
-	      });
-
-	      animation.name = uniqueName;
-	      animation.length = take.stop - take.start;
-	      animation.fps = 25;
-	      animation.hierarchy = hierarchy;
-
-	      return new _three2.default.Animation(root.runtimeData, animation);
+	    key: 'getChannel',
+	    value: function getChannel(id) {
+	      return this.getProperty('channels')[id];
 	    }
 
 	    /**
-	     * Get the curve with the specified name.
-	     * @method getCurveByName
-	     * @param  {String} curveName The curve name
-	     * @return {Object} The curve or null if the curve does not exist.
+	     * Get the IDs of all the channels.
+	     * @method getChannelIds
+	     * @public
+	     * @returns {Array} An array of channel IDs.
 	     */
 
 	  }, {
-	    key: 'getCurveByName',
-	    value: function getCurveByName(curveName) {
-	      return _lodash2.default.find(this.getCurves(), function (curve) {
-	        return curve.name === curveName;
-	      });
+	    key: 'getChannelIds',
+	    value: function getChannelIds() {
+	      return Object.keys(this.getProperty('channels'));
 	    }
 
 	    /**
-	     * Get names of all the curves.
-	     * @method getCurveNames
-	     * @return {Array} An array of curve names.
+	     * Get all channels.
+	     * @method getChannels
+	     * @public
+	     * @returns {Array} An array of channels.
 	     */
 
 	  }, {
-	    key: 'getCurveNames',
-	    value: function getCurveNames() {
-	      return _lodash2.default.map(this.getCurves(), function (curve) {
-	        return curve.name;
-	      });
+	    key: 'getChannels',
+	    value: function getChannels() {
+	      return _lodash2.default.values(this.getProperty('channels'));
 	    }
 
 	    /**
-	     * Get all curves.
-	     * @method getCurves
-	     * @return {Array} An array of curves.
+	     * Get the clip with the specified ID.
+	     * @method getClip
+	     * @public
+	     * @param {String} id The clip ID.
+	     * @returns {Object} The clip or undefined if the clip does not exist.
 	     */
 
 	  }, {
-	    key: 'getCurves',
-	    value: function getCurves() {
-	      return this.getProperty('curves');
+	    key: 'getClip',
+	    value: function getClip(id) {
+	      return this.getProperty('clips')[id];
 	    }
 
 	    /**
-	     * Get the layer with the specified name.
-	     * @method getLayerByName
-	     * @param  {String} layerName The layer name
-	     * @return {Object} The layer or null if the layer does not exist.
+	     * Get IDs of all the clips.
+	     * @method getClipIds
+	     * @public
+	     * @returns {Array} An array of clip IDs.
 	     */
 
 	  }, {
-	    key: 'getLayerByName',
-	    value: function getLayerByName(layerName) {
-	      return _lodash2.default.find(this.getLayers(), function (layer) {
-	        return layer.name === layerName;
-	      });
+	    key: 'getClipIds',
+	    value: function getClipIds() {
+	      return Object.keys(this.getProperty('clips'));
 	    }
 
 	    /**
-	     * Get names of all the layers.
-	     * @method getLayerNames
-	     * @return {Array} An array of layer names.
+	     * Get all clips.
+	     * @method getClips
+	     * @public
+	     * @returns {Array} An array of clips.
 	     */
 
 	  }, {
-	    key: 'getLayerNames',
-	    value: function getLayerNames() {
-	      return _lodash2.default.map(this.getLayers(), function (layer) {
-	        return layer.name;
-	      });
+	    key: 'getClips',
+	    value: function getClips() {
+	      return _lodash2.default.values(this.getProperty('clips'));
+	    }
+
+	    /**
+	     * Get the layer with the specified ID.
+	     * @method getLayer
+	     * @public
+	     * @param {String} id The layer ID.
+	     * @returns {Object|undefined} The layer or undefined if the layer does not exist.
+	     */
+
+	  }, {
+	    key: 'getLayer',
+	    value: function getLayer(id) {
+	      return this.getProperty('layers')[id];
+	    }
+
+	    /**
+	     * Get IDs of all the layers.
+	     * @method getLayerIds
+	     * @public
+	     * @returns {Array} An array of layer IDs.
+	     */
+
+	  }, {
+	    key: 'getLayerIds',
+	    value: function getLayerIds() {
+	      return Object.keys(this.getProperty('layers'));
 	    }
 
 	    /**
 	     * Get all layers.
 	     * @method getLayers
-	     * @return {Array} An array of layers.
+	     * @public
+	     * @returns {Array} An array of layers.
 	     */
 
 	  }, {
 	    key: 'getLayers',
 	    value: function getLayers() {
-	      return this.getProperty('layers');
+	      return _lodash2.default.values(this.getProperty('layers'));
 	    }
 
-	    /**
-	     * Get the take with the specified name.
-	     * @method getTakeByName
-	     * @param  {String} takeName The take name
-	     * @return {Object} The take or null if the take does not exist.
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'getTakeByName',
-	    value: function getTakeByName(takeName) {
-	      return _lodash2.default.find(this.getTakes(), function (take) {
-	        return take.name === takeName;
+	    key: 'registerDependencies',
+	    value: function registerDependencies() {
+	      var _this6 = this;
+
+	      var channels = this.getChannels();
+	      var accessorIds = [];
+
+	      channels.forEach(function (channel) {
+	        accessorIds.push(channel.times);
+	        accessorIds.push(channel.values);
 	      });
-	    }
 
-	    /**
-	     * Get names of all the takes.
-	     * @method getTakeNames
-	     * @return {Array} An array of take names.
-	     */
+	      accessorIds.forEach(function (accessorId) {
+	        var tokens = accessorId.split('#');
+	        if (tokens.length !== 2) {
+	          throw new Error(_this6.box3DRuntime.engineName + ' - AnimationAsset: Invalid accessorId, ' + accessorId);
+	        }
 
-	  }, {
-	    key: 'getTakeNames',
-	    value: function getTakeNames() {
-	      return _lodash2.default.map(this.getTakes(), function (take) {
-	        return take.name;
+	        _this6.registerDependency(tokens[0]);
 	      });
-	    }
-
-	    /**
-	     * Get all takes.
-	     * @method getTakes
-	     * @return {Array} An array of takes.
-	     */
-
-	  }, {
-	    key: 'getTakes',
-	    value: function getTakes() {
-	      return this.getProperty('takes');
-	    }
-
-	    /**
-	     * Remove the specified take.
-	     * @method removeTake
-	     * @param {Integer} idx The index of the take
-	     */
-
-	  }, {
-	    key: 'removeTake',
-	    value: function removeTake(idx) {
-	      var takes = _lodash2.default.clone(this.getTakes());
-
-	      takes.splice(idx, 1);
-	      this.setProperty('takes', takes);
-	    }
-
-	    /**
-	     * Set the name of the specified take.
-	     * @method setTakeName
-	     * @param {Integer} takeIdx The index of the take
-	     * @param {String} name The new take name
-	     * @return {Boolean} true on success; otherwise, false.
-	     */
-
-	  }, {
-	    key: 'setTakeName',
-	    value: function setTakeName(takeIdx, name) {
-	      var idx = this.getTakeNames().indexOf(name);
-
-	      if (idx !== -1 && idx !== takeIdx) {
-	        _log2.default.warn('Failed to set take name because it is not unique.');
-	        return false;
-	      }
-
-	      var takes = _lodash2.default.cloneDeep(this.getTakes());
-	      takes[takeIdx].name = name;
-	      this.setProperty('takes', takes);
-
-	      return true;
-	    }
-
-	    /**
-	     * Set the start time of the specified take.
-	     * @method setTakeStart
-	     * @param {Integer} takeIdx The index of the take
-	     * @param {Number} start The new take start time
-	     */
-
-	  }, {
-	    key: 'setTakeStart',
-	    value: function setTakeStart(takeIdx, start) {
-	      var takes = _lodash2.default.cloneDeep(this.getTakes());
-	      takes[takeIdx].start = Number(start);
-	      this.setProperty('takes', takes);
-	    }
-
-	    /**
-	     * Set the stop time of the specified take.
-	     * @method setTakeStop
-	     * @param {Integer} takeIdx The index of the take
-	     * @param {Number} stop The new take stop time
-	     */
-
-	  }, {
-	    key: 'setTakeStop',
-	    value: function setTakeStop(takeIdx, stop) {
-	      var takes = _lodash2.default.cloneDeep(this.getTakes());
-	      takes[takeIdx].stop = Number(stop);
-	      this.setProperty('takes', takes);
-	    }
-	  }, {
-	    key: 'unload',
-	    value: function unload() {
-	      _get(Object.getPrototypeOf(AnimationAsset.prototype), 'unload', this).call(this);
-	      this.box3DRuntime.trigger('animationUnloaded', this.id);
 	    }
 	  }]);
 
 	  return AnimationAsset;
 	}(_Box3DAsset3.default);
 
+	AnimationAsset.schema = Object.assign({}, _Box3DAsset3.default.schema, {
+	  clips: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  layers: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  channels: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  }
+	});
+
+
 	window.Box3D.AnimationAsset = AnimationAsset;
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 114 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89172,7 +89612,7 @@
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 115 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89255,7 +89695,7 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 116 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89277,6 +89717,10 @@
 	var _Box3DAsset2 = __webpack_require__(12);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	var _Box3DEntity = __webpack_require__(13);
+
+	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -89371,6 +89815,7 @@
 
 	      var onBufferLoadError = function onBufferLoadError(err) {
 	        _log2.default.error(_this3.box3DRuntime.engineName + ' - BufferAsset: Error loading buffer , ' + _this3.getName(), err.toString());
+	        _this3.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
 	        callback();
 	      };
 
@@ -89550,7 +89995,7 @@
 	exports.default = BufferAsset;
 
 /***/ },
-/* 117 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89569,7 +90014,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(118);
+	var _JSONLoader = __webpack_require__(120);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -89670,12 +90115,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 118 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(3), __webpack_require__(119)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(3), __webpack_require__(121)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -89745,29 +90190,50 @@
 	   * were added to the runtime.
 	   */
 	  JSONLoader.prototype.loadFromJson = function (json, baseUrl) {
-	    var entities;
-
 	    // Make sure the major version is 4 or less.
 	    if (json === undefined || json.version === undefined || json.version.major > 4) {
 	      throw new Error('Unsupported data version');
 	    }
 
+	    // The absolute pattern should match URLs like:
+	    //
+	    //   * http://example.com
+	    //   * HTTP://EXAMPLE.COM
+	    //   * https://www.example.com
+	    //   * ftp://example.com/file.txt
+	    //   * //cdn.example.com/lib.js
+	    //
+	    // but should not match URLs like:
+	    //
+	    //   * /myfolder/test.txt
+	    //   * test
+	    var absolutePattern = new RegExp(/^(?:[a-z]+:)?\/\//i);
+
+	    // The domain relative pattern should match URLs like: /myfolder/test.txt
+	    var domainRelativePattern = new RegExp(/^\//);
+
+	    // This predicate should match URLs that are not absolute and not
+	    // domain-relative.
+	    var isFileRelative = function isFileRelative(url) {
+	      return !url.match(absolutePattern) && !url.match(domainRelativePattern);
+	    };
+
 	    // Translate the entities with Box3DShim.
-	    entities = Box3DShim.mapEntities(json.entities, json.version);
+	    var entities = Box3DShim.mapEntities(json.entities, json.version);
 
 	    // Prefix all "src" properties with baseUrl.
 	    entities.forEach(function (entity) {
 	      // Prefix image representation "src" properties:
 	      if (entity.representations) {
 	        entity.representations.forEach(function (representation) {
-	          if (representation.src) {
+	          if (representation.src && isFileRelative(representation.src)) {
 	            representation.src = baseUrl + representation.src;
 	          }
 	        });
 	      }
 
 	      // Prefix buffer entity "src" properties:
-	      if (entity.type === 'buffer' && entity.properties.src) {
+	      if (entity.type === 'buffer' && entity.properties.src && isFileRelative(entity.properties.src)) {
 	        entity.properties.src = baseUrl + entity.properties.src;
 	      }
 	    });
@@ -89794,8 +90260,13 @@
 	      options.withCredentials = true;
 	    }
 
-	    // Save base url to later prefix asset urls in entities.
-	    var baseUrl = url.slice(0, url.lastIndexOf('/') + 1);
+	    // Compute the base URL of the JSON file (everything before the filename).
+	    // Also strip out any query parameters. The base URL will be prefixed to all
+	    // relative "src" properties (e.g., in image representations and buffer
+	    // entities) after loading.
+	    var queryIndex = url.indexOf('?');
+	    var fromIndex = queryIndex >= 0 ? queryIndex : url.length;
+	    var baseUrl = url.slice(0, url.lastIndexOf('/', fromIndex) + 1);
 
 	    return requestJson(url, options.withCredentials).then(function (json) {
 	      return this.loadFromJson(json, baseUrl);
@@ -89809,15 +90280,15 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 119 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(120);
-	var v1 = __webpack_require__(121);
-	var v2 = __webpack_require__(122);
-	var v3 = __webpack_require__(146);
+	var _ = __webpack_require__(122);
+	var v1 = __webpack_require__(123);
+	var v2 = __webpack_require__(124);
+	var v3 = __webpack_require__(148);
 
 	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
 	  'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
@@ -89918,12 +90389,12 @@
 	 * @param {Object} material The material entity to transform.
 	 * @returns {Object} The transformed material entity.
 	 */
-	function mapMaterial(material) {
+	function mapMaterial(material, entitiesById) {
 	  var matProps = material.properties;
 
 	  var properties = {
 	    name: matProps.name,
-	    shader: 'box3d_pbr_spec_gloss_shader',
+	    shader: 'box3d_pbr_shader',
 	    enabledFeatures: {}
 	  };
 
@@ -89954,15 +90425,18 @@
 
 	  if (matProps.shininess || matProps.shininessTexture) {
 	    _.extend(properties, mapMaterialProperties(matProps, 'shininess', undefined,
-	      'shininessTexture', 'gloss', 'glossMap', true));
+	      'shininessTexture', 'roughness', 'glossMap', true));
 
-	    if (properties.gloss) {
-	      // Convert phong shininess value to our 0-1 gloss value.
+	    setImageEncoding(matProps.shininessTexture, 'linear', entitiesById);
+
+	    if (properties.roughness) {
+	      // Convert phong shininess value to our 0-1 roughness value.
 	      // 512 is assumed to be the maximum specular power in our conversion
-	      properties.gloss = Math.log10(properties.gloss / 512) / 2.5 + 1.0;
-	      properties.gloss = Math.min(Math.max(properties.gloss, 0.0), 1.0);
+	      properties.roughness = Math.log10(properties.roughness / 512) / 2.5 + 1.0;
+	      properties.roughness = Math.min(Math.max(properties.roughness, 0.0), 1.0);
+	      properties.roughness = 1.0 - properties.roughness;
 	    } else {
-	      // Turn off specular entirely if gloss is 0. For dielectric materials,
+	      // Turn off specular entirely if roughness is 1. For dielectric materials,
 	      // no specular is visible if the material is fully 'rough'.
 	      properties.enabledFeatures.specular = false;
 	    }
@@ -89974,11 +90448,13 @@
 
 	    _.extend(properties, mapMaterialProperties(matProps, 'ambientColor',
 	      'ambientFactor', 'ambientTexture', undefined, 'aoMap'));
+	    setImageEncoding(matProps.ambientTexture, 'linear', entitiesById);
 	  } else if (matProps.ambientFactorTexture) {
 	    properties.enabledFeatures.albedo = true;
 
 	    _.extend(properties, mapMaterialProperties(matProps, 'ambientColor',
 	      'ambientFactor', 'ambientFactorTexture', undefined, 'aoMap'));
+	    setImageEncoding(matProps.ambientFactorTexture, 'linear', entitiesById);
 	  }
 
 	  // Emissive
@@ -89998,6 +90474,8 @@
 	    _.extend(properties, mapMaterialProperties(matProps, 'emissive', null,
 	      'emissiveFactorTexture', 'emissiveColor', 'emissiveMap'));
 
+	    setImageEncoding(matProps.emissiveFactorTexture, 'linear', entitiesById);
+
 	    // Separate intensity value for emissive
 	    if (matProps.emissiveFactor !== undefined) {
 	      properties.emissiveIntensity = matProps.emissiveFactor;
@@ -90007,6 +90485,8 @@
 	  // Transparency
 	  _.extend(properties, mapMaterialProperties(matProps, 'transparentColor',
 	    'transparencyFactor', 'transparentTexture', 'opacity', 'alphaMap', true));
+
+	  setImageEncoding(matProps.transparentTexture, 'linear', entitiesById);
 
 	  if (properties.opacity !== undefined) {
 	    properties.opacity = Math.max(Math.min(1.0 - properties.opacity, 1.0), 0.0);
@@ -90026,6 +90506,8 @@
 
 	    _.extend(properties, mapMaterialProperties(matProps, undefined,
 	      'bumpFactor', 'normalMapTexture', 'normalScale', 'normalMap', true));
+
+	    setImageEncoding(matProps.normalMapTexture, 'linear', entitiesById);
 	  }
 
 	  // Bumps
@@ -90038,6 +90520,8 @@
 
 	    _.extend(properties, mapMaterialProperties(matProps, undefined,
 	      'bumpFactor', 'bumpTexture', 'normalScale', 'normalMap', true));
+
+	    setImageEncoding(matProps.bumpTexture, 'linear', entitiesById);
 	  }
 
 	  // Convert normal scale to vec2 since that's what three.js wants.
@@ -90052,6 +90536,8 @@
 	    _.extend(properties, mapMaterialProperties(matProps, 'displacementColor',
 	      'displacementFactor', 'displacementTexture', 'displacementScale',
 	      'displacementMap', true));
+
+	    setImageEncoding(matProps.displacementTexture, 'linear', entitiesById);
 	  }
 
 	  // Vector displacement
@@ -90063,11 +90549,33 @@
 	      'vectorDisplacementColor', 'vectorDisplacementFactor',
 	      'vectorDisplacementColorTexture', 'displacementScale',
 	      'displacementMap'));
+
+	    setImageEncoding(matProps.vectorDisplacementColorTexture, 'linear', entitiesById);
 	  }
 
 	  material.properties = properties;
 
 	  return material;
+	}
+
+	/**
+	 * Given a texture ID, find the image that it references and set its encoding
+	 * to the one given. This should be replaced later when we have accurate colorspace
+	 * and usage info coming through the converter.
+	 * @method setImageEncoding
+	 * @private
+	 * @param {String} textureId  The ID of the texture that we're interested in.
+	 * @param {String} encoding Name of encoding to set image to ('linear', 'srgb', etc.)
+	 * @param {Object} entityMap  Map of all entities, keyed by ID
+	 */
+	function setImageEncoding(textureId, encoding, entityMap) {
+	  var texture = entityMap[textureId];
+	  if (texture) {
+	    var image = entityMap[texture.properties.imageId];
+	    if (image) {
+	      image.properties.encoding = encoding;
+	    }
+	  }
 	}
 
 	/**
@@ -90144,13 +90652,17 @@
 	function mapTexture(texture, entitiesById) {
 	  var textureProps = texture.properties;
 	  var properties = { name: textureProps.name, imageId: textureProps.imageId };
+	  var imageId;
+	  var documentOrImage;
 
 	  // Possibly change the texture2D to a videoTexture entity.
-	  var imageId = texture.properties.imageId.split('#')[0];
-	  var documentOrImage = entitiesById[imageId];
+	  if (texture.properties.imageId) {
+	    imageId = texture.properties.imageId.split('#')[0];
+	    documentOrImage = entitiesById[imageId];
 
-	  if (isVideoFormat(documentOrImage.properties.filename)) {
-	    texture.type = 'textureVideo';
+	    if (isVideoFormat(documentOrImage.properties.filename)) {
+	      texture.type = 'textureVideo';
+	    }
 	  }
 
 	  if (textureProps.hasOwnProperty('wrapModeU')) {
@@ -90178,7 +90690,7 @@
 	};
 
 /***/ },
-/* 120 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -91527,12 +92039,12 @@
 
 
 /***/ },
-/* 121 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(120);
+	var _ = __webpack_require__(122);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -91590,13 +92102,13 @@
 
 
 /***/ },
-/* 122 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(120);
-	var uuid = __webpack_require__(123);
+	var _ = __webpack_require__(122);
+	var uuid = __webpack_require__(125);
 
 	/**
 	 * Returns the basename of a filename (i.e., the final element in the path).
@@ -91677,7 +92189,7 @@
 
 
 /***/ },
-/* 123 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(Buffer) {//     uuid.js
@@ -91738,7 +92250,7 @@
 	    // Moderately fast, high quality
 	    if (true) {
 	      try {
-	        var _rb = __webpack_require__(128).randomBytes;
+	        var _rb = __webpack_require__(130).randomBytes;
 	        _nodeRNG = _rng = _rb && function() {return _rb(16);};
 	        _rng();
 	      } catch(e) {}
@@ -91953,10 +92465,10 @@
 	  }
 	})('undefined' !== typeof window ? window : null);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
 
 /***/ },
-/* 124 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -91969,9 +92481,9 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(125)
-	var ieee754 = __webpack_require__(126)
-	var isArray = __webpack_require__(127)
+	var base64 = __webpack_require__(127)
+	var ieee754 = __webpack_require__(128)
+	var isArray = __webpack_require__(129)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -93508,10 +94020,10 @@
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 125 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -93641,7 +94153,7 @@
 
 
 /***/ },
-/* 126 */
+/* 128 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -93731,7 +94243,7 @@
 
 
 /***/ },
-/* 127 */
+/* 129 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -93742,10 +94254,10 @@
 
 
 /***/ },
-/* 128 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(129)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(131)
 
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -93756,9 +94268,9 @@
 	    ].join('\n'))
 	}
 
-	exports.createHash = __webpack_require__(131)
+	exports.createHash = __webpack_require__(133)
 
-	exports.createHmac = __webpack_require__(143)
+	exports.createHmac = __webpack_require__(145)
 
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -93779,7 +94291,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 
-	var p = __webpack_require__(144)(exports)
+	var p = __webpack_require__(146)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 
@@ -93799,16 +94311,16 @@
 	  }
 	})
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
 
 /***/ },
-/* 129 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(130)
+	    g.crypto || g.msCrypto || __webpack_require__(132)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -93832,22 +94344,22 @@
 	  }
 	}())
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(126).Buffer))
 
 /***/ },
-/* 130 */
+/* 132 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 131 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(132)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(134)
 
-	var md5 = toConstructor(__webpack_require__(140))
-	var rmd160 = toConstructor(__webpack_require__(142))
+	var md5 = toConstructor(__webpack_require__(142))
+	var rmd160 = toConstructor(__webpack_require__(144))
 
 	function toConstructor (fn) {
 	  return function () {
@@ -93875,10 +94387,10 @@
 	  return createHash(alg)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
 
 /***/ },
-/* 132 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -93887,16 +94399,16 @@
 	  return new Alg()
 	}
 
-	var Buffer = __webpack_require__(124).Buffer
-	var Hash   = __webpack_require__(133)(Buffer)
+	var Buffer = __webpack_require__(126).Buffer
+	var Hash   = __webpack_require__(135)(Buffer)
 
-	exports.sha1 = __webpack_require__(134)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(138)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(139)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(136)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(140)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(141)(Buffer, Hash)
 
 
 /***/ },
-/* 133 */
+/* 135 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -93979,7 +94491,7 @@
 
 
 /***/ },
-/* 134 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -93991,7 +94503,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 
-	var inherits = __webpack_require__(135).inherits
+	var inherits = __webpack_require__(137).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -94123,7 +94635,7 @@
 
 
 /***/ },
-/* 135 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -94651,7 +95163,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(136);
+	exports.isBuffer = __webpack_require__(138);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -94695,7 +95207,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(137);
+	exports.inherits = __webpack_require__(139);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -94713,10 +95225,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(63)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(65)))
 
 /***/ },
-/* 136 */
+/* 138 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -94727,7 +95239,7 @@
 	}
 
 /***/ },
-/* 137 */
+/* 139 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -94756,7 +95268,7 @@
 
 
 /***/ },
-/* 138 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -94768,7 +95280,7 @@
 	 *
 	 */
 
-	var inherits = __webpack_require__(135).inherits
+	var inherits = __webpack_require__(137).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -94909,10 +95421,10 @@
 
 
 /***/ },
-/* 139 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(135).inherits
+	var inherits = __webpack_require__(137).inherits
 
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -95159,7 +95671,7 @@
 
 
 /***/ },
-/* 140 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -95171,7 +95683,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 
-	var helpers = __webpack_require__(141);
+	var helpers = __webpack_require__(143);
 
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -95320,7 +95832,7 @@
 
 
 /***/ },
-/* 141 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -95358,10 +95870,10 @@
 
 	module.exports = { hash: hash };
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
 
 /***/ },
-/* 142 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -95570,13 +96082,13 @@
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
 
 /***/ },
-/* 143 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(131)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(133)
 
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -95620,13 +96132,13 @@
 	}
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
 
 /***/ },
-/* 144 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(145)
+	var pbkdf2Export = __webpack_require__(147)
 
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -95641,7 +96153,7 @@
 
 
 /***/ },
-/* 145 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -95729,16 +96241,16 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(124).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
 
 /***/ },
-/* 146 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(120);
-	var uuid = __webpack_require__(123);
+	var _ = __webpack_require__(122);
+	var uuid = __webpack_require__(125);
 
 	/**
 	 * Map a v3 entity to v4.
@@ -95811,7 +96323,7 @@
 
 
 /***/ },
-/* 147 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96124,7 +96636,7 @@
 	exports.default = ImageAsset;
 
 /***/ },
-/* 148 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96362,7 +96874,7 @@
 	exports.default = VideoAsset;
 
 /***/ },
-/* 149 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96385,7 +96897,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(150);
+	var _BaseGeometryAsset2 = __webpack_require__(152);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -96679,7 +97191,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 150 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96927,7 +97439,7 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 151 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96948,7 +97460,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(150);
+	var _BaseGeometryAsset2 = __webpack_require__(152);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -97146,7 +97658,7 @@
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 152 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97241,7 +97753,7 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 153 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97256,7 +97768,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _ImageAsset = __webpack_require__(147);
+	var _ImageAsset = __webpack_require__(149);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97264,7 +97776,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(154);
+	var _BaseRenderTextureAsset = __webpack_require__(156);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97317,7 +97829,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 154 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97334,7 +97846,7 @@
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _ImageAsset = __webpack_require__(147);
+	var _ImageAsset = __webpack_require__(149);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97453,11 +97965,6 @@
 	    description: '',
 	    default: false
 	  },
-	  generateMipmaps: {
-	    type: 'boolean',
-	    description: '',
-	    default: false
-	  },
 	  width: _ImageAsset2.default.schema.width, // import from Images
 	  height: _ImageAsset2.default.schema.height, // import from Images
 	  format: _ImageAsset2.default.schema.format, // import from Images
@@ -97471,7 +97978,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 155 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97488,7 +97995,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _ImageAsset = __webpack_require__(147);
+	var _ImageAsset = __webpack_require__(149);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97496,7 +98003,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(154);
+	var _BaseRenderTextureAsset = __webpack_require__(156);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97577,7 +98084,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 156 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97872,7 +98379,7 @@
 	exports.default = SceneAsset;
 
 /***/ },
-/* 157 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97897,13 +98404,9 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR_MetalRoughness = __webpack_require__(158);
+	var _Box3DShaderPBR = __webpack_require__(160);
 
-	var _Box3DShaderPBR_MetalRoughness2 = _interopRequireDefault(_Box3DShaderPBR_MetalRoughness);
-
-	var _Box3DShaderPBR_SpecGloss = __webpack_require__(162);
-
-	var _Box3DShaderPBR_SpecGloss2 = _interopRequireDefault(_Box3DShaderPBR_SpecGloss);
+	var _Box3DShaderPBR2 = _interopRequireDefault(_Box3DShaderPBR);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -98153,26 +98656,25 @@
 	  }
 	});
 	ShaderAsset.builtInAssetDescriptors = {
-	  PBR_Metalness: _Box3DShaderPBR_MetalRoughness2.default,
-	  PBR_Specular: _Box3DShaderPBR_SpecGloss2.default
+	  PBR: _Box3DShaderPBR2.default
 	};
 
 	window.Box3D.ShaderAsset = ShaderAsset;
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 158 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(159), __webpack_require__(160), __webpack_require__(161)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(161), __webpack_require__(162), __webpack_require__(163)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
-	    id: 'box3d_pbr_metal_rough_shader',
+	    id: 'box3d_pbr_shader',
 	    type: 'shader',
-	    name: 'PBR Metalness/Roughness',
+	    name: 'PBR Shader',
 	    properties: {
 	      vertexShader: uberPBRVertexShader,
 	      fragmentShader: uberPBRFragmentShader,
@@ -98180,32 +98682,37 @@
 	        albedo: {
 	          displayName: 'Albedo',
 	          defaultEnabled: true,
-	          parameters: ['albedoColor', 'albedoCombine', 'albedoMap', 'blending', 'blendEquation', 'blendSrc', 'blendDst', 'useSeparateAlphaBlend', 'blendEquationAlpha', 'blendSrcAlpha', 'blendDstAlpha']
+	          parameters: ['albedoColor', 'albedoMap', 'aoMap', 'envMapIrradiance']
 	        },
 	        transparency: {
 	          displayName: 'Transparency',
 	          defaultEnabled: false,
-	          parameters: ['opacity', 'alphaBlendMode', 'useAlphaFromAlbedoMap', 'alphaMap']
+	          parameters: ['opacity', 'alphaMap', 'blending', 'blendEquation', 'blendSrc', 'blendDst', 'useSeparateAlphaBlend', 'blendEquationAlpha', 'blendSrcAlpha', 'blendDstAlpha']
 	        },
 	        specular: {
 	          displayName: 'Specular',
 	          defaultEnabled: false,
-	          parameters: ['roughness', 'roughnessMap', 'useRoughnessFromMetalnessMap', 'metalness', 'metalnessMap', 'reflectivityF0']
+	          parameters: ['specularColor', 'specularMap', 'glossMap', 'roughness', 'roughnessMap', 'reflectivity', 'envMapGlossVariance', 'envMapRadiance', 'envMapRadianceHalfGloss']
+	        },
+	        clearCoat: {
+	          displayName: 'Clear Coat',
+	          defaultEnabled: false,
+	          parameters: ['clearCoat', 'clearCoatRoughness']
+	        },
+	        metalness: {
+	          displayName: 'Metalness',
+	          defaultEnabled: false,
+	          parameters: ['metalness', 'metalnessMap']
 	        },
 	        normals: {
 	          displayName: 'Bump/Normals',
 	          defaultEnabled: false,
-	          parameters: ['useBump', 'normalMap', 'normalScale', 'flipNormalX', 'flipNormalY', 'bumpMap', 'bumpScale']
+	          parameters: ['normalMap', 'normalScale', 'bumpMap', 'bumpScale']
 	        },
 	        emissive: {
 	          displayName: 'Emissive',
 	          defaultEnabled: false,
-	          parameters: ['emissiveColor', 'emissiveCombine', 'emissiveMap', 'emissiveIntensity']
-	        },
-	        environment: {
-	          displayName: 'Environment',
-	          defaultEnabled: true,
-	          parameters: ['useSceneLights', 'useEnvironmentMap', 'environmentMapProjection', 'environmentMapCube_0', 'environmentMapCube_1', 'environmentMapCube_2', 'environmentMap2D_0', 'environmentMap2D_1', 'environmentMap2D_2', 'aoMap']
+	          parameters: ['emissiveColor', 'emissiveMap']
 	        },
 	        rendering: {
 	          displayName: 'Render Parameters',
@@ -98214,11 +98721,15 @@
 	        }
 	      },
 	      parameters: shaderParams,
-	      uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, THREE.UniformsLib.lights, THREE.UniformsLib.shadowmap, {
-	        time: {
-	          type: 'f',
-	          value: 1.0
-	        }
+	      uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.common, THREE.UniformsLib.emissivemap, THREE.UniformsLib.bumpmap, THREE.UniformsLib.normalmap, THREE.UniformsLib.roughnessmap, THREE.UniformsLib.metalnessmap, THREE.UniformsLib.displacementmap, THREE.UniformsLib.fog, THREE.UniformsLib.lights, {
+	        time: { value: 1.0 },
+	        emissive: { value: new THREE.Color(0x000000) },
+	        specular: { value: new THREE.Color(0x111111) },
+	        roughness: { value: 0 },
+	        metalness: { value: 0 },
+	        clearCoat: { value: 0 },
+	        clearCoatRoughness: { value: 0 },
+	        envMapIntensity: { value: 1 }
 	      }])
 	    }
 	  };
@@ -98226,7 +98737,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 159 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -98256,7 +98767,7 @@
 	      uniformName: 'map',
 	      enabledWhen: {
 	        albedoMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98281,7 +98792,7 @@
 	      isRenderParam: true,
 	      enabledWhen: {
 	        alphaMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98305,7 +98816,7 @@
 	      isRenderParam: true,
 	      enabledWhen: {
 	        specularMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98316,8 +98827,7 @@
 	      min: 0.0,
 	      max: 1.0,
 	      default: 0.0,
-	      isUniform: true,
-	      isRenderParam: true
+	      isUniform: true
 	    },
 	    metalnessMap: {
 	      displayName: 'Metalness Map',
@@ -98328,18 +98838,9 @@
 	      isRenderParam: true,
 	      enabledWhen: {
 	        metalnessMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
-	    },
-	    gloss: {
-	      displayName: 'Glossiness',
-	      description: 'How glossy the surface appears.',
-	      type: 'f',
-	      min: 0.0,
-	      max: 1.0,
-	      default: 0.95,
-	      isUniform: true
 	    },
 	    glossMap: {
 	      displayName: 'Gloss Map',
@@ -98349,7 +98850,10 @@
 	      isUniform: true,
 	      enabledWhen: {
 	        glossMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
+	        },
+	        roughnessMap: {
+	          equalsDefault: true
 	        }
 	      }
 	    },
@@ -98372,7 +98876,7 @@
 	      isRenderParam: true,
 	      enabledWhen: {
 	        roughnessMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98398,7 +98902,7 @@
 	      textureUsage: 'normal',
 	      enabledWhen: {
 	        normalMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98421,10 +98925,10 @@
 	      textureUsage: 'bump',
 	      enabledWhen: {
 	        normalMap: {
-	          equalDefault: true
+	          equalsDefault: true
 	        },
 	        bumpMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98439,10 +98943,10 @@
 	      isRenderParam: true,
 	      enabledWhen: {
 	        normalMap: {
-	          equalDefault: true
+	          equalsDefault: true
 	        },
 	        bumpMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      },
 	      displayWhen: {
@@ -98450,6 +98954,24 @@
 	          equal: true
 	        }
 	      }
+	    },
+	    clearCoat: {
+	      displayName: 'Clear Coat',
+	      type: 'f',
+	      min: 0.0,
+	      max: 1.0,
+	      isUniform: true,
+	      isRenderParam: true,
+	      default: 0.0
+	    },
+	    clearCoatRoughness: {
+	      displayName: 'Clear Coat',
+	      type: 'f',
+	      min: 0.0,
+	      max: 1.0,
+	      isUniform: true,
+	      isRenderParam: true,
+	      default: 0.0
 	    },
 	    envMapRadiance: {
 	      displayName: 'Specular Light Map',
@@ -98460,7 +98982,7 @@
 	      forceUpdate: true,
 	      enabledWhen: {
 	        envMapRadiance: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98473,13 +98995,13 @@
 	      isUniform: true,
 	      enabledWhen: {
 	        envMapIrradiance: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        },
 	        envMapRadiance: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        },
 	        envMapRadianceHalfGloss: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98492,12 +99014,12 @@
 	      isUniform: true,
 	      enabledWhen: {
 	        envMapIrradiance: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      },
 	      displayWhen: {
 	        envMapIrradiance: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98508,7 +99030,9 @@
 	      default: true,
 	      forceUpdate: true,
 	      enabledWhen: {
-	        envMapGlossVariance: true
+	        envMapGlossVariance: {
+	          equals: true
+	        }
 	      }
 	    },
 	    emissiveColor: {
@@ -98529,7 +99053,7 @@
 	      isRenderParam: true,
 	      enabledWhen: {
 	        emissiveMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98541,7 +99065,7 @@
 	      isUniform: true,
 	      enabledWhen: {
 	        aoMap: {
-	          notEqualDefault: true
+	          notEqualsDefault: true
 	        }
 	      }
 	    },
@@ -98817,82 +99341,19 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 160 */
-/***/ function(module, exports) {
-
-	module.exports = "#define PHYSICAL\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n// Removed chunk from physical material <uv_pars_vertex>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP )\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n// Removed chunk from physical material <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\nvoid main() {\n\n\t#include <uv_vertex>\n\t#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP )\n\t\tvUv.y = 1.0 - vUv.y;\n\t#endif\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\n#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n\n\tvNormal = normalize( transformedNormal );\n\n#endif\n\n\t#include <begin_vertex>\n\t#include <displacementmap_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\n\tvViewPosition = - mvPosition.xyz;\n\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\n}"
-
-/***/ },
-/* 161 */
-/***/ function(module, exports) {
-
-	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n#ifdef GLOSS\n\tuniform float gloss;\n#endif\n#ifdef GLOSS_MAP\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\n\t#ifdef CLEAR_COAT\n\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * material.clearCoat * BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( DEFAULT_SPECULAR_COEFFICIENT ), material.clearCoatRoughness );\n\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tvec3 colour1, colour2;\n\t\t\tfloat interp = roughness * 3.0;\n\t\t\tif (roughness <= 0.33333) {\n\t\t\t\tcolour1 = refRadiance;\n\t\t\t\tcolour2 = refRadianceHalf;\n\t\t\t} else {\n\t\t\t\tinterp = interp * 0.5 - 0.5;\n\t\t\t\tcolour1 = refRadianceHalf;\n\t\t\t\tcolour2 = refIrradiance;\n\t\t\t}\n\t\t\treturn mix(colour1, colour2, interp);\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat mipBias = 0.0;\n\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\n\t\t\t// Sample env maps\n\t\t\tmipBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS);\n\t\t\tvec4 envMapColorRadiance = textureCube( envMapRadiance, queryReflectVec, mipBias );\n\t\t\tenvMapColorRadiance.rgb = envMapTexelToLinear( envMapColorRadiance ).rgb;\n\t\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\t\tmipBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t\t\t\tvec4 envMapColorRadianceHalf = textureCube( envMapRadianceHalfGloss, queryReflectVec, mipBias );\n\t\t\t\t\tenvMapColorRadianceHalf.rgb = envMapTexelToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\t#endif\n\t\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\t\tvec4 envMapColorIrradiance = textureCube( envMapIrradiance, queryReflectVec );\n\t\t\t\t\tenvMapColorIrradiance.rgb = envMapTexelToLinear( envMapColorIrradiance ).rgb;\n\t\t\t\t#endif\n\n\n\t\t\t\t// Blend depending on which env maps are defined.\n\t\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t\t#else\n\t\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t\t#endif\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#ifdef GLOSS\n\t\troughnessFactor = 1.0 - gloss;\n\t#endif\n\t#include <metalnessmap_fragment>\n\t#include <normal_flip>\n\t#include <normal_fragment>\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );\n\t#ifdef STANDARD\n\t\tmaterial.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\t\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\t#endif\n\n\t// Sample gloss map and modify specular roughness\n\t#ifdef GLOSS_MAP\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\tfloat fresnel;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
-
-/***/ },
 /* 162 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(159), __webpack_require__(160), __webpack_require__(161)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
-	  'use strict';
-
-	  var Box3DShaderPBR = {
-	    id: 'box3d_pbr_spec_gloss_shader',
-	    type: 'shader',
-	    name: 'PBR Specular/Gloss',
-	    properties: {
-	      vertexShader: uberPBRVertexShader,
-	      fragmentShader: uberPBRFragmentShader,
-	      features: {
-	        albedo: {
-	          displayName: 'Albedo',
-	          defaultEnabled: true,
-	          parameters: ['albedoColor', 'albedoMap', 'aoMap', 'envMapIrradiance']
-	        },
-	        transparency: {
-	          displayName: 'Transparency',
-	          defaultEnabled: false,
-	          parameters: ['opacity', 'alphaMap', 'blending', 'blendEquation', 'blendSrc', 'blendDst', 'useSeparateAlphaBlend', 'blendEquationAlpha', 'blendSrcAlpha', 'blendDstAlpha']
-	        },
-	        specular: {
-	          displayName: 'Specular',
-	          defaultEnabled: false,
-	          parameters: ['specularColor', 'specularMap', 'gloss', 'glossMap', 'reflectivity', 'envMapGlossVariance', 'envMapRadiance', 'envMapRadianceHalfGloss']
-	        },
-	        normals: {
-	          displayName: 'Bump/Normals',
-	          defaultEnabled: false,
-	          parameters: ['normalMap', 'normalScale', 'bumpMap', 'bumpScale']
-	        },
-	        emissive: {
-	          displayName: 'Emissive',
-	          defaultEnabled: false,
-	          parameters: ['emissiveColor', 'emissiveMap']
-	        },
-	        rendering: {
-	          displayName: 'Render Parameters',
-	          alwaysEnabled: true,
-	          parameters: ['fog', 'side', 'depthWrite', 'depthTest', 'depthFunc', 'alphaTest', 'polygonOffset', 'polygonOffsetFactor', 'polygonOffsetUnits']
-	        }
-	      },
-	      parameters: shaderParams,
-	      uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.common, THREE.UniformsLib.emissivemap, THREE.UniformsLib.bumpmap, THREE.UniformsLib.normalmap, THREE.UniformsLib.displacementmap, THREE.UniformsLib.fog, THREE.UniformsLib.lights, {
-	        time: { value: 1.0 },
-	        emissive: { value: new THREE.Color(0x000000) },
-	        specular: { value: new THREE.Color(0x111111) },
-	        shininess: { value: 30 },
-	        clearCoat: { value: 0 },
-	        clearCoatRoughness: { value: 0 },
-	        envMapIntensity: { value: 1 }
-	      }])
-	    }
-	  };
-	  return Box3DShaderPBR;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	module.exports = "#define PHYSICAL\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n// Removed chunk from physical material <uv_pars_vertex>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n// Removed chunk from physical material <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\nvoid main() {\n\n\t// Removed chunk from physical material <uv_vertex>\n\t#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\t\tvUv = uv;\n\t\tvUv.y = 1.0 - vUv.y;\n\t#endif\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\n#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n\n\tvNormal = normalize( transformedNormal );\n\n#endif\n\n\t#include <begin_vertex>\n\t#include <displacementmap_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\n\tvViewPosition = - mvPosition.xyz;\n\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\n}"
 
 /***/ },
 /* 163 */
+/***/ function(module, exports) {
+
+	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\t#ifdef CLEAR_COAT\n\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * material.clearCoat * BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tvec3 colour1, colour2;\n\t\t\tfloat interp = roughness * 3.0;\n\t\t\tif (roughness <= 0.33333) {\n\t\t\t\tcolour1 = refRadiance;\n\t\t\t\tcolour2 = refRadianceHalf;\n\t\t\t} else {\n\t\t\t\tinterp = interp * 0.5 - 0.5;\n\t\t\t\tcolour1 = refRadianceHalf;\n\t\t\t\tcolour2 = refIrradiance;\n\t\t\t}\n\t\t\treturn mix(colour1, colour2, interp);\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\tenvMapColorRadiance.rgb = envMapTexelToLinear( envMapColorRadiance ).rgb;\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorIrradiance.rgb = envMapTexelToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorRadianceHalf.rgb = envMapTexelToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
+
+/***/ },
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
@@ -98918,7 +99379,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _APIUtilities = __webpack_require__(164);
+	var _APIUtilities = __webpack_require__(165);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
@@ -99057,7 +99518,7 @@
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -99131,7 +99592,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99160,7 +99621,7 @@
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
-	var _VideoAsset = __webpack_require__(148);
+	var _VideoAsset = __webpack_require__(150);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -99304,7 +99765,7 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99407,7 +99868,7 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 167 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99488,7 +99949,7 @@
 	    value: function createRuntimeData(callback) {
 	      // Default implementation creates a THREE.Object3D.
 	      this.runtimeData = new _three2.default.Object3D();
-	      this.runtimeData.name = this.getName();
+	      this.runtimeData.name = this.getRuntimeName();
 	      callback();
 	    }
 
@@ -99547,19 +100008,17 @@
 	     * Position and orient this object identically with the one provided.
 	     * @method alignToObject
 	     * @param  {String} objectId The ID of the object to match alignment to.
-	     * @param  {Object} options Standard options object.
 	     */
 
 	  }, {
 	    key: 'alignToObject',
-	    value: function alignToObject(objectId, options) {
+	    value: function alignToObject(objectId) {
 	      var object;
 	      if (!_lodash2.default.isString(objectId)) {
 	        if (objectId instanceof Box3D.Box3DObject) {
 	          object = objectId;
 	        } else {
-	          _log2.default.warn('Box3DObject.alignToObject - You must pass this method either a valid object ' + 'ID or a reference to a Box3DObject');
-	          return;
+	          throw new Error('Box3DObject.alignToObject - Method accepts either a valid object ' + 'ID or a reference to a Box3DObject');
 	        }
 	      } else {
 	        object = this.box3DRuntime.getEntityById(objectId);
@@ -99602,7 +100061,7 @@
 	            z: newQuaternion.z,
 	            w: newQuaternion.w
 	          }
-	        }, options);
+	        });
 	      }
 	    }
 
@@ -99614,13 +100073,11 @@
 	     * values for x, y and z are between -1 and +1 and specify how the object is aligned to
 	     * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
 	     * object to the specified position.
-	     * @param  {Object} [options]     Options object. You can pass in 'success' and 'failure'
-	     * callbacks that will be called when the action finishes.
 	     */
 
 	  }, {
 	    key: 'alignToPosition',
-	    value: function alignToPosition(newPosition, alignment, options) {
+	    value: function alignToPosition(newPosition, alignment) {
 
 	      var position = new _three2.default.Vector3(newPosition.x || 0, newPosition.y || 0, newPosition.z || 0),
 	          quaternion = this.getQuaternion(),
@@ -99656,7 +100113,7 @@
 	        }, this);
 	      }
 
-	      this.setProperty('position', position, options);
+	      this.setProperty('position', position);
 	    }
 
 	    /**
@@ -99687,20 +100144,19 @@
 	     * @param {float} x       : x axis position
 	     * @param {float} y       : y axis position
 	     * @param {float} z       : z axis position
-	     * @param {Object} options :    Options object.
 	     */
 
 	  }, {
 	    key: 'setPosition',
-	    value: function setPosition(x, y, z, options) {
+	    value: function setPosition(x, y, z) {
 	      if (z === undefined) {
-	        _log2.default.warn('Calling setPosition with invalid arguments. Expected ' + 'setPosition( x, y, z, options ).');
+	        throw new Error('Calling setPosition with invalid arguments. Expected ' + 'setPosition( x, y, z ).');
 	      }
 	      this.setProperty('position', {
 	        x: x,
 	        y: y,
 	        z: z
-	      }, options);
+	      });
 	    }
 
 	    /**
@@ -99727,21 +100183,20 @@
 	     * @param {float} y       : y component
 	     * @param {float} z       : z component
 	     * @param {float} w       : w component
-	     * @param {Object} options    Options object.
 	     */
 
 	  }, {
 	    key: 'setQuaternion',
-	    value: function setQuaternion(x, y, z, w, options) {
+	    value: function setQuaternion(x, y, z, w) {
 	      if (w === undefined) {
-	        _log2.default.warn('Calling setQuaternion with invalid arguments. Expected ' + 'setQuaternion( x, y, z, w ).');
+	        throw new Error('Calling setQuaternion with invalid arguments. Expected ' + 'setQuaternion( x, y, z, w ).');
 	      }
 	      this.setProperty('quaternion', {
 	        x: x,
 	        y: y,
 	        z: z,
 	        w: w
-	      }, options);
+	      });
 	    }
 
 	    /**
@@ -99772,20 +100227,19 @@
 	     * @param {float} x :     value to scale the x axis
 	     * @param {float} y :     value to scale the y axis
 	     * @param {float} z :     value to scale the z axis
-	     * @param {Object} options :    Options object.
 	     */
 
 	  }, {
 	    key: 'setScale',
-	    value: function setScale(x, y, z, options) {
+	    value: function setScale(x, y, z) {
 	      if (z === undefined) {
-	        _log2.default.warn('Calling setScale with invalid arguments. Expected setScale( x, y, z, options ).');
+	        throw new Error('Calling setScale with invalid arguments. Expected setScale( x, y, z ).');
 	      }
 	      this.setProperty('scale', {
 	        x: x,
 	        y: y,
 	        z: z
-	      }, options);
+	      });
 	    }
 
 	    /**
@@ -99953,6 +100407,19 @@
 	    value: function getObjectById(objectId) {
 	      var asset = this.getParentAsset();
 	      return asset.getObjectById(objectId);
+	    }
+
+	    /**
+	     * Get the name that should be assigned to the runtime object (i.e., this.runtimeData).
+	     * @method getRuntimeName
+	     * @private
+	     * @returns {String} The runtime name.
+	     */
+
+	  }, {
+	    key: 'getRuntimeName',
+	    value: function getRuntimeName() {
+	      return this.box3DRuntime.getRuntimeName(this.getSid());
 	    }
 
 	    /**
@@ -100143,7 +100610,7 @@
 	exports.default = Box3DObject;
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100160,7 +100627,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(167);
+	var _Box3DObject2 = __webpack_require__(168);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100200,7 +100667,7 @@
 	        this.runtimeData = new _three2.default.PerspectiveCamera();
 	      }
 
-	      this.runtimeData.name = this.getName();
+	      this.runtimeData.name = this.getRuntimeName();
 	      callback(this);
 	    }
 
@@ -100302,7 +100769,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100323,7 +100790,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(167);
+	var _Box3DObject2 = __webpack_require__(168);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100384,7 +100851,7 @@
 	        this.runtimeData = new _three2.default.PointLight(colour);
 	      }
 
-	      this.runtimeData.name = this.getName();
+	      this.runtimeData.name = this.getRuntimeName();
 	      callback(this);
 	    }
 
@@ -100679,7 +101146,7 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100698,7 +101165,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(171);
+	var _BaseMeshObject2 = __webpack_require__(172);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -100851,7 +101318,7 @@
 	exports.default = SkinnedMeshObject;
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100876,7 +101343,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(167);
+	var _Box3DObject2 = __webpack_require__(168);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101356,6 +101823,7 @@
 	          var geometry = _this2.getGeometry();
 	          if (!_this2.runtimeData) {
 	            _this2.runtimeData = _this2._allocateMesh(geometry);
+	            _this2.runtimeData.name = _this2.getRuntimeName();
 	            _this2.runtimeData.castShadow = true;
 	            _this2.runtimeData.receiveShadow = true;
 	            _this2.runtimeData.material = null;
@@ -101800,7 +102268,7 @@
 	exports.default = BaseMeshObject;
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101815,7 +102283,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseMeshObject2 = __webpack_require__(171);
+	var _BaseMeshObject2 = __webpack_require__(172);
 
 	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
 
@@ -101864,7 +102332,7 @@
 	exports.default = StaticMeshObject;
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101877,7 +102345,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DObject2 = __webpack_require__(167);
+	var _Box3DObject2 = __webpack_require__(168);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101953,7 +102421,7 @@
 	exports.default = ModelObject;
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -101979,7 +102447,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
