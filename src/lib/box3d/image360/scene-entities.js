@@ -33,7 +33,7 @@ export default [{
                 inertialDamping: 0.2,
                 invertX: true,
                 invertY: true,
-                lookSpeed: 0.25
+                lookSpeed: 0.5
             },
             enabled: true,
             scriptId: 'orbit_camera_controller'
