@@ -98,7 +98,7 @@ $header-height: 48px;
     }
 
     .box-preview-default-logo svg {
-        fill: fade-out($white, .1);
+        fill: $white;
     }
 
     .box-preview {
