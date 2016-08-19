@@ -112,6 +112,7 @@ class Model3d extends Box3D {
      * @public
      * @param {Float} newSize The size of the largest dimension of the model in metres.
      * Default is 1 m.
+     * @returns {void}
      */
     setModelScale(newSize) {
         if (!this.renderer) {
@@ -132,6 +133,7 @@ class Model3d extends Box3D {
      * @public
      * @param {Float} newSize The size of the largest dimension of the model in metres.
      * Default is 1 m.
+     * @returns {void}
      */
     setModelScaleVr(newSize) {
         if (!this.renderer) {
@@ -156,6 +158,7 @@ class Model3d extends Box3D {
      * values for x, y and z are between -1 and +1 and specify how the object is aligned to
      * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
      * object to the specified position.
+     * @returns {void}
      */
     setModelAlignment(position, alignmentVector) {
         if (this.renderer) {
@@ -180,6 +183,7 @@ class Model3d extends Box3D {
      * values for x, y and z are between -1 and +1 and specify how the object is aligned to
      * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
      * object to the specified position.
+     * @returns {void}
      */
     setModelAlignmentVr(position, alignmentVector) {
         if (this.renderer) {

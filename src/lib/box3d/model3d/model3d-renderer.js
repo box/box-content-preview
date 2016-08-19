@@ -278,7 +278,7 @@ class Model3dRenderer extends Box3DRenderer {
      * quality to try to achieve a minimum framerate.
      * @method startOptimizer
      * @private
-     * @return {void}
+     * @returns {void}
      */
     startOptimizer() {
         this.dynamicOptimizer = this.box3d.getApplication().componentRegistry.getFirstByScriptId('dynamic_optimizer');
@@ -593,7 +593,7 @@ class Model3dRenderer extends Box3DRenderer {
     /**
      * Grow and shrink the model in VR using mouse scrolling
      * @param  {float} delta Amount of scrolling
-     * @return {void}
+     * @returns {void}
      */
     onVrZoom(delta) {
         this.modelVrSize += delta * 0.05;
