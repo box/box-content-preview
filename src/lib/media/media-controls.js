@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import controlsTemplate from 'raw!./media-controls.html';
 import Scrubber from './scrubber';
 import Settings from './settings';
+import fullscreen from '../fullscreen';
 import { insertTemplate } from '../util';
 
 const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
@@ -39,15 +40,23 @@ class MediaControls extends EventEmitter {
         this.volScrubberEl = this.wrapperEl.querySelector('.box-preview-media-volume-scrubber-container');
 
         this.playButtonEl = this.wrapperEl.querySelector('.box-preview-media-playpause-icon');
+        this.setLabel(this.playButtonEl, __('media_play'));
+
 
         this.volButtonEl = this.wrapperEl.querySelector('.box-preview-media-controls-volume-control');
         this.volLevelButtonEl = this.wrapperEl.querySelector('.box-preview-media-volume-icon');
+        this.setLabel(this.volButtonEl, __('media_mute'));
 
         this.timecodeEl = this.wrapperEl.querySelector('.box-preview-media-controls-timecode');
         this.durationEl = this.wrapperEl.querySelector('.box-preview-media-controls-duration');
 
         this.fullscreenButtonEl = this.wrapperEl.querySelector('.box-preview-media-fullscreen-icon');
+        this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen'));
+
+
         this.settingsButtonEl = this.wrapperEl.querySelector('.box-preview-media-gear-icon');
+        this.setLabel(this.settingsButtonEl, __('media_settings'));
+
 
         this.setupSettings();
         this.setupScrubbers();
@@ -103,6 +112,11 @@ class MediaControls extends EventEmitter {
         if (this.wrapperEl) {
             this.wrapperEl.removeEventListener('mouseenter', this.mouseenterHandler);
             this.wrapperEl.removeEventListener('mouseleave', this.mouseleaveHandler);
+        }
+
+        if (fullscreen) {
+            fullscreen.removeListener('exit', () =>
+                this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen')));
         }
 
         this.wrapperEl = undefined;
@@ -223,6 +237,9 @@ class MediaControls extends EventEmitter {
      */
     toggleMute() {
         this.emit('togglemute');
+        const muteTitle = this.volButtonEl.title === __('media_mute') ?
+                          __('media_unmute') : __('media_mute');
+        this.setLabel(this.volButtonEl, muteTitle);
     }
 
     /**
@@ -235,12 +252,15 @@ class MediaControls extends EventEmitter {
     }
 
     /**
-     * Toggles playback
+     * Toggles fullscreen
      * @emits togglefullscreen
      * @returns {void}
      */
     toggleFullscreen() {
         this.emit('togglefullscreen');
+        const fullscreenTitle = fullscreen.isFullscreen(this.containerEl) ?
+                                __('exit_fullscreen') : __('enter_fullscreen');
+        this.setLabel(this.fullscreenButtonEl, fullscreenTitle);
     }
 
     /**
@@ -253,6 +273,15 @@ class MediaControls extends EventEmitter {
         } else {
             this.settings.show();
         }
+    }
+
+    /**
+     * Toggles label for control element with more than one state
+     * @returns {void}
+     */
+    setLabel(el, label) {
+        el.setAttribute('aria-label', label);
+        el.setAttribute('title', label);
     }
 
     /**
@@ -270,6 +299,7 @@ class MediaControls extends EventEmitter {
      */
     showPauseIcon() {
         this.wrapperEl.classList.add(PLAYING_CLASS);
+        this.setLabel(this.playButtonEl, __('media_pause'));
     }
 
     /**
@@ -279,6 +309,7 @@ class MediaControls extends EventEmitter {
      */
     showPlayIcon() {
         this.wrapperEl.classList.remove(PLAYING_CLASS);
+        this.setLabel(this.playButtonEl, __('media_play'));
     }
 
     /**
@@ -292,6 +323,10 @@ class MediaControls extends EventEmitter {
         });
         this.volLevelButtonEl.classList.add(VOLUME_LEVEL_CLASS_NAMES[Math.ceil(volume * 3)]);
         this.volScrubber.setValue(volume);
+
+        const muteTitle = Math.ceil(volume * 3) === 0 ?
+                          __('media_unmute') : __('media_mute');
+        this.setLabel(this.volButtonEl, muteTitle);
     }
 
     /**
@@ -302,9 +337,12 @@ class MediaControls extends EventEmitter {
         this.wrapperEl.addEventListener('mouseenter', this.mouseenterHandler);
         this.wrapperEl.addEventListener('mouseleave', this.mouseleaveHandler);
         this.playButtonEl.addEventListener('click', this.togglePlay);
+
         this.volLevelButtonEl.addEventListener('click', this.toggleMute);
         this.fullscreenButtonEl.addEventListener('click', this.toggleFullscreen);
         this.settingsButtonEl.addEventListener('click', this.toggleSettings);
+        fullscreen.addListener('exit', () =>
+            this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen')));
     }
 
     /**

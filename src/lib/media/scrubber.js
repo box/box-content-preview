@@ -36,7 +36,8 @@ class Scrubber extends EventEmitter {
         // The scrubber is relative positioned 50% to the left. Since its relative parent is
         // positioned 50% right, it makes this element center aligned.
         this.scrubberEl = this.containerEl.querySelector('.box-preview-media-scrubber');
-
+        this.scrubberEl.setAttribute('aria-label', accessibilityText);
+        this.scrubberEl.setAttribute('title', accessibilityText);
         // The actual bars
         this.bufferedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-buffered');
         this.convertedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-converted');
