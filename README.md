@@ -5,10 +5,6 @@ Box Javascript Preview SDK
 
 The Box Javascript Preview SDK makes it easy for developers to embed previews of Box files in a web application. The SDK fetches information about the file and its converted representations through the Box Content API, chooses the appropriate viewer for the file type, dynamically loads the static assets and file representations needed, and finally renders the preview client-side. The SDK also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
-Example Preview
----------------
-![Preview SDK Sample](https://cloud.box.com/shared/static/ltsj7aoqmz2ih0bg2fi6db2f32kfvm01.png)
-
 Browser Support
 ---------------
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
@@ -51,6 +47,10 @@ Usage
 </body>
 </html>
 ```
+
+Sample Preview
+---------------
+![Preview SDK Sample](https://cloud.box.com/shared/static/ltsj7aoqmz2ih0bg2fi6db2f32kfvm01.png)
 
 Setup
 -----
