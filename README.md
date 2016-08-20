@@ -1,19 +1,23 @@
 [![Project Status](http://opensource.box.com/badges/active.svg)](http://opensource.box.com/badges)
 
 Box Javascript Preview SDK
-===========
+==========================
 
 The Box Javascript Preview SDK makes it easy for developers to embed previews of Box files in a web application. The SDK fetches information about the file and its converted representations through the Box Content API, chooses the appropriate viewer for the file type, dynamically loads the static assets and file representations needed, and finally renders the preview client-side. The SDK also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
+Example Preview
+---------------
+![Preview SDK Sample](https://cloud.box.com/shared/static/ltsj7aoqmz2ih0bg2fi6db2f32kfvm01.png)
+
 Browser Support
-===============
+---------------
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
 * Limited support for mobile web - previews will render but some controls may not work, full support will come soon!
 
 The browser needs to have the Promise API implimented. If not, it can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js) before including any other script.
 
-Latest version of the SDK hosted on Box's CDN
-============================
+Current Version
+---------------
 * Version: 0.73.0
 * Locale: en-US
 
@@ -21,7 +25,7 @@ https://cdn01.boxcdn.net/content-experience/0.73.0/en-US/preview.js
 https://cdn01.boxcdn.net/content-experience/0.73.0/en-US/preview.css
 
 Usage
-=====
+-----
 ```html
 <!DOCTYPE html>
 <html lang="en-US">
@@ -49,7 +53,7 @@ Usage
 ```
 
 Setup
-=================
+-----
 *Note: Do not use sudo for the commands below below. If you did, delete the ~/.npm and node_module folders and run npm install again without sudo.*
 
 1. Make sure you have Node version 4 or higher.
@@ -67,7 +71,7 @@ Setup
 
 In order for the webapp to use your static assets from your dev VM, you will need to add entries for yourself in `preview.conf` which requires an appconf push to dev. Follow instructions here `https://confluence.inside-box.net/display/ETO/Appconf+User+Guide#AppconfUserGuide-DevWorkflow`. If you are a developer, you would want an entry in there pointing to your dev VM with version set to `dev`. If you are not a developer, then you do not need to modify this file and it will automatically use the version thats deployed to our live CDNs.
 
-While developing
+While Developing
 ----------------
 Install SCSS linter `gem install scss_lint` for linting SCSS files.
 
@@ -81,8 +85,7 @@ Install the following plugins in Sublime
 
 Similar counterparts for atom.
 
-NPM commands
-------------
+### NPM commands
 
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
@@ -92,20 +95,18 @@ NPM commands
 
 *For more script commands see `package.json`*
 
-Release build
--------------
+### Release build
 `npm run release` does a release build.
 
-Change log
-----------
+### Change log
 Generate using `github_changelog_generator --github-site https://gitenterprise.inside-box.net --github-api https://gitenterprise.inside-box.net/api/v3 --token 0c280723f1ceb4dd83f934f1dc117b9f0a15a2df Preview/Preview`
 
-Demo and testing local changes
-==============================
+Demo App
+------------------------------
 https://gitenterprise.inside-box.net/Preview/demo
 
 API
-===
+---
 
 The recommended way to show a preview is by calling `Box.Preview.show(fileId, { options })` where fileId is a `Box_File` id. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
 
@@ -115,7 +116,7 @@ preview.show(fileId, { options });
 ```
 
 { options }
-===========
+-----------
 
 ```javascript
 {
@@ -155,7 +156,7 @@ preview.show(fileId, { options });
 | annotations |  | false | Enables annotations for the viewer |
 
 Token
-=====
+-----
 
 The Preview SDK needs an authentication token to make Box Content API calls. The value passed in for the token option above can be either a string token or a token generator function. If a string is passed in, it is assumed that the token never expires or changes. If, however, the token expires or changes over time, then a generator function should be passed in instead. The generator function should take in a file id or a list of file ids as the argument. It should return a `Promise` which should resolve to either a string token (for example when the same token is being used for all files) or a JSON map of { file id: token } pairs. A sample implementation is below:
 
@@ -194,12 +195,12 @@ function tokenGenerator(id) {
 ```
 
 VIEWERNAME
-==========
+----------
 
 The name of the viewer. Can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be discovered by calling `Box.Preview.getViewers()`.
 
 Other Methods
-=============
+-------------
 
 `Box.Preview.hide()` hides the preview.
 
@@ -226,7 +227,7 @@ Other Methods
 `Box.Preview.prefetchViewers()` prefetches the static assets for all the available viewers for browser to cache for performance.
 
 Events
-======
+------
 
 The preview object exposes `addListener` and `removeListener` for binding to events. Events should be bound before calling `show()` otherwise they can be missed.
 
@@ -278,8 +279,7 @@ EVENTNAME can be one of the following
   }
 ```
 
-Examples
---------
+### Examples
 
 ```javascript
 Box.Preview.addListener('viewer', (viewer) => {
