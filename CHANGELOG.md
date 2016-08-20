@@ -1,5 +1,17 @@
 # Change Log
 
+## [v0.74.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.74.0) (2016-08-20)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.73.0...v0.74.0)
+
+**Merged pull requests:**
+
+- Fix preview header padding when there is no header [\#544](https://gitenterprise.inside-box.net/Preview/Preview/pull/544) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Tweak annotation CSS [\#543](https://gitenterprise.inside-box.net/Preview/Preview/pull/543) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update changelog for v0.73.0 [\#542](https://gitenterprise.inside-box.net/Preview/Preview/pull/542) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding dynamic optimizer that will adjust material and rendering sett… [\#541](https://gitenterprise.inside-box.net/Preview/Preview/pull/541) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Change doc loader to pref PDF representation over original [\#536](https://gitenterprise.inside-box.net/Preview/Preview/pull/536) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- COXP-902, adding labels to controls [\#528](https://gitenterprise.inside-box.net/Preview/Preview/pull/528) ([jpress](https://gitenterprise.inside-box.net/jpress))
+
 ## [v0.73.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.73.0) (2016-08-19)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.72.0...v0.73.0)
 
