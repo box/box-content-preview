@@ -8,8 +8,7 @@ import Video360Renderer from './video360-renderer';
 import sceneEntities from './scene-entities';
 
 import {
-    EVENT_ENABLE_VR,
-    EVENT_DISABLE_VR,
+    EVENT_TOGGLE_VR,
     EVENT_SHOW_VR_BUTTON
 } from '../box3d-constants';
 
@@ -99,8 +98,7 @@ class Video360 extends Dash {
      */
     createControls() {
         this.controls = new Video360Controls(this.mediaContainerEl);
-        this.controls.on(EVENT_ENABLE_VR, this.handleEnableVr);
-        this.controls.on(EVENT_DISABLE_VR, this.handleDisableVr);
+        this.controls.on(EVENT_TOGGLE_VR, this.handleToggleVr);
     }
 
     /**
@@ -111,8 +109,7 @@ class Video360 extends Dash {
      */
     destroyControls() {
         if (this.controls) {
-            this.controls.removeListener(EVENT_ENABLE_VR, this.handleEnableVr);
-            this.controls.removeListener(EVENT_DISABLE_VR, this.handleDisableVr);
+            this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
             this.controls.destroy();
         }
     }
@@ -177,23 +174,18 @@ class Video360 extends Dash {
     }
 
     /**
-     * Handles enable VR event
+     * Handles toggle VR event
      * @returns {void}
      */
     @autobind
-    handleEnableVr() {
-        this.renderer.enableVr();
-        this.skybox.setAttribute('stereoEnabled', true);
-    }
+    handleToggleVr() {
+        this.renderer.toggleVr();
 
-    /**
-     * Handles disable VR event
-     * @returns {void}
-     */
-    @autobind
-    handleDisableVr() {
-        this.renderer.disableVr();
-        this.skybox.setAttribute('stereoEnabled', false);
+        if (this.renderer.vrEnabled) {
+            this.skybox.setAttribute('stereoEnabled', true);
+        } else {
+            this.skybox.setAttribute('stereoEnabled', false);
+        }
     }
 
     /**

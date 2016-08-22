@@ -3,11 +3,10 @@ import Controls from '../controls';
 import autobind from 'autobind-decorator';
 
 import {
-    EVENT_ENABLE_VR,
-    EVENT_DISABLE_VR,
     EVENT_RESET,
     EVENT_SCENE_LOADED,
-    EVENT_TOGGLE_FULLSCREEN
+    EVENT_TOGGLE_FULLSCREEN,
+    EVENT_TOGGLE_VR
 } from './box3d-constants';
 
 import {
@@ -33,7 +32,6 @@ class Box3DControls extends EventEmitter {
     constructor(containerEl) {
         super();
 
-        this.vrEnabled = false;
         this.el = containerEl;
         this.controls = new Controls(this.el);
 
@@ -80,8 +78,7 @@ class Box3DControls extends EventEmitter {
      * @returns {void}
      */
     handleToggleVr() {
-        this.vrEnabled = !this.vrEnabled;
-        this.emit(this.vrEnabled ? EVENT_ENABLE_VR : EVENT_DISABLE_VR);
+        this.emit(EVENT_TOGGLE_VR);
     }
 
     /**
