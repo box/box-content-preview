@@ -1,7 +1,7 @@
 import AssetLoader from '../../asset-loader';
 
 const STATIC_URI = 'third-party/doc/';
-const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'document.js'];
+const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, `${STATIC_URI}pdf.worker.js`, 'document.js'];
 const OFFICE_CONSTRUCTOR = 'Office';
 const FIVE_MB = 5242880;
 

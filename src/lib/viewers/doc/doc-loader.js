@@ -1,7 +1,7 @@
 import AssetLoader from '../../asset-loader';
 
 const STATIC_URI = 'third-party/doc/';
-const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'document.js'];
+const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, `${STATIC_URI}pdf.worker.js`, 'document.js'];
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 // For example, a pdf file can be previewed both natively (majority use case) using the original
@@ -10,7 +10,7 @@ const VIEWERS = [
     {
         REPRESENTATION: 'pdf',
         EXTENSIONS: ['ppt', 'pptx'],
-        SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, 'presentation.js'],
+        SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.js`, `${STATIC_URI}pdf_viewer.js`, `${STATIC_URI}pdf.worker.js`, 'presentation.js'],
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
         CONSTRUCTOR: 'Presentation',
         PREFETCH: 'xhr'
