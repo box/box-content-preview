@@ -105,8 +105,8 @@ Demo App
 ------------------------------
 https://gitenterprise.inside-box.net/Preview/demo
 
-API
----
+Initialization
+--------------
 
 The recommended way to show a preview is by calling `Box.Preview.show(fileId, { options })` where fileId is a `Box_File` id. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
 
@@ -115,8 +115,8 @@ const preview = new Preview();
 preview.show(fileId, { options });
 ```
 
-{ options }
------------
+Options
+-------
 
 ```javascript
 {
@@ -155,8 +155,8 @@ preview.show(fileId, { options });
 | disabled |  | false | Disables the viewer |
 | annotations |  | false | Enables annotations for the viewer |
 
-Token
------
+Authentication Token
+--------------------
 
 The Preview SDK needs an authentication token to make Box Content API calls. The value passed in for the token option above can be either a string token or a token generator function. If a string is passed in, it is assumed that the token never expires or changes. If, however, the token expires or changes over time, then a generator function should be passed in instead. The generator function should take in a file id or a list of file ids as the argument. It should return a `Promise` which should resolve to either a string token (for example when the same token is being used for all files) or a JSON map of { file id: token } pairs. A sample implementation is below:
 
@@ -191,13 +191,13 @@ function tokenGenerator(id) {
 }
 ```
 
-VIEWERNAME
-----------
+Viewers
+-------
 
-The name of the viewer. Can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be discovered by calling `Box.Preview.getViewers()`.
+The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be discovered by calling `Box.Preview.getViewers()`.
 
-Other Methods
--------------
+Additional Methods
+------------------
 
 `Box.Preview.hide()` hides the preview.
 
@@ -276,7 +276,7 @@ EVENTNAME can be one of the following
   }
 ```
 
-### Examples
+### Example usages of events
 
 ```javascript
 Box.Preview.addListener('viewer', (viewer) => {
