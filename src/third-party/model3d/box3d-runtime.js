@@ -59345,20 +59345,6 @@
 	    value: function reset() {}
 
 	    /**
-	     * Construct and return a list of all unique dependencies of the specified type that are
-	     * referenced by this entity or any.
-	     * @public
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations', 'materials'
-	     * @return {Object}               Dictionary of assets, keyed on ID.
-	     */
-
-	  }, {
-	    key: 'buildListOfReferencedDependencies',
-	    value: function buildListOfReferencedDependencies() /*dependencyType*/{
-	      return {};
-	    }
-
-	    /**
 	     * Return the assets that this entity and all of its children are dependent on.
 	     * e.g. materials, textures, geometry, animations, etc. This includes all assets
 	     * referenced directly by this entity or by any children. If the dependencies also
@@ -63585,22 +63571,21 @@
 	        texture.anisotropy = this.getProperty('anisotropy');
 	      }
 
-	      if (changes.hasOwnProperty('generateMipmaps')) {
-	        texture.generateMipmaps = this.getProperty('generateMipmaps');
-	      }
-
 	      if (changes.hasOwnProperty('minFilter')) {
-	        texture.minFilter = BaseTextureAsset.FILTER[this.getProperty('minFilter')];
+	        texture.minFilter = BaseTextureAsset.FILTER[this.getMinFilter()];
 	      }
 	      if (changes.hasOwnProperty('magFilter')) {
-	        texture.magFilter = BaseTextureAsset.FILTER[this.getProperty('magFilter')];
+	        texture.magFilter = BaseTextureAsset.FILTER[this.getMagFilter()];
 	      }
-	      // If we were using linear filtering but our hardware doesn't support it,
-	      // we'll turn it off. This would only happen for floating point textures.
-	      if (this.isHdr() && !this.isHdrLinearFilterAvailable()) {
-	        texture.minFilter = _three2.default.NearestFilter;
-	        texture.magFilter = _three2.default.NearestFilter;
+
+	      if (changes.hasOwnProperty('generateMipmaps')) {
+	        if (this.isLinearFilterAvailableForType(this.getDataType())) {
+	          texture.generateMipmaps = this.getProperty('generateMipmaps');
+	        } else {
+	          texture.generateMipmaps = false;
+	        }
 	      }
+
 	      this.box3DRuntime.needsRender = true;
 	    }
 
@@ -63662,6 +63647,96 @@
 	    }
 
 	    /**
+	     * Return the minification filter based on the texture's 'minFilter' property, taking into
+	     * account the capabilities of the current hardware and the texture's data type. e.g. if linear
+	     * filtering isn't supported for the current data type, this will return the 'nearest' filter.
+	     * @return {String} The best supported filter.
+	     */
+
+	  }, {
+	    key: 'getMinFilter',
+	    value: function getMinFilter() {
+	      return this.getSupportedFilter(this.getProperty('minFilter'));
+	    }
+
+	    /**
+	     * Return the magnification filter based on the texture's 'magFilter' property, taking into
+	     * account the capabilities of the current hardware and the texture's data type. e.g. if linear
+	     * filtering isn't supported for the current data type, this will return the 'nearest' filter.
+	     * @return {String} The best supported filter.
+	     */
+
+	  }, {
+	    key: 'getMagFilter',
+	    value: function getMagFilter() {
+	      return this.getSupportedFilter(this.getProperty('magFilter'));
+	    }
+
+	    /**
+	     * Given a texture filter, check if it's supported by the current hardware for the current
+	     * data type and modify and return the filter as necessary. If the filter is supported, the
+	     * returned value is the same as the filter passed in.
+	     * @method getSupportedFilter
+	     * @public
+	     * @param  {String} filter The filter that we want to check for support
+	     * @return {String}      The filter closest to the one passed in that is supported
+	     * by the current hardware in combination with the current data type.
+	     */
+
+	  }, {
+	    key: 'getSupportedFilter',
+	    value: function getSupportedFilter(filter) {
+	      var type = this.getDataType();
+	      // If we have a float type, check for a compatible filtering extension.
+	      if (this.isLinearFilterAvailableForType(type)) {
+	        return filter;
+	      }
+	      return 'nearest';
+	    }
+
+	    /**
+	     * Return the texture type of this asset (e.g. 'float', 'uByte', etc.). If the texture type is
+	     * not compatible with the current hardware, the closest type will be returned instead.
+	     * @method getDataType
+	     * @public
+	     * @return {String} The data type of the texture.
+	     */
+
+	  }, {
+	    key: 'getDataType',
+	    value: function getDataType() {
+	      var type = this.getProperty('type');
+	      if (!type) {
+	        var image = this.getImage();
+	        if (image) {
+	          return image.getDataType();
+	        }
+	        return 'uByte';
+	      }
+	      var returnType = type;
+	      var renderer = this.box3DRuntime.getThreeRenderer();
+	      var extensions = renderer.extensions;
+	      switch (type) {
+	        case 'float':
+	          if (extensions.get('OES_texture_float')) {
+	            returnType = 'float';
+	            break;
+	          }
+	        // Fallthrough (for fallback compatibility)
+	        case 'halfFloat':
+	          if (extensions.get('OES_texture_half_float')) {
+	            returnType = 'halfFloat';
+	          } else {
+	            returnType = 'uByte';
+	          }
+	          break;
+	        default:
+	          returnType = type;
+	      }
+	      return returnType;
+	    }
+
+	    /**
 	     * Returns the number of mip levels that this texture has, including the full-resolution version.
 	     * @method getMipCount
 	     * @public
@@ -63676,19 +63751,6 @@
 	      }
 	      var imageAsset = this.getImage();
 	      return imageAsset ? imageAsset.getMipCount() : 1;
-	    }
-
-	    /**
-	     * Returns true iff this texture contains HDR data.
-	     * @method isHdr
-	     * @public
-	     * @return {Boolean} True iff the texture contains high dynamic range, floating point data
-	     */
-
-	  }, {
-	    key: 'isHdr',
-	    value: function isHdr() {
-	      return !!this.getProperty('isHdr');
 	    }
 
 	    /**
@@ -63718,45 +63780,23 @@
 	    }
 
 	    /**
-	     * Returns the recommended 'type' for an HDR texture on this system. Currently, this will
-	     * choose half-float above a regular 32-bit float texture for performance reasons.
-	     * @method getHdrTargetType
+	     * Returns true iff linear texture filtering is supported for the provided type
+	     * on the current hardware.
+	     * @method isLinearFilterAvailableForType
 	     * @public
+	     * @param {String} dataType The dataType of the texture (e.g. 'float', 'halfFloat', 'uByte', etc.)
 	     * @return {Integer} Returns the three.js type (e.g. THREE.FloatType)
 	     */
 
 	  }, {
-	    key: 'getHdrTargetType',
-	    value: function getHdrTargetType() {
+	    key: 'isLinearFilterAvailableForType',
+	    value: function isLinearFilterAvailableForType(dataType) {
 	      var renderer = this.box3DRuntime.getThreeRenderer();
 	      var extensions = renderer.extensions;
-	      if (extensions.get('OES_texture_half_float')) {
-	        return _three2.default.HalfFloatType;
-	      } else if (extensions.get('OES_texture_float')) {
-	        return _three2.default.FloatType;
-	      } else {
-	        return _three2.default.UnsignedByteType;
-	      }
-	    }
-
-	    /**
-	     * Returns the linear filter type for the texture
-	     * choose half-float above a regular 32-bit float texture for performance reasons.
-	     * @method isHdrLinearFilterAvailable
-	     * @public
-	     * @return {Integer} Returns the three.js type (e.g. THREE.FloatType)
-	     */
-
-	  }, {
-	    key: 'isHdrLinearFilterAvailable',
-	    value: function isHdrLinearFilterAvailable() {
-	      var renderer = this.box3DRuntime.getThreeRenderer();
-	      var extensions = renderer.extensions;
-	      var targetType = this.getHdrTargetType();
-	      switch (targetType) {
-	        case _three2.default.HalfFloatType:
+	      switch (dataType) {
+	        case 'halfFloat':
 	          return !!extensions.get('OES_texture_half_float_linear');
-	        case _three2.default.FloatType:
+	        case 'float':
 	          return !!extensions.get('OES_texture_float_linear');
 	        default:
 	          return true;
@@ -64137,10 +64177,6 @@
 	    description: '',
 	    default: true
 	  },
-	  isHdr: {
-	    type: 'boolean',
-	    default: false
-	  },
 	  imageId: {
 	    type: 'string',
 	    default: null
@@ -64278,7 +64314,7 @@
 	  }, {
 	    key: 'getDataType',
 	    value: function getDataType() {
-	      return this.getProperty('type');
+	      return this.getSupportedType(this.getProperty('type'));
 	    }
 
 	    /**
@@ -64293,6 +64329,43 @@
 	    value: function isCubeImage() {
 	      // TODO - implement me!
 	      return false;
+	    }
+
+	    /**
+	     * Given a data type for an image, check if it's supported by the current hardware
+	     * and modify and return the type as necessary. If the type is supported, the returned
+	     * value is the same as the type passed in.
+	     * @method getSupportedType
+	     * @public
+	     * @param  {String} type The data type that we want to check for support
+	     * @return {String}      The data type closest to the one passed in that is supported
+	     * by the current hardware.
+	     */
+
+	  }, {
+	    key: 'getSupportedType',
+	    value: function getSupportedType(type) {
+	      var returnType = type;
+	      var renderer = this.box3DRuntime.getThreeRenderer();
+	      var extensions = renderer.extensions;
+	      switch (type) {
+	        case 'float':
+	          if (extensions.get('OES_texture_float')) {
+	            returnType = 'float';
+	            break;
+	          }
+	        // Fallthrough
+	        case 'halfFloat':
+	          if (extensions.get('OES_texture_half_float')) {
+	            returnType = 'halfFloat';
+	          } else {
+	            returnType = 'uByte';
+	          }
+	          break;
+	        default:
+	          returnType = type;
+	      }
+	      return returnType;
 	    }
 
 	    /**
@@ -64340,21 +64413,6 @@
 	      var height = this.getHeight();
 	      var max = Math.max(width, height);
 	      return Math.floor(Math.log2(Math.max(max, 1))) + 1;
-	    }
-
-	    /**
-	     * Is the range of this image considered to be HDR? Typically, being HDRI means that the colour
-	     * depth is greater than 8-bits per channel and the value of 'white' isn't explicitly clamped to
-	     * a value (such as 1.0).
-	     * @method isHdr
-	     * @public
-	     * @return {Boolean} True iff the texture contains high dynamic range, floating point data
-	     */
-
-	  }, {
-	    key: 'isHdr',
-	    value: function isHdr() {
-	      return !!this.getProperty('isHdr');
 	    }
 
 	    /**
@@ -64505,10 +64563,6 @@
 	    type: 'boolean',
 	    description: 'True if a low-resolution image should be loaded before the full-size image.',
 	    default: true
-	  },
-	  isHdr: {
-	    type: 'boolean',
-	    default: false
 	  },
 	  width: {
 	    type: 'integer',
@@ -96407,7 +96461,6 @@
 	      var textureParams = {
 	        maxSize: 64,
 	        priority: 2,
-	        channels: this.isHdr() ? ['red', 'green', 'blue', 'exponent'] : undefined,
 	        compression: this.getCompressionFormat(),
 	        xhrKey: this.id
 	      };
@@ -97944,7 +97997,7 @@
 	        }
 
 	        this.runtimeData.texture.format = _ImageAsset2.default.FORMAT[this.getProperty('format')];
-	        this.runtimeData.texture.type = _ImageAsset2.default.TYPE[this.getProperty('type')];
+	        this.runtimeData.texture.type = _ImageAsset2.default.TYPE[this.getDataType()];
 	        this.runtimeData.texture.height = this.getHeight();
 	        this.runtimeData.texture.width = this.getWidth();
 	      }
@@ -98045,10 +98098,10 @@
 	      this.runtimeData = new _three2.default.WebGLRenderTargetCube(width, height, {
 	        wrapS: _BaseTextureAsset2.default.ADDRESS_MODE[this.getProperty('uMapping')],
 	        wrapT: _BaseTextureAsset2.default.ADDRESS_MODE[this.getProperty('vMapping')],
-	        minFilter: _three2.default.LinearFilter,
-	        magFilter: _three2.default.LinearFilter,
+	        minFilter: _BaseTextureAsset2.default.FILTER[this.getMinFilter()],
+	        magFilter: _BaseTextureAsset2.default.FILTER[this.getMagFilter()],
 	        format: _ImageAsset2.default.FORMAT[this.getProperty('format')],
-	        type: _ImageAsset2.default.TYPE[this.getProperty('type')],
+	        type: _ImageAsset2.default.TYPE[this.getDataType()],
 	        stencilBuffer: this.getProperty('stencilBuffer')
 	      });
 	    }
@@ -99350,7 +99403,7 @@
 /* 163 */
 /***/ function(module, exports) {
 
-	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\t#ifdef CLEAR_COAT\n\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * material.clearCoat * BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tvec3 colour1, colour2;\n\t\t\tfloat interp = roughness * 3.0;\n\t\t\tif (roughness <= 0.33333) {\n\t\t\t\tcolour1 = refRadiance;\n\t\t\t\tcolour2 = refRadianceHalf;\n\t\t\t} else {\n\t\t\t\tinterp = interp * 0.5 - 0.5;\n\t\t\t\tcolour1 = refRadianceHalf;\n\t\t\t\tcolour2 = refIrradiance;\n\t\t\t}\n\t\t\treturn mix(colour1, colour2, interp);\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\tenvMapColorRadiance.rgb = envMapTexelToLinear( envMapColorRadiance ).rgb;\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorIrradiance.rgb = envMapTexelToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorRadianceHalf.rgb = envMapTexelToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
+	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\tfresnel = 0.0;\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\n\t#ifdef CLEAR_COAT\n\t\tfresnel += BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\t\tfresnel = clamp(fresnel, 0.0, 1.0);\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * fresnel;\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = roughness * 2.0;\n\t\t\treturn mix(mix(refRadiance, refRadianceHalf, min(interp, 1.0)), refIrradiance, max(interp - 1.0, 0.0));\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\tenvMapColorRadiance.rgb = envMapTexelToLinear( envMapColorRadiance ).rgb;\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorIrradiance.rgb = envMapTexelToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorRadianceHalf.rgb = envMapTexelToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel = 0.0;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
 
 /***/ },
 /* 164 */
@@ -99706,10 +99759,10 @@
 
 	      this.runtimeData = new _three2.default.WebGLRenderTarget(imageData.width, imageData.height, {
 	        // The filter settings will be overridden later by the usual method
-	        minFilter: _three2.default.LinearFilter,
-	        magFilter: _three2.default.LinearFilter,
+	        minFilter: _BaseTextureAsset3.default.FILTER[this.getMinFilter()],
+	        magFilter: _BaseTextureAsset3.default.FILTER[this.getMagFilter()],
 	        format: _three2.default.RGBAFormat,
-	        type: this.isHdr() ? this.getHdrTargetType() : _three2.default.UnsignedByteType,
+	        type: _BaseImageAsset2.default.TYPE[this.getDataType()],
 	        depthBuffer: false,
 	        stencilBuffer: false
 	      });
@@ -99735,8 +99788,8 @@
 	      this.hdrSource.minFilter = _three2.default.NearestFilter;
 	      this.hdrSource.magFilter = _three2.default.NearestFilter;
 	      this.hdrSource.generateMipmaps = false;
-	      if (this.isHdr() && !this.isHdrLinearFilterAvailable()) {
-	        var texture = this.getThreeTexture();
+	      var texture = this.getThreeTexture();
+	      if (!this.isLinearFilterAvailableForType(this.getDataType())) {
 	        texture.minFilter = _three2.default.NearestFilter;
 	        texture.magFilter = _three2.default.NearestFilter;
 	        texture.generateMipmaps = false;
@@ -99830,7 +99883,7 @@
 	          break;
 	      }
 
-	      if (this.isHdr() && image.channels) {
+	      if (this.getHdrPackingType(image.channels)) {
 	        this.createHdrTextureData(image);
 	      }
 
@@ -101371,6 +101424,9 @@
 
 	  _createClass(BaseMeshObject, [{
 	    key: 'initialize',
+
+
+	    /** @inheritdoc */
 	    value: function initialize(properties) {
 	      _get(Object.getPrototypeOf(BaseMeshObject.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('materialDeleted', this.onMaterialDeleted, this);
@@ -101379,6 +101435,9 @@
 	      this.on('castShadowsDisable', this.castShadowsDisable, this);
 	      this.on('castShadowsToggle', this.castShadowsToggle, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'uninitialize',
 	    value: function uninitialize(properties) {
@@ -101389,16 +101448,18 @@
 	      this.box3DRuntime.off('materialDeleted', this.onMaterialDeleted, this);
 	      _get(Object.getPrototypeOf(BaseMeshObject.prototype), 'uninitialize', this).call(this, properties);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'unload',
 	    value: function unload(options) {
-	      var parentAsset = this.getParentAsset();
-
 	      if (this.runtimeData) {
 	        // TODO: is this line needed?
 	        this.runtimeData.material = null;
 
 	        // TODO: perhaps listeners should listen for "unload" instead?
+	        var parentAsset = this.getParentAsset();
 	        parentAsset.trigger('meshUnloaded', this);
 
 	        // TODO: is this line needed?
@@ -101409,25 +101470,24 @@
 	    }
 
 	    /**
-	     * Load a MaterialAsset and assign its runtimeData to the specified property.
+	     * Load a material asset and assign its runtime data to the specified property.
 	     * @method loadAndAssignMaterial
 	     * @private
-	     * @param {Object} obj the object that receives the material assignment
-	     * @param {String} property the property that receives the material assignment
-	     * @param {String} materialId the ID of the MaterialAsset
-	     * @param {String} materialType the type of material to use
+	     * @param {Object} obj The object that receives the material assignment.
+	     * @param {String} property The property that receives the material assignment.
+	     * @param {String} materialId The ID of the material asset.
+	     * @param {String} materialType The type of material to use.
 	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'loadAndAssignMaterial',
 	    value: function loadAndAssignMaterial(obj, property, materialId, materialType) {
-	      var materialRegistry = this.box3DRuntime.assetRegistry.Materials,
-	          missingMaterial = materialRegistry.getMissingMaterial(),
-	          materialAsset;
+	      var _this2 = this;
 
+	      // Assign the missing material while the real material loads.
+	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
 	      if (missingMaterial.getRuntimeData()) {
-	        // Assign the missing material while the real material loads.
 	        obj[property] = missingMaterial.getRuntimeData()[materialType];
 	      } else {
 	        _log2.default.error(this.box3DRuntime.engineName + ' - BaseMeshObject: "Missing" material needed, but not loaded.');
@@ -101435,17 +101495,18 @@
 
 	      // Load and assign the real material.
 	      if (materialId) {
-	        materialAsset = this.box3DRuntime.assetRegistry.getAssetById(materialId);
+	        (function () {
+	          var materialAsset = _this2.box3DRuntime.assetRegistry.getAssetById(materialId);
+	          if (materialAsset) {
+	            materialAsset.when('loadBase', function () {
+	              obj[property] = materialAsset.getRuntimeData()[materialType];
+	            });
 
-	        if (materialAsset) {
-	          materialAsset.when('loadBase', function () {
-	            obj[property] = materialAsset.getRuntimeData()[materialType];
-	          });
-
-	          if (materialAsset.isUnloaded()) {
-	            materialAsset.load();
+	            if (materialAsset.isUnloaded()) {
+	              materialAsset.load();
+	            }
 	          }
-	        }
+	        })();
 	      }
 	    }
 
@@ -101453,9 +101514,9 @@
 	     * Start or stop listening for changes to a Box3DAsset.
 	     * @method registerChangeListener
 	     * @private
-	     * @param {String} assetId the ID of the Box3DAsset to listen to
-	     * @param {Function} callback the function to be called when properties change
-	     * @param {Boolean} enabled indicates whether to start or stop listening
+	     * @param {String} assetId The ID of the Box3DAsset to listen to.
+	     * @param {Function} callback The function to be called when properties change.
+	     * @param {Boolean} enabled Indicates whether to start or stop listening.
 	     * @returns {void}
 	     */
 
@@ -101463,10 +101524,8 @@
 	    key: 'registerChangeListener',
 	    value: function registerChangeListener(assetId, callback, enabled) {
 	      // TODO: move this functionality into Box3DEntity.
-	      var asset;
-
 	      if (assetId) {
-	        asset = this.box3DRuntime.assetRegistry.getAssetById(assetId);
+	        var asset = this.box3DRuntime.assetRegistry.getAssetById(assetId);
 	        if (asset) {
 	          if (enabled) {
 	            asset.on('propertyChanges', callback, this);
@@ -101481,14 +101540,13 @@
 	     * Get the depth material type.
 	     * @method getDepthMaterialType
 	     * @private
-	     * @returns {String} either 'depthSkinned' or 'depthStatic'
+	     * @returns {String} Either 'depthSkinned' or 'depthStatic'.
 	     */
 
 	  }, {
 	    key: 'getDepthMaterialType',
 	    value: function getDepthMaterialType() {
 	      var materialType = this._getMaterialType();
-
 	      if (Box3D.MaterialRegistry.materialObjectTypes[materialType].skinning) {
 	        return 'depthSkinned';
 	      }
@@ -101497,26 +101555,25 @@
 	    }
 
 	    /**
-	     * Return the GeometryAsset.
+	     * Get the geometry asset assigned to this mesh.
 	     * @method getGeometryAsset
 	     * @public
-	     * @returns {Object} the GeometryAsset
+	     * @returns {Box3DAsset|null} The geometry asset if it exists; otherwise, null.
 	     */
 
 	  }, {
 	    key: 'getGeometryAsset',
 	    value: function getGeometryAsset() {
-	      var geometryRegistry = this.box3DRuntime.assetRegistry.Geometries,
-	          geometryId = this.getProperty('geometryId');
-
-	      return geometryId ? geometryRegistry.getAssetById(geometryId) : undefined;
+	      var geometryId = this.getProperty('geometryId');
+	      return geometryId ? this.box3DRuntime.assetRegistry.getAssetById(geometryId) : null;
 	    }
 
 	    /**
 	     * Return the Three.js geometry object.
 	     * @method getGeometry
 	     * @public
-	     * @returns {Object} the Three.js geometry object
+	     * @returns {THREE.BufferGeometry|THREE.Geometry|null} The Three.js geometry object if it exists;
+	     * otherwise, null.
 	     */
 
 	  }, {
@@ -101526,152 +101583,51 @@
 	      if (geometryAsset) {
 	        return geometryAsset.getGeometry(Box3D.BaseGeometryAsset.PrimitiveType.TRIANGLES);
 	      }
+
 	      return null;
 	    }
 
 	    /**
-	     * Return the MaterialAsset assigned to this mesh.
+	     * Get the material asset assigned to this mesh at the specified index.
 	     * @method getMaterial
 	     * @public
-	     * @param {Integer} [index] the material index (default is 0)
-	     * @param {Boolean} [placeholder] return a placeholder MaterialAsset when a
-	     * material is missing (default is true)
-	     * @returns {Object} a MaterialAsset or undefined
+	     * @param {Integer} [index] The material index (default is 0).
+	     * @param {Boolean} [placeholder] Return a placeholder material if the material is missing
+	     * (default is true).
+	     * @returns {Box3DAsset|null} The material if it exists; otherwise, null.
 	     */
 
 	  }, {
 	    key: 'getMaterial',
-	    value: function getMaterial(index, placeholder) {
-	      var materialIds = this.getMaterialIds(),
-	          materialAsset;
+	    value: function getMaterial() {
+	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	      var placeholder = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
 	      // Validate the index parameter.
-	      index = index || 0;
-
-	      if (index < 0 || index >= materialIds.length) {
-	        _log2.default.error(this.box3DRuntime.engineName + ' - BaseMeshObject: Invalid index parameter passed to setMaterial.');
-	        return;
+	      if (index < 0 || index >= this.getMaterialCount()) {
+	        throw new Error('Invalid index parameter');
 	      }
 
-	      // placeholder defaults to true.
-	      placeholder = placeholder === undefined ? true : placeholder;
-
-	      // Get the material asset.
-	      if (materialIds[index]) {
-	        materialAsset = this.box3DRuntime.assetRegistry.getAssetById(materialIds[index]);
+	      var materialId = this.getMaterialIds()[index];
+	      if (materialId) {
+	        var asset = this.box3DRuntime.assetRegistry.getAssetById(materialId);
+	        if (asset) {
+	          return asset;
+	        }
 	      }
 
-	      // Get the placeholder material
-	      if (!materialAsset && placeholder) {
-	        materialAsset = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
+	      if (placeholder) {
+	        return this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
 	      }
 
-	      // Return the material asset or undefined.
-	      return materialAsset;
+	      return null;
 	    }
 
 	    /**
-	     * Return an array of MaterialAssets that are assigned to this mesh.
-	     * @method getMaterials
-	     * @public
-	     * @param {Boolean} [placeholder] use a placeholder MaterialAsset when a
-	     * material is missing (default is true)
-	     * @returns {Array} an array of MaterialAssets
-	     */
-
-	  }, {
-	    key: 'getMaterials',
-	    value: function getMaterials(placeholder) {
-	      var materialIds = this.getMaterialIds();
-	      var materialRegistry = this.box3DRuntime.assetRegistry.Materials;
-	      var materials = [];
-	      // placeholder defaults to true.
-	      placeholder = placeholder === undefined ? true : placeholder;
-
-	      materialIds.forEach(function (id) {
-	        var material = this.box3DRuntime.assetRegistry.getAssetById(id);
-	        if (material) {
-	          materials.push(material);
-	        } else if (placeholder) {
-	          materials.push(materialRegistry.getMissingMaterial());
-	        } else {
-	          materials.push(null);
-	        }
-	      }, this);
-	      return materials;
-	    }
-
-	    /**
-	     * Return an array of MaterialAsset IDs that were previously assigned to this mesh.
-	     * @method getPreviousMaterialIds
-	     * @private
-	     * @returns {Array} an array of MaterialAsset IDs
-	     */
-
-	  }, {
-	    key: 'getPreviousMaterialIds',
-	    value: function getPreviousMaterialIds() {
-	      var prefabObj = this.getPrefabObject();
-	      var materialRegistry = this.box3DRuntime.assetRegistry.Materials;
-	      var prefabMats;
-	      var myMats = this.getPreviousProperty('materials');
-	      var returnMats;
-	      var i;
-	      if (prefabObj) {
-	        prefabMats = prefabObj.getPreviousProperty('materials');
-	        returnMats = new Array(Math.max(prefabMats.length, myMats.length));
-	        for (i = 0; i < returnMats.length; i++) {
-	          returnMats[i] = myMats[i] ? myMats[i] : prefabMats[i];
-	        }
-	      } else {
-	        returnMats = myMats.slice();
-	      }
-	      for (i = 0; i < returnMats.length; i++) {
-	        if (!returnMats[i]) {
-	          returnMats[i] = materialRegistry.getMissingMaterial().id;
-	        }
-	      }
-	      return returnMats;
-	    }
-
-	    /**
-	     * Return an array of MaterialAsset IDs that are assigned to this mesh.
-	     * @method getMaterialIds
-	     * @private
-	     * @returns {Array} an array of MaterialAsset IDs
-	     */
-
-	  }, {
-	    key: 'getMaterialIds',
-	    value: function getMaterialIds() {
-	      var prefabObj = this.getPrefabObject();
-	      var materialRegistry = this.box3DRuntime.assetRegistry.Materials;
-	      var prefabMats;
-	      var myMats = this.getProperty('materials');
-	      var returnMats;
-	      var i;
-	      if (prefabObj) {
-	        prefabMats = prefabObj.getProperty('materials');
-	        returnMats = new Array(Math.max(prefabMats.length, myMats.length));
-	        for (i = 0; i < returnMats.length; i++) {
-	          returnMats[i] = myMats[i] ? myMats[i] : prefabMats[i];
-	        }
-	      } else {
-	        returnMats = myMats.slice();
-	      }
-	      for (i = 0; i < returnMats.length; i++) {
-	        if (!returnMats[i]) {
-	          returnMats[i] = materialRegistry.getMissingMaterial().id;
-	        }
-	      }
-	      return returnMats;
-	    }
-
-	    /**
-	     * Return the number of materials assigned to this mesh.
+	     * Get the number of material slots that this mesh has.
 	     * @method getMaterialCount
 	     * @public
-	     * @returns {Integer} the number of materials assigned to this mesh
+	     * @returns {Integer} The number of material slots that this mesh has.
 	     */
 
 	  }, {
@@ -101681,137 +101637,115 @@
 	    }
 
 	    /**
-	     * Return a list of all unique dependencies of the specified type that are
-	     * referenced by this entity.
-	     * @public
-	     * @param {String} dependencyType One of 'textures', 'geometries', 'animations'
-	     * @return {[type]}                [description]
+	     * Get an array of material asset IDs that are assigned to this mesh.
+	     * @method getMaterialIds
+	     * @private
+	     * @returns {Array} An array of Box3DAsset IDs.
 	     */
 
 	  }, {
-	    key: 'buildListOfReferencedDependencies',
-	    value: function buildListOfReferencedDependencies(dependencyType) {
-	      var ref = {};
-	      var geometryRegistry;
-	      var geometryId;
-	      var geometryAsset;
-	      var materials;
+	    key: 'getMaterialIds',
+	    value: function getMaterialIds() {
+	      var materialIds = this.getProperty('materials');
+	      var prefab = this.getPrefabObject();
+	      var prefabMaterialIds = prefab ? prefab.getProperty('materials') : [];
+	      var merged = [];
+	      var length = Math.max(materialIds.length, prefabMaterialIds.length);
 
-	      // If we're asking for geometries or everything, get our referenced geometry asset.
-	      if (!dependencyType || dependencyType === 'geometries') {
-	        geometryRegistry = this.box3DRuntime.assetRegistry.Geometries;
-	        geometryId = this.getProperty('geometryId');
-	        geometryAsset = geometryRegistry.getAssetById(geometryId);
-
-	        if (geometryAsset) {
-	          ref[geometryId] = geometryAsset;
-	        }
+	      for (var i = 0; i < length; ++i) {
+	        // Note: if the material ID is null, we interpret that as "no material" rather than falling
+	        // back to the prefab's material ID, which we do when material ID is undefined.
+	        merged.push(materialIds[i] !== undefined ? materialIds[i] : prefabMaterialIds[i]);
 	      }
 
-	      // If we're asking for materials or everything, get our referenced materials
-	      if (!dependencyType || dependencyType === 'materials') {
-	        materials = this.getMaterialIds();
-
-	        materials.forEach(function (materialId) {
-	          var material = this.box3DRuntime.getEntityById(materialId);
-	          if (material) {
-	            ref[materialId] = material;
-	          }
-	        });
-	      }
-
-	      // If we're asking for textures or everything, get our referenced textures from our
-	      // referenced materials.
-	      if (!dependencyType || dependencyType === 'textures') {
-	        materials = this.getMaterials();
-
-	        materials.forEach(function (material) {
-	          if (material) {
-	            Object.assign(ref, material.buildListOfReferencedDependencies(dependencyType));
-	          }
-	        });
-	      }
-
-	      return ref;
+	      return merged;
 	    }
 
 	    /**
-	     * Register dependencies with the parent asset.
-	     * @method registerDependencies
-	     * @private
-	     * @param {String} type the type of assets to register
-	     * @returns {void}
+	     * Get an array of material assets that are assigned to this mesh.
+	     * @method getMaterials
+	     * @public
+	     * @param {Boolean} [placeholder] Substitute a placeholder for missing materials (default is
+	     * true).
+	     * @returns {Array} An array of Box3DAssets.
 	     */
+
+	  }, {
+	    key: 'getMaterials',
+	    value: function getMaterials() {
+	      var placeholder = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+	      var materials = [];
+	      var nMaterials = this.getMaterialCount();
+
+	      for (var i = 0; i < nMaterials; ++i) {
+	        materials.push(this.getMaterial(i, placeholder));
+	      }
+
+	      return materials;
+	    }
+
+	    /**
+	     * Get an array of material asset IDs that were previously assigned to this mesh.
+	     * @method getPreviousMaterialIds
+	     * @private
+	     * @returns {Array} an array of Box3DAsset IDs.
+	     */
+
+	  }, {
+	    key: 'getPreviousMaterialIds',
+	    value: function getPreviousMaterialIds() {
+	      var materialIds = this.getPreviousProperty('materials');
+	      var prefab = this.getPrefabObject();
+	      var prefabMaterialIds = prefab ? prefab.getPreviousProperty('materials') : [];
+	      var merged = [];
+	      var length = Math.max(materialIds.length, prefabMaterialIds.length);
+
+	      for (var i = 0; i < length; ++i) {
+	        // Note: if the material ID is null, we interpret that as "no material" rather than falling
+	        // back to the prefab's material ID, which we do when material ID is undefined.
+	        merged.push(materialIds[i] !== undefined ? materialIds[i] : prefabMaterialIds[i]);
+	      }
+
+	      return merged;
+	    }
+
+	    /** @inheritdoc */
 
 	  }, {
 	    key: 'registerDependencies',
 	    value: function registerDependencies() {
-	      var geometryId = this.getProperty('geometryId');
-	      var materialIds = this.getMaterialIds();
+	      var _this3 = this;
 
+	      var geometryId = this.getProperty('geometryId');
 	      if (geometryId) {
 	        this.registerDependency(geometryId);
 	      }
 
+	      var materialIds = this.getMaterialIds();
 	      materialIds.forEach(function (materialId) {
-	        this.registerMaterialDependency(materialId);
-	      }, this);
-	    }
+	        if (materialId) {
+	          _this3.registerDependency(materialId);
+	        }
+	      });
 
-	    /**
-	     * Register material dependency with the parent asset. If the given material
-	     * ID isn't valid, the 'missing material' will be registered.
-	     * @method registerMaterialDependency
-	     * @private
-	     * @param  {String} materialId The ID of the material to register
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'registerMaterialDependency',
-	    value: function registerMaterialDependency(materialId) {
-	      var materialRegistry = this.box3DRuntime.assetRegistry.Materials;
-	      var missingMaterial = materialRegistry.getMissingMaterial();
-	      if (materialRegistry.getAssetById(materialId)) {
-	        this.registerDependency(materialId);
-	      } else {
+	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
+	      if (missingMaterial) {
 	        this.registerDependency(missingMaterial.id);
 	      }
 	    }
 
 	    /**
-	     * Unregister material dependency with the parent asset. If the given material
-	     * ID isn't valid, the 'missing material' will be unregistered.
-	     * @method unregisterMaterialDependency
-	     * @private
-	     * @param  {String} materialId The ID of the material to unregister
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'unregisterMaterialDependency',
-	    value: function unregisterMaterialDependency(materialId) {
-	      var materialRegistry = this.box3DRuntime.assetRegistry.Materials;
-	      var missingMaterial = materialRegistry.getMissingMaterial();
-	      if (materialRegistry.getAssetById(materialId)) {
-	        this.unregisterDependency(materialId);
-	      } else {
-	        this.unregisterDependency(missingMaterial.id);
-	      }
-	    }
-
-	    /**
-	     * Returns a promise that resolves when a THREE.Mesh or THREE.SkinnedMesh has
-	     * been created for this object.
+	     * Create the runtime mesh (i.e., a THREE.Mesh or THREEE.SkinnedMesh).
 	     * @method createMesh
 	     * @private
-	     * @returns {Promise} The promise that resolves when the mesh has been created.
+	     * @returns {Promise} A promise that resolves when the mesh has been created.
 	     */
 
 	  }, {
 	    key: 'createMesh',
 	    value: function createMesh() {
-	      var _this2 = this;
+	      var _this4 = this;
 
 	      var geometryAsset = this.getGeometryAsset();
 	      if (!geometryAsset) {
@@ -101820,34 +101754,35 @@
 
 	      return new Promise(function (resolve) {
 	        geometryAsset.when('loadBase', function () {
-	          var geometry = _this2.getGeometry();
-	          if (!_this2.runtimeData) {
-	            _this2.runtimeData = _this2._allocateMesh(geometry);
-	            _this2.runtimeData.name = _this2.getRuntimeName();
-	            _this2.runtimeData.castShadow = true;
-	            _this2.runtimeData.receiveShadow = true;
-	            _this2.runtimeData.material = null;
+	          var geometry = _this4.getGeometry();
+	          if (!_this4.runtimeData) {
+	            _this4.runtimeData = _this4._allocateMesh(geometry);
+	            _this4.runtimeData.name = _this4.getRuntimeName();
+	            _this4.runtimeData.castShadow = true;
+	            _this4.runtimeData.receiveShadow = true;
+	            _this4.runtimeData.material = null;
 	          } else {
-	            _this2.runtimeData.geometry = geometry;
+	            _this4.runtimeData.geometry = geometry;
 	          }
 
-	          // Check if the number of materials in the geometry doesn't match with the
-	          // materials for this mesh. If they don't match, adjust this meshes material
-	          // array.
-	          var materialIds = _this2.getProperty('materials');
-	          var maxMaterialIndex = geometryAsset ? geometryAsset.getMaxMaterialIndex('triangles') : -1;
+	          // Check if the number of materials in the geometry matches the number in the mesh. If not,
+	          // pad the mesh's "materials" array with null.
+	          var materialIds = _this4.getProperty('materials');
+	          var maxMaterialIndex = geometryAsset.getMaxMaterialIndex('triangles');
 	          var nMaterials = Math.max(maxMaterialIndex + 1, materialIds.length);
 	          var extraMaterialIds = Array(nMaterials - materialIds.length);
-	          // Fill out the array (note: not using Array.prototype.fill because IE11 lacks support)
+
+	          // Fill out the array (note: not using Array.prototype.fill because IE11 lacks support).
 	          for (var i = 0; i < extraMaterialIds.length; i++) {
 	            extraMaterialIds[i] = null;
 	          }
-	          _this2.setProperty('materials', materialIds.concat(extraMaterialIds));
+
+	          _this4.setProperty('materials', materialIds.concat(extraMaterialIds));
 
 	          // Inform anyone who cares that a new mesh has been loaded.
 	          // TODO: do we still need this? Can they listen to 'loadBase' instead?
-	          var parentAsset = _this2.getParentAsset();
-	          parentAsset.trigger('meshLoaded', _this2);
+	          var parentAsset = _this4.getParentAsset();
+	          parentAsset.trigger('meshLoaded', _this4);
 
 	          resolve();
 	        });
@@ -101859,25 +101794,21 @@
 	    }
 
 	    /**
-	     * Returns a promise that resolves when the "missing" material is loaded.
+	     * Load the "missing" material.
 	     * @method loadMissingMaterial
 	     * @private
-	     * @returns {Promise} The promise that resolves when the material is loaded.
+	     * @returns {Promise} A promise that resolves when the "missing" material is loaded.
 	     */
 
 	  }, {
 	    key: 'loadMissingMaterial',
 	    value: function loadMissingMaterial() {
-	      var _this3 = this;
+	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
+	      if (!missingMaterial || missingMaterial.isLoaded()) {
+	        return Promise.resolve();
+	      }
 
 	      return new Promise(function (resolve) {
-	        var materialRegistry = _this3.box3DRuntime.assetRegistry.Materials;
-	        var missingMaterial = materialRegistry.getMissingMaterial();
-
-	        if (!missingMaterial || missingMaterial.isLoaded()) {
-	          return resolve();
-	        }
-
 	        missingMaterial.load(function () {
 	          return resolve();
 	        });
@@ -101889,10 +101820,12 @@
 	  }, {
 	    key: 'createRuntimeData',
 	    value: function createRuntimeData(callback) {
-	      var _this4 = this;
+	      var _this5 = this;
 
-	      Promise.all([this.createMesh(), this.loadMissingMaterial()]).then(callback).catch(function (err) {
-	        _log2.default.error(_this4.box3DRuntime.engineName + ' - BaseMeshObject: ' + err.toString());
+	      Promise.all([this.createMesh(), this.loadMissingMaterial()]).then(function () {
+	        return callback();
+	      }).catch(function (err) {
+	        _log2.default.error(_this5.box3DRuntime.engineName + ' - BaseMeshObject: ' + err.toString());
 	        callback();
 	      });
 	    }
@@ -101902,7 +101835,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      _get(Object.getPrototypeOf(BaseMeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
@@ -101923,28 +101856,29 @@
 
 	      if (changes.hasOwnProperty('materials')) {
 	        (function () {
-	          var materialType = _this5._getMaterialType();
-	          var prevMaterialIds = _this5.getPreviousProperty('materials') || [];
-	          var newMaterialIds = _this5.getMaterialIds();
-
 	          // Stop listening for changes to the previous materials.
+	          var prevMaterialIds = _this6.getPreviousMaterialIds();
+
 	          prevMaterialIds.forEach(function (materialId) {
-	            this.registerChangeListener(materialId, this.onMaterialChanged, false);
-	          }, _this5);
+	            _this6.registerChangeListener(materialId, _this6.onMaterialChanged, false);
+	          });
 
 	          // Allocate the MeshFaceMaterial (container for other materials).
-	          if (!(_this5.runtimeData.material instanceof _three2.default.MeshFaceMaterial)) {
-	            _this5.runtimeData.material = new _three2.default.MeshFaceMaterial();
+	          if (!(_this6.runtimeData.material instanceof _three2.default.MeshFaceMaterial)) {
+	            _this6.runtimeData.material = new _three2.default.MeshFaceMaterial();
 	          }
 
 	          // Reset the MeshFaceMaterial's material list.
-	          _this5.runtimeData.material.materials = [];
+	          _this6.runtimeData.material.materials = [];
 
 	          // Assign the new materials and listen for changes.
+	          var materialType = _this6._getMaterialType();
+	          var newMaterialIds = _this6.getMaterialIds();
+
 	          newMaterialIds.forEach(function (materialId, index) {
-	            this.registerChangeListener(materialId, this.onMaterialChanged, true);
-	            this.loadAndAssignMaterial(this.runtimeData.material.materials, index, materialId, materialType);
-	          }, _this5);
+	            _this6.registerChangeListener(materialId, _this6.onMaterialChanged, true);
+	            _this6.loadAndAssignMaterial(_this6.runtimeData.material.materials, index, materialId, materialType);
+	          });
 	        })();
 	      }
 
@@ -101961,69 +101895,61 @@
 	      }
 	    }
 
-	    /**
-	     * Called in response to property changes when runtimeData might not be available.
-	     * @method _applyPropertiesUnloaded
-	     * @protected
-	     * @param {Object} changes the properties that have changed
-	     * @returns {void}
-	     */
+	    /** @inheritdoc */
 
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded(changes) {
-	      var parentAsset = this.getParentAsset(),
-	          prevMaterialIds,
-	          newMaterialIds,
-	          prevDepthMaterialId,
-	          newDepthMaterialId,
-	          prevGeometryId,
-	          newGeometryId;
+	      var _this7 = this;
 
-	      // If the parent asset doesn't exist, this object is in the process of being
-	      // cleaned up so ignore the changes.
+	      // If the parent asset doesn't exist, this object is in the process of being cleaned up so
+	      // ignore the changes.
+	      var parentAsset = this.getParentAsset();
 	      if (!parentAsset) {
 	        return;
 	      }
 
 	      if (changes && changes.hasOwnProperty('materials')) {
-	        prevMaterialIds = this.getPreviousMaterialIds() || [];
-	        newMaterialIds = this.getMaterialIds();
-
-	        if (_lodash2.default.isArray(prevMaterialIds)) {
-	          // Unregister previous materials.
-	          prevMaterialIds.forEach(function (materialId) {
-	            this.unregisterMaterialDependency(materialId);
-	          }, this);
-	        }
+	        // Unregister previous materials.
+	        var prevMaterialIds = this.getPreviousMaterialIds();
+	        prevMaterialIds.forEach(function (materialId) {
+	          if (materialId) {
+	            _this7.unregisterDependency(materialId);
+	          }
+	        });
 
 	        // Register new materials.
+	        var newMaterialIds = this.getMaterialIds();
 	        newMaterialIds.forEach(function (materialId) {
-	          this.registerMaterialDependency(materialId);
-	        }, this);
+	          if (materialId) {
+	            _this7.registerDependency(materialId);
+	          }
+	        });
 	      }
 
 	      if (changes && changes.hasOwnProperty('customDepthMaterial')) {
-	        prevDepthMaterialId = this.getPreviousProperty('customDepthMaterial');
-	        newDepthMaterialId = this.getProperty('customDepthMaterial');
-
 	        // Unregister previous material.
-	        this.unregisterMaterialDependency(prevDepthMaterialId);
+	        var prevDepthMaterialId = this.getPreviousProperty('customDepthMaterial');
+	        if (prevDepthMaterialId) {
+	          this.unregisterDependency(prevDepthMaterialId);
+	        }
 
 	        // Register new material.
-	        this.registerMaterialDependency(newDepthMaterialId);
+	        var newDepthMaterialId = this.getProperty('customDepthMaterial');
+	        if (newDepthMaterialId) {
+	          this.registerDependency(newDepthMaterialId);
+	        }
 	      }
 
 	      if (changes && changes.hasOwnProperty('geometryId')) {
-	        prevGeometryId = this.getPreviousProperty('geometryId');
-	        newGeometryId = this.getProperty('geometryId');
-
 	        // Unregister previous geometry.
+	        var prevGeometryId = this.getPreviousProperty('geometryId');
 	        if (prevGeometryId) {
 	          this.unregisterDependency(prevGeometryId);
 	        }
 
 	        // Register new geometry.
+	        var newGeometryId = this.getProperty('geometryId');
 	        if (newGeometryId) {
 	          this.registerDependency(newGeometryId);
 	        }
@@ -102040,7 +101966,7 @@
 	  }, {
 	    key: 'onMaterialChanged',
 	    value: function onMaterialChanged() {
-	      // TODO: Update runtimeData.customDepthMaterial
+	      // TODO: Update runtimeData.customDepthMaterial.
 	      return;
 	    }
 
@@ -102058,23 +101984,24 @@
 	    }
 
 	    /**
-	     * Called when a material asset is deleted.
+	     * Called when a MaterialAsset is deleted.
 	     * @method onMaterialDeleted
 	     * @public
-	     * @param materialId {String} the ID of the material being unloaded
+	     * @param {String} unloadedMaterialId The ID of the material being unloaded.
 	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'onMaterialDeleted',
 	    value: function onMaterialDeleted(unloadedMaterialId) {
-	      var materialIds = this.getMaterialIds(),
-	          removed = false;
+	      var materialIds = this.getMaterialIds();
+	      var removed = false;
 
 	      // Remove the unloaded material from the list of materials.
 	      materialIds.forEach(function (materialId, index) {
 	        if (materialId === unloadedMaterialId) {
-	          materialIds[index] = undefined;
+	          // Note: we assign null (no material) rather than undefined (use prefab material).
+	          materialIds[index] = null;
 	          removed = true;
 	        }
 	      });
@@ -102096,7 +102023,6 @@
 	    key: 'getLocalBounds',
 	    value: function getLocalBounds() {
 	      var geometryAsset = this.getGeometryAsset();
-
 	      if (geometryAsset) {
 	        return geometryAsset.getBounds();
 	      }
@@ -102105,67 +102031,58 @@
 	    }
 
 	    /**
-	     * Set the given material to be used by this mesh.
+	     * Assign the specified material to the mesh at the specified index.
 	     * @method setMaterial
 	     * @public
-	     * @param {String|Object} material the ID of the material asset, a MaterialAsset or null/undefined
-	     * @param {Integer} [index] the index to assign the material to (default is 0)
+	     * @param {String|MaterialAsset} material The MaterialAsset, its ID or null/undefined.
+	     * @param {Integer} [index] The material index (default is 0).
 	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'setMaterial',
-	    value: function setMaterial(material, index) {
-	      var materialIds = _lodash2.default.clone(this.getOwnProperty('materials'));
-	      var prefabMatIds;
-	      var i;
-	      if (!materialIds) {
-	        prefabMatIds = this.getPrefabProperty('materials');
-	        if (prefabMatIds) {
-	          //Populate the instance material array with nulls rather than undefined.
-	          materialIds = new Array(prefabMatIds.length);
-	          for (i = 0; i < materialIds.length; i++) {
-	            materialIds[i] = null;
-	          }
-	        } else {
-	          materialIds = [null];
-	        }
+	    value: function setMaterial(material) {
+	      var index = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+	      // Validate the index parameter.
+	      if (index < 0 || index >= this.getMaterialCount()) {
+	        throw new Error('Invalid index parameter');
 	      }
 
 	      // If material is a MaterialAsset, get the ID.
-	      material = _lodash2.default.isObject(material) ? material.id : material;
-
-	      // Change undefined -> null.
-	      material = material === undefined ? null : material;
-
-	      // Validate the material parameter.
-	      if (material !== null && !_lodash2.default.isString(material)) {
-	        _log2.default.error(this.box3DRuntime.engineName + ' - BaseMeshObject: Invalid material parameter passed to setMaterial.');
-	        return;
-	      }
-
-	      // Validate the index parameter.
-	      index = index || 0;
-
-	      if (index < 0 || index >= materialIds.length) {
-	        _log2.default.error(this.box3DRuntime.engineName + ' - BaseMeshObject: Invalid index parameter passed to setMaterial.');
-	        return;
-	      }
+	      var materialId = _lodash2.default.isObject(material) ? material.id : material;
 
 	      // Assign the material to the index.
-	      if (materialIds[index] !== material) {
-	        materialIds[index] = material;
+	      var materialIds = (this.getOwnProperty('materials') || []).slice();
+
+	      if (materialIds[index] !== materialId) {
+	        materialIds[index] = materialId;
 	        this.setProperty('materials', materialIds);
 	      }
 	    }
+
+	    /**
+	     * Revert the material assignment at the specified index. This will cause the material at that
+	     * index to be inherited from the prefab object, if one is set.
+	     * @method revertMaterial
+	     * @public
+	     * @param {Integer} [index] The material index (default is 0).
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'revertMaterial',
-	    value: function revertMaterial(index) {
-	      this.setMaterial(null, index);
+	    value: function revertMaterial() {
+	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+	      // Note: we pass undefined, which unassigns the material and causes the prefab material at the
+	      // same index to be used. Passing null would override the prefab's material with an empty
+	      // material slot.
+	      this.setMaterial(undefined, index);
 	    }
 
 	    /**
-	     * Set this mesh to cast shadows.
+	     * Enable shadow casting.
 	     * @method castShadowsEnable
 	     * @public
 	     * @returns {void}
@@ -102179,7 +102096,7 @@
 	    }
 
 	    /**
-	     * Set this mesh to not cast shadows.
+	     * Disable shadow casting.
 	     * @method castShadowsDisable
 	     * @public
 	     * @returns {void}
@@ -102193,7 +102110,7 @@
 	    }
 
 	    /**
-	     * Toggle the mesh's shadow-casting setting.
+	     * Toggle shadow casting.
 	     * @method castShadowsToggle
 	     * @public
 	     * @returns {void}

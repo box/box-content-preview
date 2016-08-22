@@ -171,7 +171,6 @@ function sceneEntities(prefix) {
         type: 'image',
         properties: {
             name: 'HDR Env Image 0',
-            isHdr: true,
             width: 1024,
             height: 512,
             stream: false,
@@ -192,7 +191,6 @@ function sceneEntities(prefix) {
         type: 'image',
         properties: {
             name: 'HDR Env Image 1',
-            isHdr: true,
             width: 512,
             height: 256,
             stream: false,
@@ -213,7 +211,6 @@ function sceneEntities(prefix) {
         type: 'image',
         properties: {
             name: 'HDR Env Image 2',
-            isHdr: true,
             width: 256,
             height: 128,
             stream: false,
@@ -235,7 +232,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_0',
             name: 'HDR Env Map 0',
-            isHdr: !Browser.isMobile(),
+            type: 'halfFloat',
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
@@ -247,7 +244,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_1',
             name: 'HDR Env Map 1',
-            isHdr: !Browser.isMobile(),
+            type: 'halfFloat',
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
@@ -259,7 +256,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_2',
             name: 'HDR Env Map 2',
-            isHdr: !Browser.isMobile(),
+            type: 'halfFloat',
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
@@ -270,8 +267,7 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 0',
-            isHdr: !Browser.isMobile(),
-            type: Browser.isMobile() ? 'uByte' : 'float',
+            type: 'halfFloat',
             width: 512,
             height: 512,
             generateMipmaps: true,
@@ -292,8 +288,7 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 1',
-            isHdr: !Browser.isMobile(),
-            type: Browser.isMobile() ? 'uByte' : 'float',
+            type: 'halfFloat',
             width: 256,
             height: 256,
             generateMipmaps: true,
@@ -314,8 +309,7 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 2',
-            isHdr: !Browser.isMobile(),
-            type: Browser.isMobile() ? 'uByte' : 'float',
+            type: 'halfFloat',
             width: 128,
             height: 128,
             generateMipmaps: true,
