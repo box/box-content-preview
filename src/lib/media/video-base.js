@@ -94,7 +94,9 @@ class VideoBase extends MediaBase {
      * @returns {void}
      */
     waitingHandler() {
-        this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
+        if (this.containerEl) {
+            this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
+        }
     }
 
     /**

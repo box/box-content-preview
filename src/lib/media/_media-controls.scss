@@ -47,7 +47,7 @@
 }
 
 .box-preview-media-controls-label,
-.box-preview-media-controls-btn  {
+.box-preview-media-controls-btn {
     cursor: pointer;
     font-size: 12px;
     height: 40px;
@@ -125,11 +125,14 @@
 .box-preview-media-controls-hd {
     font-size: 8px;
     background: $box-blue;
-    padding: 1px 2px;
+    padding: 2px 2px 2px 3px;
     border-radius: 3px;
     position: absolute;
     left: 22px;
     display: none;
+    letter-spacing: 0.1em;
+    line-height: 8px;
+    font-weight: 600;
 
     .box-preview-media-controls-is-hd & {
         display: inline;

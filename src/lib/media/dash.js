@@ -5,7 +5,6 @@ import cache from '../cache';
 import fullscreen from '../fullscreen';
 import { createContentUrl, getHeaders } from '../util';
 import RepStatus from '../rep-status';
-import { CLASS_PREVIEW_LOADED, CLASS_HIDDEN } from '../constants';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
@@ -26,6 +25,10 @@ class Dash extends VideoBase {
     constructor(container, options) {
         super(container, options);
 
+        // stats
+        this.bandwidthHistory = [];
+        this.bufferingHistory = [];
+
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
     }
@@ -35,12 +38,19 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     destroy() {
+        // Log bandwidth history
+        this.emit('bandwidthHistory', this.bandwidthHistory);
+        this.emit('bufferingHistory', this.bufferingHistory);
+
+        clearInterval(this.statsIntervalId);
         if (this.player) {
             this.player.destroy();
+            this.player = undefined;
         }
         if (this.mediaControls) {
             this.mediaControls.removeListener('qualitychange', this.handleQuality);
         }
+        this.removeStats();
         super.destroy();
     }
 
@@ -70,6 +80,7 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     loadDashPlayer() {
+        this.adapting = true;
         this.player = new shaka.player.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
         this.player.configure({
@@ -123,10 +134,44 @@ class Dash extends VideoBase {
      * Handler for hd video
      *
      * @private
+     * @param {Number} id rep id
+     * @returns {Object|undefined}
+     */
+    getVideoRepresentation(id) {
+        const videoTracks = this.player.getVideoTracks();
+
+        if (!videoTracks.length) {
+            return undefined;
+        }
+
+        return videoTracks.find((track) => {
+            return track.id === id;
+        });
+    }
+
+    /**
+     * Shows the loading indicator
+     *
+     * @private
+     * @param {Number} id rep id
+     * @returns {void}
+     */
+    showLoadingIcon(id) {
+        const rep = this.getVideoRepresentation(id);
+        if (rep && !rep.active) {
+            super.showLoadingIcon();
+        }
+    }
+
+    /**
+     * Handler for hd video
+     *
+     * @private
      * @returns {void}
      */
     enableHD() {
         this.enableAdaptation(false);
+        this.showLoadingIcon(this.largestRepresentationId);
         this.player.selectVideoTrack(this.largestRepresentationId);
     }
 
@@ -138,6 +183,7 @@ class Dash extends VideoBase {
      */
     enableSD() {
         this.enableAdaptation(false);
+        this.showLoadingIcon(this.largestRepresentationId + 1);
         this.player.selectVideoTrack(this.largestRepresentationId + 1);
     }
 
@@ -149,6 +195,7 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     enableAdaptation(adapt = true) {
+        this.adapting = adapt;
         this.player.configure({ enableAdaptation: adapt });
     }
 
@@ -156,15 +203,10 @@ class Dash extends VideoBase {
      * Handler for hd/sd/auto video
      *
      * @private
-     * @param {Boolean|void} [showLoadingIndicator] shows the loading crawler
      * @returns {void}
      */
-    handleQuality(showLoadingIndicator = true) {
+    handleQuality() {
         const quality = cache.get('media-quality');
-
-        if (showLoadingIndicator && !this.mediaEl.paused && !this.mediaEl.ended) {
-            this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
-        }
 
         switch (quality) {
             case 'hd':
@@ -177,6 +219,10 @@ class Dash extends VideoBase {
             default:
                 this.enableAdaptation();
                 break;
+        }
+
+        if (quality) {
+            this.emit('qualitychange', quality);
         }
     }
 
@@ -194,6 +240,10 @@ class Dash extends VideoBase {
             } else {
                 this.wrapperEl.classList.remove(CSS_CLASS_HD);
             }
+            if (this.adapting) {
+                this.emit('adaptation', adaptation.bandwidth);
+            }
+            this.hideLoadingIcon();
         }
     }
 
@@ -216,17 +266,18 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     loadedmetadataHandler() {
-        if (this.destroyed) {
+        if (this.isDestroyed()) {
             return;
         }
 
-        this.handleQuality(false);
         this.calculateVideoDimensions();
         this.loadUI();
         this.loadFilmStrip();
         this.resize();
         this.showPlayButton();
         this.handleVolume();
+        this.startBandwidthTracking();
+        this.handleQuality(); // should come after gettings rep ids
         this.loaded = true;
         this.emit('load');
     }
@@ -339,17 +390,56 @@ class Dash extends VideoBase {
     }
 
     /**
+     * Tracks bandwidth
+     *
+     * @private
+     * @returns {void}
+     */
+    startBandwidthTracking() {
+        this.statsIntervalId = setInterval(() => {
+            if (this.isDestroyed() || !this.player || !this.player.getStats || this.mediaEl.paused || this.mediaEl.ended) {
+                return;
+            }
+
+            const stats = this.player.getStats();
+            const bandwidth = stats.estimatedBandwidth;
+
+            // Streaming representation history
+            let stream;
+            if (stats.streamStats) {
+                stream = stats.streamStats.videoBandwidth;
+            }
+            if (stream) {
+                this.bandwidthHistory.push({ bandwidth, stream });
+            }
+
+            // Buffering history
+            let buffered = 0;
+            if (stats.bufferingHistory) {
+                buffered = stats.bufferingHistory.length;
+            }
+            if (buffered && stream) {
+                this.bufferingHistory.push({ buffered, stream });
+            }
+
+            // If stats element exists then show it visually
+            if (this.statsEl) {
+                this.statsEl.textContent = `${Math.round(bandwidth / 1000)} kbps`;
+            }
+        }, 3000);
+    }
+
+    /**
      * Removes the stats
      *
      * @private
      * @returns {void}
      */
     removeStats() {
-        clearInterval(this.statsIntervalId);
-        this.statsIntervalId = undefined;
-        if (this.statsEl) {
-            this.statsEl.classList.add(CLASS_HIDDEN);
+        if (this.statsEl && this.mediaContainerEl) {
+            this.mediaContainerEl.removeChild(this.statsEl);
         }
+        this.statsEl = undefined;
     }
 
     /**
@@ -360,32 +450,14 @@ class Dash extends VideoBase {
      */
     toggleStats() {
         // If we were showing the stats, hide them
-        if (this.statsIntervalId) {
+        if (this.statsEl) {
             this.removeStats();
             return;
         }
 
-        // If no player object just return
-        if (!this.player) {
-            return;
-        }
-
-        // Create the stats element if it doesn't exist
-        if (!this.statsEl) {
-            this.statsEl = this.mediaContainerEl.appendChild(document.createElement('div'));
-            this.statsEl.className = 'box-preview-media-dash-stats';
-        }
-
-        // Unhide the stats element
-        this.statsEl.classList.remove(CLASS_HIDDEN);
-
-        this.statsIntervalId = setInterval(() => {
-            if (!this.player || !this.player.getStats) {
-                this.removeStats();
-                return;
-            }
-            this.statsEl.textContent = `${Math.round(this.player.getStats().estimatedBandwidth / 1000)}kbps`;
-        }, 1000);
+        this.statsEl = this.mediaContainerEl.appendChild(document.createElement('div'));
+        this.statsEl.className = 'box-preview-media-dash-stats';
+        this.statsEl.textContent = '?!? kbps';
     }
 
     /**

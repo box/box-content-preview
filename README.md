@@ -269,7 +269,7 @@ EVENTNAME can be one of the following
   }
 ```
 
-* Each viewer will fire its own sets of events. For example, Image viewer will fire `rotate` or `resize` etc. Another viewer may fire similar or other events. All these will be propogated on the viewer instance as shown in the examples below and even on the preview wrapper with the following data:
+* `previewerevent` Each viewer will fire its own sets of events. For example, Image viewer will fire `rotate` or `resize` etc. Another viewer may fire similar or other events. All these will be propagated on the viewer instance as shown in the examples below and even on the preview wrapper with the following data:
 ```javascript
   {
       event: EVENTNAME,         // Some event
@@ -295,6 +295,20 @@ Box.Preview.addListener('load', (data) => {
     viewer.addListener('rotate', () => {
         // do something
     });
+});
+
+OR
+
+Box.Preview.addListener('previewerevent', (data) => {
+    if (data.viewerName === 'Image') {
+        if (data.event === 'rotate') {
+            // Do something when image rotation happens
+        }
+    } else if (data.viewerName === 'Image360') {
+        if (data.event === 'rotate') {
+            // Do something else when 360 image rotation happens
+        }
+    } else if (...) { ... }
 });
 
 OR

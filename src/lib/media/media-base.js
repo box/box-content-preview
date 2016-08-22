@@ -51,7 +51,7 @@ class MediaBase extends Base {
                 this.mediaEl.removeEventListener('playing', this.playingHandler);
                 this.mediaEl.removeEventListener('pause', this.pauseHandler);
                 this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
-                this.mediaEl.removeEventListener('seeked', this.removeLoadingIcon);
+                this.mediaEl.removeEventListener('seeked', this.hideLoadingIcon);
                 this.mediaEl.removeEventListener('loadedmetadata', this.loadedmetadataHandler);
 
                 this.mediaEl.removeAttribute('src');
@@ -108,6 +108,9 @@ class MediaBase extends Base {
      */
     handleSpeed() {
         const speed = cache.get('media-speed') - 0;
+        if (speed && this.mediaEl.playbackRate !== speed) {
+            this.emit('speedchange', speed);
+        }
         this.mediaEl.playbackRate = speed;
     }
 
@@ -221,7 +224,7 @@ class MediaBase extends Base {
         if (this.mediaControls) {
             this.mediaControls.showPauseIcon();
         }
-        this.removeLoadingIcon();
+        this.hideLoadingIcon();
         this.handleSpeed();
         this.handleVolume();
     }
@@ -260,7 +263,7 @@ class MediaBase extends Base {
         if (this.mediaControls) {
             this.mediaControls.setTimeCode(0);
         }
-        this.removeLoadingIcon();
+        this.hideLoadingIcon();
         this.pauseHandler();
     }
 
@@ -277,14 +280,26 @@ class MediaBase extends Base {
     }
 
     /**
-     * Removes loading indicator
+     * Hides the loading indicator
      *
      * @private
      * @returns {void}
      */
-    removeLoadingIcon() {
+    hideLoadingIcon() {
         if (this.containerEl) {
             this.containerEl.classList.add(CLASS_PREVIEW_LOADED);
+        }
+    }
+
+    /**
+     * Shows the loading indicator
+     *
+     * @private
+     * @returns {void}
+     */
+    showLoadingIcon() {
+        if (this.containerEl && this.mediaEl && !this.mediaEl.paused && !this.mediaEl.ended) {
+            this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
         }
     }
 
@@ -302,7 +317,7 @@ class MediaBase extends Base {
         this.mediaEl.addEventListener('playing', this.playingHandler);
         this.mediaEl.addEventListener('pause', this.pauseHandler);
         this.mediaEl.addEventListener('ended', this.resetPlayIcon);
-        this.mediaEl.addEventListener('seeked', this.removeLoadingIcon);
+        this.mediaEl.addEventListener('seeked', this.hideLoadingIcon);
     }
 
     /**
