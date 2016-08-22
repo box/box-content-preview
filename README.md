@@ -111,7 +111,7 @@ API
 The recommended way to show a preview is by calling `Box.Preview.show(fileId, { options })` where fileId is a `Box_File` id. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
 
 ```javascript
-let preview = new Preview();
+const preview = new Preview();
 preview.show(fileId, { options });
 ```
 
