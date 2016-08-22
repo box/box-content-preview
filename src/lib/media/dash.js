@@ -121,12 +121,9 @@ class Dash extends VideoBase {
      * @returns {Function} function to add shared name
      */
     requestInterceptor() {
-        const token = this.options.token;
-
-        return (url, headers) => {
-            if (url && url.indexOf(token) === -1) {
-                getHeaders(headers, token, this.options.sharedLink, this.options.sharedLinkPassword);
-            }
+        const { token, sharedLink, sharedLinkPassword } = this.options;
+        return (url) => {
+            return createContentUrl(url, token, sharedLink, sharedLinkPassword);
         };
     }
 
@@ -289,10 +286,11 @@ class Dash extends VideoBase {
      * @returns {void}
      */
     loadFilmStrip() {
-        const filmstrip = this.options.file.representations.entries.find((entry) => entry.representation === 'filmstrip');
+        const { file, token, sharedLink, sharedLinkPassword } = this.options;
+        const filmstrip = file.representations.entries.find((entry) => entry.representation === 'filmstrip');
         if (filmstrip) {
-            const url = createContentUrl(filmstrip.links.content.url, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
-            const status = new RepStatus(filmstrip, getHeaders({}, this.options.token, this.options.sharedLink));
+            const url = createContentUrl(filmstrip.links.content.url, token, sharedLink, sharedLinkPassword);
+            const status = new RepStatus(filmstrip, getHeaders({}, token, sharedLink, sharedLinkPassword));
             this.mediaControls.initFilmstrip(url, status, this.aspect);
         }
     }
