@@ -146,7 +146,7 @@ preview.show(fileId, { options });
 | api | Optional | https://api.box.com | Root API URL |
 | sharedLink | Optional |  | Shared link URL |
 | sharedLinkPassword | Optional |  | Shared link password |
-| collection | Optional |  | List of file IDs to preview over |
+| collection | Optional |  | List of file IDs to iterate over for previewing |
 | header | Optional | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
 | logoUrl | Optional |  | URL of logo to show in header |
 | showDownload | Optional | false | Whether download button is shown |
