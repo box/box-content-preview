@@ -52,24 +52,24 @@ module.exports = languages.map((language, index) => {
     /* eslint-disable key-spacing */
     config.entry = {
         preview:        [`${lib}/preview.js`],
-        image:          [`${lib}/image/image.js`],
-        'multi-image':  [`${lib}/image/multi-image.js`],
-        swf:            [`${lib}/swf/swf.js`],
-        text:           [`${lib}/text/text.js`],
-        csv:            [`${lib}/text/csv.js`],
-        document:       [`${lib}/doc/document.js`],
-        presentation:   [`${lib}/doc/presentation.js`],
-        markdown:       [`${lib}/text/markdown.js`],
-        mp4:            [`${lib}/media/mp4.js`],
-        mp3:            [`${lib}/media/mp3.js`],
-        dash:           [`${lib}/media/dash.js`],
-        error:          [`${lib}/error/error.js`],
-        box3d:          [`${lib}/box3d/box3d.js`],
-        model3d:        [`${lib}/box3d/model3d/model3d.js`],
-        image360:       [`${lib}/box3d/image360/image360.js`],
-        video360:       [`${lib}/box3d/video360/video360.js`],
-        iframe:         [`${lib}/iframe/iframe.js`],
-        office:         [`${lib}/office/office.js`]
+        image:          [`${lib}/viewers/image/image.js`],
+        'multi-image':  [`${lib}/viewers/image/multi-image.js`],
+        swf:            [`${lib}/viewers/swf/swf.js`],
+        text:           [`${lib}/viewers/text/text.js`],
+        csv:            [`${lib}/viewers/text/csv.js`],
+        document:       [`${lib}/viewers/doc/document.js`],
+        presentation:   [`${lib}/viewers/doc/presentation.js`],
+        markdown:       [`${lib}/viewers/text/markdown.js`],
+        mp4:            [`${lib}/viewers/media/mp4.js`],
+        mp3:            [`${lib}/viewers/media/mp3.js`],
+        dash:           [`${lib}/viewers/media/dash.js`],
+        error:          [`${lib}/viewers/error/error.js`],
+        box3d:          [`${lib}/viewers/box3d/box3d.js`],
+        model3d:        [`${lib}/viewers/box3d/model3d/model3d.js`],
+        image360:       [`${lib}/viewers/box3d/image360/image360.js`],
+        video360:       [`${lib}/viewers/box3d/video360/video360.js`],
+        iframe:         [`${lib}/viewers/iframe/iframe.js`],
+        office:         [`${lib}/viewers/office/office.js`]
     };
     /* eslint-enable key-spacing */
 

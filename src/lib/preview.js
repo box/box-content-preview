@@ -7,7 +7,7 @@ import Logger from './logger';
 import loaders from './loaders';
 import cache from './cache';
 import RepStatus from './rep-status';
-import ErrorLoader from './error/error-loader';
+import ErrorLoader from './viewers/error/error-loader';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import throttle from 'lodash.throttle';
 import getTokens from './tokens';
