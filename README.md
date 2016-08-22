@@ -167,30 +167,27 @@ The Preview SDK needs an authentication token to make Box Content API calls. The
  * @returns {Promise} Promise to resolve to a map of ids and tokens or just a string token
  */
 function tokenGenerator(id) {
-    // id can be a single file id or an array of ids
+    // id can be a single file id or an array of ids, normalizing to an array
     const ids = Array.isArray(id) ? id : [id];
 
-    return new Promise((resolve, reject) => {
-        // Get tokens for all files with ids
-        // via some mechanism or network request
-        //    response should look like
-        //    {
-        //        id1: 'token1',
-        //        id2: 'token2',
-        //        id3: 'token3'
-        //        ...
-        //    }
-        //      -- OR --
-        //       'token'
-        //
-        fetch(tokenServiceUrl, {
-            method: 'post',
-            body: { fileIDs: ids } // based on what the token service endpoint expects
-        })
-        .then((response) => response.json())  // OR response.text()
-        .then(resolve)
-        .catch(reject);
-    });
+    // Get tokens for all files with ids
+    // via some mechanism or network request
+    //    response should look like
+    //    {
+    //        id1: 'token1',
+    //        id2: 'token2',
+    //        id3: 'token3'
+    //        ...
+    //    }
+    //      -- OR --
+    //       'token'
+    //
+    // The fetch() API returns a promise
+    return fetch(tokenServiceUrl, {
+        method: 'post',
+        body: { fileIds: ids } // based on what the token service endpoint expects
+    })
+    .then((response) => response.json());  // OR response.text()
 }
 ```
 
