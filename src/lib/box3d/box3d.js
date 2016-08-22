@@ -7,14 +7,13 @@ import Box3DControls from './box3d-controls';
 import Box3DRenderer from './box3d-renderer';
 import {
     CSS_CLASS_BOX3D,
-    EVENT_ENABLE_VR,
     EVENT_ERROR,
-    EVENT_DISABLE_VR,
     EVENT_LOAD,
     EVENT_RESET,
     EVENT_SCENE_LOADED,
     EVENT_SHOW_VR_BUTTON,
-    EVENT_TOGGLE_FULLSCREEN
+    EVENT_TOGGLE_FULLSCREEN,
+    EVENT_TOGGLE_VR
 } from './box3d-constants';
 
 /**
@@ -70,8 +69,7 @@ class Box3D extends Base {
     attachEventHandlers() {
         if (this.controls) {
             this.controls.on(EVENT_TOGGLE_FULLSCREEN, this.toggleFullscreen);
-            this.controls.on(EVENT_ENABLE_VR, this.handleEnableVr);
-            this.controls.on(EVENT_DISABLE_VR, this.handleDisableVr);
+            this.controls.on(EVENT_TOGGLE_VR, this.handleToggleVr);
             this.controls.on(EVENT_RESET, this.handleReset);
         }
 
@@ -89,8 +87,7 @@ class Box3D extends Base {
     detachEventHandlers() {
         if (this.controls) {
             this.controls.removeListener(EVENT_TOGGLE_FULLSCREEN, this.toggleFullscreen);
-            this.controls.removeListener(EVENT_ENABLE_VR, this.handleEnableVr);
-            this.controls.removeListener(EVENT_DISABLE_VR, this.handleDisableVr);
+            this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
             this.controls.removeListener(EVENT_RESET, this.handleReset);
         }
 
@@ -155,21 +152,12 @@ class Box3D extends Base {
     }
 
     /**
-     * Handles enable VR event
+     * Handles toggle VR event
      * @returns {void}
      */
     @autobind
-    handleEnableVr() {
-        this.renderer.enableVr();
-    }
-
-    /**
-     * Handles disable VR event
-     * @returns {void}
-     */
-    @autobind
-    handleDisableVr() {
-        this.renderer.disableVr();
+    handleToggleVr() {
+        this.renderer.toggleVr();
     }
 
     /**

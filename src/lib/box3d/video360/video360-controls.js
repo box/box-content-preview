@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import {
-    EVENT_ENABLE_VR,
-    EVENT_DISABLE_VR
+    EVENT_TOGGLE_VR
 } from '../box3d-constants';
 import {
     ICON_3D_VR
@@ -21,8 +20,6 @@ class Video360Controls extends EventEmitter {
      */
     constructor(containerEl) {
         super();
-
-        this.vrEnabled = false;
 
         this.el = containerEl;
 
@@ -61,8 +58,7 @@ class Video360Controls extends EventEmitter {
      * @returns {void}
      */
     handleToggleVr() {
-        this.vrEnabled = !this.vrEnabled;
-        this.emit(this.vrEnabled ? EVENT_ENABLE_VR : EVENT_DISABLE_VR);
+        this.emit(EVENT_TOGGLE_VR);
     }
 
     /**

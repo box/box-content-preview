@@ -1,8 +1,7 @@
 // All 3D previews come with base functionality for enabling VR, enabling fullscreen
 // mode, and resetting the camera orientation
 // EVENTS
-export const EVENT_DISABLE_VR = 'disableVr';
-export const EVENT_ENABLE_VR = 'enableVr';
+export const EVENT_TOGGLE_VR = 'toggleVr';
 export const EVENT_ERROR = 'error';
 export const EVENT_LOAD = 'load';
 export const EVENT_RESET = 'reset';

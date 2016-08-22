@@ -294,6 +294,18 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
+     * Toggle the VR system (HMD)
+     * @returns {void}
+     */
+    toggleVr() {
+        if (this.vrEnabled) {
+            this.disableVr();
+        } else {
+            this.enableVr();
+        }
+    }
+
+    /**
      * Enable the VR system (HMD)
      * @returns {void}
      */
