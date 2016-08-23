@@ -170,6 +170,84 @@ describe('doc-annotator', () => {
                 });
             });
         });
+
+        describe('highlight-comment', () => {
+            it('should not return a location if there is no selection present', () => {
+                sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(false);
+                const location = annotator.getLocationFromEvent({}, 'highlight-comment');
+                expect(location).to.be.null;
+            });
+
+            it('should infer page from selection if it cannot be inferred from event', () => {
+                sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(true);
+                const getPageStub = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber');
+                getPageStub.onFirstCall().returns({
+                    pageEl: null,
+                    page: -1
+                });
+                getPageStub.onSecondCall().returns({
+                    pageEl: {
+                        getBoundingClientRect: sandbox.stub().returns({
+                            width: 100,
+                            height: 100
+                        })
+                    },
+                    page: 2
+                });
+                sandbox.stub(window, 'getSelection').returns({});
+                sandbox.stub(rangy, 'saveSelection');
+                sandbox.stub(docAnnotatorUtil, 'getHighlightAndHighlightEls').returns({
+                    highlight: {},
+                    highlightEls: []
+                });
+                sandbox.stub(annotator, '_removeRangyHighlight');
+                sandbox.stub(rangy, 'restoreSelection');
+
+                annotator.getLocationFromEvent({}, 'highlight-comment');
+                expect(window.getSelection).to.have.been.called;
+            });
+
+            it('should return a valid highlight location if selection is valid', () => {
+                const page = 3;
+                const quadPoints = [
+                    [1, 2, 3, 4, 5, 6, 7, 8],
+                    [2, 3, 4, 5, 6, 7, 8, 9]
+                ];
+                const dimensions = {
+                    x: 100,
+                    y: 200
+                };
+
+                sandbox.stub(annotatorUtil, 'getScale').returns(1);
+                sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(true);
+                sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({
+                    pageEl: {
+                        getBoundingClientRect: sandbox.stub().returns({
+                            width: dimensions.x,
+                            height: dimensions.y + 30 // 15px padidng top and bottom
+                        })
+                    },
+                    page
+                });
+                sandbox.stub(rangy, 'saveSelection');
+                sandbox.stub(docAnnotatorUtil, 'getHighlightAndHighlightEls').returns({
+                    highlight: {},
+                    highlightEls: [{}, {}]
+                });
+                const quadPointStub = sandbox.stub(docAnnotatorUtil, 'getQuadPoints');
+                quadPointStub.onFirstCall().returns(quadPoints[0]);
+                quadPointStub.onSecondCall().returns(quadPoints[1]);
+                sandbox.stub(annotator, '_removeRangyHighlight');
+                sandbox.stub(rangy, 'restoreSelection');
+
+                const location = annotator.getLocationFromEvent({}, 'highlight-comment');
+                expect(location).to.deep.equal({
+                    page,
+                    quadPoints,
+                    dimensions
+                });
+            });
+        });
     });
 
     describe('createAnnotationThread()', () => {

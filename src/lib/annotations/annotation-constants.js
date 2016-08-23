@@ -32,3 +32,4 @@ export const ANNOTATION_STATE_PENDING = 'pending'; // not saved
 export const ANNOTATION_STATE_PENDING_ACTIVE = 'pending-active'; // not saved and pending comment
 export const ANNOTATION_TYPE_POINT = 'point';
 export const ANNOTATION_TYPE_HIGHLIGHT = 'highlight';
+export const ANNOTATION_TYPE_HIGHLIGHT_COMMENT = 'highlight-comment';

@@ -107,7 +107,7 @@ class DocAnnotator extends Annotator {
             };
 
             location = { x, y, page, dimensions };
-        } else if (annotationType === constants.ANNOTATION_TYPE_HIGHLIGHT) {
+        } else if (docAnnotatorUtil.isHighlightAnnotation(annotationType)) {
             if (!docAnnotatorUtil.isSelectionPresent()) {
                 return location;
             }
@@ -178,7 +178,7 @@ class DocAnnotator extends Annotator {
             threadParams.threadID = annotations[0].threadID;
         }
 
-        if (type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
+        if (docAnnotatorUtil.isHighlightAnnotation(type)) {
             thread = new DocHighlightThread(threadParams);
         } else {
             thread = new DocPointThread(threadParams);
@@ -422,7 +422,9 @@ class DocAnnotator extends Annotator {
 
     /**
      * Handler for creating a pending highlight thread from the current
-     * selection.
+     * selection. Default creates highlight threads as ANNOTATION_TYPE_HIGHLIGHT.
+     * If the user adds a comment, the type changes to
+     * ANNOTATION_TYPE_HIGHLIGHT_COMMENT.
      *
      * @param {Event} event DOM event
      * @private
@@ -478,7 +480,6 @@ class DocAnnotator extends Annotator {
         // keydown handlers to not activate
         let consumed = false;
         let activeThread = null;
-
         Object.keys(this._threads).forEach((threadPage) => {
             this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
                 const threadActive = thread.onClick(event, consumed);
@@ -525,7 +526,7 @@ class DocAnnotator extends Annotator {
      */
     _getHighlightThreadsOnPage(page) {
         const threads = this._threads[page] || [];
-        return threads.filter((thread) => thread.type === constants.ANNOTATION_TYPE_HIGHLIGHT);
+        return threads.filter((thread) => docAnnotatorUtil.isHighlightAnnotation(thread.type));
     }
 
     /**
@@ -546,7 +547,7 @@ class DocAnnotator extends Annotator {
                     matchedState = matchedState || (thread.state === state);
                 });
 
-                return matchedState && thread.type === constants.ANNOTATION_TYPE_HIGHLIGHT;
+                return matchedState && docAnnotatorUtil.isHighlightAnnotation(thread.type);
             }));
         });
 

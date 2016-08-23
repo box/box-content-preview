@@ -33,6 +33,9 @@ class DocHighlightThread extends AnnotationThread {
         if (this._annotations.length === 1 && this._annotations[0].text === '') {
             this._dialog.toggleHighlightDialogs();
             this.reset();
+
+            // Reset type from highlight-comment to highlight
+            this._type = constants.ANNOTATION_TYPE_HIGHLIGHT;
         } else {
             this.destroy();
         }
@@ -244,6 +247,14 @@ class DocHighlightThread extends AnnotationThread {
             location: this._location,
             canAnnotate: this._annotationService.canAnnotate
         });
+
+        // Ensures that previously created annotations have the right type
+        if (this._annotations.length) {
+            if ((this._annotations[0].text !== '' || this._annotations.length > 1) &&
+                this._type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
+                this._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+            }
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -277,11 +288,14 @@ class DocHighlightThread extends AnnotationThread {
 
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
-            this.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, data ? data.text : '');
-
             if (data) {
+                this._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
                 this._dialog.toggleHighlightCommentsReply(this._annotations.length);
+            } else {
+                this._type = constants.ANNOTATION_TYPE_HIGHLIGHT;
             }
+
+            this.saveAnnotation(this._type, data ? data.text : '');
         });
 
         // Annotation canceled
