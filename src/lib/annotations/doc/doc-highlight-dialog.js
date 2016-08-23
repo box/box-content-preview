@@ -35,7 +35,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * The annotation is still added to the thread on the server side.
      *
      * @override
-     * @param {string} [annotationID] Optional annotationID to remove
+     * @param {Annotation} annotation Annotation to add
      * @returns {void}
      */
     addAnnotation(annotation) {
