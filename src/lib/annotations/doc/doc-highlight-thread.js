@@ -147,7 +147,7 @@ class DocHighlightThread extends AnnotationThread {
      * the annotations dialog
      */
     isOnHighlight(event) {
-        return this._isInHighlight(event) || this._isInDialog(event);
+        return this._isInDialog(event) || this._isInHighlight(event);
     }
 
     /**

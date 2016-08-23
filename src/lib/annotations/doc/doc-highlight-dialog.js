@@ -90,10 +90,11 @@ class DocHighlightDialog extends AnnotationDialog {
         const [browserX, browserY] = docAnnotatorUtil.convertPDFSpaceToDOMSpace([x, y], pageHeight, zoomScale);
 
         const highlightDialogWidth = this._hasComments ? HIGHLIGHT_COMMENTS_DIALOG_WIDTH : HIGHLIGHT_BUTTONS_DIALOG_WIDTH;
+        const hoverPadding = this._hasComments ? 10 : 0;
 
         // Make sure button dialog doesn't go off the page
         let dialogX = browserX - highlightDialogWidth / 2; // Center 81px button
-        let dialogY = browserY + 10; // Caret + some padding
+        let dialogY = browserY + (hoverPadding); // adding top padding for hover
 
         // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
         const dialogPastLeft = dialogX < 0;
