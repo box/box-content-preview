@@ -306,7 +306,6 @@ class DocAnnotator extends Annotator {
                 // hover events of other annotations
                 const pendingThreads = this._getHighlightThreadsWithStates(
                     constants.ANNOTATION_STATE_PENDING,
-                    constants.ANNOTATION_STATE_PENDING_ACTIVE,
                     constants.ANNOTATION_STATE_ACTIVE,
                     constants.ANNOTATION_STATE_ACTIVE_HOVER);
                 if (pendingThreads.length) {

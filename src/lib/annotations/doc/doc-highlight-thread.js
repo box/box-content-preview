@@ -38,6 +38,10 @@ class DocHighlightThread extends AnnotationThread {
 
             // Reset type from highlight-comment to highlight
             this._type = constants.ANNOTATION_TYPE_HIGHLIGHT;
+
+            // Clear text area when comment is cancelled
+            const annotationTextEl = this._annotatedElement.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            annotationTextEl.value = '';
         } else {
             this.destroy();
         }
@@ -172,8 +176,7 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
-        if (this._state === constants.ANNOTATION_STATE_PENDING ||
-            this._state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
+        if (this._state === constants.ANNOTATION_STATE_PENDING) {
             return false;
         }
 
