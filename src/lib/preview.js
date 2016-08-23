@@ -362,7 +362,7 @@ class Preview extends EventEmitter {
                     break;
                 default:
                     this.emit(data.event, data.data);
-                    this.emit('previewerevent', data);
+                    this.emit('viewerevent', data);
             }
         });
     }
