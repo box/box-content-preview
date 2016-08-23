@@ -250,9 +250,7 @@ class DocHighlightThread extends AnnotationThread {
 
         // Ensures that previously created annotations have the right type
         if (this._annotations.length) {
-            const hasBlankAnnotation = (this._annotations[0].text === '');
-            if (((this._annotations.length && !hasBlankAnnotation) ||
-                (this._annotations.length > 1 && hasBlankAnnotation)) &&
+            if ((this._annotations[0].text !== '' || this._annotations.length > 1) &&
                 this._type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
                 this._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
             }
