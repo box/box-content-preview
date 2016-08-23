@@ -376,7 +376,7 @@ class DocAnnotator extends Annotator {
                 // dialog will be displayed and the others will be hidden
                 // without delay
                 for (let i = 0; i < delayThreads.length; i++) {
-                    if (i === delayThreads.length - 1) {
+                    if (i === 0) {
                         delayThreads[i].show();
                     } else {
                         delayThreads[i].hideDialog(true);
