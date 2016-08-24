@@ -27,6 +27,7 @@ const Box = global.Box || {};
 
 const DEFAULT_AXIS_UP = '+Y';
 const DEFAULT_AXIS_FORWARD = '+Z';
+const CLASS_VR_ENABLED = 'vr-enabled';
 
 /**
  * Model3d
@@ -54,6 +55,7 @@ class Model3d extends Box3D {
             up: null,
             forward: null
         };
+        this.lastVrChange = null;
     }
 
     /**
@@ -79,6 +81,9 @@ class Model3d extends Box3D {
             this.controls.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         }
         this.renderer.on(EVENT_CLOSE_UI, this.handleCloseUi);
+
+        // For addition/removal of VR class when display stops presenting
+        window.addEventListener('vrdisplaypresentchange', this.onVrPresentChange);
     }
 
     /**
@@ -96,6 +101,7 @@ class Model3d extends Box3D {
             this.controls.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         }
         this.renderer.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
+        window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange);
     }
 
     /**
@@ -225,7 +231,6 @@ class Model3d extends Box3D {
      */
     @autobind
     handleSceneLoaded() {
-        this.emit(EVENT_LOAD);
         this.loaded = true;
 
         // Get scene defaults for up/forward axes, and render mode
@@ -272,6 +277,9 @@ class Model3d extends Box3D {
                 this.controls.addUi(false);
                 this.showWrapper();
                 this.renderer.initVrIfPresent();
+            })
+            .then(() => {
+                this.emit(EVENT_LOAD);
             });
     }
 
@@ -282,6 +290,30 @@ class Model3d extends Box3D {
     @autobind
     handleCloseUi() {
         this.controls.emit(EVENT_CLOSE_UI);
+    }
+
+    /**
+     * Add/remove the vr-enabled class when vr events occur
+     * @returns {void}
+     */
+    @autobind
+    onVrPresentChange(event) {
+        const vrDetail = event.detail || {};
+        const vrDevice = vrDetail.vrdisplay;
+
+        // If no device OR no display changes, get outta here
+        if (!vrDevice || this.lastVrChange === vrDevice.isPresenting) {
+            return;
+        }
+
+        if (vrDevice.isPresenting) {
+            this.wrapperEl.classList.add(CLASS_VR_ENABLED);
+        } else {
+            this.wrapperEl.classList.remove(CLASS_VR_ENABLED);
+        }
+
+        this.lastVrChange = vrDevice.isPresenting;
+        this.controls.vrEnabled = this.lastVrChange;
     }
 
     /**
