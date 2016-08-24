@@ -1,5 +1,4 @@
 import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature } from '../file';
-import Browser from '../browser';
 
 describe('getURL()', () => {
     it('should return the correct api url', () => {
@@ -51,10 +50,6 @@ describe('checkPermission()', () => {
 
 describe('checkFeature()', () => {
     const sandbox = sinon.sandbox.create();
-
-    beforeEach(() => {
-        sandbox.stub(Browser, 'isMobile').returns(false);
-    });
 
     afterEach(() => {
         sandbox.verifyAndRestore();

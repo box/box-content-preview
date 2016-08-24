@@ -1,5 +1,3 @@
-import Browser from './browser';
-
 const fields = [
     'permissions',
     'parent',
@@ -73,6 +71,6 @@ export function checkPermission(file, operation) {
  * @returns {boolean} available or not
  */
 export function checkFeature(viewer, primary, secondary) {
-    const available = !Browser.isMobile() && !!viewer && typeof viewer[primary] === 'function';
+    const available = !!viewer && typeof viewer[primary] === 'function';
     return available && (!secondary || viewer[primary](secondary));
 }
