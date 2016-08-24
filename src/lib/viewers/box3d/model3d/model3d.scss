@@ -10,8 +10,13 @@ $arrow-top-bottom: 4px solid transparent;
     border-left: 5px solid $color;
 }
 
-.box-preview-box3d {
+.box-preview-is-mobile {
+    .box-preview-box3d .box-preview-controls {
+        opacity: 1!important;
+    }
+}
 
+.box-preview-box3d {
     .box-preview-settings-wrapper .box-preview-settings-btn:active,
     .box-preview-overlay span:active {
         opacity: 1.0;
@@ -161,6 +166,13 @@ $arrow-top-bottom: 4px solid transparent;
         }
         .box3d-setting-axis-rotate-right:active::after {
             @include arrow-right($twos);
+        }
+    }
+
+    // For VR mode
+    &.vr-enabled {
+        .box-preview-controls {
+            opacity: 0!important; // Hide this NO MATTER WHAT
         }
     }
 }
