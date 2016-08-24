@@ -376,14 +376,15 @@ class Preview extends EventEmitter {
      */
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && !Browser.isMobile()) {
             showDownloadButton(this.download);
+
             if (checkFeature(this.viewer, 'print')) {
                 showPrintButton(this.print);
             }
         }
 
-        if (checkPermission(this.file, PERMISSION_ANNOTATE)) {
+        if (checkPermission(this.file, PERMISSION_ANNOTATE) && !Browser.isMobile()) {
             if (checkFeature(this.viewer, 'isAnnotatable', 'point')) {
                 showAnnotateButton(this.viewer.getPointModeClickHandler());
             }
