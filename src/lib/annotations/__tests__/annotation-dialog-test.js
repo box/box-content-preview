@@ -20,9 +20,12 @@ describe('annotation-dialog', () => {
             annotations: [],
             canAnnotate: true
         });
+        document.querySelector('.annotated-element').appendChild(annotationDialog._element);
     });
 
     afterEach(() => {
+        const dialogEl = document.querySelector('.annotated-element');
+        dialogEl.parentNode.removeChild(dialogEl);
         sandbox.verifyAndRestore();
     });
 
@@ -331,6 +334,266 @@ describe('annotation-dialog', () => {
             annotationDialog.clickHandler(event);
 
             expect(stub).to.have.been.calledWith('someID');
+        });
+    });
+
+    describe('_addAnnotationElement()', () => {
+        it('should not add a comment if the text is blank', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: '',
+                user: {},
+                permissions: {}
+            });
+            const annotationComment = document.querySelector('.annotation-comment');
+
+            expect(annotationComment).to.be.null;
+        });
+
+        it('should add an annotation comment if text is present', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is awesome!',
+                user: {},
+                permissions: {}
+            });
+            const annotationComment = document.querySelector('.comment-text');
+
+            expect(annotationComment.innerHTML).to.equal('the preview sdk is awesome!');
+        });
+
+        it('should display the posting message if the user id is 0', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is awesome!',
+                user: { id: 0 },
+                permissions: {}
+            });
+            const username = document.querySelector('.user-name');
+
+            expect(username.innerHTML).to.equal(__('annotation_posting_message'));
+        });
+
+        it('should display user name if the user id is not 0', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is awesome!',
+                user: { id: 1, name: 'user' },
+                permissions: {}
+            });
+            const username = document.querySelector('.user-name');
+
+            expect(username.innerHTML).to.equal('user');
+        });
+
+        it('should hide the delete icon if the user does\'nt have delete permissions', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: false }
+            });
+            const deleteButton = document.querySelector('.delete-comment-btn');
+
+            expect(deleteButton.classList.contains('box-preview-is-hidden')).to.be.true;
+        });
+
+        it('should make the delete icon hidden if the delete permission is not specified', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: {}
+            });
+            const deleteButton = document.querySelector('.delete-comment-btn');
+
+            expect(deleteButton.classList.contains('box-preview-is-hidden')).to.be.true;
+        });
+
+        it('should make delete icon visible if the user has delete permission', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const deleteButton = document.querySelector('.delete-comment-btn');
+
+            expect(deleteButton.classList.contains('box-preview-is-hidden')).to.be.false;
+        });
+
+        it('should hide the delete confirmation UI by default', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const deleteConfirmation = document.querySelector('.delete-confirmation');
+
+            expect(deleteConfirmation.classList.contains('box-preview-is-hidden')).to.be.true;
+        });
+    });
+
+    describe('_postAannotation()', () => {
+        it('should not post an annotation to the dialog if it has no text', () => {
+            const emitStub = sandbox.stub(annotationDialog, 'emit');
+
+            annotationDialog._postAnnotation();
+            expect(emitStub).to.not.be.called;
+        });
+
+        it('should post an annotation to the dialog if it has text', () => {
+            const emitStub = sandbox.stub(annotationDialog, 'emit');
+
+            document.querySelector('textarea').innerHTML += 'the preview SDK is great!';
+            annotationDialog._postAnnotation();
+            expect(emitStub).to.have.been.calledWith('annotationcreate', { text: 'the preview SDK is great!' });
+        });
+
+        it('should clear the annotation text element after posting', () => {
+            const annotationTextEl = document.querySelector('textarea');
+
+            annotationTextEl.innerHTML += 'the preview SDK is great!';
+            annotationDialog._postAnnotation();
+            expect(annotationTextEl.value).to.equal('');
+        });
+    });
+
+    describe('_cancelAnnotation()', () => {
+        it('should emit the annotationcancel message', () => {
+            const emitStub = sandbox.stub(annotationDialog, 'emit');
+
+            annotationDialog._cancelAnnotation();
+            expect(emitStub).to.have.been.calledWith('annotationcancel');
+        });
+    });
+
+    describe('_activateReply()', () => {
+        it('should show the correct UI when the reply textarea is activated', () => {
+            document.querySelector('textarea').innerHTML += 'the preview SDK is great!';
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
+
+            annotationDialog._activateReply();
+            expect(replyTextEl.classList.contains('box-preview-is-active')).to.be.true;
+            expect(buttonContainer.classList.contains('box-preview-is-hidden')).to.be.false;
+        });
+    });
+
+    describe('_deactivateReply()', () => {
+        it('should show the correct UI when the reply textarea is deactivated', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
+
+            annotationDialog._deactivateReply();
+            expect(replyTextEl.classList.contains('box-preview-is-active')).to.be.false;
+            expect(buttonContainer.classList.contains('box-preview-is-hidden')).to.be.true;
+        });
+    });
+
+    describe('_postReply()', () => {
+        it('should not post reply to the dialog if it has no text', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const emitStub = sandbox.stub(annotationDialog, 'emit');
+
+            annotationDialog._activateReply();
+            annotationDialog._postReply();
+            expect(emitStub).to.not.be.called;
+        });
+
+        it('should post a reply to the dialog if it has text', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const emitStub = sandbox.stub(annotationDialog, 'emit');
+            const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+
+            annotationDialog._activateReply();
+            replyTextEl.innerHTML += 'the preview SDK is great!';
+            annotationDialog._postReply();
+            expect(emitStub).to.have.been.calledWith('annotationcreate', { text: 'the preview SDK is great!' });
+        });
+
+        it('should clear the reply text element after posting', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+
+            annotationDialog._activateReply();
+            replyTextEl.innerHTML += 'the preview SDK is great!';
+            annotationDialog._postReply();
+            expect(replyTextEl.value).to.equal('');
+        });
+    });
+
+    describe('_showDeleteConfirmation()', () => {
+        it('should show the correct UI when a user clicks on delete', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const showElementStub = sandbox.stub(annotatorUtil, 'showElement');
+
+            annotationDialog._showDeleteConfirmation(1);
+            expect(showElementStub).to.be.called;
+        });
+    });
+
+    describe('_hideDeleteConfirmation()', () => {
+        it('should show the correct UI when a user clicks cancel in the delete confirmation', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const hideElementStub = sandbox.stub(annotatorUtil, 'hideElement');
+
+            annotationDialog._showDeleteConfirmation(1);
+            annotationDialog._hideDeleteConfirmation(1);
+            expect(hideElementStub).to.be.called;
+        });
+    });
+
+    describe('_deleteAnnotation()', () => {
+        it('should emit the annotationdelete message', () => {
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true }
+            });
+            const emitStub = sandbox.stub(annotationDialog, 'emit');
+
+            annotationDialog._deleteAnnotation(1);
+            expect(emitStub).to.have.been.calledWith('annotationdelete', { annotationID: 1 });
         });
     });
 });
