@@ -19,6 +19,7 @@ import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
 const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
+const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const PRESENTATION_MODE_STATE = {
@@ -146,7 +147,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     print() {
-        // Convert PDF to blob if needed
+        // If print blob is still not ready, explictitly fetch it
         if (!this.printBlob) {
             this.fetchPrintBlob(this.pdfUrl).then(this.print);
             return;
@@ -156,12 +157,47 @@ class DocBase extends Base {
         // in a new tab due to security restrictions, see:
         // http://stackoverflow.com/questions/24007073/open-links-made-by-createobjecturl-in-ie11
         if (typeof window.navigator.msSaveOrOpenBlob === 'function') {
-            window.navigator.msSaveOrOpenBlob(this.printBlob, 'print.pdf');
+            const printResult = window.navigator.msSaveOrOpenBlob(this.printBlob, 'print.pdf');
 
-        // For other browsers, open in a new tab
+            // If open/save notification is not shown, broadcast error
+            if (!printResult) {
+                this.emit('printerror');
+            } else {
+                this.emit('printsuccess');
+            }
+
+        // For other browsers, open and print in a new tab
         } else {
             const printURL = URL.createObjectURL(this.printBlob);
-            window.open(printURL);
+            const printResult = window.open(printURL);
+
+            // Open print popup if possible
+            if (printResult && typeof printResult.print === 'function') {
+                const browser = Browser.getName();
+
+                // Chrome supports printing on load
+                if (browser === 'Chrome') {
+                    printResult.addEventListener('load', () => {
+                        printResult.print();
+                    });
+
+                // Safari print on load produces blank page, so we use a timeout
+                } else if (browser === 'Safari') {
+                    setTimeout(() => {
+                        printResult.print();
+                    }, PRINT_TIMEOUT_MS);
+                }
+
+                // Firefox has a blocking bug: https://bugzilla.mozilla.org/show_bug.cgi?id=911444
+            }
+
+            // If new window/tab was blocked, broadcast error
+            if (!printResult || printResult.closed || typeof printResult.closed === 'undefined') {
+                this.emit('printerror');
+            } else {
+                this.emit('printsuccess');
+            }
+
             URL.revokeObjectURL(printURL);
         }
     }
@@ -527,7 +563,7 @@ class DocBase extends Base {
     }
 
     /**
-     * Sets up print notification.
+     * Sets up print notification & prepare PDF for printing.
      *
      * @returns {void}
      * @private
@@ -537,6 +573,8 @@ class DocBase extends Base {
         printNotificationEl.classList.add('box-preview-print-notification');
         printNotificationEl.textContent = __('print_notification');
         this.containerEl.appendChild(printNotificationEl);
+
+        this.fetchPrintBlob(this.pdfUrl);
     }
 
     /**
@@ -605,8 +643,7 @@ class DocBase extends Base {
      * @private
      */
     fetchPrintBlob(pdfUrl) {
-        return get(pdfUrl, this.appendAuthHeader(), 'blob')
-        .then((blob) => {
+        return get(pdfUrl, this.appendAuthHeader(), 'blob').then((blob) => {
             this.printBlob = blob;
         });
     }
