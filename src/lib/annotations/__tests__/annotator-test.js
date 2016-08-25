@@ -337,4 +337,83 @@ describe('annotator', () => {
             expect(annotator.isInPointMode()).to.be.false;
         });
     });
+
+    describe('_destroyPendingThreads', () => {
+        it('should destroy and return true if there are any pending threads', () => {
+            const thread = {
+                location: {
+                    page: 2
+                },
+                state: constants.ANNOTATION_STATE_PENDING,
+                destroy: () => {}
+            };
+            const destroyStub = sandbox.stub(thread, 'destroy');
+            annotator.init();
+            annotator.addThreadToMap(thread);
+            const destroyed = annotator._destroyPendingThreads();
+
+            expect(destroyStub).to.be.called;
+            expect(destroyed).to.equal(true);
+        });
+
+        it('should not destroy and return false if there are no threads', () => {
+            const thread = {
+                location: {
+                    page: 2
+                },
+                state: constants.ANNOTATION_STATE_PENDING,
+                destroy: () => {}
+            };
+            const destroyStub = sandbox.stub(thread, 'destroy');
+            annotator.init();
+            const destroyed = annotator._destroyPendingThreads();
+
+            expect(destroyStub).to.not.be.called;
+            expect(destroyed).to.equal(false);
+        });
+
+        it('should not destroy and return false if the threads are not pending', () => {
+            const thread = {
+                location: {
+                    page: 2
+                },
+                state: 'NOT_PENDING',
+                destroy: () => {}
+            };
+            const destroyStub = sandbox.stub(thread, 'destroy');
+            annotator.init();
+            annotator.addThreadToMap(thread);
+            const destroyed = annotator._destroyPendingThreads();
+
+            expect(destroyStub).to.not.be.called;
+            expect(destroyed).to.equal(false);
+        });
+
+        it('should destroy only pending threads, and return true', () => {
+            const thread = {
+                location: {
+                    page: 2
+                },
+                state: 'NOT_PENDING',
+                destroy: () => {}
+            };
+            const thread2 = {
+                location: {
+                    page: 2
+                },
+                state: constants.ANNOTATION_STATE_PENDING,
+                destroy: () => {}
+            };
+            const destroyStub = sandbox.stub(thread, 'destroy');
+            const destroyStub2 = sandbox.stub(thread2, 'destroy');
+            annotator.init();
+            annotator.addThreadToMap(thread);
+            annotator.addThreadToMap(thread2);
+            const destroyed = annotator._destroyPendingThreads();
+
+            expect(destroyStub).to.not.be.called;
+            expect(destroyStub2).to.be.called;
+            expect(destroyed).to.equal(true);
+        });
+    });
 });

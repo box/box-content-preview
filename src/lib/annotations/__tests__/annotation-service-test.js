@@ -233,4 +233,58 @@ describe('annotation-service', () => {
     describe('getAnnotationUser()', () => {
         // @TODO(tjin): Test when getAnnotationUser() is updated after the release of transactional users
     });
+
+    describe('_createThreadMap()', () => {
+        it('should create a thread map with the correct annotations, in the correct order', () => {
+            const annotation1 = new Annotation({
+                fileVersionID: 2,
+                threadID: AnnotationService.generateID(),
+                type: 'point',
+                text: 'blah',
+                location: { x: 0, y: 0 },
+                created: Date.now()
+            });
+            const annotation2 = new Annotation({
+                fileVersionID: 2,
+                threadID: AnnotationService.generateID(),
+                type: 'point',
+                text: 'blah2',
+                location: { x: 0, y: 0 },
+                created: Date.now()
+
+            });
+            const annotation3 = new Annotation({
+                fileVersionID: 2,
+                threadID: annotation1.threadID,
+                type: 'point',
+                text: 'blah3',
+                location: { x: 0, y: 0 },
+                created: Date.now()
+
+            });
+            const threadMap = annotationService._createThreadMap([annotation1, annotation2, annotation3]);
+
+            assert.equal(threadMap[annotation1.threadID].length, 2, 'First thread should have two annotations');
+            assert.equal(threadMap[annotation1.threadID][0], annotation1, 'The first thread added should appear first in the map');
+        });
+    });
+
+    describe('_createAnnotation()', () => {
+        it('should call the Annotation constructor', () => {
+            const data = {
+                fileVersionID: 2,
+                threadID: 1,
+                type: 'point',
+                text: 'blah3',
+                location: { x: 0, y: 0 },
+                created: Date.now(),
+                item: { id: 1 },
+                details: { threadID: 1 },
+                created_by: { id: 1 }
+            };
+            const annotation1 = annotationService._createAnnotation(data);
+
+            assert.equal(annotation1 instanceof Annotation, true);
+        });
+    });
 });
