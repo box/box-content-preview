@@ -359,7 +359,8 @@ THREE.VREffect = function ( renderer, boxRenderer, onError ) {
                 renderTarget: renderTarget,
                 clearDepth: true,
                 clearColor: true,
-                viewPort: renderRectL
+                viewPort: renderRectL,
+                enablePreRenderFunctions: true
             });
 
             // render right eye
@@ -368,7 +369,8 @@ THREE.VREffect = function ( renderer, boxRenderer, onError ) {
                 renderTarget: renderTarget,
                 clearDepth: true,
                 clearColor: true,
-                viewPort: renderRectR
+                viewPort: renderRectR,
+                enablePreRenderFunctions: true
             })
 
             renderer.setScissorTest( false );

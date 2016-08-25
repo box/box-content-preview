@@ -144,83 +144,79 @@
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _VideoAsset = __webpack_require__(150);
-
-	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
-
 	var _MaterialAsset = __webpack_require__(17);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(151);
+	var _MeshGeometryAsset = __webpack_require__(150);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
+
+	var _PrefabAsset = __webpack_require__(152);
+
+	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
 	var _PrimitiveGeometryAsset = __webpack_require__(153);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(154);
-
-	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
-
-	var _RenderTexture2DAsset = __webpack_require__(155);
+	var _RenderTexture2DAsset = __webpack_require__(154);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(157);
+	var _RenderTextureCubeAsset = __webpack_require__(156);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _SceneAsset = __webpack_require__(158);
+	var _SceneAsset = __webpack_require__(157);
 
 	var _SceneAsset2 = _interopRequireDefault(_SceneAsset);
 
-	var _ShaderAsset = __webpack_require__(159);
+	var _ScriptAsset = __webpack_require__(158);
+
+	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
+
+	var _ShaderAsset = __webpack_require__(160);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _ScriptAsset = __webpack_require__(164);
+	var _SkinAsset = __webpack_require__(165);
 
-	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
+	var _SkinAsset2 = _interopRequireDefault(_SkinAsset);
 
 	var _Texture2DAsset = __webpack_require__(166);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(167);
+	var _TextureCubeAsset = __webpack_require__(168);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _Box3DObject = __webpack_require__(168);
+	var _VideoAsset = __webpack_require__(167);
+
+	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
+
+	var _Box3DObject = __webpack_require__(169);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(169);
+	var _CameraObject = __webpack_require__(170);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(170);
+	var _LightObject = __webpack_require__(171);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _SkinnedMeshObject = __webpack_require__(171);
+	var _MeshObject = __webpack_require__(172);
 
-	var _SkinnedMeshObject2 = _interopRequireDefault(_SkinnedMeshObject);
+	var _MeshObject2 = _interopRequireDefault(_MeshObject);
 
-	var _StaticMeshObject = __webpack_require__(173);
-
-	var _StaticMeshObject2 = _interopRequireDefault(_StaticMeshObject);
-
-	var _ModelObject = __webpack_require__(174);
-
-	var _ModelObject2 = _interopRequireDefault(_ModelObject);
-
-	var _APIUtilities = __webpack_require__(165);
+	var _APIUtilities = __webpack_require__(159);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(175);
+	var _DOMUtilities = __webpack_require__(173);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
@@ -228,7 +224,7 @@
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(176);
+	var _DevResourceLoader = __webpack_require__(174);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
 
@@ -410,25 +406,24 @@
 	Box3D.BufferAsset = _BufferAsset2.default;
 	Box3D.DocumentAsset = _DocumentAsset2.default;
 	Box3D.ImageAsset = _ImageAsset2.default;
-	Box3D.VideoAsset = _VideoAsset2.default;
 	Box3D.MaterialAsset = _MaterialAsset2.default;
 	Box3D.MeshGeometryAsset = _MeshGeometryAsset2.default;
-	Box3D.PrimitiveGeometryAsset = _PrimitiveGeometryAsset2.default;
 	Box3D.PrefabAsset = _PrefabAsset2.default;
+	Box3D.PrimitiveGeometryAsset = _PrimitiveGeometryAsset2.default;
 	Box3D.RenderTexture2DAsset = _RenderTexture2DAsset2.default;
 	Box3D.RenderTextureCubeAsset = _RenderTextureCubeAsset2.default;
 	Box3D.SceneAsset = _SceneAsset2.default;
-	Box3D.ShaderAsset = _ShaderAsset2.default;
 	Box3D.ScriptAsset = _ScriptAsset2.default;
+	Box3D.ShaderAsset = _ShaderAsset2.default;
+	Box3D.SkinAsset = _SkinAsset2.default;
 	Box3D.Texture2DAsset = _Texture2DAsset2.default;
 	Box3D.TextureCubeAsset = _TextureCubeAsset2.default;
+	Box3D.VideoAsset = _VideoAsset2.default;
 
 	Box3D.Box3DObject = _Box3DObject2.default;
 	Box3D.CameraObject = _CameraObject2.default;
 	Box3D.LightObject = _LightObject2.default;
-	Box3D.SkinnedMeshObject = _SkinnedMeshObject2.default;
-	Box3D.StaticMeshObject = _StaticMeshObject2.default;
-	Box3D.ModelObject = _ModelObject2.default;
+	Box3D.MeshObject = _MeshObject2.default;
 
 	Box3D.APIUtilities = _APIUtilities2.default;
 	Box3D.DOMUtilities = _DOMUtilities2.default;
@@ -56547,6 +56542,8 @@
 	    _this.assets = undefined;
 	    _this.box3DRuntime = undefined;
 	    _this.entityCollection = undefined;
+	    _this.initTimeoutId = undefined;
+
 	    _this.Scripts = new _ScriptRegistry2.default();
 	    _this.Applications = new _BaseRegistry2.default(Box3D.ApplicationAsset);
 	    _this.Buffers = new _BaseRegistry2.default(Box3D.BufferAsset);
@@ -56560,7 +56557,7 @@
 	    _this.Images = new _BaseRegistry2.default(Box3D.BaseImageAsset);
 	    _this.Animations = new _BaseRegistry2.default(Box3D.AnimationAsset);
 	    _this.Audio = new _BaseRegistry2.default(Box3D.AudioAsset);
-	    _this.initTimeoutId = undefined;
+	    _this.Skins = new _BaseRegistry2.default(Box3D.SkinAsset);
 	    return _this;
 	  }
 
@@ -56583,6 +56580,7 @@
 	      this.Geometries.initialize(box3DRuntime);
 	      this.Animations.initialize(box3DRuntime);
 	      this.Audio.initialize(box3DRuntime);
+	      this.Skins.initialize(box3DRuntime);
 
 	      this.on('addAssetEntity', this.registerAsset, this);
 	      this.on('removeAssetEntity', this.unregisterAsset, this);
@@ -56600,6 +56598,8 @@
 	      }
 	      _log2.default.info(this.box3DRuntime.engineName + ' - Uninitializing AssetRegistry.');
 
+	      this.Skins.uninitialize();
+	      this.Skins = undefined;
 	      this.Buffers.uninitialize();
 	      this.Buffers = undefined;
 	      this.Scenes.uninitialize();
@@ -56855,54 +56855,78 @@
 	    key: 'getEntityClass',
 	    value: function getEntityClass(type) {
 	      switch (type) {
-	        case 'application':
-	          return Box3D.ApplicationAsset;
 	        case 'animation':
 	          return Box3D.AnimationAsset;
-	        case 'buffer':
-	          return Box3D.BufferAsset;
-	        case 'document':
-	          return Box3D.DocumentAsset;
-	        case 'object':
-	          return Box3D.Box3DObject;
+
+	        case 'application':
+	          return Box3D.ApplicationAsset;
+
 	        case 'asset':
 	          return Box3D.Box3DAsset;
-	        case 'scene':
-	          return Box3D.SceneAsset;
-	        case 'prefab':
-	          return Box3D.PrefabAsset;
-	        case 'material':
-	          return Box3D.MaterialAsset;
-	        case 'shader':
-	          return Box3D.ShaderAsset;
-	        case 'meshGeometry':
-	          return Box3D.MeshGeometryAsset;
-	        case 'primitiveGeometry':
-	          return Box3D.PrimitiveGeometryAsset;
-	        case 'video':
-	          return Box3D.VideoAsset;
-	        case 'image':
-	          return Box3D.ImageAsset;
-	        case 'texture2D':
-	          return Box3D.Texture2DAsset;
-	        case 'textureCube':
-	          return Box3D.TextureCubeAsset;
-	        case 'renderTexture2D':
-	          return Box3D.RenderTexture2DAsset;
-	        case 'renderTextureCube':
-	          return Box3D.RenderTextureCubeAsset;
-	        case 'script':
-	          return Box3D.ScriptAsset;
-	        case 'model':
-	          return Box3D.ModelObject;
-	        case 'mesh':
-	          return Box3D.BaseMeshObject;
+
+	        case 'buffer':
+	          return Box3D.BufferAsset;
+
 	        case 'camera':
 	          return Box3D.CameraObject;
+
+	        case 'document':
+	          return Box3D.DocumentAsset;
+
+	        case 'image':
+	          return Box3D.ImageAsset;
+
 	        case 'light':
 	          return Box3D.LightObject;
+
+	        case 'material':
+	          return Box3D.MaterialAsset;
+
+	        case 'mesh':
+	          return Box3D.MeshObject;
+
+	        case 'meshGeometry':
+	          return Box3D.MeshGeometryAsset;
+
 	        case 'node':
 	          return Box3D.Box3DObject;
+
+	        case 'object':
+	          return Box3D.Box3DObject;
+
+	        case 'prefab':
+	          return Box3D.PrefabAsset;
+
+	        case 'primitiveGeometry':
+	          return Box3D.PrimitiveGeometryAsset;
+
+	        case 'renderTexture2D':
+	          return Box3D.RenderTexture2DAsset;
+
+	        case 'renderTextureCube':
+	          return Box3D.RenderTextureCubeAsset;
+
+	        case 'scene':
+	          return Box3D.SceneAsset;
+
+	        case 'script':
+	          return Box3D.ScriptAsset;
+
+	        case 'shader':
+	          return Box3D.ShaderAsset;
+
+	        case 'skin':
+	          return Box3D.SkinAsset;
+
+	        case 'texture2D':
+	          return Box3D.Texture2DAsset;
+
+	        case 'textureCube':
+	          return Box3D.TextureCubeAsset;
+
+	        case 'video':
+	          return Box3D.VideoAsset;
+
 	        default:
 	          _log2.default.error('Unknown asset type, ' + type + ', given as argument to getEntityClass');
 	          return;
@@ -56912,8 +56936,14 @@
 	    key: 'getRegistryByType',
 	    value: function getRegistryByType(type) {
 	      switch (type) {
+	        case 'animation':
+	          return this.Animations;
+
 	        case 'application':
 	          return this.Applications;
+
+	        case 'audio':
+	          return this.Audio;
 
 	        case 'buffer':
 	          return this.Buffers;
@@ -56921,40 +56951,37 @@
 	        case 'document':
 	          return this.Documents;
 
-	        case 'scene':
-	          return this.Scenes;
-
-	        case 'prefab':
-	          return this.Prefabs;
+	        case 'image':
+	        case 'video':
+	          return this.Images;
 
 	        case 'material':
 	          return this.Materials;
-
-	        case 'shader':
-	          return this.Shaders;
 
 	        case 'meshGeometry':
 	        case 'primitiveGeometry':
 	          return this.Geometries;
 
-	        case 'texture2D':
+	        case 'prefab':
+	          return this.Prefabs;
+
 	        case 'renderTexture2D':
-	        case 'textureCube':
 	        case 'renderTextureCube':
+	        case 'texture2D':
+	        case 'textureCube':
 	          return this.Textures;
 
-	        case 'image':
-	        case 'video':
-	          return this.Images;
-
-	        case 'animation':
-	          return this.Animations;
+	        case 'scene':
+	          return this.Scenes;
 
 	        case 'script':
 	          return this.Scripts;
 
-	        case 'audio':
-	          return this.Audio;
+	        case 'shader':
+	          return this.Shaders;
+
+	        case 'skin':
+	          return this.Skins;
 
 	        default:
 	          return null;
@@ -57410,16 +57437,16 @@
 	      switch (type) {
 	        case 'camera':
 	          return Box3D.CameraObject;
+
 	        case 'light':
 	          return Box3D.LightObject;
+
 	        case 'mesh':
-	          return Box3D.StaticMeshObject;
-	        case 'skinnedMesh':
-	          return Box3D.SkinnedMeshObject;
-	        case 'model':
-	          return Box3D.ModelObject;
+	          return Box3D.MeshObject;
+
 	        case 'node':
 	          return Box3D.Box3DObject;
+
 	        default:
 	          _log2.default.warn('Currently no support for object type ' + type);
 	          return Box3D.Box3DObject;
@@ -58719,7 +58746,7 @@
 	        this.sharedData.children.push(objectId);
 	        this.box3DRuntime.entityDispatcher.dispatchChildAdded(this, objectId);
 	      } else {
-	        _log2.default.error('Box3DEntity.addChildById - the object being added is not part of this asset.' + ' If it is an object from a different asset (e.g. scene, model, etc.), it must first ' + 'be moved to this asset using moveTo()');
+	        _log2.default.error('Box3DEntity.addChildById - the object being added is not part of this asset.' + ' If it is an object from a different asset (e.g. scene, prefab, etc.), it must first ' + 'be moved to this asset using moveTo()');
 	      }
 	    }
 
@@ -59454,12 +59481,21 @@
 	        parent.remove(this.runtimeData);
 	      }
 
+	      // Save the children!
+	      var children = this.runtimeData && this.runtimeData.children;
+
 	      this.setState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.PENDING);
 
 	      this.loadBase(function () {
 	        // Add the new runtimeData to the parent.
 	        if (parent) {
 	          parent.add(_this6.runtimeData);
+	        }
+	        if (children) {
+	          // Add the old children to the new object.
+	          for (var i = 0; i < children.length; i++) {
+	            _this6.runtimeData.add(children[i]);
+	          }
 	        }
 
 	        if (_lodash2.default.isFunction(callback)) {
@@ -76427,7 +76463,7 @@
 
 	      var that = this;
 	      parentAsset.traverse(function (obj) {
-	        if (obj.type === 'mesh' || obj.type === 'skinnedMesh') {
+	        if (obj.type === 'mesh') {
 	          that.registerMesh(obj);
 	        }
 	      });
@@ -80141,6 +80177,9 @@
 
 	        var q = new _three2.default.Vector4();
 	        var projectionMatrix = this.reflectionCamera.projectionMatrix;
+	        projectionMatrix.copy(camera.projectionMatrix);
+	        // If any left-right asymetry  exists in the fov, flip the projection.
+	        projectionMatrix.elements[8] *= -1;
 
 	        q.x = (sign(this.clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
 	        q.y = (sign(this.clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
@@ -80163,6 +80202,7 @@
 	     * Render the scene to the texture.
 	     * @method captureScene
 	     * @public
+	     * @param {Object} scene The scene that the reflection will render.
 	     * @param {Object} camera The camera that the reflection will be rendered relative to (since
 	     * reflections are dependent on view)
 	     * @return {void}
@@ -80170,11 +80210,10 @@
 
 	  }, {
 	    key: 'captureScene',
-	    value: function captureScene(camera) {
+	    value: function captureScene(scene, camera) {
 	      if (!camera) {
 	        throw new Error('Call to ReflectionCapture.captureScene without specifying a camera.');
 	      }
-	      var scene = this.getThreeScene();
 	      this.updateReflection(camera);
 	      // Render the mirrored view of the current scene into the target texture
 	      var threeTexture = this.captureTexture ? this.captureTexture.runtimeData : null;
@@ -80194,9 +80233,8 @@
 	    value: function preRenderView(scene, camera) {
 	      if (this.isEnabled()) {
 	        if (this.framesElapsed >= this.updateFrameInterval) {
-	          this.updateReflection(camera);
 	          //render reflection
-	          this.captureScene(camera);
+	          this.captureScene(scene, camera);
 	          this.framesElapsed = 0;
 	        } else {
 	          this.framesElapsed++;
@@ -81249,9 +81287,11 @@
 	        this.overrideMaterialEnabled = true;
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
-	            obj.runtimeData.material = overrideMaterial.static;
-	          } else if (obj.type === 'skinnedMesh') {
-	            obj.runtimeData.material = overrideMaterial.skinned;
+	            if (obj.isSkinned()) {
+	              obj.runtimeData.material = overrideMaterial.skinned;
+	            } else {
+	              obj.runtimeData.material = overrideMaterial.static;
+	            }
 	          }
 	        });
 	      } else if (perMeshOverrideMaterial) {
@@ -81262,9 +81302,9 @@
 	          var prevMats;
 	          var newMat;
 	          var matType;
-	          if (obj.type === 'mesh' || obj.type === 'skinnedMesh') {
+	          if (obj.type === 'mesh') {
 	            prevMats = obj.getMaterials();
-	            matType = obj.type === 'mesh' ? 'static' : 'skinned';
+	            matType = obj.isSkinned() ? 'skinned' : 'static';
 	            overrideMaterial = perMeshOverrideMaterial[matType];
 	            if (prevMats.length > 1) {
 	              obj.runtimeData.material = new _three2.default.MultiMaterial();
@@ -81308,7 +81348,7 @@
 	          var material;
 	          var newMaterials;
 	          var i;
-	          if (obj.type === 'mesh' || obj.type === 'skinnedMesh') {
+	          if (obj.type === 'mesh') {
 	            if (this.perMeshOverrideMaterialEnabled && obj.runtimeData.material) {
 	              if (obj.runtimeData.material instanceof _three2.default.MultiMaterial) {
 	                for (i = 0; i < obj.runtimeData.material.materials.length; i++) {
@@ -81370,7 +81410,7 @@
 	          obj.visible = false;
 	        }, this);
 	        scene.traverse(function (obj) {
-	          if (obj.type === 'mesh' || obj.type === 'skinnedMesh') {
+	          if (obj.type === 'mesh') {
 	            if (this.wireframeCache[obj.id]) {
 	              this.wireframeCache[obj.id].visible = true;
 	            } else {
@@ -96700,244 +96740,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _BaseImageAsset2 = __webpack_require__(20);
-
-	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class VideoAsset
-	 * @constructor
-	 */
-	var VideoAsset = function (_BaseImageAsset) {
-	  _inherits(VideoAsset, _BaseImageAsset);
-
-	  function VideoAsset(json) {
-	    _classCallCheck(this, VideoAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(VideoAsset).call(this, json));
-	  }
-
-	  _createClass(VideoAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
-	      this.box3DRuntime.on('update', this.onUpdate, this);
-	      this.on('pause', this.pause, this);
-	      this.on('play', this.play, this);
-	      this.on('stop', this.stop, this);
-	      this.on('toggle', this.toggle, this);
-	    }
-	  }, {
-	    key: 'uninitialize',
-	    value: function uninitialize() {
-	      this.box3DRuntime.off('update', this.onUpdate, this);
-	      this.off('pause', this.pause, this);
-	      this.off('play', this.play, this);
-	      this.off('stop', this.stop, this);
-	      this.off('toggle', this.toggle, this);
-
-	      if (this.runtimeData && this.runtimeData.image) {
-	        // TODO: should we be doing more here?
-	        this.runtimeData.image.pause();
-	      }
-
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      var _this2 = this;
-
-	      var onVideoReady = function onVideoReady(videoEl) {
-	        if (videoEl) {
-	          videoEl.style.display = 'none';
-	          videoEl.loop = _this2.getProperty('loop');
-	          videoEl.autoplay = _this2.getProperty('autoPlay');
-	          if (!_this2.runtimeData) {
-	            _this2.runtimeData = {};
-	          }
-
-	          _this2.runtimeData.imageData = videoEl;
-	          _this2.runtimeData.width = videoEl.width;
-	          _this2.runtimeData.height = videoEl.height;
-	          _this2.trigger('loadProgress', _this2);
-	        }
-	        callback();
-	      };
-
-	      var onVideoFail = function onVideoFail(err) {
-	        _log2.default.debug('There was an error loading the video, ' + _this2.getName(), err);
-	        _this2.failure = true;
-	        callback();
-	      };
-
-	      var parentEl = this.box3DRuntime.getRenderer().getCanvas().parentElement;
-	      var cssSelector = this.getProperty('querySelector');
-	      if (cssSelector) {
-	        var videoEl = parentEl.querySelector(cssSelector);
-	        onVideoReady(videoEl);
-	      } else {
-	        this.box3DRuntime.resourceLoader.load(this, { xhrKey: this.id }).then(function (data) {
-	          parentEl.appendChild(data.data);
-	          onVideoReady(data.data);
-	        }).catch(onVideoFail);
-	      }
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-	      var videoEl = this.runtimeData.imageData;
-	      if (videoEl) {
-
-	        if (changes.hasOwnProperty('loop')) {
-	          videoEl.loop = this.getProperty('loop');
-	        }
-
-	        if (changes.hasOwnProperty('autoPlay')) {
-	          videoEl.autoplay = this.getProperty('autoPlay');
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'onUpdate',
-	    value: function onUpdate() {
-	      if (this.runtimeData) {
-	        var videoEl = this.runtimeData.imageData;
-
-	        if (videoEl && !videoEl.paused && !videoEl.error && videoEl.readyState >= videoEl.HAVE_CURRENT_DATA) {
-	          this.box3DRuntime.needsRender = true;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'pause',
-	    value: function pause() {
-	      if (this.runtimeData) {
-	        this.runtimeData.image.pause();
-	      }
-	    }
-	  }, {
-	    key: 'play',
-	    value: function play(seek, seekTime) {
-	      if (this.runtimeData) {
-	        if (seek) {
-	          this.runtimeData.imageData.currentTime = seekTime;
-	        }
-
-	        this.runtimeData.imageData.play();
-	      }
-	    }
-	  }, {
-	    key: 'stop',
-	    value: function stop() {
-	      if (this.runtimeData) {
-	        this.runtimeData.imageData.pause();
-	        this.runtimeData.imageData.currentTime = 0;
-	      }
-	    }
-	  }, {
-	    key: 'toggle',
-	    value: function toggle() {
-	      if (this.runtimeData) {
-	        if (this.runtimeData.imageData.paused) {
-	          this.play();
-	        } else {
-	          this.pause();
-	        }
-	      }
-	    }
-	  }]);
-
-	  return VideoAsset;
-	}(_BaseImageAsset3.default);
-
-	VideoAsset.schema = Object.assign({}, _BaseImageAsset3.default.schema, {
-	  autoPlay: {
-	    type: 'boolean',
-	    description: '',
-	    default: true
-	  },
-	  state: {
-	    type: 'string',
-	    description: '',
-	    default: 'play'
-	  },
-	  loop: {
-	    type: 'boolean',
-	    description: '',
-	    default: true
-	  }
-	});
-	VideoAsset.events = {
-	  pause: {
-	    params: [],
-	    action: true,
-	    category: ''
-	  },
-	  play: {
-	    params: [{
-	      name: 'seek',
-	      type: 'b',
-	      description: '',
-	      default: false
-	    }, {
-	      name: 'seekTime',
-	      type: 'f',
-	      description: '',
-	      default: 0
-	    }],
-	    action: true,
-	    category: ''
-	  },
-	  stop: {
-	    params: [],
-	    action: true,
-	    category: ''
-	  },
-	  toggle: {
-	    params: [],
-	    action: true,
-	    category: ''
-	  }
-	};
-
-
-	window.Box3D.VideoAsset = VideoAsset;
-	exports.default = VideoAsset;
-
-/***/ },
-/* 151 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _log = __webpack_require__(6);
 
 	var _log2 = _interopRequireDefault(_log);
@@ -96950,7 +96752,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(152);
+	var _BaseGeometryAsset2 = __webpack_require__(151);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -97244,7 +97046,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 152 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97492,6 +97294,101 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
+/* 152 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _lodash = __webpack_require__(3);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class PrefabAsset
+	 * @constructor
+	 */
+	var PrefabAsset = function (_Box3DAsset) {
+	  _inherits(PrefabAsset, _Box3DAsset);
+
+	  function PrefabAsset(json) {
+	    _classCallCheck(this, PrefabAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
+	  }
+
+	  _createClass(PrefabAsset, [{
+	    key: 'verifyProperty',
+	    value: function verifyProperty(propertyName, valueObj) {
+	      if (_get(Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	        return true;
+	      }
+	      var originalType = this.get('originalType') || 'node';
+	      var objectClass = this.getObjectClass(originalType);
+	      // return objectClass.verifyProperty.call(this, propertyName, valueObj);
+	      // TODO: this doesn't actually verify that the property is valid. It only checks
+	      // that it exists.
+	      return !!objectClass.schema[propertyName];
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      this.runtimeData = new _three2.default.Object3D();
+	      callback();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'getDefaultProperty',
+	    value: function getDefaultProperty(propertyName) {
+	      var originalType = this.get('originalType') || 'node';
+	      var objectClass = this.getObjectClass(originalType);
+	      var value = void 0;
+	      var schemaDef = objectClass.schema[propertyName];
+	      value = schemaDef ? schemaDef.default : undefined;
+
+	      if (value instanceof Object) {
+	        return _lodash2.default.clone(value);
+	      } else {
+	        return value;
+	      }
+	    }
+	  }]);
+
+	  return PrefabAsset;
+	}(_Box3DAsset3.default);
+
+	window.Box3D.PrefabAsset = PrefabAsset;
+	exports.default = PrefabAsset;
+
+/***/ },
 /* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -97513,7 +97410,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(152);
+	var _BaseGeometryAsset2 = __webpack_require__(151);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -97722,101 +97619,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _lodash = __webpack_require__(3);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DAsset2 = __webpack_require__(12);
-
-	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class PrefabAsset
-	 * @constructor
-	 */
-	var PrefabAsset = function (_Box3DAsset) {
-	  _inherits(PrefabAsset, _Box3DAsset);
-
-	  function PrefabAsset(json) {
-	    _classCallCheck(this, PrefabAsset);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
-	  }
-
-	  _createClass(PrefabAsset, [{
-	    key: 'verifyProperty',
-	    value: function verifyProperty(propertyName, valueObj) {
-	      if (_get(Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
-	        return true;
-	      }
-	      var originalType = this.get('originalType') || 'node';
-	      var objectClass = this.getObjectClass(originalType);
-	      // return objectClass.verifyProperty.call(this, propertyName, valueObj);
-	      // TODO: this doesn't actually verify that the property is valid. It only checks
-	      // that it exists.
-	      return !!objectClass.schema[propertyName];
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this.runtimeData = new _three2.default.Object3D();
-	      callback();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'getDefaultProperty',
-	    value: function getDefaultProperty(propertyName) {
-	      var originalType = this.get('originalType') || 'node';
-	      var objectClass = this.getObjectClass(originalType);
-	      var value = void 0;
-	      var schemaDef = objectClass.schema[propertyName];
-	      value = schemaDef ? schemaDef.default : undefined;
-
-	      if (value instanceof Object) {
-	        return _lodash2.default.clone(value);
-	      } else {
-	        return value;
-	      }
-	    }
-	  }]);
-
-	  return PrefabAsset;
-	}(_Box3DAsset3.default);
-
-	window.Box3D.PrefabAsset = PrefabAsset;
-	exports.default = PrefabAsset;
-
-/***/ },
-/* 155 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
@@ -97829,7 +97631,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(156);
+	var _BaseRenderTextureAsset = __webpack_require__(155);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97882,7 +97684,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 156 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98031,7 +97833,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 157 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98056,7 +97858,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(156);
+	var _BaseRenderTextureAsset = __webpack_require__(155);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -98137,7 +97939,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 158 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98264,7 +98066,7 @@
 	        prefabObjectId: prefab.id,
 	        prefabAssetId: prefab.id,
 	        prefabInstanceId: newTopObjectId,
-	        type: prefab.get('originalType') || 'model',
+	        type: prefab.get('originalType') || 'node',
 	        components: Object.assign({}, prefab.componentRegistry.getDescriptors())
 	      };
 	      var that = this;
@@ -98432,7 +98234,246 @@
 	exports.default = SceneAsset;
 
 /***/ },
+/* 158 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* jshint -W061 */
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _lodash = __webpack_require__(3);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _Box3DEntity = __webpack_require__(13);
+
+	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
+
+	var _Box3DAsset2 = __webpack_require__(12);
+
+	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
+
+	var _APIUtilities = __webpack_require__(159);
+
+	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ScriptAsset = function (_Box3DAsset) {
+	  _inherits(ScriptAsset, _Box3DAsset);
+
+	  function ScriptAsset(json) {
+	    _classCallCheck(this, ScriptAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptAsset).call(this, json));
+	  }
+
+	  _createClass(ScriptAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'initialize', this).call(this, properties);
+	      var category = this.getProperty('category');
+	      if (!category) {
+	        this.setProperty('category', 'User Defined');
+	      }
+	      this.setState(_Box3DEntity2.default.STATE_TYPE.CHILDREN, _Box3DEntity2.default.STATE.SUCCEEDED);
+	    }
+	  }, {
+	    key: 'uninitialize',
+	    value: function uninitialize() {
+	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'uninitialize', this).apply(this, arguments);
+	    }
+	  }, {
+	    key: 'initializeComponents',
+	    value: function initializeComponents() {
+	      this.setState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
+	      return;
+	    }
+	  }, {
+	    key: 'getDefaultComponentData',
+	    value: function getDefaultComponentData() {
+	      return ScriptAsset.getDefaultComponentData(this.getProperty('attributes'));
+	    }
+	  }, {
+	    key: 'loadBase',
+	    value: function loadBase() {
+	      if (this.isBaseLoaded()) {
+	        this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
+	      } else {
+	        var externalDependencies = [];
+
+	        _lodash2.default.each(this.getProperty('externalDependencies'), function (dependency) {
+	          externalDependencies.push(dependency);
+	        }, this);
+
+	        _APIUtilities2.default.loadExtensions(externalDependencies, _lodash2.default.bind(function () {
+	          this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
+	        }, this));
+	      }
+	    }
+	  }], [{
+	    key: 'getDefaultComponentData',
+	    value: function getDefaultComponentData(attrs) {
+	      var attributes = {};
+
+	      if (attrs) {
+	        _lodash2.default.each(attrs, function (attr, idx) {
+	          if (typeof attr.default !== 'undefined') {
+	            attributes[idx] = attr.default;
+	          } else if (attr.type === 'custom') {
+	            attributes[idx] = ScriptAsset.getDefaultComponentData(attr.attributes);
+	          } else if (attr.type === 'a') {
+	            attributes[idx] = [];
+	          }
+	        }, this);
+	      }
+
+	      return _lodash2.default.cloneDeep(attributes);
+	    }
+	  }]);
+
+	  return ScriptAsset;
+	}(_Box3DAsset3.default);
+
+	ScriptAsset.schema = Object.assign({}, _Box3DAsset3.default.schema, {
+	  attributes: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  description: {
+	    type: 'string',
+	    default: ''
+	  },
+	  attributesOrder: {
+	    type: 'array',
+	    default: []
+	  },
+	  events: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  externalDependencies: {
+	    type: 'array',
+	    default: []
+	  },
+	  filter: {
+	    type: 'array',
+	    default: []
+	  },
+	  category: {
+	    type: 'string',
+	    default: ''
+	  },
+	  parsedComments: {
+	    type: 'boolean',
+	    default: true
+	  },
+	  flags: {
+	    type: 'object',
+	    description: '',
+	    default: {}
+	  },
+	  path: {
+	    type: 'string',
+	    default: ''
+	  }
+	});
+
+
+	window.Box3D.ScriptAsset = ScriptAsset;
+	exports.default = ScriptAsset;
+
+/***/ },
 /* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	/**
+	 * @module Box3D
+	 */
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_) {
+	  'use strict';
+
+	  var Box3D = window.Box3D = window.Box3D || {};
+	  var define = window.define;
+
+	  var extensions = {};
+	  var nLoading = 0;
+
+	  Box3D.loadExtensions = function (paths, fn) {
+	    if (!_.isArray(paths) || !_.size(paths)) {
+	      return fn();
+	    }
+	    Promise.all(paths.map(function (path) {
+	      return new Promise(function (resolve) {
+	        Box3D.loadExtension(path, resolve);
+	      });
+	    })).then(fn);
+	  };
+
+	  Box3D.loadExtension = function (path, fn) {
+	    var script;
+
+	    if (extensions[path] && extensions[path].state === 'loaded') {
+	      return fn();
+	    } else if (extensions[path] && extensions[path].state !== 'loaded') {
+	      script = extensions[path].script;
+
+	      if (typeof fn === 'function') {
+	        script.addEventListener('load', function () {
+	          setTimeout(fn, 0);
+	        });
+	      }
+	    } else {
+	      // backup define
+	      window.define = undefined;
+	      var body = document.getElementsByTagName('body')[0];
+	      script = document.createElement('script');
+	      script.type = 'text/javascript';
+	      script.src = path;
+	      script.async = false;
+	      body.appendChild(script);
+	      extensions[path] = {
+	        script: script,
+	        state: 'loading'
+	      };
+
+	      nLoading++;
+
+	      script.addEventListener('load', function () {
+	        extensions[path].state = 'loaded';
+	        nLoading--;
+	        if (nLoading === 0) {
+	          window.define = define;
+	        }
+	        if (typeof fn === 'function') {
+	          fn();
+	        }
+	      });
+	    }
+	  };
+
+	  return Box3D;
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98457,7 +98498,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR = __webpack_require__(160);
+	var _Box3DShaderPBR = __webpack_require__(161);
 
 	var _Box3DShaderPBR2 = _interopRequireDefault(_Box3DShaderPBR);
 
@@ -98716,12 +98757,12 @@
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(161), __webpack_require__(162), __webpack_require__(163)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(162), __webpack_require__(163), __webpack_require__(164)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -98790,7 +98831,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -99394,22 +99435,21 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n// Removed chunk from physical material <uv_pars_vertex>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n// Removed chunk from physical material <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\nvoid main() {\n\n\t// Removed chunk from physical material <uv_vertex>\n\t#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\t\tvUv = uv;\n\t\tvUv.y = 1.0 - vUv.y;\n\t#endif\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\n#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n\n\tvNormal = normalize( transformedNormal );\n\n#endif\n\n\t#include <begin_vertex>\n\t#include <displacementmap_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\n\tvViewPosition = - mvPosition.xyz;\n\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\n}"
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\tfresnel = 0.0;\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\n\t#ifdef CLEAR_COAT\n\t\tfresnel += BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\t\tfresnel = clamp(fresnel, 0.0, 1.0);\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * fresnel;\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = roughness * 2.0;\n\t\t\treturn mix(mix(refRadiance, refRadianceHalf, min(interp, 1.0)), refIrradiance, max(interp - 1.0, 0.0));\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\tenvMapColorRadiance.rgb = envMapTexelToLinear( envMapColorRadiance ).rgb;\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorIrradiance.rgb = envMapTexelToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorRadianceHalf.rgb = envMapTexelToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel = 0.0;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* jshint -W061 */
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -99418,23 +99458,13 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	var _three = __webpack_require__(8);
 
-	var _lodash = __webpack_require__(3);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _Box3DEntity = __webpack_require__(13);
-
-	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
+	var _three2 = _interopRequireDefault(_three);
 
 	var _Box3DAsset2 = __webpack_require__(12);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
-
-	var _APIUtilities = __webpack_require__(165);
-
-	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -99444,205 +99474,212 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ScriptAsset = function (_Box3DAsset) {
-	  _inherits(ScriptAsset, _Box3DAsset);
+	/**
+	 * An asset that holds skinning data.
+	 * @class SkinAsset
+	 * @constructor
+	 */
+	var SkinAsset = function (_Box3DAsset) {
+	  _inherits(SkinAsset, _Box3DAsset);
 
-	  function ScriptAsset(json) {
-	    _classCallCheck(this, ScriptAsset);
+	  function SkinAsset(json) {
+	    _classCallCheck(this, SkinAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkinAsset).call(this, json));
+
+	    _this.bindShapeMatrix = new _three2.default.Matrix4();
+	    _this.inverseBindMatrices = [];
+	    return _this;
 	  }
 
-	  _createClass(ScriptAsset, [{
-	    key: 'initialize',
-	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'initialize', this).call(this, properties);
-	      var category = this.getProperty('category');
-	      if (!category) {
-	        this.setProperty('category', 'User Defined');
-	      }
-	      this.setState(_Box3DEntity2.default.STATE_TYPE.CHILDREN, _Box3DEntity2.default.STATE.SUCCEEDED);
-	    }
-	  }, {
-	    key: 'uninitialize',
-	    value: function uninitialize() {
-	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'uninitialize', this).apply(this, arguments);
-	    }
-	  }, {
-	    key: 'initializeComponents',
-	    value: function initializeComponents() {
-	      this.setState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
-	      return;
-	    }
-	  }, {
-	    key: 'getDefaultComponentData',
-	    value: function getDefaultComponentData() {
-	      return ScriptAsset.getDefaultComponentData(this.getProperty('attributes'));
-	    }
-	  }, {
-	    key: 'loadBase',
-	    value: function loadBase() {
-	      if (this.isBaseLoaded()) {
-	        this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
-	      } else {
-	        var externalDependencies = [];
+	  _createClass(SkinAsset, [{
+	    key: 'createMatrices',
 
-	        _lodash2.default.each(this.getProperty('externalDependencies'), function (dependency) {
-	          externalDependencies.push(dependency);
-	        }, this);
 
-	        _APIUtilities2.default.loadExtensions(externalDependencies, _lodash2.default.bind(function () {
-	          this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
-	        }, this));
-	      }
-	    }
-	  }], [{
-	    key: 'getDefaultComponentData',
-	    value: function getDefaultComponentData(attrs) {
-	      var attributes = {};
+	    /**
+	     * Create a THREE.Matrix4 instance for the bind-shape matrix and each inverse bind matrix.
+	     * @method createMatrices
+	     * @private
+	     * @returns {void}
+	     */
+	    value: function createMatrices() {
+	      // Initialize the bind-shape matrix.
+	      this.bindShapeMatrix.fromArray(this.getProperty('bindShapeMatrix'));
 
-	      if (attrs) {
-	        _lodash2.default.each(attrs, function (attr, idx) {
-	          if (typeof attr.default !== 'undefined') {
-	            attributes[idx] = attr.default;
-	          } else if (attr.type === 'custom') {
-	            attributes[idx] = ScriptAsset.getDefaultComponentData(attr.attributes);
-	          } else if (attr.type === 'a') {
-	            attributes[idx] = [];
-	          }
-	        }, this);
+	      // Get the inverse bind matrix array.
+	      var accessorId = this.getProperty('inverseBindMatrices');
+	      var tokens = accessorId.split('#');
+	      if (tokens.length !== 2) {
+	        throw new Error(this.box3DRuntime.engineName + ' - SkinAsset: Invalid accessorId, ' + accessorId);
 	      }
 
-	      return _lodash2.default.cloneDeep(attributes);
+	      var bufferId = tokens[0];
+	      var buffer = this.box3DRuntime.assetRegistry.getAssetById(bufferId);
+	      if (!buffer) {
+	        throw new Error(this.box3DRuntime.engineName + ' - SkinAsset: Invalid accessorId, ' + accessorId);
+	      }
+
+	      var accessorName = tokens[1];
+	      var accessor = buffer.getAccessor(accessorName);
+	      var array = buffer.getArray(accessorName);
+	      if (!accessor || !array) {
+	        throw new Error(this.box3DRuntime.engineName + ' - SkinAsset: Invalid accessorId, ' + accessorId);
+	      }
+
+	      // Create THREE.Matrix4 instances for each inverse bind matrix.
+	      var nJoints = this.getJointCount();
+	      this.inverseBindMatrices = [];
+
+	      for (var i = 0; i < nJoints; ++i) {
+	        var subArray = array.subarray(i * 16, (i + 1) * 16);
+	        var transform = new _three2.default.Matrix4().fromArray(subArray);
+	        this.inverseBindMatrices.push(transform);
+	      }
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      var _this2 = this;
+
+	      this.when('loadDependencies', function () {
+	        var dependencies = _this2.getDependencies();
+	        var loadFailed = Object.keys(dependencies).some(function (id) {
+	          var asset = _this2.box3DRuntime.assetRegistry.getAssetById(id);
+	          return !asset || asset.isLoadFailed();
+	        });
+
+	        if (!loadFailed) {
+	          _this2.createMatrices();
+	        }
+
+	        callback();
+	      }, this);
+	    }
+
+	    /**
+	     * Get the bind-shape matrix, which is the world-space transform of the mesh.
+	     * @method getBindShapeMatrix
+	     * @public
+	     * @returns {THREE.Matrix4} The bind-shape matrix.
+	     */
+
+	  }, {
+	    key: 'getBindShapeMatrix',
+	    value: function getBindShapeMatrix() {
+	      return this.bindShapeMatrix;
+	    }
+
+	    /**
+	     * Get the inverse bind matrices for all joints (@see getInverseBindMatrix).
+	     * @method getInverseBindMatrices
+	     * @public
+	     * @returns {Array} An array of THREE.Matrix4 instances.
+	     */
+
+	  }, {
+	    key: 'getInverseBindMatrices',
+	    value: function getInverseBindMatrices() {
+	      return this.inverseBindMatrices;
+	    }
+
+	    /**
+	     * Get the inverse bind matrix for the joint with the specified index. The
+	     * inverse bind matrix is the inverse, world-space transform of the joint at
+	     * bind-time.
+	     * @method getInverseBindMatrix
+	     * @public
+	     * @param {Integer} index The joint index.
+	     * @returns {THREE.Matrix4} The inverse bind matrix.
+	     */
+
+	  }, {
+	    key: 'getInverseBindMatrix',
+	    value: function getInverseBindMatrix(index) {
+	      return this.inverseBindMatrices[index];
+	    }
+
+	    /**
+	     * Get the number of joints.
+	     * @method getJointCount
+	     * @public
+	     * @returns {Integer} The number of joints.
+	     */
+
+	  }, {
+	    key: 'getJointCount',
+	    value: function getJointCount() {
+	      return this.getJointNames().length;
+	    }
+
+	    /**
+	     * Get the name of the joint with the specified index.
+	     * @method getJointName
+	     * @public
+	     * @param {Integer} index The joint index.
+	     * @returns {String} The name of the joint.
+	     */
+
+	  }, {
+	    key: 'getJointName',
+	    value: function getJointName(index) {
+	      return this.getJointNames()[index];
+	    }
+
+	    /**
+	     * Get all of the joint names.
+	     * @method getJointNames
+	     * @public
+	     * @returns {Array} An array of joint names.
+	     */
+
+	  }, {
+	    key: 'getJointNames',
+	    value: function getJointNames() {
+	      return this.getProperty('jointNames');
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'registerDependencies',
+	    value: function registerDependencies() {
+	      var accessorId = this.getProperty('inverseBindMatrices');
+	      var tokens = accessorId.split('#');
+	      if (tokens.length !== 2) {
+	        throw new Error(this.box3DRuntime.engineName + ' - SkinAsset: Invalid accessorId, ' + accessorId);
+	      }
+
+	      this.registerDependency(tokens[0]);
 	    }
 	  }]);
 
-	  return ScriptAsset;
+	  return SkinAsset;
 	}(_Box3DAsset3.default);
 
-	ScriptAsset.schema = Object.assign({}, _Box3DAsset3.default.schema, {
-	  attributes: {
-	    type: 'object',
+	SkinAsset.schema = Object.assign({}, _Box3DAsset3.default.schema, {
+	  bindShapeMatrix: {
+	    type: 'array',
 	    description: '',
-	    default: {}
+	    default: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
 	  },
-	  description: {
+	  inverseBindMatrices: {
 	    type: 'string',
+	    description: '',
 	    default: ''
 	  },
-	  attributesOrder: {
+	  jointNames: {
 	    type: 'array',
-	    default: []
-	  },
-	  events: {
-	    type: 'object',
 	    description: '',
-	    default: {}
-	  },
-	  externalDependencies: {
-	    type: 'array',
 	    default: []
-	  },
-	  filter: {
-	    type: 'array',
-	    default: []
-	  },
-	  category: {
-	    type: 'string',
-	    default: ''
-	  },
-	  parsedComments: {
-	    type: 'boolean',
-	    default: true
-	  },
-	  flags: {
-	    type: 'object',
-	    description: '',
-	    default: {}
-	  },
-	  path: {
-	    type: 'string',
-	    default: ''
 	  }
 	});
 
 
-	window.Box3D.ScriptAsset = ScriptAsset;
-	exports.default = ScriptAsset;
-
-/***/ },
-/* 165 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	/**
-	 * @module Box3D
-	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_) {
-	  'use strict';
-
-	  var Box3D = window.Box3D = window.Box3D || {};
-	  var define = window.define;
-
-	  var extensions = {};
-	  var nLoading = 0;
-
-	  Box3D.loadExtensions = function (paths, fn) {
-	    if (!_.isArray(paths) || !_.size(paths)) {
-	      return fn();
-	    }
-	    Promise.all(paths.map(function (path) {
-	      return new Promise(function (resolve) {
-	        Box3D.loadExtension(path, resolve);
-	      });
-	    })).then(fn);
-	  };
-
-	  Box3D.loadExtension = function (path, fn) {
-	    var script;
-
-	    if (extensions[path] && extensions[path].state === 'loaded') {
-	      return fn();
-	    } else if (extensions[path] && extensions[path].state !== 'loaded') {
-	      script = extensions[path].script;
-
-	      if (typeof fn === 'function') {
-	        script.addEventListener('load', function () {
-	          setTimeout(fn, 0);
-	        });
-	      }
-	    } else {
-	      // backup define
-	      window.define = undefined;
-	      var body = document.getElementsByTagName('body')[0];
-	      script = document.createElement('script');
-	      script.type = 'text/javascript';
-	      script.src = path;
-	      script.async = false;
-	      body.appendChild(script);
-	      extensions[path] = {
-	        script: script,
-	        state: 'loading'
-	      };
-
-	      nLoading++;
-
-	      script.addEventListener('load', function () {
-	        extensions[path].state = 'loaded';
-	        nLoading--;
-	        if (nLoading === 0) {
-	          window.define = define;
-	        }
-	        if (typeof fn === 'function') {
-	          fn();
-	        }
-	      });
-	    }
-	  };
-
-	  return Box3D;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	window.Box3D.SkinAsset = SkinAsset;
+	exports.default = SkinAsset;
 
 /***/ },
 /* 166 */
@@ -99674,7 +99711,7 @@
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
-	var _VideoAsset = __webpack_require__(150);
+	var _VideoAsset = __webpack_require__(167);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -99829,6 +99866,244 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _BaseImageAsset2 = __webpack_require__(20);
+
+	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class VideoAsset
+	 * @constructor
+	 */
+	var VideoAsset = function (_BaseImageAsset) {
+	  _inherits(VideoAsset, _BaseImageAsset);
+
+	  function VideoAsset(json) {
+	    _classCallCheck(this, VideoAsset);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(VideoAsset).call(this, json));
+	  }
+
+	  _createClass(VideoAsset, [{
+	    key: 'initialize',
+	    value: function initialize(properties) {
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
+	      this.box3DRuntime.on('update', this.onUpdate, this);
+	      this.on('pause', this.pause, this);
+	      this.on('play', this.play, this);
+	      this.on('stop', this.stop, this);
+	      this.on('toggle', this.toggle, this);
+	    }
+	  }, {
+	    key: 'uninitialize',
+	    value: function uninitialize() {
+	      this.box3DRuntime.off('update', this.onUpdate, this);
+	      this.off('pause', this.pause, this);
+	      this.off('play', this.play, this);
+	      this.off('stop', this.stop, this);
+	      this.off('toggle', this.toggle, this);
+
+	      if (this.runtimeData && this.runtimeData.image) {
+	        // TODO: should we be doing more here?
+	        this.runtimeData.image.pause();
+	      }
+
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      var _this2 = this;
+
+	      var onVideoReady = function onVideoReady(videoEl) {
+	        if (videoEl) {
+	          videoEl.style.display = 'none';
+	          videoEl.loop = _this2.getProperty('loop');
+	          videoEl.autoplay = _this2.getProperty('autoPlay');
+	          if (!_this2.runtimeData) {
+	            _this2.runtimeData = {};
+	          }
+
+	          _this2.runtimeData.imageData = videoEl;
+	          _this2.runtimeData.width = videoEl.width;
+	          _this2.runtimeData.height = videoEl.height;
+	          _this2.trigger('loadProgress', _this2);
+	        }
+	        callback();
+	      };
+
+	      var onVideoFail = function onVideoFail(err) {
+	        _log2.default.debug('There was an error loading the video, ' + _this2.getName(), err);
+	        _this2.failure = true;
+	        callback();
+	      };
+
+	      var parentEl = this.box3DRuntime.getRenderer().getCanvas().parentElement;
+	      var cssSelector = this.getProperty('querySelector');
+	      if (cssSelector) {
+	        var videoEl = parentEl.querySelector(cssSelector);
+	        onVideoReady(videoEl);
+	      } else {
+	        this.box3DRuntime.resourceLoader.load(this, { xhrKey: this.id }).then(function (data) {
+	          parentEl.appendChild(data.data);
+	          onVideoReady(data.data);
+	        }).catch(onVideoFail);
+	      }
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      var videoEl = this.runtimeData.imageData;
+	      if (videoEl) {
+
+	        if (changes.hasOwnProperty('loop')) {
+	          videoEl.loop = this.getProperty('loop');
+	        }
+
+	        if (changes.hasOwnProperty('autoPlay')) {
+	          videoEl.autoplay = this.getProperty('autoPlay');
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'onUpdate',
+	    value: function onUpdate() {
+	      if (this.runtimeData) {
+	        var videoEl = this.runtimeData.imageData;
+
+	        if (videoEl && !videoEl.paused && !videoEl.error && videoEl.readyState >= videoEl.HAVE_CURRENT_DATA) {
+	          this.box3DRuntime.needsRender = true;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'pause',
+	    value: function pause() {
+	      if (this.runtimeData) {
+	        this.runtimeData.image.pause();
+	      }
+	    }
+	  }, {
+	    key: 'play',
+	    value: function play(seek, seekTime) {
+	      if (this.runtimeData) {
+	        if (seek) {
+	          this.runtimeData.imageData.currentTime = seekTime;
+	        }
+
+	        this.runtimeData.imageData.play();
+	      }
+	    }
+	  }, {
+	    key: 'stop',
+	    value: function stop() {
+	      if (this.runtimeData) {
+	        this.runtimeData.imageData.pause();
+	        this.runtimeData.imageData.currentTime = 0;
+	      }
+	    }
+	  }, {
+	    key: 'toggle',
+	    value: function toggle() {
+	      if (this.runtimeData) {
+	        if (this.runtimeData.imageData.paused) {
+	          this.play();
+	        } else {
+	          this.pause();
+	        }
+	      }
+	    }
+	  }]);
+
+	  return VideoAsset;
+	}(_BaseImageAsset3.default);
+
+	VideoAsset.schema = Object.assign({}, _BaseImageAsset3.default.schema, {
+	  autoPlay: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  },
+	  state: {
+	    type: 'string',
+	    description: '',
+	    default: 'play'
+	  },
+	  loop: {
+	    type: 'boolean',
+	    description: '',
+	    default: true
+	  }
+	});
+	VideoAsset.events = {
+	  pause: {
+	    params: [],
+	    action: true,
+	    category: ''
+	  },
+	  play: {
+	    params: [{
+	      name: 'seek',
+	      type: 'b',
+	      description: '',
+	      default: false
+	    }, {
+	      name: 'seekTime',
+	      type: 'f',
+	      description: '',
+	      default: 0
+	    }],
+	    action: true,
+	    category: ''
+	  },
+	  stop: {
+	    params: [],
+	    action: true,
+	    category: ''
+	  },
+	  toggle: {
+	    params: [],
+	    action: true,
+	    category: ''
+	  }
+	};
+
+
+	window.Box3D.VideoAsset = VideoAsset;
+	exports.default = VideoAsset;
+
+/***/ },
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
@@ -99921,7 +100196,7 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100663,7 +100938,7 @@
 	exports.default = Box3DObject;
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100680,7 +100955,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(168);
+	var _Box3DObject2 = __webpack_require__(169);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100822,7 +101097,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100843,7 +101118,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(168);
+	var _Box3DObject2 = __webpack_require__(169);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100889,19 +101164,18 @@
 	    key: 'createRuntimeData',
 	    value: function createRuntimeData(callback) {
 	      var type = this.getProperty('lightType');
-	      var colour = new _three2.default.Color(this.getProperty('color'));
 
 	      if (type === 'directional') {
-	        this.runtimeData = new _three2.default.DirectionalLight(colour);
+	        this.runtimeData = new _three2.default.DirectionalLight();
 	      } else if (type === 'ambient') {
-	        this.runtimeData = new _three2.default.AmbientLight(colour);
+	        this.runtimeData = new _three2.default.AmbientLight();
 	      } else if (type === 'spot') {
-	        this.runtimeData = new _three2.default.SpotLight(colour);
+	        this.runtimeData = new _three2.default.SpotLight();
 	      } else if (type === 'hemisphere') {
-	        this.runtimeData = new _three2.default.HemisphereLight(colour);
+	        this.runtimeData = new _three2.default.HemisphereLight();
 	      } else {
 	        // default case is a point light
-	        this.runtimeData = new _three2.default.PointLight(colour);
+	        this.runtimeData = new _three2.default.PointLight();
 	      }
 
 	      this.runtimeData.name = this.getRuntimeName();
@@ -100928,7 +101202,7 @@
 	      }
 
 	      if (changes.hasOwnProperty('color')) {
-	        this.runtimeData.color.setHex(this.getProperty('color'));
+	        this.runtimeData.color.copy(this.getProperty('color'));
 	      }
 
 	      var type = this.getProperty('lightType');
@@ -101199,178 +101473,6 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 171 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _lodash = __webpack_require__(3);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _BaseMeshObject2 = __webpack_require__(172);
-
-	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class SkinnedMeshObject
-	 * @constructor
-	 */
-	var SkinnedMeshObject = function (_BaseMeshObject) {
-	  _inherits(SkinnedMeshObject, _BaseMeshObject);
-
-	  function SkinnedMeshObject(json) {
-	    _classCallCheck(this, SkinnedMeshObject);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SkinnedMeshObject).call(this, json));
-	  }
-
-	  _createClass(SkinnedMeshObject, [{
-	    key: '_allocateMesh',
-	    value: function _allocateMesh(geometry) {
-	      var mesh, useVertexTexture;
-
-	      useVertexTexture = this.getProperty('useVertexTexture') && this.box3DRuntime.getGPUCapability('MAX_VERTEX_TEXTURE_IMAGE_UNITS') > 0;
-
-	      mesh = new _three2.default.SkinnedMesh(geometry, undefined, // material
-	      useVertexTexture);
-
-	      // TODO - fix skinned mesh bounding boxes so this isn't necessary!
-	      mesh.frustumCulled = false;
-
-	      return mesh;
-	    }
-	  }, {
-	    key: '_getMaterialType',
-	    value: function _getMaterialType() {
-	      var geometry = this.getGeometry();
-	      if (geometry && geometry.hasTangents) {
-	        return 'skinnedTangents';
-	      }
-	      return 'skinned';
-	    }
-
-	    /**
-	     * Bind this skinned mesh to the specified object hierarchy.
-	     * @method bindToHierarchy
-	     * @param {Object} root The root object of the hierarchy
-	     * @returns {Boolean} true if successful; otherwise false
-	     */
-
-	  }, {
-	    key: 'bindToHierarchy',
-	    value: function bindToHierarchy(root) {
-	      function getBindMatrix(bindPose, obj) {
-	        var objPose,
-	            parentXform = new _three2.default.Matrix4(),
-	            position = new _three2.default.Vector3(),
-	            quaternion = new _three2.default.Quaternion(),
-	            scale = new _three2.default.Vector3(),
-	            xform = new _three2.default.Matrix4();
-
-	        if (!obj) {
-	          return xform;
-	        }
-
-	        objPose = bindPose ? bindPose[obj.name] : null;
-
-	        if (objPose) {
-	          position.set(objPose.position[0], objPose.position[1], objPose.position[2]);
-
-	          quaternion.set(objPose.quaternion[0], objPose.quaternion[1], objPose.quaternion[2], objPose.quaternion[3]);
-
-	          scale.set(objPose.scale[0], objPose.scale[1], objPose.scale[2]);
-
-	          xform.compose(position, quaternion, scale);
-	        } else {
-	          xform.compose(obj.position, obj.quaternion, obj.scale);
-	        }
-
-	        parentXform = getBindMatrix(bindPose, obj.parent);
-	        xform.multiplyMatrices(parentXform, xform);
-
-	        return xform;
-	      }
-
-	      if (!root || !this.runtimeData || !this.runtimeData.geometry || !this.runtimeData.geometry.bindPose || !this.runtimeData.geometry.boneNames) {
-	        return false;
-	      }
-
-	      var bindPose = this.runtimeData.geometry.bindPose,
-	          boneInverses,
-	          boneNames = this.runtimeData.geometry.boneNames,
-	          bones,
-	          meshBindMatrix,
-	          objectMap = root.getDescendants(),
-	          objectsByName,
-	          skeleton;
-
-	      // Create a map from object name -> object.
-	      objectsByName = _lodash2.default.indexBy(_lodash2.default.values(objectMap), function (object) {
-	        return object.getName();
-	      });
-
-	      objectsByName[root.getName()] = root;
-
-	      // Create an array of THREE.js objects (bones) in the same order as
-	      // boneNames.
-	      bones = _lodash2.default.map(boneNames, function (boneName) {
-	        var object = objectsByName[boneName];
-	        return object ? object.runtimeData : null;
-	      });
-
-	      // Compute an inverse bind pose matrix for each bone.
-	      boneInverses = _lodash2.default.map(bones, function (bone) {
-	        var xform = getBindMatrix(bindPose, bone);
-	        return new _three2.default.Matrix4().getInverse(xform);
-	      });
-
-	      // Get the mesh's bind matrix.
-	      meshBindMatrix = getBindMatrix(bindPose, this.runtimeData);
-
-	      // Create a skeleton and bind the mesh to it.
-	      skeleton = new _three2.default.Skeleton(bones, boneInverses, this.runtimeData.skeleton.useVertexTexture);
-
-	      this.runtimeData.bind(skeleton, meshBindMatrix);
-
-	      return true;
-	    }
-	  }]);
-
-	  return SkinnedMeshObject;
-	}(_BaseMeshObject3.default);
-
-	SkinnedMeshObject.schema = Object.assign({}, _BaseMeshObject3.default.schema, {
-	  useVertexTexture: {
-	    type: 'boolean',
-	    description: '',
-	    default: true
-	  }
-	});
-
-
-	window.Box3D.SkinnedMeshObject = SkinnedMeshObject;
-	exports.default = SkinnedMeshObject;
-
-/***/ },
 /* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -101384,19 +101486,19 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _log = __webpack_require__(6);
-
-	var _log2 = _interopRequireDefault(_log);
-
 	var _lodash = __webpack_require__(3);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _log = __webpack_require__(6);
+
+	var _log2 = _interopRequireDefault(_log);
 
 	var _three = __webpack_require__(8);
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(168);
+	var _Box3DObject2 = __webpack_require__(169);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101410,25 +101512,25 @@
 
 	/* global Box3D */
 	/**
-	 * @class BaseMeshObject
+	 * @class MeshObject
 	 * @constructor
 	 */
-	var BaseMeshObject = function (_Box3DObject) {
-	  _inherits(BaseMeshObject, _Box3DObject);
+	var MeshObject = function (_Box3DObject) {
+	  _inherits(MeshObject, _Box3DObject);
 
-	  function BaseMeshObject(json) {
-	    _classCallCheck(this, BaseMeshObject);
+	  function MeshObject(json) {
+	    _classCallCheck(this, MeshObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(BaseMeshObject).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MeshObject).call(this, json));
 	  }
 
-	  _createClass(BaseMeshObject, [{
+	  _createClass(MeshObject, [{
 	    key: 'initialize',
 
 
 	    /** @inheritdoc */
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseMeshObject.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(MeshObject.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('materialDeleted', this.onMaterialDeleted, this);
 	      this.on('setMaterial', this.setMaterial, this);
 	      this.on('castShadowsEnable', this.castShadowsEnable, this);
@@ -101446,7 +101548,7 @@
 	      this.off('castShadowsDisable', this.castShadowsDisable, this);
 	      this.off('castShadowsToggle', this.castShadowsToggle, this);
 	      this.box3DRuntime.off('materialDeleted', this.onMaterialDeleted, this);
-	      _get(Object.getPrototypeOf(BaseMeshObject.prototype), 'uninitialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(MeshObject.prototype), 'uninitialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -101466,74 +101568,306 @@
 	        this.runtimeData.geometry = null;
 	      }
 
-	      _get(Object.getPrototypeOf(BaseMeshObject.prototype), 'unload', this).call(this, options);
+	      _get(Object.getPrototypeOf(MeshObject.prototype), 'unload', this).call(this, options);
 	    }
 
-	    /**
-	     * Load a material asset and assign its runtime data to the specified property.
-	     * @method loadAndAssignMaterial
-	     * @private
-	     * @param {Object} obj The object that receives the material assignment.
-	     * @param {String} property The property that receives the material assignment.
-	     * @param {String} materialId The ID of the material asset.
-	     * @param {String} materialType The type of material to use.
-	     * @returns {void}
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'loadAndAssignMaterial',
-	    value: function loadAndAssignMaterial(obj, property, materialId, materialType) {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this2 = this;
 
-	      // Assign the missing material while the real material loads.
-	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
-	      if (missingMaterial.getRuntimeData()) {
-	        obj[property] = missingMaterial.getRuntimeData()[materialType];
-	      } else {
-	        _log2.default.error(this.box3DRuntime.engineName + ' - BaseMeshObject: "Missing" material needed, but not loaded.');
+	      _get(Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+
+	      if (changes.hasOwnProperty('geometryId')) {
+	        var prevGeometryId = this.getPreviousProperty('geometryId');
+	        var newGeometryId = this.getProperty('geometryId');
+
+	        // Stop listening to the old geometry, start listening to the new one.
+	        this.registerChangeListener(prevGeometryId, this.onGeometryChanged, false);
+	        this.registerChangeListener(newGeometryId, this.onGeometryChanged, true);
+
+	        // Reload the runtime data.
+	        if (reason !== 'init') {
+	          this.reloadBase();
+	          return;
+	        }
 	      }
 
-	      // Load and assign the real material.
-	      if (materialId) {
+	      if (changes.hasOwnProperty('materials')) {
 	        (function () {
-	          var materialAsset = _this2.box3DRuntime.assetRegistry.getAssetById(materialId);
-	          if (materialAsset) {
-	            materialAsset.when('loadBase', function () {
-	              obj[property] = materialAsset.getRuntimeData()[materialType];
-	            });
+	          // Stop listening for changes to the previous materials.
+	          var prevMaterialIds = _this2.getPreviousMaterialIds();
 
-	            if (materialAsset.isUnloaded()) {
-	              materialAsset.load();
-	            }
+	          prevMaterialIds.forEach(function (materialId) {
+	            _this2.registerChangeListener(materialId, _this2.onMaterialChanged, false);
+	          });
+
+	          // Allocate the MeshFaceMaterial (container for other materials).
+	          if (!(_this2.runtimeData.material instanceof _three2.default.MeshFaceMaterial)) {
+	            _this2.runtimeData.material = new _three2.default.MeshFaceMaterial();
 	          }
+
+	          // Reset the MeshFaceMaterial's material list.
+	          _this2.runtimeData.material.materials = [];
+
+	          // Assign the new materials and listen for changes.
+	          var materialType = _this2.getMaterialType();
+	          var newMaterialIds = _this2.getMaterialIds();
+
+	          // Extend newMaterialIds to cover all of the material slots that the geometry references.
+	          var geometryAsset = _this2.getGeometryAsset();
+	          var maxMaterialIndex = geometryAsset ? geometryAsset.getMaxMaterialIndex('triangles') : 0;
+	          while (newMaterialIds.length <= maxMaterialIndex) {
+	            newMaterialIds.push(null);
+	          }
+
+	          newMaterialIds.forEach(function (materialId, index) {
+	            _this2.registerChangeListener(materialId, _this2.onMaterialChanged, true);
+	            _this2.loadAndAssignMaterial(_this2.runtimeData.material.materials, index, materialId, materialType);
+	          });
 	        })();
+	      }
+
+	      if (changes.hasOwnProperty('customDepthMaterial')) {
+	        var prevDepthMaterialId = this.getPreviousProperty('customDepthMaterial');
+	        var newDepthMaterialId = this.getProperty('customDepthMaterial');
+
+	        // Stop listening to the old material, start listening to the new one.
+	        this.registerChangeListener(prevDepthMaterialId, this.onMaterialChanged, false);
+	        this.registerChangeListener(newDepthMaterialId, this.onMaterialChanged, true);
+
+	        // Assign the new depth material.
+	        this.loadAndAssignMaterial(this.runtimeData, 'customDepthMaterial', newDepthMaterialId, this.getDepthMaterialType());
+	      }
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesUnloaded',
+	    value: function _applyPropertiesUnloaded() {
+	      var _this3 = this;
+
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	      // If the parent asset doesn't exist, this object is in the process of being cleaned up so
+	      // ignore the changes.
+	      var parentAsset = this.getParentAsset();
+	      if (!parentAsset) {
+	        return;
+	      }
+
+	      if (changes.hasOwnProperty('materials')) {
+	        // Unregister previous materials.
+	        var prevMaterialIds = this.getPreviousMaterialIds();
+	        prevMaterialIds.forEach(function (materialId) {
+	          if (materialId) {
+	            _this3.unregisterDependency(materialId);
+	          }
+	        });
+
+	        // Register new materials.
+	        var newMaterialIds = this.getMaterialIds();
+	        newMaterialIds.forEach(function (materialId) {
+	          if (materialId) {
+	            _this3.registerDependency(materialId);
+	          }
+	        });
+	      }
+
+	      if (changes.hasOwnProperty('customDepthMaterial')) {
+	        // Unregister previous material.
+	        var prevDepthMaterialId = this.getPreviousProperty('customDepthMaterial');
+	        if (prevDepthMaterialId) {
+	          this.unregisterDependency(prevDepthMaterialId);
+	        }
+
+	        // Register new material.
+	        var newDepthMaterialId = this.getProperty('customDepthMaterial');
+	        if (newDepthMaterialId) {
+	          this.registerDependency(newDepthMaterialId);
+	        }
+	      }
+
+	      if (changes.hasOwnProperty('geometryId')) {
+	        // Unregister previous geometry.
+	        var prevGeometryId = this.getPreviousProperty('geometryId');
+	        if (prevGeometryId) {
+	          this.unregisterDependency(prevGeometryId);
+	        }
+
+	        // Register new geometry.
+	        var newGeometryId = this.getProperty('geometryId');
+	        if (newGeometryId) {
+	          this.registerDependency(newGeometryId);
+	        }
 	      }
 	    }
 
 	    /**
-	     * Start or stop listening for changes to a Box3DAsset.
-	     * @method registerChangeListener
+	     * Bind this mesh to a skeleton using the assigned skin. An error will be thrown if:
+	     *   * This mesh is not part of a prefab instance
+	     *   * No skin asset is assigned
+	     *   * The skin asset is not loaded
+	     *   * The mesh's runtime data is not loaded
+	     * @method bindToHierarchy
 	     * @private
-	     * @param {String} assetId The ID of the Box3DAsset to listen to.
-	     * @param {Function} callback The function to be called when properties change.
-	     * @param {Boolean} enabled Indicates whether to start or stop listening.
+	     * @returns {void}
+	     * @throws Error
+	     */
+
+	  }, {
+	    key: 'bindToHierarchy',
+	    value: function bindToHierarchy() {
+	      var _this4 = this;
+
+	      var root = this.getInstanceTop();
+	      if (!root) {
+	        throw new Error('Cannot bind mesh to hierarchy because it is not part of a prefab instance');
+	      }
+
+	      var skinAsset = this.getSkinAsset();
+	      if (!skinAsset) {
+	        throw new Error('Cannot bind mesh to hierarchy because it does not have a skin asset');
+	      }
+
+	      if (!skinAsset.isLoaded()) {
+	        throw new Error('Cannot bind mesh to hierarchy because the skin asset is not loaded');
+	      }
+
+	      var mesh = this.runtimeData;
+	      if (!mesh) {
+	        throw new Error('Cannot bind mesh to hierarchy because the mesh is not loaded');
+	      }
+
+	      root.when('loadChildren', function () {
+	        var entities = root ? root.getDescendants() : [];
+	        var objects = entities.map(function (entity) {
+	          return entity.getRuntimeData();
+	        });
+	        var objectsByName = _lodash2.default.indexBy(objects, 'name');
+	        var joints = skinAsset.getJointNames().map(function (jointName) {
+	          var runtimeName = _this4.box3DRuntime.getRuntimeName(jointName);
+	          return objectsByName[runtimeName];
+	        });
+	        var skeleton = new _three2.default.Skeleton(joints, skinAsset.getInverseBindMatrices());
+	        mesh.bind(skeleton, skinAsset.getBindShapeMatrix());
+	      });
+
+	      if (!root.isUnloaded()) {
+	        root.load();
+	      }
+	    }
+
+	    /**
+	     * Disable shadow casting.
+	     * @method castShadowsDisable
+	     * @public
 	     * @returns {void}
 	     */
 
 	  }, {
-	    key: 'registerChangeListener',
-	    value: function registerChangeListener(assetId, callback, enabled) {
-	      // TODO: move this functionality into Box3DEntity.
-	      if (assetId) {
-	        var asset = this.box3DRuntime.assetRegistry.getAssetById(assetId);
-	        if (asset) {
-	          if (enabled) {
-	            asset.on('propertyChanges', callback, this);
-	          } else {
-	            asset.off('propertyChanges', callback, this);
-	          }
-	        }
+	    key: 'castShadowsDisable',
+	    value: function castShadowsDisable() {
+	      this.setProperty('castShadow', false);
+	      this.box3DRuntime.needsRender = true;
+	    }
+
+	    /**
+	     * Enable shadow casting.
+	     * @method castShadowsEnable
+	     * @public
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'castShadowsEnable',
+	    value: function castShadowsEnable() {
+	      this.setProperty('castShadow', true);
+	      this.box3DRuntime.needsRender = true;
+	    }
+
+	    /**
+	     * Toggle shadow casting.
+	     * @method castShadowsToggle
+	     * @public
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'castShadowsToggle',
+	    value: function castShadowsToggle() {
+	      var castShadow = this.getProperty('castShadow') ? false : true;
+	      this.setProperty('castShadow', castShadow);
+	      this.box3DRuntime.needsRender = true;
+	    }
+
+	    /**
+	     * Create the runtime mesh (i.e., a THREE.Mesh or THREEE.SkinnedMesh).
+	     * @method createMesh
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'createMesh',
+	    value: function createMesh() {
+	      var geometryAsset = this.getGeometryAsset();
+	      if (!geometryAsset.isLoaded()) {
+	        throw new Error('Cannot create mesh because geometry asset is not loaded');
 	      }
+
+	      var skinAsset = this.getSkinAsset();
+	      if (skinAsset && !skinAsset.isLoaded()) {
+	        throw new Error('Cannot create mesh because skin asset is not loaded');
+	      }
+
+	      var primitiveType = Box3D.BaseGeometryAsset.PrimitiveType.TRIANGLES;
+	      var geometry = geometryAsset ? geometryAsset.getGeometry(primitiveType) : new _three2.default.BufferGeometry();
+
+	      if (!this.runtimeData) {
+	        var MeshType = skinAsset ? _three2.default.SkinnedMesh : _three2.default.Mesh;
+	        var mesh = new MeshType(geometry);
+	        mesh.name = this.getRuntimeName();
+	        mesh.castShadow = true;
+	        mesh.receiveShadow = true;
+	        mesh.material = null;
+	        this.runtimeData = mesh;
+	      } else {
+	        this.runtimeData.geometry = geometry;
+	      }
+
+	      if (skinAsset) {
+	        this.bindToHierarchy();
+	      }
+
+	      // Inform anyone who cares that a new mesh has been loaded.
+	      // TODO: do we still need this? Can they listen to 'loadBase' instead?
+	      var parentAsset = this.getParentAsset();
+	      parentAsset.trigger('meshLoaded', this);
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'createRuntimeData',
+	    value: function createRuntimeData(callback) {
+	      var _this5 = this;
+
+	      var geometryId = this.getProperty('geometryId');
+	      var skinId = this.getProperty('skinId');
+	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
+	      var missingMaterialId = missingMaterial ? missingMaterial.id : null;
+
+	      Promise.all([this.loadAsset(missingMaterialId), this.loadAsset(geometryId), this.loadAsset(skinId)]).then(function () {
+	        _this5.createMesh();
+	        callback();
+	      }).catch(function (err) {
+	        _log2.default.error(_this5.box3DRuntime.engineName + ' - MeshObject: ' + err.toString());
+	        callback();
+	      });
 	    }
 
 	    /**
@@ -101546,26 +101880,12 @@
 	  }, {
 	    key: 'getDepthMaterialType',
 	    value: function getDepthMaterialType() {
-	      var materialType = this._getMaterialType();
+	      var materialType = this.getMaterialType();
 	      if (Box3D.MaterialRegistry.materialObjectTypes[materialType].skinning) {
 	        return 'depthSkinned';
 	      }
 
 	      return 'depthStatic';
-	    }
-
-	    /**
-	     * Get the geometry asset assigned to this mesh.
-	     * @method getGeometryAsset
-	     * @public
-	     * @returns {Box3DAsset|null} The geometry asset if it exists; otherwise, null.
-	     */
-
-	  }, {
-	    key: 'getGeometryAsset',
-	    value: function getGeometryAsset() {
-	      var geometryId = this.getProperty('geometryId');
-	      return geometryId ? this.box3DRuntime.assetRegistry.getAssetById(geometryId) : null;
 	    }
 
 	    /**
@@ -101585,6 +101905,38 @@
 	      }
 
 	      return null;
+	    }
+
+	    /**
+	     * Get the geometry asset assigned to this mesh.
+	     * @method getGeometryAsset
+	     * @public
+	     * @returns {Box3DAsset|null} The geometry asset if it exists; otherwise, null.
+	     */
+
+	  }, {
+	    key: 'getGeometryAsset',
+	    value: function getGeometryAsset() {
+	      var geometryId = this.getProperty('geometryId');
+	      return geometryId ? this.box3DRuntime.assetRegistry.getAssetById(geometryId) : null;
+	    }
+
+	    /**
+	     * Get the bounds of this object, but not its children.
+	     * @method getLocalBounds
+	     * @public
+	     * @returns {THREE.Box3} The bounds of this object.
+	     */
+
+	  }, {
+	    key: 'getLocalBounds',
+	    value: function getLocalBounds() {
+	      var geometryAsset = this.getGeometryAsset();
+	      if (geometryAsset) {
+	        return geometryAsset.getBounds();
+	      }
+
+	      return MeshObject.DEFAULT_LOCAL_BOUNDS;
 	    }
 
 	    /**
@@ -101686,6 +102038,26 @@
 	    }
 
 	    /**
+	     * Get the material type.
+	     * @method getMaterialType
+	     * @private
+	     * @returns {String} One of 'static', 'staticTangents', 'skinned', or 'skinnedTangents'.
+	     */
+
+	  }, {
+	    key: 'getMaterialType',
+	    value: function getMaterialType() {
+	      var geometry = this.getGeometry();
+	      var hasTangents = geometry && geometry.hasTangents;
+
+	      if (this.isSkinned()) {
+	        return hasTangents ? 'skinnedTangents' : 'skinned';
+	      }
+
+	      return hasTangents ? 'staticTangents' : 'static';
+	    }
+
+	    /**
 	     * Get an array of material asset IDs that were previously assigned to this mesh.
 	     * @method getPreviousMaterialIds
 	     * @private
@@ -101710,250 +102082,117 @@
 	      return merged;
 	    }
 
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'registerDependencies',
-	    value: function registerDependencies() {
-	      var _this3 = this;
-
-	      var geometryId = this.getProperty('geometryId');
-	      if (geometryId) {
-	        this.registerDependency(geometryId);
-	      }
-
-	      var materialIds = this.getMaterialIds();
-	      materialIds.forEach(function (materialId) {
-	        if (materialId) {
-	          _this3.registerDependency(materialId);
-	        }
-	      });
-
-	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
-	      if (missingMaterial) {
-	        this.registerDependency(missingMaterial.id);
-	      }
-	    }
-
 	    /**
-	     * Create the runtime mesh (i.e., a THREE.Mesh or THREEE.SkinnedMesh).
-	     * @method createMesh
-	     * @private
-	     * @returns {Promise} A promise that resolves when the mesh has been created.
+	     * Get the skin asset assigned to this mesh.
+	     * @method getSkinAsset
+	     * @public
+	     * @returns {Box3DAsset|null} The skin asset if it exists; otherwise, null.
 	     */
 
 	  }, {
-	    key: 'createMesh',
-	    value: function createMesh() {
-	      var _this4 = this;
-
-	      var geometryAsset = this.getGeometryAsset();
-	      if (!geometryAsset) {
-	        return Promise.reject(new Error('No geometry asset found for mesh, ' + this.id));
-	      }
-
-	      return new Promise(function (resolve) {
-	        geometryAsset.when('loadBase', function () {
-	          var geometry = _this4.getGeometry();
-	          if (!_this4.runtimeData) {
-	            _this4.runtimeData = _this4._allocateMesh(geometry);
-	            _this4.runtimeData.name = _this4.getRuntimeName();
-	            _this4.runtimeData.castShadow = true;
-	            _this4.runtimeData.receiveShadow = true;
-	            _this4.runtimeData.material = null;
-	          } else {
-	            _this4.runtimeData.geometry = geometry;
-	          }
-
-	          // Check if the number of materials in the geometry matches the number in the mesh. If not,
-	          // pad the mesh's "materials" array with null.
-	          var materialIds = _this4.getProperty('materials');
-	          var maxMaterialIndex = geometryAsset.getMaxMaterialIndex('triangles');
-	          var nMaterials = Math.max(maxMaterialIndex + 1, materialIds.length);
-	          var extraMaterialIds = Array(nMaterials - materialIds.length);
-
-	          // Fill out the array (note: not using Array.prototype.fill because IE11 lacks support).
-	          for (var i = 0; i < extraMaterialIds.length; i++) {
-	            extraMaterialIds[i] = null;
-	          }
-
-	          _this4.setProperty('materials', materialIds.concat(extraMaterialIds));
-
-	          // Inform anyone who cares that a new mesh has been loaded.
-	          // TODO: do we still need this? Can they listen to 'loadBase' instead?
-	          var parentAsset = _this4.getParentAsset();
-	          parentAsset.trigger('meshLoaded', _this4);
-
-	          resolve();
-	        });
-
-	        if (geometryAsset.isBaseUnloaded()) {
-	          geometryAsset.load();
-	        }
-	      });
+	    key: 'getSkinAsset',
+	    value: function getSkinAsset() {
+	      var skinId = this.getProperty('skinId');
+	      return skinId ? this.box3DRuntime.assetRegistry.getAssetById(skinId) : null;
 	    }
 
 	    /**
-	     * Load the "missing" material.
-	     * @method loadMissingMaterial
-	     * @private
-	     * @returns {Promise} A promise that resolves when the "missing" material is loaded.
+	     * Indicates whether or not this mesh is skinned.
+	     * @method isSkinned
+	     * @public
+	     * @returns {Boolean} true if this mesh is skinned; otherwise, false.
 	     */
 
 	  }, {
-	    key: 'loadMissingMaterial',
-	    value: function loadMissingMaterial() {
-	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
-	      if (!missingMaterial || missingMaterial.isLoaded()) {
-	        return Promise.resolve();
-	      }
-
-	      return new Promise(function (resolve) {
-	        missingMaterial.load(function () {
-	          return resolve();
-	        });
-	      });
+	    key: 'isSkinned',
+	    value: function isSkinned() {
+	      return this.getSkinAsset() !== null;
 	    }
 
-	    /** @inheritdoc */
+	    /**
+	     * Load a material asset and assign its runtime data to the specified property.
+	     * @method loadAndAssignMaterial
+	     * @private
+	     * @param {Object} obj The object that receives the material assignment.
+	     * @param {String} property The property that receives the material assignment.
+	     * @param {String} materialId The ID of the material asset.
+	     * @param {String} materialType The type of material to use.
+	     * @returns {void}
+	     */
 
 	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      var _this5 = this;
-
-	      Promise.all([this.createMesh(), this.loadMissingMaterial()]).then(function () {
-	        return callback();
-	      }).catch(function (err) {
-	        _log2.default.error(_this5.box3DRuntime.engineName + ' - BaseMeshObject: ' + err.toString());
-	        callback();
-	      });
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
+	    key: 'loadAndAssignMaterial',
+	    value: function loadAndAssignMaterial(obj, property, materialId, materialType) {
 	      var _this6 = this;
 
-	      _get(Object.getPrototypeOf(BaseMeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      if (changes.hasOwnProperty('geometryId')) {
-	        var prevGeometryId = this.getPreviousProperty('geometryId');
-	        var newGeometryId = this.getProperty('geometryId');
-
-	        // Stop listening to the old geometry, start listening to the new one.
-	        this.registerChangeListener(prevGeometryId, this.onGeometryChanged, false);
-	        this.registerChangeListener(newGeometryId, this.onGeometryChanged, true);
-
-	        // Reload the runtime data.
-	        if (reason !== 'init') {
-	          this.reloadBase();
-	          return;
-	        }
+	      // Assign the missing material while the real material loads.
+	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
+	      if (missingMaterial.getRuntimeData()) {
+	        obj[property] = missingMaterial.getRuntimeData()[materialType];
+	      } else {
+	        _log2.default.error(this.box3DRuntime.engineName + ' - MeshObject: "Missing" material needed, but not loaded.');
 	      }
 
-	      if (changes.hasOwnProperty('materials')) {
+	      // Load and assign the real material.
+	      if (materialId) {
 	        (function () {
-	          // Stop listening for changes to the previous materials.
-	          var prevMaterialIds = _this6.getPreviousMaterialIds();
+	          var materialAsset = _this6.box3DRuntime.assetRegistry.getAssetById(materialId);
+	          if (materialAsset) {
+	            materialAsset.when('loadBase', function () {
+	              obj[property] = materialAsset.getRuntimeData()[materialType];
+	            });
 
-	          prevMaterialIds.forEach(function (materialId) {
-	            _this6.registerChangeListener(materialId, _this6.onMaterialChanged, false);
-	          });
-
-	          // Allocate the MeshFaceMaterial (container for other materials).
-	          if (!(_this6.runtimeData.material instanceof _three2.default.MeshFaceMaterial)) {
-	            _this6.runtimeData.material = new _three2.default.MeshFaceMaterial();
+	            if (materialAsset.isUnloaded()) {
+	              materialAsset.load();
+	            }
 	          }
-
-	          // Reset the MeshFaceMaterial's material list.
-	          _this6.runtimeData.material.materials = [];
-
-	          // Assign the new materials and listen for changes.
-	          var materialType = _this6._getMaterialType();
-	          var newMaterialIds = _this6.getMaterialIds();
-
-	          newMaterialIds.forEach(function (materialId, index) {
-	            _this6.registerChangeListener(materialId, _this6.onMaterialChanged, true);
-	            _this6.loadAndAssignMaterial(_this6.runtimeData.material.materials, index, materialId, materialType);
-	          });
 	        })();
-	      }
-
-	      if (changes.hasOwnProperty('customDepthMaterial')) {
-	        var prevDepthMaterialId = this.getPreviousProperty('customDepthMaterial');
-	        var newDepthMaterialId = this.getProperty('customDepthMaterial');
-
-	        // Stop listening to the old material, start listening to the new one.
-	        this.registerChangeListener(prevDepthMaterialId, this.onMaterialChanged, false);
-	        this.registerChangeListener(newDepthMaterialId, this.onMaterialChanged, true);
-
-	        // Assign the new depth material.
-	        this.loadAndAssignMaterial(this.runtimeData, 'customDepthMaterial', newDepthMaterialId, this.getDepthMaterialType());
 	      }
 	    }
 
-	    /** @inheritdoc */
+	    /**
+	     * Load the asset with the specified ID.
+	     * @method loadAsset
+	     * @private
+	     * @param {String} assetId The ID of the asset to load.
+	     * @returns {Promise} A promise that resolves with the loaded asset or an error, if one occurs.
+	     * If assetId is null, the promise resolves with null.
+	     */
 
 	  }, {
-	    key: '_applyPropertiesUnloaded',
-	    value: function _applyPropertiesUnloaded(changes) {
-	      var _this7 = this;
-
-	      // If the parent asset doesn't exist, this object is in the process of being cleaned up so
-	      // ignore the changes.
-	      var parentAsset = this.getParentAsset();
-	      if (!parentAsset) {
-	        return;
+	    key: 'loadAsset',
+	    value: function loadAsset(assetId) {
+	      if (!assetId) {
+	        return Promise.resolve(null);
 	      }
 
-	      if (changes && changes.hasOwnProperty('materials')) {
-	        // Unregister previous materials.
-	        var prevMaterialIds = this.getPreviousMaterialIds();
-	        prevMaterialIds.forEach(function (materialId) {
-	          if (materialId) {
-	            _this7.unregisterDependency(materialId);
-	          }
+	      var asset = this.box3DRuntime.assetRegistry.getAssetById(assetId);
+	      if (!asset) {
+	        return Promise.reject(new Error('Asset "' + assetId + '" not found'));
+	      }
+
+	      return new Promise(function (resolve) {
+	        asset.when('load', function () {
+	          return resolve(asset);
 	        });
 
-	        // Register new materials.
-	        var newMaterialIds = this.getMaterialIds();
-	        newMaterialIds.forEach(function (materialId) {
-	          if (materialId) {
-	            _this7.registerDependency(materialId);
-	          }
-	        });
-	      }
-
-	      if (changes && changes.hasOwnProperty('customDepthMaterial')) {
-	        // Unregister previous material.
-	        var prevDepthMaterialId = this.getPreviousProperty('customDepthMaterial');
-	        if (prevDepthMaterialId) {
-	          this.unregisterDependency(prevDepthMaterialId);
+	        if (asset.isUnloaded()) {
+	          asset.load();
 	        }
+	      });
+	    }
 
-	        // Register new material.
-	        var newDepthMaterialId = this.getProperty('customDepthMaterial');
-	        if (newDepthMaterialId) {
-	          this.registerDependency(newDepthMaterialId);
-	        }
-	      }
+	    /**
+	     * Called in response to GeometryAsset property changes.
+	     * @method onGeometryChanged
+	     * @public
+	     * @returns {void}
+	     */
 
-	      if (changes && changes.hasOwnProperty('geometryId')) {
-	        // Unregister previous geometry.
-	        var prevGeometryId = this.getPreviousProperty('geometryId');
-	        if (prevGeometryId) {
-	          this.unregisterDependency(prevGeometryId);
-	        }
-
-	        // Register new geometry.
-	        var newGeometryId = this.getProperty('geometryId');
-	        if (newGeometryId) {
-	          this.registerDependency(newGeometryId);
-	        }
-	      }
+	  }, {
+	    key: 'onGeometryChanged',
+	    value: function onGeometryChanged() {
+	      this.createRuntimeData();
 	    }
 
 	    /**
@@ -101968,19 +102207,6 @@
 	    value: function onMaterialChanged() {
 	      // TODO: Update runtimeData.customDepthMaterial.
 	      return;
-	    }
-
-	    /**
-	     * Called in response to GeometryAsset property changes.
-	     * @method onGeometryChanged
-	     * @public
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'onGeometryChanged',
-	    value: function onGeometryChanged() {
-	      this.createRuntimeData();
 	    }
 
 	    /**
@@ -102013,21 +102239,78 @@
 	    }
 
 	    /**
-	     * Get the bounds of this object, but not its children.
-	     * @method getLocalBounds
-	     * @public
-	     * @returns {THREE.Box3} The bounds of this object.
+	     * Start or stop listening for changes to a Box3DAsset.
+	     * @method registerChangeListener
+	     * @private
+	     * @param {String} assetId The ID of the Box3DAsset to listen to.
+	     * @param {Function} callback The function to be called when properties change.
+	     * @param {Boolean} enabled Indicates whether to start or stop listening.
+	     * @returns {void}
 	     */
 
 	  }, {
-	    key: 'getLocalBounds',
-	    value: function getLocalBounds() {
-	      var geometryAsset = this.getGeometryAsset();
-	      if (geometryAsset) {
-	        return geometryAsset.getBounds();
+	    key: 'registerChangeListener',
+	    value: function registerChangeListener(assetId, callback, enabled) {
+	      // TODO: move this functionality into Box3DEntity.
+	      if (!assetId) {
+	        return;
 	      }
 
-	      return new _three2.default.Box3();
+	      var asset = this.box3DRuntime.assetRegistry.getAssetById(assetId);
+	      if (!asset) {
+	        return;
+	      }
+
+	      if (enabled) {
+	        asset.on('propertyChanges', callback, this);
+	      } else {
+	        asset.off('propertyChanges', callback, this);
+	      }
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'registerDependencies',
+	    value: function registerDependencies() {
+	      var _this7 = this;
+
+	      var geometryId = this.getProperty('geometryId');
+	      if (geometryId) {
+	        this.registerDependency(geometryId);
+	      }
+
+	      var materialIds = this.getMaterialIds();
+	      materialIds.forEach(function (materialId) {
+	        if (materialId) {
+	          _this7.registerDependency(materialId);
+	        }
+	      });
+
+	      var missingMaterial = this.box3DRuntime.assetRegistry.Materials.getMissingMaterial();
+	      if (missingMaterial) {
+	        this.registerDependency(missingMaterial.id);
+	      }
+	    }
+
+	    /**
+	     * Revert the material assignment at the specified index. This will cause the material at that
+	     * index to be inherited from the prefab object, if one is set.
+	     * @method revertMaterial
+	     * @public
+	     * @param {Integer} [index] The material index (default is 0).
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'revertMaterial',
+	    value: function revertMaterial() {
+	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+	      // Note: we pass undefined, which unassigns the material and causes the prefab material at the
+	      // same index to be used. Passing null would override the prefab's material with an empty
+	      // material slot.
+	      this.setMaterial(undefined, index);
 	    }
 
 	    /**
@@ -102060,75 +102343,12 @@
 	        this.setProperty('materials', materialIds);
 	      }
 	    }
-
-	    /**
-	     * Revert the material assignment at the specified index. This will cause the material at that
-	     * index to be inherited from the prefab object, if one is set.
-	     * @method revertMaterial
-	     * @public
-	     * @param {Integer} [index] The material index (default is 0).
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'revertMaterial',
-	    value: function revertMaterial() {
-	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-
-	      // Note: we pass undefined, which unassigns the material and causes the prefab material at the
-	      // same index to be used. Passing null would override the prefab's material with an empty
-	      // material slot.
-	      this.setMaterial(undefined, index);
-	    }
-
-	    /**
-	     * Enable shadow casting.
-	     * @method castShadowsEnable
-	     * @public
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'castShadowsEnable',
-	    value: function castShadowsEnable() {
-	      this.setProperty('castShadow', true);
-	      this.box3DRuntime.needsRender = true;
-	    }
-
-	    /**
-	     * Disable shadow casting.
-	     * @method castShadowsDisable
-	     * @public
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'castShadowsDisable',
-	    value: function castShadowsDisable() {
-	      this.setProperty('castShadow', false);
-	      this.box3DRuntime.needsRender = true;
-	    }
-
-	    /**
-	     * Toggle shadow casting.
-	     * @method castShadowsToggle
-	     * @public
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'castShadowsToggle',
-	    value: function castShadowsToggle() {
-	      var castShadow = this.getProperty('castShadow') ? false : true;
-	      this.setProperty('castShadow', castShadow);
-	      this.box3DRuntime.needsRender = true;
-	    }
 	  }]);
 
-	  return BaseMeshObject;
+	  return MeshObject;
 	}(_Box3DObject3.default);
 
-	BaseMeshObject.schema = Object.assign({}, _Box3DObject3.default.schema, {
+	MeshObject.schema = Object.assign({}, _Box3DObject3.default.schema, {
 	  customDepthMaterial: {
 	    type: 'id',
 	    description: '',
@@ -102143,9 +102363,14 @@
 	    type: 'id',
 	    description: '',
 	    default: null
+	  },
+	  skinId: {
+	    type: 'id',
+	    description: '',
+	    default: null
 	  }
 	});
-	BaseMeshObject.events = {
+	MeshObject.events = {
 	  setMaterial: {
 	    scope: 'local',
 	    action: true,
@@ -102179,166 +102404,14 @@
 	    category: 'Rendering'
 	  }
 	};
+	MeshObject.DEFAULT_LOCAL_BOUNDS = new _three2.default.Box3();
 
 
-	window.Box3D.BaseMeshObject = BaseMeshObject;
-	exports.default = BaseMeshObject;
+	window.Box3D.MeshObject = MeshObject;
+	exports.default = MeshObject;
 
 /***/ },
 /* 173 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _BaseMeshObject2 = __webpack_require__(172);
-
-	var _BaseMeshObject3 = _interopRequireDefault(_BaseMeshObject2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/* global Box3D */
-	/**
-	 * @class StaticMeshObject
-	 * @constructor
-	 */
-	var StaticMeshObject = function (_BaseMeshObject) {
-	  _inherits(StaticMeshObject, _BaseMeshObject);
-
-	  function StaticMeshObject(json) {
-	    _classCallCheck(this, StaticMeshObject);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(StaticMeshObject).call(this, json));
-	  }
-
-	  _createClass(StaticMeshObject, [{
-	    key: '_allocateMesh',
-	    value: function _allocateMesh(geometry) {
-	      return new _three2.default.Mesh(geometry);
-	    }
-	  }, {
-	    key: '_getMaterialType',
-	    value: function _getMaterialType() {
-	      var geometry = this.getGeometry();
-	      if (geometry && geometry.hasTangents) {
-	        return 'staticTangents';
-	      }
-	      return 'static';
-	    }
-	  }]);
-
-	  return StaticMeshObject;
-	}(_BaseMeshObject3.default);
-
-	Box3D.StaticMeshObject = StaticMeshObject;
-	exports.default = StaticMeshObject;
-
-/***/ },
-/* 174 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _Box3DObject2 = __webpack_require__(168);
-
-	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class ModelObject
-	 * @constructor
-	 */
-	var ModelObject = function (_Box3DObject) {
-	  _inherits(ModelObject, _Box3DObject);
-
-	  function ModelObject(json) {
-	    _classCallCheck(this, ModelObject);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ModelObject).call(this, json));
-
-	    _this.bound = false;
-	    return _this;
-	  }
-
-	  /** @inheritdoc */
-
-
-	  _createClass(ModelObject, [{
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      var _this2 = this;
-
-	      _get(Object.getPrototypeOf(ModelObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      if (this.bound) {
-	        this.trigger('updated', this);
-	        return;
-	      }
-
-	      this.when('loadChildren', function () {
-	        _this2.bindChildMeshes();
-	        _this2.trigger('updated', _this2);
-	      });
-	    }
-
-	    /**
-	     * Bind SkinnedMeshObject children to this model's hierarchy.
-	     * @method bindChildMeshes
-	     */
-
-	  }, {
-	    key: 'bindChildMeshes',
-	    value: function bindChildMeshes() {
-	      var _this3 = this;
-
-	      this.traverse(function (obj) {
-	        if (obj.type === 'skinnedMesh') {
-	          obj.bindToHierarchy(_this3);
-	        }
-	      });
-
-	      this.bound = true;
-	    }
-	  }]);
-
-	  return ModelObject;
-	}(_Box3DObject3.default);
-
-	window.Box3D.ModelObject = ModelObject;
-	exports.default = ModelObject;
-
-/***/ },
-/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -102364,7 +102437,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 176 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
