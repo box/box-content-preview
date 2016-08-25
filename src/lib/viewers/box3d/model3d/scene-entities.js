@@ -62,7 +62,8 @@ function sceneEntities(prefix) {
         type: 'light',
         parentAssetId: 'SCENE_ID',
         properties: {
-            lightType: 'ambient'
+            lightType: 'ambient',
+            color: { r: 0.0, g: 0.0, b: 0.0 }
         }
     }, {
         id: 'APP_ASSET_ID',
@@ -78,6 +79,7 @@ function sceneEntities(prefix) {
                     renderOnDemand: true,
                     maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
+                    preserveDrawingBuffer: false,
                     precision: Browser.isMobile() ? 'highp' : 'mediump',
                     clearAlpha: 1.0,
                     clearColor: { r: 0.95, g: 0.95, b: 0.95 }
@@ -87,7 +89,10 @@ function sceneEntities(prefix) {
             },
             dynamicOptimizer: {
                 scriptId: 'dynamic_optimizer',
-                enabled: false
+                enabled: false,
+                componentData: {
+                    testInterval: 4000.0
+                }
             },
             debugPerformance: {
                 scriptId: 'debug_performance',
