@@ -100,12 +100,7 @@ push_to_maven() {
     cd dist
     fpm -s dir -t rpm --prefix $installDir --rpm-os linux --architecture all --package $rpmDir/$rpm --directories . --name "$KIND-$VERSION" --version $VERSION --rpm-user box --rpm-group box --rpm-compression none --description 'content experience assets bundle' .
     cd ..
-    status=$(curl -s -o /dev/null -w %{http_code} -X POST -u $mavenUser:$mavenPassword -T $rpmDir/$rpm $publishURL)
-
-    echo "----------------------------------------------------"
-    echo "Status of Maven push: $status"
-    echo "----------------------------------------------------"
-
+    
     REPO_NAME="box-rpm-releases" REPO_PATH='net/box' SERVICE_KIND=$KIND SERVICE_VERSION=$VERSION rpm-to-artifactory $rpmDir/$rpm
     status=$?
 
