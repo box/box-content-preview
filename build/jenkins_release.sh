@@ -128,29 +128,6 @@ build_assets() {
         echo "----------------------------------------------------"
         echo "Installed node modules."
         echo "----------------------------------------------------"
-    else
-        echo "-------------------------------------------------------------"
-        echo "Installing node modules from https://registry.nodejitsu.com"
-        echo "-------------------------------------------------------------"
-        if npm install --registry https://registry.nodejitsu.com; then
-            echo "----------------------------------------------------"
-            echo "Installed node modules."
-            echo "----------------------------------------------------"
-        else
-            echo "--------------------------------------------------------------"
-            echo "Installing node modules from http://registry.cnpmjs.org"
-            echo "--------------------------------------------------------------"
-            if npm install --registry http://registry.cnpmjs.org; then
-                echo "----------------------------------------------------"
-                echo "Installed node modules."
-                echo "----------------------------------------------------"
-            else
-                echo "----------------------------------------------------"
-                echo "Failed to install node modules!"
-                echo "----------------------------------------------------"
-                exit 1;
-            fi
-        fi
     fi
 
 
