@@ -17,10 +17,10 @@ import Browser from '../../../browser';
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
 const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };
 
-const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR = 33.333333; // 30 FPS
+const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR = 50; // 20 FPS
 const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE = 66.6; // 15 FPS
 const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR = 20.0; // 50 FPS
-const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR = 50; // 20 FPS
+const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR = 66.6; // 15 FPS
 const DEFAULT_MODEL_SIZE = 1;
 const DEFAULT_MODEL_VR_SIZE = 1.5;
 
@@ -619,9 +619,6 @@ class Model3dRenderer extends Box3DRenderer {
     createRegularQualityChangeLevels() {
         this.regularQualityChangeLevels = [
             new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.5),
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'glossMap', null),
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapGlossVariance', false),
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapRadianceHalfGloss', null),
             new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.75),
             new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 1.0)
         ];
@@ -629,12 +626,11 @@ class Model3dRenderer extends Box3DRenderer {
 
     createVrQualityChangeLevels() {
         this.vrQualityChangeLevels = [
-            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.5),
-            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.75),
-            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 1.0),
             new this.dynamicOptimizer.QualityChangeLevel('material', null, 'aoMap', null),
-            // TODO - how to turn off lighting?
+            // TODO - Removing light environments means that we also need to bump up ambient lighting. We'll need
+            // to add the ability to set multiple params to the dynamic optimizer to make this work well.
             new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapIrradiance', null),
+            new this.dynamicOptimizer.QualityChangeLevel('light', null, 'color', { r: 1, g: 1, b: 1 }),
             new this.dynamicOptimizer.QualityChangeLevel('material', null, 'normalMap', null),
             new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapRadiance', null),
             new this.dynamicOptimizer.QualityChangeLevel('material', null, 'glossMap', null),

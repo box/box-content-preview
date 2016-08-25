@@ -327,6 +327,7 @@ class Box3DRenderer extends EventEmitter {
 
         const renderView = camera.componentRegistry.getFirstByScriptId('render_view_component');
         renderView.effect = this.vrEffect;
+        renderView.setAttribute('enablePreRenderFunctions', false);
 
         // Start doing updates of the VR controls.
         this.box3d.on('preUpdate', this.updateVrControls, this);
@@ -398,6 +399,7 @@ class Box3DRenderer extends EventEmitter {
         if (camera) {
             const renderViewComponent = camera.componentRegistry.getFirstByScriptId(renderViewId);
             renderViewComponent.effect = null;
+            renderViewComponent.setAttribute('enablePreRenderFunctions', true);
         }
         this.box3d.off('preUpdate', this.updateVrControls, this);
 
