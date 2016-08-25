@@ -100,12 +100,7 @@ push_to_maven() {
     cd dist
     fpm -s dir -t rpm --prefix $installDir --rpm-os linux --architecture all --package $rpmDir/$rpm --directories . --name "$KIND-$VERSION" --version $VERSION --rpm-user box --rpm-group box --rpm-compression none --description 'content experience assets bundle' .
     cd ..
-    status=$(curl -s -o /dev/null -w %{http_code} -X POST -u $mavenUser:$mavenPassword -T $rpmDir/$rpm $publishURL)
-
-    echo "----------------------------------------------------"
-    echo "Status of Maven push: $status"
-    echo "----------------------------------------------------"
-
+    
     REPO_NAME="box-rpm-releases" REPO_PATH='net/box' SERVICE_KIND=$KIND SERVICE_VERSION=$VERSION rpm-to-artifactory $rpmDir/$rpm
     status=$?
 
@@ -128,29 +123,6 @@ build_assets() {
         echo "----------------------------------------------------"
         echo "Installed node modules."
         echo "----------------------------------------------------"
-    else
-        echo "-------------------------------------------------------------"
-        echo "Installing node modules from https://registry.nodejitsu.com"
-        echo "-------------------------------------------------------------"
-        if npm install --registry https://registry.nodejitsu.com; then
-            echo "----------------------------------------------------"
-            echo "Installed node modules."
-            echo "----------------------------------------------------"
-        else
-            echo "--------------------------------------------------------------"
-            echo "Installing node modules from http://registry.cnpmjs.org"
-            echo "--------------------------------------------------------------"
-            if npm install --registry http://registry.cnpmjs.org; then
-                echo "----------------------------------------------------"
-                echo "Installed node modules."
-                echo "----------------------------------------------------"
-            else
-                echo "----------------------------------------------------"
-                echo "Failed to install node modules!"
-                echo "----------------------------------------------------"
-                exit 1;
-            fi
-        fi
     fi
 
 
