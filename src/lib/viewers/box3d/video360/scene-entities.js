@@ -75,7 +75,44 @@ export default [{
         inputController: {
             scriptId: 'input_controller_component',
             isBuiltIn: true,
-            enabled: true
+            enabled: true,
+            componentData: {
+                mouseEvents: {
+                    enable: true,
+                    scroll: true,
+                    scroll_preventDefault: true,
+                    move: true,
+                    down: true,
+                    down_preventDefault: false,
+                    up: true,
+                    double_click: true,
+                    leave: true,
+                    contextMenu: true,
+                    contextMenu_preventDefault: true,
+                    dragBufferDistance: 12,
+                    eventHandler: true
+                },
+                touchEvents: {
+                    enable: true,
+                    start: true,
+                    start_preventDefault: false,
+                    end: true,
+                    doubleTap: true,
+                    cancel: true,
+                    leave: true,
+                    move: true,
+                    move_preventDefault: true,
+                    dragBufferDistance: 12,
+                    eventHandler: true
+                },
+                keyEvents: {
+                    enable: true,
+                    down: true,
+                    up: true,
+                    preventDefault: false,
+                    eventHandler: true
+                }
+            }
         }
     }
 }];
