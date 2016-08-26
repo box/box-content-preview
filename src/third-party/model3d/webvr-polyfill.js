@@ -5,82 +5,82 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
+    if (val === null || val === undefined) {
+        throw new TypeError('Object.assign cannot be called with null or undefined');
+    }
 
-	return Object(val);
+    return Object(val);
 }
 
 function shouldUseNative() {
-	try {
-		if (!Object.assign) {
-			return false;
-		}
+    try {
+        if (!Object.assign) {
+            return false;
+        }
 
-		// Detect buggy property enumeration order in older V8 versions.
+        // Detect buggy property enumeration order in older V8 versions.
 
-		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line
-		test1[5] = 'de';
-		if (Object.getOwnPropertyNames(test1)[0] === '5') {
-			return false;
-		}
+        // https://bugs.chromium.org/p/v8/issues/detail?id=4118
+        var test1 = new String('abc');  // eslint-disable-line
+        test1[5] = 'de';
+        if (Object.getOwnPropertyNames(test1)[0] === '5') {
+            return false;
+        }
 
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test2 = {};
-		for (var i = 0; i < 10; i++) {
-			test2['_' + String.fromCharCode(i)] = i;
-		}
-		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-			return test2[n];
-		});
-		if (order2.join('') !== '0123456789') {
-			return false;
-		}
+        // https://bugs.chromium.org/p/v8/issues/detail?id=3056
+        var test2 = {};
+        for (var i = 0; i < 10; i++) {
+            test2['_' + String.fromCharCode(i)] = i;
+        }
+        var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+            return test2[n];
+        });
+        if (order2.join('') !== '0123456789') {
+            return false;
+        }
 
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test3 = {};
-		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-			test3[letter] = letter;
-		});
-		if (Object.keys(Object.assign({}, test3)).join('') !==
-				'abcdefghijklmnopqrst') {
-			return false;
-		}
+        // https://bugs.chromium.org/p/v8/issues/detail?id=3056
+        var test3 = {};
+        'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+            test3[letter] = letter;
+        });
+        if (Object.keys(Object.assign({}, test3)).join('') !==
+                'abcdefghijklmnopqrst') {
+            return false;
+        }
 
-		return true;
-	} catch (e) {
-		// We don't expect any of the above to throw, but better to be safe.
-		return false;
-	}
+        return true;
+    } catch (e) {
+        // We don't expect any of the above to throw, but better to be safe.
+        return false;
+    }
 }
 
 module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
+    var from;
+    var to = toObject(target);
+    var symbols;
 
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
+    for (var s = 1; s < arguments.length; s++) {
+        from = Object(arguments[s]);
 
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
+        for (var key in from) {
+            if (hasOwnProperty.call(from, key)) {
+                to[key] = from[key];
+            }
+        }
 
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
+        if (Object.getOwnPropertySymbols) {
+            symbols = Object.getOwnPropertySymbols(from);
+            for (var i = 0; i < symbols.length; i++) {
+                if (propIsEnumerable.call(from, symbols[i])) {
+                    to[symbols[i]] = from[symbols[i]];
+                }
+            }
+        }
+    }
 
-	return to;
+    return to;
 };
 
 },{}],2:[function(_dereq_,module,exports){
@@ -313,22 +313,33 @@ VRDisplay.prototype.requestPresent = function(layers) {
       var fullscreenElement = self.wrapForFullscreen(self.layer_.source);
 
       function onFullscreenChange() {
+        // Don't let another fullscreen request cause multiple presents to the called.
+        // This currently happens with the shaka player and results in a black screen.
+        if (self.fullscreenJustChanged) {
+            return;
+        }
+        self.fullscreenJustChanged = true;
+        setTimeout(function() {
+            self.fullscreenJustChanged = false;
+        }, 700);
+
         var actualFullscreenElement = Util.getFullscreenElement();
 
         self.isPresenting = (fullscreenElement === actualFullscreenElement);
         if (self.isPresenting) {
-          if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('landscape-primary').catch(function(error){
-                    console.error('screen.orientation.lock() failed due to', error.message)
-            });
-          }
+          // Removing orientation lock as if seems to conflict with shaka player
+          // if (screen.orientation && screen.orientation.lock) {
+          //   screen.orientation.lock('landscape-primary').catch(function(error){
+          //           console.error('screen.orientation.lock() failed due to', error.message)
+          //   });
+          // }
           self.waitingForPresent_ = false;
           self.beginPresent_();
           resolve();
         } else {
-          if (screen.orientation && screen.orientation.unlock) {
-            screen.orientation.unlock();
-          }
+          // if (screen.orientation && screen.orientation.unlock) {
+          //   screen.orientation.unlock();
+          // }
           self.removeFullscreenWrapper();
           self.wakelock_.release();
           self.endPresent_();
