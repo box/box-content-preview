@@ -149,6 +149,10 @@ class AnnotationThread extends EventEmitter {
         const tempAnnotation = new Annotation(tempAnnotationData);
         this._saveAnnotationToThread(tempAnnotation);
 
+        if (this._annotations.length === 1) {
+            this.emit('pointmodeexit');
+        }
+
         // Save annotation on server
         this._annotationService.create(annotationData).then((savedAnnotation) => {
             // If no temporary annotation is found, save to thread normally
