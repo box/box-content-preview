@@ -319,7 +319,7 @@ VRDisplay.prototype.requestPresent = function(layers) {
             return;
         }
         self.fullscreenJustChanged = true;
-        setTimeout(() => {
+        setTimeout(function() {
             self.fullscreenJustChanged = false;
         }, 700);
 
