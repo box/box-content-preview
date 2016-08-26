@@ -1,5 +1,34 @@
 # Change Log
 
+## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
+
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.75.0...HEAD)
+
+**Merged pull requests:**
+
+- COXP-2530: Showing highlight comments in view-only on mobile [\#563](https://gitenterprise.inside-box.net/Preview/Preview/pull/563) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
+## [v0.75.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.75.0) (2016-08-25)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.74.0...v0.75.0)
+
+**Merged pull requests:**
+
+- Coxp 2542 fix mirror reflections in vr [\#559](https://gitenterprise.inside-box.net/Preview/Preview/pull/559) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Load event timing change [\#558](https://gitenterprise.inside-box.net/Preview/Preview/pull/558) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Testing private methods of annotation-dialog.js [\#557](https://gitenterprise.inside-box.net/Preview/Preview/pull/557) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Hide download button on mobile [\#556](https://gitenterprise.inside-box.net/Preview/Preview/pull/556) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add print events and open print window in supported browsers [\#555](https://gitenterprise.inside-box.net/Preview/Preview/pull/555) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Include PDF.js worker as third party script requirement for doc viewer [\#554](https://gitenterprise.inside-box.net/Preview/Preview/pull/554) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- COXP-2521: Hovering over a highlight annotation that is beneath the dialog of another hides the annotation dialog currently being displayed [\#553](https://gitenterprise.inside-box.net/Preview/Preview/pull/553) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Unit tests for doc highlights [\#552](https://gitenterprise.inside-box.net/Preview/Preview/pull/552) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Coxp 2498 add hdr float texture support on mobile [\#550](https://gitenterprise.inside-box.net/Preview/Preview/pull/550) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Move viewers inside viewers directory [\#548](https://gitenterprise.inside-box.net/Preview/Preview/pull/548) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Switching to use access\_token instead of Authorization header for dash [\#547](https://gitenterprise.inside-box.net/Preview/Preview/pull/547) ([phora](https://gitenterprise.inside-box.net/phora))
+- COXP-2506: Fix VR button on wake from sleep \(and other situations\) [\#546](https://gitenterprise.inside-box.net/Preview/Preview/pull/546) ([dweis](https://gitenterprise.inside-box.net/dweis))
+- Update changelog for v0.74.0 [\#545](https://gitenterprise.inside-box.net/Preview/Preview/pull/545) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Distinguishing between highlight and highlight-comments in thread type [\#533](https://gitenterprise.inside-box.net/Preview/Preview/pull/533) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Extracting token stuff [\#524](https://gitenterprise.inside-box.net/Preview/Preview/pull/524) ([phora](https://gitenterprise.inside-box.net/phora))
+
 ## [v0.74.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.74.0) (2016-08-20)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.73.0...v0.74.0)
 
