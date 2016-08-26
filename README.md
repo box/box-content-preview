@@ -10,7 +10,7 @@ Browser Support
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
 * Limited support for mobile web - previews will render but some controls may not work, full support will come soon!
 
-The browser needs to have the Promise API implimented. If not, it can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js) before including any other script.
+The browser needs to have the Promise API implemented. If not, it can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js) before including any other script.
 
 Current Version
 ---------------
@@ -151,9 +151,9 @@ Options
 | logoUrl | Optional |  | URL of logo to show in header |
 | showDownload | Optional | false | Whether download button is shown |
 | viewers | Optional |  | Arguments to pass on to viewers |
-| VIEWERNAME |  |  | Name of the viewer, see below for more details |
-| disabled |  | false | Disables the viewer |
-| annotations |  | false | Enables annotations for the viewer |
+| { VIEWERNAME } |  |  | Name of the viewer, see below for more details |
+| {{ disabled }} |  | false | Disables the viewer |
+| {{ annotations }} |  | false | Enables annotations for the viewer |
 
 Authentication Token
 --------------------
@@ -194,7 +194,7 @@ function tokenGenerator(id) {
 Viewers
 -------
 
-The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of viewers can also be discovered by calling `Box.Preview.getViewers()`.
+The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of possible viewers can also be discovered by calling `Box.Preview.getViewers()`.
 
 Additional Methods
 ------------------

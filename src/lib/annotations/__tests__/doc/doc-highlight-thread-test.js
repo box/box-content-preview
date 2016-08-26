@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import Browser from '../../../browser';
 import DocHighlightDialog from '../../doc/doc-highlight-dialog';
 import DocHighlightThread from '../../doc/doc-highlight-thread';
 import AnnotationService from '../../annotation-service';
@@ -146,39 +147,66 @@ describe('doc-highlight-thread', () => {
     });
 
     describe('onClick()', () => {
+        it('should return false if event was from a mobile device and thread does not have comments', () => {
+            highlightThread._type = constants.ANNOTATION_TYPE_HIGHLIGHT;
+            sandbox.stub(Browser, 'isMobile').returns(true);
+
+            const isHighlightPending = highlightThread.onClick({}, false);
+
+            expect(isHighlightPending).to.be.false;
+        });
+
+        it('should return true if event was from a mobile device and thread has comments', () => {
+            highlightThread._state = constants.ANNOTATION_STATE_HOVER;
+            highlightThread._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+            sandbox.stub(Browser, 'isMobile').returns(true);
+
+            const isHighlightPending = highlightThread.onClick({}, false);
+
+            expect(isHighlightPending).to.be.true;
+        });
+
         it('should set annotation to inactive if event has already been consumed', () => {
             highlightThread._state = constants.ANNOTATION_STATE_HOVER;
+            highlightThread._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+            sandbox.stub(Browser, 'isMobile').returns(false);
 
             const isHighlightPending = highlightThread.onClick({}, true);
 
             expect(isHighlightPending).to.be.false;
-            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_INACTIVE);
+            expect(highlightThread._state).to.equal(constants.ANNOTATION_STATE_INACTIVE);
         });
 
         it('should set annotation to active if highlight is in the hover state', () => {
             highlightThread._state = constants.ANNOTATION_STATE_HOVER;
+            highlightThread._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+            sandbox.stub(Browser, 'isMobile').returns(false);
             sandbox.stub(highlightThread, 'reset');
 
             const isHighlightPending = highlightThread.onClick({}, false);
 
             expect(isHighlightPending).to.be.true;
             expect(highlightThread.reset).to.not.have.been.called;
-            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_ACTIVE);
+            expect(highlightThread._state).to.equal(constants.ANNOTATION_STATE_ACTIVE);
         });
 
         it('should set annotation to active if highlight is in the active hover state', () => {
             highlightThread._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
+            highlightThread._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+            sandbox.stub(Browser, 'isMobile').returns(false);
             sandbox.stub(highlightThread, 'reset');
 
             const isHighlightPending = highlightThread.onClick({}, false);
 
             expect(isHighlightPending).to.be.true;
             expect(highlightThread.reset).to.not.have.been.called;
-            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_ACTIVE);
+            expect(highlightThread._state).to.equal(constants.ANNOTATION_STATE_ACTIVE);
         });
 
         it('should set annotation to active if mouse is hovering over highlight or dialog', () => {
             highlightThread._state = constants.ANNOTATION_STATE_PENDING;
+            highlightThread._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+            sandbox.stub(Browser, 'isMobile').returns(false);
             sandbox.stub(highlightThread, 'isOnHighlight').returns(true);
             sandbox.stub(highlightThread, 'reset');
 
@@ -186,7 +214,7 @@ describe('doc-highlight-thread', () => {
 
             expect(isHighlightPending).to.be.true;
             expect(highlightThread.reset).to.not.have.been.called;
-            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_ACTIVE);
+            expect(highlightThread._state).to.equal(constants.ANNOTATION_STATE_ACTIVE);
         });
     });
 

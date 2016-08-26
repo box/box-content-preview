@@ -218,15 +218,13 @@ class DocAnnotator extends Annotator {
      * @protected
      */
     bindDOMListeners() {
-        // If user cannot create or modify annotations, don't bind any listeners
-        if (!this._annotationService.canAnnotate) {
-            return;
-        }
-
-        this._annotatedElement.addEventListener('mousedown', this._highlightMousedownHandler);
-        this._annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
-        this._annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
         this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
+
+        if (this._annotationService.canAnnotate) {
+            this._annotatedElement.addEventListener('mousedown', this._highlightMousedownHandler);
+            this._annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
+            this._annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
+        }
     }
 
     /**
@@ -237,14 +235,13 @@ class DocAnnotator extends Annotator {
      * @protected
      */
     unbindDOMListeners() {
-        if (!this._annotationService.canAnnotate) {
-            return;
-        }
-
-        this._annotatedElement.removeEventListener('mousedown', this._highlightMousedownHandler);
-        this._annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
-        this._annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
         this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
+
+        if (this._annotationService.canAnnotate) {
+            this._annotatedElement.removeEventListener('mousedown', this._highlightMousedownHandler);
+            this._annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
+            this._annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
+        }
     }
 
     /**
