@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import AnnotationThread from '../annotation-thread';
+import Annotation from '../annotation';
 import * as constants from '../annotation-constants';
 
 let annotationThread;
@@ -31,9 +32,14 @@ describe('annotation-thread', () => {
             show: () => {},
             hide: () => {}
         };
+
+        annotationThread._annotationService = {
+            user: { id: 1 }
+        };
     });
 
     afterEach(() => {
+        annotationThread._annotationService = undefined;
         sandbox.verifyAndRestore();
     });
 
@@ -297,6 +303,87 @@ describe('annotation-thread', () => {
             expect(removeAllListenersStub).to.have.been.calledWith('annotationcreate');
             expect(removeAllListenersStub).to.have.been.calledWith('annotationcancel');
             expect(removeAllListenersStub).to.have.been.calledWith('annotationdelete');
+        });
+    });
+
+    describe('_createElement()', () => {
+        it('should create an element with the right class and attribute', () => {
+            const element = annotationThread._createElement();
+
+            expect(element.classList.contains('box-preview-point-annotation-btn')).to.be.true;
+            expect(element.getAttribute('data-type')).to.equal('annotation-indicator');
+        });
+    });
+
+    describe('_mouseoutHandler()', () => {
+        it('should not call hideDialog if there are no annotations in the thread', () => {
+            const hideStub = sandbox.stub(annotationThread, 'hideDialog');
+
+            annotationThread._mouseoutHandler();
+            expect(hideStub).to.not.be.called;
+        });
+
+        it('should call hideDialog if there are annotations in the thread', () => {
+            const hideStub = sandbox.stub(annotationThread, 'hideDialog');
+            const annotation1 = new Annotation({
+                fileVersionID: 2,
+                threadID: 1,
+                type: 'point',
+                text: 'blah',
+                location: { x: 0, y: 0 },
+                created: Date.now()
+            });
+
+            annotationThread._annotations = [annotation1];
+            annotationThread._mouseoutHandler();
+            expect(hideStub).to.be.called;
+        });
+    });
+
+    describe('_saveAnnotationToThread()', () => {
+        it('should push the annotation, reset, and add to the dialog when the dialog exists', () => {
+            const addStub = sandbox.stub(annotationThread._dialog, 'addAnnotation');
+            const pushStub = sandbox.stub(annotationThread._annotations, 'push');
+            const resetStub = sandbox.stub(annotationThread, 'reset');
+            const annotation1 = new Annotation({
+                fileVersionID: 2,
+                threadID: 1,
+                type: 'point',
+                text: 'blah',
+                location: { x: 0, y: 0 },
+                created: Date.now()
+            });
+
+            annotationThread._saveAnnotationToThread(annotation1);
+            expect(addStub).to.be.calledWith(annotation1);
+            expect(pushStub).to.be.calledWith(annotation1);
+            expect(resetStub).to.be.called;
+        });
+
+        it('should not try to push an annotation to the dialog if it doesn\'t exist', () => {
+            const addStub = sandbox.stub(annotationThread._dialog, 'addAnnotation');
+            const annotation1 = new Annotation({
+                fileVersionID: 2,
+                threadID: 1,
+                type: 'point',
+                text: 'blah',
+                location: { x: 0, y: 0 },
+                created: Date.now()
+            });
+
+            annotationThread._dialog = undefined;
+            annotationThread._saveAnnotationToThread(annotation1);
+            expect(addStub).to.not.be.called;
+        });
+    });
+
+    describe('_createAnnotationDialog()', () => {
+        it('should correctly create the annotation data object', () => {
+            const annotationData = annotationThread._createAnnotationData('highlight', 'test');
+
+            expect(annotationData.location).to.equal(annotationThread._location);
+            expect(annotationData.fileVersionID).to.equal(annotationThread._fileVersionID);
+            expect(annotationData.user.id).to.equal(1);
         });
     });
 });
