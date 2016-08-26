@@ -142,15 +142,23 @@ describe('annotator', () => {
             const destroyStub = sandbox.stub(annotator, '_destroyPendingThreads');
             sandbox.stub(annotator, 'isInPointMode').returns(true);
             sandbox.stub(annotator.notification, 'show');
-            sandbox.stub(annotator, 'emit');
-            sandbox.stub(annotator, 'bindDOMListeners');
-            sandbox.stub(annotator, 'unbindPointModeListeners');
+            sandbox.stub(annotator, 'exitPointMode');
 
             annotator.togglePointModeHandler();
 
             expect(destroyStub).to.have.been.called;
             expect(annotator.notification.show).to.not.have.been.called;
-            expect(annotator.emit).to.have.been.calledWith('pointmodeexit');
+            expect(annotator.exitPointMode).to.have.been.called;
+        });
+    });
+
+    describe('exitPointMode', () => {
+        it('should turn annotation mode off', () => {
+            sandbox.stub(annotator, 'bindDOMListeners');
+            sandbox.stub(annotator, 'unbindPointModeListeners');
+
+            annotator.exitPointMode();
+
             expect(document.querySelector('.annotated-element').classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)).to.be.false;
             expect(annotator.unbindPointModeListeners).to.have.been.called;
             expect(annotator.bindDOMListeners).to.have.been.called;
