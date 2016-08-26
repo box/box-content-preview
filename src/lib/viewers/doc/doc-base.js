@@ -22,6 +22,7 @@ const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
+const MIN_RANGE_REQUEST_SIZE_BYTES = 5242880; // 5MB
 const PRESENTATION_MODE_STATE = {
     UNKNOWN: 0,
     NORMAL: 1,
@@ -29,6 +30,7 @@ const PRESENTATION_MODE_STATE = {
     FULLSCREEN: 3
 };
 const PRESENTATION_VIEWER_NAME = 'Presentation';
+const RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 
 @autobind
@@ -499,9 +501,9 @@ class DocBase extends Base {
         // Open links in new tab
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
 
-        // Disable range requests for files smaller than 2MB
-        PDFJS.disableRange = this.options.file && this.options.file.size ?
-            this.options.file.size < 2097152 :
+        // Disable range requests for files smaller than the minimum size
+        PDFJS.disableRange = (this.options.file && this.options.file.size) ?
+            this.options.file.size < MIN_RANGE_REQUEST_SIZE_BYTES :
             false;
 
         // Disable range requests for Safari, see: https://github.com/mozilla/pdf.js/issues/4927
@@ -540,7 +542,7 @@ class DocBase extends Base {
         this.pdfLoadingTask = PDFJS.getDocument({
             url: pdfUrl,
             httpHeaders: this.appendAuthHeader(),
-            rangeChunkSize: 524288 // 512KB chunk size
+            rangeChunkSize: RANGE_REQUEST_CHUNK_SIZE
         });
 
         // Set document for PDF.js
