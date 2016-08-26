@@ -360,13 +360,14 @@ class Model3d extends Box3D {
      * @inheritdoc
      */
     handleReset() {
-        if (this.renderer.vrEnabled) {
-            return;
-        }
         super.handleReset();
         this.handleRotationAxisSet(this.axes.up, this.axes.forward, true);
         this.controls.handleSetRenderMode(this.renderMode);
         this.controls.setCurrentProjectionMode(this.projection);
+        if (this.renderer.vrEnabled) {
+            const camera = this.renderer.getCamera();
+            this.renderer.initCameraForVr(camera);
+        }
     }
 
     /**
