@@ -142,7 +142,7 @@ class Box3DRenderer extends EventEmitter {
         const camera = this.getCamera();
 
         // Reset camera settings to default.
-        if (camera) {
+        if (camera && !this.vrEnabled) {
             camera.trigger('resetOrbitCameraController');
         }
     }
@@ -305,6 +305,17 @@ class Box3DRenderer extends EventEmitter {
         }
     }
 
+    initCameraForVr(camera) {
+        if (this.vrControls) {
+            this.vrControls.dispose();
+        }
+        this.vrControls = new THREE.VRControls(camera.runtimeData);
+        this.vrControls.scale = 1;
+        this.vrControls.standing = true;
+        this.vrControls.userHeight = 1;
+        this.vrControls.resetPose();
+    }
+
     /**
      * Enable the VR system (HMD)
      * @returns {void}
@@ -316,15 +327,10 @@ class Box3DRenderer extends EventEmitter {
 
         this.disableCameraControls();
 
+        const camera = this.getCamera();
         // Create the controls every time we enter VR mode so that we're always using the current
         // camera.
-        const camera = this.getCamera();
-        this.vrControls = new THREE.VRControls(camera.runtimeData);
-        this.vrControls.scale = 1;
-        this.vrControls.standing = true;
-        this.vrControls.userHeight = 1;
-        window.vrControls = this.vrControls;
-
+        this.initCameraForVr(camera);
         const renderView = camera.componentRegistry.getFirstByScriptId('render_view_component');
         renderView.effect = this.vrEffect;
         renderView.setAttribute('enablePreRenderFunctions', false);
@@ -406,7 +412,7 @@ class Box3DRenderer extends EventEmitter {
         this.vrEffect.exitPresent().then(() => {
             const renderer = this.box3d.getRenderer();
             renderer.setAttribute('renderOnDemand', true);
-            this.box3d.needsRender = true;
+            this.box3d.trigger('resize');
         });
     }
 

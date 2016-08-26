@@ -453,7 +453,9 @@ class Model3dRenderer extends Box3DRenderer {
                         break;
                     // no default
                 }
-                camera.trigger('resetOrbitCameraController');
+                if (!this.vrEnabled) {
+                    camera.trigger('resetOrbitCameraController');
+                }
             }
         }
     }
@@ -524,7 +526,11 @@ class Model3dRenderer extends Box3DRenderer {
         // Save these values back to forward and up, for metadata save
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
-        this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
+        if (this.vrEnabled) {
+            this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
+        } else {
+            this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
+        }
     }
 
     /**
