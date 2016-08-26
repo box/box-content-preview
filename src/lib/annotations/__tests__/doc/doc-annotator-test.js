@@ -288,17 +288,17 @@ describe('doc-annotator', () => {
     });
 
     describe('bindDOMListeners()', () => {
-        it('shouldn\'t bind DOM listeners if user cannot annotate', () => {
+        it('shouldn\'t bind DOM listeners if user cannot annotate except mouseup', () => {
             const element = annotator._annotatedElement;
             sandbox.stub(element, 'addEventListener');
             annotator._annotationService.canAnnotate = false;
 
             annotator.bindDOMListeners();
 
+            expect(element.addEventListener).to.have.been.calledWith('mouseup', sinon.match.func);
             expect(element.addEventListener).to.not.have.been.calledWith('mousedown', sinon.match.func);
             expect(element.addEventListener).to.not.have.been.calledWith('contextmenu', sinon.match.func);
             expect(element.addEventListener).to.not.have.been.calledWith('mousemove', sinon.match.func);
-            expect(element.addEventListener).to.not.have.been.calledWith('mouseup', sinon.match.func);
         });
 
         it('should bind DOM listeners if user can annotate', () => {
@@ -316,17 +316,17 @@ describe('doc-annotator', () => {
     });
 
     describe('unbindDOMListeners()', () => {
-        it('shouldn\'t unbind DOM listeners if user cannot annotate', () => {
+        it('shouldn\'t unbind DOM listeners if user cannot annotate except mouseup', () => {
             const element = annotator._annotatedElement;
             sandbox.stub(element, 'removeEventListener');
             annotator._annotationService.canAnnotate = false;
 
             annotator.unbindDOMListeners();
 
+            expect(element.removeEventListener).to.have.been.calledWith('mouseup', sinon.match.func);
             expect(element.removeEventListener).to.not.have.been.calledWith('mousedown', sinon.match.func);
             expect(element.removeEventListener).to.not.have.been.calledWith('contextmenu', sinon.match.func);
             expect(element.removeEventListener).to.not.have.been.calledWith('mousemove', sinon.match.func);
-            expect(element.removeEventListener).to.not.have.been.calledWith('mouseup', sinon.match.func);
         });
 
         it('should unbind DOM listeners if user can annotate', () => {
