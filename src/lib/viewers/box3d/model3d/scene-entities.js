@@ -277,7 +277,8 @@ function sceneEntities(prefix) {
             height: 512,
             generateMipmaps: true,
             vMapping: 'clamp',
-            uMapping: 'clamp'
+            uMapping: 'clamp',
+            encoding: 'linear'
         },
         components: {
             equirectToCubemap: {
@@ -298,7 +299,8 @@ function sceneEntities(prefix) {
             height: 256,
             generateMipmaps: true,
             vMapping: 'clamp',
-            uMapping: 'clamp'
+            uMapping: 'clamp',
+            encoding: 'linear'
         },
         components: {
             equirectToCubemap: {
@@ -319,7 +321,8 @@ function sceneEntities(prefix) {
             height: 128,
             generateMipmaps: true,
             vMapping: 'clamp',
-            uMapping: 'clamp'
+            uMapping: 'clamp',
+            encoding: 'linear'
         },
         components: {
             equirectToCubemap: {
