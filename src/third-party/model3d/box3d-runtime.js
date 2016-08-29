@@ -13122,7 +13122,7 @@
 	  function Engine(properties) {
 	    _classCallCheck(this, Engine);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Engine).call(this));
+	    var _this = _possibleConstructorReturn(this, (Engine.__proto__ || Object.getPrototypeOf(Engine)).call(this));
 
 	    if (!Math.log2) {
 	      Math.log2 = function (val) {
@@ -56537,7 +56537,7 @@
 	  function AssetRegistry() {
 	    _classCallCheck(this, AssetRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AssetRegistry).call(this));
+	    var _this = _possibleConstructorReturn(this, (AssetRegistry.__proto__ || Object.getPrototypeOf(AssetRegistry)).call(this));
 
 	    _this.assets = undefined;
 	    _this.box3DRuntime = undefined;
@@ -57091,7 +57091,7 @@
 	  function Box3DAsset(json) {
 	    _classCallCheck(this, Box3DAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (Box3DAsset.__proto__ || Object.getPrototypeOf(Box3DAsset)).call(this, json));
 
 	    _this.objects = {};
 	    _this.registry = undefined;
@@ -57104,7 +57104,7 @@
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.registry = properties.registry;
-	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'initialize', this).call(this, properties);
 
 	      this.on('addObjectEntity', this.registerObject, this);
 	      this.on('removeObjectEntity', this.unregisterObject, this);
@@ -57121,7 +57121,7 @@
 	      this.off('removeObjectEntity', this.unregisterObject, this);
 
 	      //Uninitialize this asset ( will force unload the asset and its children)
-	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'uninitialize', this).call(this);
+	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'uninitialize', this).call(this);
 
 	      //Uninitialize all child objects. Most of these will probably already be unloaded
 	      //but, if not, this will force unload them.
@@ -57138,7 +57138,7 @@
 	  }, {
 	    key: 'load',
 	    value: function load(callback) {
-	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'load', this).call(this, callback);
+	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'load', this).call(this, callback);
 	      if (!this.isDependenciesLoaded()) {
 	        this.loadDependencies();
 	      }
@@ -57393,7 +57393,7 @@
 	      //abort xhr request associated with this
 	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
 
-	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'unload', this).call(this, options);
+	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /**
@@ -57758,7 +57758,7 @@
 	  function Box3DEntity(jsonDesc) {
 	    _classCallCheck(this, Box3DEntity);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DEntity).call(this));
+	    var _this = _possibleConstructorReturn(this, (Box3DEntity.__proto__ || Object.getPrototypeOf(Box3DEntity)).call(this));
 
 	    jsonDesc = jsonDesc || {};
 	    _this.box3DRuntime = undefined;
@@ -57783,7 +57783,7 @@
 	  _createClass(Box3DEntity, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(Box3DEntity.prototype), 'initialize', this).call(this, properties);
+	      _get(Box3DEntity.prototype.__proto__ || Object.getPrototypeOf(Box3DEntity.prototype), 'initialize', this).call(this, properties);
 	      this._buildParamDependencies();
 	    }
 	  }, {
@@ -60695,7 +60695,7 @@
 	  function ComponentRegistry(opts) {
 	    _classCallCheck(this, ComponentRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ComponentRegistry).call(this));
+	    var _this = _possibleConstructorReturn(this, (ComponentRegistry.__proto__ || Object.getPrototypeOf(ComponentRegistry)).call(this));
 
 	    _this.components = {};
 	    _this.box3DEntity = opts.box3DEntity;
@@ -61780,7 +61780,7 @@
 	  function MaterialRegistry() {
 	    _classCallCheck(this, MaterialRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialRegistry).call(this, Box3D.MaterialAsset));
+	    var _this = _possibleConstructorReturn(this, (MaterialRegistry.__proto__ || Object.getPrototypeOf(MaterialRegistry)).call(this, Box3D.MaterialAsset));
 
 	    _this.sharedUniforms = {
 	      time: {
@@ -61800,7 +61800,7 @@
 	  _createClass(MaterialRegistry, [{
 	    key: 'initialize',
 	    value: function initialize(box3DRuntime) {
-	      _get(Object.getPrototypeOf(MaterialRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
+	      _get(MaterialRegistry.prototype.__proto__ || Object.getPrototypeOf(MaterialRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
 
 	      this.standInTextures[_MaterialAsset2.default.STANDIN_TEXTURE_WHITE] = {
 	        texture: null,
@@ -61840,7 +61840,7 @@
 	          this.standInTextures[i].texture.dispose();
 	        }
 	      }
-	      _get(Object.getPrototypeOf(MaterialRegistry.prototype), 'uninitialize', this).call(this);
+	      _get(MaterialRegistry.prototype.__proto__ || Object.getPrototypeOf(MaterialRegistry.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /**
@@ -62041,7 +62041,7 @@
 	  function MaterialAsset(json) {
 	    _classCallCheck(this, MaterialAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (MaterialAsset.__proto__ || Object.getPrototypeOf(MaterialAsset)).call(this, json));
 	  }
 
 	  /**
@@ -62071,7 +62071,7 @@
 	  }, {
 	    key: 'getProperty',
 	    value: function getProperty(propName) {
-	      var value = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, propName);
+	      var value = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, propName);
 	      if (value === undefined) {
 	        var shaderParams = this.getShader().getProperty('parameters');
 	        if (shaderParams[propName]) {
@@ -62086,7 +62086,7 @@
 	  }, {
 	    key: 'getDefaultProperties',
 	    value: function getDefaultProperties() {
-	      var values = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getDefaultProperties', this).call(this);
+	      var values = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getDefaultProperties', this).call(this);
 	      var shaderParams = this.getShader().getProperty('parameters');
 	      Object.keys(shaderParams).forEach(function (paramName) {
 	        values[paramName] = shaderParams[paramName].default;
@@ -62096,7 +62096,7 @@
 	  }, {
 	    key: 'verifyProperty',
 	    value: function verifyProperty(propertyName, valueObj) {
-	      if (_get(Object.getPrototypeOf(MaterialAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	      if (_get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
 	        return true;
 	      }
 	      var shaderAsset = this.getShader();
@@ -62242,7 +62242,7 @@
 	    value: function getShader() {
 	      // Calling super to avoid an infinite loop because Material.getProperty will fallback to looking
 	      // in the shader for default property values.
-	      var shaderId = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, 'shader');
+	      var shaderId = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, 'shader');
 	      // If the shader asset doesn't exist, get the default shader asset.
 	      if (!this.getAssetById(shaderId)) {
 	        shaderId = this.getDefaultProperty('shader');
@@ -62476,6 +62476,8 @@
 	                  defines[modeDefine] = 0;
 	                  var typeDefine = defineName + '_TYPE_' + this._convertToDefine(texture.getProperty('mappingType'));
 	                  defines[typeDefine] = 0;
+	                  var encodingDefine = defineName + '_ENCODING_' + this._convertToDefine(texture.getProperty('encoding'));
+	                  defines[encodingDefine] = 0;
 	                }
 	              }
 	              if (shaderParams[paramName].defines) {
@@ -62554,7 +62556,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this3 = this;
 
-	      _get(Object.getPrototypeOf(MaterialAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('shader')) {
 	        (function () {
@@ -63203,7 +63205,7 @@
 	        }
 	        this.runtimeData = null;
 
-	        _get(Object.getPrototypeOf(MaterialAsset.prototype), 'unload', this).call(this);
+	        _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'unload', this).call(this);
 	      }
 	    }
 	  }], [{
@@ -63297,7 +63299,7 @@
 	  function TextureRegistry() {
 	    _classCallCheck(this, TextureRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TextureRegistry).call(this, _BaseTextureAsset2.default));
+	    var _this = _possibleConstructorReturn(this, (TextureRegistry.__proto__ || Object.getPrototypeOf(TextureRegistry)).call(this, _BaseTextureAsset2.default));
 
 	    _this.missingTexture2d = undefined;
 	    _this.missingTextureCube = undefined;
@@ -63462,7 +63464,7 @@
 	  function BaseTextureAsset(json) {
 	    _classCallCheck(this, BaseTextureAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTextureAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (BaseTextureAsset.__proto__ || Object.getPrototypeOf(BaseTextureAsset)).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -63481,7 +63483,7 @@
 	    value: function initialize(properties) {
 	      var _this2 = this;
 
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
 	      this.listenTo(this.box3DRuntime, 'imageUnloaded', function (imageId) {
 	        // If this texture is using the image, unload the texture so that entities
 	        // listening for texture unload can take action.
@@ -63577,7 +63579,7 @@
 	        this.runtimeData.dispose();
 	      }
 
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
+	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
 	      this.loadedBytes = 0;
 	    }
 
@@ -63586,7 +63588,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      var texture = this.runtimeData instanceof _three2.default.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
 
@@ -64263,7 +64265,7 @@
 	  function BaseImageAsset(json) {
 	    _classCallCheck(this, BaseImageAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseImageAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (BaseImageAsset.__proto__ || Object.getPrototypeOf(BaseImageAsset)).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -64312,7 +64314,7 @@
 	     * @inheritDoc
 	     */
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseImageAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(BaseImageAsset.prototype.__proto__ || Object.getPrototypeOf(BaseImageAsset.prototype), 'initialize', this).call(this, properties);
 
 	      this.loadComponents = true;
 	    }
@@ -64724,7 +64726,7 @@
 	  function ScriptRegistry() {
 	    _classCallCheck(this, ScriptRegistry);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptRegistry).call(this, Box3D.ScriptAsset));
+	    return _possibleConstructorReturn(this, (ScriptRegistry.__proto__ || Object.getPrototypeOf(ScriptRegistry)).call(this, Box3D.ScriptAsset));
 	  }
 
 	  /**
@@ -64740,7 +64742,7 @@
 	  _createClass(ScriptRegistry, [{
 	    key: 'initialize',
 	    value: function initialize(box3DRuntime) {
-	      _get(Object.getPrototypeOf(ScriptRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
+	      _get(ScriptRegistry.prototype.__proto__ || Object.getPrototypeOf(ScriptRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
 
 	      if (!componentsAdded) {
 	        componentsAdded = true;
@@ -64750,7 +64752,7 @@
 	  }, {
 	    key: 'uninitialize',
 	    value: function uninitialize() {
-	      _get(Object.getPrototypeOf(ScriptRegistry.prototype), 'uninitialize', this).call(this);
+	      _get(ScriptRegistry.prototype.__proto__ || Object.getPrototypeOf(ScriptRegistry.prototype), 'uninitialize', this).call(this);
 	    }
 	  }, {
 	    key: 'initSystemAssets',
@@ -66616,41 +66618,29 @@
 	    "path": "Box3DRuntime/Components/BuiltIn/LookAtTarget"
 	  }
 	}, ComponentLookAtTarget);  Box3D.ScriptRegistry.registerScript({
-	  "id": "reflection_capture_planar",
-	  "sid": "Reflection Capture Plane",
+	  "id": "material_capture",
+	  "sid": "Material Capture",
 	  "properties": {
-	    "name": "Reflection Capture Plane",
+	    "name": "Material Capture",
+	    "description": "A component that captures an image of a rendered material as a spherical map, complete with lighting. This image can then be applied (with a sphere map projection) to a mesh to achieve convincing material shading (although the mesh will appear with the same lighting from all directions).",
 	    "attributes": {
 	      "captureTexture": {
 	        "name": "captureTexture",
 	        "type": "asset",
-	        "description": "The RenderTexture2D to render the reflection to.",
+	        "description": "",
 	        "filter": {
 	          "renderTexture2D": true
-	        }
-	      },
-	      "clipBias": {
-	        "name": "clipBias",
-	        "type": "f",
-	        "description": "Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.",
-	        "default": 0.01
-	      },
-	      "updateFrameInterval": {
-	        "name": "updateFrameInterval",
-	        "type": "i",
-	        "description": "The number of frames to skip in between updates of the reflection. Default is 0.",
-	        "default": 0
+	        },
+	        "default": null
 	      }
 	    },
 	    "attributesOrder": [
-	      "captureTexture",
-	      "clipBias",
-	      "updateFrameInterval"
+	      "captureTexture"
 	    ],
 	    "events": {},
 	    "externalDependencies": [],
 	    "filter": [
-	      "Object"
+	      "material"
 	    ],
 	    "category": "Rendering",
 	    "parsedComments": true,
@@ -69076,7 +69066,7 @@
 	  function ObjectAnimator() {
 	    _classCallCheck(this, ObjectAnimator);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectAnimator).call(this));
+	    var _this = _possibleConstructorReturn(this, (ObjectAnimator.__proto__ || Object.getPrototypeOf(ObjectAnimator)).call(this));
 
 	    _this.playingCurveAnimation = false;
 	    _this.curveAnim = undefined;
@@ -69673,7 +69663,7 @@
 	  function Box3DComponent() {
 	    _classCallCheck(this, Box3DComponent);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DComponent).call(this));
+	    var _this = _possibleConstructorReturn(this, (Box3DComponent.__proto__ || Object.getPrototypeOf(Box3DComponent)).call(this));
 
 	    _this.inputController = null;
 	    return _this;
@@ -70326,7 +70316,7 @@
 	  function AudioListener() {
 	    _classCallCheck(this, AudioListener);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AudioListener).call(this));
+	    var _this = _possibleConstructorReturn(this, (AudioListener.__proto__ || Object.getPrototypeOf(AudioListener)).call(this));
 
 	    _this.context = null;
 	    return _this;
@@ -70456,7 +70446,7 @@
 	  function CubeMapCapture() {
 	    _classCallCheck(this, CubeMapCapture);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CubeMapCapture).call(this));
+	    var _this = _possibleConstructorReturn(this, (CubeMapCapture.__proto__ || Object.getPrototypeOf(CubeMapCapture)).call(this));
 
 	    _this.framesElapsed = 0;
 
@@ -70773,7 +70763,7 @@
 	  function Curve() {
 	    _classCallCheck(this, Curve);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Curve).call(this));
+	    var _this = _possibleConstructorReturn(this, (Curve.__proto__ || Object.getPrototypeOf(Curve)).call(this));
 
 	    _this.isEditor = false;
 	    _this.controlPoints = undefined;
@@ -71137,7 +71127,7 @@
 	  function DebugConsoleDisplay() {
 	    _classCallCheck(this, DebugConsoleDisplay);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DebugConsoleDisplay).call(this));
+	    return _possibleConstructorReturn(this, (DebugConsoleDisplay.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay)).call(this));
 	  }
 
 	  _createClass(DebugConsoleDisplay, [{
@@ -71222,7 +71212,7 @@
 	  function DebugConsoleDisplay() {
 	    _classCallCheck(this, DebugConsoleDisplay);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DebugConsoleDisplay).call(this));
+	    var _this = _possibleConstructorReturn(this, (DebugConsoleDisplay.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay)).call(this));
 
 	    _this.stats = new _stats2.default();
 	    return _this;
@@ -71250,13 +71240,13 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      _get(Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'enable', this).call(this);
+	      _get(DebugConsoleDisplay.prototype.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'enable', this).call(this);
 	      document.body.appendChild(this.stats.dom);
 	    }
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      _get(Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'disable', this).call(this);
+	      _get(DebugConsoleDisplay.prototype.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'disable', this).call(this);
 	      document.body.removeChild(this.stats.dom);
 	    }
 	  }, {
@@ -71362,7 +71352,7 @@
 	  function DebugTextureViewer() {
 	    _classCallCheck(this, DebugTextureViewer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DebugTextureViewer).call(this));
+	    var _this = _possibleConstructorReturn(this, (DebugTextureViewer.__proto__ || Object.getPrototypeOf(DebugTextureViewer)).call(this));
 
 	    _this.renderEventName = 'render';
 	    _this.textureRegistryById = {};
@@ -71826,7 +71816,7 @@
 	  function DefaultFilters() {
 	    _classCallCheck(this, DefaultFilters);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DefaultFilters).call(this));
+	    return _possibleConstructorReturn(this, (DefaultFilters.__proto__ || Object.getPrototypeOf(DefaultFilters)).call(this));
 	  }
 
 	  _createClass(DefaultFilters, [{
@@ -71984,7 +71974,7 @@
 	  function DynamicOptimizer() {
 	    _classCallCheck(this, DynamicOptimizer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DynamicOptimizer).call(this));
+	    var _this = _possibleConstructorReturn(this, (DynamicOptimizer.__proto__ || Object.getPrototypeOf(DynamicOptimizer)).call(this));
 
 	    _this.frameTimeThreshold = 33.333333333; // Attribute defined above
 	    _this.testInterval = 2000.0; // Attribute defined above
@@ -72256,7 +72246,7 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      _get(Object.getPrototypeOf(DynamicOptimizer.prototype), 'enable', this).call(this);
+	      _get(DynamicOptimizer.prototype.__proto__ || Object.getPrototypeOf(DynamicOptimizer.prototype), 'enable', this).call(this);
 	      this.autoOptimize = true;
 	    }
 
@@ -72265,7 +72255,7 @@
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      _get(Object.getPrototypeOf(DynamicOptimizer.prototype), 'disable', this).call(this);
+	      _get(DynamicOptimizer.prototype.__proto__ || Object.getPrototypeOf(DynamicOptimizer.prototype), 'disable', this).call(this);
 	      this.autoOptimize = false;
 	      this.setMaxQuality();
 	    }
@@ -72358,7 +72348,7 @@
 	  function Environment() {
 	    _classCallCheck(this, Environment);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Environment).call(this));
+	    return _possibleConstructorReturn(this, (Environment.__proto__ || Object.getPrototypeOf(Environment)).call(this));
 	  }
 
 	  _createClass(Environment, [{
@@ -72481,7 +72471,7 @@
 	  function EventHandler() {
 	    _classCallCheck(this, EventHandler);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(EventHandler).call(this));
+	    return _possibleConstructorReturn(this, (EventHandler.__proto__ || Object.getPrototypeOf(EventHandler)).call(this));
 	  }
 
 	  /**
@@ -72644,7 +72634,7 @@
 	  function Exploder() {
 	    _classCallCheck(this, Exploder);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Exploder).call(this));
+	    var _this = _possibleConstructorReturn(this, (Exploder.__proto__ || Object.getPrototypeOf(Exploder)).call(this));
 
 	    _this.m_fTime = 99999999.0;
 	    _this.m_vDestTest = null;
@@ -72896,7 +72886,7 @@
 	  function FreeCamera() {
 	    _classCallCheck(this, FreeCamera);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FreeCamera).call(this));
+	    var _this = _possibleConstructorReturn(this, (FreeCamera.__proto__ || Object.getPrototypeOf(FreeCamera)).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -73444,7 +73434,7 @@
 	  function Fullscreen() {
 	    _classCallCheck(this, Fullscreen);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Fullscreen).call(this));
+	    var _this = _possibleConstructorReturn(this, (Fullscreen.__proto__ || Object.getPrototypeOf(Fullscreen)).call(this));
 
 	    _this.el = null;
 	    _this.fsEnabled = false;
@@ -73788,7 +73778,7 @@
 	  function InputController() {
 	    _classCallCheck(this, InputController);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(InputController).call(this));
+	    var _this = _possibleConstructorReturn(this, (InputController.__proto__ || Object.getPrototypeOf(InputController)).call(this));
 
 	    _this.inputQueue = [];
 	    _this.inputPool = [];
@@ -74717,10 +74707,12 @@
 	  function Animation() {
 	    _classCallCheck(this, Animation);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Animation).call(this));
+	    var _this = _possibleConstructorReturn(this, (Animation.__proto__ || Object.getPrototypeOf(Animation)).call(this));
 
 	    _this.dirty = true;
 	    _this.paused = false;
+	    _this.needsReset = false;
+	    _this.ended = false;
 	    return _this;
 	  }
 
@@ -74898,8 +74890,13 @@
 	  }, {
 	    key: 'onMixerEvent',
 	    value: function onMixerEvent(event) {
+	      // These events are fired in the mixer update loop. Rather than firing an event immediately,
+	      // set the "ended" flag to true, and fire the event after the mixer update loop completes. This
+	      // prevents callbacks from modifying animation state during the update loop, which can cause
+	      // unexpected problems.
 	      if (event.action === this.action && event.type === 'finished') {
-	        this.getEntity().trigger('endAnimation');
+	        this.needsReset = true;
+	        this.ended = true;
 	      }
 	    }
 
@@ -74948,6 +74945,12 @@
 	      }
 
 	      if (this.action) {
+	        if (this.needsReset) {
+	          this.action.reset();
+	          this.action.time = this.startTime;
+	          this.needsReset = false;
+	        }
+
 	        this.action.play();
 	        this.action.paused = this.paused;
 	      }
@@ -75180,6 +75183,11 @@
 	      if (this.mixer) {
 	        this.mixer.update(deltaTime);
 	        this.getRuntime().needsRender = true;
+
+	        if (this.ended) {
+	          this.getEntity().trigger('endAnimation');
+	          this.ended = false;
+	        }
 	      }
 	    }
 	  }]);
@@ -75243,7 +75251,7 @@
 	  function LookAt() {
 	    _classCallCheck(this, LookAt);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(LookAt).call(this));
+	    var _this = _possibleConstructorReturn(this, (LookAt.__proto__ || Object.getPrototypeOf(LookAt)).call(this));
 
 	    _this.playing = true;
 	    return _this;
@@ -75367,23 +75375,14 @@
 
 	/* eslint-disable */
 	/**
-	 * @vid reflection_capture_planar
-	 * @vname Reflection Capture Plane
-	 * @vfilter Object
+	 * @vid material_capture
+	 * @vname Material Capture
+	 * @vfilter material
 	 * @vcategory Rendering
-	 * @vreserved
-	 * @vattr Asset captureTexture {
-	 *   description: 'The RenderTexture2D to render the reflection to.',
-	 *   filter: { renderTexture2D: true }
-	 * }
-	 * @vattr Float clipBias {
-	 *   description: 'Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.',
-	 *   default: 0.01
-	 * }
-	 * @vattr Integer updateFrameInterval {
-	 *   description: 'The number of frames to skip in between updates of the reflection. Default is 0.',
-	 *   default: 0
-	 * }
+	 * @vdescription A component that captures an image of a rendered material as a spherical map, complete
+	 * with lighting. This image can then be applied (with a sphere map projection) to a mesh to achieve
+	 * convincing material shading (although the mesh will appear with the same lighting from all directions).
+	 * @vattr Asset captureTexture { 'description': '', 'filter': { 'renderTexture2D': true }, default: null }
 	 */
 	/* eslint-enable */
 	'use strict';
@@ -75410,52 +75409,80 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ReflectionCapture = function (_Box3DComponent) {
-	  _inherits(ReflectionCapture, _Box3DComponent);
+	var SCENE_RADIUS = 0.5;
+	var SPHERE_TESSELATION = 36;
+	var SCENE_NEAR = 1;
+	var SCENE_FAR = 80;
 
-	  function ReflectionCapture() {
-	    _classCallCheck(this, ReflectionCapture);
+	var MaterialCapture = function (_Box3DComponent) {
+	  _inherits(MaterialCapture, _Box3DComponent);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ReflectionCapture).call(this));
+	  function MaterialCapture() {
+	    _classCallCheck(this, MaterialCapture);
 
-	    _this.framesElapsed = 0;
-	    _this.perspectiveCamera = null;
-	    _this.orthoCamera = null;
-	    _this.reflectionNormal = new _three2.default.Vector3(0, 1, 0);
-	    _this.reflectionPlane = new _three2.default.Plane();
-	    _this.clipPlane = new _three2.default.Vector4();
+	    var _this = _possibleConstructorReturn(this, (MaterialCapture.__proto__ || Object.getPrototypeOf(MaterialCapture)).call(this));
 
-	    _this.reflectionPosition = new _three2.default.Vector3();
-	    _this.cameraWorldPosition = new _three2.default.Vector3();
-	    _this.rotationMatrix = new _three2.default.Matrix4();
-	    _this.lookAtPosition = new _three2.default.Vector3(0, 0, -1);
-	    _this.up = new _three2.default.Vector3(0, 1, 0);
+	    _this.createScene();
 	    return _this;
 	  }
 
-	  /** @inheritdoc */
+	  /**
+	   * Creates the scene and camera used to render the material capture.
+	   * @method createScene
+	   * @private
+	   * @return {void}
+	   */
 
 
-	  _createClass(ReflectionCapture, [{
-	    key: 'entityCreated',
-	    value: function entityCreated() {
-	      this.initCameras();
-	      this.initTexture();
+	  _createClass(MaterialCapture, [{
+	    key: 'createScene',
+	    value: function createScene() {
+	      this.camera = new _three2.default.OrthographicCamera(-SCENE_RADIUS, SCENE_RADIUS, SCENE_RADIUS, -SCENE_RADIUS, SCENE_NEAR, SCENE_FAR);
+	      this.scene = new _three2.default.Scene();
+
+	      this.createGeometry();
+
+	      this.scene.add(this.sphereMesh);
+	      this.scene.add(this.planeMesh);
+	      this.scene.add(this.camera);
+
+	      // Move the camera a significant fraction of the far clip plane away from the sphere.
+	      // This will get the camera vector within the shader closer to the ideal orthographic
+	      // projection that they should be. This won't be necessary when we support true, ortho
+	      // camera vectors in our shaders.
+	      this.camera.position.z = SCENE_FAR * 0.5;
+	      // Also bump the xy position of the camera to get better lighting in the capture.
+	      // This obviously depends on the environment map setup so this should be made into a
+	      // component attribute at some point.
+	      this.camera.position.y = SCENE_FAR * 0.25;
+	      this.camera.position.x = SCENE_FAR * 0.25;
+	      this.camera.lookAt(new _three2.default.Vector3(0, 0, 0));
+	      this.planeMesh.lookAt(this.camera.position);
 	    }
+
+	    /**
+	     * Create the geometry and meshes needed to render the matcap texture.
+	     * @method createGeometry
+	     * @private
+	     * @return {void}
+	     */
+
 	  }, {
-	    key: 'createTempRenderTexture',
-	    value: function createTempRenderTexture() {
-	      this.tempRenderTexture = this.getAssetRegistry().createAsset({
-	        type: 'renderTexture2D',
-	        id: 'render_tex_reflection',
-	        properties: {
-	          width: 512,
-	          height: 512,
-	          format: _three2.default.RGBAFormat,
-	          type: _three2.default.UnsignedByteType
-	        }
-	      });
-	      this.tempRenderTexture.load();
+	    key: 'createGeometry',
+	    value: function createGeometry() {
+	      this.geometry = new _three2.default.SphereBufferGeometry(SCENE_RADIUS, SPHERE_TESSELATION, SPHERE_TESSELATION);
+	      this.planeGeometry = new _three2.default.PlaneBufferGeometry(SCENE_RADIUS * 2, 2);
+	      // Adjust the plane's normals to point outward so they kind of match the edge of the sphere
+	      var xyLength = Math.sqrt(0.5);
+	      var normalBuffer = this.planeGeometry.attributes.normal;
+	      // TODO - this should just copy the position array...
+	      normalBuffer.array = new Float32Array([-1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0]);
+	      for (var i = 0; i < normalBuffer.array.length; i++) {
+	        normalBuffer.array[i] *= xyLength;
+	      }
+
+	      this.sphereMesh = new _three2.default.Mesh(this.geometry);
+	      this.planeMesh = new _three2.default.Mesh(this.planeGeometry);
 	    }
 
 	    /** @inheritdoc */
@@ -75463,182 +75490,46 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
+	      var _this2 = this;
+
 	      if (changes.indexOf('captureTexture') !== -1) {
-	        this.initTexture();
-	      }
-	    }
-	  }, {
-	    key: 'initTexture',
-	    value: function initTexture() {
-	      if (this.captureTexture) {
-	        var that = this;
-
-	        this.captureTexture.when('load', function () {
-	          if (that.tempRenderTexture) {
-	            that.tempRenderTexture.unload();
-	          }
+	        this.getEntity().when('load', function () {
+	          _this2.captureScene();
 	        });
-	        if (this.captureTexture.isBaseUnloaded()) {
-	          this.captureTexture.load();
-	        }
-	      } else {
-	        this.createTempRenderTexture();
 	      }
 	    }
 
 	    /**
-	     * Called immediately after after component creation
-	     */
-
-	  }, {
-	    key: 'initCameras',
-	    value: function initCameras() {
-	      if (this.captureTexture) {
-	        this.captureTexture.load();
-	      }
-
-	      this.perspectiveCamera = new _three2.default.PerspectiveCamera();
-	      this.orthoCamera = new _three2.default.OrthographicCamera();
-	    }
-	  }, {
-	    key: 'updateReflection',
-	    value: function updateReflection(camera) {
-	      if (this.isEnabled()) {
-	        var sign = function sign(num) {
-	          return num < 0 ? -1 : 1;
-	        };
-	        this.box3DEntity.runtimeData.updateMatrixWorld();
-	        camera.updateMatrixWorld();
-
-	        this.reflectionPosition.setFromMatrixPosition(this.box3DEntity.runtimeData.matrixWorld);
-	        this.cameraWorldPosition.setFromMatrixPosition(camera.matrixWorld);
-
-	        this.rotationMatrix.extractRotation(this.box3DEntity.runtimeData.matrixWorld);
-
-	        this.reflectionNormal.set(0, 1, 0);
-	        this.reflectionNormal.applyMatrix4(this.rotationMatrix);
-
-	        var view = this.reflectionPosition.clone().sub(this.cameraWorldPosition);
-	        var reflectView = view.reflect(this.reflectionNormal).negate();
-	        reflectView.add(this.reflectionPosition);
-
-	        this.rotationMatrix.extractRotation(camera.matrixWorld);
-
-	        this.lookAtPosition.set(0, 0, -1);
-	        this.lookAtPosition.applyMatrix4(this.rotationMatrix);
-	        this.lookAtPosition.add(this.cameraWorldPosition);
-
-	        var target = this.reflectionPosition.clone().sub(this.lookAtPosition);
-	        var reflectTarget = target.reflect(this.reflectionNormal).negate();
-	        reflectTarget.add(this.reflectionPosition);
-
-	        this.up.set(0, -1, 0);
-	        this.up.applyMatrix4(this.rotationMatrix);
-	        var reflectUp = this.up.reflect(this.reflectionNormal).negate();
-
-	        if (camera instanceof _three2.default.PerspectiveCamera && this.perspectiveCamera) {
-	          this.perspectiveCamera.aspect = camera.aspect;
-	          this.perspectiveCamera.fov = camera.fov;
-	          this.perspectiveCamera.near = camera.near;
-	          this.perspectiveCamera.far = camera.far;
-	          this.reflectionCamera = this.perspectiveCamera;
-	        } else if (this.orthoCamera) {
-	          this.orthoCamera.left = camera.left;
-	          this.orthoCamera.right = camera.right;
-	          this.orthoCamera.top = camera.top;
-	          this.orthoCamera.bottom = camera.bottom;
-	          this.orthoCamera.near = camera.near;
-	          this.orthoCamera.far = camera.far;
-	          this.reflectionCamera = this.orthoCamera;
-	        } else {
-	          return;
-	        }
-	        this.reflectionCamera.position.copy(reflectView);
-	        this.reflectionCamera.up = reflectUp;
-	        this.reflectionCamera.lookAt(reflectTarget);
-
-	        this.reflectionCamera.updateProjectionMatrix();
-	        this.reflectionCamera.updateMatrixWorld();
-	        this.reflectionCamera.matrixWorldInverse.getInverse(this.reflectionCamera.matrixWorld);
-
-	        // Now update projection matrix with new clip plane, implementing code
-	        // from: http://www.terathon.com/code/oblique.html
-	        // Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
-	        this.reflectionPlane.setFromNormalAndCoplanarPoint(this.reflectionNormal, this.reflectionPosition);
-	        this.reflectionPlane.applyMatrix4(this.reflectionCamera.matrixWorldInverse);
-
-	        this.clipPlane.set(this.reflectionPlane.normal.x, this.reflectionPlane.normal.y, this.reflectionPlane.normal.z, this.reflectionPlane.constant);
-
-	        var q = new _three2.default.Vector4();
-	        var projectionMatrix = this.reflectionCamera.projectionMatrix;
-
-	        q.x = (sign(this.clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
-	        q.y = (sign(this.clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
-	        q.z = -1.0;
-	        q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
-
-	        // Calculate the scaled plane vector
-	        var c = new _three2.default.Vector4();
-	        c = this.clipPlane.multiplyScalar(2.0 / this.clipPlane.dot(q));
-
-	        // Replacing the third row of the projection matrix
-	        projectionMatrix.elements[2] = c.x;
-	        projectionMatrix.elements[6] = c.y;
-	        projectionMatrix.elements[10] = c.z + 1.0 - this.clipBias;
-	        projectionMatrix.elements[14] = c.w;
-	      }
-	    }
-
-	    /**
-	     * Render the scene to the texture.
+	     * Render the scene to the texture
 	     * @method captureScene
-	     * @public
-	     * @param {Object} camera The camera that the reflection will be rendered relative to (since
-	     * reflections are dependent on view)
+	     * @private
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'captureScene',
-	    value: function captureScene(camera) {
-	      if (!camera) {
-	        throw new Error('Call to ReflectionCapture.captureScene without specifying a camera.');
-	      }
-	      var scene = this.getThreeScene();
-	      this.updateReflection(camera);
-	      // Render the mirrored view of the current scene into the target texture
-	      var threeTexture = this.captureTexture ? this.captureTexture.runtimeData : null;
-	      var target = threeTexture ? threeTexture : this.tempRenderTexture.runtimeData;
-	      this.getRenderer().renderView(scene, this.reflectionCamera, {
-	        renderTarget: target,
-	        clearDepth: true,
-	        enableShadows: false,
-	        enablePreRenderFunctions: false
-	      });
-	    }
+	    value: function captureScene() {
+	      var _this3 = this;
 
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'preRenderView',
-	    value: function preRenderView(scene, camera) {
-	      if (this.isEnabled()) {
-	        if (this.framesElapsed >= this.updateFrameInterval) {
-	          this.updateReflection(camera);
-	          //render reflection
-	          this.captureScene(camera);
-	          this.framesElapsed = 0;
-	        } else {
-	          this.framesElapsed++;
+	      var threeMaterial = this.getRuntimeData().static;
+	      this.sphereMesh.material = threeMaterial;
+	      this.planeMesh.material = threeMaterial;
+	      var renderer = this.getThreeRenderer();
+	      if (this.captureTexture) {
+	        this.captureTexture.when('load', function (textureAsset) {
+	          renderer.render(_this3.scene, _this3.camera, textureAsset.runtimeData);
+	        });
+	        if (!this.captureTexture.isLoaded()) {
+	          this.captureTexture.load();
 	        }
 	      }
 	    }
 	  }]);
 
-	  return ReflectionCapture;
+	  return MaterialCapture;
 	}(_Box3DComponent3.default);
 
-	exports.default = ReflectionCapture;
+	exports.default = MaterialCapture;
 
 /***/ },
 /* 43 */
@@ -75702,7 +75593,7 @@
 	  function NormalMapGenerator() {
 	    _classCallCheck(this, NormalMapGenerator);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NormalMapGenerator).call(this));
+	    var _this = _possibleConstructorReturn(this, (NormalMapGenerator.__proto__ || Object.getPrototypeOf(NormalMapGenerator)).call(this));
 
 	    _this.m_Uniforms = null;
 	    _this.normalMaterial = null;
@@ -75905,7 +75796,7 @@
 	  function AudioSource() {
 	    _classCallCheck(this, AudioSource);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AudioSource).call(this));
+	    var _this = _possibleConstructorReturn(this, (AudioSource.__proto__ || Object.getPrototypeOf(AudioSource)).call(this));
 
 	    _this.gainNode = null;
 	    _this.sourceNode = null;
@@ -76310,7 +76201,7 @@
 	  function ObjectPicker() {
 	    _classCallCheck(this, ObjectPicker);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectPicker).call(this));
+	    var _this = _possibleConstructorReturn(this, (ObjectPicker.__proto__ || Object.getPrototypeOf(ObjectPicker)).call(this));
 
 	    _this.pickingMaterialDef = undefined;
 	    _this.meshRegistry = {};
@@ -76979,7 +76870,7 @@
 	  function OrbitCamera() {
 	    _classCallCheck(this, OrbitCamera);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(OrbitCamera).call(this));
+	    var _this = _possibleConstructorReturn(this, (OrbitCamera.__proto__ || Object.getPrototypeOf(OrbitCamera)).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -77878,7 +77769,7 @@
 	  function PMREMGenerator() {
 	    _classCallCheck(this, PMREMGenerator);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PMREMGenerator).call(this));
+	    return _possibleConstructorReturn(this, (PMREMGenerator.__proto__ || Object.getPrototypeOf(PMREMGenerator)).call(this));
 	  }
 
 	  _createClass(PMREMGenerator, [{
@@ -78135,7 +78026,7 @@
 	  function PanoramaToCubeMap() {
 	    _classCallCheck(this, PanoramaToCubeMap);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PanoramaToCubeMap).call(this));
+	    var _this = _possibleConstructorReturn(this, (PanoramaToCubeMap.__proto__ || Object.getPrototypeOf(PanoramaToCubeMap)).call(this));
 
 	    _this.skyboxScene = undefined;
 	    _this.cameras = new Array(6);
@@ -78338,7 +78229,7 @@
 	  function PreviewAxisRotation() {
 	    _classCallCheck(this, PreviewAxisRotation);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewAxisRotation).call(this));
+	    var _this = _possibleConstructorReturn(this, (PreviewAxisRotation.__proto__ || Object.getPrototypeOf(PreviewAxisRotation)).call(this));
 
 	    _this.time = 0;
 	    _this.target = new _three2.default.Quaternion();
@@ -78860,7 +78751,7 @@
 	  function PreviewCamera() {
 	    _classCallCheck(this, PreviewCamera);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewCamera).call(this));
+	    var _this = _possibleConstructorReturn(this, (PreviewCamera.__proto__ || Object.getPrototypeOf(PreviewCamera)).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -79743,7 +79634,7 @@
 	  function PreviewCameraFocus() {
 	    _classCallCheck(this, PreviewCameraFocus);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewCameraFocus).call(this));
+	    var _this = _possibleConstructorReturn(this, (PreviewCameraFocus.__proto__ || Object.getPrototypeOf(PreviewCameraFocus)).call(this));
 
 	    _this.previewCamControl = null;
 	    _this.mouseVector = null;
@@ -80022,7 +79913,7 @@
 	  function ReflectionCapture() {
 	    _classCallCheck(this, ReflectionCapture);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ReflectionCapture).call(this));
+	    var _this = _possibleConstructorReturn(this, (ReflectionCapture.__proto__ || Object.getPrototypeOf(ReflectionCapture)).call(this));
 
 	    _this.framesElapsed = 0;
 	    _this.perspectiveCamera = null;
@@ -80375,7 +80266,7 @@
 	  function RenderFilters() {
 	    _classCallCheck(this, RenderFilters);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderFilters).call(this));
+	    var _this = _possibleConstructorReturn(this, (RenderFilters.__proto__ || Object.getPrototypeOf(RenderFilters)).call(this));
 
 	    _this.shaderDefs = {
 	      video: {
@@ -80833,6 +80724,7 @@
 	 *   'default': 'null'
 	 * }
 	 */
+
 	/* eslint-enable */
 	/* global Box3D */
 	'use strict';
@@ -80863,94 +80755,103 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var DEFAULT_GRID_SIZE = 1024;
+	var DEFAULT_GRID_DIVISIONS = 10;
+	var DEFAULT_GRID_PADDING = 2;
+
 	/**
-	 * Generate a UV grid texture programatically
-	 * @param  {Object} opts Options object
-	 * @return {Canvas}      Returns a canvas containing the UV grid
+	 * Calculates the color value for the specific UV grid cell.
+	 * @function calculateUvGridCellColor
+	 * @param {Number} x The grid cell x position.
+	 * @param {Number} y The grid cell y position.
+	 * @param {Number} divisions The number of divisions across a single dimension.
+	 * @returns {String} The color in the format of rgb(x,x,x).
 	 */
-	function generateUvGrid(opts) {
-	  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
-	      canvas = document.createElement('canvas'),
-	      context = canvas.getContext('2d'),
-	      x,
-	      y;
+	function calculateUvGridCellColor(x, y, divisions) {
+	  var quadrants = [{ r: 200, g: 200, b: 0 }, { r: 0, g: 200, b: 200 }, { r: 0, g: 200, b: 0 }, { r: 200, g: 0, b: 200 }];
 
-	  opts = opts || {};
-	  opts.size = opts.size || 1024;
-	  opts.divisions = opts.divisions || 10;
-	  opts.padding = typeof opts.padding !== 'undefined' ? opts.padding : 2;
+	  var center = Math.floor(divisions / 2);
 
-	  canvas.width = opts.size;
-	  canvas.height = opts.size;
+	  var quadrant = Math.floor(x / Math.floor(divisions / 2)) % 2 + Math.floor(y / Math.floor(divisions / 2)) % 2 * 2;
 
+	  var distancePct = 1.0 - Math.sqrt(Math.pow(x - center, 2) + Math.pow(y - center, 2)) / Math.sqrt(Math.pow(center + center, 2));
+
+	  var color = {
+	    r: Math.floor(quadrants[quadrant].r * distancePct),
+	    g: Math.floor(quadrants[quadrant].g * distancePct),
+	    b: Math.floor(quadrants[quadrant].b * distancePct)
+	  };
+
+	  return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+	}
+
+	/**
+	 * Renders a single UV grid cell to the canvas.
+	 * @function renderUvGridCell
+	 * @param {Context2D} context The canvas's context.
+	 * @param {Integer} x The grid cell x position.
+	 * @param {Integer} y The grid cell y position.
+	 * @param {Integer} size The width / height of the grid.
+	 * @param {Integer} divisions The number of times the grid is divided.
+	 * @param {Integer} padding The grid padding.
+	 * @returns {void}
+	 */
+	function renderUvGridCell(context, x, y, size, divisions, padding) {
+	  var xPos = size / divisions * x;
+	  var yPos = size / divisions * y;
+	  var width = size / divisions;
+	  var height = size / divisions;
+
+	  // Draw the background for this grid cell.
+	  context.fillStyle = calculateUvGridCellColor(x, y, divisions);
+	  context.fillRect(xPos + padding, yPos + padding, width - padding * 2, height - padding * 2);
+
+	  // Render the sub grid on the grid cell.
+	  context.strokeStyle = 'rgba(0,0,0,0.2)';
+	  context.beginPath();
+	  context.moveTo(xPos + padding, yPos + height / 2);
+	  context.lineTo(xPos + width - padding, yPos + height / 2);
+	  context.moveTo(xPos + width / 2, yPos + padding);
+	  context.lineTo(xPos + width / 2, yPos + height - padding);
+	  context.stroke();
+
+	  // Draw the grid position on alternating grid cells.
+	  if ((x + y) % 2 === 0) {
+	    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+	    context.fillStyle = 'white';
+	    context.strokeStyle = 'white';
+	    context.font = Math.floor(size / (5 * divisions)) + 'px sans-serif';
+	    context.fillText(characters[y] + x, xPos + height / 10, yPos + height - height / 10);
+	  }
+	}
+
+	/**
+	 * Generate a UV grid texture programatically.
+	 * @function generateUvGrid
+	 * @param {Object} [options] Grid options.
+	 * @param {Integer} [options.size] The width / height of the grid (default is 1024).
+	 * @param {Integer} [options.divisions] The number of times the grid is divided (default is 10).
+	 * @param {Integer} [options.padding] The grid padding (default is 2).
+	 * @returns {Canvas} Returns a canvas containing the UV grid.
+	 */
+	function generateUvGrid() {
+	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	  var size = options.size || DEFAULT_GRID_SIZE;
+	  var divisions = options.divisions || DEFAULT_GRID_DIVISIONS;
+	  var padding = options.padding !== undefined ? options.padding : DEFAULT_GRID_PADDING;
+
+	  var canvas = document.createElement('canvas');
+	  canvas.width = size;
+	  canvas.height = size;
+
+	  var context = canvas.getContext('2d');
 	  context.fillStyle = 'rgb(255,255,255)';
-	  context.fillRect(0, 0, opts.size, opts.size);
+	  context.fillRect(0, 0, size, size);
 
-	  /**
-	   * Calculates the color value for the specific uv grid cell
-	   * @param  {Number} x         The grid cell x position
-	   * @param  {Number} y         The grid cell y position
-	   * @param  {Number} divisions The number of divisions across a single dimension
-	   * @return {String}           The color in the format of rgb(x,x,x)
-	   */
-	  function calculateColor(x, y, divisions) {
-	    var quadrants = [{ r: 200, g: 200, b: 0 }, { r: 0, g: 200, b: 200 }, { r: 0, g: 200, b: 0 }, { r: 200, g: 0, b: 200 }],
-	        color = { r: 0, g: 0, b: 0 },
-	        center,
-	        quadrant,
-	        distancePct;
-
-	    center = Math.floor(divisions / 2);
-
-	    quadrant = Math.floor(x / Math.floor(divisions / 2)) % 2 + Math.floor(y / Math.floor(divisions / 2)) % 2 * 2;
-
-	    distancePct = 1.0 - Math.sqrt(Math.pow(x - center, 2) + Math.pow(y - center, 2)) / Math.sqrt(Math.pow(center + center, 2));
-
-	    color.r = Math.floor(quadrants[quadrant].r * distancePct);
-	    color.g = Math.floor(quadrants[quadrant].g * distancePct);
-	    color.b = Math.floor(quadrants[quadrant].b * distancePct);
-
-	    return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
-	  }
-
-	  /**
-	   * Renders a single grid cell to the canvas
-	   * @param  {Context2D} context  Canvas 2D Context
-	   * @param  {Number} x           The grid cell x position
-	   * @param  {Number} y           The grid cell y position
-	   */
-	  function renderUvGridCell(context, x, y) {
-	    var xPos = opts.size / opts.divisions * x,
-	        yPos = opts.size / opts.divisions * y,
-	        width = opts.size / opts.divisions,
-	        height = opts.size / opts.divisions;
-
-	    // Draw the background for this grid cell
-	    context.fillStyle = calculateColor(x, y, opts.divisions);
-	    context.fillRect(xPos + opts.padding, yPos + opts.padding, width - opts.padding * 2, height - opts.padding * 2);
-
-	    // Render the sub grid on the grid cell
-	    context.strokeStyle = 'rgba(0,0,0,0.2)';
-
-	    context.beginPath();
-	    context.moveTo(xPos + opts.padding, yPos + height / 2);
-	    context.lineTo(xPos + width - opts.padding, yPos + height / 2);
-	    context.moveTo(xPos + width / 2, yPos + opts.padding);
-	    context.lineTo(xPos + width / 2, yPos + height - opts.padding);
-	    context.stroke();
-
-	    // Draw the grid position on alternating grid cells
-	    if ((x + y) % 2 === 0) {
-	      context.fillStyle = 'white';
-	      context.strokeStyle = 'white';
-	      context.font = Math.floor(opts.size / (5 * opts.divisions)) + 'px sans-serif';
-	      context.fillText(characters[y] + x, xPos + height / 10, yPos + height - height / 10);
-	    }
-	  }
-
-	  for (y = 0; y < opts.divisions; y++) {
-	    for (x = 0; x < opts.divisions; x++) {
-	      renderUvGridCell(context, x, y);
+	  for (var y = 0; y < divisions; y++) {
+	    for (var x = 0; x < divisions; x++) {
+	      renderUvGridCell(context, x, y, size, divisions, padding);
 	    }
 	  }
 
@@ -80960,189 +80861,160 @@
 	var RenderModes = function (_Box3DComponent) {
 	  _inherits(RenderModes, _Box3DComponent);
 
+	  /**
+	   * Create a new RenderModes instance.
+	   * @constructor
+	   */
 	  function RenderModes() {
 	    _classCallCheck(this, RenderModes);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderModes).call(this));
+	    var _this = _possibleConstructorReturn(this, (RenderModes.__proto__ || Object.getPrototypeOf(RenderModes)).call(this));
 
 	    _this.wireframeCache = {};
-	    _this.viewport = new _three2.default.Vector4();
 	    _this.overrideMaterialEnabled = false;
-	    _this.lightsAreDisabled = false;
-	    _this.currentRenderMode = 'Lit';
-	    _this.skinWeightsMatDef = {
-	      side: _three2.default.DoubleSide,
-	      vertexShader: [_three2.default.ShaderChunk.skinning_pars_vertex, 'varying vec3 vColor;', 'void main() {', _three2.default.ShaderChunk.skinbase_vertex, _three2.default.ShaderChunk.skinning_vertex, _three2.default.ShaderChunk.project_vertex, '#ifdef USE_SKINNING', 'vColor = vec3( skinWeight.x, skinWeight.y, skinWeight.z);', '#else', 'vColor = vec3( 0.0, 0.0, 0);', '#endif', '}'].join('\n'),
+	    _this.lightsDisabled = false;
+	    _this.currentRenderMode = RenderModes.LIT;
+	    _this.prevMaterialProperties = {};
 
-	      fragmentShader: ['varying vec3 vColor;', 'void main() {', 'gl_FragColor = vec4( vColor, 1.0 );', '}'].join('\n')
+	    _this.renderModes = {};
+	    _this.renderModes[RenderModes.LIT] = {
+	      overrideMaterial: null,
+	      wireframeEnable: false
 	    };
 
-	    _this.normalsMatDef = {
-	      side: _three2.default.DoubleSide,
-	      uniforms: _three2.default.UniformsUtils.merge([_three2.default.UniformsLib.common, _three2.default.UniformsLib.bumpmap, _three2.default.UniformsLib.normalmap]),
-	      vertexShader: [_three2.default.ShaderChunk.common, _three2.default.ShaderChunk.uv_pars_vertex, _three2.default.ShaderChunk.bsdfs, _three2.default.ShaderChunk.skinning_pars_vertex, _three2.default.ShaderChunk.lights_phong_pars_vertex, '#ifndef FLAT_SHADED', 'varying vec3 vNormal;', '#endif', '#if defined( USE_NORMALMAP ) || defined(USE_BUMPMAP)', 'varying vec3 vViewPosition;', '#endif', 'void main() {', _three2.default.ShaderChunk.begin_vertex, _three2.default.ShaderChunk.uv_vertex, '#if defined( USE_NORMALMAP ) || defined(USE_BUMPMAP)', 'vUv.y = 1.0 - vUv.y;', '#endif', _three2.default.ShaderChunk.skinbase_vertex, _three2.default.ShaderChunk.skinning_vertex, _three2.default.ShaderChunk.project_vertex, _three2.default.ShaderChunk.skinnormal_vertex, _three2.default.ShaderChunk.beginnormal_vertex, _three2.default.ShaderChunk.defaultnormal_vertex, 'vNormal = normalize( transformedNormal );', '#if defined( USE_NORMALMAP ) || defined(USE_BUMPMAP)', 'vViewPosition = - mvPosition.xyz;', '#endif', _three2.default.ShaderChunk.lights_phong_vertex, '}'].join('\n'),
-
-	      fragmentShader: [_three2.default.ShaderChunk.common, _three2.default.ShaderChunk.uv_pars_fragment, _three2.default.ShaderChunk.bsdfs, _three2.default.ShaderChunk.lights_phong_pars_fragment, _three2.default.ShaderChunk.normalmap_pars_fragment, _three2.default.ShaderChunk.bumpmap_pars_fragment, 'void main() {', _three2.default.ShaderChunk.normal_flip, _three2.default.ShaderChunk.normal_fragment, 'normal = 0.5 * normal + 0.5;', 'gl_FragColor = vec4( normal, 1.0 );', '}'].join('\n')
-
+	    _this.renderModes[RenderModes.UNLINT] = {
+	      overrideMaterial: null,
+	      disableLights: true,
+	      wireframeEnable: false,
+	      isGlobal: true
 	    };
 
-	    _this.shapeMatDef = {
-	      side: _three2.default.DoubleSide,
-	      uniforms: _three2.default.UniformsUtils.merge([_three2.default.UniformsLib.common, _three2.default.UniformsLib.bumpmap, _three2.default.UniformsLib.normalmap, { matCapTexture: { type: 't', value: null } }]),
-	      vertexShader: [_three2.default.ShaderChunk.common, _three2.default.ShaderChunk.uv_pars_vertex, _three2.default.ShaderChunk.bsdfs, _three2.default.ShaderChunk.skinning_pars_vertex, _three2.default.ShaderChunk.lights_phong_pars_vertex, '#ifndef FLAT_SHADED', 'varying vec3 vNormal;', '#endif', 'varying vec3 vViewPosition;', 'void main() {', _three2.default.ShaderChunk.begin_vertex, _three2.default.ShaderChunk.uv_vertex, '#if defined( USE_NORMALMAP ) || defined(USE_BUMPMAP)', 'vUv.y = 1.0 - vUv.y;', '#endif', _three2.default.ShaderChunk.skinbase_vertex, _three2.default.ShaderChunk.skinning_vertex, _three2.default.ShaderChunk.project_vertex, _three2.default.ShaderChunk.skinnormal_vertex, _three2.default.ShaderChunk.beginnormal_vertex, _three2.default.ShaderChunk.defaultnormal_vertex, 'vNormal = normalize( transformedNormal );', 'vViewPosition = - mvPosition.xyz;', _three2.default.ShaderChunk.lights_phong_vertex, '}'].join('\n'),
-
-	      fragmentShader: [_three2.default.ShaderChunk.common, _three2.default.ShaderChunk.uv_pars_fragment, _three2.default.ShaderChunk.bsdfs, _three2.default.ShaderChunk.lights_phong_pars_fragment, _three2.default.ShaderChunk.normalmap_pars_fragment, _three2.default.ShaderChunk.bumpmap_pars_fragment, 'uniform sampler2D matCapTexture;', 'void main() {', 'vec3 eyeVector_VS = normalize(vViewPosition);', _three2.default.ShaderChunk.normal_flip, _three2.default.ShaderChunk.normal_fragment, 'vec3 reflect_SS = reflect(-eyeVector_VS, normal );', 'reflect_SS.z += 1.0;', 'float temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));', 'reflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);', 'reflect_SS.y = 1.0 - reflect_SS.y;',
-	      //sample matCap
-	      'vec3 colour = texture2D(matCapTexture, reflect_SS.xy).rgb;', 'gl_FragColor = vec4( colour, 1.0 );', '}'].join('\n')
-
+	    _this.renderModes[RenderModes.SHAPE] = {
+	      wireframeEnable: false,
+	      overrideMaterial: {
+	        skinned: new _three2.default.ShaderMaterial(RenderModes.SHAPE_MATERIAL),
+	        static: new _three2.default.ShaderMaterial(RenderModes.SHAPE_MATERIAL)
+	      },
+	      copyUniforms: ['bumpMap', 'normalMap']
 	    };
 
-	    _this.materialPrevProperties = {};
+	    _this.renderModes[RenderModes.NORMALS] = {
+	      wireframeEnable: false,
+	      overrideMaterial: {
+	        skinned: new _three2.default.ShaderMaterial(RenderModes.NORMALS_MATERIAL),
+	        static: new _three2.default.ShaderMaterial(RenderModes.NORMALS_MATERIAL)
+	      },
+	      copyUniforms: ['bumpMap', 'normalMap']
+	    };
 
-	    _this.renderModes = {
-	      'Lit': {
-	        overrideMaterial: null,
-	        wireframeEnable: false
+	    _this.renderModes[RenderModes.WIREFRAME] = {
+	      overrideMaterial: null,
+	      wireframeEnable: true
+	    };
+
+	    _this.renderModes[RenderModes.UNTEXTURED_WIREFRAME] = {
+	      overrideMaterial: 'flatShaded',
+	      wireframeEnable: true,
+	      disableSkybox: false
+	    };
+
+	    _this.renderModes[RenderModes.UV_OVERLAY] = {
+	      overrideMaterial: {
+	        skinned: undefined,
+	        static: undefined
 	      },
-	      'Unlit': {
-	        overrideMaterial: null,
-	        disableLights: true,
-	        wireframeEnable: false,
-	        isGlobal: true
+	      disableSkybox: false,
+	      wireframeEnable: false
+	    };
+
+	    _this.renderModes[RenderModes.SKIN_WEIGHTS] = {
+	      overrideMaterial: {
+	        skinned: new _three2.default.ShaderMaterial(RenderModes.SKIN_WEIGHTS_MATERIAL),
+	        static: new _three2.default.ShaderMaterial(RenderModes.SKIN_WEIGHTS_MATERIAL)
 	      },
-	      'Shape': {
-	        overrideMaterial: null,
-	        wireframeEnable: false,
-	        perMeshOverrideMaterial: {
-	          skinned: new _three2.default.ShaderMaterial(_this.shapeMatDef),
-	          static: new _three2.default.ShaderMaterial(_this.shapeMatDef),
-	          copyUniforms: {
-	            normalMap: 'normalMap',
-	            bumpMap: 'bumpMap'
-	          }
-	        }
-	      },
-	      'Normals': {
-	        overrideMaterial: null,
-	        wireframeEnable: false,
-	        perMeshOverrideMaterial: {
-	          skinned: new _three2.default.ShaderMaterial(_this.normalsMatDef),
-	          static: new _three2.default.ShaderMaterial(_this.normalsMatDef),
-	          copyUniforms: {
-	            normalMap: 'normalMap',
-	            bumpMap: 'bumpMap'
-	          }
-	        }
-	      },
-	      'Wireframe': {
-	        overrideMaterial: null,
-	        wireframeEnable: true
-	      },
-	      'Untextured Wireframe': {
-	        overrideMaterial: 'flatShaded',
-	        wireframeEnable: true,
-	        disableSkybox: false
-	      },
-	      'UV Overlay': {
-	        overrideMaterial: {
-	          skinned: undefined,
-	          static: undefined
-	        },
-	        disableSkybox: false,
-	        wireframeEnable: false
-	      },
-	      'Skin Weights': {
-	        overrideMaterial: {
-	          skinned: new _three2.default.ShaderMaterial(_this.skinWeightsMatDef),
-	          static: new _three2.default.ShaderMaterial(_this.skinWeightsMatDef)
-	        },
-	        wireframeEnable: false
-	      },
-	      'Skin Indices': {
-	        overrideMaterial: {
-	          skinned: new _three2.default.ShaderMaterial(_this.skinIndicesMatDef),
-	          static: new _three2.default.ShaderMaterial(_this.skinIndicesMatDef)
-	        },
-	        wireframeEnable: false
-	      }
+	      wireframeEnable: false
 	    };
 	    return _this;
 	  }
 
-	  /**
-	   * Called immediately after after RenderModes creation
-	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(RenderModes, [{
 	    key: 'init',
 	    value: function init() {
-	      var uvTexture, uvMaterialStatic, uvMaterialSkinned, flatShadedMat;
-
-	      uvTexture = new _three2.default.Texture(generateUvGrid());
+	      // Create a UV overlay material.
+	      var uvTexture = new _three2.default.Texture(generateUvGrid());
 	      uvTexture.anisotropy = 8;
 	      uvTexture.needsUpdate = true;
 
-	      uvMaterialStatic = new _three2.default.MeshBasicMaterial({
+	      var uvMaterialStatic = new _three2.default.MeshBasicMaterial({
 	        map: uvTexture,
 	        side: _three2.default.DoubleSide
 	      });
-	      uvMaterialSkinned = new _three2.default.MeshBasicMaterial({
+
+	      var uvMaterialSkinned = new _three2.default.MeshBasicMaterial({
 	        map: uvTexture,
 	        side: _three2.default.DoubleSide,
 	        skinning: true
 	      });
 
-	      this.renderModes['UV Overlay'].overrideMaterial.skinned = uvMaterialSkinned;
-	      this.renderModes['UV Overlay'].overrideMaterial.static = uvMaterialStatic;
+	      this.renderModes[RenderModes.UV_OVERLAY].overrideMaterial.skinned = uvMaterialSkinned;
+	      this.renderModes[RenderModes.UV_OVERLAY].overrideMaterial.static = uvMaterialStatic;
 
-	      this.flatShadedMaterialJSON = {
-	        name: 'flatShaded',
-	        id: 'flatShaded',
-	        type: 'material',
-	        properties: {
-	          emissiveColor: { r: 0.9, g: 0.85, b: 0.8 }
-	        },
-	        side: _three2.default.DoubleSide
-	      };
-
-	      this.getGlobalEvents().on('setRenderMode', this.setRenderMode, this);
-
-	      this.sceneAsset = this.box3DEntity.getParentAsset();
-	      this.assetRegistry = this.box3DEntity.box3DRuntime.assetRegistry;
+	      // Create a scene to store the wireframe meshes in.
 	      this.wireframeScene = new _three2.default.Scene();
 
-	      if (!this.assetRegistry.assets[this.flatShadedMaterialJSON.id]) {
-	        this.assetRegistry.createAsset(this.flatShadedMaterialJSON);
-	        flatShadedMat = this.assetRegistry.getAssetById('flatShaded');
-	        flatShadedMat.enableFeature('albedo', false);
-	        flatShadedMat.enableFeature('emissive', true);
+	      // Add a flat shaded material to the registry if it doesn't already exist.
+	      // TODO: We do we do this for the flat shaded material but not for the others?
+	      if (!this.getAssetRegistry().getAssetById('flatShaded')) {
+	        this.getAssetRegistry().createAsset({
+	          name: 'flatShaded',
+	          id: 'flatShaded',
+	          type: 'material',
+	          properties: {
+	            emissiveColor: { r: 0.9, g: 0.85, b: 0.8 }
+	          },
+	          side: _three2.default.DoubleSide
+	        });
+
+	        var flatShadedMaterial = this.getAssetRegistry().getAssetById('flatShaded');
+	        flatShadedMaterial.enableFeature('albedo', false);
+	        flatShadedMaterial.enableFeature('emissive', true);
 	      }
+
+	      this.getGlobalEvents().on('setRenderMode', this.setRenderMode, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
 	      var _this2 = this;
 
-	      if (changes.indexOf('shapeTexture') !== -1) {
-	        if (this.shapeTexture) {
-	          this.shapeTexture.when('load', function (tex) {
-	            var material = _this2.renderModes.Shape.perMeshOverrideMaterial;
-	            material.static.uniforms.matCapTexture.value = tex.runtimeData;
-	            material.skinned.uniforms.matCapTexture.value = tex.runtimeData;
-	          });
-	          if (this.shapeTexture.isBaseUnloaded()) {
-	            this.shapeTexture.load();
-	          }
-	        }
+	      if (changes.indexOf('shapeTexture') === -1 || !this.shapeTexture) {
+	        return;
+	      }
+
+	      this.shapeTexture.when('load', function (tex) {
+	        var material = _this2.renderModes[RenderModes.SHAPE].overrideMaterial;
+	        material.static.uniforms.matCapTexture.value = tex.runtimeData;
+	        material.skinned.uniforms.matCapTexture.value = tex.runtimeData;
+	      });
+
+	      if (this.shapeTexture.isBaseUnloaded()) {
+	        this.shapeTexture.load();
 	      }
 	    }
 
 	    /**
-	    * Clear a registered wireframe and remove from the cache
-	    * @param {string} id Id of the registered entity
-	    * @returns {void}
-	    */
+	     * Clear a registered wireframe and remove from the cache.
+	     * @method clearWireframe
+	     * @private
+	     * @param {String} id The ID of the registered entity.
+	     * @returns {void}
+	     */
 
 	  }, {
 	    key: 'clearWireframe',
@@ -81158,24 +81030,28 @@
 	    }
 
 	    /**
-	    * Clear all registered wireframes
-	    * @returns {void}
-	    */
+	     * Clear all registered wireframes.
+	     * @method clearWireframes
+	     * @private
+	     * @returns {void}
+	     */
 
 	  }, {
 	    key: 'clearWireframes',
 	    value: function clearWireframes() {
-	      for (var id in this.wireframeCache) {
-	        if (this.wireframeCache.hasOwnProperty(id)) {
-	          this.clearWireframe(id);
-	        }
-	      }
+	      var _this3 = this;
+
+	      Object.keys(this.wireframeCache).forEach(function (id) {
+	        return _this3.clearWireframe(id);
+	      });
 	    }
 
 	    /**
-	    * Clear all render mode created materials, geometry, etc.
-	    * @returns {void}
-	    */
+	     * Free all resources created by this component: materials, geometry, etc.
+	     * @method clearRenderModeCaches
+	     * @public
+	     * @returns {void}
+	     */
 
 	  }, {
 	    key: 'clearRenderModeCaches',
@@ -81183,10 +81059,7 @@
 	      this.clearWireframes();
 	    }
 
-	    /**
-	     * Called when a verold object is destroyed or this RenderModes is removed
-	     * from a verold object.
-	     */
+	    /** @inheritdoc */
 
 	  }, {
 	    key: 'shutdown',
@@ -81198,182 +81071,247 @@
 	      this.wireframeScene = undefined;
 
 	      _lodash2.default.each(this.renderModes, function (mode) {
-	        if (_lodash2.default.isObject(mode.overrideMaterial)) {
-	          _lodash2.default.each(mode.overrideMaterial, function (mat) {
-	            if (mat) {
-	              mat.dispose();
+	        if (mode.overrideMaterial) {
+	          _lodash2.default.each(mode.overrideMaterial, function (material) {
+	            if (material) {
+	              material.dispose();
 	            }
-	          }, this);
+	          });
 	        }
-	        if (_lodash2.default.isObject(mode.perMeshOverrideMaterial)) {
-	          _lodash2.default.each(mode.perMeshOverrideMaterial, function (mat) {
-	            if (mat && mat instanceof _three2.default.Material) {
-	              mat.dispose();
-	            }
-	          }, this);
-	        }
-	      }, this);
+	      });
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'postRenderView',
 	    value: function postRenderView(scene, camera /*, options*/) {
-	      var renderMode;
 	      if (!this.currentRenderMode || !this.renderModes) {
 	        return;
 	      }
-	      renderMode = this.renderModes[this.currentRenderMode];
+
+	      var renderMode = this.renderModes[this.currentRenderMode];
 	      if (renderMode.wireframeEnable) {
 	        this.getThreeRenderer().render(this.wireframeScene, camera);
 	      }
 	    }
+
+	    /**
+	     * Set the current render mode.
+	     * @method setRenderMode
+	     * @public
+	     * @param {String} modeName One of the render mode constants (e.g., LIT, UNLIT, etc.).
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'setRenderMode',
 	    value: function setRenderMode(modeName) {
+	      var _this4 = this;
 
 	      if (!this.renderModes[modeName]) {
-	        modeName = 'Lit';
+	        modeName = RenderModes.LIT;
 	      }
-	      this.currentRenderMode = modeName;
 
+	      this.currentRenderMode = modeName;
 	      this.applyRenderModeGlobalSettings();
-	      //for each scene, set the render mode
+
+	      // For each scene, set the render mode.
 	      var scenes = this.getAssetRegistry().Scenes.getAssets();
 	      _lodash2.default.each(scenes, function (scene) {
 	        if (scene.isChildrenLoaded()) {
-	          this.applyRenderModeForScene(scene, null);
+	          _this4.applyRenderModeToScene(scene, null);
 	        }
-	      }, this);
+	      });
 
 	      this.getRuntime().needsRender = true;
 	    }
+
+	    /**
+	     * Apply global (non-scene specific) settings based on the render mode.
+	     * @method applyRenderModeGlobalSettings
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'applyRenderModeGlobalSettings',
 	    value: function applyRenderModeGlobalSettings() {
 	      var renderMode = this.renderModes[this.currentRenderMode];
 
-	      //Disable lights is they should be for this render mode
+	      // Disable lights is they should be for this render mode.
 	      if (renderMode.disableLights) {
 	        this.disableImageBasedLighting();
-	        //Re-enable lights if they were previously disabled.
-	      } else if (this.lightsAreDisabled) {
+	        // Re-enable lights if they were previously disabled.
+	      } else if (this.lightsDisabled) {
 	        this.enableImageBasedLighting();
 	      }
 	    }
-	  }, {
-	    key: 'applyRenderModeForScene',
-	    value: function applyRenderModeForScene(scene) {
-	      var renderMode;
-	      var overrideMaterial;
-	      var perMeshOverrideMaterial;
 
-	      renderMode = this.renderModes[this.currentRenderMode];
+	    /**
+	     * Clone the specified Three.js material.
+	     * @method cloneMaterial
+	     * @private
+	     * @param {THREE.Material} material The material to clone.
+	     * @returns {THREE.Material} The new material.
+	     */
+
+	  }, {
+	    key: 'cloneMaterial',
+	    value: function cloneMaterial(material) {
+	      var newMaterial = material.clone();
+
+	      // When cloning a material in three.js, it clones the uniforms which clones any uniform values
+	      // assigned. This includes textures. For some reason, when a texture is cloned, it doesn't get
+	      // re-uploaded to the GPU and so doesn't work. We should probably look into fixing this in
+	      // three.js at some point. In this case, we don't want a cloned texture anyway.
+	      Object.keys(newMaterial.uniforms).forEach(function (name) {
+	        if (newMaterial.uniforms[name].type === 't') {
+	          // Re-use the existing texture in the new material.
+	          newMaterial.uniforms[name].value = material.uniforms[name].value;
+	        }
+	      });
+
+	      newMaterial.needsUpdate = true;
+
+	      return newMaterial;
+	    }
+
+	    /**
+	     * Apply the specified override material to the mesh, while copying the specified uniforms from
+	     * the old materials to the override material.
+	     * @method applyOverrideMaterialToMesh
+	     * @private
+	     * @param {MeshObject} mesh The mesh to apply the override material to.
+	     * @param {Object} overrideMaterials The override materials.
+	     * @param {THREE.ShaderMaterial} overrideMaterials.skinned The material to use for skinned meshes.
+	     * @param {THREE.ShaderMaterial} overrideMaterials.static The material to use for static meshes.
+	     * @param {Array} [copyUniforms] The names of the uniforms to copy from the old materials.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'applyOverrideMaterialToMesh',
+	    value: function applyOverrideMaterialToMesh(mesh, overrideMaterials, copyUniforms) {
+	      var _this5 = this;
+
+	      var matType = mesh.isSkinned() ? 'skinned' : 'static';
+	      var overrideMaterial = overrideMaterials[matType];
+	      var materials = mesh.runtimeData.material.materials;
+	      var newMaterials = void 0;
+
+	      if (!copyUniforms) {
+	        newMaterials = materials.map(function () {
+	          return overrideMaterial;
+	        });
+	      } else {
+	        newMaterials = materials.map(function () {
+	          return _this5.cloneMaterial(overrideMaterial);
+	        });
+
+	        // Copy certain shader uniforms from the old materials to the new materials.
+	        var materialAssets = mesh.getMaterials();
+
+	        materialAssets.forEach(function (materialAsset, idx) {
+	          var newMaterial = newMaterials[idx];
+
+	          materialAsset.when('loadBase', function () {
+	            copyUniforms.forEach(function (uniformName) {
+	              var material = materialAsset.runtimeData[matType];
+	              if (material.uniforms[uniformName] && material.uniforms[uniformName].value) {
+	                newMaterial[uniformName] = material.uniforms[uniformName].value;
+	                newMaterial.uniforms[uniformName].value = material.uniforms[uniformName].value;
+	              }
+	            });
+	          });
+
+	          if (materialAsset.isBaseUnloaded()) {
+	            materialAsset.load();
+	          }
+	        });
+	      }
+
+	      // Update the mesh materials.
+	      mesh.runtimeData.material.materials = newMaterials;
+	    }
+
+	    /**
+	     * Remove the material override from the mesh.
+	     * @method removeMaterialOverrideFromMesh
+	     * @private
+	     * @param {MeshObject} mesh The mesh to remove the override from.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'removeMaterialOverrideFromMesh',
+	    value: function removeMaterialOverrideFromMesh(mesh) {
+	      if (mesh.runtimeData.material) {
+	        mesh.runtimeData.material.materials.forEach(function (material) {
+	          material.dispose();
+	        });
+
+	        mesh.runtimeData.material = null;
+	      }
+
+	      // Force the materials to update.
+	      var materialIds = mesh.getProperty('materials');
+	      var newMaterialIds = new Array(materialIds.length);
+	      mesh.setProperty('materials', newMaterialIds, { silent: true });
+	      mesh.setProperty('materials', materialIds);
+	    }
+
+	    /**
+	     * Apply the current render mode to the specified scene.
+	     * @method applyRenderModeToScene
+	     * @private
+	     * @param {SceneAsset} scene The scene to apply to render mode to.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'applyRenderModeToScene',
+	    value: function applyRenderModeToScene(scene) {
+	      var _this6 = this;
+
+	      // Get the override material.
+	      var renderMode = this.renderModes[this.currentRenderMode];
+	      var overrideMaterial = void 0;
 
 	      if (_lodash2.default.isString(renderMode.overrideMaterial)) {
-	        this.assetRegistry.getAssetById(renderMode.overrideMaterial).load();
-	        overrideMaterial = this.assetRegistry.getAssetById(renderMode.overrideMaterial).runtimeData;
+	        var materialAsset = this.getAssetRegistry().getAssetById(renderMode.overrideMaterial);
+	        // TODO: Are we assuming that the asset will load immediately here?
+	        materialAsset.load();
+	        overrideMaterial = materialAsset.runtimeData;
 	      } else {
 	        overrideMaterial = renderMode.overrideMaterial;
 	      }
-	      if (_lodash2.default.isString(renderMode.perMeshOverrideMaterial)) {
-	        this.assetRegistry.getAssetById(renderMode.perMeshOverrideMaterial).load();
-	        perMeshOverrideMaterial = this.assetRegistry.getAssetById(renderMode.perMeshOverrideMaterial).runtimeData;
-	      } else {
-	        perMeshOverrideMaterial = renderMode.perMeshOverrideMaterial;
-	      }
 
-	      //Apply override material for this render mode
+	      // Apply override material for this render mode.
 	      if (overrideMaterial) {
-	        overrideMaterial.skinned.skinning = true;
 	        this.overrideMaterialEnabled = true;
+	        overrideMaterial.skinned.skinning = true; // TODO: this should be done in init()
+
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
-	            if (obj.isSkinned()) {
-	              obj.runtimeData.material = overrideMaterial.skinned;
-	            } else {
-	              obj.runtimeData.material = overrideMaterial.static;
-	            }
+	            _this6.applyOverrideMaterialToMesh(obj, overrideMaterial, renderMode.copyUniforms);
 	          }
 	        });
-	      } else if (perMeshOverrideMaterial) {
-	        perMeshOverrideMaterial.skinned.skinning = true;
-	        this.overrideMaterialEnabled = true;
-	        this.perMeshOverrideMaterialEnabled = true;
-	        scene.traverse(function (obj) {
-	          var prevMats;
-	          var newMat;
-	          var matType;
-	          if (obj.type === 'mesh') {
-	            prevMats = obj.getMaterials();
-	            matType = obj.isSkinned() ? 'skinned' : 'static';
-	            overrideMaterial = perMeshOverrideMaterial[matType];
-	            if (prevMats.length > 1) {
-	              obj.runtimeData.material = new _three2.default.MultiMaterial();
-	            }
-	            prevMats.forEach(function (prevMatAsset) {
-	              newMat = overrideMaterial.clone();
-	              // When cloning a material in three.js, it clones the uniforms which clones any
-	              // uniform values assigned. This includes textures. For some reason, when a texture
-	              // is cloned, it doesn't get re-uploaded to the GPU and so doesn't work. We should
-	              // probably look into fixing this in three.js at some point. In this case, we don't
-	              // want a cloned texture anyway.
-	              for (var i in newMat.uniforms) {
-	                if (newMat.uniforms[i].type === 't') {
-	                  newMat.uniforms[i].value = overrideMaterial.uniforms[i].value;
-	                }
-	              }
-	              if (prevMats.length > 1) {
-	                obj.runtimeData.material.materials.push(newMat);
-	              } else {
-	                obj.runtimeData.material = newMat;
-	              }
-	              newMat.needsUpdate = true;
-	              _lodash2.default.each(perMeshOverrideMaterial.copyUniforms, function (fromParam, toParam) {
-	                prevMatAsset.when('loadBase', function (mat) {
-	                  var prevMaterial = mat.runtimeData[matType];
-	                  if (prevMaterial.uniforms[fromParam] && prevMaterial.uniforms[fromParam].value) {
-	                    newMat[toParam] = prevMaterial.uniforms[fromParam].value;
-	                    newMat.uniforms[toParam].value = prevMaterial.uniforms[fromParam].value;
-	                  }
-	                });
-	                if (prevMatAsset.isBaseUnloaded()) {
-	                  prevMatAsset.load();
-	                }
-	              }, this);
-	            }, this);
-	          }
-	        }, this);
 	      } else if (this.overrideMaterialEnabled) {
-	        //Re-apply materials if they were previously overridden
+	        // Re-apply materials if they were previously overridden.
 	        scene.traverse(function (obj) {
-	          var material;
-	          var newMaterials;
-	          var i;
 	          if (obj.type === 'mesh') {
-	            if (this.perMeshOverrideMaterialEnabled && obj.runtimeData.material) {
-	              if (obj.runtimeData.material instanceof _three2.default.MultiMaterial) {
-	                for (i = 0; i < obj.runtimeData.material.materials.length; i++) {
-	                  obj.runtimeData.material.materials[i].dispose();
-	                }
-	              } else {
-	                obj.runtimeData.material.dispose();
-	              }
-	              obj.runtimeData.material = null;
-	            }
-	            material = obj.getProperty('materials');
-	            newMaterials = new Array(material.length);
-	            obj.setProperty('materials', newMaterials, {
-	              silent: true
-	            });
-	            obj.setProperty('materials', material);
+	            _this6.removeMaterialOverrideFromMesh(obj);
 	          }
-	        }, this);
+	        });
+
 	        this.overrideMaterialEnabled = false;
-	        this.perMeshOverrideMaterialEnabled = false;
 	      }
 
-	      //Disable lights is they should be for this render mode
+	      // Disable lights is they should be for this render mode.
 	      if (renderMode.disableLights) {
-	        this.lightsAreDisabled = true;
+	        this.lightsDisabled = true;
+
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'light') {
 	            if (obj.getProperty('lightType') === 'ambient') {
@@ -81383,80 +81321,97 @@
 	            }
 	          }
 	        });
-	      } else if (this.lightsAreDisabled) {
-	        //Re-enable lights if they were turned off
-	        this.lightsAreDisabled = false;
+	      } else if (this.lightsDisabled) {
+	        // Re-enable lights if they were turned off.
+	        this.lightsDisabled = false;
+
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'light') {
 	            if (obj.getProperty('lightType') === 'ambient') {
 	              var colour = obj.getProperty('color');
-	              obj.setProperty('color', { r: 0, g: 0, b: 0 }, {
-	                silent: true
-	              });
+	              obj.setProperty('color', { r: 0, g: 0, b: 0 }, { silent: true });
 	              obj.setProperty('color', colour);
 	            } else {
 	              var intensity = obj.getProperty('intensity');
-	              obj.setProperty('intensity', 0, {
-	                silent: true
-	              });
+	              obj.setProperty('intensity', 0, { silent: true });
 	              obj.setProperty('intensity', intensity);
 	            }
 	          }
-	        }, this);
+	        });
 	      }
 
 	      if (renderMode.wireframeEnable) {
 	        _lodash2.default.each(this.wireframeCache, function (obj) {
 	          obj.visible = false;
-	        }, this);
+	        });
+
 	        scene.traverse(function (obj) {
-	          if (obj.type === 'mesh') {
-	            if (this.wireframeCache[obj.id]) {
-	              this.wireframeCache[obj.id].visible = true;
-	            } else {
-	              if (obj.runtimeData) {
-	                this.wireframeCache[obj.id] = new _three2.default.WireframeHelper(obj.runtimeData, 0x050505);
-	                obj.once('unload', this.clearWireframe.bind(this, obj.id), this);
-	              }
-	            }
-	            if (this.wireframeScene) {
-	              this.wireframeScene.add(this.wireframeCache[obj.id]);
+	          if (obj.type !== 'mesh') {
+	            return;
+	          }
+
+	          if (_this6.wireframeCache[obj.id]) {
+	            _this6.wireframeCache[obj.id].visible = true;
+	          } else {
+	            if (obj.runtimeData) {
+	              _this6.wireframeCache[obj.id] = new _three2.default.WireframeHelper(obj.runtimeData, 0x050505);
+	              obj.once('unload', _this6.clearWireframe.bind(_this6, obj.id), _this6);
 	            }
 	          }
-	        }, this);
+
+	          if (_this6.wireframeScene) {
+	            _this6.wireframeScene.add(_this6.wireframeCache[obj.id]);
+	          }
+	        });
 	      }
 	    }
+
+	    /**
+	     * Disable image-based lighting.
+	     * @method disableImageBasedLighting
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'disableImageBasedLighting',
 	    value: function disableImageBasedLighting() {
-	      var _this3 = this;
+	      var _this7 = this;
 
 	      var materials = this.getAssetRegistry().Materials.assets;
 	      Object.keys(materials).forEach(function (matId) {
-	        if (!_this3.materialPrevProperties[matId]) {
-	          _this3.materialPrevProperties[matId] = {};
+	        if (!_this7.prevMaterialProperties[matId]) {
+	          _this7.prevMaterialProperties[matId] = {};
 	        }
 	        var useSpecular = materials[matId].isFeatureEnabled('specular');
 	        var irradianceMap = materials[matId].getProperty('irradianceMap');
-	        _this3.materialPrevProperties[matId].useSpecular = useSpecular;
-	        _this3.materialPrevProperties[matId].irradianceMap = irradianceMap;
+	        _this7.prevMaterialProperties[matId].useSpecular = useSpecular;
+	        _this7.prevMaterialProperties[matId].irradianceMap = irradianceMap;
 	        materials[matId].setProperty('irradianceMap', null);
 	        materials[matId].enableFeature('specular', false);
 	      });
 	    }
+
+	    /**
+	     * Enable image-based lighting.
+	     * @method enableImageBasedLighting
+	     * @private
+	     * @returns {void}
+	     */
+
 	  }, {
 	    key: 'enableImageBasedLighting',
 	    value: function enableImageBasedLighting() {
-	      var _this4 = this;
+	      var _this8 = this;
 
 	      var materials = this.getAssetRegistry().Materials.assets;
 	      Object.keys(materials).forEach(function (matId) {
-	        if (_this4.materialPrevProperties[matId]) {
-	          var useSpecular = _this4.materialPrevProperties[matId].useSpecular;
-	          var irradianceMap = _this4.materialPrevProperties[matId].irradianceMap;
+	        if (_this8.prevMaterialProperties[matId]) {
+	          var useSpecular = _this8.prevMaterialProperties[matId].useSpecular;
+	          var irradianceMap = _this8.prevMaterialProperties[matId].irradianceMap;
 	          materials[matId].enableFeature('specular', useSpecular);
 	          materials[matId].setProperty('irradianceMap', irradianceMap);
-	          delete _this4.materialPrevProperties[matId];
+	          delete _this8.prevMaterialProperties[matId];
 	        }
 	      });
 	    }
@@ -81464,6 +81419,43 @@
 
 	  return RenderModes;
 	}(_Box3DComponent3.default);
+
+	// TODO: Convert to "static" class members when the generator supports it.
+	// Render modes:
+
+
+	RenderModes.LIT = 'Lit';
+	RenderModes.UNLINT = 'Unlit';
+	RenderModes.SHAPE = 'Shape';
+	RenderModes.NORMALS = 'Normals';
+	RenderModes.WIREFRAME = 'Wireframe';
+	RenderModes.UNTEXTURED_WIREFRAME = 'Untextured Wireframe';
+	RenderModes.UV_OVERLAY = 'UV Overlay';
+	RenderModes.SKIN_WEIGHTS = 'Skin Weights';
+	RenderModes.SKIN_INDICES = 'Skin Indices';
+
+	// Materials:
+	RenderModes.NORMALS_MATERIAL = {
+	  side: _three2.default.DoubleSide,
+	  uniforms: _three2.default.UniformsUtils.merge([_three2.default.UniformsLib.common, _three2.default.UniformsLib.bumpmap, _three2.default.UniformsLib.normalmap]),
+	  vertexShader: [_three2.default.ShaderChunk.common, _three2.default.ShaderChunk.uv_pars_vertex, _three2.default.ShaderChunk.bsdfs, _three2.default.ShaderChunk.skinning_pars_vertex, _three2.default.ShaderChunk.lights_phong_pars_vertex, '#ifndef FLAT_SHADED', 'varying vec3 vNormal;', '#endif', 'varying vec3 vViewPosition;', 'void main() {', _three2.default.ShaderChunk.uv_vertex, '#if defined(USE_NORMALMAP) || defined(USE_BUMPMAP)', 'vUv.y = 1.0 - vUv.y;', '#endif', _three2.default.ShaderChunk.beginnormal_vertex, _three2.default.ShaderChunk.morphnormal_vertex, _three2.default.ShaderChunk.skinbase_vertex, _three2.default.ShaderChunk.skinnormal_vertex, _three2.default.ShaderChunk.defaultnormal_vertex, '#ifndef FLAT_SHADED', 'vNormal = normalize( transformedNormal );', '#endif', _three2.default.ShaderChunk.begin_vertex, _three2.default.ShaderChunk.displacementmap_vertex, _three2.default.ShaderChunk.morphtarget_vertex, _three2.default.ShaderChunk.skinning_vertex, _three2.default.ShaderChunk.project_vertex, _three2.default.ShaderChunk.logdepthbuf_vertex, _three2.default.ShaderChunk.clipping_planes_vertex, 'vViewPosition = - mvPosition.xyz;', _three2.default.ShaderChunk.worldpos_vertex, '}'].join('\n'),
+	  fragmentShader: [_three2.default.ShaderChunk.common, _three2.default.ShaderChunk.uv_pars_fragment, _three2.default.ShaderChunk.bsdfs, _three2.default.ShaderChunk.lights_phong_pars_fragment, _three2.default.ShaderChunk.normalmap_pars_fragment, _three2.default.ShaderChunk.bumpmap_pars_fragment, 'void main() {', _three2.default.ShaderChunk.normal_flip, _three2.default.ShaderChunk.normal_fragment, 'normal = 0.5 * normal + 0.5;', 'gl_FragColor = vec4(normal, 1.0);', '}'].join('\n')
+	};
+
+	RenderModes.SHAPE_MATERIAL = {
+	  side: _three2.default.DoubleSide,
+	  uniforms: _three2.default.UniformsUtils.merge([_three2.default.UniformsLib.common, _three2.default.UniformsLib.bumpmap, _three2.default.UniformsLib.normalmap, { matCapTexture: { type: 't', value: null } }]),
+	  vertexShader: [_three2.default.ShaderChunk.common, _three2.default.ShaderChunk.uv_pars_vertex, _three2.default.ShaderChunk.bsdfs, _three2.default.ShaderChunk.skinning_pars_vertex, _three2.default.ShaderChunk.lights_phong_pars_vertex, '#ifndef FLAT_SHADED', 'varying vec3 vNormal;', '#endif', 'varying vec3 vViewPosition;', 'void main() {', _three2.default.ShaderChunk.uv_vertex, '#if defined(USE_NORMALMAP) || defined(USE_BUMPMAP)', 'vUv.y = 1.0 - vUv.y;', '#endif', _three2.default.ShaderChunk.beginnormal_vertex, _three2.default.ShaderChunk.morphnormal_vertex, _three2.default.ShaderChunk.skinbase_vertex, _three2.default.ShaderChunk.skinnormal_vertex, _three2.default.ShaderChunk.defaultnormal_vertex, '#ifndef FLAT_SHADED', 'vNormal = normalize( transformedNormal );', '#endif', _three2.default.ShaderChunk.begin_vertex, _three2.default.ShaderChunk.displacementmap_vertex, _three2.default.ShaderChunk.morphtarget_vertex, _three2.default.ShaderChunk.skinning_vertex, _three2.default.ShaderChunk.project_vertex, _three2.default.ShaderChunk.logdepthbuf_vertex, _three2.default.ShaderChunk.clipping_planes_vertex, 'vViewPosition = - mvPosition.xyz;', _three2.default.ShaderChunk.worldpos_vertex, '}'].join('\n'),
+	  fragmentShader: [_three2.default.ShaderChunk.common, _three2.default.ShaderChunk.uv_pars_fragment, _three2.default.ShaderChunk.bsdfs, _three2.default.ShaderChunk.lights_phong_pars_fragment, _three2.default.ShaderChunk.normalmap_pars_fragment, _three2.default.ShaderChunk.bumpmap_pars_fragment, 'uniform sampler2D matCapTexture;', 'void main() {', 'vec3 eyeVector_VS = normalize(vViewPosition);', _three2.default.ShaderChunk.normal_flip, _three2.default.ShaderChunk.normal_fragment, 'vec3 reflect_SS = reflect(-eyeVector_VS, normal);', 'reflect_SS.z += 1.0;', 'float temp = 2.0 * sqrt(dot(reflect_SS, reflect_SS));', 'reflect_SS.xy = reflect_SS.xy / vec2(temp) + vec2(0.5);', 'reflect_SS.y = 1.0 - reflect_SS.y;',
+	  // Sample matCap
+	  'vec3 colour = texture2D(matCapTexture, reflect_SS.xy).rgb;', 'gl_FragColor = vec4(colour, 1.0);', '}'].join('\n')
+	};
+
+	RenderModes.SKIN_WEIGHTS_MATERIAL = {
+	  side: _three2.default.DoubleSide,
+	  vertexShader: [_three2.default.ShaderChunk.skinning_pars_vertex, 'varying vec3 vColor;', 'void main() {', _three2.default.ShaderChunk.skinbase_vertex, _three2.default.ShaderChunk.skinning_vertex, _three2.default.ShaderChunk.project_vertex, '#ifdef USE_SKINNING', 'vColor = vec3(skinWeight.x, skinWeight.y, skinWeight.z);', '#else', 'vColor = vec3(0.0, 0.0, 0);', '#endif', '}'].join('\n'),
+	  fragmentShader: ['varying vec3 vColor;', 'void main() {', 'gl_FragColor = vec4(vColor, 1.0);', '}'].join('\n')
+	};
 
 	exports.default = RenderModes;
 
@@ -81533,7 +81525,7 @@
 	  function RenderView() {
 	    _classCallCheck(this, RenderView);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderView).call(this));
+	    var _this = _possibleConstructorReturn(this, (RenderView.__proto__ || Object.getPrototypeOf(RenderView)).call(this));
 
 	    _this.renderEventName = 'render';
 	    _this.enablePostProcess = true;
@@ -81953,7 +81945,7 @@
 	  function DefaultRenderer() {
 	    _classCallCheck(this, DefaultRenderer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DefaultRenderer).call(this));
+	    var _this = _possibleConstructorReturn(this, (DefaultRenderer.__proto__ || Object.getPrototypeOf(DefaultRenderer)).call(this));
 
 	    _this.threeRenderer = null;
 	    _this.caps = {};
@@ -82487,7 +82479,7 @@
 	  function Rotate() {
 	    _classCallCheck(this, Rotate);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Rotate).call(this));
+	    var _this = _possibleConstructorReturn(this, (Rotate.__proto__ || Object.getPrototypeOf(Rotate)).call(this));
 
 	    _this.quaternion = new _three2.default.Quaternion();
 	    _this.currentGlobalQuaternion = new _three2.default.Quaternion();
@@ -82657,7 +82649,7 @@
 	  function SceneLoader() {
 	    _classCallCheck(this, SceneLoader);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneLoader).call(this));
+	    var _this = _possibleConstructorReturn(this, (SceneLoader.__proto__ || Object.getPrototypeOf(SceneLoader)).call(this));
 
 	    _this.m_bHierarchy = false;
 	    _this.m_bDependencies = false;
@@ -82817,7 +82809,7 @@
 	  function SimplexNoiseRenderer() {
 	    _classCallCheck(this, SimplexNoiseRenderer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SimplexNoiseRenderer).call(this));
+	    var _this = _possibleConstructorReturn(this, (SimplexNoiseRenderer.__proto__ || Object.getPrototypeOf(SimplexNoiseRenderer)).call(this));
 
 	    _this.m_Uniforms = null;
 	    _this.m_NoiseMat = null;
@@ -83008,7 +83000,7 @@
 	  function SkyboxRenderer() {
 	    _classCallCheck(this, SkyboxRenderer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkyboxRenderer).call(this));
+	    var _this = _possibleConstructorReturn(this, (SkyboxRenderer.__proto__ || Object.getPrototypeOf(SkyboxRenderer)).call(this));
 
 	    _this.currentTexLayout = null;
 	    _this.skyboxMesh = null;
@@ -83422,7 +83414,7 @@
 	  function TextRenderer() {
 	    _classCallCheck(this, TextRenderer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TextRenderer).call(this));
+	    var _this = _possibleConstructorReturn(this, (TextRenderer.__proto__ || Object.getPrototypeOf(TextRenderer)).call(this));
 
 	    _this.m_Material = null;
 	    _this.m_Canvas = null;
@@ -83628,7 +83620,7 @@
 	  function Texture2dToCubeMap() {
 	    _classCallCheck(this, Texture2dToCubeMap);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Texture2dToCubeMap).call(this));
+	    var _this = _possibleConstructorReturn(this, (Texture2dToCubeMap.__proto__ || Object.getPrototypeOf(Texture2dToCubeMap)).call(this));
 
 	    _this.skyboxScene = undefined;
 	    _this.cameras = new Array(6);
@@ -89287,7 +89279,7 @@
 	  function AnimationAsset(json) {
 	    _classCallCheck(this, AnimationAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (AnimationAsset.__proto__ || Object.getPrototypeOf(AnimationAsset)).call(this, json));
 
 	    _this.clips = {};
 	    return _this;
@@ -89664,14 +89656,14 @@
 	  function ApplicationAsset(json) {
 	    _classCallCheck(this, ApplicationAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ApplicationAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (ApplicationAsset.__proto__ || Object.getPrototypeOf(ApplicationAsset)).call(this, json));
 	  }
 
 	  _createClass(ApplicationAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(ApplicationAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(ApplicationAsset.prototype.__proto__ || Object.getPrototypeOf(ApplicationAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -89741,7 +89733,7 @@
 	  function AudioAsset(json) {
 	    _classCallCheck(this, AudioAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AudioAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (AudioAsset.__proto__ || Object.getPrototypeOf(AudioAsset)).call(this, json));
 	  }
 
 	  _createClass(AudioAsset, [{
@@ -89752,7 +89744,7 @@
 	        this.runtimeData.pause();
 	      }
 
-	      _get(Object.getPrototypeOf(AudioAsset.prototype), 'uninitialize', this).call(this);
+	      _get(AudioAsset.prototype.__proto__ || Object.getPrototypeOf(AudioAsset.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /** @inheritdoc */
@@ -89760,7 +89752,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(AudioAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(AudioAsset.prototype.__proto__ || Object.getPrototypeOf(AudioAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (this.runtimeData) {
 	        if (changes.hasOwnProperty('loop')) {
@@ -89835,7 +89827,7 @@
 	  function BufferAsset(json) {
 	    _classCallCheck(this, BufferAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BufferAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (BufferAsset.__proto__ || Object.getPrototypeOf(BufferAsset)).call(this, json));
 
 	    _this.buffer = null;
 	    _this.arrays = {};
@@ -90132,7 +90124,7 @@
 	  function DocumentAsset(json) {
 	    _classCallCheck(this, DocumentAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DocumentAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (DocumentAsset.__proto__ || Object.getPrototypeOf(DocumentAsset)).call(this, json));
 	  }
 
 	  /**
@@ -92582,9 +92574,6 @@
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
 	exports.INSPECT_MAX_BYTES = 50
-	Buffer.poolSize = 8192 // not used by this implementation
-
-	var rootParent = {}
 
 	/**
 	 * If `Buffer.TYPED_ARRAY_SUPPORT`:
@@ -92602,9 +92591,6 @@
 	 *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
 	 *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
 	 *
-	 *   - Safari 5-7 lacks support for changing the `Object.prototype.constructor` property
-	 *     on objects.
-	 *
 	 *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
 	 *
 	 *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
@@ -92617,14 +92603,16 @@
 	  ? global.TYPED_ARRAY_SUPPORT
 	  : typedArraySupport()
 
+	/*
+	 * Export kMaxLength after typed array support is determined.
+	 */
+	exports.kMaxLength = kMaxLength()
+
 	function typedArraySupport () {
-	  function Bar () {}
 	  try {
 	    var arr = new Uint8Array(1)
-	    arr.foo = function () { return 42 }
-	    arr.constructor = Bar
+	    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
 	    return arr.foo() === 42 && // typed array instances can be augmented
-	        arr.constructor === Bar && // constructor can be set
 	        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
 	        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
 	  } catch (e) {
@@ -92638,184 +92626,252 @@
 	    : 0x3fffffff
 	}
 
-	/**
-	 * Class: Buffer
-	 * =============
-	 *
-	 * The Buffer constructor returns instances of `Uint8Array` that are augmented
-	 * with function properties for all the node `Buffer` API functions. We use
-	 * `Uint8Array` so that square bracket notation works as expected -- it returns
-	 * a single octet.
-	 *
-	 * By augmenting the instances, we can avoid modifying the `Uint8Array`
-	 * prototype.
-	 */
-	function Buffer (arg) {
-	  if (!(this instanceof Buffer)) {
-	    // Avoid going through an ArgumentsAdaptorTrampoline in the common case.
-	    if (arguments.length > 1) return new Buffer(arg, arguments[1])
-	    return new Buffer(arg)
+	function createBuffer (that, length) {
+	  if (kMaxLength() < length) {
+	    throw new RangeError('Invalid typed array length')
+	  }
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    // Return an augmented `Uint8Array` instance, for best performance
+	    that = new Uint8Array(length)
+	    that.__proto__ = Buffer.prototype
+	  } else {
+	    // Fallback: Return an object instance of the Buffer class
+	    if (that === null) {
+	      that = new Buffer(length)
+	    }
+	    that.length = length
 	  }
 
-	  if (!Buffer.TYPED_ARRAY_SUPPORT) {
-	    this.length = 0
-	    this.parent = undefined
+	  return that
+	}
+
+	/**
+	 * The Buffer constructor returns instances of `Uint8Array` that have their
+	 * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+	 * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+	 * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+	 * returns a single octet.
+	 *
+	 * The `Uint8Array` prototype remains unmodified.
+	 */
+
+	function Buffer (arg, encodingOrOffset, length) {
+	  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+	    return new Buffer(arg, encodingOrOffset, length)
 	  }
 
 	  // Common case.
 	  if (typeof arg === 'number') {
-	    return fromNumber(this, arg)
+	    if (typeof encodingOrOffset === 'string') {
+	      throw new Error(
+	        'If encoding is specified then the first argument must be a string'
+	      )
+	    }
+	    return allocUnsafe(this, arg)
 	  }
-
-	  // Slightly less common case.
-	  if (typeof arg === 'string') {
-	    return fromString(this, arg, arguments.length > 1 ? arguments[1] : 'utf8')
-	  }
-
-	  // Unusual.
-	  return fromObject(this, arg)
+	  return from(this, arg, encodingOrOffset, length)
 	}
 
-	function fromNumber (that, length) {
-	  that = allocate(that, length < 0 ? 0 : checked(length) | 0)
+	Buffer.poolSize = 8192 // not used by this implementation
+
+	// TODO: Legacy, not needed anymore. Remove in next major version.
+	Buffer._augment = function (arr) {
+	  arr.__proto__ = Buffer.prototype
+	  return arr
+	}
+
+	function from (that, value, encodingOrOffset, length) {
+	  if (typeof value === 'number') {
+	    throw new TypeError('"value" argument must not be a number')
+	  }
+
+	  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+	    return fromArrayBuffer(that, value, encodingOrOffset, length)
+	  }
+
+	  if (typeof value === 'string') {
+	    return fromString(that, value, encodingOrOffset)
+	  }
+
+	  return fromObject(that, value)
+	}
+
+	/**
+	 * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+	 * if value is a number.
+	 * Buffer.from(str[, encoding])
+	 * Buffer.from(array)
+	 * Buffer.from(buffer)
+	 * Buffer.from(arrayBuffer[, byteOffset[, length]])
+	 **/
+	Buffer.from = function (value, encodingOrOffset, length) {
+	  return from(null, value, encodingOrOffset, length)
+	}
+
+	if (Buffer.TYPED_ARRAY_SUPPORT) {
+	  Buffer.prototype.__proto__ = Uint8Array.prototype
+	  Buffer.__proto__ = Uint8Array
+	  if (typeof Symbol !== 'undefined' && Symbol.species &&
+	      Buffer[Symbol.species] === Buffer) {
+	    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+	    Object.defineProperty(Buffer, Symbol.species, {
+	      value: null,
+	      configurable: true
+	    })
+	  }
+	}
+
+	function assertSize (size) {
+	  if (typeof size !== 'number') {
+	    throw new TypeError('"size" argument must be a number')
+	  } else if (size < 0) {
+	    throw new RangeError('"size" argument must not be negative')
+	  }
+	}
+
+	function alloc (that, size, fill, encoding) {
+	  assertSize(size)
+	  if (size <= 0) {
+	    return createBuffer(that, size)
+	  }
+	  if (fill !== undefined) {
+	    // Only pay attention to encoding if it's a string. This
+	    // prevents accidentally sending in a number that would
+	    // be interpretted as a start offset.
+	    return typeof encoding === 'string'
+	      ? createBuffer(that, size).fill(fill, encoding)
+	      : createBuffer(that, size).fill(fill)
+	  }
+	  return createBuffer(that, size)
+	}
+
+	/**
+	 * Creates a new filled Buffer instance.
+	 * alloc(size[, fill[, encoding]])
+	 **/
+	Buffer.alloc = function (size, fill, encoding) {
+	  return alloc(null, size, fill, encoding)
+	}
+
+	function allocUnsafe (that, size) {
+	  assertSize(size)
+	  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
 	  if (!Buffer.TYPED_ARRAY_SUPPORT) {
-	    for (var i = 0; i < length; i++) {
+	    for (var i = 0; i < size; ++i) {
 	      that[i] = 0
 	    }
 	  }
 	  return that
 	}
 
+	/**
+	 * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+	 * */
+	Buffer.allocUnsafe = function (size) {
+	  return allocUnsafe(null, size)
+	}
+	/**
+	 * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+	 */
+	Buffer.allocUnsafeSlow = function (size) {
+	  return allocUnsafe(null, size)
+	}
+
 	function fromString (that, string, encoding) {
-	  if (typeof encoding !== 'string' || encoding === '') encoding = 'utf8'
+	  if (typeof encoding !== 'string' || encoding === '') {
+	    encoding = 'utf8'
+	  }
 
-	  // Assumption: byteLength() return value is always < kMaxLength.
+	  if (!Buffer.isEncoding(encoding)) {
+	    throw new TypeError('"encoding" must be a valid string encoding')
+	  }
+
 	  var length = byteLength(string, encoding) | 0
-	  that = allocate(that, length)
+	  that = createBuffer(that, length)
 
-	  that.write(string, encoding)
-	  return that
-	}
+	  var actual = that.write(string, encoding)
 
-	function fromObject (that, object) {
-	  if (Buffer.isBuffer(object)) return fromBuffer(that, object)
-
-	  if (isArray(object)) return fromArray(that, object)
-
-	  if (object == null) {
-	    throw new TypeError('must start with number, buffer, array or string')
+	  if (actual !== length) {
+	    // Writing a hex string, for example, that contains invalid characters will
+	    // cause everything after the first invalid character to be ignored. (e.g.
+	    // 'abxxcd' will be treated as 'ab')
+	    that = that.slice(0, actual)
 	  }
 
-	  if (typeof ArrayBuffer !== 'undefined') {
-	    if (object.buffer instanceof ArrayBuffer) {
-	      return fromTypedArray(that, object)
-	    }
-	    if (object instanceof ArrayBuffer) {
-	      return fromArrayBuffer(that, object)
-	    }
-	  }
-
-	  if (object.length) return fromArrayLike(that, object)
-
-	  return fromJsonObject(that, object)
-	}
-
-	function fromBuffer (that, buffer) {
-	  var length = checked(buffer.length) | 0
-	  that = allocate(that, length)
-	  buffer.copy(that, 0, 0, length)
-	  return that
-	}
-
-	function fromArray (that, array) {
-	  var length = checked(array.length) | 0
-	  that = allocate(that, length)
-	  for (var i = 0; i < length; i += 1) {
-	    that[i] = array[i] & 255
-	  }
-	  return that
-	}
-
-	// Duplicate of fromArray() to keep fromArray() monomorphic.
-	function fromTypedArray (that, array) {
-	  var length = checked(array.length) | 0
-	  that = allocate(that, length)
-	  // Truncating the elements is probably not what people expect from typed
-	  // arrays with BYTES_PER_ELEMENT > 1 but it's compatible with the behavior
-	  // of the old Buffer constructor.
-	  for (var i = 0; i < length; i += 1) {
-	    that[i] = array[i] & 255
-	  }
-	  return that
-	}
-
-	function fromArrayBuffer (that, array) {
-	  if (Buffer.TYPED_ARRAY_SUPPORT) {
-	    // Return an augmented `Uint8Array` instance, for best performance
-	    array.byteLength
-	    that = Buffer._augment(new Uint8Array(array))
-	  } else {
-	    // Fallback: Return an object instance of the Buffer class
-	    that = fromTypedArray(that, new Uint8Array(array))
-	  }
 	  return that
 	}
 
 	function fromArrayLike (that, array) {
-	  var length = checked(array.length) | 0
-	  that = allocate(that, length)
+	  var length = array.length < 0 ? 0 : checked(array.length) | 0
+	  that = createBuffer(that, length)
 	  for (var i = 0; i < length; i += 1) {
 	    that[i] = array[i] & 255
 	  }
 	  return that
 	}
 
-	// Deserialize { type: 'Buffer', data: [1,2,3,...] } into a Buffer object.
-	// Returns a zero-length buffer for inputs that don't conform to the spec.
-	function fromJsonObject (that, object) {
-	  var array
-	  var length = 0
+	function fromArrayBuffer (that, array, byteOffset, length) {
+	  array.byteLength // this throws if `array` is not a valid ArrayBuffer
 
-	  if (object.type === 'Buffer' && isArray(object.data)) {
-	    array = object.data
-	    length = checked(array.length) | 0
+	  if (byteOffset < 0 || array.byteLength < byteOffset) {
+	    throw new RangeError('\'offset\' is out of bounds')
 	  }
-	  that = allocate(that, length)
 
-	  for (var i = 0; i < length; i += 1) {
-	    that[i] = array[i] & 255
+	  if (array.byteLength < byteOffset + (length || 0)) {
+	    throw new RangeError('\'length\' is out of bounds')
 	  }
-	  return that
-	}
 
-	if (Buffer.TYPED_ARRAY_SUPPORT) {
-	  Buffer.prototype.__proto__ = Uint8Array.prototype
-	  Buffer.__proto__ = Uint8Array
-	} else {
-	  // pre-set for values that may exist in the future
-	  Buffer.prototype.length = undefined
-	  Buffer.prototype.parent = undefined
-	}
+	  if (byteOffset === undefined && length === undefined) {
+	    array = new Uint8Array(array)
+	  } else if (length === undefined) {
+	    array = new Uint8Array(array, byteOffset)
+	  } else {
+	    array = new Uint8Array(array, byteOffset, length)
+	  }
 
-	function allocate (that, length) {
 	  if (Buffer.TYPED_ARRAY_SUPPORT) {
 	    // Return an augmented `Uint8Array` instance, for best performance
-	    that = Buffer._augment(new Uint8Array(length))
+	    that = array
 	    that.__proto__ = Buffer.prototype
 	  } else {
 	    // Fallback: Return an object instance of the Buffer class
-	    that.length = length
-	    that._isBuffer = true
+	    that = fromArrayLike(that, array)
 	  }
-
-	  var fromPool = length !== 0 && length <= Buffer.poolSize >>> 1
-	  if (fromPool) that.parent = rootParent
-
 	  return that
 	}
 
+	function fromObject (that, obj) {
+	  if (Buffer.isBuffer(obj)) {
+	    var len = checked(obj.length) | 0
+	    that = createBuffer(that, len)
+
+	    if (that.length === 0) {
+	      return that
+	    }
+
+	    obj.copy(that, 0, 0, len)
+	    return that
+	  }
+
+	  if (obj) {
+	    if ((typeof ArrayBuffer !== 'undefined' &&
+	        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+	      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+	        return createBuffer(that, 0)
+	      }
+	      return fromArrayLike(that, obj)
+	    }
+
+	    if (obj.type === 'Buffer' && isArray(obj.data)) {
+	      return fromArrayLike(that, obj.data)
+	    }
+	  }
+
+	  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+	}
+
 	function checked (length) {
-	  // Note: cannot use `length < kMaxLength` here because that fails when
+	  // Note: cannot use `length < kMaxLength()` here because that fails when
 	  // length is NaN (which is otherwise coerced to zero.)
 	  if (length >= kMaxLength()) {
 	    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
@@ -92824,12 +92880,11 @@
 	  return length | 0
 	}
 
-	function SlowBuffer (subject, encoding) {
-	  if (!(this instanceof SlowBuffer)) return new SlowBuffer(subject, encoding)
-
-	  var buf = new Buffer(subject, encoding)
-	  delete buf.parent
-	  return buf
+	function SlowBuffer (length) {
+	  if (+length != length) { // eslint-disable-line eqeqeq
+	    length = 0
+	  }
+	  return Buffer.alloc(+length)
 	}
 
 	Buffer.isBuffer = function isBuffer (b) {
@@ -92846,17 +92901,12 @@
 	  var x = a.length
 	  var y = b.length
 
-	  var i = 0
-	  var len = Math.min(x, y)
-	  while (i < len) {
-	    if (a[i] !== b[i]) break
-
-	    ++i
-	  }
-
-	  if (i !== len) {
-	    x = a[i]
-	    y = b[i]
+	  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+	    if (a[i] !== b[i]) {
+	      x = a[i]
+	      y = b[i]
+	      break
+	    }
 	  }
 
 	  if (x < y) return -1
@@ -92870,9 +92920,9 @@
 	    case 'utf8':
 	    case 'utf-8':
 	    case 'ascii':
+	    case 'latin1':
 	    case 'binary':
 	    case 'base64':
-	    case 'raw':
 	    case 'ucs2':
 	    case 'ucs-2':
 	    case 'utf16le':
@@ -92884,32 +92934,46 @@
 	}
 
 	Buffer.concat = function concat (list, length) {
-	  if (!isArray(list)) throw new TypeError('list argument must be an Array of Buffers.')
+	  if (!isArray(list)) {
+	    throw new TypeError('"list" argument must be an Array of Buffers')
+	  }
 
 	  if (list.length === 0) {
-	    return new Buffer(0)
+	    return Buffer.alloc(0)
 	  }
 
 	  var i
 	  if (length === undefined) {
 	    length = 0
-	    for (i = 0; i < list.length; i++) {
+	    for (i = 0; i < list.length; ++i) {
 	      length += list[i].length
 	    }
 	  }
 
-	  var buf = new Buffer(length)
+	  var buffer = Buffer.allocUnsafe(length)
 	  var pos = 0
-	  for (i = 0; i < list.length; i++) {
-	    var item = list[i]
-	    item.copy(buf, pos)
-	    pos += item.length
+	  for (i = 0; i < list.length; ++i) {
+	    var buf = list[i]
+	    if (!Buffer.isBuffer(buf)) {
+	      throw new TypeError('"list" argument must be an Array of Buffers')
+	    }
+	    buf.copy(buffer, pos)
+	    pos += buf.length
 	  }
-	  return buf
+	  return buffer
 	}
 
 	function byteLength (string, encoding) {
-	  if (typeof string !== 'string') string = '' + string
+	  if (Buffer.isBuffer(string)) {
+	    return string.length
+	  }
+	  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+	      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+	    return string.byteLength
+	  }
+	  if (typeof string !== 'string') {
+	    string = '' + string
+	  }
 
 	  var len = string.length
 	  if (len === 0) return 0
@@ -92919,13 +92983,12 @@
 	  for (;;) {
 	    switch (encoding) {
 	      case 'ascii':
+	      case 'latin1':
 	      case 'binary':
-	      // Deprecated
-	      case 'raw':
-	      case 'raws':
 	        return len
 	      case 'utf8':
 	      case 'utf-8':
+	      case undefined:
 	        return utf8ToBytes(string).length
 	      case 'ucs2':
 	      case 'ucs-2':
@@ -92948,13 +93011,39 @@
 	function slowToString (encoding, start, end) {
 	  var loweredCase = false
 
-	  start = start | 0
-	  end = end === undefined || end === Infinity ? this.length : end | 0
+	  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+	  // property of a typed array.
+
+	  // This behaves neither like String nor Uint8Array in that we set start/end
+	  // to their upper/lower bounds if the value passed is out of range.
+	  // undefined is handled specially as per ECMA-262 6th Edition,
+	  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+	  if (start === undefined || start < 0) {
+	    start = 0
+	  }
+	  // Return early if start > this.length. Done here to prevent potential uint32
+	  // coercion fail below.
+	  if (start > this.length) {
+	    return ''
+	  }
+
+	  if (end === undefined || end > this.length) {
+	    end = this.length
+	  }
+
+	  if (end <= 0) {
+	    return ''
+	  }
+
+	  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+	  end >>>= 0
+	  start >>>= 0
+
+	  if (end <= start) {
+	    return ''
+	  }
 
 	  if (!encoding) encoding = 'utf8'
-	  if (start < 0) start = 0
-	  if (end > this.length) end = this.length
-	  if (end <= start) return ''
 
 	  while (true) {
 	    switch (encoding) {
@@ -92968,8 +93057,9 @@
 	      case 'ascii':
 	        return asciiSlice(this, start, end)
 
+	      case 'latin1':
 	      case 'binary':
-	        return binarySlice(this, start, end)
+	        return latin1Slice(this, start, end)
 
 	      case 'base64':
 	        return base64Slice(this, start, end)
@@ -92986,6 +93076,53 @@
 	        loweredCase = true
 	    }
 	  }
+	}
+
+	// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+	// Buffer instances.
+	Buffer.prototype._isBuffer = true
+
+	function swap (b, n, m) {
+	  var i = b[n]
+	  b[n] = b[m]
+	  b[m] = i
+	}
+
+	Buffer.prototype.swap16 = function swap16 () {
+	  var len = this.length
+	  if (len % 2 !== 0) {
+	    throw new RangeError('Buffer size must be a multiple of 16-bits')
+	  }
+	  for (var i = 0; i < len; i += 2) {
+	    swap(this, i, i + 1)
+	  }
+	  return this
+	}
+
+	Buffer.prototype.swap32 = function swap32 () {
+	  var len = this.length
+	  if (len % 4 !== 0) {
+	    throw new RangeError('Buffer size must be a multiple of 32-bits')
+	  }
+	  for (var i = 0; i < len; i += 4) {
+	    swap(this, i, i + 3)
+	    swap(this, i + 1, i + 2)
+	  }
+	  return this
+	}
+
+	Buffer.prototype.swap64 = function swap64 () {
+	  var len = this.length
+	  if (len % 8 !== 0) {
+	    throw new RangeError('Buffer size must be a multiple of 64-bits')
+	  }
+	  for (var i = 0; i < len; i += 8) {
+	    swap(this, i, i + 7)
+	    swap(this, i + 1, i + 6)
+	    swap(this, i + 2, i + 5)
+	    swap(this, i + 3, i + 4)
+	  }
+	  return this
 	}
 
 	Buffer.prototype.toString = function toString () {
@@ -93011,63 +93148,197 @@
 	  return '<Buffer ' + str + '>'
 	}
 
-	Buffer.prototype.compare = function compare (b) {
-	  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-	  if (this === b) return 0
-	  return Buffer.compare(this, b)
+	Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+	  if (!Buffer.isBuffer(target)) {
+	    throw new TypeError('Argument must be a Buffer')
+	  }
+
+	  if (start === undefined) {
+	    start = 0
+	  }
+	  if (end === undefined) {
+	    end = target ? target.length : 0
+	  }
+	  if (thisStart === undefined) {
+	    thisStart = 0
+	  }
+	  if (thisEnd === undefined) {
+	    thisEnd = this.length
+	  }
+
+	  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+	    throw new RangeError('out of range index')
+	  }
+
+	  if (thisStart >= thisEnd && start >= end) {
+	    return 0
+	  }
+	  if (thisStart >= thisEnd) {
+	    return -1
+	  }
+	  if (start >= end) {
+	    return 1
+	  }
+
+	  start >>>= 0
+	  end >>>= 0
+	  thisStart >>>= 0
+	  thisEnd >>>= 0
+
+	  if (this === target) return 0
+
+	  var x = thisEnd - thisStart
+	  var y = end - start
+	  var len = Math.min(x, y)
+
+	  var thisCopy = this.slice(thisStart, thisEnd)
+	  var targetCopy = target.slice(start, end)
+
+	  for (var i = 0; i < len; ++i) {
+	    if (thisCopy[i] !== targetCopy[i]) {
+	      x = thisCopy[i]
+	      y = targetCopy[i]
+	      break
+	    }
+	  }
+
+	  if (x < y) return -1
+	  if (y < x) return 1
+	  return 0
 	}
 
-	Buffer.prototype.indexOf = function indexOf (val, byteOffset) {
-	  if (byteOffset > 0x7fffffff) byteOffset = 0x7fffffff
-	  else if (byteOffset < -0x80000000) byteOffset = -0x80000000
-	  byteOffset >>= 0
+	// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+	// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+	//
+	// Arguments:
+	// - buffer - a Buffer to search
+	// - val - a string, Buffer, or number
+	// - byteOffset - an index into `buffer`; will be clamped to an int32
+	// - encoding - an optional encoding, relevant is val is a string
+	// - dir - true for indexOf, false for lastIndexOf
+	function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+	  // Empty buffer means no match
+	  if (buffer.length === 0) return -1
 
-	  if (this.length === 0) return -1
-	  if (byteOffset >= this.length) return -1
+	  // Normalize byteOffset
+	  if (typeof byteOffset === 'string') {
+	    encoding = byteOffset
+	    byteOffset = 0
+	  } else if (byteOffset > 0x7fffffff) {
+	    byteOffset = 0x7fffffff
+	  } else if (byteOffset < -0x80000000) {
+	    byteOffset = -0x80000000
+	  }
+	  byteOffset = +byteOffset  // Coerce to Number.
+	  if (isNaN(byteOffset)) {
+	    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+	    byteOffset = dir ? 0 : (buffer.length - 1)
+	  }
 
-	  // Negative offsets start from the end of the buffer
-	  if (byteOffset < 0) byteOffset = Math.max(this.length + byteOffset, 0)
+	  // Normalize byteOffset: negative offsets start from the end of the buffer
+	  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+	  if (byteOffset >= buffer.length) {
+	    if (dir) return -1
+	    else byteOffset = buffer.length - 1
+	  } else if (byteOffset < 0) {
+	    if (dir) byteOffset = 0
+	    else return -1
+	  }
 
+	  // Normalize val
 	  if (typeof val === 'string') {
-	    if (val.length === 0) return -1 // special case: looking for empty string always fails
-	    return String.prototype.indexOf.call(this, val, byteOffset)
-	  }
-	  if (Buffer.isBuffer(val)) {
-	    return arrayIndexOf(this, val, byteOffset)
-	  }
-	  if (typeof val === 'number') {
-	    if (Buffer.TYPED_ARRAY_SUPPORT && Uint8Array.prototype.indexOf === 'function') {
-	      return Uint8Array.prototype.indexOf.call(this, val, byteOffset)
-	    }
-	    return arrayIndexOf(this, [ val ], byteOffset)
+	    val = Buffer.from(val, encoding)
 	  }
 
-	  function arrayIndexOf (arr, val, byteOffset) {
-	    var foundIndex = -1
-	    for (var i = 0; byteOffset + i < arr.length; i++) {
-	      if (arr[byteOffset + i] === val[foundIndex === -1 ? 0 : i - foundIndex]) {
-	        if (foundIndex === -1) foundIndex = i
-	        if (i - foundIndex + 1 === val.length) return byteOffset + foundIndex
+	  // Finally, search either indexOf (if dir is true) or lastIndexOf
+	  if (Buffer.isBuffer(val)) {
+	    // Special case: looking for empty string/buffer always fails
+	    if (val.length === 0) {
+	      return -1
+	    }
+	    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+	  } else if (typeof val === 'number') {
+	    val = val & 0xFF // Search for a byte value [0-255]
+	    if (Buffer.TYPED_ARRAY_SUPPORT &&
+	        typeof Uint8Array.prototype.indexOf === 'function') {
+	      if (dir) {
+	        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
 	      } else {
-	        foundIndex = -1
+	        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
 	      }
 	    }
-	    return -1
+	    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
 	  }
 
 	  throw new TypeError('val must be string, number or Buffer')
 	}
 
-	// `get` is deprecated
-	Buffer.prototype.get = function get (offset) {
-	  console.log('.get() is deprecated. Access using array indexes instead.')
-	  return this.readUInt8(offset)
+	function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+	  var indexSize = 1
+	  var arrLength = arr.length
+	  var valLength = val.length
+
+	  if (encoding !== undefined) {
+	    encoding = String(encoding).toLowerCase()
+	    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+	        encoding === 'utf16le' || encoding === 'utf-16le') {
+	      if (arr.length < 2 || val.length < 2) {
+	        return -1
+	      }
+	      indexSize = 2
+	      arrLength /= 2
+	      valLength /= 2
+	      byteOffset /= 2
+	    }
+	  }
+
+	  function read (buf, i) {
+	    if (indexSize === 1) {
+	      return buf[i]
+	    } else {
+	      return buf.readUInt16BE(i * indexSize)
+	    }
+	  }
+
+	  var i
+	  if (dir) {
+	    var foundIndex = -1
+	    for (i = byteOffset; i < arrLength; i++) {
+	      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+	        if (foundIndex === -1) foundIndex = i
+	        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+	      } else {
+	        if (foundIndex !== -1) i -= i - foundIndex
+	        foundIndex = -1
+	      }
+	    }
+	  } else {
+	    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+	    for (i = byteOffset; i >= 0; i--) {
+	      var found = true
+	      for (var j = 0; j < valLength; j++) {
+	        if (read(arr, i + j) !== read(val, j)) {
+	          found = false
+	          break
+	        }
+	      }
+	      if (found) return i
+	    }
+	  }
+
+	  return -1
 	}
 
-	// `set` is deprecated
-	Buffer.prototype.set = function set (v, offset) {
-	  console.log('.set() is deprecated. Access using array indexes instead.')
-	  return this.writeUInt8(v, offset)
+	Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+	  return this.indexOf(val, byteOffset, encoding) !== -1
+	}
+
+	Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+	  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+	}
+
+	Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+	  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
 	}
 
 	function hexWrite (buf, string, offset, length) {
@@ -93084,14 +93355,14 @@
 
 	  // must be an even number of digits
 	  var strLen = string.length
-	  if (strLen % 2 !== 0) throw new Error('Invalid hex string')
+	  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
 
 	  if (length > strLen / 2) {
 	    length = strLen / 2
 	  }
-	  for (var i = 0; i < length; i++) {
+	  for (var i = 0; i < length; ++i) {
 	    var parsed = parseInt(string.substr(i * 2, 2), 16)
-	    if (isNaN(parsed)) throw new Error('Invalid hex string')
+	    if (isNaN(parsed)) return i
 	    buf[offset + i] = parsed
 	  }
 	  return i
@@ -93105,7 +93376,7 @@
 	  return blitBuffer(asciiToBytes(string), buf, offset, length)
 	}
 
-	function binaryWrite (buf, string, offset, length) {
+	function latin1Write (buf, string, offset, length) {
 	  return asciiWrite(buf, string, offset, length)
 	}
 
@@ -93140,17 +93411,16 @@
 	    }
 	  // legacy write(string, encoding, offset, length) - remove in v0.13
 	  } else {
-	    var swap = encoding
-	    encoding = offset
-	    offset = length | 0
-	    length = swap
+	    throw new Error(
+	      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+	    )
 	  }
 
 	  var remaining = this.length - offset
 	  if (length === undefined || length > remaining) length = remaining
 
 	  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-	    throw new RangeError('attempt to write outside buffer bounds')
+	    throw new RangeError('Attempt to write outside buffer bounds')
 	  }
 
 	  if (!encoding) encoding = 'utf8'
@@ -93168,8 +93438,9 @@
 	      case 'ascii':
 	        return asciiWrite(this, string, offset, length)
 
+	      case 'latin1':
 	      case 'binary':
-	        return binaryWrite(this, string, offset, length)
+	        return latin1Write(this, string, offset, length)
 
 	      case 'base64':
 	        // Warning: maxLength not taken into account in base64Write
@@ -93304,17 +93575,17 @@
 	  var ret = ''
 	  end = Math.min(buf.length, end)
 
-	  for (var i = start; i < end; i++) {
+	  for (var i = start; i < end; ++i) {
 	    ret += String.fromCharCode(buf[i] & 0x7F)
 	  }
 	  return ret
 	}
 
-	function binarySlice (buf, start, end) {
+	function latin1Slice (buf, start, end) {
 	  var ret = ''
 	  end = Math.min(buf.length, end)
 
-	  for (var i = start; i < end; i++) {
+	  for (var i = start; i < end; ++i) {
 	    ret += String.fromCharCode(buf[i])
 	  }
 	  return ret
@@ -93327,7 +93598,7 @@
 	  if (!end || end < 0 || end > len) end = len
 
 	  var out = ''
-	  for (var i = start; i < end; i++) {
+	  for (var i = start; i < end; ++i) {
 	    out += toHex(buf[i])
 	  }
 	  return out
@@ -93365,16 +93636,15 @@
 
 	  var newBuf
 	  if (Buffer.TYPED_ARRAY_SUPPORT) {
-	    newBuf = Buffer._augment(this.subarray(start, end))
+	    newBuf = this.subarray(start, end)
+	    newBuf.__proto__ = Buffer.prototype
 	  } else {
 	    var sliceLen = end - start
 	    newBuf = new Buffer(sliceLen, undefined)
-	    for (var i = 0; i < sliceLen; i++) {
+	    for (var i = 0; i < sliceLen; ++i) {
 	      newBuf[i] = this[i + start]
 	    }
 	  }
-
-	  if (newBuf.length) newBuf.parent = this.parent || this
 
 	  return newBuf
 	}
@@ -93544,16 +93814,19 @@
 	}
 
 	function checkInt (buf, value, offset, ext, max, min) {
-	  if (!Buffer.isBuffer(buf)) throw new TypeError('buffer must be a Buffer instance')
-	  if (value > max || value < min) throw new RangeError('value is out of bounds')
-	  if (offset + ext > buf.length) throw new RangeError('index out of range')
+	  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+	  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+	  if (offset + ext > buf.length) throw new RangeError('Index out of range')
 	}
 
 	Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
 	  value = +value
 	  offset = offset | 0
 	  byteLength = byteLength | 0
-	  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+	  if (!noAssert) {
+	    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+	    checkInt(this, value, offset, byteLength, maxBytes, 0)
+	  }
 
 	  var mul = 1
 	  var i = 0
@@ -93569,7 +93842,10 @@
 	  value = +value
 	  offset = offset | 0
 	  byteLength = byteLength | 0
-	  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+	  if (!noAssert) {
+	    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+	    checkInt(this, value, offset, byteLength, maxBytes, 0)
+	  }
 
 	  var i = byteLength - 1
 	  var mul = 1
@@ -93592,7 +93868,7 @@
 
 	function objectWriteUInt16 (buf, value, offset, littleEndian) {
 	  if (value < 0) value = 0xffff + value + 1
-	  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; i++) {
+	  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
 	    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
 	      (littleEndian ? i : 1 - i) * 8
 	  }
@@ -93626,7 +93902,7 @@
 
 	function objectWriteUInt32 (buf, value, offset, littleEndian) {
 	  if (value < 0) value = 0xffffffff + value + 1
-	  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; i++) {
+	  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
 	    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
 	  }
 	}
@@ -93672,9 +93948,12 @@
 
 	  var i = 0
 	  var mul = 1
-	  var sub = value < 0 ? 1 : 0
+	  var sub = 0
 	  this[offset] = value & 0xFF
 	  while (++i < byteLength && (mul *= 0x100)) {
+	    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+	      sub = 1
+	    }
 	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
 	  }
 
@@ -93692,9 +93971,12 @@
 
 	  var i = byteLength - 1
 	  var mul = 1
-	  var sub = value < 0 ? 1 : 0
+	  var sub = 0
 	  this[offset + i] = value & 0xFF
 	  while (--i >= 0 && (mul *= 0x100)) {
+	    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+	      sub = 1
+	    }
 	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
 	  }
 
@@ -93769,9 +94051,8 @@
 	}
 
 	function checkIEEE754 (buf, value, offset, ext, max, min) {
-	  if (value > max || value < min) throw new RangeError('value is out of bounds')
-	  if (offset + ext > buf.length) throw new RangeError('index out of range')
-	  if (offset < 0) throw new RangeError('index out of range')
+	  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+	  if (offset < 0) throw new RangeError('Index out of range')
 	}
 
 	function writeFloat (buf, value, offset, littleEndian, noAssert) {
@@ -93836,142 +94117,90 @@
 
 	  if (this === target && start < targetStart && targetStart < end) {
 	    // descending copy from end
-	    for (i = len - 1; i >= 0; i--) {
+	    for (i = len - 1; i >= 0; --i) {
 	      target[i + targetStart] = this[i + start]
 	    }
 	  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
 	    // ascending copy from start
-	    for (i = 0; i < len; i++) {
+	    for (i = 0; i < len; ++i) {
 	      target[i + targetStart] = this[i + start]
 	    }
 	  } else {
-	    target._set(this.subarray(start, start + len), targetStart)
+	    Uint8Array.prototype.set.call(
+	      target,
+	      this.subarray(start, start + len),
+	      targetStart
+	    )
 	  }
 
 	  return len
 	}
 
-	// fill(value, start=0, end=buffer.length)
-	Buffer.prototype.fill = function fill (value, start, end) {
-	  if (!value) value = 0
-	  if (!start) start = 0
-	  if (!end) end = this.length
+	// Usage:
+	//    buffer.fill(number[, offset[, end]])
+	//    buffer.fill(buffer[, offset[, end]])
+	//    buffer.fill(string[, offset[, end]][, encoding])
+	Buffer.prototype.fill = function fill (val, start, end, encoding) {
+	  // Handle string cases:
+	  if (typeof val === 'string') {
+	    if (typeof start === 'string') {
+	      encoding = start
+	      start = 0
+	      end = this.length
+	    } else if (typeof end === 'string') {
+	      encoding = end
+	      end = this.length
+	    }
+	    if (val.length === 1) {
+	      var code = val.charCodeAt(0)
+	      if (code < 256) {
+	        val = code
+	      }
+	    }
+	    if (encoding !== undefined && typeof encoding !== 'string') {
+	      throw new TypeError('encoding must be a string')
+	    }
+	    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+	      throw new TypeError('Unknown encoding: ' + encoding)
+	    }
+	  } else if (typeof val === 'number') {
+	    val = val & 255
+	  }
 
-	  if (end < start) throw new RangeError('end < start')
+	  // Invalid ranges are not set to a default, so can range check early.
+	  if (start < 0 || this.length < start || this.length < end) {
+	    throw new RangeError('Out of range index')
+	  }
 
-	  // Fill 0 bytes; we're done
-	  if (end === start) return
-	  if (this.length === 0) return
+	  if (end <= start) {
+	    return this
+	  }
 
-	  if (start < 0 || start >= this.length) throw new RangeError('start out of bounds')
-	  if (end < 0 || end > this.length) throw new RangeError('end out of bounds')
+	  start = start >>> 0
+	  end = end === undefined ? this.length : end >>> 0
+
+	  if (!val) val = 0
 
 	  var i
-	  if (typeof value === 'number') {
-	    for (i = start; i < end; i++) {
-	      this[i] = value
+	  if (typeof val === 'number') {
+	    for (i = start; i < end; ++i) {
+	      this[i] = val
 	    }
 	  } else {
-	    var bytes = utf8ToBytes(value.toString())
+	    var bytes = Buffer.isBuffer(val)
+	      ? val
+	      : utf8ToBytes(new Buffer(val, encoding).toString())
 	    var len = bytes.length
-	    for (i = start; i < end; i++) {
-	      this[i] = bytes[i % len]
+	    for (i = 0; i < end - start; ++i) {
+	      this[i + start] = bytes[i % len]
 	    }
 	  }
 
 	  return this
 	}
 
-	/**
-	 * Creates a new `ArrayBuffer` with the *copied* memory of the buffer instance.
-	 * Added in Node 0.12. Only available in browsers that support ArrayBuffer.
-	 */
-	Buffer.prototype.toArrayBuffer = function toArrayBuffer () {
-	  if (typeof Uint8Array !== 'undefined') {
-	    if (Buffer.TYPED_ARRAY_SUPPORT) {
-	      return (new Buffer(this)).buffer
-	    } else {
-	      var buf = new Uint8Array(this.length)
-	      for (var i = 0, len = buf.length; i < len; i += 1) {
-	        buf[i] = this[i]
-	      }
-	      return buf.buffer
-	    }
-	  } else {
-	    throw new TypeError('Buffer.toArrayBuffer not supported in this browser')
-	  }
-	}
-
 	// HELPER FUNCTIONS
 	// ================
-
-	var BP = Buffer.prototype
-
-	/**
-	 * Augment a Uint8Array *instance* (not the Uint8Array class!) with Buffer methods
-	 */
-	Buffer._augment = function _augment (arr) {
-	  arr.constructor = Buffer
-	  arr._isBuffer = true
-
-	  // save reference to original Uint8Array set method before overwriting
-	  arr._set = arr.set
-
-	  // deprecated
-	  arr.get = BP.get
-	  arr.set = BP.set
-
-	  arr.write = BP.write
-	  arr.toString = BP.toString
-	  arr.toLocaleString = BP.toString
-	  arr.toJSON = BP.toJSON
-	  arr.equals = BP.equals
-	  arr.compare = BP.compare
-	  arr.indexOf = BP.indexOf
-	  arr.copy = BP.copy
-	  arr.slice = BP.slice
-	  arr.readUIntLE = BP.readUIntLE
-	  arr.readUIntBE = BP.readUIntBE
-	  arr.readUInt8 = BP.readUInt8
-	  arr.readUInt16LE = BP.readUInt16LE
-	  arr.readUInt16BE = BP.readUInt16BE
-	  arr.readUInt32LE = BP.readUInt32LE
-	  arr.readUInt32BE = BP.readUInt32BE
-	  arr.readIntLE = BP.readIntLE
-	  arr.readIntBE = BP.readIntBE
-	  arr.readInt8 = BP.readInt8
-	  arr.readInt16LE = BP.readInt16LE
-	  arr.readInt16BE = BP.readInt16BE
-	  arr.readInt32LE = BP.readInt32LE
-	  arr.readInt32BE = BP.readInt32BE
-	  arr.readFloatLE = BP.readFloatLE
-	  arr.readFloatBE = BP.readFloatBE
-	  arr.readDoubleLE = BP.readDoubleLE
-	  arr.readDoubleBE = BP.readDoubleBE
-	  arr.writeUInt8 = BP.writeUInt8
-	  arr.writeUIntLE = BP.writeUIntLE
-	  arr.writeUIntBE = BP.writeUIntBE
-	  arr.writeUInt16LE = BP.writeUInt16LE
-	  arr.writeUInt16BE = BP.writeUInt16BE
-	  arr.writeUInt32LE = BP.writeUInt32LE
-	  arr.writeUInt32BE = BP.writeUInt32BE
-	  arr.writeIntLE = BP.writeIntLE
-	  arr.writeIntBE = BP.writeIntBE
-	  arr.writeInt8 = BP.writeInt8
-	  arr.writeInt16LE = BP.writeInt16LE
-	  arr.writeInt16BE = BP.writeInt16BE
-	  arr.writeInt32LE = BP.writeInt32LE
-	  arr.writeInt32BE = BP.writeInt32BE
-	  arr.writeFloatLE = BP.writeFloatLE
-	  arr.writeFloatBE = BP.writeFloatBE
-	  arr.writeDoubleLE = BP.writeDoubleLE
-	  arr.writeDoubleBE = BP.writeDoubleBE
-	  arr.fill = BP.fill
-	  arr.inspect = BP.inspect
-	  arr.toArrayBuffer = BP.toArrayBuffer
-
-	  return arr
-	}
 
 	var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
 
@@ -94004,7 +94233,7 @@
 	  var leadSurrogate = null
 	  var bytes = []
 
-	  for (var i = 0; i < length; i++) {
+	  for (var i = 0; i < length; ++i) {
 	    codePoint = string.charCodeAt(i)
 
 	    // is surrogate component
@@ -94079,7 +94308,7 @@
 
 	function asciiToBytes (str) {
 	  var byteArray = []
-	  for (var i = 0; i < str.length; i++) {
+	  for (var i = 0; i < str.length; ++i) {
 	    // Node's code seems to be doing this and not & 0x7F..
 	    byteArray.push(str.charCodeAt(i) & 0xFF)
 	  }
@@ -94089,7 +94318,7 @@
 	function utf16leToBytes (str, units) {
 	  var c, hi, lo
 	  var byteArray = []
-	  for (var i = 0; i < str.length; i++) {
+	  for (var i = 0; i < str.length; ++i) {
 	    if ((units -= 2) < 0) break
 
 	    c = str.charCodeAt(i)
@@ -94107,143 +94336,132 @@
 	}
 
 	function blitBuffer (src, dst, offset, length) {
-	  for (var i = 0; i < length; i++) {
+	  for (var i = 0; i < length; ++i) {
 	    if ((i + offset >= dst.length) || (i >= src.length)) break
 	    dst[i + offset] = src[i]
 	  }
 	  return i
 	}
 
+	function isnan (val) {
+	  return val !== val // eslint-disable-line no-self-compare
+	}
+
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer, (function() { return this; }())))
 
 /***/ },
 /* 127 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+	'use strict'
 
-	;(function (exports) {
-		'use strict';
+	exports.toByteArray = toByteArray
+	exports.fromByteArray = fromByteArray
 
-	  var Arr = (typeof Uint8Array !== 'undefined')
-	    ? Uint8Array
-	    : Array
+	var lookup = []
+	var revLookup = []
+	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-		var PLUS   = '+'.charCodeAt(0)
-		var SLASH  = '/'.charCodeAt(0)
-		var NUMBER = '0'.charCodeAt(0)
-		var LOWER  = 'a'.charCodeAt(0)
-		var UPPER  = 'A'.charCodeAt(0)
-		var PLUS_URL_SAFE = '-'.charCodeAt(0)
-		var SLASH_URL_SAFE = '_'.charCodeAt(0)
+	function init () {
+	  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+	  for (var i = 0, len = code.length; i < len; ++i) {
+	    lookup[i] = code[i]
+	    revLookup[code.charCodeAt(i)] = i
+	  }
 
-		function decode (elt) {
-			var code = elt.charCodeAt(0)
-			if (code === PLUS ||
-			    code === PLUS_URL_SAFE)
-				return 62 // '+'
-			if (code === SLASH ||
-			    code === SLASH_URL_SAFE)
-				return 63 // '/'
-			if (code < NUMBER)
-				return -1 //no match
-			if (code < NUMBER + 10)
-				return code - NUMBER + 26 + 26
-			if (code < UPPER + 26)
-				return code - UPPER
-			if (code < LOWER + 26)
-				return code - LOWER + 26
-		}
+	  revLookup['-'.charCodeAt(0)] = 62
+	  revLookup['_'.charCodeAt(0)] = 63
+	}
 
-		function b64ToByteArray (b64) {
-			var i, j, l, tmp, placeHolders, arr
+	init()
 
-			if (b64.length % 4 > 0) {
-				throw new Error('Invalid string. Length must be a multiple of 4')
-			}
+	function toByteArray (b64) {
+	  var i, j, l, tmp, placeHolders, arr
+	  var len = b64.length
 
-			// the number of equal signs (place holders)
-			// if there are two placeholders, than the two characters before it
-			// represent one byte
-			// if there is only one, then the three characters before it represent 2 bytes
-			// this is just a cheap hack to not do indexOf twice
-			var len = b64.length
-			placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
+	  if (len % 4 > 0) {
+	    throw new Error('Invalid string. Length must be a multiple of 4')
+	  }
 
-			// base64 is 4/3 + up to two characters of the original data
-			arr = new Arr(b64.length * 3 / 4 - placeHolders)
+	  // the number of equal signs (place holders)
+	  // if there are two placeholders, than the two characters before it
+	  // represent one byte
+	  // if there is only one, then the three characters before it represent 2 bytes
+	  // this is just a cheap hack to not do indexOf twice
+	  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
 
-			// if there are placeholders, only get up to the last complete 4 chars
-			l = placeHolders > 0 ? b64.length - 4 : b64.length
+	  // base64 is 4/3 + up to two characters of the original data
+	  arr = new Arr(len * 3 / 4 - placeHolders)
 
-			var L = 0
+	  // if there are placeholders, only get up to the last complete 4 chars
+	  l = placeHolders > 0 ? len - 4 : len
 
-			function push (v) {
-				arr[L++] = v
-			}
+	  var L = 0
 
-			for (i = 0, j = 0; i < l; i += 4, j += 3) {
-				tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
-				push((tmp & 0xFF0000) >> 16)
-				push((tmp & 0xFF00) >> 8)
-				push(tmp & 0xFF)
-			}
+	  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+	    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
+	    arr[L++] = (tmp >> 16) & 0xFF
+	    arr[L++] = (tmp >> 8) & 0xFF
+	    arr[L++] = tmp & 0xFF
+	  }
 
-			if (placeHolders === 2) {
-				tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
-				push(tmp & 0xFF)
-			} else if (placeHolders === 1) {
-				tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
-				push((tmp >> 8) & 0xFF)
-				push(tmp & 0xFF)
-			}
+	  if (placeHolders === 2) {
+	    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
+	    arr[L++] = tmp & 0xFF
+	  } else if (placeHolders === 1) {
+	    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
+	    arr[L++] = (tmp >> 8) & 0xFF
+	    arr[L++] = tmp & 0xFF
+	  }
 
-			return arr
-		}
+	  return arr
+	}
 
-		function uint8ToBase64 (uint8) {
-			var i,
-				extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
-				output = "",
-				temp, length
+	function tripletToBase64 (num) {
+	  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+	}
 
-			function encode (num) {
-				return lookup.charAt(num)
-			}
+	function encodeChunk (uint8, start, end) {
+	  var tmp
+	  var output = []
+	  for (var i = start; i < end; i += 3) {
+	    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+	    output.push(tripletToBase64(tmp))
+	  }
+	  return output.join('')
+	}
 
-			function tripletToBase64 (num) {
-				return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
-			}
+	function fromByteArray (uint8) {
+	  var tmp
+	  var len = uint8.length
+	  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+	  var output = ''
+	  var parts = []
+	  var maxChunkLength = 16383 // must be multiple of 3
 
-			// go through the array every three bytes, we'll deal with trailing stuff later
-			for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
-				temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-				output += tripletToBase64(temp)
-			}
+	  // go through the array every three bytes, we'll deal with trailing stuff later
+	  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+	    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+	  }
 
-			// pad the end with zeros, but make sure to not forget the extra bytes
-			switch (extraBytes) {
-				case 1:
-					temp = uint8[uint8.length - 1]
-					output += encode(temp >> 2)
-					output += encode((temp << 4) & 0x3F)
-					output += '=='
-					break
-				case 2:
-					temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
-					output += encode(temp >> 10)
-					output += encode((temp >> 4) & 0x3F)
-					output += encode((temp << 2) & 0x3F)
-					output += '='
-					break
-			}
+	  // pad the end with zeros, but make sure to not forget the extra bytes
+	  if (extraBytes === 1) {
+	    tmp = uint8[len - 1]
+	    output += lookup[tmp >> 2]
+	    output += lookup[(tmp << 4) & 0x3F]
+	    output += '=='
+	  } else if (extraBytes === 2) {
+	    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
+	    output += lookup[tmp >> 10]
+	    output += lookup[(tmp >> 4) & 0x3F]
+	    output += lookup[(tmp << 2) & 0x3F]
+	    output += '='
+	  }
 
-			return output
-		}
+	  parts.push(output)
 
-		exports.toByteArray = b64ToByteArray
-		exports.fromByteArray = uint8ToBase64
-	}( false ? (this.base64js = {}) : exports))
+	  return parts.join('')
+	}
 
 
 /***/ },
@@ -96456,7 +96674,7 @@
 	  function ImageAsset(json) {
 	    _classCallCheck(this, ImageAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ImageAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (ImageAsset.__proto__ || Object.getPrototypeOf(ImageAsset)).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -96476,7 +96694,7 @@
 
 	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading image, ' + this.getName());
 
-	        _get(Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
+	        _get(ImageAsset.prototype.__proto__ || Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
 	      }
 
 	      this.loadedBytes = 0;
@@ -96775,7 +96993,7 @@
 	  function MeshGeometryAsset(json) {
 	    _classCallCheck(this, MeshGeometryAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MeshGeometryAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (MeshGeometryAsset.__proto__ || Object.getPrototypeOf(MeshGeometryAsset)).call(this, json));
 	  }
 
 	  _createClass(MeshGeometryAsset, [{
@@ -97094,7 +97312,7 @@
 	  function BaseGeometryAsset(json) {
 	    _classCallCheck(this, BaseGeometryAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseGeometryAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (BaseGeometryAsset.__proto__ || Object.getPrototypeOf(BaseGeometryAsset)).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    _this.geometries = {};
@@ -97109,7 +97327,7 @@
 	  _createClass(BaseGeometryAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(BaseGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(BaseGeometryAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: 'unload',
@@ -97126,7 +97344,7 @@
 	      });
 
 	      this.geometries = {};
-	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'unload', this).call(this);
+	      _get(BaseGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(BaseGeometryAsset.prototype), 'unload', this).call(this);
 	    }
 
 	    /**
@@ -97337,13 +97555,13 @@
 	  function PrefabAsset(json) {
 	    _classCallCheck(this, PrefabAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (PrefabAsset.__proto__ || Object.getPrototypeOf(PrefabAsset)).call(this, json));
 	  }
 
 	  _createClass(PrefabAsset, [{
 	    key: 'verifyProperty',
 	    value: function verifyProperty(propertyName, valueObj) {
-	      if (_get(Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	      if (_get(PrefabAsset.prototype.__proto__ || Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
 	        return true;
 	      }
 	      var originalType = this.get('originalType') || 'node';
@@ -97433,13 +97651,13 @@
 	  function PrimitiveGeometryAsset(json) {
 	    _classCallCheck(this, PrimitiveGeometryAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrimitiveGeometryAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (PrimitiveGeometryAsset.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset)).call(this, json));
 	  }
 
 	  _createClass(PrimitiveGeometryAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(PrimitiveGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: 'createRuntimeData',
@@ -97457,7 +97675,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(PrimitiveGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (reason !== 'init') {
 	        // Currently, any property changes cause the runtimeData to be re-created.
@@ -97654,7 +97872,7 @@
 	  function RenderTexture2DAsset(json) {
 	    _classCallCheck(this, RenderTexture2DAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTexture2DAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (RenderTexture2DAsset.__proto__ || Object.getPrototypeOf(RenderTexture2DAsset)).call(this, json));
 	  }
 
 	  /** @inheritdoc */
@@ -97724,7 +97942,7 @@
 	  function BaseRenderTextureAsset(json) {
 	    _classCallCheck(this, BaseRenderTextureAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(BaseRenderTextureAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (BaseRenderTextureAsset.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset)).call(this, json));
 	  }
 
 	  /**
@@ -97739,7 +97957,7 @@
 	    /** @inheritdoc */
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(BaseRenderTextureAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(BaseRenderTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -97789,7 +98007,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(BaseRenderTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(BaseRenderTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If something changed that necessitates the texture being recreated, do so.
 	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
@@ -97803,6 +98021,7 @@
 	        this.runtimeData.texture.height = this.getHeight();
 	        this.runtimeData.texture.width = this.getWidth();
 	      }
+	      this.runtimeData.texture.encoding = _ImageAsset2.default.ENCODING[this.getProperty('encoding')];
 	    }
 	  }]);
 
@@ -97880,7 +98099,7 @@
 	  function RenderTextureCubeAsset(json) {
 	    _classCallCheck(this, RenderTextureCubeAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTextureCubeAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (RenderTextureCubeAsset.__proto__ || Object.getPrototypeOf(RenderTextureCubeAsset)).call(this, json));
 	  }
 
 	  /**
@@ -97917,7 +98136,7 @@
 	  }, {
 	    key: 'getDataSizeInMemory',
 	    value: function getDataSizeInMemory() {
-	      var oneFaceSize = _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
+	      var oneFaceSize = _get(RenderTextureCubeAsset.prototype.__proto__ || Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
 	      return oneFaceSize * 6;
 	    }
 	  }]);
@@ -97990,14 +98209,14 @@
 	  function SceneAsset(json) {
 	    _classCallCheck(this, SceneAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SceneAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (SceneAsset.__proto__ || Object.getPrototypeOf(SceneAsset)).call(this, json));
 	  }
 
 	  _createClass(SceneAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('prefabDeleted', this.onPrefabDeleted, this);
 	      this.on('load', this._sceneLoaded, this);
 	    }
@@ -98006,7 +98225,7 @@
 	    value: function uninitialize(properties) {
 	      this.box3DRuntime.off('prefabDeleted', this.onPrefabDeleted, this);
 	      this.off('load', this._sceneLoaded, this);
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'uninitialize', this).call(this, properties);
+	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'uninitialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: '_sceneLoaded',
@@ -98125,7 +98344,7 @@
 	    key: 'getDataSizeGeometryDownload',
 	    value: function getDataSizeGeometryDownload() {
 	      var totalSize = 0;
-	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
+	      totalSize = _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
 
 	      return totalSize;
 	    }
@@ -98133,7 +98352,7 @@
 	    key: 'getDataSizeGeometryInMemory',
 	    value: function getDataSizeGeometryInMemory() {
 	      var totalSize = 0;
-	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
+	      totalSize = _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
 	      return totalSize;
 	    }
 
@@ -98153,7 +98372,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (!this.getProperty('fogEnabled')) {
 	        this.runtimeData.fog = null;
@@ -98187,7 +98406,7 @@
 	      if (this.runtimeData) {
 	        _log2.default.info('Unloading scene, ' + this.getName());
 
-	        _get(Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
+	        _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
 	      }
 	    }
 	  }, {
@@ -98278,13 +98497,13 @@
 	  function ScriptAsset(json) {
 	    _classCallCheck(this, ScriptAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (ScriptAsset.__proto__ || Object.getPrototypeOf(ScriptAsset)).call(this, json));
 	  }
 
 	  _createClass(ScriptAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(ScriptAsset.prototype.__proto__ || Object.getPrototypeOf(ScriptAsset.prototype), 'initialize', this).call(this, properties);
 	      var category = this.getProperty('category');
 	      if (!category) {
 	        this.setProperty('category', 'User Defined');
@@ -98294,7 +98513,7 @@
 	  }, {
 	    key: 'uninitialize',
 	    value: function uninitialize() {
-	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'uninitialize', this).apply(this, arguments);
+	      _get(ScriptAsset.prototype.__proto__ || Object.getPrototypeOf(ScriptAsset.prototype), 'uninitialize', this).apply(this, arguments);
 	    }
 	  }, {
 	    key: 'initializeComponents',
@@ -98516,13 +98735,13 @@
 	  function ShaderAsset(json) {
 	    _classCallCheck(this, ShaderAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ShaderAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (ShaderAsset.__proto__ || Object.getPrototypeOf(ShaderAsset)).call(this, json));
 	  }
 
 	  _createClass(ShaderAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(ShaderAsset.prototype.__proto__ || Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this, properties);
 	      this.buildParamDependencies();
 	    }
 
@@ -99444,7 +99663,7 @@
 /* 164 */
 /***/ function(module, exports) {
 
-	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\tfresnel = 0.0;\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\n\t#ifdef CLEAR_COAT\n\t\tfresnel += BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\t\tfresnel = clamp(fresnel, 0.0, 1.0);\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * fresnel;\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = roughness * 2.0;\n\t\t\treturn mix(mix(refRadiance, refRadianceHalf, min(interp, 1.0)), refIrradiance, max(interp - 1.0, 0.0));\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\tenvMapColorRadiance.rgb = envMapTexelToLinear( envMapColorRadiance ).rgb;\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorIrradiance.rgb = envMapTexelToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColorRadianceHalf.rgb = envMapTexelToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel = 0.0;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
+	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\tfresnel = 0.0;\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\n\t#ifdef CLEAR_COAT\n\t\tfresnel += BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\t\tfresnel = clamp(fresnel, 0.0, 1.0);\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * fresnel;\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE_ENCODING_SRGB\n\t\tenvMapColor.rgb = sRGBToLinear( envMapColor ).rgb;\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = roughness * 2.0;\n\t\t\treturn mix(mix(refRadiance, refRadianceHalf, min(interp, 1.0)), refIrradiance, max(interp - 1.0, 0.0));\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\t#ifdef ENV_MAP_RADIANCE_ENCODING_SRGB\n\t\t\tenvMapColorRadiance.rgb = sRGBToLinear( envMapColorRadiance ).rgb;\n\t\t#endif\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE_ENCODING_SRGB)\n\t\t\t\tenvMapColorIrradiance.rgb = sRGBToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS_ENCODING_SRGB)\n\t\t\t\t\tenvMapColorRadianceHalf.rgb = sRGBToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\t#endif\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel = 0.0;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
 
 /***/ },
 /* 165 */
@@ -99485,7 +99704,7 @@
 	  function SkinAsset(json) {
 	    _classCallCheck(this, SkinAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkinAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (SkinAsset.__proto__ || Object.getPrototypeOf(SkinAsset)).call(this, json));
 
 	    _this.bindShapeMatrix = new _three2.default.Matrix4();
 	    _this.inverseBindMatrices = [];
@@ -99733,13 +99952,13 @@
 	  function Texture2DAsset(json) {
 	    _classCallCheck(this, Texture2DAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Texture2DAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (Texture2DAsset.__proto__ || Object.getPrototypeOf(Texture2DAsset)).call(this, json));
 	  }
 
 	  _createClass(Texture2DAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(Texture2DAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Texture2DAsset.prototype.__proto__ || Object.getPrototypeOf(Texture2DAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -99844,7 +100063,7 @@
 	        this.hdrSource.dispose();
 	        this.hdrSource = undefined;
 	      }
-	      _get(Object.getPrototypeOf(Texture2DAsset.prototype), 'unload', this).call(this, options);
+	      _get(Texture2DAsset.prototype.__proto__ || Object.getPrototypeOf(Texture2DAsset.prototype), 'unload', this).call(this, options);
 	    }
 	  }]);
 
@@ -99894,13 +100113,13 @@
 	  function VideoAsset(json) {
 	    _classCallCheck(this, VideoAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(VideoAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (VideoAsset.__proto__ || Object.getPrototypeOf(VideoAsset)).call(this, json));
 	  }
 
 	  _createClass(VideoAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('update', this.onUpdate, this);
 	      this.on('pause', this.pause, this);
 	      this.on('play', this.play, this);
@@ -99921,7 +100140,7 @@
 	        this.runtimeData.image.pause();
 	      }
 
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
+	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /** @inheritdoc */
@@ -99972,7 +100191,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 	      var videoEl = this.runtimeData.imageData;
 	      if (videoEl) {
 
@@ -100130,7 +100349,7 @@
 	  function TextureCubeAsset(json) {
 	    _classCallCheck(this, TextureCubeAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(TextureCubeAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (TextureCubeAsset.__proto__ || Object.getPrototypeOf(TextureCubeAsset)).call(this, json));
 	  }
 
 	  /**
@@ -100241,7 +100460,7 @@
 	  function Box3DObject(json) {
 	    _classCallCheck(this, Box3DObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DObject).call(this, json));
+	    return _possibleConstructorReturn(this, (Box3DObject.__proto__ || Object.getPrototypeOf(Box3DObject)).call(this, json));
 	  }
 
 	  _createClass(Box3DObject, [{
@@ -100286,7 +100505,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(Box3DObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Box3DObject.prototype.__proto__ || Object.getPrototypeOf(Box3DObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('static')) {
 	        var isStatic = this.getProperty('static');
@@ -100977,7 +101196,7 @@
 	  function CameraObject(json) {
 	    _classCallCheck(this, CameraObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CameraObject).call(this, json));
+	    return _possibleConstructorReturn(this, (CameraObject.__proto__ || Object.getPrototypeOf(CameraObject)).call(this, json));
 	  }
 
 	  _createClass(CameraObject, [{
@@ -101004,7 +101223,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(CameraObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(CameraObject.prototype.__proto__ || Object.getPrototypeOf(CameraObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If the camera type changed, we need to re-create runtimeData.
 	      if (changes.hasOwnProperty('cameraType') && reason !== 'init') {
@@ -101140,13 +101359,13 @@
 	  function LightObject(json) {
 	    _classCallCheck(this, LightObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(LightObject).call(this, json));
+	    return _possibleConstructorReturn(this, (LightObject.__proto__ || Object.getPrototypeOf(LightObject)).call(this, json));
 	  }
 
 	  _createClass(LightObject, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(LightObject.prototype), 'initialize', this).call(this, properties);
+	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), 'initialize', this).call(this, properties);
 
 	      this.on('setColor', this.setColor, this);
 	      this.on('setIntensity', this.setIntensity, this);
@@ -101189,7 +101408,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this2 = this;
 
-	      _get(Object.getPrototypeOf(LightObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If the light type changed, we need to re-create the runtimeData.
 	      if (changes.hasOwnProperty('lightType') && reason !== 'init') {
@@ -101286,7 +101505,7 @@
 	        }
 	      }
 
-	      _get(Object.getPrototypeOf(LightObject.prototype), 'unload', this).call(this, options);
+	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), 'unload', this).call(this, options);
 	    }
 	  }, {
 	    key: 'setColor',
@@ -101521,7 +101740,7 @@
 	  function MeshObject(json) {
 	    _classCallCheck(this, MeshObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MeshObject).call(this, json));
+	    return _possibleConstructorReturn(this, (MeshObject.__proto__ || Object.getPrototypeOf(MeshObject)).call(this, json));
 	  }
 
 	  _createClass(MeshObject, [{
@@ -101530,7 +101749,7 @@
 
 	    /** @inheritdoc */
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(MeshObject.prototype), 'initialize', this).call(this, properties);
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('materialDeleted', this.onMaterialDeleted, this);
 	      this.on('setMaterial', this.setMaterial, this);
 	      this.on('castShadowsEnable', this.castShadowsEnable, this);
@@ -101548,7 +101767,7 @@
 	      this.off('castShadowsDisable', this.castShadowsDisable, this);
 	      this.off('castShadowsToggle', this.castShadowsToggle, this);
 	      this.box3DRuntime.off('materialDeleted', this.onMaterialDeleted, this);
-	      _get(Object.getPrototypeOf(MeshObject.prototype), 'uninitialize', this).call(this, properties);
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'uninitialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -101568,7 +101787,7 @@
 	        this.runtimeData.geometry = null;
 	      }
 
-	      _get(Object.getPrototypeOf(MeshObject.prototype), 'unload', this).call(this, options);
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /** @inheritdoc */
@@ -101578,7 +101797,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this2 = this;
 
-	      _get(Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('geometryId')) {
 	        var prevGeometryId = this.getPreviousProperty('geometryId');
@@ -102176,7 +102395,7 @@
 	          return resolve(asset);
 	        });
 
-	        if (asset.isUnloaded()) {
+	        if (!asset.isLoaded()) {
 	          asset.load();
 	        }
 	      });
