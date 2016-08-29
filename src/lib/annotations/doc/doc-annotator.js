@@ -221,6 +221,7 @@ class DocAnnotator extends Annotator {
         this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
 
         if (this._annotationService.canAnnotate) {
+            this._annotatedElement.addEventListener('dblclick', this._highlightMouseupHandler);
             this._annotatedElement.addEventListener('mousedown', this._highlightMousedownHandler);
             this._annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
             this._annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
@@ -238,6 +239,7 @@ class DocAnnotator extends Annotator {
         this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
 
         if (this._annotationService.canAnnotate) {
+            this._annotatedElement.removeEventListener('dblclick', this._highlightMouseupHandler);
             this._annotatedElement.removeEventListener('mousedown', this._highlightMousedownHandler);
             this._annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
             this._annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
@@ -408,9 +410,9 @@ class DocAnnotator extends Annotator {
 
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
-        // is unreliable. If the mouse moved or we're in highlight mode,
+        // is unreliable. If the mouse moved or we double clicked text,
         // we trigger the create handler instead of the click handler
-        if (!IS_MOBILE && this._didMouseMove) {
+        if (!IS_MOBILE && (this._didMouseMove || event.type === 'dblclick')) {
             this._highlightCreateHandler(event);
         } else {
             this._highlightClickHandler(event);
