@@ -295,7 +295,10 @@ describe('doc-annotator', () => {
 
             annotator.bindDOMListeners();
 
+            // mouse up gets bound regardless of annotation permissions
             expect(element.addEventListener).to.have.been.calledWith('mouseup', sinon.match.func);
+
+            expect(element.addEventListener).to.not.have.been.calledWith('dblclick', sinon.match.func);
             expect(element.addEventListener).to.not.have.been.calledWith('mousedown', sinon.match.func);
             expect(element.addEventListener).to.not.have.been.calledWith('contextmenu', sinon.match.func);
             expect(element.addEventListener).to.not.have.been.calledWith('mousemove', sinon.match.func);
@@ -308,6 +311,7 @@ describe('doc-annotator', () => {
 
             annotator.bindDOMListeners();
 
+            expect(element.addEventListener).to.have.been.calledWith('dblclick', sinon.match.func);
             expect(element.addEventListener).to.have.been.calledWith('mousedown', sinon.match.func);
             expect(element.addEventListener).to.have.been.calledWith('contextmenu', sinon.match.func);
             expect(element.addEventListener).to.have.been.calledWith('mousemove', sinon.match.func);
