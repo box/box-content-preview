@@ -220,4 +220,54 @@ describe('doc-highlight-dialog', () => {
             expect(replyTextEl.classList.contains(CLASS_HIDDEN)).to.be.false;
         });
     });
+
+    describe('_toggleHighlight()', () => {
+        it('should delete a blank annotation if text is highlighted', () => {
+            const emitStub = sandbox.stub(highlightDialog, 'emit');
+            highlightDialog._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+
+            highlightDialog._toggleHighlight();
+            expect(highlightDialog._element.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED)).to.be.false;
+            expect(highlightDialog._hasComments).to.be.true;
+            expect(emitStub).to.be.calledWith('annotationdelete');
+        });
+
+        it('should create a blank annotation if text is not highlighted', () => {
+            const emitStub = sandbox.stub(highlightDialog, 'emit');
+            highlightDialog._element.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+
+            highlightDialog._toggleHighlight();
+            expect(highlightDialog._element.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED)).to.be.true;
+            expect(highlightDialog._hasComments).to.be.false;
+            expect(emitStub).to.be.calledWith('annotationcreate');
+        });
+    });
+
+    describe('_focusAnnotationsTextArea()', () => {
+        it('should focus the add comment area if it exists', () => {
+            const textarea = {
+                focus: sandbox.stub()
+            };
+            const querySelectorStub = sandbox.stub(highlightDialog._element, 'querySelector').returns(textarea);
+            const isInViewportStub = sandbox.stub(annotatorUtil, 'isElementInViewport').returns(true);
+
+            highlightDialog._focusAnnotationsTextArea();
+            expect(querySelectorStub).to.be.called;
+            expect(isInViewportStub).to.be.called;
+            expect(textarea.focus).to.be.called;
+        });
+
+        it('should do nothing if the add comment area does not exist', () => {
+            const textarea = {
+                focus: sandbox.stub()
+            };
+            const querySelectorStub = sandbox.stub(highlightDialog._element, 'querySelector').returns(textarea);
+            const isInViewportStub = sandbox.stub(annotatorUtil, 'isElementInViewport').returns(false);
+
+            highlightDialog._focusAnnotationsTextArea();
+            expect(querySelectorStub).to.be.called;
+            expect(isInViewportStub).to.be.called;
+            expect(textarea.focus).to.not.be.called;
+        });
+    });
 });
