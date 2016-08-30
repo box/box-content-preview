@@ -458,7 +458,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {void}
      */
     initVrIfPresent() {
-        if (WEBVR.isLatestAvailable()) {
+        if (WEBVR.isLatestAvailable() && !Box3D.isTablet()) {
             navigator.getVRDisplays().then((devices) => {
                 this.vrDeviceHasPosition = devices.some((device) => device.capabilities.hasPosition);
 
