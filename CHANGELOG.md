@@ -1,12 +1,20 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.75.0...HEAD)
+## [v0.76.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.76.0) (2016-08-29)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.75.0...v0.76.0)
 
 **Merged pull requests:**
 
+- Updating runtime with fixed render modes \(and other changes\) [\#569](https://gitenterprise.inside-box.net/Preview/Preview/pull/569) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Create highlight annotations when text is double clicked [\#568](https://gitenterprise.inside-box.net/Preview/Preview/pull/568) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Exiting point annotation mode automatically on certain events [\#567](https://gitenterprise.inside-box.net/Preview/Preview/pull/567) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Changing chunk size to 1MB and minimum size needed for RR to 5MB [\#566](https://gitenterprise.inside-box.net/Preview/Preview/pull/566) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Coxp 2574 video360 on mobile doesnt work with vr [\#565](https://gitenterprise.inside-box.net/Preview/Preview/pull/565) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Updating changelog for v0.75.0 [\#564](https://gitenterprise.inside-box.net/Preview/Preview/pull/564) ([spramod](https://gitenterprise.inside-box.net/spramod))
 - COXP-2530: Showing highlight comments in view-only on mobile [\#563](https://gitenterprise.inside-box.net/Preview/Preview/pull/563) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Don't allow reset to work when in VR mode [\#562](https://gitenterprise.inside-box.net/Preview/Preview/pull/562) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- COXP-2250: Android devices: No action is performed on clicking ''Back' [\#561](https://gitenterprise.inside-box.net/Preview/Preview/pull/561) ([dweis](https://gitenterprise.inside-box.net/dweis))
+- testing private annotations methods [\#560](https://gitenterprise.inside-box.net/Preview/Preview/pull/560) ([jpress](https://gitenterprise.inside-box.net/jpress))
 
 ## [v0.75.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.75.0) (2016-08-25)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.74.0...v0.75.0)
