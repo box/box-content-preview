@@ -76,6 +76,10 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
+	var _UserAgent = __webpack_require__(65);
+
+	var _UserAgent2 = _interopRequireDefault(_UserAgent);
+
 	var _EffectComposer = __webpack_require__(66);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
@@ -230,112 +234,62 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var Box3D = window.Box3D || {};
+	// Utilities
+
+
+	// Objects
 	var applicationContexts = {};
-	var _isMobile = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase());
-	var _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
-	var _isAndroid = /android/i.test(navigator.userAgent.toLowerCase());
-	var _isMac = /mac/i.test(navigator.userAgent.toLowerCase());
-	var _isLinux = /linux/i.test(navigator.userAgent.toLowerCase());
-	var _isUnix = /x11/i.test(navigator.userAgent.toLowerCase());
-	var _isWindows = /windows/i.test(navigator.userAgent.toLowerCase());
-	var _isChrome = /chrome/i.test(navigator.userAgent.toLowerCase());
-	var _isFirefox = /firefox/i.test(navigator.userAgent.toLowerCase());
-	var _isSafari = /safari/i.test(navigator.userAgent.toLowerCase());
-	var _isOpera = /opera/i.test(navigator.userAgent.toLowerCase());
-	var _isEdge = /edge/i.test(navigator.userAgent.toLowerCase());
 
-	Object.assign(Box3D, {
+	/** @global Box3D */
 
-	  getBrowser: function getBrowser() {
-	    var ua = navigator.userAgent,
-	        tem,
-	        M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [],
-	        EdgeM = ua.match(/(edge(?=\/))\/?\s*(\d+)/i) || [];
-	    if (EdgeM.length) {
-	      M = EdgeM;
-	    }
-	    if (/trident/i.test(M[1])) {
-	      tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
-	      return 'IE ' + (tem[1] || '');
-	    }
-	    if (M[1] === 'Chrome') {
-	      tem = ua.match(/\bOPR\/(\d+)/);
-	      if (tem != null) return 'Opera ' + tem[1];
-	    }
-	    M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
-	    if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
-	    return M.join(' ');
-	  },
 
-	  isMobile: function isMobile() {
-	    return _isMobile;
-	  },
+	// Assets
+	var Box3D = window.Box3D || {};
 
-	  isIOS: function isIOS() {
-	    return _isIOS;
-	  },
+	Object.assign(Box3D, _UserAgent2.default, {
+	  Engine: _Engine2.default,
 
-	  isAndroid: function isAndroid() {
-	    return _isAndroid;
-	  },
+	  EffectComposer: _EffectComposer2.default,
+	  BloomPass: _BloomPass2.default,
+	  BokehPass: _BokehPass2.default,
+	  DotScreenPass: _DotScreenPass2.default,
+	  FilmPass: _FilmPass2.default,
+	  MaskPass: _MaskPass2.default,
+	  RenderPass: _RenderPass2.default,
+	  SavePass: _SavePass2.default,
+	  ShaderPass: _ShaderPass2.default,
+	  TexturePass: _TexturePass2.default,
+	  AdaptiveToneMappingPass: _AdaptiveToneMappingPass2.default,
 
-	  isMac: function isMac() {
-	    return _isMac;
-	  },
+	  AnimationAsset: _AnimationAsset2.default,
+	  ApplicationAsset: _ApplicationAsset2.default,
+	  AudioAsset: _AudioAsset2.default,
+	  BufferAsset: _BufferAsset2.default,
+	  DocumentAsset: _DocumentAsset2.default,
+	  ImageAsset: _ImageAsset2.default,
+	  MaterialAsset: _MaterialAsset2.default,
+	  MeshGeometryAsset: _MeshGeometryAsset2.default,
+	  PrefabAsset: _PrefabAsset2.default,
+	  PrimitiveGeometryAsset: _PrimitiveGeometryAsset2.default,
+	  RenderTexture2DAsset: _RenderTexture2DAsset2.default,
+	  RenderTextureCubeAsset: _RenderTextureCubeAsset2.default,
+	  SceneAsset: _SceneAsset2.default,
+	  ScriptAsset: _ScriptAsset2.default,
+	  ShaderAsset: _ShaderAsset2.default,
+	  SkinAsset: _SkinAsset2.default,
+	  Texture2DAsset: _Texture2DAsset2.default,
+	  TextureCubeAsset: _TextureCubeAsset2.default,
+	  VideoAsset: _VideoAsset2.default,
 
-	  isLinux: function isLinux() {
-	    return _isLinux;
-	  },
+	  Box3DObject: _Box3DObject2.default,
+	  CameraObject: _CameraObject2.default,
+	  LightObject: _LightObject2.default,
+	  MeshObject: _MeshObject2.default,
 
-	  isUnix: function isUnix() {
-	    return _isUnix;
-	  },
-
-	  isWindows: function isWindows() {
-	    return _isWindows;
-	  },
-
-	  isChrome: function isChrome() {
-	    return _isChrome;
-	  },
-
-	  isFirefox: function isFirefox() {
-	    return _isFirefox;
-	  },
-
-	  isSafari: function isSafari() {
-	    return _isSafari;
-	  },
-
-	  isOpera: function isOpera() {
-	    return _isOpera;
-	  },
-
-	  isIE: function isIE() {
-	    var isIE = /ie/i.test(Box3D.getBrowser().toLowerCase());
-	    return isIE;
-	  },
-
-	  isIE11: function isIE11() {
-	    var isIE11 = /ie 11/i.test(Box3D.getBrowser().toLowerCase());
-	    return isIE11;
-	  },
-
-	  isEdge: function isEdge() {
-	    return _isEdge;
-	  },
-
-	  // Box3D.defaultPaths = Box3D.defaultPaths || {
-	  //     apiBaseUrl: window.verold && window.verold.apiBaseUrl || '',
-	  //     glAssetsBaseUrl: window.verold && window.verold.glAssetsBaseUrl || '',
-	  //     assetsBaseUrl: window.verold && window.verold.assetsBaseUrl || '',
-	  //     staticBaseUrls: window.verold && window.verold.staticBaseUrls || {
-	  //         js: '',
-	  //         css: '',
-	  //         images: ''
-	  //     }
-	  // };
+	  APIUtilities: _APIUtilities2.default,
+	  DOMUtilities: _DOMUtilities2.default,
+	  JSONLoader: _JSONLoader2.default,
+	  DevResourceLoader: _DevResourceLoader2.default,
 
 	  globalEvents: new _RuntimeEvents2.default(),
 
@@ -376,59 +330,6 @@
 	    };
 	  }()
 	});
-
-	// Assets
-
-
-	// Objects
-
-
-	// Utilities
-
-
-	Box3D.Engine = _Engine2.default;
-
-	Box3D.EffectComposer = _EffectComposer2.default;
-	Box3D.BloomPass = _BloomPass2.default;
-	Box3D.BokehPass = _BokehPass2.default;
-	Box3D.DotScreenPass = _DotScreenPass2.default;
-	Box3D.FilmPass = _FilmPass2.default;
-	Box3D.MaskPass = _MaskPass2.default;
-	Box3D.RenderPass = _RenderPass2.default;
-	Box3D.SavePass = _SavePass2.default;
-	Box3D.ShaderPass = _ShaderPass2.default;
-	Box3D.TexturePass = _TexturePass2.default;
-	Box3D.AdaptiveToneMappingPass = _AdaptiveToneMappingPass2.default;
-
-	Box3D.AnimationAsset = _AnimationAsset2.default;
-	Box3D.ApplicationAsset = _ApplicationAsset2.default;
-	Box3D.AudioAsset = _AudioAsset2.default;
-	Box3D.BufferAsset = _BufferAsset2.default;
-	Box3D.DocumentAsset = _DocumentAsset2.default;
-	Box3D.ImageAsset = _ImageAsset2.default;
-	Box3D.MaterialAsset = _MaterialAsset2.default;
-	Box3D.MeshGeometryAsset = _MeshGeometryAsset2.default;
-	Box3D.PrefabAsset = _PrefabAsset2.default;
-	Box3D.PrimitiveGeometryAsset = _PrimitiveGeometryAsset2.default;
-	Box3D.RenderTexture2DAsset = _RenderTexture2DAsset2.default;
-	Box3D.RenderTextureCubeAsset = _RenderTextureCubeAsset2.default;
-	Box3D.SceneAsset = _SceneAsset2.default;
-	Box3D.ScriptAsset = _ScriptAsset2.default;
-	Box3D.ShaderAsset = _ShaderAsset2.default;
-	Box3D.SkinAsset = _SkinAsset2.default;
-	Box3D.Texture2DAsset = _Texture2DAsset2.default;
-	Box3D.TextureCubeAsset = _TextureCubeAsset2.default;
-	Box3D.VideoAsset = _VideoAsset2.default;
-
-	Box3D.Box3DObject = _Box3DObject2.default;
-	Box3D.CameraObject = _CameraObject2.default;
-	Box3D.LightObject = _LightObject2.default;
-	Box3D.MeshObject = _MeshObject2.default;
-
-	Box3D.APIUtilities = _APIUtilities2.default;
-	Box3D.DOMUtilities = _DOMUtilities2.default;
-	Box3D.JSONLoader = _JSONLoader2.default;
-	Box3D.DevResourceLoader = _DevResourceLoader2.default;
 
 	exports.default = Box3D;
 
@@ -13079,7 +12980,7 @@
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(63);
+	var _raf = __webpack_require__(62);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -13122,7 +13023,7 @@
 	  function Engine(properties) {
 	    _classCallCheck(this, Engine);
 
-	    var _this = _possibleConstructorReturn(this, (Engine.__proto__ || Object.getPrototypeOf(Engine)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Engine).call(this));
 
 	    if (!Math.log2) {
 	      Math.log2 = function (val) {
@@ -56537,7 +56438,7 @@
 	  function AssetRegistry() {
 	    _classCallCheck(this, AssetRegistry);
 
-	    var _this = _possibleConstructorReturn(this, (AssetRegistry.__proto__ || Object.getPrototypeOf(AssetRegistry)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AssetRegistry).call(this));
 
 	    _this.assets = undefined;
 	    _this.box3DRuntime = undefined;
@@ -57091,7 +56992,7 @@
 	  function Box3DAsset(json) {
 	    _classCallCheck(this, Box3DAsset);
 
-	    var _this = _possibleConstructorReturn(this, (Box3DAsset.__proto__ || Object.getPrototypeOf(Box3DAsset)).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DAsset).call(this, json));
 
 	    _this.objects = {};
 	    _this.registry = undefined;
@@ -57104,7 +57005,7 @@
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.registry = properties.registry;
-	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'initialize', this).call(this, properties);
 
 	      this.on('addObjectEntity', this.registerObject, this);
 	      this.on('removeObjectEntity', this.unregisterObject, this);
@@ -57121,7 +57022,7 @@
 	      this.off('removeObjectEntity', this.unregisterObject, this);
 
 	      //Uninitialize this asset ( will force unload the asset and its children)
-	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'uninitialize', this).call(this);
+	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'uninitialize', this).call(this);
 
 	      //Uninitialize all child objects. Most of these will probably already be unloaded
 	      //but, if not, this will force unload them.
@@ -57138,7 +57039,7 @@
 	  }, {
 	    key: 'load',
 	    value: function load(callback) {
-	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'load', this).call(this, callback);
+	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'load', this).call(this, callback);
 	      if (!this.isDependenciesLoaded()) {
 	        this.loadDependencies();
 	      }
@@ -57393,7 +57294,7 @@
 	      //abort xhr request associated with this
 	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
 
-	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'unload', this).call(this, options);
+	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /**
@@ -57758,7 +57659,7 @@
 	  function Box3DEntity(jsonDesc) {
 	    _classCallCheck(this, Box3DEntity);
 
-	    var _this = _possibleConstructorReturn(this, (Box3DEntity.__proto__ || Object.getPrototypeOf(Box3DEntity)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DEntity).call(this));
 
 	    jsonDesc = jsonDesc || {};
 	    _this.box3DRuntime = undefined;
@@ -57783,7 +57684,7 @@
 	  _createClass(Box3DEntity, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Box3DEntity.prototype.__proto__ || Object.getPrototypeOf(Box3DEntity.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(Box3DEntity.prototype), 'initialize', this).call(this, properties);
 	      this._buildParamDependencies();
 	    }
 	  }, {
@@ -60695,7 +60596,7 @@
 	  function ComponentRegistry(opts) {
 	    _classCallCheck(this, ComponentRegistry);
 
-	    var _this = _possibleConstructorReturn(this, (ComponentRegistry.__proto__ || Object.getPrototypeOf(ComponentRegistry)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ComponentRegistry).call(this));
 
 	    _this.components = {};
 	    _this.box3DEntity = opts.box3DEntity;
@@ -61780,7 +61681,7 @@
 	  function MaterialRegistry() {
 	    _classCallCheck(this, MaterialRegistry);
 
-	    var _this = _possibleConstructorReturn(this, (MaterialRegistry.__proto__ || Object.getPrototypeOf(MaterialRegistry)).call(this, Box3D.MaterialAsset));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialRegistry).call(this, Box3D.MaterialAsset));
 
 	    _this.sharedUniforms = {
 	      time: {
@@ -61800,7 +61701,7 @@
 	  _createClass(MaterialRegistry, [{
 	    key: 'initialize',
 	    value: function initialize(box3DRuntime) {
-	      _get(MaterialRegistry.prototype.__proto__ || Object.getPrototypeOf(MaterialRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
+	      _get(Object.getPrototypeOf(MaterialRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
 
 	      this.standInTextures[_MaterialAsset2.default.STANDIN_TEXTURE_WHITE] = {
 	        texture: null,
@@ -61840,7 +61741,7 @@
 	          this.standInTextures[i].texture.dispose();
 	        }
 	      }
-	      _get(MaterialRegistry.prototype.__proto__ || Object.getPrototypeOf(MaterialRegistry.prototype), 'uninitialize', this).call(this);
+	      _get(Object.getPrototypeOf(MaterialRegistry.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /**
@@ -62041,7 +61942,7 @@
 	  function MaterialAsset(json) {
 	    _classCallCheck(this, MaterialAsset);
 
-	    return _possibleConstructorReturn(this, (MaterialAsset.__proto__ || Object.getPrototypeOf(MaterialAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialAsset).call(this, json));
 	  }
 
 	  /**
@@ -62071,7 +61972,7 @@
 	  }, {
 	    key: 'getProperty',
 	    value: function getProperty(propName) {
-	      var value = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, propName);
+	      var value = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, propName);
 	      if (value === undefined) {
 	        var shaderParams = this.getShader().getProperty('parameters');
 	        if (shaderParams[propName]) {
@@ -62086,7 +61987,7 @@
 	  }, {
 	    key: 'getDefaultProperties',
 	    value: function getDefaultProperties() {
-	      var values = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getDefaultProperties', this).call(this);
+	      var values = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getDefaultProperties', this).call(this);
 	      var shaderParams = this.getShader().getProperty('parameters');
 	      Object.keys(shaderParams).forEach(function (paramName) {
 	        values[paramName] = shaderParams[paramName].default;
@@ -62096,7 +61997,7 @@
 	  }, {
 	    key: 'verifyProperty',
 	    value: function verifyProperty(propertyName, valueObj) {
-	      if (_get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	      if (_get(Object.getPrototypeOf(MaterialAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
 	        return true;
 	      }
 	      var shaderAsset = this.getShader();
@@ -62242,7 +62143,7 @@
 	    value: function getShader() {
 	      // Calling super to avoid an infinite loop because Material.getProperty will fallback to looking
 	      // in the shader for default property values.
-	      var shaderId = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, 'shader');
+	      var shaderId = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, 'shader');
 	      // If the shader asset doesn't exist, get the default shader asset.
 	      if (!this.getAssetById(shaderId)) {
 	        shaderId = this.getDefaultProperty('shader');
@@ -62556,7 +62457,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this3 = this;
 
-	      _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(MaterialAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('shader')) {
 	        (function () {
@@ -63205,7 +63106,7 @@
 	        }
 	        this.runtimeData = null;
 
-	        _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'unload', this).call(this);
+	        _get(Object.getPrototypeOf(MaterialAsset.prototype), 'unload', this).call(this);
 	      }
 	    }
 	  }], [{
@@ -63299,7 +63200,7 @@
 	  function TextureRegistry() {
 	    _classCallCheck(this, TextureRegistry);
 
-	    var _this = _possibleConstructorReturn(this, (TextureRegistry.__proto__ || Object.getPrototypeOf(TextureRegistry)).call(this, _BaseTextureAsset2.default));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TextureRegistry).call(this, _BaseTextureAsset2.default));
 
 	    _this.missingTexture2d = undefined;
 	    _this.missingTextureCube = undefined;
@@ -63464,7 +63365,7 @@
 	  function BaseTextureAsset(json) {
 	    _classCallCheck(this, BaseTextureAsset);
 
-	    var _this = _possibleConstructorReturn(this, (BaseTextureAsset.__proto__ || Object.getPrototypeOf(BaseTextureAsset)).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTextureAsset).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -63483,7 +63384,7 @@
 	    value: function initialize(properties) {
 	      var _this2 = this;
 
-	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
 	      this.listenTo(this.box3DRuntime, 'imageUnloaded', function (imageId) {
 	        // If this texture is using the image, unload the texture so that entities
 	        // listening for texture unload can take action.
@@ -63579,7 +63480,7 @@
 	        this.runtimeData.dispose();
 	      }
 
-	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
+	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
 	      this.loadedBytes = 0;
 	    }
 
@@ -63588,7 +63489,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      var texture = this.runtimeData instanceof _three2.default.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
 
@@ -64265,7 +64166,7 @@
 	  function BaseImageAsset(json) {
 	    _classCallCheck(this, BaseImageAsset);
 
-	    var _this = _possibleConstructorReturn(this, (BaseImageAsset.__proto__ || Object.getPrototypeOf(BaseImageAsset)).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseImageAsset).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -64314,7 +64215,7 @@
 	     * @inheritDoc
 	     */
 	    value: function initialize(properties) {
-	      _get(BaseImageAsset.prototype.__proto__ || Object.getPrototypeOf(BaseImageAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(BaseImageAsset.prototype), 'initialize', this).call(this, properties);
 
 	      this.loadComponents = true;
 	    }
@@ -64726,7 +64627,7 @@
 	  function ScriptRegistry() {
 	    _classCallCheck(this, ScriptRegistry);
 
-	    return _possibleConstructorReturn(this, (ScriptRegistry.__proto__ || Object.getPrototypeOf(ScriptRegistry)).call(this, Box3D.ScriptAsset));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptRegistry).call(this, Box3D.ScriptAsset));
 	  }
 
 	  /**
@@ -64742,7 +64643,7 @@
 	  _createClass(ScriptRegistry, [{
 	    key: 'initialize',
 	    value: function initialize(box3DRuntime) {
-	      _get(ScriptRegistry.prototype.__proto__ || Object.getPrototypeOf(ScriptRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
+	      _get(Object.getPrototypeOf(ScriptRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
 
 	      if (!componentsAdded) {
 	        componentsAdded = true;
@@ -64752,7 +64653,7 @@
 	  }, {
 	    key: 'uninitialize',
 	    value: function uninitialize() {
-	      _get(ScriptRegistry.prototype.__proto__ || Object.getPrototypeOf(ScriptRegistry.prototype), 'uninitialize', this).call(this);
+	      _get(Object.getPrototypeOf(ScriptRegistry.prototype), 'uninitialize', this).call(this);
 	    }
 	  }, {
 	    key: 'initSystemAssets',
@@ -64815,9 +64716,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(25),__webpack_require__(44),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(23),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(62) 
+	  __webpack_require__(25),__webpack_require__(44),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(23),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
-	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPMREMGenerator,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
+	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
 	   Box3D.ScriptRegistry.registerScript({
 	  "id": "audio_listener",
@@ -67397,45 +67298,6 @@
 	    "path": "Box3DRuntime/Components/BuiltIn/OrbitCameraController"
 	  }
 	}, ComponentOrbitCameraController);  Box3D.ScriptRegistry.registerScript({
-	  "id": "texture2d_to_pmrem_cubeuv",
-	  "sid": "GeneratePMREM",
-	  "properties": {
-	    "name": "GeneratePMREM",
-	    "description": "Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI, input environment map. The entire result will be stored in this texture in the CubeUV layout.",
-	    "attributes": {
-	      "inputTexture": {
-	        "name": "inputTexture",
-	        "type": "asset",
-	        "default": null,
-	        "filter": {
-	          "texture2D": true,
-	          "renderTexture2D": true,
-	          "textureCube": true,
-	          "renderTextureCube": true
-	        },
-	        "description": "The texture to generate the PMREM for."
-	      }
-	    },
-	    "attributesOrder": [
-	      "inputTexture"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "renderTexture2D"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/PMREMGenerator"
-	  }
-	}, ComponentPMREMGenerator);  Box3D.ScriptRegistry.registerScript({
 	  "id": "panorama_to_cubemap_script",
 	  "sid": "Panorama To Cube Map",
 	  "properties": {
@@ -69066,7 +68928,7 @@
 	  function ObjectAnimator() {
 	    _classCallCheck(this, ObjectAnimator);
 
-	    var _this = _possibleConstructorReturn(this, (ObjectAnimator.__proto__ || Object.getPrototypeOf(ObjectAnimator)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectAnimator).call(this));
 
 	    _this.playingCurveAnimation = false;
 	    _this.curveAnim = undefined;
@@ -69663,7 +69525,7 @@
 	  function Box3DComponent() {
 	    _classCallCheck(this, Box3DComponent);
 
-	    var _this = _possibleConstructorReturn(this, (Box3DComponent.__proto__ || Object.getPrototypeOf(Box3DComponent)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DComponent).call(this));
 
 	    _this.inputController = null;
 	    return _this;
@@ -70316,7 +70178,7 @@
 	  function AudioListener() {
 	    _classCallCheck(this, AudioListener);
 
-	    var _this = _possibleConstructorReturn(this, (AudioListener.__proto__ || Object.getPrototypeOf(AudioListener)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AudioListener).call(this));
 
 	    _this.context = null;
 	    return _this;
@@ -70446,7 +70308,7 @@
 	  function CubeMapCapture() {
 	    _classCallCheck(this, CubeMapCapture);
 
-	    var _this = _possibleConstructorReturn(this, (CubeMapCapture.__proto__ || Object.getPrototypeOf(CubeMapCapture)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CubeMapCapture).call(this));
 
 	    _this.framesElapsed = 0;
 
@@ -70763,7 +70625,7 @@
 	  function Curve() {
 	    _classCallCheck(this, Curve);
 
-	    var _this = _possibleConstructorReturn(this, (Curve.__proto__ || Object.getPrototypeOf(Curve)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Curve).call(this));
 
 	    _this.isEditor = false;
 	    _this.controlPoints = undefined;
@@ -71127,7 +70989,7 @@
 	  function DebugConsoleDisplay() {
 	    _classCallCheck(this, DebugConsoleDisplay);
 
-	    return _possibleConstructorReturn(this, (DebugConsoleDisplay.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay)).call(this));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DebugConsoleDisplay).call(this));
 	  }
 
 	  _createClass(DebugConsoleDisplay, [{
@@ -71212,7 +71074,7 @@
 	  function DebugConsoleDisplay() {
 	    _classCallCheck(this, DebugConsoleDisplay);
 
-	    var _this = _possibleConstructorReturn(this, (DebugConsoleDisplay.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DebugConsoleDisplay).call(this));
 
 	    _this.stats = new _stats2.default();
 	    return _this;
@@ -71240,13 +71102,13 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      _get(DebugConsoleDisplay.prototype.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'enable', this).call(this);
+	      _get(Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'enable', this).call(this);
 	      document.body.appendChild(this.stats.dom);
 	    }
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      _get(DebugConsoleDisplay.prototype.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'disable', this).call(this);
+	      _get(Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'disable', this).call(this);
 	      document.body.removeChild(this.stats.dom);
 	    }
 	  }, {
@@ -71352,7 +71214,7 @@
 	  function DebugTextureViewer() {
 	    _classCallCheck(this, DebugTextureViewer);
 
-	    var _this = _possibleConstructorReturn(this, (DebugTextureViewer.__proto__ || Object.getPrototypeOf(DebugTextureViewer)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DebugTextureViewer).call(this));
 
 	    _this.renderEventName = 'render';
 	    _this.textureRegistryById = {};
@@ -71816,7 +71678,7 @@
 	  function DefaultFilters() {
 	    _classCallCheck(this, DefaultFilters);
 
-	    return _possibleConstructorReturn(this, (DefaultFilters.__proto__ || Object.getPrototypeOf(DefaultFilters)).call(this));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DefaultFilters).call(this));
 	  }
 
 	  _createClass(DefaultFilters, [{
@@ -71974,7 +71836,7 @@
 	  function DynamicOptimizer() {
 	    _classCallCheck(this, DynamicOptimizer);
 
-	    var _this = _possibleConstructorReturn(this, (DynamicOptimizer.__proto__ || Object.getPrototypeOf(DynamicOptimizer)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DynamicOptimizer).call(this));
 
 	    _this.frameTimeThreshold = 33.333333333; // Attribute defined above
 	    _this.testInterval = 2000.0; // Attribute defined above
@@ -72246,7 +72108,7 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      _get(DynamicOptimizer.prototype.__proto__ || Object.getPrototypeOf(DynamicOptimizer.prototype), 'enable', this).call(this);
+	      _get(Object.getPrototypeOf(DynamicOptimizer.prototype), 'enable', this).call(this);
 	      this.autoOptimize = true;
 	    }
 
@@ -72255,7 +72117,7 @@
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      _get(DynamicOptimizer.prototype.__proto__ || Object.getPrototypeOf(DynamicOptimizer.prototype), 'disable', this).call(this);
+	      _get(Object.getPrototypeOf(DynamicOptimizer.prototype), 'disable', this).call(this);
 	      this.autoOptimize = false;
 	      this.setMaxQuality();
 	    }
@@ -72348,7 +72210,7 @@
 	  function Environment() {
 	    _classCallCheck(this, Environment);
 
-	    return _possibleConstructorReturn(this, (Environment.__proto__ || Object.getPrototypeOf(Environment)).call(this));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Environment).call(this));
 	  }
 
 	  _createClass(Environment, [{
@@ -72471,7 +72333,7 @@
 	  function EventHandler() {
 	    _classCallCheck(this, EventHandler);
 
-	    return _possibleConstructorReturn(this, (EventHandler.__proto__ || Object.getPrototypeOf(EventHandler)).call(this));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(EventHandler).call(this));
 	  }
 
 	  /**
@@ -72634,7 +72496,7 @@
 	  function Exploder() {
 	    _classCallCheck(this, Exploder);
 
-	    var _this = _possibleConstructorReturn(this, (Exploder.__proto__ || Object.getPrototypeOf(Exploder)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Exploder).call(this));
 
 	    _this.m_fTime = 99999999.0;
 	    _this.m_vDestTest = null;
@@ -72886,7 +72748,7 @@
 	  function FreeCamera() {
 	    _classCallCheck(this, FreeCamera);
 
-	    var _this = _possibleConstructorReturn(this, (FreeCamera.__proto__ || Object.getPrototypeOf(FreeCamera)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FreeCamera).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -73434,7 +73296,7 @@
 	  function Fullscreen() {
 	    _classCallCheck(this, Fullscreen);
 
-	    var _this = _possibleConstructorReturn(this, (Fullscreen.__proto__ || Object.getPrototypeOf(Fullscreen)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Fullscreen).call(this));
 
 	    _this.el = null;
 	    _this.fsEnabled = false;
@@ -73778,7 +73640,7 @@
 	  function InputController() {
 	    _classCallCheck(this, InputController);
 
-	    var _this = _possibleConstructorReturn(this, (InputController.__proto__ || Object.getPrototypeOf(InputController)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(InputController).call(this));
 
 	    _this.inputQueue = [];
 	    _this.inputPool = [];
@@ -74707,7 +74569,7 @@
 	  function Animation() {
 	    _classCallCheck(this, Animation);
 
-	    var _this = _possibleConstructorReturn(this, (Animation.__proto__ || Object.getPrototypeOf(Animation)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Animation).call(this));
 
 	    _this.dirty = true;
 	    _this.paused = false;
@@ -75251,7 +75113,7 @@
 	  function LookAt() {
 	    _classCallCheck(this, LookAt);
 
-	    var _this = _possibleConstructorReturn(this, (LookAt.__proto__ || Object.getPrototypeOf(LookAt)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(LookAt).call(this));
 
 	    _this.playing = true;
 	    return _this;
@@ -75420,7 +75282,7 @@
 	  function MaterialCapture() {
 	    _classCallCheck(this, MaterialCapture);
 
-	    var _this = _possibleConstructorReturn(this, (MaterialCapture.__proto__ || Object.getPrototypeOf(MaterialCapture)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialCapture).call(this));
 
 	    _this.createScene();
 	    return _this;
@@ -75593,7 +75455,7 @@
 	  function NormalMapGenerator() {
 	    _classCallCheck(this, NormalMapGenerator);
 
-	    var _this = _possibleConstructorReturn(this, (NormalMapGenerator.__proto__ || Object.getPrototypeOf(NormalMapGenerator)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NormalMapGenerator).call(this));
 
 	    _this.m_Uniforms = null;
 	    _this.normalMaterial = null;
@@ -75796,7 +75658,7 @@
 	  function AudioSource() {
 	    _classCallCheck(this, AudioSource);
 
-	    var _this = _possibleConstructorReturn(this, (AudioSource.__proto__ || Object.getPrototypeOf(AudioSource)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AudioSource).call(this));
 
 	    _this.gainNode = null;
 	    _this.sourceNode = null;
@@ -76201,7 +76063,7 @@
 	  function ObjectPicker() {
 	    _classCallCheck(this, ObjectPicker);
 
-	    var _this = _possibleConstructorReturn(this, (ObjectPicker.__proto__ || Object.getPrototypeOf(ObjectPicker)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectPicker).call(this));
 
 	    _this.pickingMaterialDef = undefined;
 	    _this.meshRegistry = {};
@@ -76870,7 +76732,7 @@
 	  function OrbitCamera() {
 	    _classCallCheck(this, OrbitCamera);
 
-	    var _this = _possibleConstructorReturn(this, (OrbitCamera.__proto__ || Object.getPrototypeOf(OrbitCamera)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(OrbitCamera).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -77719,272 +77581,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @vid texture2d_to_pmrem_cubeuv
-	 * @vname GeneratePMREM
-	 * @vdescription Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI,
-	 * input environment map. The entire result will be stored in this texture in the CubeUV layout.
-	 * @vfilter renderTexture2D
-	 * @vcategory Rendering
-	 * @vattr asset inputTexture {
-	 *   default : null,
-	 *   filter : { texture2D: true, renderTexture2D: true, textureCube: true, renderTextureCube: true },
-	 *   description : 'The texture to generate the PMREM for.'
-	 * }
-	*/
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _three = __webpack_require__(8);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DComponent2 = __webpack_require__(24);
-
-	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	var _BaseImageAsset = __webpack_require__(20);
-
-	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
-
-	var _BaseTextureAsset = __webpack_require__(19);
-
-	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var PMREMGenerator = function (_Box3DComponent) {
-	  _inherits(PMREMGenerator, _Box3DComponent);
-
-	  function PMREMGenerator() {
-	    _classCallCheck(this, PMREMGenerator);
-
-	    return _possibleConstructorReturn(this, (PMREMGenerator.__proto__ || Object.getPrototypeOf(PMREMGenerator)).call(this));
-	  }
-
-	  _createClass(PMREMGenerator, [{
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
-	      if (changes.indexOf('inputTexture') !== -1) {
-	        var prevTex = this.getPreviousAttribute('inputTexture');
-	        this.unregisterDependency(prevTex);
-	        this.registerDependency(this.inputTexture);
-	        this.updateTexture();
-	      }
-	    }
-
-	    // init() {
-	    //   this.registerDependency(this.inputTexture);
-	    //   // this.updateTexture();
-	    // }
-
-	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
-	      var _this2 = this;
-
-	      if (this.inputTexture) {
-	        this.inputTexture.when('load', function () {
-	          _this2.registerDependency(_this2.inputTexture);
-	          _this2.updateTexture();
-	        });
-	        if (this.inputTexture.isUnloaded()) {
-	          this.inputTexture.load();
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
-	      if (this.inputTexture) {
-	        this.unregisterDependency(this.inputTexture);
-	        this.inputTexture.off('load', this.renderToCube, this);
-	      }
-	    }
-	  }, {
-	    key: 'updateTexture',
-	    value: function updateTexture() {
-	      if (this.inputTexture) {
-	        // let cubeSource = this.inputTexture.getThreeTexture();
-	        // if (this.inputTexture && (this.inputTexture.type === 'renderTexture2D' ||
-	        //   this.inputTexture.type === 'texture2D')) {
-	        var cubeSource = this.convertToCubeMap();
-	        // }
-
-
-	        this.generate(cubeSource);
-
-	        // skyboxMesh.material.dispose();
-
-	        // Setup appropriate material for transforming 2D texture to cube map
-	        // let shader;
-	        // let layout = this.inputTexture.getLayout();
-	        // if (layout === BaseImageAsset.LAYOUT.normal) {
-
-
-	        // Bind to texture loading
-	        // this.inputTexture.off('load', this.renderToCube, this);
-	        // this.inputTexture.when('load', this.renderToCube, this);
-	        // if (this.inputTexture.isUnloaded()) {
-	        //   this.inputTexture.load();
-	        // }
-
-	      }
-	    }
-	  }, {
-	    key: 'generate',
-	    value: function generate(sourceCubeMap) {
-	      var renderer = this.getThreeRenderer();
-	      var generator = new _three2.default.PMREMGenerator(sourceCubeMap);
-	      generator.update(renderer);
-	      var packer = new _three2.default.PMREMCubeUVPacker(generator.cubeLods);
-
-	      this.getEntity().getThreeTexture().mapping = _three2.default.EquirectangularReflectionMapping;
-	      packer.CubeUVRenderTarget = this.getEntity().getRuntimeData();
-	      packer.update(renderer);
-	    }
-	  }, {
-	    key: 'convertToCubeMap',
-	    value: function convertToCubeMap() {
-	      // Assume width is power of two so that dividing by 4 produces power of two size.
-	      // TODO: add code to ensure this is the case.
-	      // We're setting the size of the cubemap to be 1/4 the size of this render target because
-	      // that is the ratio hard-coded into the THREE.PMREMCubeUVPacker.
-	      var size = this.getEntity().getWidth() / 4;
-	      var params = {
-	        format: _BaseImageAsset2.default.FORMAT[this.getEntity().getProperty('format')],
-	        magFilter: _BaseTextureAsset2.default.FILTER[this.getEntity().getProperty('magFilter')],
-	        minFilter: _BaseTextureAsset2.default.FILTER[this.getEntity().getProperty('minFilter')],
-	        type: _BaseImageAsset2.default.TYPE[this.getEntity().getProperty('type')],
-	        generateMipmaps: this.getEntity().getProperty('generateMipmaps'),
-	        anisotropy: this.getEntity().getProperty('anisotropy'),
-	        encoding: this.getEntity().getProperty('encoding')
-	      };
-	      var targetCubeMap = new _three2.default.WebGLRenderTargetCube(size, size, params);
-	      var skyboxScene = new _three2.default.Scene();
-	      var skyboxGeometry = new _three2.default.BoxGeometry(100, 100, 100, 1, 1, 1);
-	      skyboxGeometry.dynamic = false;
-	      var skyboxMesh = new _three2.default.Mesh(skyboxGeometry);
-	      skyboxMesh.frustumCulled = false;
-	      skyboxMesh.castShadow = false;
-	      skyboxMesh.receiveShadow = false;
-	      if (this.isEnabled()) {
-	        skyboxScene.add(skyboxMesh);
-	      }
-
-	      var shader = _three2.default.ShaderLib['equirect'];
-	      shader.uniforms.tFlip.value = 1.0;
-	      var equirectMaterial = new _three2.default.ShaderMaterial({
-	        fragmentShader: shader.fragmentShader,
-	        vertexShader: shader.vertexShader,
-	        uniforms: shader.uniforms,
-	        depthWrite: false,
-	        side: _three2.default.BackSide
-	      });
-
-	      equirectMaterial.uniforms.tEquirect.value = this.inputTexture.getThreeTexture();
-	      skyboxMesh.material = equirectMaterial;
-
-	      var fov = 90;
-	      var aspect = 1;
-
-	      var cameras = [];
-	      cameras[0] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[0].up.set(0, -1, 0);
-	      cameras[0].lookAt(new _three2.default.Vector3(1, 0, 0));
-	      cameras[0].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[0]);
-
-	      cameras[1] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[1].up.set(0, -1, 0);
-	      cameras[1].lookAt(new _three2.default.Vector3(-1, 0, 0));
-	      cameras[1].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[1]);
-
-	      cameras[2] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[2].up.set(0, 0, 1);
-	      cameras[2].lookAt(new _three2.default.Vector3(0, 1, 0));
-	      cameras[2].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[2]);
-
-	      cameras[3] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[3].up.set(0, 0, -1);
-	      cameras[3].lookAt(new _three2.default.Vector3(0, -1, 0));
-	      cameras[3].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[3]);
-
-	      cameras[4] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[4].up.set(0, -1, 0);
-	      cameras[4].lookAt(new _three2.default.Vector3(0, 0, 1));
-	      cameras[4].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[4]);
-
-	      cameras[5] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[5].up.set(0, -1, 0);
-	      cameras[5].lookAt(new _three2.default.Vector3(0, 0, -1));
-	      cameras[5].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[5]);
-
-	      // const renderTarget = this.getRuntimeData();
-	      var renderer = this.getThreeRenderer();
-
-	      targetCubeMap.texture.generateMipmaps = false;
-
-	      renderer.setViewport(0, 0, targetCubeMap.width, targetCubeMap.height);
-	      for (var i = 0; i < 5; i++) {
-	        targetCubeMap.activeCubeFace = i;
-	        renderer.render(skyboxScene, cameras[i], targetCubeMap);
-	      }
-	      targetCubeMap.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
-
-	      targetCubeMap.activeCubeFace = 5;
-	      renderer.render(skyboxScene, cameras[5], targetCubeMap);
-	      return targetCubeMap;
-	    }
-
-	    // renderToCube() {
-	    //   if (this.hasThreeData()) {
-
-	    //     this.equirectMaterial.uniforms.inputTexture.value = this.inputTexture.runtimeData;
-	    //     var renderTarget = this.getRuntimeData();
-	    //     var renderer = this.getThreeRenderer();
-
-	    //     renderTarget.texture.generateMipmaps = false;
-
-	    //     renderer.setViewport(0, 0, renderTarget.width, renderTarget.height);
-	    //     for (var i = 0; i < 5; i++) {
-	    //       renderTarget.activeCubeFace = i;
-	    //       renderer.render(this.skyboxScene, this.cameras[i], renderTarget);
-	    //     }
-	    //     renderTarget.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
-
-	    //     renderTarget.activeCubeFace = 5;
-	    //     renderer.render(this.skyboxScene, this.cameras[5], renderTarget);
-	    //   }
-	    // }
-
-	  }]);
-
-	  return PMREMGenerator;
-	}(_Box3DComponent3.default);
-
-	exports.default = PMREMGenerator;
-
-/***/ },
-/* 48 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
 	 * @vid panorama_to_cubemap_script
 	 * @vname Panorama To Cube Map
 	 * @vdescription A controller that allows a camera to easily orbit a target object.
@@ -78026,7 +77622,7 @@
 	  function PanoramaToCubeMap() {
 	    _classCallCheck(this, PanoramaToCubeMap);
 
-	    var _this = _possibleConstructorReturn(this, (PanoramaToCubeMap.__proto__ || Object.getPrototypeOf(PanoramaToCubeMap)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PanoramaToCubeMap).call(this));
 
 	    _this.skyboxScene = undefined;
 	    _this.cameras = new Array(6);
@@ -78176,7 +77772,7 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 49 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78229,7 +77825,7 @@
 	  function PreviewAxisRotation() {
 	    _classCallCheck(this, PreviewAxisRotation);
 
-	    var _this = _possibleConstructorReturn(this, (PreviewAxisRotation.__proto__ || Object.getPrototypeOf(PreviewAxisRotation)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewAxisRotation).call(this));
 
 	    _this.time = 0;
 	    _this.target = new _three2.default.Quaternion();
@@ -78581,7 +78177,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 50 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78751,7 +78347,7 @@
 	  function PreviewCamera() {
 	    _classCallCheck(this, PreviewCamera);
 
-	    var _this = _possibleConstructorReturn(this, (PreviewCamera.__proto__ || Object.getPrototypeOf(PreviewCamera)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewCamera).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -79585,7 +79181,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 51 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79634,7 +79230,7 @@
 	  function PreviewCameraFocus() {
 	    _classCallCheck(this, PreviewCameraFocus);
 
-	    var _this = _possibleConstructorReturn(this, (PreviewCameraFocus.__proto__ || Object.getPrototypeOf(PreviewCameraFocus)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewCameraFocus).call(this));
 
 	    _this.previewCamControl = null;
 	    _this.mouseVector = null;
@@ -79859,7 +79455,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 52 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79913,7 +79509,7 @@
 	  function ReflectionCapture() {
 	    _classCallCheck(this, ReflectionCapture);
 
-	    var _this = _possibleConstructorReturn(this, (ReflectionCapture.__proto__ || Object.getPrototypeOf(ReflectionCapture)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ReflectionCapture).call(this));
 
 	    _this.framesElapsed = 0;
 	    _this.perspectiveCamera = null;
@@ -80140,7 +79736,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 53 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80266,7 +79862,7 @@
 	  function RenderFilters() {
 	    _classCallCheck(this, RenderFilters);
 
-	    var _this = _possibleConstructorReturn(this, (RenderFilters.__proto__ || Object.getPrototypeOf(RenderFilters)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderFilters).call(this));
 
 	    _this.shaderDefs = {
 	      video: {
@@ -80705,7 +80301,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 54 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80868,7 +80464,7 @@
 	  function RenderModes() {
 	    _classCallCheck(this, RenderModes);
 
-	    var _this = _possibleConstructorReturn(this, (RenderModes.__proto__ || Object.getPrototypeOf(RenderModes)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderModes).call(this));
 
 	    _this.wireframeCache = {};
 	    _this.overrideMaterialEnabled = false;
@@ -81460,7 +81056,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 55 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81525,7 +81121,7 @@
 	  function RenderView() {
 	    _classCallCheck(this, RenderView);
 
-	    var _this = _possibleConstructorReturn(this, (RenderView.__proto__ || Object.getPrototypeOf(RenderView)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderView).call(this));
 
 	    _this.renderEventName = 'render';
 	    _this.enablePostProcess = true;
@@ -81813,7 +81409,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 56 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81945,7 +81541,7 @@
 	  function DefaultRenderer() {
 	    _classCallCheck(this, DefaultRenderer);
 
-	    var _this = _possibleConstructorReturn(this, (DefaultRenderer.__proto__ || Object.getPrototypeOf(DefaultRenderer)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DefaultRenderer).call(this));
 
 	    _this.threeRenderer = null;
 	    _this.caps = {};
@@ -82383,7 +81979,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 57 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82479,7 +82075,7 @@
 	  function Rotate() {
 	    _classCallCheck(this, Rotate);
 
-	    var _this = _possibleConstructorReturn(this, (Rotate.__proto__ || Object.getPrototypeOf(Rotate)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Rotate).call(this));
 
 	    _this.quaternion = new _three2.default.Quaternion();
 	    _this.currentGlobalQuaternion = new _three2.default.Quaternion();
@@ -82605,7 +82201,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 58 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82649,7 +82245,7 @@
 	  function SceneLoader() {
 	    _classCallCheck(this, SceneLoader);
 
-	    var _this = _possibleConstructorReturn(this, (SceneLoader.__proto__ || Object.getPrototypeOf(SceneLoader)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneLoader).call(this));
 
 	    _this.m_bHierarchy = false;
 	    _this.m_bDependencies = false;
@@ -82713,7 +82309,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 59 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82809,7 +82405,7 @@
 	  function SimplexNoiseRenderer() {
 	    _classCallCheck(this, SimplexNoiseRenderer);
 
-	    var _this = _possibleConstructorReturn(this, (SimplexNoiseRenderer.__proto__ || Object.getPrototypeOf(SimplexNoiseRenderer)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SimplexNoiseRenderer).call(this));
 
 	    _this.m_Uniforms = null;
 	    _this.m_NoiseMat = null;
@@ -82942,7 +82538,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 60 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -83000,7 +82596,7 @@
 	  function SkyboxRenderer() {
 	    _classCallCheck(this, SkyboxRenderer);
 
-	    var _this = _possibleConstructorReturn(this, (SkyboxRenderer.__proto__ || Object.getPrototypeOf(SkyboxRenderer)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkyboxRenderer).call(this));
 
 	    _this.currentTexLayout = null;
 	    _this.skyboxMesh = null;
@@ -83368,7 +82964,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 61 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -83414,7 +83010,7 @@
 	  function TextRenderer() {
 	    _classCallCheck(this, TextRenderer);
 
-	    var _this = _possibleConstructorReturn(this, (TextRenderer.__proto__ || Object.getPrototypeOf(TextRenderer)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TextRenderer).call(this));
 
 	    _this.m_Material = null;
 	    _this.m_Canvas = null;
@@ -83571,7 +83167,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 62 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -83620,7 +83216,7 @@
 	  function Texture2dToCubeMap() {
 	    _classCallCheck(this, Texture2dToCubeMap);
 
-	    var _this = _possibleConstructorReturn(this, (Texture2dToCubeMap.__proto__ || Object.getPrototypeOf(Texture2dToCubeMap)).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Texture2dToCubeMap).call(this));
 
 	    _this.skyboxScene = undefined;
 	    _this.cameras = new Array(6);
@@ -83813,10 +83409,10 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 63 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(64)
+	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(63)
 	  , root = typeof window === 'undefined' ? global : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -83892,7 +83488,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 64 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -83928,10 +83524,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(64)))
 
 /***/ },
-/* 65 */
+/* 64 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -83963,45 +83559,17 @@
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
 	        return setTimeout(fun, 0);
+	    } else {
+	        return cachedSetTimeout.call(null, fun, 0);
 	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedSetTimeout(fun, 0);
-	    } catch(e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-	            return cachedSetTimeout.call(null, fun, 0);
-	        } catch(e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-	            return cachedSetTimeout.call(this, fun, 0);
-	        }
-	    }
-
-
 	}
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
+	        clearTimeout(marker);
+	    } else {
+	        cachedClearTimeout.call(null, marker);
 	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedClearTimeout(marker);
-	    } catch (e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-	            return cachedClearTimeout.call(null, marker);
-	        } catch (e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-	            return cachedClearTimeout.call(this, marker);
-	        }
-	    }
-
-
-
 	}
 	var queue = [];
 	var draining = false;
@@ -84095,6 +83663,226 @@
 	};
 	process.umask = function() { return 0; };
 
+
+/***/ },
+/* 65 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * This mixin providers helper methods to determine what type of browser is
+	 * being used.
+	 * @mixin UserAgent
+	 */
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var UserAgent = {
+	  /**
+	   * Gets a simplified representation of the UserAgent eg: "Chrome 52".
+	   * @method
+	   * @return {String} The name of the browser and the version
+	   */
+	  getBrowser: function getBrowser() {
+	    var ua = navigator.userAgent;
+	    var EdgeM = ua.match(/(edge(?=\/))\/?\s*(\d+)/i) || [];
+	    var tem,
+	        M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+	    if (EdgeM.length) {
+	      M = EdgeM;
+	    }
+	    if (/trident/i.test(M[1])) {
+	      tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+	      return 'IE ' + (tem[1] || '');
+	    }
+	    if (M[1] === 'Chrome') {
+	      tem = ua.match(/\bOPR\/(\d+)/);
+	      if (tem != null) return 'Opera ' + tem[1];
+	    }
+	    M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+	    if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
+	    return M.join(' ');
+	  },
+
+	  /**
+	   * Determines if the browser is mobile.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isMobile: function isMobile() {
+	    return browser.isMobile;
+	  },
+
+	  /**
+	   * Determines if the browser is iOS.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isIOS: function isIOS() {
+	    return browser.isIOS;
+	  },
+
+	  /**
+	   * Determines if the browser is Android.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isAndroid: function isAndroid() {
+	    return browser.isAndroid;
+	  },
+
+	  /**
+	   * Determines if the browser is Mac.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isMac: function isMac() {
+	    return browser.isMac;
+	  },
+
+	  /**
+	   * Determines if the browser is Linux.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isLinux: function isLinux() {
+	    return browser.isLinux;
+	  },
+
+	  /**
+	   * Determines if the browser is Unix.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isUnix: function isUnix() {
+	    return browser.isUnix;
+	  },
+
+	  /**
+	   * Determines if the browser is Windows.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isWindows: function isWindows() {
+	    return browser.isWindows;
+	  },
+
+	  /**
+	   * Determines if the browser is Chrome.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isChrome: function isChrome() {
+	    return browser.isChrome;
+	  },
+
+	  /**
+	   * Determines if the browser is Firefox.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isFirefox: function isFirefox() {
+	    return browser.isFirefox;
+	  },
+
+	  /**
+	   * Determines if the browser is Safari.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isSafari: function isSafari() {
+	    return browser.isSafari;
+	  },
+
+	  /**
+	   * Determines if the browser is Opera.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isOpera: function isOpera() {
+	    return browser.isOpera;
+	  },
+
+	  /**
+	   * Determines if the browser is Microsoft Edge.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isEdge: function isEdge() {
+	    return browser.isEdge;
+	  },
+
+	  /**
+	   * Determines if the browser is an Android tablet.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isAndroidTablet: function isAndroidTablet() {
+	    return browser.isAndroidTablet;
+	  },
+
+	  /**
+	   * Determines if the browser is an iPad.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isIpad: function isIpad() {
+	    return browser.isIpad;
+	  },
+
+	  /**
+	   * Determines if the browser is a tablet.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isTablet: function isTablet() {
+	    return browser.isTablet;
+	  },
+
+	  /**
+	   * Determines if the browser is Internet Explorer.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isIE: function isIE() {
+	    return browser.isIE;
+	  },
+
+	  /**
+	   * Determines if the browser is Internet Explorer 11.
+	   * @method
+	   * @return {Boolean}
+	   */
+	  isIE11: function isIE11() {
+	    return browser.isIE11;
+	  }
+	};
+
+	// Pre-test all of the conditions and cache the results.
+	var browser = {
+	  isMobile: /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()),
+	  isIOS: /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()),
+	  isAndroid: /android/i.test(navigator.userAgent.toLowerCase()),
+	  isMac: /mac/i.test(navigator.userAgent.toLowerCase()),
+	  isLinux: /linux/i.test(navigator.userAgent.toLowerCase()),
+	  isUnix: /x11/i.test(navigator.userAgent.toLowerCase()),
+	  isWindows: /windows/i.test(navigator.userAgent.toLowerCase()),
+	  isChrome: /chrome/i.test(navigator.userAgent.toLowerCase()),
+	  isFirefox: /firefox/i.test(navigator.userAgent.toLowerCase()),
+	  isSafari: /safari/i.test(navigator.userAgent.toLowerCase()),
+	  isOpera: /opera/i.test(navigator.userAgent.toLowerCase()),
+	  isEdge: /edge/i.test(navigator.userAgent.toLowerCase()),
+	  isIpad: /ipad/i.test(navigator.userAgent.toLowerCase())
+	};
+
+	browser.isIE = /ie/i.test(UserAgent.getBrowser().toLowerCase());
+	browser.isIE11 = /ie 11/i.test(UserAgent.getBrowser().toLowerCase());
+	browser.isAndroidTablet = browser.isAndroid && !/mobile/i.test(navigator.userAgent.toLowerCase());
+	browser.isTablet = browser.isIpad || browser.isAndroidTablet;
+
+	exports.default = UserAgent;
 
 /***/ },
 /* 66 */
@@ -89279,7 +89067,7 @@
 	  function AnimationAsset(json) {
 	    _classCallCheck(this, AnimationAsset);
 
-	    var _this = _possibleConstructorReturn(this, (AnimationAsset.__proto__ || Object.getPrototypeOf(AnimationAsset)).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationAsset).call(this, json));
 
 	    _this.clips = {};
 	    return _this;
@@ -89656,14 +89444,14 @@
 	  function ApplicationAsset(json) {
 	    _classCallCheck(this, ApplicationAsset);
 
-	    return _possibleConstructorReturn(this, (ApplicationAsset.__proto__ || Object.getPrototypeOf(ApplicationAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ApplicationAsset).call(this, json));
 	  }
 
 	  _createClass(ApplicationAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(ApplicationAsset.prototype.__proto__ || Object.getPrototypeOf(ApplicationAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(ApplicationAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -89733,7 +89521,7 @@
 	  function AudioAsset(json) {
 	    _classCallCheck(this, AudioAsset);
 
-	    return _possibleConstructorReturn(this, (AudioAsset.__proto__ || Object.getPrototypeOf(AudioAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AudioAsset).call(this, json));
 	  }
 
 	  _createClass(AudioAsset, [{
@@ -89744,7 +89532,7 @@
 	        this.runtimeData.pause();
 	      }
 
-	      _get(AudioAsset.prototype.__proto__ || Object.getPrototypeOf(AudioAsset.prototype), 'uninitialize', this).call(this);
+	      _get(Object.getPrototypeOf(AudioAsset.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /** @inheritdoc */
@@ -89752,7 +89540,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(AudioAsset.prototype.__proto__ || Object.getPrototypeOf(AudioAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(AudioAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (this.runtimeData) {
 	        if (changes.hasOwnProperty('loop')) {
@@ -89827,7 +89615,7 @@
 	  function BufferAsset(json) {
 	    _classCallCheck(this, BufferAsset);
 
-	    var _this = _possibleConstructorReturn(this, (BufferAsset.__proto__ || Object.getPrototypeOf(BufferAsset)).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BufferAsset).call(this, json));
 
 	    _this.buffer = null;
 	    _this.arrays = {};
@@ -90124,7 +89912,7 @@
 	  function DocumentAsset(json) {
 	    _classCallCheck(this, DocumentAsset);
 
-	    return _possibleConstructorReturn(this, (DocumentAsset.__proto__ || Object.getPrototypeOf(DocumentAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DocumentAsset).call(this, json));
 	  }
 
 	  /**
@@ -92574,6 +92362,9 @@
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
 	exports.INSPECT_MAX_BYTES = 50
+	Buffer.poolSize = 8192 // not used by this implementation
+
+	var rootParent = {}
 
 	/**
 	 * If `Buffer.TYPED_ARRAY_SUPPORT`:
@@ -92591,6 +92382,9 @@
 	 *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
 	 *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
 	 *
+	 *   - Safari 5-7 lacks support for changing the `Object.prototype.constructor` property
+	 *     on objects.
+	 *
 	 *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
 	 *
 	 *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
@@ -92603,16 +92397,14 @@
 	  ? global.TYPED_ARRAY_SUPPORT
 	  : typedArraySupport()
 
-	/*
-	 * Export kMaxLength after typed array support is determined.
-	 */
-	exports.kMaxLength = kMaxLength()
-
 	function typedArraySupport () {
+	  function Bar () {}
 	  try {
 	    var arr = new Uint8Array(1)
-	    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
+	    arr.foo = function () { return 42 }
+	    arr.constructor = Bar
 	    return arr.foo() === 42 && // typed array instances can be augmented
+	        arr.constructor === Bar && // constructor can be set
 	        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
 	        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
 	  } catch (e) {
@@ -92626,252 +92418,184 @@
 	    : 0x3fffffff
 	}
 
-	function createBuffer (that, length) {
-	  if (kMaxLength() < length) {
-	    throw new RangeError('Invalid typed array length')
-	  }
-	  if (Buffer.TYPED_ARRAY_SUPPORT) {
-	    // Return an augmented `Uint8Array` instance, for best performance
-	    that = new Uint8Array(length)
-	    that.__proto__ = Buffer.prototype
-	  } else {
-	    // Fallback: Return an object instance of the Buffer class
-	    if (that === null) {
-	      that = new Buffer(length)
-	    }
-	    that.length = length
-	  }
-
-	  return that
-	}
-
 	/**
-	 * The Buffer constructor returns instances of `Uint8Array` that have their
-	 * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
-	 * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
-	 * and the `Uint8Array` methods. Square bracket notation works as expected -- it
-	 * returns a single octet.
+	 * Class: Buffer
+	 * =============
 	 *
-	 * The `Uint8Array` prototype remains unmodified.
+	 * The Buffer constructor returns instances of `Uint8Array` that are augmented
+	 * with function properties for all the node `Buffer` API functions. We use
+	 * `Uint8Array` so that square bracket notation works as expected -- it returns
+	 * a single octet.
+	 *
+	 * By augmenting the instances, we can avoid modifying the `Uint8Array`
+	 * prototype.
 	 */
+	function Buffer (arg) {
+	  if (!(this instanceof Buffer)) {
+	    // Avoid going through an ArgumentsAdaptorTrampoline in the common case.
+	    if (arguments.length > 1) return new Buffer(arg, arguments[1])
+	    return new Buffer(arg)
+	  }
 
-	function Buffer (arg, encodingOrOffset, length) {
-	  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
-	    return new Buffer(arg, encodingOrOffset, length)
+	  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+	    this.length = 0
+	    this.parent = undefined
 	  }
 
 	  // Common case.
 	  if (typeof arg === 'number') {
-	    if (typeof encodingOrOffset === 'string') {
-	      throw new Error(
-	        'If encoding is specified then the first argument must be a string'
-	      )
-	    }
-	    return allocUnsafe(this, arg)
-	  }
-	  return from(this, arg, encodingOrOffset, length)
-	}
-
-	Buffer.poolSize = 8192 // not used by this implementation
-
-	// TODO: Legacy, not needed anymore. Remove in next major version.
-	Buffer._augment = function (arr) {
-	  arr.__proto__ = Buffer.prototype
-	  return arr
-	}
-
-	function from (that, value, encodingOrOffset, length) {
-	  if (typeof value === 'number') {
-	    throw new TypeError('"value" argument must not be a number')
+	    return fromNumber(this, arg)
 	  }
 
-	  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-	    return fromArrayBuffer(that, value, encodingOrOffset, length)
+	  // Slightly less common case.
+	  if (typeof arg === 'string') {
+	    return fromString(this, arg, arguments.length > 1 ? arguments[1] : 'utf8')
 	  }
 
-	  if (typeof value === 'string') {
-	    return fromString(that, value, encodingOrOffset)
-	  }
-
-	  return fromObject(that, value)
+	  // Unusual.
+	  return fromObject(this, arg)
 	}
 
-	/**
-	 * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
-	 * if value is a number.
-	 * Buffer.from(str[, encoding])
-	 * Buffer.from(array)
-	 * Buffer.from(buffer)
-	 * Buffer.from(arrayBuffer[, byteOffset[, length]])
-	 **/
-	Buffer.from = function (value, encodingOrOffset, length) {
-	  return from(null, value, encodingOrOffset, length)
-	}
-
-	if (Buffer.TYPED_ARRAY_SUPPORT) {
-	  Buffer.prototype.__proto__ = Uint8Array.prototype
-	  Buffer.__proto__ = Uint8Array
-	  if (typeof Symbol !== 'undefined' && Symbol.species &&
-	      Buffer[Symbol.species] === Buffer) {
-	    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-	    Object.defineProperty(Buffer, Symbol.species, {
-	      value: null,
-	      configurable: true
-	    })
-	  }
-	}
-
-	function assertSize (size) {
-	  if (typeof size !== 'number') {
-	    throw new TypeError('"size" argument must be a number')
-	  } else if (size < 0) {
-	    throw new RangeError('"size" argument must not be negative')
-	  }
-	}
-
-	function alloc (that, size, fill, encoding) {
-	  assertSize(size)
-	  if (size <= 0) {
-	    return createBuffer(that, size)
-	  }
-	  if (fill !== undefined) {
-	    // Only pay attention to encoding if it's a string. This
-	    // prevents accidentally sending in a number that would
-	    // be interpretted as a start offset.
-	    return typeof encoding === 'string'
-	      ? createBuffer(that, size).fill(fill, encoding)
-	      : createBuffer(that, size).fill(fill)
-	  }
-	  return createBuffer(that, size)
-	}
-
-	/**
-	 * Creates a new filled Buffer instance.
-	 * alloc(size[, fill[, encoding]])
-	 **/
-	Buffer.alloc = function (size, fill, encoding) {
-	  return alloc(null, size, fill, encoding)
-	}
-
-	function allocUnsafe (that, size) {
-	  assertSize(size)
-	  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
+	function fromNumber (that, length) {
+	  that = allocate(that, length < 0 ? 0 : checked(length) | 0)
 	  if (!Buffer.TYPED_ARRAY_SUPPORT) {
-	    for (var i = 0; i < size; ++i) {
+	    for (var i = 0; i < length; i++) {
 	      that[i] = 0
 	    }
 	  }
 	  return that
 	}
 
-	/**
-	 * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
-	 * */
-	Buffer.allocUnsafe = function (size) {
-	  return allocUnsafe(null, size)
-	}
-	/**
-	 * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
-	 */
-	Buffer.allocUnsafeSlow = function (size) {
-	  return allocUnsafe(null, size)
-	}
-
 	function fromString (that, string, encoding) {
-	  if (typeof encoding !== 'string' || encoding === '') {
-	    encoding = 'utf8'
-	  }
+	  if (typeof encoding !== 'string' || encoding === '') encoding = 'utf8'
 
-	  if (!Buffer.isEncoding(encoding)) {
-	    throw new TypeError('"encoding" must be a valid string encoding')
-	  }
-
+	  // Assumption: byteLength() return value is always < kMaxLength.
 	  var length = byteLength(string, encoding) | 0
-	  that = createBuffer(that, length)
+	  that = allocate(that, length)
 
-	  var actual = that.write(string, encoding)
-
-	  if (actual !== length) {
-	    // Writing a hex string, for example, that contains invalid characters will
-	    // cause everything after the first invalid character to be ignored. (e.g.
-	    // 'abxxcd' will be treated as 'ab')
-	    that = that.slice(0, actual)
-	  }
-
+	  that.write(string, encoding)
 	  return that
 	}
 
-	function fromArrayLike (that, array) {
-	  var length = array.length < 0 ? 0 : checked(array.length) | 0
-	  that = createBuffer(that, length)
+	function fromObject (that, object) {
+	  if (Buffer.isBuffer(object)) return fromBuffer(that, object)
+
+	  if (isArray(object)) return fromArray(that, object)
+
+	  if (object == null) {
+	    throw new TypeError('must start with number, buffer, array or string')
+	  }
+
+	  if (typeof ArrayBuffer !== 'undefined') {
+	    if (object.buffer instanceof ArrayBuffer) {
+	      return fromTypedArray(that, object)
+	    }
+	    if (object instanceof ArrayBuffer) {
+	      return fromArrayBuffer(that, object)
+	    }
+	  }
+
+	  if (object.length) return fromArrayLike(that, object)
+
+	  return fromJsonObject(that, object)
+	}
+
+	function fromBuffer (that, buffer) {
+	  var length = checked(buffer.length) | 0
+	  that = allocate(that, length)
+	  buffer.copy(that, 0, 0, length)
+	  return that
+	}
+
+	function fromArray (that, array) {
+	  var length = checked(array.length) | 0
+	  that = allocate(that, length)
 	  for (var i = 0; i < length; i += 1) {
 	    that[i] = array[i] & 255
 	  }
 	  return that
 	}
 
-	function fromArrayBuffer (that, array, byteOffset, length) {
-	  array.byteLength // this throws if `array` is not a valid ArrayBuffer
-
-	  if (byteOffset < 0 || array.byteLength < byteOffset) {
-	    throw new RangeError('\'offset\' is out of bounds')
-	  }
-
-	  if (array.byteLength < byteOffset + (length || 0)) {
-	    throw new RangeError('\'length\' is out of bounds')
-	  }
-
-	  if (byteOffset === undefined && length === undefined) {
-	    array = new Uint8Array(array)
-	  } else if (length === undefined) {
-	    array = new Uint8Array(array, byteOffset)
-	  } else {
-	    array = new Uint8Array(array, byteOffset, length)
-	  }
-
-	  if (Buffer.TYPED_ARRAY_SUPPORT) {
-	    // Return an augmented `Uint8Array` instance, for best performance
-	    that = array
-	    that.__proto__ = Buffer.prototype
-	  } else {
-	    // Fallback: Return an object instance of the Buffer class
-	    that = fromArrayLike(that, array)
+	// Duplicate of fromArray() to keep fromArray() monomorphic.
+	function fromTypedArray (that, array) {
+	  var length = checked(array.length) | 0
+	  that = allocate(that, length)
+	  // Truncating the elements is probably not what people expect from typed
+	  // arrays with BYTES_PER_ELEMENT > 1 but it's compatible with the behavior
+	  // of the old Buffer constructor.
+	  for (var i = 0; i < length; i += 1) {
+	    that[i] = array[i] & 255
 	  }
 	  return that
 	}
 
-	function fromObject (that, obj) {
-	  if (Buffer.isBuffer(obj)) {
-	    var len = checked(obj.length) | 0
-	    that = createBuffer(that, len)
+	function fromArrayBuffer (that, array) {
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    // Return an augmented `Uint8Array` instance, for best performance
+	    array.byteLength
+	    that = Buffer._augment(new Uint8Array(array))
+	  } else {
+	    // Fallback: Return an object instance of the Buffer class
+	    that = fromTypedArray(that, new Uint8Array(array))
+	  }
+	  return that
+	}
 
-	    if (that.length === 0) {
-	      return that
-	    }
+	function fromArrayLike (that, array) {
+	  var length = checked(array.length) | 0
+	  that = allocate(that, length)
+	  for (var i = 0; i < length; i += 1) {
+	    that[i] = array[i] & 255
+	  }
+	  return that
+	}
 
-	    obj.copy(that, 0, 0, len)
-	    return that
+	// Deserialize { type: 'Buffer', data: [1,2,3,...] } into a Buffer object.
+	// Returns a zero-length buffer for inputs that don't conform to the spec.
+	function fromJsonObject (that, object) {
+	  var array
+	  var length = 0
+
+	  if (object.type === 'Buffer' && isArray(object.data)) {
+	    array = object.data
+	    length = checked(array.length) | 0
+	  }
+	  that = allocate(that, length)
+
+	  for (var i = 0; i < length; i += 1) {
+	    that[i] = array[i] & 255
+	  }
+	  return that
+	}
+
+	if (Buffer.TYPED_ARRAY_SUPPORT) {
+	  Buffer.prototype.__proto__ = Uint8Array.prototype
+	  Buffer.__proto__ = Uint8Array
+	} else {
+	  // pre-set for values that may exist in the future
+	  Buffer.prototype.length = undefined
+	  Buffer.prototype.parent = undefined
+	}
+
+	function allocate (that, length) {
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    // Return an augmented `Uint8Array` instance, for best performance
+	    that = Buffer._augment(new Uint8Array(length))
+	    that.__proto__ = Buffer.prototype
+	  } else {
+	    // Fallback: Return an object instance of the Buffer class
+	    that.length = length
+	    that._isBuffer = true
 	  }
 
-	  if (obj) {
-	    if ((typeof ArrayBuffer !== 'undefined' &&
-	        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
-	      if (typeof obj.length !== 'number' || isnan(obj.length)) {
-	        return createBuffer(that, 0)
-	      }
-	      return fromArrayLike(that, obj)
-	    }
+	  var fromPool = length !== 0 && length <= Buffer.poolSize >>> 1
+	  if (fromPool) that.parent = rootParent
 
-	    if (obj.type === 'Buffer' && isArray(obj.data)) {
-	      return fromArrayLike(that, obj.data)
-	    }
-	  }
-
-	  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+	  return that
 	}
 
 	function checked (length) {
-	  // Note: cannot use `length < kMaxLength()` here because that fails when
+	  // Note: cannot use `length < kMaxLength` here because that fails when
 	  // length is NaN (which is otherwise coerced to zero.)
 	  if (length >= kMaxLength()) {
 	    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
@@ -92880,11 +92604,12 @@
 	  return length | 0
 	}
 
-	function SlowBuffer (length) {
-	  if (+length != length) { // eslint-disable-line eqeqeq
-	    length = 0
-	  }
-	  return Buffer.alloc(+length)
+	function SlowBuffer (subject, encoding) {
+	  if (!(this instanceof SlowBuffer)) return new SlowBuffer(subject, encoding)
+
+	  var buf = new Buffer(subject, encoding)
+	  delete buf.parent
+	  return buf
 	}
 
 	Buffer.isBuffer = function isBuffer (b) {
@@ -92901,12 +92626,17 @@
 	  var x = a.length
 	  var y = b.length
 
-	  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-	    if (a[i] !== b[i]) {
-	      x = a[i]
-	      y = b[i]
-	      break
-	    }
+	  var i = 0
+	  var len = Math.min(x, y)
+	  while (i < len) {
+	    if (a[i] !== b[i]) break
+
+	    ++i
+	  }
+
+	  if (i !== len) {
+	    x = a[i]
+	    y = b[i]
 	  }
 
 	  if (x < y) return -1
@@ -92920,9 +92650,9 @@
 	    case 'utf8':
 	    case 'utf-8':
 	    case 'ascii':
-	    case 'latin1':
 	    case 'binary':
 	    case 'base64':
+	    case 'raw':
 	    case 'ucs2':
 	    case 'ucs-2':
 	    case 'utf16le':
@@ -92934,46 +92664,32 @@
 	}
 
 	Buffer.concat = function concat (list, length) {
-	  if (!isArray(list)) {
-	    throw new TypeError('"list" argument must be an Array of Buffers')
-	  }
+	  if (!isArray(list)) throw new TypeError('list argument must be an Array of Buffers.')
 
 	  if (list.length === 0) {
-	    return Buffer.alloc(0)
+	    return new Buffer(0)
 	  }
 
 	  var i
 	  if (length === undefined) {
 	    length = 0
-	    for (i = 0; i < list.length; ++i) {
+	    for (i = 0; i < list.length; i++) {
 	      length += list[i].length
 	    }
 	  }
 
-	  var buffer = Buffer.allocUnsafe(length)
+	  var buf = new Buffer(length)
 	  var pos = 0
-	  for (i = 0; i < list.length; ++i) {
-	    var buf = list[i]
-	    if (!Buffer.isBuffer(buf)) {
-	      throw new TypeError('"list" argument must be an Array of Buffers')
-	    }
-	    buf.copy(buffer, pos)
-	    pos += buf.length
+	  for (i = 0; i < list.length; i++) {
+	    var item = list[i]
+	    item.copy(buf, pos)
+	    pos += item.length
 	  }
-	  return buffer
+	  return buf
 	}
 
 	function byteLength (string, encoding) {
-	  if (Buffer.isBuffer(string)) {
-	    return string.length
-	  }
-	  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
-	      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
-	    return string.byteLength
-	  }
-	  if (typeof string !== 'string') {
-	    string = '' + string
-	  }
+	  if (typeof string !== 'string') string = '' + string
 
 	  var len = string.length
 	  if (len === 0) return 0
@@ -92983,12 +92699,13 @@
 	  for (;;) {
 	    switch (encoding) {
 	      case 'ascii':
-	      case 'latin1':
 	      case 'binary':
+	      // Deprecated
+	      case 'raw':
+	      case 'raws':
 	        return len
 	      case 'utf8':
 	      case 'utf-8':
-	      case undefined:
 	        return utf8ToBytes(string).length
 	      case 'ucs2':
 	      case 'ucs-2':
@@ -93011,39 +92728,13 @@
 	function slowToString (encoding, start, end) {
 	  var loweredCase = false
 
-	  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
-	  // property of a typed array.
-
-	  // This behaves neither like String nor Uint8Array in that we set start/end
-	  // to their upper/lower bounds if the value passed is out of range.
-	  // undefined is handled specially as per ECMA-262 6th Edition,
-	  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
-	  if (start === undefined || start < 0) {
-	    start = 0
-	  }
-	  // Return early if start > this.length. Done here to prevent potential uint32
-	  // coercion fail below.
-	  if (start > this.length) {
-	    return ''
-	  }
-
-	  if (end === undefined || end > this.length) {
-	    end = this.length
-	  }
-
-	  if (end <= 0) {
-	    return ''
-	  }
-
-	  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
-	  end >>>= 0
-	  start >>>= 0
-
-	  if (end <= start) {
-	    return ''
-	  }
+	  start = start | 0
+	  end = end === undefined || end === Infinity ? this.length : end | 0
 
 	  if (!encoding) encoding = 'utf8'
+	  if (start < 0) start = 0
+	  if (end > this.length) end = this.length
+	  if (end <= start) return ''
 
 	  while (true) {
 	    switch (encoding) {
@@ -93057,9 +92748,8 @@
 	      case 'ascii':
 	        return asciiSlice(this, start, end)
 
-	      case 'latin1':
 	      case 'binary':
-	        return latin1Slice(this, start, end)
+	        return binarySlice(this, start, end)
 
 	      case 'base64':
 	        return base64Slice(this, start, end)
@@ -93076,53 +92766,6 @@
 	        loweredCase = true
 	    }
 	  }
-	}
-
-	// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
-	// Buffer instances.
-	Buffer.prototype._isBuffer = true
-
-	function swap (b, n, m) {
-	  var i = b[n]
-	  b[n] = b[m]
-	  b[m] = i
-	}
-
-	Buffer.prototype.swap16 = function swap16 () {
-	  var len = this.length
-	  if (len % 2 !== 0) {
-	    throw new RangeError('Buffer size must be a multiple of 16-bits')
-	  }
-	  for (var i = 0; i < len; i += 2) {
-	    swap(this, i, i + 1)
-	  }
-	  return this
-	}
-
-	Buffer.prototype.swap32 = function swap32 () {
-	  var len = this.length
-	  if (len % 4 !== 0) {
-	    throw new RangeError('Buffer size must be a multiple of 32-bits')
-	  }
-	  for (var i = 0; i < len; i += 4) {
-	    swap(this, i, i + 3)
-	    swap(this, i + 1, i + 2)
-	  }
-	  return this
-	}
-
-	Buffer.prototype.swap64 = function swap64 () {
-	  var len = this.length
-	  if (len % 8 !== 0) {
-	    throw new RangeError('Buffer size must be a multiple of 64-bits')
-	  }
-	  for (var i = 0; i < len; i += 8) {
-	    swap(this, i, i + 7)
-	    swap(this, i + 1, i + 6)
-	    swap(this, i + 2, i + 5)
-	    swap(this, i + 3, i + 4)
-	  }
-	  return this
 	}
 
 	Buffer.prototype.toString = function toString () {
@@ -93148,197 +92791,63 @@
 	  return '<Buffer ' + str + '>'
 	}
 
-	Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
-	  if (!Buffer.isBuffer(target)) {
-	    throw new TypeError('Argument must be a Buffer')
-	  }
-
-	  if (start === undefined) {
-	    start = 0
-	  }
-	  if (end === undefined) {
-	    end = target ? target.length : 0
-	  }
-	  if (thisStart === undefined) {
-	    thisStart = 0
-	  }
-	  if (thisEnd === undefined) {
-	    thisEnd = this.length
-	  }
-
-	  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-	    throw new RangeError('out of range index')
-	  }
-
-	  if (thisStart >= thisEnd && start >= end) {
-	    return 0
-	  }
-	  if (thisStart >= thisEnd) {
-	    return -1
-	  }
-	  if (start >= end) {
-	    return 1
-	  }
-
-	  start >>>= 0
-	  end >>>= 0
-	  thisStart >>>= 0
-	  thisEnd >>>= 0
-
-	  if (this === target) return 0
-
-	  var x = thisEnd - thisStart
-	  var y = end - start
-	  var len = Math.min(x, y)
-
-	  var thisCopy = this.slice(thisStart, thisEnd)
-	  var targetCopy = target.slice(start, end)
-
-	  for (var i = 0; i < len; ++i) {
-	    if (thisCopy[i] !== targetCopy[i]) {
-	      x = thisCopy[i]
-	      y = targetCopy[i]
-	      break
-	    }
-	  }
-
-	  if (x < y) return -1
-	  if (y < x) return 1
-	  return 0
+	Buffer.prototype.compare = function compare (b) {
+	  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+	  if (this === b) return 0
+	  return Buffer.compare(this, b)
 	}
 
-	// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
-	// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
-	//
-	// Arguments:
-	// - buffer - a Buffer to search
-	// - val - a string, Buffer, or number
-	// - byteOffset - an index into `buffer`; will be clamped to an int32
-	// - encoding - an optional encoding, relevant is val is a string
-	// - dir - true for indexOf, false for lastIndexOf
-	function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
-	  // Empty buffer means no match
-	  if (buffer.length === 0) return -1
+	Buffer.prototype.indexOf = function indexOf (val, byteOffset) {
+	  if (byteOffset > 0x7fffffff) byteOffset = 0x7fffffff
+	  else if (byteOffset < -0x80000000) byteOffset = -0x80000000
+	  byteOffset >>= 0
 
-	  // Normalize byteOffset
-	  if (typeof byteOffset === 'string') {
-	    encoding = byteOffset
-	    byteOffset = 0
-	  } else if (byteOffset > 0x7fffffff) {
-	    byteOffset = 0x7fffffff
-	  } else if (byteOffset < -0x80000000) {
-	    byteOffset = -0x80000000
-	  }
-	  byteOffset = +byteOffset  // Coerce to Number.
-	  if (isNaN(byteOffset)) {
-	    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-	    byteOffset = dir ? 0 : (buffer.length - 1)
-	  }
+	  if (this.length === 0) return -1
+	  if (byteOffset >= this.length) return -1
 
-	  // Normalize byteOffset: negative offsets start from the end of the buffer
-	  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
-	  if (byteOffset >= buffer.length) {
-	    if (dir) return -1
-	    else byteOffset = buffer.length - 1
-	  } else if (byteOffset < 0) {
-	    if (dir) byteOffset = 0
-	    else return -1
-	  }
+	  // Negative offsets start from the end of the buffer
+	  if (byteOffset < 0) byteOffset = Math.max(this.length + byteOffset, 0)
 
-	  // Normalize val
 	  if (typeof val === 'string') {
-	    val = Buffer.from(val, encoding)
+	    if (val.length === 0) return -1 // special case: looking for empty string always fails
+	    return String.prototype.indexOf.call(this, val, byteOffset)
+	  }
+	  if (Buffer.isBuffer(val)) {
+	    return arrayIndexOf(this, val, byteOffset)
+	  }
+	  if (typeof val === 'number') {
+	    if (Buffer.TYPED_ARRAY_SUPPORT && Uint8Array.prototype.indexOf === 'function') {
+	      return Uint8Array.prototype.indexOf.call(this, val, byteOffset)
+	    }
+	    return arrayIndexOf(this, [ val ], byteOffset)
 	  }
 
-	  // Finally, search either indexOf (if dir is true) or lastIndexOf
-	  if (Buffer.isBuffer(val)) {
-	    // Special case: looking for empty string/buffer always fails
-	    if (val.length === 0) {
-	      return -1
-	    }
-	    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
-	  } else if (typeof val === 'number') {
-	    val = val & 0xFF // Search for a byte value [0-255]
-	    if (Buffer.TYPED_ARRAY_SUPPORT &&
-	        typeof Uint8Array.prototype.indexOf === 'function') {
-	      if (dir) {
-	        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+	  function arrayIndexOf (arr, val, byteOffset) {
+	    var foundIndex = -1
+	    for (var i = 0; byteOffset + i < arr.length; i++) {
+	      if (arr[byteOffset + i] === val[foundIndex === -1 ? 0 : i - foundIndex]) {
+	        if (foundIndex === -1) foundIndex = i
+	        if (i - foundIndex + 1 === val.length) return byteOffset + foundIndex
 	      } else {
-	        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+	        foundIndex = -1
 	      }
 	    }
-	    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+	    return -1
 	  }
 
 	  throw new TypeError('val must be string, number or Buffer')
 	}
 
-	function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
-	  var indexSize = 1
-	  var arrLength = arr.length
-	  var valLength = val.length
-
-	  if (encoding !== undefined) {
-	    encoding = String(encoding).toLowerCase()
-	    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-	        encoding === 'utf16le' || encoding === 'utf-16le') {
-	      if (arr.length < 2 || val.length < 2) {
-	        return -1
-	      }
-	      indexSize = 2
-	      arrLength /= 2
-	      valLength /= 2
-	      byteOffset /= 2
-	    }
-	  }
-
-	  function read (buf, i) {
-	    if (indexSize === 1) {
-	      return buf[i]
-	    } else {
-	      return buf.readUInt16BE(i * indexSize)
-	    }
-	  }
-
-	  var i
-	  if (dir) {
-	    var foundIndex = -1
-	    for (i = byteOffset; i < arrLength; i++) {
-	      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-	        if (foundIndex === -1) foundIndex = i
-	        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
-	      } else {
-	        if (foundIndex !== -1) i -= i - foundIndex
-	        foundIndex = -1
-	      }
-	    }
-	  } else {
-	    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
-	    for (i = byteOffset; i >= 0; i--) {
-	      var found = true
-	      for (var j = 0; j < valLength; j++) {
-	        if (read(arr, i + j) !== read(val, j)) {
-	          found = false
-	          break
-	        }
-	      }
-	      if (found) return i
-	    }
-	  }
-
-	  return -1
+	// `get` is deprecated
+	Buffer.prototype.get = function get (offset) {
+	  console.log('.get() is deprecated. Access using array indexes instead.')
+	  return this.readUInt8(offset)
 	}
 
-	Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
-	  return this.indexOf(val, byteOffset, encoding) !== -1
-	}
-
-	Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
-	  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-	}
-
-	Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
-	  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+	// `set` is deprecated
+	Buffer.prototype.set = function set (v, offset) {
+	  console.log('.set() is deprecated. Access using array indexes instead.')
+	  return this.writeUInt8(v, offset)
 	}
 
 	function hexWrite (buf, string, offset, length) {
@@ -93355,14 +92864,14 @@
 
 	  // must be an even number of digits
 	  var strLen = string.length
-	  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+	  if (strLen % 2 !== 0) throw new Error('Invalid hex string')
 
 	  if (length > strLen / 2) {
 	    length = strLen / 2
 	  }
-	  for (var i = 0; i < length; ++i) {
+	  for (var i = 0; i < length; i++) {
 	    var parsed = parseInt(string.substr(i * 2, 2), 16)
-	    if (isNaN(parsed)) return i
+	    if (isNaN(parsed)) throw new Error('Invalid hex string')
 	    buf[offset + i] = parsed
 	  }
 	  return i
@@ -93376,7 +92885,7 @@
 	  return blitBuffer(asciiToBytes(string), buf, offset, length)
 	}
 
-	function latin1Write (buf, string, offset, length) {
+	function binaryWrite (buf, string, offset, length) {
 	  return asciiWrite(buf, string, offset, length)
 	}
 
@@ -93411,16 +92920,17 @@
 	    }
 	  // legacy write(string, encoding, offset, length) - remove in v0.13
 	  } else {
-	    throw new Error(
-	      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
-	    )
+	    var swap = encoding
+	    encoding = offset
+	    offset = length | 0
+	    length = swap
 	  }
 
 	  var remaining = this.length - offset
 	  if (length === undefined || length > remaining) length = remaining
 
 	  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-	    throw new RangeError('Attempt to write outside buffer bounds')
+	    throw new RangeError('attempt to write outside buffer bounds')
 	  }
 
 	  if (!encoding) encoding = 'utf8'
@@ -93438,9 +92948,8 @@
 	      case 'ascii':
 	        return asciiWrite(this, string, offset, length)
 
-	      case 'latin1':
 	      case 'binary':
-	        return latin1Write(this, string, offset, length)
+	        return binaryWrite(this, string, offset, length)
 
 	      case 'base64':
 	        // Warning: maxLength not taken into account in base64Write
@@ -93575,17 +93084,17 @@
 	  var ret = ''
 	  end = Math.min(buf.length, end)
 
-	  for (var i = start; i < end; ++i) {
+	  for (var i = start; i < end; i++) {
 	    ret += String.fromCharCode(buf[i] & 0x7F)
 	  }
 	  return ret
 	}
 
-	function latin1Slice (buf, start, end) {
+	function binarySlice (buf, start, end) {
 	  var ret = ''
 	  end = Math.min(buf.length, end)
 
-	  for (var i = start; i < end; ++i) {
+	  for (var i = start; i < end; i++) {
 	    ret += String.fromCharCode(buf[i])
 	  }
 	  return ret
@@ -93598,7 +93107,7 @@
 	  if (!end || end < 0 || end > len) end = len
 
 	  var out = ''
-	  for (var i = start; i < end; ++i) {
+	  for (var i = start; i < end; i++) {
 	    out += toHex(buf[i])
 	  }
 	  return out
@@ -93636,15 +93145,16 @@
 
 	  var newBuf
 	  if (Buffer.TYPED_ARRAY_SUPPORT) {
-	    newBuf = this.subarray(start, end)
-	    newBuf.__proto__ = Buffer.prototype
+	    newBuf = Buffer._augment(this.subarray(start, end))
 	  } else {
 	    var sliceLen = end - start
 	    newBuf = new Buffer(sliceLen, undefined)
-	    for (var i = 0; i < sliceLen; ++i) {
+	    for (var i = 0; i < sliceLen; i++) {
 	      newBuf[i] = this[i + start]
 	    }
 	  }
+
+	  if (newBuf.length) newBuf.parent = this.parent || this
 
 	  return newBuf
 	}
@@ -93814,19 +93324,16 @@
 	}
 
 	function checkInt (buf, value, offset, ext, max, min) {
-	  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
-	  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
-	  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+	  if (!Buffer.isBuffer(buf)) throw new TypeError('buffer must be a Buffer instance')
+	  if (value > max || value < min) throw new RangeError('value is out of bounds')
+	  if (offset + ext > buf.length) throw new RangeError('index out of range')
 	}
 
 	Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
 	  value = +value
 	  offset = offset | 0
 	  byteLength = byteLength | 0
-	  if (!noAssert) {
-	    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-	    checkInt(this, value, offset, byteLength, maxBytes, 0)
-	  }
+	  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
 
 	  var mul = 1
 	  var i = 0
@@ -93842,10 +93349,7 @@
 	  value = +value
 	  offset = offset | 0
 	  byteLength = byteLength | 0
-	  if (!noAssert) {
-	    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-	    checkInt(this, value, offset, byteLength, maxBytes, 0)
-	  }
+	  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
 
 	  var i = byteLength - 1
 	  var mul = 1
@@ -93868,7 +93372,7 @@
 
 	function objectWriteUInt16 (buf, value, offset, littleEndian) {
 	  if (value < 0) value = 0xffff + value + 1
-	  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+	  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; i++) {
 	    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
 	      (littleEndian ? i : 1 - i) * 8
 	  }
@@ -93902,7 +93406,7 @@
 
 	function objectWriteUInt32 (buf, value, offset, littleEndian) {
 	  if (value < 0) value = 0xffffffff + value + 1
-	  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+	  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; i++) {
 	    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
 	  }
 	}
@@ -93948,12 +93452,9 @@
 
 	  var i = 0
 	  var mul = 1
-	  var sub = 0
+	  var sub = value < 0 ? 1 : 0
 	  this[offset] = value & 0xFF
 	  while (++i < byteLength && (mul *= 0x100)) {
-	    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-	      sub = 1
-	    }
 	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
 	  }
 
@@ -93971,12 +93472,9 @@
 
 	  var i = byteLength - 1
 	  var mul = 1
-	  var sub = 0
+	  var sub = value < 0 ? 1 : 0
 	  this[offset + i] = value & 0xFF
 	  while (--i >= 0 && (mul *= 0x100)) {
-	    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-	      sub = 1
-	    }
 	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
 	  }
 
@@ -94051,8 +93549,9 @@
 	}
 
 	function checkIEEE754 (buf, value, offset, ext, max, min) {
-	  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-	  if (offset < 0) throw new RangeError('Index out of range')
+	  if (value > max || value < min) throw new RangeError('value is out of bounds')
+	  if (offset + ext > buf.length) throw new RangeError('index out of range')
+	  if (offset < 0) throw new RangeError('index out of range')
 	}
 
 	function writeFloat (buf, value, offset, littleEndian, noAssert) {
@@ -94117,90 +93616,142 @@
 
 	  if (this === target && start < targetStart && targetStart < end) {
 	    // descending copy from end
-	    for (i = len - 1; i >= 0; --i) {
+	    for (i = len - 1; i >= 0; i--) {
 	      target[i + targetStart] = this[i + start]
 	    }
 	  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
 	    // ascending copy from start
-	    for (i = 0; i < len; ++i) {
+	    for (i = 0; i < len; i++) {
 	      target[i + targetStart] = this[i + start]
 	    }
 	  } else {
-	    Uint8Array.prototype.set.call(
-	      target,
-	      this.subarray(start, start + len),
-	      targetStart
-	    )
+	    target._set(this.subarray(start, start + len), targetStart)
 	  }
 
 	  return len
 	}
 
-	// Usage:
-	//    buffer.fill(number[, offset[, end]])
-	//    buffer.fill(buffer[, offset[, end]])
-	//    buffer.fill(string[, offset[, end]][, encoding])
-	Buffer.prototype.fill = function fill (val, start, end, encoding) {
-	  // Handle string cases:
-	  if (typeof val === 'string') {
-	    if (typeof start === 'string') {
-	      encoding = start
-	      start = 0
-	      end = this.length
-	    } else if (typeof end === 'string') {
-	      encoding = end
-	      end = this.length
-	    }
-	    if (val.length === 1) {
-	      var code = val.charCodeAt(0)
-	      if (code < 256) {
-	        val = code
-	      }
-	    }
-	    if (encoding !== undefined && typeof encoding !== 'string') {
-	      throw new TypeError('encoding must be a string')
-	    }
-	    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-	      throw new TypeError('Unknown encoding: ' + encoding)
-	    }
-	  } else if (typeof val === 'number') {
-	    val = val & 255
-	  }
+	// fill(value, start=0, end=buffer.length)
+	Buffer.prototype.fill = function fill (value, start, end) {
+	  if (!value) value = 0
+	  if (!start) start = 0
+	  if (!end) end = this.length
 
-	  // Invalid ranges are not set to a default, so can range check early.
-	  if (start < 0 || this.length < start || this.length < end) {
-	    throw new RangeError('Out of range index')
-	  }
+	  if (end < start) throw new RangeError('end < start')
 
-	  if (end <= start) {
-	    return this
-	  }
+	  // Fill 0 bytes; we're done
+	  if (end === start) return
+	  if (this.length === 0) return
 
-	  start = start >>> 0
-	  end = end === undefined ? this.length : end >>> 0
-
-	  if (!val) val = 0
+	  if (start < 0 || start >= this.length) throw new RangeError('start out of bounds')
+	  if (end < 0 || end > this.length) throw new RangeError('end out of bounds')
 
 	  var i
-	  if (typeof val === 'number') {
-	    for (i = start; i < end; ++i) {
-	      this[i] = val
+	  if (typeof value === 'number') {
+	    for (i = start; i < end; i++) {
+	      this[i] = value
 	    }
 	  } else {
-	    var bytes = Buffer.isBuffer(val)
-	      ? val
-	      : utf8ToBytes(new Buffer(val, encoding).toString())
+	    var bytes = utf8ToBytes(value.toString())
 	    var len = bytes.length
-	    for (i = 0; i < end - start; ++i) {
-	      this[i + start] = bytes[i % len]
+	    for (i = start; i < end; i++) {
+	      this[i] = bytes[i % len]
 	    }
 	  }
 
 	  return this
 	}
 
+	/**
+	 * Creates a new `ArrayBuffer` with the *copied* memory of the buffer instance.
+	 * Added in Node 0.12. Only available in browsers that support ArrayBuffer.
+	 */
+	Buffer.prototype.toArrayBuffer = function toArrayBuffer () {
+	  if (typeof Uint8Array !== 'undefined') {
+	    if (Buffer.TYPED_ARRAY_SUPPORT) {
+	      return (new Buffer(this)).buffer
+	    } else {
+	      var buf = new Uint8Array(this.length)
+	      for (var i = 0, len = buf.length; i < len; i += 1) {
+	        buf[i] = this[i]
+	      }
+	      return buf.buffer
+	    }
+	  } else {
+	    throw new TypeError('Buffer.toArrayBuffer not supported in this browser')
+	  }
+	}
+
 	// HELPER FUNCTIONS
 	// ================
+
+	var BP = Buffer.prototype
+
+	/**
+	 * Augment a Uint8Array *instance* (not the Uint8Array class!) with Buffer methods
+	 */
+	Buffer._augment = function _augment (arr) {
+	  arr.constructor = Buffer
+	  arr._isBuffer = true
+
+	  // save reference to original Uint8Array set method before overwriting
+	  arr._set = arr.set
+
+	  // deprecated
+	  arr.get = BP.get
+	  arr.set = BP.set
+
+	  arr.write = BP.write
+	  arr.toString = BP.toString
+	  arr.toLocaleString = BP.toString
+	  arr.toJSON = BP.toJSON
+	  arr.equals = BP.equals
+	  arr.compare = BP.compare
+	  arr.indexOf = BP.indexOf
+	  arr.copy = BP.copy
+	  arr.slice = BP.slice
+	  arr.readUIntLE = BP.readUIntLE
+	  arr.readUIntBE = BP.readUIntBE
+	  arr.readUInt8 = BP.readUInt8
+	  arr.readUInt16LE = BP.readUInt16LE
+	  arr.readUInt16BE = BP.readUInt16BE
+	  arr.readUInt32LE = BP.readUInt32LE
+	  arr.readUInt32BE = BP.readUInt32BE
+	  arr.readIntLE = BP.readIntLE
+	  arr.readIntBE = BP.readIntBE
+	  arr.readInt8 = BP.readInt8
+	  arr.readInt16LE = BP.readInt16LE
+	  arr.readInt16BE = BP.readInt16BE
+	  arr.readInt32LE = BP.readInt32LE
+	  arr.readInt32BE = BP.readInt32BE
+	  arr.readFloatLE = BP.readFloatLE
+	  arr.readFloatBE = BP.readFloatBE
+	  arr.readDoubleLE = BP.readDoubleLE
+	  arr.readDoubleBE = BP.readDoubleBE
+	  arr.writeUInt8 = BP.writeUInt8
+	  arr.writeUIntLE = BP.writeUIntLE
+	  arr.writeUIntBE = BP.writeUIntBE
+	  arr.writeUInt16LE = BP.writeUInt16LE
+	  arr.writeUInt16BE = BP.writeUInt16BE
+	  arr.writeUInt32LE = BP.writeUInt32LE
+	  arr.writeUInt32BE = BP.writeUInt32BE
+	  arr.writeIntLE = BP.writeIntLE
+	  arr.writeIntBE = BP.writeIntBE
+	  arr.writeInt8 = BP.writeInt8
+	  arr.writeInt16LE = BP.writeInt16LE
+	  arr.writeInt16BE = BP.writeInt16BE
+	  arr.writeInt32LE = BP.writeInt32LE
+	  arr.writeInt32BE = BP.writeInt32BE
+	  arr.writeFloatLE = BP.writeFloatLE
+	  arr.writeFloatBE = BP.writeFloatBE
+	  arr.writeDoubleLE = BP.writeDoubleLE
+	  arr.writeDoubleBE = BP.writeDoubleBE
+	  arr.fill = BP.fill
+	  arr.inspect = BP.inspect
+	  arr.toArrayBuffer = BP.toArrayBuffer
+
+	  return arr
+	}
 
 	var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
 
@@ -94233,7 +93784,7 @@
 	  var leadSurrogate = null
 	  var bytes = []
 
-	  for (var i = 0; i < length; ++i) {
+	  for (var i = 0; i < length; i++) {
 	    codePoint = string.charCodeAt(i)
 
 	    // is surrogate component
@@ -94308,7 +93859,7 @@
 
 	function asciiToBytes (str) {
 	  var byteArray = []
-	  for (var i = 0; i < str.length; ++i) {
+	  for (var i = 0; i < str.length; i++) {
 	    // Node's code seems to be doing this and not & 0x7F..
 	    byteArray.push(str.charCodeAt(i) & 0xFF)
 	  }
@@ -94318,7 +93869,7 @@
 	function utf16leToBytes (str, units) {
 	  var c, hi, lo
 	  var byteArray = []
-	  for (var i = 0; i < str.length; ++i) {
+	  for (var i = 0; i < str.length; i++) {
 	    if ((units -= 2) < 0) break
 
 	    c = str.charCodeAt(i)
@@ -94336,132 +93887,143 @@
 	}
 
 	function blitBuffer (src, dst, offset, length) {
-	  for (var i = 0; i < length; ++i) {
+	  for (var i = 0; i < length; i++) {
 	    if ((i + offset >= dst.length) || (i >= src.length)) break
 	    dst[i + offset] = src[i]
 	  }
 	  return i
 	}
 
-	function isnan (val) {
-	  return val !== val // eslint-disable-line no-self-compare
-	}
-
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer, (function() { return this; }())))
 
 /***/ },
 /* 127 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-	exports.toByteArray = toByteArray
-	exports.fromByteArray = fromByteArray
+	;(function (exports) {
+		'use strict';
 
-	var lookup = []
-	var revLookup = []
-	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+	  var Arr = (typeof Uint8Array !== 'undefined')
+	    ? Uint8Array
+	    : Array
 
-	function init () {
-	  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-	  for (var i = 0, len = code.length; i < len; ++i) {
-	    lookup[i] = code[i]
-	    revLookup[code.charCodeAt(i)] = i
-	  }
+		var PLUS   = '+'.charCodeAt(0)
+		var SLASH  = '/'.charCodeAt(0)
+		var NUMBER = '0'.charCodeAt(0)
+		var LOWER  = 'a'.charCodeAt(0)
+		var UPPER  = 'A'.charCodeAt(0)
+		var PLUS_URL_SAFE = '-'.charCodeAt(0)
+		var SLASH_URL_SAFE = '_'.charCodeAt(0)
 
-	  revLookup['-'.charCodeAt(0)] = 62
-	  revLookup['_'.charCodeAt(0)] = 63
-	}
+		function decode (elt) {
+			var code = elt.charCodeAt(0)
+			if (code === PLUS ||
+			    code === PLUS_URL_SAFE)
+				return 62 // '+'
+			if (code === SLASH ||
+			    code === SLASH_URL_SAFE)
+				return 63 // '/'
+			if (code < NUMBER)
+				return -1 //no match
+			if (code < NUMBER + 10)
+				return code - NUMBER + 26 + 26
+			if (code < UPPER + 26)
+				return code - UPPER
+			if (code < LOWER + 26)
+				return code - LOWER + 26
+		}
 
-	init()
+		function b64ToByteArray (b64) {
+			var i, j, l, tmp, placeHolders, arr
 
-	function toByteArray (b64) {
-	  var i, j, l, tmp, placeHolders, arr
-	  var len = b64.length
+			if (b64.length % 4 > 0) {
+				throw new Error('Invalid string. Length must be a multiple of 4')
+			}
 
-	  if (len % 4 > 0) {
-	    throw new Error('Invalid string. Length must be a multiple of 4')
-	  }
+			// the number of equal signs (place holders)
+			// if there are two placeholders, than the two characters before it
+			// represent one byte
+			// if there is only one, then the three characters before it represent 2 bytes
+			// this is just a cheap hack to not do indexOf twice
+			var len = b64.length
+			placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
 
-	  // the number of equal signs (place holders)
-	  // if there are two placeholders, than the two characters before it
-	  // represent one byte
-	  // if there is only one, then the three characters before it represent 2 bytes
-	  // this is just a cheap hack to not do indexOf twice
-	  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+			// base64 is 4/3 + up to two characters of the original data
+			arr = new Arr(b64.length * 3 / 4 - placeHolders)
 
-	  // base64 is 4/3 + up to two characters of the original data
-	  arr = new Arr(len * 3 / 4 - placeHolders)
+			// if there are placeholders, only get up to the last complete 4 chars
+			l = placeHolders > 0 ? b64.length - 4 : b64.length
 
-	  // if there are placeholders, only get up to the last complete 4 chars
-	  l = placeHolders > 0 ? len - 4 : len
+			var L = 0
 
-	  var L = 0
+			function push (v) {
+				arr[L++] = v
+			}
 
-	  for (i = 0, j = 0; i < l; i += 4, j += 3) {
-	    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-	    arr[L++] = (tmp >> 16) & 0xFF
-	    arr[L++] = (tmp >> 8) & 0xFF
-	    arr[L++] = tmp & 0xFF
-	  }
+			for (i = 0, j = 0; i < l; i += 4, j += 3) {
+				tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
+				push((tmp & 0xFF0000) >> 16)
+				push((tmp & 0xFF00) >> 8)
+				push(tmp & 0xFF)
+			}
 
-	  if (placeHolders === 2) {
-	    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
-	    arr[L++] = tmp & 0xFF
-	  } else if (placeHolders === 1) {
-	    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
-	    arr[L++] = (tmp >> 8) & 0xFF
-	    arr[L++] = tmp & 0xFF
-	  }
+			if (placeHolders === 2) {
+				tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
+				push(tmp & 0xFF)
+			} else if (placeHolders === 1) {
+				tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
+				push((tmp >> 8) & 0xFF)
+				push(tmp & 0xFF)
+			}
 
-	  return arr
-	}
+			return arr
+		}
 
-	function tripletToBase64 (num) {
-	  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
-	}
+		function uint8ToBase64 (uint8) {
+			var i,
+				extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
+				output = "",
+				temp, length
 
-	function encodeChunk (uint8, start, end) {
-	  var tmp
-	  var output = []
-	  for (var i = start; i < end; i += 3) {
-	    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-	    output.push(tripletToBase64(tmp))
-	  }
-	  return output.join('')
-	}
+			function encode (num) {
+				return lookup.charAt(num)
+			}
 
-	function fromByteArray (uint8) {
-	  var tmp
-	  var len = uint8.length
-	  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-	  var output = ''
-	  var parts = []
-	  var maxChunkLength = 16383 // must be multiple of 3
+			function tripletToBase64 (num) {
+				return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
+			}
 
-	  // go through the array every three bytes, we'll deal with trailing stuff later
-	  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-	    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
-	  }
+			// go through the array every three bytes, we'll deal with trailing stuff later
+			for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
+				temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+				output += tripletToBase64(temp)
+			}
 
-	  // pad the end with zeros, but make sure to not forget the extra bytes
-	  if (extraBytes === 1) {
-	    tmp = uint8[len - 1]
-	    output += lookup[tmp >> 2]
-	    output += lookup[(tmp << 4) & 0x3F]
-	    output += '=='
-	  } else if (extraBytes === 2) {
-	    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
-	    output += lookup[tmp >> 10]
-	    output += lookup[(tmp >> 4) & 0x3F]
-	    output += lookup[(tmp << 2) & 0x3F]
-	    output += '='
-	  }
+			// pad the end with zeros, but make sure to not forget the extra bytes
+			switch (extraBytes) {
+				case 1:
+					temp = uint8[uint8.length - 1]
+					output += encode(temp >> 2)
+					output += encode((temp << 4) & 0x3F)
+					output += '=='
+					break
+				case 2:
+					temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
+					output += encode(temp >> 10)
+					output += encode((temp >> 4) & 0x3F)
+					output += encode((temp << 2) & 0x3F)
+					output += '='
+					break
+			}
 
-	  parts.push(output)
+			return output
+		}
 
-	  return parts.join('')
-	}
+		exports.toByteArray = b64ToByteArray
+		exports.fromByteArray = uint8ToBase64
+	}( false ? (this.base64js = {}) : exports))
 
 
 /***/ },
@@ -95537,7 +95099,7 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(65)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(64)))
 
 /***/ },
 /* 138 */
@@ -96674,7 +96236,7 @@
 	  function ImageAsset(json) {
 	    _classCallCheck(this, ImageAsset);
 
-	    var _this = _possibleConstructorReturn(this, (ImageAsset.__proto__ || Object.getPrototypeOf(ImageAsset)).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ImageAsset).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -96694,7 +96256,7 @@
 
 	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading image, ' + this.getName());
 
-	        _get(ImageAsset.prototype.__proto__ || Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
+	        _get(Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
 	      }
 
 	      this.loadedBytes = 0;
@@ -96993,7 +96555,7 @@
 	  function MeshGeometryAsset(json) {
 	    _classCallCheck(this, MeshGeometryAsset);
 
-	    return _possibleConstructorReturn(this, (MeshGeometryAsset.__proto__ || Object.getPrototypeOf(MeshGeometryAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MeshGeometryAsset).call(this, json));
 	  }
 
 	  _createClass(MeshGeometryAsset, [{
@@ -97312,7 +96874,7 @@
 	  function BaseGeometryAsset(json) {
 	    _classCallCheck(this, BaseGeometryAsset);
 
-	    var _this = _possibleConstructorReturn(this, (BaseGeometryAsset.__proto__ || Object.getPrototypeOf(BaseGeometryAsset)).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseGeometryAsset).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    _this.geometries = {};
@@ -97327,7 +96889,7 @@
 	  _createClass(BaseGeometryAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(BaseGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(BaseGeometryAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: 'unload',
@@ -97344,7 +96906,7 @@
 	      });
 
 	      this.geometries = {};
-	      _get(BaseGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(BaseGeometryAsset.prototype), 'unload', this).call(this);
+	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'unload', this).call(this);
 	    }
 
 	    /**
@@ -97555,13 +97117,13 @@
 	  function PrefabAsset(json) {
 	    _classCallCheck(this, PrefabAsset);
 
-	    return _possibleConstructorReturn(this, (PrefabAsset.__proto__ || Object.getPrototypeOf(PrefabAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
 	  }
 
 	  _createClass(PrefabAsset, [{
 	    key: 'verifyProperty',
 	    value: function verifyProperty(propertyName, valueObj) {
-	      if (_get(PrefabAsset.prototype.__proto__ || Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	      if (_get(Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
 	        return true;
 	      }
 	      var originalType = this.get('originalType') || 'node';
@@ -97651,13 +97213,13 @@
 	  function PrimitiveGeometryAsset(json) {
 	    _classCallCheck(this, PrimitiveGeometryAsset);
 
-	    return _possibleConstructorReturn(this, (PrimitiveGeometryAsset.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrimitiveGeometryAsset).call(this, json));
 	  }
 
 	  _createClass(PrimitiveGeometryAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(PrimitiveGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: 'createRuntimeData',
@@ -97675,7 +97237,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(PrimitiveGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (reason !== 'init') {
 	        // Currently, any property changes cause the runtimeData to be re-created.
@@ -97872,7 +97434,7 @@
 	  function RenderTexture2DAsset(json) {
 	    _classCallCheck(this, RenderTexture2DAsset);
 
-	    return _possibleConstructorReturn(this, (RenderTexture2DAsset.__proto__ || Object.getPrototypeOf(RenderTexture2DAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTexture2DAsset).call(this, json));
 	  }
 
 	  /** @inheritdoc */
@@ -97942,7 +97504,7 @@
 	  function BaseRenderTextureAsset(json) {
 	    _classCallCheck(this, BaseRenderTextureAsset);
 
-	    return _possibleConstructorReturn(this, (BaseRenderTextureAsset.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(BaseRenderTextureAsset).call(this, json));
 	  }
 
 	  /**
@@ -97957,7 +97519,7 @@
 	    /** @inheritdoc */
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(BaseRenderTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(BaseRenderTextureAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -98007,7 +97569,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(BaseRenderTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(BaseRenderTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If something changed that necessitates the texture being recreated, do so.
 	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
@@ -98099,7 +97661,7 @@
 	  function RenderTextureCubeAsset(json) {
 	    _classCallCheck(this, RenderTextureCubeAsset);
 
-	    return _possibleConstructorReturn(this, (RenderTextureCubeAsset.__proto__ || Object.getPrototypeOf(RenderTextureCubeAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTextureCubeAsset).call(this, json));
 	  }
 
 	  /**
@@ -98136,7 +97698,7 @@
 	  }, {
 	    key: 'getDataSizeInMemory',
 	    value: function getDataSizeInMemory() {
-	      var oneFaceSize = _get(RenderTextureCubeAsset.prototype.__proto__ || Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
+	      var oneFaceSize = _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
 	      return oneFaceSize * 6;
 	    }
 	  }]);
@@ -98209,14 +97771,14 @@
 	  function SceneAsset(json) {
 	    _classCallCheck(this, SceneAsset);
 
-	    return _possibleConstructorReturn(this, (SceneAsset.__proto__ || Object.getPrototypeOf(SceneAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SceneAsset).call(this, json));
 	  }
 
 	  _createClass(SceneAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('prefabDeleted', this.onPrefabDeleted, this);
 	      this.on('load', this._sceneLoaded, this);
 	    }
@@ -98225,7 +97787,7 @@
 	    value: function uninitialize(properties) {
 	      this.box3DRuntime.off('prefabDeleted', this.onPrefabDeleted, this);
 	      this.off('load', this._sceneLoaded, this);
-	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'uninitialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'uninitialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: '_sceneLoaded',
@@ -98344,7 +97906,7 @@
 	    key: 'getDataSizeGeometryDownload',
 	    value: function getDataSizeGeometryDownload() {
 	      var totalSize = 0;
-	      totalSize = _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
+	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
 
 	      return totalSize;
 	    }
@@ -98352,7 +97914,7 @@
 	    key: 'getDataSizeGeometryInMemory',
 	    value: function getDataSizeGeometryInMemory() {
 	      var totalSize = 0;
-	      totalSize = _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
+	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
 	      return totalSize;
 	    }
 
@@ -98372,7 +97934,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (!this.getProperty('fogEnabled')) {
 	        this.runtimeData.fog = null;
@@ -98406,7 +97968,7 @@
 	      if (this.runtimeData) {
 	        _log2.default.info('Unloading scene, ' + this.getName());
 
-	        _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
+	        _get(Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
 	      }
 	    }
 	  }, {
@@ -98497,13 +98059,13 @@
 	  function ScriptAsset(json) {
 	    _classCallCheck(this, ScriptAsset);
 
-	    return _possibleConstructorReturn(this, (ScriptAsset.__proto__ || Object.getPrototypeOf(ScriptAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptAsset).call(this, json));
 	  }
 
 	  _createClass(ScriptAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(ScriptAsset.prototype.__proto__ || Object.getPrototypeOf(ScriptAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'initialize', this).call(this, properties);
 	      var category = this.getProperty('category');
 	      if (!category) {
 	        this.setProperty('category', 'User Defined');
@@ -98513,7 +98075,7 @@
 	  }, {
 	    key: 'uninitialize',
 	    value: function uninitialize() {
-	      _get(ScriptAsset.prototype.__proto__ || Object.getPrototypeOf(ScriptAsset.prototype), 'uninitialize', this).apply(this, arguments);
+	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'uninitialize', this).apply(this, arguments);
 	    }
 	  }, {
 	    key: 'initializeComponents',
@@ -98735,13 +98297,13 @@
 	  function ShaderAsset(json) {
 	    _classCallCheck(this, ShaderAsset);
 
-	    return _possibleConstructorReturn(this, (ShaderAsset.__proto__ || Object.getPrototypeOf(ShaderAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ShaderAsset).call(this, json));
 	  }
 
 	  _createClass(ShaderAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(ShaderAsset.prototype.__proto__ || Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this, properties);
 	      this.buildParamDependencies();
 	    }
 
@@ -99704,7 +99266,7 @@
 	  function SkinAsset(json) {
 	    _classCallCheck(this, SkinAsset);
 
-	    var _this = _possibleConstructorReturn(this, (SkinAsset.__proto__ || Object.getPrototypeOf(SkinAsset)).call(this, json));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkinAsset).call(this, json));
 
 	    _this.bindShapeMatrix = new _three2.default.Matrix4();
 	    _this.inverseBindMatrices = [];
@@ -99952,13 +99514,13 @@
 	  function Texture2DAsset(json) {
 	    _classCallCheck(this, Texture2DAsset);
 
-	    return _possibleConstructorReturn(this, (Texture2DAsset.__proto__ || Object.getPrototypeOf(Texture2DAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Texture2DAsset).call(this, json));
 	  }
 
 	  _createClass(Texture2DAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Texture2DAsset.prototype.__proto__ || Object.getPrototypeOf(Texture2DAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(Texture2DAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -100063,7 +99625,7 @@
 	        this.hdrSource.dispose();
 	        this.hdrSource = undefined;
 	      }
-	      _get(Texture2DAsset.prototype.__proto__ || Object.getPrototypeOf(Texture2DAsset.prototype), 'unload', this).call(this, options);
+	      _get(Object.getPrototypeOf(Texture2DAsset.prototype), 'unload', this).call(this, options);
 	    }
 	  }]);
 
@@ -100113,13 +99675,13 @@
 	  function VideoAsset(json) {
 	    _classCallCheck(this, VideoAsset);
 
-	    return _possibleConstructorReturn(this, (VideoAsset.__proto__ || Object.getPrototypeOf(VideoAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(VideoAsset).call(this, json));
 	  }
 
 	  _createClass(VideoAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('update', this.onUpdate, this);
 	      this.on('pause', this.pause, this);
 	      this.on('play', this.play, this);
@@ -100140,7 +99702,7 @@
 	        this.runtimeData.image.pause();
 	      }
 
-	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /** @inheritdoc */
@@ -100191,7 +99753,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 	      var videoEl = this.runtimeData.imageData;
 	      if (videoEl) {
 
@@ -100349,7 +99911,7 @@
 	  function TextureCubeAsset(json) {
 	    _classCallCheck(this, TextureCubeAsset);
 
-	    return _possibleConstructorReturn(this, (TextureCubeAsset.__proto__ || Object.getPrototypeOf(TextureCubeAsset)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(TextureCubeAsset).call(this, json));
 	  }
 
 	  /**
@@ -100460,7 +100022,7 @@
 	  function Box3DObject(json) {
 	    _classCallCheck(this, Box3DObject);
 
-	    return _possibleConstructorReturn(this, (Box3DObject.__proto__ || Object.getPrototypeOf(Box3DObject)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DObject).call(this, json));
 	  }
 
 	  _createClass(Box3DObject, [{
@@ -100505,7 +100067,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Box3DObject.prototype.__proto__ || Object.getPrototypeOf(Box3DObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(Box3DObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('static')) {
 	        var isStatic = this.getProperty('static');
@@ -101196,7 +100758,7 @@
 	  function CameraObject(json) {
 	    _classCallCheck(this, CameraObject);
 
-	    return _possibleConstructorReturn(this, (CameraObject.__proto__ || Object.getPrototypeOf(CameraObject)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CameraObject).call(this, json));
 	  }
 
 	  _createClass(CameraObject, [{
@@ -101223,7 +100785,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(CameraObject.prototype.__proto__ || Object.getPrototypeOf(CameraObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(CameraObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If the camera type changed, we need to re-create runtimeData.
 	      if (changes.hasOwnProperty('cameraType') && reason !== 'init') {
@@ -101359,13 +100921,13 @@
 	  function LightObject(json) {
 	    _classCallCheck(this, LightObject);
 
-	    return _possibleConstructorReturn(this, (LightObject.__proto__ || Object.getPrototypeOf(LightObject)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(LightObject).call(this, json));
 	  }
 
 	  _createClass(LightObject, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(LightObject.prototype), 'initialize', this).call(this, properties);
 
 	      this.on('setColor', this.setColor, this);
 	      this.on('setIntensity', this.setIntensity, this);
@@ -101408,7 +100970,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this2 = this;
 
-	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(LightObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If the light type changed, we need to re-create the runtimeData.
 	      if (changes.hasOwnProperty('lightType') && reason !== 'init') {
@@ -101505,7 +101067,7 @@
 	        }
 	      }
 
-	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), 'unload', this).call(this, options);
+	      _get(Object.getPrototypeOf(LightObject.prototype), 'unload', this).call(this, options);
 	    }
 	  }, {
 	    key: 'setColor',
@@ -101740,7 +101302,7 @@
 	  function MeshObject(json) {
 	    _classCallCheck(this, MeshObject);
 
-	    return _possibleConstructorReturn(this, (MeshObject.__proto__ || Object.getPrototypeOf(MeshObject)).call(this, json));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MeshObject).call(this, json));
 	  }
 
 	  _createClass(MeshObject, [{
@@ -101749,7 +101311,7 @@
 
 	    /** @inheritdoc */
 	    value: function initialize(properties) {
-	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'initialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(MeshObject.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('materialDeleted', this.onMaterialDeleted, this);
 	      this.on('setMaterial', this.setMaterial, this);
 	      this.on('castShadowsEnable', this.castShadowsEnable, this);
@@ -101767,7 +101329,7 @@
 	      this.off('castShadowsDisable', this.castShadowsDisable, this);
 	      this.off('castShadowsToggle', this.castShadowsToggle, this);
 	      this.box3DRuntime.off('materialDeleted', this.onMaterialDeleted, this);
-	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'uninitialize', this).call(this, properties);
+	      _get(Object.getPrototypeOf(MeshObject.prototype), 'uninitialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -101787,7 +101349,7 @@
 	        this.runtimeData.geometry = null;
 	      }
 
-	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'unload', this).call(this, options);
+	      _get(Object.getPrototypeOf(MeshObject.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /** @inheritdoc */
@@ -101797,7 +101359,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this2 = this;
 
-	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('geometryId')) {
 	        var prevGeometryId = this.getPreviousProperty('geometryId');
