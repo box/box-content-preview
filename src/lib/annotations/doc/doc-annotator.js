@@ -306,7 +306,6 @@ class DocAnnotator extends Annotator {
                 // hover events of other annotations
                 const pendingThreads = this._getHighlightThreadsWithStates(
                     constants.ANNOTATION_STATE_PENDING,
-                    constants.ANNOTATION_STATE_PENDING_ACTIVE,
                     constants.ANNOTATION_STATE_ACTIVE,
                     constants.ANNOTATION_STATE_ACTIVE_HOVER);
                 if (pendingThreads.length) {
@@ -338,15 +337,14 @@ class DocAnnotator extends Annotator {
                         thread.hideDialog(true);
                     });
                 }
-
                 // If we are hovering over a highlight, we should use a hand cursor
                 if (delayThreads.some((thread) => {
                     return thread.state === constants.ANNOTATION_STATE_HOVER ||
                         thread.state === constants.ANNOTATION_STATE_ACTIVE_HOVER;
                 })) {
-                    this._useHandCursor();
+                    this._useDefaultCursor();
                 } else {
-                    this._removeHandCursor();
+                    this._removeDefaultCursor();
                 }
 
                 // Delayed threads (threads that should be in active or hover
@@ -477,23 +475,23 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Show hand cursor instead of normal cursor.
+     * Show normal cursor instead of text cursor.
      *
      * @returns {void}
      * @private
      */
-    _useHandCursor() {
-        this._annotatedElement.classList.add('box-preview-use-hand-cursor');
+    _useDefaultCursor() {
+        this._annotatedElement.classList.add('box-preview-use-default-cursor');
     }
 
     /**
-     * Use normal cursor.
+     * Use text cursor.
      *
      * @returns {void}
      * @private
      */
-    _removeHandCursor() {
-        this._annotatedElement.classList.remove('box-preview-use-hand-cursor');
+    _removeDefaultCursor() {
+        this._annotatedElement.classList.remove('box-preview-use-default-cursor');
     }
 
     /**

@@ -340,13 +340,13 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-use-hand-cursor {
-    cursor: pointer;
+.box-preview-use-default-cursor {
+    cursor: default;
 
     // Overrides pdf_viewer.css
     // scss-lint:disable SelectorFormat
     .textLayer > div {
-        cursor: pointer;
+        cursor: default;
     }
 }
 

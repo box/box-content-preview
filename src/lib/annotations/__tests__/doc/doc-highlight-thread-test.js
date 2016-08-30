@@ -55,7 +55,11 @@ describe('doc-highlight-thread', () => {
             expect(highlightThread.reset).to.have.been.called;
 
             // only plain highlight annotation should still exist
-            assert.equal(highlightThread._annotations.length, 1);
+            expect(highlightThread._annotations.length).to.equal(1);
+
+            // comment textarea should be cleared
+            const annotationTextEl = highlightThread._annotatedElement.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            expect(annotationTextEl.value).to.equal('');
         });
 
         it('should destroy the annotation when cancelling a new highlight comment annotation', () => {
@@ -255,14 +259,6 @@ describe('doc-highlight-thread', () => {
             expect(result).to.be.false;
         });
 
-        it('should not delay drawing highlight if a plain highlight is pending a comment', () => {
-            highlightThread._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
-
-            const result = highlightThread.onMousemove({});
-
-            expect(result).to.be.false;
-        });
-
         it('should delay drawing highlight if mouse is hovering over an active highlight or dialog', () => {
             sandbox.stub(highlightThread, 'isOnHighlight').returns(true);
             sandbox.stub(highlightThread._dialog, 'mouseenterHandler');
@@ -310,11 +306,10 @@ describe('doc-highlight-thread', () => {
         it('should not delay drawing highlight if mouse is not in highlight and the state is not already inactive', () => {
             sandbox.stub(highlightThread, 'isOnHighlight').returns(false);
             sandbox.stub(highlightThread, 'reset');
-            highlightThread._state = constants.ANNOTATION_STATE_HOVER;
+            highlightThread._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
 
             const result = highlightThread.onMousemove({});
 
-            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_HOVER);
             expect(highlightThread.reset).to.have.been.called;
             expect(result).to.be.false;
         });
