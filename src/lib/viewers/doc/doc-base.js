@@ -13,6 +13,7 @@ import Controls from '../../controls';
 import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../../fullscreen';
+import throttle from 'lodash.throttle';
 import { CLASS_BOX_PREVIEW_FIND_BAR } from '../../constants';
 import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
 
@@ -30,6 +31,7 @@ const PRESENTATION_MODE_STATE = {
 };
 const PRESENTATION_VIEWER_NAME = 'Presentation';
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
+const WHEEL_THROTTLE = 200;
 
 @autobind
 class DocBase extends Base {
@@ -744,6 +746,9 @@ class DocBase extends Base {
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
+        // We set passive: true to make page more responsive
+        this.docEl.addEventListener('wheel', this.wheelHandler(), { passive: true });
+
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
@@ -761,6 +766,9 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
+
+            // We set passive: true to make page more responsive
+            this.docEl.removeEventListener('wheel', this.wheelHandler(), { passive: true });
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
@@ -936,6 +944,26 @@ class DocBase extends Base {
 
         // Force resize for annotations
         this.resize();
+    }
+
+    /**
+     * Mousewheel handler - scrolls presentations by page
+     *
+     * @returns {Function} Throttled mousewheel handler
+     * @private
+     */
+    wheelHandler() {
+        if (!this.throttledWheelHandler) {
+            this.throttledWheelHandler = throttle((event) => {
+                if (event.deltaY > 0) {
+                    this.nextPage();
+                } else if (event.deltaY < 0) {
+                    this.previousPage();
+                }
+            }, WHEEL_THROTTLE);
+        }
+
+        return this.throttledWheelHandler;
     }
 }
 
