@@ -6,7 +6,9 @@
 import './document.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
+import fullscreen from '../../fullscreen';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
+import throttle from 'lodash.throttle';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
@@ -17,6 +19,7 @@ import {
 } from '../../icons/icons';
 
 const Box = global.Box || {};
+const WHEEL_THROTTLE = 200;
 
 @autobind
 class Document extends DocBase {
@@ -51,6 +54,12 @@ class Document extends DocBase {
         } else if (key === 'Shift+_') {
             this.zoomOut();
             return true;
+        } else if (key === 'ArrowUp' && fullscreen.isFullscreen(this.containerEl)) {
+            this.previousPage();
+            return true;
+        } else if (key === 'ArrowDown' && fullscreen.isFullscreen(this.containerEl)) {
+            this.nextPage();
+            return true;
         }
 
         return super.onKeydown(key);
@@ -80,6 +89,30 @@ class Document extends DocBase {
 
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+    }
+
+    /**
+     * Mousewheel handler - scrolls presentations by page
+     *
+     * @returns {Function} Throttled mousewheel handler
+     * @private
+     */
+    wheelHandler() {
+        if (!this.throttledWheelHandler) {
+            this.throttledWheelHandler = throttle((event) => {
+                if (!fullscreen.isFullscreen(this.containerEl)) {
+                    return;
+                }
+
+                if (event.deltaY > 0) {
+                    this.nextPage();
+                } else if (event.deltaY < 0) {
+                    this.previousPage();
+                }
+            }, WHEEL_THROTTLE);
+        }
+
+        return this.throttledWheelHandler;
     }
 }
 

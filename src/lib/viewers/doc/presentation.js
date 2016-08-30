@@ -7,7 +7,6 @@ import './presentation.scss';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
-import throttle from 'lodash.throttle';
 import { CLASS_INVISIBLE } from '../../constants';
 import {
     ICON_DROP_DOWN,
@@ -17,7 +16,6 @@ import {
 } from '../../icons/icons';
 
 const Box = global.Box || {};
-const WHEEL_THROTTLE = 200;
 
 @autobind
 class Presentation extends DocBase {
@@ -79,34 +77,6 @@ class Presentation extends DocBase {
     //--------------------------------------------------------------------------
 
     /**
-     * Binds DOM listeners for presentation viewer.
-     *
-     * @override
-     * @returns {void}
-     * @protected
-     */
-    bindDOMListeners() {
-        super.bindDOMListeners();
-
-        // We set passive: true to make page more responsive
-        this.docEl.addEventListener('wheel', this.wheelHandler(), { passive: true });
-    }
-
-    /**
-     * Unbinds DOM listeners for presentation viewer.
-     *
-     * @override
-     * @returns {void}
-     * @protected
-     */
-    unbindDOMListeners() {
-        super.unbindDOMListeners();
-
-        // We set passive: true to make page more responsive
-        this.docEl.removeEventListener('wheel', this.wheelHandler(), { passive: true });
-    }
-
-    /**
      * Adds event listeners for presentation controls
      *
      * @override
@@ -145,26 +115,6 @@ class Presentation extends DocBase {
         });
 
         super.pagesinitHandler();
-    }
-
-    /**
-     * Mousewheel handler - scrolls presentations by page
-     *
-     * @returns {Function} Throttled mousewheel handler
-     * @private
-     */
-    wheelHandler() {
-        if (!this.throttledWheelHandler) {
-            this.throttledWheelHandler = throttle((event) => {
-                if (event.deltaY > 0) {
-                    this.nextPage();
-                } else if (event.deltaY < 0) {
-                    this.previousPage();
-                }
-            }, WHEEL_THROTTLE);
-        }
-
-        return this.throttledWheelHandler;
     }
 }
 
