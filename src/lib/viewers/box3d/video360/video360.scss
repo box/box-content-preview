@@ -10,3 +10,10 @@
     cursor: -webkit-grab;
     cursor: grab;
 }
+
+.box-preview-is-mobile {
+    .box-preview-media-controls-wrapper {
+        opacity: 1!important;
+    }
+}
+
