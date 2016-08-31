@@ -223,7 +223,6 @@ class DocBase extends Base {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(this.pdfViewer.currentScale);
-            this.reRenderAnnotations = true;
         }
 
         super.resize();
@@ -386,7 +385,6 @@ class DocBase extends Base {
         // Redraw annotations if needed
         if (this.annotator) {
             this.annotator.setScale(scale);
-            this.reRenderAnnotations = true;
         }
 
         this.pdfViewer.currentScaleValue = scale;
@@ -876,10 +874,15 @@ class DocBase extends Base {
      * @returns {void}
      * @private
      */
-    pagerenderedHandler() {
-        if (this.annotator && this.reRenderAnnotations) {
-            this.annotator.renderAnnotations();
-            this.reRenderAnnotations = false;
+    pagerenderedHandler(event) {
+        if (this.annotator) {
+            // we should get a page number from pdfViewer most of the time
+            if (event.detail && event.detail.pageNumber) {
+                this.annotator.renderAnnotationsOnPage(event.detail.pageNumber);
+            // if not, we re-render all annotations to be safe
+            } else {
+                this.annotator.renderAnnotations();
+            }
         }
     }
 
