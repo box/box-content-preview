@@ -12,6 +12,14 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
+
+    // For VR mode
+    &.vr-enabled {
+        .box-preview-controls {
+            opacity: 0!important; // Hide this NO MATTER WHAT
+        }
+    }
 }
 
 .box-preview-box3d canvas {
@@ -68,4 +76,10 @@
     list-style: none;
     padding: 0;
     margin: 0;
+}
+
+.box-preview-is-mobile {
+    .box-preview-box3d .box-preview-controls {
+        opacity: 1!important;
+    }
 }
