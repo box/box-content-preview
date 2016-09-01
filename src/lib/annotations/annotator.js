@@ -150,6 +150,8 @@ class Annotator extends EventEmitter {
 
         // If in annotation mode, turn it off
         if (this.isInPointMode()) {
+            this.notification.hide();
+
             this.emit('pointmodeexit');
             this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
@@ -346,6 +348,9 @@ class Annotator extends EventEmitter {
      */
     pointClickHandler(event) {
         event.stopPropagation();
+
+        // Exits point annotation mode on first click
+        this.togglePointModeHandler();
 
         // Determine if a point annotation dialog is already open and close the
         // current open dialog
