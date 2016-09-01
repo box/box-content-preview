@@ -123,6 +123,11 @@ class DocHighlightDialog extends AnnotationDialog {
             annotatorUtil.showElement(commentsDialogEl);
             this._hasComments = true;
 
+            // Show light caret
+            const caretEl = this._element.querySelector('.box-preview-dark-annotation-caret');
+            caretEl.classList.remove('box-preview-dark-annotation-caret');
+            caretEl.classList.add('box-preview-annotation-caret');
+
         // Displays the highlight and comment buttons dialog and hides the
         // comments dialog
         } else {
@@ -132,6 +137,11 @@ class DocHighlightDialog extends AnnotationDialog {
             this._element.classList.add(CLASS_HIGHLIGHT_DIALOG);
             annotatorUtil.showElement(highlightDialogEl);
             this._hasComments = false;
+
+            // Show dark caret
+            const caretEl = this._element.querySelector('.box-preview-annotation-caret');
+            caretEl.classList.remove('box-preview-annotation-caret');
+            caretEl.classList.add('box-preview-dark-annotation-caret');
         }
 
         // Reposition dialog
@@ -193,7 +203,7 @@ class DocHighlightDialog extends AnnotationDialog {
         }
 
         this._element.innerHTML = `
-            <div class="box-preview-annotation-caret"></div>
+            <div class="${this._hasComments ? 'box-preview-annotation-caret' : 'box-preview-dark-annotation-caret'}"></div>
             <div class="box-preview-annotation-highlight-dialog ${this._hasComments ? CLASS_HIDDEN : ''}">
                 <span class="box-preview-annotation-highlight-label ${CLASS_HIDDEN}"></span>
                 <button class="box-preview-btn-plain box-preview-add-highlight-btn"
@@ -333,6 +343,15 @@ class DocHighlightDialog extends AnnotationDialog {
         }
     }
 
+    toggleHighlightIcon(fillStyle) {
+        const addHighlightBtn = this._element.querySelector('.box-preview-add-highlight-btn');
+        if (fillStyle === constants.HIGHLIGHT_ACTIVE_FILL_STYLE) {
+            addHighlightBtn.classList.add('highlight-active');
+        } else {
+            addHighlightBtn.classList.remove('highlight-active');
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -408,7 +427,7 @@ class DocHighlightDialog extends AnnotationDialog {
         // ${pageWidth}px
         const dialogPastLeft = dialogX < 0;
         const dialogPastRight = dialogX + highlightDialogWidth > pageWidth;
-        const annotationCaretEl = this._element.querySelector('.box-preview-annotation-caret');
+        const annotationCaretEl = this._hasComments ? this._element.querySelector('.box-preview-annotation-caret') : this._element.querySelector('.box-preview-dark-annotation-caret');
 
         if (dialogPastLeft && !dialogPastRight) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
@@ -428,7 +447,9 @@ class DocHighlightDialog extends AnnotationDialog {
         }
 
         // Reset caret to center
-        annotationCaretEl.style.left = '50%';
+        if (annotationCaretEl) {
+            annotationCaretEl.style.left = '50%';
+        }
         return dialogX;
     }
 

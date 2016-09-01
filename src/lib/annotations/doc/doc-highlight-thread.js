@@ -12,9 +12,6 @@ import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
 import * as docAnnotatorUtil from './doc-annotator-util';
 
-const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';
-const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 233, 23, 0.5)';
-const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 255, 255, 1)';
 const IS_MOBILE = Browser.isMobile();
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
@@ -70,7 +67,7 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {void}
      */
     hide() {
-        this._draw(HIGHLIGHT_ERASE_FILL_STYLE);
+        this._draw(constants.HIGHLIGHT_ERASE_FILL_STYLE);
     }
 
     /**
@@ -232,14 +229,14 @@ class DocHighlightThread extends AnnotationThread {
                 break;
             case constants.ANNOTATION_STATE_INACTIVE:
                 this.hideDialog();
-                this._draw(HIGHLIGHT_NORMAL_FILL_STYLE);
+                this._draw(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
                 break;
             case constants.ANNOTATION_STATE_HOVER:
             case constants.ANNOTATION_STATE_ACTIVE:
             case constants.ANNOTATION_STATE_PENDING_ACTIVE:
             case constants.ANNOTATION_STATE_ACTIVE_HOVER:
                 this.showDialog();
-                this._draw(HIGHLIGHT_ACTIVE_FILL_STYLE);
+                this._draw(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
             default:
                 break;
@@ -386,13 +383,16 @@ class DocHighlightThread extends AnnotationThread {
             // transparency
             context.save();
             context.globalCompositeOperation = 'destination-out';
-            context.fillStyle = HIGHLIGHT_ERASE_FILL_STYLE;
+            context.fillStyle = constants.HIGHLIGHT_ERASE_FILL_STYLE;
             context.fill();
             context.restore();
 
             // Draw actual highlight rectangle if needed
-            if (fillStyle !== HIGHLIGHT_ERASE_FILL_STYLE) {
+            if (fillStyle !== constants.HIGHLIGHT_ERASE_FILL_STYLE) {
                 context.fill();
+
+                // Update highlight icon hover to appropriate color
+                this._dialog.toggleHighlightIcon(fillStyle);
             }
         });
     }

@@ -10,9 +10,6 @@ import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
 let highlightThread;
 const sandbox = sinon.sandbox.create();
 
-const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 233, 23, 0.35)';
-const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 233, 23, 0.5)';
-
 describe('doc-highlight-thread', () => {
     before(() => {
         fixture.setBase('src/lib');
@@ -353,7 +350,7 @@ describe('doc-highlight-thread', () => {
             highlightThread.show();
 
             expect(highlightThread.hideDialog).to.have.been.called;
-            expect(highlightThread._draw).to.have.been.calledWith(HIGHLIGHT_NORMAL_FILL_STYLE);
+            expect(highlightThread._draw).to.have.been.calledWith(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
         });
 
         it('should show the dialog if the state is not pending and redraw the highlight as active', () => {
@@ -364,7 +361,7 @@ describe('doc-highlight-thread', () => {
             highlightThread.show();
 
             expect(highlightThread.showDialog).to.have.been.called;
-            expect(highlightThread._draw).to.have.been.calledWith(HIGHLIGHT_ACTIVE_FILL_STYLE);
+            expect(highlightThread._draw).to.have.been.calledWith(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
         });
     });
 
