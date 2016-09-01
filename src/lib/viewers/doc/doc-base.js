@@ -615,8 +615,6 @@ class DocBase extends Base {
         });
 
         this.annotator.addListener('pointmodeexit', () => {
-            this.annotator.exitPointMode();
-
             if (this.controls) {
                 this.controls.enable();
             }

@@ -141,24 +141,16 @@ describe('annotator', () => {
         it('should turn annotation mode off if it is on', () => {
             const destroyStub = sandbox.stub(annotator, '_destroyPendingThreads');
             sandbox.stub(annotator, 'isInPointMode').returns(true);
-            sandbox.stub(annotator.notification, 'show');
-            sandbox.stub(annotator, 'exitPointMode');
+            sandbox.stub(annotator.notification, 'hide');
+            sandbox.stub(annotator, 'emit');
+            sandbox.stub(annotator, 'bindDOMListeners');
+            sandbox.stub(annotator, 'unbindPointModeListeners');
 
             annotator.togglePointModeHandler();
 
             expect(destroyStub).to.have.been.called;
-            expect(annotator.notification.show).to.not.have.been.called;
-            expect(annotator.exitPointMode).to.have.been.called;
-        });
-    });
-
-    describe('exitPointMode', () => {
-        it('should turn annotation mode off', () => {
-            sandbox.stub(annotator, 'bindDOMListeners');
-            sandbox.stub(annotator, 'unbindPointModeListeners');
-
-            annotator.exitPointMode();
-
+            expect(annotator.notification.hide).to.have.been.called;
+            expect(annotator.emit).to.have.been.calledWith('pointmodeexit');
             expect(document.querySelector('.annotated-element').classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)).to.be.false;
             expect(annotator.unbindPointModeListeners).to.have.been.called;
             expect(annotator.bindDOMListeners).to.have.been.called;
@@ -260,12 +252,14 @@ describe('annotator', () => {
             sandbox.stub(annotator, 'getLocationFromEvent');
             sandbox.stub(annotator, 'createAnnotationThread').returns(thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
+            sandbox.stub(annotator, 'togglePointModeHandler');
 
             annotator.pointClickHandler(event);
 
             expect(annotator.getLocationFromEvent).to.not.have.been.called;
             expect(thread.show).to.not.have.been.called;
             expect(annotator.bindCustomListenersOnThread).to.not.have.been.called;
+            expect(annotator.togglePointModeHandler).to.have.been.called;
         });
 
         it('should not create a thread if a location object cannot be inferred from the event', () => {
@@ -276,12 +270,14 @@ describe('annotator', () => {
             sandbox.stub(annotator, 'getLocationFromEvent').returns(null);
             sandbox.stub(annotator, 'createAnnotationThread').returns(thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
+            sandbox.stub(annotator, 'togglePointModeHandler');
 
             annotator.pointClickHandler(event);
 
             expect(annotator.getLocationFromEvent).to.have.been.called;
             expect(thread.show).to.not.have.been.called;
             expect(annotator.bindCustomListenersOnThread).to.not.have.been.called;
+            expect(annotator.togglePointModeHandler).to.have.been.called;
         });
 
         it('should create, show, and bind listeners to a thread', () => {
@@ -292,12 +288,14 @@ describe('annotator', () => {
             sandbox.stub(annotator, 'getLocationFromEvent').returns({});
             sandbox.stub(annotator, 'createAnnotationThread').returns(thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
+            sandbox.stub(annotator, 'togglePointModeHandler');
 
             annotator.pointClickHandler(event);
 
             expect(annotator.getLocationFromEvent).to.have.been.called;
             expect(thread.show).to.have.been.called;
             expect(annotator.bindCustomListenersOnThread).to.have.been.called;
+            expect(annotator.togglePointModeHandler).to.have.been.called;
         });
     });
 

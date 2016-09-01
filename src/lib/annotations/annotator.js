@@ -138,21 +138,31 @@ class Annotator extends EventEmitter {
      * @returns {void}
      */
     togglePointModeHandler(event = {}) {
+        // This unfortunately breaks encapsulation, but the header currently
+        // doesn't manage its own functionality
+        let buttonEl = event.target;
+        if (!buttonEl) {
+            const containerEl = document.querySelector('.box-preview-header');
+            buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-annotate') : null;
+        }
+
         this._destroyPendingThreads();
 
         // If in annotation mode, turn it off
         if (this.isInPointMode()) {
-            this.exitPointMode(event);
+            this.notification.hide();
+
+            this.emit('pointmodeexit');
+            this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
+            if (buttonEl) {
+                buttonEl.classList.remove(CLASS_ACTIVE);
+            }
+
+            this.unbindPointModeListeners(); // Disable point mode
+            this.bindDOMListeners(); // Re-enable other annotations
 
         // Otherwise, enable annotation mode
         } else {
-            // This unfortunately breaks encapsulation, but the header currently
-            // doesn't manage its own functionality
-            let buttonEl = event.target;
-            if (!buttonEl) {
-                const containerEl = document.querySelector('.box-preview-header');
-                buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-annotate') : null;
-            }
             this.notification.show(__('notification_annotation_mode'));
 
             this.emit('pointmodeenter');
@@ -164,31 +174,6 @@ class Annotator extends EventEmitter {
             this.unbindDOMListeners(); // Disable other annotations
             this.bindPointModeListeners();  // Enable point mode
         }
-    }
-
-    /**
-     * Turns point annotation mode off and unbinds listeners
-     *
-     * @param {HTMLEvent} event DOM event
-     * @returns {void}
-     */
-    exitPointMode(event = {}) {
-        // This unfortunately breaks encapsulation, but the header currently
-        // doesn't manage its own functionality
-        let buttonEl = event.target;
-        if (!buttonEl) {
-            const containerEl = document.querySelector('.box-preview-header');
-            buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-annotate') : null;
-        }
-
-        this._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
-        if (buttonEl) {
-            buttonEl.classList.remove(CLASS_ACTIVE);
-        }
-
-        this.notification.hide(); // Hide notification banner
-        this.unbindPointModeListeners(); // Disable point mode
-        this.bindDOMListeners(); // Re-enable other annotations
     }
 
     //--------------------------------------------------------------------------
@@ -306,10 +291,6 @@ class Annotator extends EventEmitter {
             this.unbindCustomListenersOnThread(thread);
         });
 
-        thread.addListener('pointmodeexit', () => {
-            this.exitPointMode();
-        });
-
         thread.addListener('annotationcreateerror', () => {
             // @TODO(tjin): Show annotation creation error
         });
@@ -368,22 +349,19 @@ class Annotator extends EventEmitter {
     pointClickHandler(event) {
         event.stopPropagation();
 
+        // Exits point annotation mode on first click
+        this.togglePointModeHandler();
+
         // Determine if a point annotation dialog is already open and close the
         // current open dialog
         const hasPendingThreads = this._destroyPendingThreads();
         if (hasPendingThreads) {
-            if (this.isInPointMode()) {
-                this.exitPointMode();
-            }
             return;
         }
 
         // Get annotation location from click event, ignore click if location is invalid
         const location = this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_POINT);
         if (!location) {
-            if (this.isInPointMode()) {
-                this.exitPointMode();
-            }
             return;
         }
 
