@@ -5,82 +5,82 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 function toObject(val) {
-    if (val === null || val === undefined) {
-        throw new TypeError('Object.assign cannot be called with null or undefined');
-    }
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
 
-    return Object(val);
+	return Object(val);
 }
 
 function shouldUseNative() {
-    try {
-        if (!Object.assign) {
-            return false;
-        }
+	try {
+		if (!Object.assign) {
+			return false;
+		}
 
-        // Detect buggy property enumeration order in older V8 versions.
+		// Detect buggy property enumeration order in older V8 versions.
 
-        // https://bugs.chromium.org/p/v8/issues/detail?id=4118
-        var test1 = new String('abc');  // eslint-disable-line
-        test1[5] = 'de';
-        if (Object.getOwnPropertyNames(test1)[0] === '5') {
-            return false;
-        }
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
 
-        // https://bugs.chromium.org/p/v8/issues/detail?id=3056
-        var test2 = {};
-        for (var i = 0; i < 10; i++) {
-            test2['_' + String.fromCharCode(i)] = i;
-        }
-        var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-            return test2[n];
-        });
-        if (order2.join('') !== '0123456789') {
-            return false;
-        }
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
 
-        // https://bugs.chromium.org/p/v8/issues/detail?id=3056
-        var test3 = {};
-        'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-            test3[letter] = letter;
-        });
-        if (Object.keys(Object.assign({}, test3)).join('') !==
-                'abcdefghijklmnopqrst') {
-            return false;
-        }
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
 
-        return true;
-    } catch (e) {
-        // We don't expect any of the above to throw, but better to be safe.
-        return false;
-    }
+		return true;
+	} catch (e) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
 }
 
 module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-    var from;
-    var to = toObject(target);
-    var symbols;
+	var from;
+	var to = toObject(target);
+	var symbols;
 
-    for (var s = 1; s < arguments.length; s++) {
-        from = Object(arguments[s]);
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
 
-        for (var key in from) {
-            if (hasOwnProperty.call(from, key)) {
-                to[key] = from[key];
-            }
-        }
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
 
-        if (Object.getOwnPropertySymbols) {
-            symbols = Object.getOwnPropertySymbols(from);
-            for (var i = 0; i < symbols.length; i++) {
-                if (propIsEnumerable.call(from, symbols[i])) {
-                    to[symbols[i]] = from[symbols[i]];
-                }
-            }
-        }
-    }
+		if (Object.getOwnPropertySymbols) {
+			symbols = Object.getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
 
-    return to;
+	return to;
 };
 
 },{}],2:[function(_dereq_,module,exports){
@@ -199,17 +199,20 @@ VRDisplay.prototype.wrapForFullscreen = function(element) {
       return;
     }
 
-    var cssProperties = [
-      'position: absolute',
-      'top: 0',
-      'left: 0',
-      'width: ' + Math.max(screen.width, screen.height) + 'px',
-      'height: ' + Math.min(screen.height, screen.width) + 'px',
-      'border: 0',
-      'margin: 0',
-      'padding: 0',
-    ];
-    self.fullscreenElement_.setAttribute('style', cssProperties.join('; ') + ';');
+    var cssProperties = {
+      'position': 'absolute',
+      'top': '0',
+      'left': '0',
+      'width': Math.max(screen.width, screen.height) + 'px',
+      'height': Math.min(screen.height, screen.width) + 'px',
+      'border': '0',
+      'margin': '0',
+      'padding': '0',
+    };
+
+    for (var i in cssProperties) {
+      self.fullscreenElement_.style[i] = cssProperties[i];
+    }
   }
 
   applyFullscreenElementStyle();
@@ -1296,7 +1299,7 @@ CardboardUI.prototype.listen = function(optionsCallback, backCallback) {
       optionsCallback(event);
     }
     // Check to see if the user clicked on (or around) the back icon
-    else if (event.clientX < buttonSize && event.clientY < buttonSize) {
+    else if (event.clientX < buttonSize && event.clientY > canvas.clientHeight - buttonSize) {
       backCallback(event);
     }
   };
@@ -1365,7 +1368,7 @@ CardboardUI.prototype.onResize = function() {
     self.arrowOffset = (vertices.length / 2);
 
     function addArrowVertex(x, y) {
-      vertices.push(buttonBorder + x, gl.drawingBufferHeight - buttonBorder - y);
+      vertices.push(buttonBorder + x, buttonBorder + y);
     }
 
     var angledLineWidth = lineWidth / Math.sin(45 * DEG2RAD);
@@ -1693,17 +1696,20 @@ CardboardVRDisplay.prototype.onResize_ = function(e) {
     // hide the URL bar unless content is bigger than the screen.
     // This will not be visible as long as the container element (e.g. body)
     // is set to 'overflow: hidden'.
-    var cssProperties = [
-      'position: absolute',
-      'top: 0',
-      'left: 0',
-      'width: ' + Math.max(screen.width, screen.height) + 'px',
-      'height: ' + Math.min(screen.height, screen.width) + 'px',
-      'border: 0',
-      'margin: 0',
-      'padding: 0 10px 10px 0',
-    ];
-    gl.canvas.setAttribute('style', cssProperties.join('; ') + ';');
+    var cssProperties = {
+      'position': 'absolute',
+      'top': '0',
+      'left': '0',
+      'width': Math.max(screen.width, screen.height) + 'px',
+      'height': Math.min(screen.height, screen.width) + 'px',
+      'border': '0',
+      'margin': '0',
+      'padding': '0 10px 10px 0',
+    };
+
+    for (var i in cssProperties) {
+      gl.canvas.style[i] = cssProperties[i];
+    }
 
     Util.safariCssSizeWorkaround(gl.canvas);
   }
