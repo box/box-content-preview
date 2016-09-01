@@ -106,7 +106,6 @@ describe('annotation-thread', () => {
 
         it('should save an annotation with the specified type and text', () => {
             const createStub = sandbox.stub(annotationService, 'create').returns(Promise.resolve({}));
-            const emitStub = sandbox.stub(annotationThread, 'emit');
             annotationThread.saveAnnotation('point', 'blah');
 
             expect(createStub).to.have.been.calledWith(sinon.match({
@@ -115,9 +114,6 @@ describe('annotation-thread', () => {
                 text: 'blah',
                 threadID: 2
             }));
-
-            // should exit point annotation "mode" on save
-            expect(emitStub).to.have.been.calledWith('pointmodeexit');
         });
 
         it('should delete the temporary annotation and broadcast an error if there was an error saving', (done) => {
