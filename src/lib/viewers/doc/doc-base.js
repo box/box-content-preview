@@ -530,7 +530,8 @@ class DocBase extends Base {
         // Initialize PDF.js in container
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl,
-            linkService: new PDFJS.PDFLinkService()
+            linkService: new PDFJS.PDFLinkService(),
+            enhanceTextSelection: true // improves text selection in many cases
         });
 
         // Overwrite scrollPageIntoView for presentations since we have custom pagination
