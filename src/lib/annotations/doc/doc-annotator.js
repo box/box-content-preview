@@ -270,6 +270,26 @@ class DocAnnotator extends Annotator {
     //--------------------------------------------------------------------------
 
     /**
+     * Binds point mode event listeners.
+     *
+     * @returns {void}
+     * @private
+     */
+    _bindHighlightModeListeners() {
+        this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
+    }
+
+    /**
+     * Unbinds point mode event listeners.
+     *
+     * @returns {void}
+     * @private
+     */
+    _unbindHighlightModeListeners() {
+        this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
+    }
+
+    /**
      * Mousedown handler on annotated element. Initializes didDrag to false -
      * this way, on the mouseup handler, we can check if didDrag was set to
      * true by the mousemove handler, and if not, delegate to click handlers
