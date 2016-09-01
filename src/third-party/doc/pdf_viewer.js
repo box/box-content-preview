@@ -1231,7 +1231,7 @@ var PDFFindController = (function PDFFindControllerClosure() {
         // If the page is selected, scroll the page into view, which triggers
         // rendering the page, which adds the textLayer. Once the textLayer is
         // build, it will scroll onto the selected match.
-        this.pdfViewer.scrollPageIntoView(index + 1);
+        this.pdfViewer.currentPageNumber = index + 1;
       }
 
       var page = this.pdfViewer.getPageView(index);
@@ -1891,7 +1891,7 @@ var PDFLinkService = (function PDFLinkServiceClosure() {
      * @returns {number}
      */
     get pagesCount() {
-      return this.pdfDocument.numPages;
+      return this.pdfDocument ? this.pdfDocument.numPages : 0;
     },
 
     /**
@@ -1922,9 +1922,14 @@ var PDFLinkService = (function PDFLinkServiceClosure() {
           (destRef + 1);
         if (pageNumber) {
           if (pageNumber > self.pagesCount) {
-            pageNumber = self.pagesCount;
+            console.error('PDFLinkService_navigateTo: ' +
+                          'Trying to navigate to a non-existent page.');
+            return;
           }
-          self.pdfViewer.scrollPageIntoView(pageNumber, dest);
+          self.pdfViewer.scrollPageIntoView({
+            pageNumber: pageNumber,
+            destArray: dest,
+          });
 
           if (self.pdfHistory) {
             // Update the browsing history.
@@ -2050,7 +2055,11 @@ var PDFLinkService = (function PDFLinkServiceClosure() {
           }
         }
         if (dest) {
-          this.pdfViewer.scrollPageIntoView(pageNumber || this.page, dest);
+          this.pdfViewer.scrollPageIntoView({
+            pageNumber: pageNumber || this.page,
+            destArray: dest,
+            allowNegativeOffset: true,
+          });
         } else if (pageNumber) {
           this.page = pageNumber; // simple page
         }
@@ -2099,11 +2108,15 @@ var PDFLinkService = (function PDFLinkServiceClosure() {
           break;
 
         case 'NextPage':
-          this.page++;
+          if (this.page < this.pagesCount) {
+            this.page++;
+          }
           break;
 
         case 'PrevPage':
-          this.page--;
+          if (this.page > 1) {
+            this.page--;
+          }
           break;
 
         case 'LastPage':
@@ -2272,6 +2285,8 @@ var TEXT_LAYER_RENDER_DELAY = 200; // ms
  * @property {PDFRenderingQueue} renderingQueue - The rendering queue object.
  * @property {IPDFTextLayerFactory} textLayerFactory
  * @property {IPDFAnnotationLayerFactory} annotationLayerFactory
+ * @property {boolean} enhanceTextSelection - Turns on the text selection
+ *   enhancement. The default is `false`.
  */
 
 /**
@@ -2291,6 +2306,7 @@ var PDFPageView = (function PDFPageViewClosure() {
     var renderingQueue = options.renderingQueue;
     var textLayerFactory = options.textLayerFactory;
     var annotationLayerFactory = options.annotationLayerFactory;
+    var enhanceTextSelection = options.enhanceTextSelection || false;
 
     this.id = id;
     this.renderingId = 'page' + id;
@@ -2300,6 +2316,7 @@ var PDFPageView = (function PDFPageViewClosure() {
     this.viewport = defaultViewport;
     this.pdfPageRotate = defaultViewport.rotation;
     this.hasRestrictedScaling = false;
+    this.enhanceTextSelection = enhanceTextSelection;
 
     this.eventBus = options.eventBus || domEvents.getGlobalEventBus();
     this.renderingQueue = renderingQueue;
@@ -2615,9 +2632,9 @@ var PDFPageView = (function PDFPageViewClosure() {
           div.appendChild(textLayerDiv);
         }
 
-        textLayer = this.textLayerFactory.createTextLayerBuilder(textLayerDiv,
-                                                                 this.id - 1,
-                                                                 this.viewport);
+        textLayer = this.textLayerFactory.
+          createTextLayerBuilder(textLayerDiv, this.id - 1, this.viewport,
+                                 this.enhanceTextSelection);
       }
       this.textLayer = textLayer;
 
@@ -2833,6 +2850,8 @@ exports.PDFPageView = PDFPageView;
  * @property {number} pageIndex - The page index.
  * @property {PageViewport} viewport - The viewport of the text layer.
  * @property {PDFFindController} findController
+ * @property {boolean} enhanceTextSelection - Option to turn on improved
+ *   text selection.
  */
 
 /**
@@ -2855,6 +2874,7 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
     this.textDivs = [];
     this.findController = options.findController || null;
     this.textLayerRenderTask = null;
+    this.enhanceTextSelection = options.enhanceTextSelection;
     this._bindMouse();
   }
 
@@ -2862,9 +2882,11 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
     _finishRendering: function TextLayerBuilder_finishRendering() {
       this.renderingDone = true;
 
-      var endOfContent = document.createElement('div');
-      endOfContent.className = 'endOfContent';
-      this.textLayerDiv.appendChild(endOfContent);
+      if (!this.enhanceTextSelection) {
+        var endOfContent = document.createElement('div');
+        endOfContent.className = 'endOfContent';
+        this.textLayerDiv.appendChild(endOfContent);
+      }
 
       this.eventBus.dispatch('textlayerrendered', {
         source: this,
@@ -2894,7 +2916,8 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
         container: textLayerFrag,
         viewport: this.viewport,
         textDivs: this.textDivs,
-        timeout: timeout
+        timeout: timeout,
+        enhanceTextSelection: this.enhanceTextSelection,
       });
       this.textLayerRenderTask.promise.then(function () {
         this.textLayerDiv.appendChild(textLayerFrag);
@@ -3112,7 +3135,12 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
      */
     _bindMouse: function TextLayerBuilder_bindMouse() {
       var div = this.textLayerDiv;
+      var self = this;
       div.addEventListener('mousedown', function (e) {
+        if (self.enhanceTextSelection && self.textLayerRenderTask) {
+          self.textLayerRenderTask.expandTextDivs(true);
+          return;
+        }
         var end = div.querySelector('.endOfContent');
         if (!end) {
           return;
@@ -3132,6 +3160,10 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
         end.classList.add('active');
       });
       div.addEventListener('mouseup', function (e) {
+        if (self.enhanceTextSelection && self.textLayerRenderTask) {
+          self.textLayerRenderTask.expandTextDivs(false);
+          return;
+        }
         var end = div.querySelector('.endOfContent');
         if (!end) {
           return;
@@ -3154,13 +3186,16 @@ DefaultTextLayerFactory.prototype = {
    * @param {HTMLDivElement} textLayerDiv
    * @param {number} pageIndex
    * @param {PageViewport} viewport
+   * @param {boolean} enhanceTextSelection
    * @returns {TextLayerBuilder}
    */
-  createTextLayerBuilder: function (textLayerDiv, pageIndex, viewport) {
+  createTextLayerBuilder: function (textLayerDiv, pageIndex, viewport,
+                                    enhanceTextSelection) {
     return new TextLayerBuilder({
       textLayerDiv: textLayerDiv,
       pageIndex: pageIndex,
-      viewport: viewport
+      viewport: viewport,
+      enhanceTextSelection: enhanceTextSelection
     });
   }
 };
@@ -3338,6 +3373,8 @@ var DEFAULT_CACHE_SIZE = 10;
  *   queue object.
  * @property {boolean} removePageBorders - (optional) Removes the border shadow
  *   around the pages. The default is false.
+ * @property {boolean} enhanceTextSelection - (optional) Enables the improved
+ *   text selection behaviour. The default is `false`.
  */
 
 /**
@@ -3389,6 +3426,7 @@ var PDFViewer = (function pdfViewer() {
     this.linkService = options.linkService || new SimpleLinkService();
     this.downloadManager = options.downloadManager || null;
     this.removePageBorders = options.removePageBorders || false;
+    this.enhanceTextSelection = options.enhanceTextSelection || false;
 
     this.defaultRenderingQueue = !options.renderingQueue;
     if (this.defaultRenderingQueue) {
@@ -3443,7 +3481,7 @@ var PDFViewer = (function pdfViewer() {
      * @private
      */
     _setCurrentPageNumber:
-        function pdfViewer_setCurrentPageNumber(val, resetCurrentPageView) {
+        function PDFViewer_setCurrentPageNumber(val, resetCurrentPageView) {
       if (this._currentPageNumber === val) {
         if (resetCurrentPageView) {
           this._resetCurrentPageView();
@@ -3452,6 +3490,8 @@ var PDFViewer = (function pdfViewer() {
       }
 
       if (!(0 < val && val <= this.pagesCount)) {
+        console.error('PDFViewer_setCurrentPageNumber: "' + val +
+                      '" is out of bounds.');
         return;
       }
 
@@ -3521,8 +3561,14 @@ var PDFViewer = (function pdfViewer() {
      * @param {number} rotation - The rotation of the pages (0, 90, 180, 270).
      */
     set pagesRotation(rotation) {
+      if (!(typeof rotation === 'number' && rotation % 90 === 0)) {
+        throw new Error('Invalid pages rotation angle.');
+      }
       this._pagesRotation = rotation;
 
+      if (!this.pdfDocument) {
+        return;
+      }
       for (var i = 0, l = this._pages.length; i < l; i++) {
         var pageView = this._pages[i];
         pageView.update(pageView.scale, rotation);
@@ -3577,7 +3623,6 @@ var PDFViewer = (function pdfViewer() {
           // rendering.
           self._buffer.push(this);
         };
-        // when page is painted, using the image as thumbnail base
         pageView.onAfterDraw = function pdfViewLoadOnAfterDraw() {
           if (!isOnePageRenderedResolved) {
             isOnePageRenderedResolved = true;
@@ -3607,7 +3652,8 @@ var PDFViewer = (function pdfViewer() {
             defaultViewport: viewport.clone(),
             renderingQueue: this.renderingQueue,
             textLayerFactory: textLayerFactory,
-            annotationLayerFactory: this
+            annotationLayerFactory: this,
+            enhanceTextSelection: this.enhanceTextSelection,
           });
           bindOnAfterAndBeforeDraw(pageView);
           this._pages.push(pageView);
@@ -3713,7 +3759,11 @@ var PDFViewer = (function pdfViewer() {
           dest = [null, { name: 'XYZ' }, this._location.left,
                   this._location.top, null];
         }
-        this.scrollPageIntoView(page, dest);
+        this.scrollPageIntoView({
+          pageNumber: page,
+          destArray: dest,
+          allowNegativeOffset: true,
+        });
       }
 
       this._setScaleDispatchEvent(newScale, newValue, preset);
@@ -3723,7 +3773,7 @@ var PDFViewer = (function pdfViewer() {
       }
     },
 
-    _setScale: function pdfViewer_setScale(value, noScroll) {
+    _setScale: function PDFViewer_setScale(value, noScroll) {
       var scale = parseFloat(value);
 
       if (scale > 0) {
@@ -3763,8 +3813,8 @@ var PDFViewer = (function pdfViewer() {
             scale = Math.min(MAX_AUTO_SCALE, horizontalScale);
             break;
           default:
-            console.error('pdfViewSetScale: \'' + value +
-              '\' is an unknown zoom value.');
+            console.error('PDFViewer_setScale: "' + value +
+                          '" is an unknown zoom value.');
             return;
         }
         this._setScaleUpdatePages(scale, value, noScroll, true);
@@ -3786,16 +3836,36 @@ var PDFViewer = (function pdfViewer() {
     },
 
     /**
-     * Scrolls page into view.
-     * @param {number} pageNumber
-     * @param {Array} dest - (optional) original PDF destination array:
-     *   <page-ref> </XYZ|FitXXX> <args..>
+     * @typedef ScrollPageIntoViewParameters
+     * @param {number} pageNumber - The page number.
+     * @param {Array} destArray - (optional) The original PDF destination array,
+     *   in the format: <page-ref> </XYZ|/FitXXX> <args..>
+     * @param {boolean} allowNegativeOffset - (optional) Allow negative page
+     *   offsets. The default value is `false`.
      */
-    scrollPageIntoView: function PDFViewer_scrollPageIntoView(pageNumber,
-                                                              dest) {
+
+    /**
+     * Scrolls page into view.
+     * @param {ScrollPageIntoViewParameters} params
+     */
+    scrollPageIntoView: function PDFViewer_scrollPageIntoView(params) {
       if (!this.pdfDocument) {
         return;
       }
+      if (arguments.length > 1 || typeof params === 'number') {
+        console.warn('Call of scrollPageIntoView() with obsolete signature.');
+        var paramObj = {};
+        if (typeof params === 'number') {
+          paramObj.pageNumber = params; // pageNumber argument was found.
+        }
+        if (arguments[1] instanceof Array) {
+          paramObj.destArray = arguments[1]; // destArray argument was found.
+        }
+        params = paramObj;
+      }
+      var pageNumber = params.pageNumber || 0;
+      var dest = params.destArray || null;
+      var allowNegativeOffset = params.allowNegativeOffset || false;
 
       if (this.isInPresentationMode || !dest) {
         this._setCurrentPageNumber(pageNumber, /* resetCurrentPageView */ true);
@@ -3803,6 +3873,11 @@ var PDFViewer = (function pdfViewer() {
       }
 
       var pageView = this._pages[pageNumber - 1];
+      if (!pageView) {
+        console.error('PDFViewer_scrollPageIntoView: ' +
+                      'Invalid "pageNumber" parameter.');
+        return;
+      }
       var x = 0, y = 0;
       var width = 0, height = 0, widthScale, heightScale;
       var changeOrientation = (pageView.rotation % 180 === 0 ? false : true);
@@ -3883,6 +3958,13 @@ var PDFViewer = (function pdfViewer() {
       var left = Math.min(boundingRect[0][0], boundingRect[1][0]);
       var top = Math.min(boundingRect[0][1], boundingRect[1][1]);
 
+      if (!allowNegativeOffset) {
+        // Some bad PDF generators will create destinations with e.g. top values
+        // that exceeds the page height. Ensure that offsets are not negative,
+        // to prevent a previous page from becoming visible (fixes bug 874482).
+        left = Math.max(left, 0);
+        top = Math.max(top, 0);
+      }
       scrollIntoView(pageView.div, { left: left, top: top });
     },
 
@@ -4053,13 +4135,16 @@ var PDFViewer = (function pdfViewer() {
      * @param {PageViewport} viewport
      * @returns {TextLayerBuilder}
      */
-    createTextLayerBuilder: function (textLayerDiv, pageIndex, viewport) {
+    createTextLayerBuilder: function (textLayerDiv, pageIndex, viewport,
+                                      enhanceTextSelection) {
       return new TextLayerBuilder({
         textLayerDiv: textLayerDiv,
         eventBus: this.eventBus,
         pageIndex: pageIndex,
         viewport: viewport,
-        findController: this.isInPresentationMode ? null : this.findController
+        findController: this.isInPresentationMode ? null : this.findController,
+        enhanceTextSelection: this.isInPresentationMode ? false :
+                                                          enhanceTextSelection,
       });
     },
 
