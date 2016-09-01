@@ -92,6 +92,24 @@ describe('annotator', () => {
         });
     });
 
+    describe('hideAnnotationsOnPage()', () => {
+        it('should call hide on each thread in map on page 1', () => {
+            const thread1 = { hide: sandbox.stub() };
+            const thread2 = { hide: sandbox.stub() };
+            const thread3 = { hide: sandbox.stub() };
+            annotator._threads = {
+                1: [thread1],
+                2: [thread2, thread3]
+            };
+
+            annotator.hideAnnotationsOnPage('1');
+
+            expect(thread1.hide).to.have.been.called;
+            expect(thread2.hide).to.have.not.been.called;
+            expect(thread3.hide).to.have.not.been.called;
+        });
+    });
+
     describe('renderAnnotations()', () => {
         it('should hide annotations and call show on each thread', () => {
             const thread1 = { show: sandbox.stub() };
@@ -109,6 +127,26 @@ describe('annotator', () => {
             expect(thread1.show).to.have.been.called;
             expect(thread2.show).to.have.been.called;
             expect(thread3.show).to.have.been.called;
+        });
+    });
+
+    describe('renderAnnotationsOnPage()', () => {
+        it('should hide annotations and call show on each thread', () => {
+            const thread1 = { show: sandbox.stub() };
+            const thread2 = { show: sandbox.stub() };
+            const thread3 = { show: sandbox.stub() };
+            annotator._threads = {
+                1: [thread1],
+                2: [thread2, thread3]
+            };
+            const hideStub = sandbox.stub(annotator, 'hideAnnotationsOnPage');
+
+            annotator.renderAnnotationsOnPage('1');
+
+            expect(hideStub).to.have.been.called;
+            expect(thread1.show).to.have.been.called;
+            expect(thread2.show).to.have.not.been.called;
+            expect(thread3.show).to.have.not.been.called;
         });
     });
 

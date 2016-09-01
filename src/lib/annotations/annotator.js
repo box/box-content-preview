@@ -105,6 +105,19 @@ class Annotator extends EventEmitter {
     }
 
     /**
+     * Hides annotations on a specified page.
+     *
+     * @returns {void}
+     */
+    hideAnnotationsOnPage(pageNum) {
+        if (this._threads[pageNum]) {
+            this._threads[pageNum].forEach((thread) => {
+                thread.hide();
+            });
+        }
+    }
+
+    /**
      * Renders annotations from memory.
      *
      * @returns {void}
@@ -118,6 +131,21 @@ class Annotator extends EventEmitter {
                 thread.show();
             });
         });
+    }
+
+    /**
+     * Renders annotations from memory for a specified page.
+     *
+     * @returns {void}
+     * @private
+     */
+    renderAnnotationsOnPage(pageNum) {
+        if (this._threads[pageNum]) {
+            this.hideAnnotationsOnPage(pageNum);
+            this._threads[pageNum].forEach((thread) => {
+                thread.show();
+            });
+        }
     }
 
     /**
