@@ -10,6 +10,8 @@
  *
  */
 
+import Browser from '../../browser';
+
 THREE.VREffect = function ( renderer, boxRenderer, onError ) {
 
     var isWebVR1 = true;
@@ -90,7 +92,9 @@ THREE.VREffect = function ( renderer, boxRenderer, onError ) {
         if ( scope.isPresenting ) {
 
             var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
-            renderer.setPixelRatio( 1 );
+            if (!Browser.isMobile()) {
+                renderer.setPixelRatio( 1 );
+            }
 
             if ( isWebVR1 ) {
 
@@ -158,7 +162,9 @@ THREE.VREffect = function ( renderer, boxRenderer, onError ) {
                 rendererPixelRatio = renderer.getPixelRatio();
                 rendererSize = renderer.getSize();
 
-                renderer.setPixelRatio( 1 );
+                if (!Browser.isMobile()) {
+                    renderer.setPixelRatio( 1 );
+                }
                 renderer.setSize( eyeWidth * 2, eyeHeight, false );
 
             }
