@@ -129,6 +129,34 @@ describe('doc-annotator', () => {
                 expect(window.getSelection).to.have.been.called;
             });
 
+            it('should not return a valid highlight location if no highlights exist', () => {
+                const page = 3;
+                const dimensions = {
+                    x: 100,
+                    y: 200
+                };
+
+                sandbox.stub(annotatorUtil, 'getScale').returns(1);
+                sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(true);
+                sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({
+                    pageEl: {
+                        getBoundingClientRect: sandbox.stub().returns({
+                            width: dimensions.x,
+                            height: dimensions.y + 30 // 15px padidng top and bottom
+                        })
+                    },
+                    page
+                });
+                sandbox.stub(rangy, 'saveSelection');
+                sandbox.stub(docAnnotatorUtil, 'getHighlightAndHighlightEls').returns({
+                    highlight: {},
+                    highlightEls: []
+                });
+
+                const location = annotator.getLocationFromEvent({}, 'highlight');
+                expect(location).to.deep.equal(null);
+            });
+
             it('should return a valid highlight location if selection is valid', () => {
                 const page = 3;
                 const quadPoints = [
@@ -205,6 +233,34 @@ describe('doc-annotator', () => {
 
                 annotator.getLocationFromEvent({}, 'highlight-comment');
                 expect(window.getSelection).to.have.been.called;
+            });
+
+            it('should not return a valid highlight location if no highlights exist', () => {
+                const page = 3;
+                const dimensions = {
+                    x: 100,
+                    y: 200
+                };
+
+                sandbox.stub(annotatorUtil, 'getScale').returns(1);
+                sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(true);
+                sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({
+                    pageEl: {
+                        getBoundingClientRect: sandbox.stub().returns({
+                            width: dimensions.x,
+                            height: dimensions.y + 30 // 15px padidng top and bottom
+                        })
+                    },
+                    page
+                });
+                sandbox.stub(rangy, 'saveSelection');
+                sandbox.stub(docAnnotatorUtil, 'getHighlightAndHighlightEls').returns({
+                    highlight: {},
+                    highlightEls: []
+                });
+
+                const location = annotator.getLocationFromEvent({}, 'highlight-comment');
+                expect(location).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
