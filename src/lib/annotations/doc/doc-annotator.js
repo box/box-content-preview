@@ -126,6 +126,12 @@ class DocAnnotator extends Annotator {
 
             // Use highlight module to calculate quad points
             const { highlight, highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this._highlighter, pageEl);
+
+            // Do not create highlight annotation if no highlights are detected
+            if (highlightEls.length === 0) {
+                return location;
+            }
+
             const quadPoints = [];
             highlightEls.forEach((element) => {
                 quadPoints.push(docAnnotatorUtil.getQuadPoints(element, pageEl, zoomScale));
