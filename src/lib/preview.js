@@ -63,8 +63,8 @@ class Preview extends EventEmitter {
 
         // All preview assets are relative to preview.js. Here we create a location
         // object that mimics the window location object and points to where
-        // preview.js is loaded from, by the browser.
-        this.location = findScriptLocation('preview.js');
+        // preview.js is loaded from by the browser.
+        this.location = findScriptLocation('preview.js', document.currentScript);
     }
 
     /**

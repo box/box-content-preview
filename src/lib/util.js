@@ -485,10 +485,13 @@ export function decodeKeydown(event) {
  *
  * @public
  * @param {string} name script name
+ * @param {HTMLScriptElement|null} currentScript current script tag
  * @returns {void}
  */
-export function findScriptLocation(name) {
-    const scriptSrc = document.querySelector(`script[src*="${name}"]`).src;
+export function findScriptLocation(name, currentScript) {
+    const scriptSrc = currentScript
+                        ? currentScript.src
+                        : document.querySelector(`script[src*="/${name}"]`).src;
 
     if (!scriptSrc) {
         throw new Error('Missing or malformed preview library inclusion');
