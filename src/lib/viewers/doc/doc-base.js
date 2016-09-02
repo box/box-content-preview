@@ -30,7 +30,6 @@ const PRESENTATION_MODE_STATE = {
     CHANGING: 2,
     FULLSCREEN: 3
 };
-const PRESENTATION_VIEWER_NAME = 'Presentation';
 const RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const WHEEL_THROTTLE = 200;
@@ -60,8 +59,6 @@ class DocBase extends Base {
 
         this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
-
-        this.isPresentation = (this.options.viewerName === PRESENTATION_VIEWER_NAME);
     }
 
     /**
@@ -477,6 +474,51 @@ class DocBase extends Base {
     }
 
     //--------------------------------------------------------------------------
+    // Protected
+    //--------------------------------------------------------------------------
+
+    /**
+     * Loads PDF.js with provided PDF.
+     *
+     * @param {String} pdfUrl The URL of the PDF to load
+     * @returns {void}
+     * @protected
+     */
+    initViewer(pdfUrl) {
+        // Initialize PDF.js in container
+        this.pdfViewer = new PDFJS.PDFViewer({
+            container: this.docEl,
+            linkService: new PDFJS.PDFLinkService(),
+            enhanceTextSelection: true // improves text selection in many cases
+        });
+
+        // Load PDF from representation URL
+        this.pdfLoadingTask = PDFJS.getDocument({
+            url: pdfUrl,
+            httpHeaders: this.appendAuthHeader(),
+            rangeChunkSize: RANGE_REQUEST_CHUNK_SIZE
+        });
+
+        // Set document for PDF.js
+        this.pdfLoadingTask.then((doc) => {
+            this.pdfViewer.setDocument(doc);
+
+            const linkService = this.pdfViewer.linkService;
+            if (linkService instanceof PDFJS.PDFLinkService) {
+                linkService.setDocument(doc, pdfUrl);
+                linkService.setViewer(this.pdfViewer);
+            }
+        }).catch((err) => {
+            /* eslint-disable no-console */
+            console.log(err);
+            /* eslint-enable no-console */
+            this.emit('error', err);
+        });
+
+        this.bindDOMListeners();
+    }
+
+    //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
 
@@ -517,52 +559,6 @@ class DocBase extends Base {
         PDFJS.disableTextLayer = this.options.file && this.options.file.permissions ?
             !this.options.file.permissions.can_download :
             false;
-    }
-
-    /**
-     * Loads PDF.js with provided PDF.
-     *
-     * @param {String} pdfUrl The URL of the PDF to load
-     * @returns {void}
-     * @private
-     */
-    initViewer(pdfUrl) {
-        // Initialize PDF.js in container
-        this.pdfViewer = new PDFJS.PDFViewer({
-            container: this.docEl,
-            linkService: new PDFJS.PDFLinkService(),
-            enhanceTextSelection: true // improves text selection in many cases
-        });
-
-        // Overwrite scrollPageIntoView for presentations since we have custom pagination
-        if (this.isPresentation) {
-            this.pdfViewer.scrollPageIntoView = this.setPage;
-        }
-
-        // Load PDF from representation URL
-        this.pdfLoadingTask = PDFJS.getDocument({
-            url: pdfUrl,
-            httpHeaders: this.appendAuthHeader(),
-            rangeChunkSize: RANGE_REQUEST_CHUNK_SIZE
-        });
-
-        // Set document for PDF.js
-        this.pdfLoadingTask.then((doc) => {
-            this.pdfViewer.setDocument(doc);
-
-            const linkService = this.pdfViewer.linkService;
-            if (linkService instanceof PDFJS.PDFLinkService) {
-                linkService.setDocument(doc, pdfUrl);
-                linkService.setViewer(this.pdfViewer);
-            }
-        }).catch((err) => {
-            /* eslint-disable no-console */
-            console.log(err);
-            /* eslint-enable no-console */
-            this.emit('error', err);
-        });
-
-        this.bindDOMListeners();
     }
 
     /**

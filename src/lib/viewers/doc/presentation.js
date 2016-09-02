@@ -73,6 +73,32 @@ class Presentation extends DocBase {
     }
 
     //--------------------------------------------------------------------------
+    // Protected
+    //--------------------------------------------------------------------------
+
+    /**
+     * Loads PDF.js with provided PDF.
+     *
+     * @override
+     * @param {String} pdfUrl The URL of the PDF to load
+     * @returns {void}
+     * @protected
+     */
+    initViewer(pdfUrl) {
+        super.initViewer(pdfUrl);
+
+        // Overwrite scrollPageIntoView for presentations since we have custom pagination behavior
+        this.pdfViewer.scrollPageIntoView = (pageObj) => {
+            let pageNum = pageObj;
+            if (typeof pageNum !== 'number') {
+                pageNum = pageObj.pageNumber || 1;
+            }
+
+            this.setPage(pageNum);
+        };
+    }
+
+    //--------------------------------------------------------------------------
     // Event Listeners
     //--------------------------------------------------------------------------
 
