@@ -10,15 +10,15 @@ Browser Support
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
 * Limited support for mobile web - previews will render but some controls may not work, full support will come soon!
 
-The browser needs to have the Promise API implemented. If not, it can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js) before including any other script.
+The browser needs to have the Promise API implemented. If not, it can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js) before including any other script.
 
 Current Version
 ---------------
-* Version: 0.74.0
+* Version: 0.76.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.74.0/en-US/preview.js  
-https://cdn01.boxcdn.net/content-experience/0.74.0/en-US/preview.css
+https://cdn01.boxcdn.net/content-experience/0.76.0/en-US/preview.js  
+https://cdn01.boxcdn.net/content-experience/0.76.0/en-US/preview.css
 
 Usage
 -----
@@ -27,20 +27,20 @@ Usage
 <html lang="en-US">
 <head>
     <meta charset="utf-8" />
-    <title>Preview API Sample</title>
+    <title>Preview SDK Demo</title>
 
     <!-- Polyfill promise API if using Internet Explorer -->
-    <script src="//cdn.jsdelivr.net/bluebird/3.3.1/bluebird.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
 
     <!-- Latest version of Preview SDK for en-US locale -->
-    <script src="//cdn01.boxcdn.net/content-experience/0.74.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="//cdn01.boxcdn.net/content-experience/0.74.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/content-experience/0.76.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/content-experience/0.76.0/en-US/preview.css" />
 </head>
 <body>
-    <div class="preview-container" style="width:500px; height:212px;"></div>
+    <div class="preview-container" style="height:400px;width:575px"></div>
     <script>
-        Box.Preview.show('47108636521', {
-            token: '1RVukPh5RkL23BEZqgbxc0xEowBthwGP',
+        Box.Preview.show('93392244621', {
+            token: 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP',
     	    container: '.preview-container'
         });
     </script>
@@ -112,20 +112,20 @@ The recommended way to show a preview is by calling `Box.Preview.show(fileId, { 
 
 ```javascript
 const preview = new Preview();
-preview.show(fileId, { options });
+preview.show(FILE_ID, { OPTIONS });
 ```
 
 Options
 -------
 
 ```javascript
-{
-    token: 'AUTHTOKEN',
+Box.Preview.show(FILE_ID, {
+    token: 'AUTH_TOKEN',
     container: '.preview-container',
     api: 'https://api.box.com',
-    sharedLink: 'https://cloud.box.com/v/chicken',
-    sharedLinkPassword: 'foo',
-    collection: ['123', '234', ...],
+    sharedLink: 'https://app.box.com/v/foo',
+    sharedLinkPassword: 'bar',
+    collection: [FILE_ID, '123', '234', ...],
     header: 'light',
     logoUrl: 'http://i.imgur.com/xh8j3E2.png',
     showDownload: true,
@@ -137,7 +137,7 @@ Options
         },
         ...
     }
-}
+});
 ```
 | Option | Optionality | Default | Description |
 | --- | --- | --- | --- |
