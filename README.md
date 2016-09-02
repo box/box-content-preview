@@ -48,9 +48,10 @@ Usage
 </html>
 ```
 
-Sample Preview
+Preview Demo
 ---------------
-![Preview SDK Sample](https://cloud.box.com/shared/static/ltsj7aoqmz2ih0bg2fi6db2f32kfvm01.png)
+![Preview Demo](https://cloud.box.com/shared/static/ltsj7aoqmz2ih0bg2fi6db2f32kfvm01.png)
+
 
 Setup
 -----
