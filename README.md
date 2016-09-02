@@ -50,7 +50,7 @@ Usage
 
 Preview Demo
 ---------------
-![Preview Demo](https://cloud.box.com/shared/static/ltsj7aoqmz2ih0bg2fi6db2f32kfvm01.png)
+View demo and code on CodePen - http://codepen.io/tonyjin/pen/gwYbVv.
 
 
 Setup
