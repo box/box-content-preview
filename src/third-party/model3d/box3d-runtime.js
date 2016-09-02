@@ -76,75 +76,75 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _UserAgent = __webpack_require__(65);
+	var _UserAgent = __webpack_require__(66);
 
 	var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
-	var _EffectComposer = __webpack_require__(66);
+	var _EffectComposer = __webpack_require__(67);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(67);
+	var _BloomPass = __webpack_require__(68);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(68);
+	var _BokehPass = __webpack_require__(69);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(69);
+	var _DotScreenPass = __webpack_require__(70);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(70);
+	var _FilmPass = __webpack_require__(71);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(71);
+	var _MaskPass = __webpack_require__(72);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(72);
+	var _RenderPass = __webpack_require__(73);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(73);
+	var _SavePass = __webpack_require__(74);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(74);
+	var _ShaderPass = __webpack_require__(75);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(113);
+	var _TexturePass = __webpack_require__(114);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(114);
+	var _AdaptiveToneMappingPass = __webpack_require__(115);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(115);
+	var _AnimationAsset = __webpack_require__(116);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(116);
+	var _ApplicationAsset = __webpack_require__(117);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(117);
+	var _AudioAsset = __webpack_require__(118);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _BufferAsset = __webpack_require__(118);
+	var _BufferAsset = __webpack_require__(119);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
-	var _DocumentAsset = __webpack_require__(119);
+	var _DocumentAsset = __webpack_require__(120);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
 
-	var _ImageAsset = __webpack_require__(149);
+	var _ImageAsset = __webpack_require__(150);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -152,83 +152,83 @@
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(150);
+	var _MeshGeometryAsset = __webpack_require__(151);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(152);
+	var _PrefabAsset = __webpack_require__(153);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(153);
+	var _PrimitiveGeometryAsset = __webpack_require__(154);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(154);
+	var _RenderTexture2DAsset = __webpack_require__(155);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(156);
+	var _RenderTextureCubeAsset = __webpack_require__(157);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _SceneAsset = __webpack_require__(157);
+	var _SceneAsset = __webpack_require__(158);
 
 	var _SceneAsset2 = _interopRequireDefault(_SceneAsset);
 
-	var _ScriptAsset = __webpack_require__(158);
+	var _ScriptAsset = __webpack_require__(159);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _ShaderAsset = __webpack_require__(160);
+	var _ShaderAsset = __webpack_require__(161);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _SkinAsset = __webpack_require__(165);
+	var _SkinAsset = __webpack_require__(166);
 
 	var _SkinAsset2 = _interopRequireDefault(_SkinAsset);
 
-	var _Texture2DAsset = __webpack_require__(166);
+	var _Texture2DAsset = __webpack_require__(167);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(168);
+	var _TextureCubeAsset = __webpack_require__(169);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _VideoAsset = __webpack_require__(167);
+	var _VideoAsset = __webpack_require__(168);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
-	var _Box3DObject = __webpack_require__(169);
+	var _Box3DObject = __webpack_require__(170);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(170);
+	var _CameraObject = __webpack_require__(171);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(171);
+	var _LightObject = __webpack_require__(172);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _MeshObject = __webpack_require__(172);
+	var _MeshObject = __webpack_require__(173);
 
 	var _MeshObject2 = _interopRequireDefault(_MeshObject);
 
-	var _APIUtilities = __webpack_require__(159);
+	var _APIUtilities = __webpack_require__(160);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(173);
+	var _DOMUtilities = __webpack_require__(174);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(120);
+	var _JSONLoader = __webpack_require__(121);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(174);
+	var _DevResourceLoader = __webpack_require__(175);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
 
@@ -12980,7 +12980,7 @@
 
 	var _AssetRegistry2 = _interopRequireDefault(_AssetRegistry);
 
-	var _raf = __webpack_require__(62);
+	var _raf = __webpack_require__(63);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -13023,7 +13023,7 @@
 	  function Engine(properties) {
 	    _classCallCheck(this, Engine);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Engine).call(this));
+	    var _this = _possibleConstructorReturn(this, (Engine.__proto__ || Object.getPrototypeOf(Engine)).call(this));
 
 	    if (!Math.log2) {
 	      Math.log2 = function (val) {
@@ -56438,7 +56438,7 @@
 	  function AssetRegistry() {
 	    _classCallCheck(this, AssetRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AssetRegistry).call(this));
+	    var _this = _possibleConstructorReturn(this, (AssetRegistry.__proto__ || Object.getPrototypeOf(AssetRegistry)).call(this));
 
 	    _this.assets = undefined;
 	    _this.box3DRuntime = undefined;
@@ -56992,7 +56992,7 @@
 	  function Box3DAsset(json) {
 	    _classCallCheck(this, Box3DAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (Box3DAsset.__proto__ || Object.getPrototypeOf(Box3DAsset)).call(this, json));
 
 	    _this.objects = {};
 	    _this.registry = undefined;
@@ -57005,7 +57005,7 @@
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.registry = properties.registry;
-	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'initialize', this).call(this, properties);
 
 	      this.on('addObjectEntity', this.registerObject, this);
 	      this.on('removeObjectEntity', this.unregisterObject, this);
@@ -57022,7 +57022,7 @@
 	      this.off('removeObjectEntity', this.unregisterObject, this);
 
 	      //Uninitialize this asset ( will force unload the asset and its children)
-	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'uninitialize', this).call(this);
+	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'uninitialize', this).call(this);
 
 	      //Uninitialize all child objects. Most of these will probably already be unloaded
 	      //but, if not, this will force unload them.
@@ -57039,7 +57039,7 @@
 	  }, {
 	    key: 'load',
 	    value: function load(callback) {
-	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'load', this).call(this, callback);
+	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'load', this).call(this, callback);
 	      if (!this.isDependenciesLoaded()) {
 	        this.loadDependencies();
 	      }
@@ -57294,7 +57294,7 @@
 	      //abort xhr request associated with this
 	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
 
-	      _get(Object.getPrototypeOf(Box3DAsset.prototype), 'unload', this).call(this, options);
+	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /**
@@ -57659,7 +57659,7 @@
 	  function Box3DEntity(jsonDesc) {
 	    _classCallCheck(this, Box3DEntity);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DEntity).call(this));
+	    var _this = _possibleConstructorReturn(this, (Box3DEntity.__proto__ || Object.getPrototypeOf(Box3DEntity)).call(this));
 
 	    jsonDesc = jsonDesc || {};
 	    _this.box3DRuntime = undefined;
@@ -57684,7 +57684,7 @@
 	  _createClass(Box3DEntity, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(Box3DEntity.prototype), 'initialize', this).call(this, properties);
+	      _get(Box3DEntity.prototype.__proto__ || Object.getPrototypeOf(Box3DEntity.prototype), 'initialize', this).call(this, properties);
 	      this._buildParamDependencies();
 	    }
 	  }, {
@@ -60596,7 +60596,7 @@
 	  function ComponentRegistry(opts) {
 	    _classCallCheck(this, ComponentRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ComponentRegistry).call(this));
+	    var _this = _possibleConstructorReturn(this, (ComponentRegistry.__proto__ || Object.getPrototypeOf(ComponentRegistry)).call(this));
 
 	    _this.components = {};
 	    _this.box3DEntity = opts.box3DEntity;
@@ -61681,7 +61681,7 @@
 	  function MaterialRegistry() {
 	    _classCallCheck(this, MaterialRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialRegistry).call(this, Box3D.MaterialAsset));
+	    var _this = _possibleConstructorReturn(this, (MaterialRegistry.__proto__ || Object.getPrototypeOf(MaterialRegistry)).call(this, Box3D.MaterialAsset));
 
 	    _this.sharedUniforms = {
 	      time: {
@@ -61701,7 +61701,7 @@
 	  _createClass(MaterialRegistry, [{
 	    key: 'initialize',
 	    value: function initialize(box3DRuntime) {
-	      _get(Object.getPrototypeOf(MaterialRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
+	      _get(MaterialRegistry.prototype.__proto__ || Object.getPrototypeOf(MaterialRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
 
 	      this.standInTextures[_MaterialAsset2.default.STANDIN_TEXTURE_WHITE] = {
 	        texture: null,
@@ -61741,7 +61741,7 @@
 	          this.standInTextures[i].texture.dispose();
 	        }
 	      }
-	      _get(Object.getPrototypeOf(MaterialRegistry.prototype), 'uninitialize', this).call(this);
+	      _get(MaterialRegistry.prototype.__proto__ || Object.getPrototypeOf(MaterialRegistry.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /**
@@ -61942,7 +61942,7 @@
 	  function MaterialAsset(json) {
 	    _classCallCheck(this, MaterialAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (MaterialAsset.__proto__ || Object.getPrototypeOf(MaterialAsset)).call(this, json));
 	  }
 
 	  /**
@@ -61972,7 +61972,7 @@
 	  }, {
 	    key: 'getProperty',
 	    value: function getProperty(propName) {
-	      var value = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, propName);
+	      var value = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, propName);
 	      if (value === undefined) {
 	        var shaderParams = this.getShader().getProperty('parameters');
 	        if (shaderParams[propName]) {
@@ -61987,7 +61987,7 @@
 	  }, {
 	    key: 'getDefaultProperties',
 	    value: function getDefaultProperties() {
-	      var values = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getDefaultProperties', this).call(this);
+	      var values = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getDefaultProperties', this).call(this);
 	      var shaderParams = this.getShader().getProperty('parameters');
 	      Object.keys(shaderParams).forEach(function (paramName) {
 	        values[paramName] = shaderParams[paramName].default;
@@ -61997,7 +61997,7 @@
 	  }, {
 	    key: 'verifyProperty',
 	    value: function verifyProperty(propertyName, valueObj) {
-	      if (_get(Object.getPrototypeOf(MaterialAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	      if (_get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
 	        return true;
 	      }
 	      var shaderAsset = this.getShader();
@@ -62143,7 +62143,7 @@
 	    value: function getShader() {
 	      // Calling super to avoid an infinite loop because Material.getProperty will fallback to looking
 	      // in the shader for default property values.
-	      var shaderId = _get(Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, 'shader');
+	      var shaderId = _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'getProperty', this).call(this, 'shader');
 	      // If the shader asset doesn't exist, get the default shader asset.
 	      if (!this.getAssetById(shaderId)) {
 	        shaderId = this.getDefaultProperty('shader');
@@ -62457,7 +62457,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this3 = this;
 
-	      _get(Object.getPrototypeOf(MaterialAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('shader')) {
 	        (function () {
@@ -62810,7 +62810,7 @@
 	  }, {
 	    key: 'getStandInTexture',
 	    value: function getStandInTexture(textureParamName, textureUsage) {
-	      var texture = this.registry.getAssetById(this.getProperty(textureParamName));
+	      var texture = this.box3DRuntime.assetRegistry.getAssetById(this.getProperty(textureParamName));
 	      if (!texture) {
 	        return;
 	      }
@@ -62823,7 +62823,7 @@
 	        standinTex = MaterialAsset.STANDIN_TEXTURE_BLACK;
 	      }
 
-	      if (!texture.isCubeMap()) {
+	      if (texture.isCubeMap()) {
 	        standinTex += '_CUBE';
 	      }
 	      return this.registry.getStandInTexture(standinTex);
@@ -62879,6 +62879,9 @@
 	              // Otherwise, if the texture load is already completed, call the callback directly
 	            } else if (tex.isLoaded()) {
 	              this.onTextureLoaded.call(this, tex);
+	            }
+	            // If the texture is already loaded, we don't want to set the stand-in texture.
+	            if (tex.isLoaded()) {
 	              valueNeedsSetting = false;
 	            }
 	          } else {
@@ -63106,7 +63109,7 @@
 	        }
 	        this.runtimeData = null;
 
-	        _get(Object.getPrototypeOf(MaterialAsset.prototype), 'unload', this).call(this);
+	        _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), 'unload', this).call(this);
 	      }
 	    }
 	  }], [{
@@ -63200,7 +63203,7 @@
 	  function TextureRegistry() {
 	    _classCallCheck(this, TextureRegistry);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TextureRegistry).call(this, _BaseTextureAsset2.default));
+	    var _this = _possibleConstructorReturn(this, (TextureRegistry.__proto__ || Object.getPrototypeOf(TextureRegistry)).call(this, _BaseTextureAsset2.default));
 
 	    _this.missingTexture2d = undefined;
 	    _this.missingTextureCube = undefined;
@@ -63365,7 +63368,7 @@
 	  function BaseTextureAsset(json) {
 	    _classCallCheck(this, BaseTextureAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseTextureAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (BaseTextureAsset.__proto__ || Object.getPrototypeOf(BaseTextureAsset)).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -63384,7 +63387,7 @@
 	    value: function initialize(properties) {
 	      var _this2 = this;
 
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), 'initialize', this).call(this, properties);
 	      this.listenTo(this.box3DRuntime, 'imageUnloaded', function (imageId) {
 	        // If this texture is using the image, unload the texture so that entities
 	        // listening for texture unload can take action.
@@ -63480,7 +63483,7 @@
 	        this.runtimeData.dispose();
 	      }
 
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
+	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), 'unload', this).call(this, options);
 	      this.loadedBytes = 0;
 	    }
 
@@ -63489,7 +63492,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      var texture = this.runtimeData instanceof _three2.default.WebGLRenderTarget ? this.runtimeData.texture : this.runtimeData;
 
@@ -64166,7 +64169,7 @@
 	  function BaseImageAsset(json) {
 	    _classCallCheck(this, BaseImageAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseImageAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (BaseImageAsset.__proto__ || Object.getPrototypeOf(BaseImageAsset)).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -64215,7 +64218,7 @@
 	     * @inheritDoc
 	     */
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseImageAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(BaseImageAsset.prototype.__proto__ || Object.getPrototypeOf(BaseImageAsset.prototype), 'initialize', this).call(this, properties);
 
 	      this.loadComponents = true;
 	    }
@@ -64627,7 +64630,7 @@
 	  function ScriptRegistry() {
 	    _classCallCheck(this, ScriptRegistry);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptRegistry).call(this, Box3D.ScriptAsset));
+	    return _possibleConstructorReturn(this, (ScriptRegistry.__proto__ || Object.getPrototypeOf(ScriptRegistry)).call(this, Box3D.ScriptAsset));
 	  }
 
 	  /**
@@ -64643,7 +64646,7 @@
 	  _createClass(ScriptRegistry, [{
 	    key: 'initialize',
 	    value: function initialize(box3DRuntime) {
-	      _get(Object.getPrototypeOf(ScriptRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
+	      _get(ScriptRegistry.prototype.__proto__ || Object.getPrototypeOf(ScriptRegistry.prototype), 'initialize', this).call(this, box3DRuntime);
 
 	      if (!componentsAdded) {
 	        componentsAdded = true;
@@ -64653,7 +64656,7 @@
 	  }, {
 	    key: 'uninitialize',
 	    value: function uninitialize() {
-	      _get(Object.getPrototypeOf(ScriptRegistry.prototype), 'uninitialize', this).call(this);
+	      _get(ScriptRegistry.prototype.__proto__ || Object.getPrototypeOf(ScriptRegistry.prototype), 'uninitialize', this).call(this);
 	    }
 	  }, {
 	    key: 'initSystemAssets',
@@ -64716,9 +64719,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(25),__webpack_require__(44),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(23),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61) 
+	  __webpack_require__(25),__webpack_require__(44),__webpack_require__(26),__webpack_require__(27),__webpack_require__(28),__webpack_require__(29),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(23),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(62) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
-	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
+	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEnvironment,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPMREMGenerator,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRenderer,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
 	   Box3D.ScriptRegistry.registerScript({
 	  "id": "audio_listener",
@@ -67298,6 +67301,45 @@
 	    "path": "Box3DRuntime/Components/BuiltIn/OrbitCameraController"
 	  }
 	}, ComponentOrbitCameraController);  Box3D.ScriptRegistry.registerScript({
+	  "id": "texture2d_to_pmrem_cubeuv",
+	  "sid": "GeneratePMREM",
+	  "properties": {
+	    "name": "GeneratePMREM",
+	    "description": "Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI, input environment map. The entire result will be stored in this texture in the CubeUV layout.",
+	    "attributes": {
+	      "inputTexture": {
+	        "name": "inputTexture",
+	        "type": "asset",
+	        "default": null,
+	        "filter": {
+	          "texture2D": true,
+	          "renderTexture2D": true,
+	          "textureCube": true,
+	          "renderTextureCube": true
+	        },
+	        "description": "The texture to generate the PMREM for."
+	      }
+	    },
+	    "attributesOrder": [
+	      "inputTexture"
+	    ],
+	    "events": {},
+	    "externalDependencies": [],
+	    "filter": [
+	      "renderTexture2D"
+	    ],
+	    "category": "Rendering",
+	    "parsedComments": true,
+	    "flags": {
+	      "addremove": true,
+	      "disable": true,
+	      "persist": true,
+	      "unique": false,
+	      "display": true
+	    },
+	    "path": "Box3DRuntime/Components/BuiltIn/PMREMGenerator"
+	  }
+	}, ComponentPMREMGenerator);  Box3D.ScriptRegistry.registerScript({
 	  "id": "panorama_to_cubemap_script",
 	  "sid": "Panorama To Cube Map",
 	  "properties": {
@@ -68928,7 +68970,7 @@
 	  function ObjectAnimator() {
 	    _classCallCheck(this, ObjectAnimator);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectAnimator).call(this));
+	    var _this = _possibleConstructorReturn(this, (ObjectAnimator.__proto__ || Object.getPrototypeOf(ObjectAnimator)).call(this));
 
 	    _this.playingCurveAnimation = false;
 	    _this.curveAnim = undefined;
@@ -69525,7 +69567,7 @@
 	  function Box3DComponent() {
 	    _classCallCheck(this, Box3DComponent);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DComponent).call(this));
+	    var _this = _possibleConstructorReturn(this, (Box3DComponent.__proto__ || Object.getPrototypeOf(Box3DComponent)).call(this));
 
 	    _this.inputController = null;
 	    return _this;
@@ -70178,7 +70220,7 @@
 	  function AudioListener() {
 	    _classCallCheck(this, AudioListener);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AudioListener).call(this));
+	    var _this = _possibleConstructorReturn(this, (AudioListener.__proto__ || Object.getPrototypeOf(AudioListener)).call(this));
 
 	    _this.context = null;
 	    return _this;
@@ -70308,7 +70350,7 @@
 	  function CubeMapCapture() {
 	    _classCallCheck(this, CubeMapCapture);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CubeMapCapture).call(this));
+	    var _this = _possibleConstructorReturn(this, (CubeMapCapture.__proto__ || Object.getPrototypeOf(CubeMapCapture)).call(this));
 
 	    _this.framesElapsed = 0;
 
@@ -70625,7 +70667,7 @@
 	  function Curve() {
 	    _classCallCheck(this, Curve);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Curve).call(this));
+	    var _this = _possibleConstructorReturn(this, (Curve.__proto__ || Object.getPrototypeOf(Curve)).call(this));
 
 	    _this.isEditor = false;
 	    _this.controlPoints = undefined;
@@ -70989,7 +71031,7 @@
 	  function DebugConsoleDisplay() {
 	    _classCallCheck(this, DebugConsoleDisplay);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DebugConsoleDisplay).call(this));
+	    return _possibleConstructorReturn(this, (DebugConsoleDisplay.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay)).call(this));
 	  }
 
 	  _createClass(DebugConsoleDisplay, [{
@@ -71074,7 +71116,7 @@
 	  function DebugConsoleDisplay() {
 	    _classCallCheck(this, DebugConsoleDisplay);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DebugConsoleDisplay).call(this));
+	    var _this = _possibleConstructorReturn(this, (DebugConsoleDisplay.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay)).call(this));
 
 	    _this.stats = new _stats2.default();
 	    return _this;
@@ -71102,13 +71144,13 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      _get(Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'enable', this).call(this);
+	      _get(DebugConsoleDisplay.prototype.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'enable', this).call(this);
 	      document.body.appendChild(this.stats.dom);
 	    }
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      _get(Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'disable', this).call(this);
+	      _get(DebugConsoleDisplay.prototype.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'disable', this).call(this);
 	      document.body.removeChild(this.stats.dom);
 	    }
 	  }, {
@@ -71214,7 +71256,7 @@
 	  function DebugTextureViewer() {
 	    _classCallCheck(this, DebugTextureViewer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DebugTextureViewer).call(this));
+	    var _this = _possibleConstructorReturn(this, (DebugTextureViewer.__proto__ || Object.getPrototypeOf(DebugTextureViewer)).call(this));
 
 	    _this.renderEventName = 'render';
 	    _this.textureRegistryById = {};
@@ -71678,7 +71720,7 @@
 	  function DefaultFilters() {
 	    _classCallCheck(this, DefaultFilters);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DefaultFilters).call(this));
+	    return _possibleConstructorReturn(this, (DefaultFilters.__proto__ || Object.getPrototypeOf(DefaultFilters)).call(this));
 	  }
 
 	  _createClass(DefaultFilters, [{
@@ -71836,7 +71878,7 @@
 	  function DynamicOptimizer() {
 	    _classCallCheck(this, DynamicOptimizer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DynamicOptimizer).call(this));
+	    var _this = _possibleConstructorReturn(this, (DynamicOptimizer.__proto__ || Object.getPrototypeOf(DynamicOptimizer)).call(this));
 
 	    _this.frameTimeThreshold = 33.333333333; // Attribute defined above
 	    _this.testInterval = 2000.0; // Attribute defined above
@@ -72108,7 +72150,7 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      _get(Object.getPrototypeOf(DynamicOptimizer.prototype), 'enable', this).call(this);
+	      _get(DynamicOptimizer.prototype.__proto__ || Object.getPrototypeOf(DynamicOptimizer.prototype), 'enable', this).call(this);
 	      this.autoOptimize = true;
 	    }
 
@@ -72117,7 +72159,7 @@
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      _get(Object.getPrototypeOf(DynamicOptimizer.prototype), 'disable', this).call(this);
+	      _get(DynamicOptimizer.prototype.__proto__ || Object.getPrototypeOf(DynamicOptimizer.prototype), 'disable', this).call(this);
 	      this.autoOptimize = false;
 	      this.setMaxQuality();
 	    }
@@ -72210,7 +72252,7 @@
 	  function Environment() {
 	    _classCallCheck(this, Environment);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Environment).call(this));
+	    return _possibleConstructorReturn(this, (Environment.__proto__ || Object.getPrototypeOf(Environment)).call(this));
 	  }
 
 	  _createClass(Environment, [{
@@ -72333,7 +72375,7 @@
 	  function EventHandler() {
 	    _classCallCheck(this, EventHandler);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(EventHandler).call(this));
+	    return _possibleConstructorReturn(this, (EventHandler.__proto__ || Object.getPrototypeOf(EventHandler)).call(this));
 	  }
 
 	  /**
@@ -72496,7 +72538,7 @@
 	  function Exploder() {
 	    _classCallCheck(this, Exploder);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Exploder).call(this));
+	    var _this = _possibleConstructorReturn(this, (Exploder.__proto__ || Object.getPrototypeOf(Exploder)).call(this));
 
 	    _this.m_fTime = 99999999.0;
 	    _this.m_vDestTest = null;
@@ -72748,7 +72790,7 @@
 	  function FreeCamera() {
 	    _classCallCheck(this, FreeCamera);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FreeCamera).call(this));
+	    var _this = _possibleConstructorReturn(this, (FreeCamera.__proto__ || Object.getPrototypeOf(FreeCamera)).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -73296,7 +73338,7 @@
 	  function Fullscreen() {
 	    _classCallCheck(this, Fullscreen);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Fullscreen).call(this));
+	    var _this = _possibleConstructorReturn(this, (Fullscreen.__proto__ || Object.getPrototypeOf(Fullscreen)).call(this));
 
 	    _this.el = null;
 	    _this.fsEnabled = false;
@@ -73640,7 +73682,7 @@
 	  function InputController() {
 	    _classCallCheck(this, InputController);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(InputController).call(this));
+	    var _this = _possibleConstructorReturn(this, (InputController.__proto__ || Object.getPrototypeOf(InputController)).call(this));
 
 	    _this.inputQueue = [];
 	    _this.inputPool = [];
@@ -74569,7 +74611,7 @@
 	  function Animation() {
 	    _classCallCheck(this, Animation);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Animation).call(this));
+	    var _this = _possibleConstructorReturn(this, (Animation.__proto__ || Object.getPrototypeOf(Animation)).call(this));
 
 	    _this.dirty = true;
 	    _this.paused = false;
@@ -75113,7 +75155,7 @@
 	  function LookAt() {
 	    _classCallCheck(this, LookAt);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(LookAt).call(this));
+	    var _this = _possibleConstructorReturn(this, (LookAt.__proto__ || Object.getPrototypeOf(LookAt)).call(this));
 
 	    _this.playing = true;
 	    return _this;
@@ -75282,7 +75324,7 @@
 	  function MaterialCapture() {
 	    _classCallCheck(this, MaterialCapture);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MaterialCapture).call(this));
+	    var _this = _possibleConstructorReturn(this, (MaterialCapture.__proto__ || Object.getPrototypeOf(MaterialCapture)).call(this));
 
 	    _this.createScene();
 	    return _this;
@@ -75455,7 +75497,7 @@
 	  function NormalMapGenerator() {
 	    _classCallCheck(this, NormalMapGenerator);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NormalMapGenerator).call(this));
+	    var _this = _possibleConstructorReturn(this, (NormalMapGenerator.__proto__ || Object.getPrototypeOf(NormalMapGenerator)).call(this));
 
 	    _this.m_Uniforms = null;
 	    _this.normalMaterial = null;
@@ -75658,7 +75700,7 @@
 	  function AudioSource() {
 	    _classCallCheck(this, AudioSource);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AudioSource).call(this));
+	    var _this = _possibleConstructorReturn(this, (AudioSource.__proto__ || Object.getPrototypeOf(AudioSource)).call(this));
 
 	    _this.gainNode = null;
 	    _this.sourceNode = null;
@@ -76063,7 +76105,7 @@
 	  function ObjectPicker() {
 	    _classCallCheck(this, ObjectPicker);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ObjectPicker).call(this));
+	    var _this = _possibleConstructorReturn(this, (ObjectPicker.__proto__ || Object.getPrototypeOf(ObjectPicker)).call(this));
 
 	    _this.pickingMaterialDef = undefined;
 	    _this.meshRegistry = {};
@@ -76732,7 +76774,7 @@
 	  function OrbitCamera() {
 	    _classCallCheck(this, OrbitCamera);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(OrbitCamera).call(this));
+	    var _this = _possibleConstructorReturn(this, (OrbitCamera.__proto__ || Object.getPrototypeOf(OrbitCamera)).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -77581,6 +77623,272 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
+	 * @vid texture2d_to_pmrem_cubeuv
+	 * @vname GeneratePMREM
+	 * @vdescription Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI,
+	 * input environment map. The entire result will be stored in this texture in the CubeUV layout.
+	 * @vfilter renderTexture2D
+	 * @vcategory Rendering
+	 * @vattr asset inputTexture {
+	 *   default : null,
+	 *   filter : { texture2D: true, renderTexture2D: true, textureCube: true, renderTextureCube: true },
+	 *   description : 'The texture to generate the PMREM for.'
+	 * }
+	*/
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _three = __webpack_require__(8);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DComponent2 = __webpack_require__(24);
+
+	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
+
+	var _BaseImageAsset = __webpack_require__(20);
+
+	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
+
+	var _BaseTextureAsset = __webpack_require__(19);
+
+	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var PMREMGenerator = function (_Box3DComponent) {
+	  _inherits(PMREMGenerator, _Box3DComponent);
+
+	  function PMREMGenerator() {
+	    _classCallCheck(this, PMREMGenerator);
+
+	    return _possibleConstructorReturn(this, (PMREMGenerator.__proto__ || Object.getPrototypeOf(PMREMGenerator)).call(this));
+	  }
+
+	  _createClass(PMREMGenerator, [{
+	    key: 'attributesChanged',
+	    value: function attributesChanged(changes) {
+	      if (changes.indexOf('inputTexture') !== -1) {
+	        var prevTex = this.getPreviousAttribute('inputTexture');
+	        this.unregisterDependency(prevTex);
+	        this.registerDependency(this.inputTexture);
+	        this.updateTexture();
+	      }
+	    }
+
+	    // init() {
+	    //   this.registerDependency(this.inputTexture);
+	    //   // this.updateTexture();
+	    // }
+
+	  }, {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
+	      var _this2 = this;
+
+	      if (this.inputTexture) {
+	        this.inputTexture.when('load', function () {
+	          _this2.registerDependency(_this2.inputTexture);
+	          _this2.updateTexture();
+	        });
+	        if (this.inputTexture.isUnloaded()) {
+	          this.inputTexture.load();
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'shutdown',
+	    value: function shutdown() {
+	      if (this.inputTexture) {
+	        this.unregisterDependency(this.inputTexture);
+	        this.inputTexture.off('load', this.renderToCube, this);
+	      }
+	    }
+	  }, {
+	    key: 'updateTexture',
+	    value: function updateTexture() {
+	      if (this.inputTexture) {
+	        // let cubeSource = this.inputTexture.getThreeTexture();
+	        // if (this.inputTexture && (this.inputTexture.type === 'renderTexture2D' ||
+	        //   this.inputTexture.type === 'texture2D')) {
+	        var cubeSource = this.convertToCubeMap();
+	        // }
+
+
+	        this.generate(cubeSource);
+
+	        // skyboxMesh.material.dispose();
+
+	        // Setup appropriate material for transforming 2D texture to cube map
+	        // let shader;
+	        // let layout = this.inputTexture.getLayout();
+	        // if (layout === BaseImageAsset.LAYOUT.normal) {
+
+
+	        // Bind to texture loading
+	        // this.inputTexture.off('load', this.renderToCube, this);
+	        // this.inputTexture.when('load', this.renderToCube, this);
+	        // if (this.inputTexture.isUnloaded()) {
+	        //   this.inputTexture.load();
+	        // }
+
+	      }
+	    }
+	  }, {
+	    key: 'generate',
+	    value: function generate(sourceCubeMap) {
+	      var renderer = this.getThreeRenderer();
+	      var generator = new _three2.default.PMREMGenerator(sourceCubeMap);
+	      generator.update(renderer);
+	      var packer = new _three2.default.PMREMCubeUVPacker(generator.cubeLods);
+
+	      this.getEntity().getThreeTexture().mapping = _three2.default.EquirectangularReflectionMapping;
+	      packer.CubeUVRenderTarget = this.getEntity().getRuntimeData();
+	      packer.update(renderer);
+	    }
+	  }, {
+	    key: 'convertToCubeMap',
+	    value: function convertToCubeMap() {
+	      // Assume width is power of two so that dividing by 4 produces power of two size.
+	      // TODO: add code to ensure this is the case.
+	      // We're setting the size of the cubemap to be 1/4 the size of this render target because
+	      // that is the ratio hard-coded into the THREE.PMREMCubeUVPacker.
+	      var size = this.getEntity().getWidth() / 4;
+	      var params = {
+	        format: _BaseImageAsset2.default.FORMAT[this.getEntity().getProperty('format')],
+	        magFilter: _BaseTextureAsset2.default.FILTER[this.getEntity().getProperty('magFilter')],
+	        minFilter: _BaseTextureAsset2.default.FILTER[this.getEntity().getProperty('minFilter')],
+	        type: _BaseImageAsset2.default.TYPE[this.getEntity().getProperty('type')],
+	        generateMipmaps: this.getEntity().getProperty('generateMipmaps'),
+	        anisotropy: this.getEntity().getProperty('anisotropy'),
+	        encoding: this.getEntity().getProperty('encoding')
+	      };
+	      var targetCubeMap = new _three2.default.WebGLRenderTargetCube(size, size, params);
+	      var skyboxScene = new _three2.default.Scene();
+	      var skyboxGeometry = new _three2.default.BoxGeometry(100, 100, 100, 1, 1, 1);
+	      skyboxGeometry.dynamic = false;
+	      var skyboxMesh = new _three2.default.Mesh(skyboxGeometry);
+	      skyboxMesh.frustumCulled = false;
+	      skyboxMesh.castShadow = false;
+	      skyboxMesh.receiveShadow = false;
+	      if (this.isEnabled()) {
+	        skyboxScene.add(skyboxMesh);
+	      }
+
+	      var shader = _three2.default.ShaderLib['equirect'];
+	      shader.uniforms.tFlip.value = 1.0;
+	      var equirectMaterial = new _three2.default.ShaderMaterial({
+	        fragmentShader: shader.fragmentShader,
+	        vertexShader: shader.vertexShader,
+	        uniforms: shader.uniforms,
+	        depthWrite: false,
+	        side: _three2.default.BackSide
+	      });
+
+	      equirectMaterial.uniforms.tEquirect.value = this.inputTexture.getThreeTexture();
+	      skyboxMesh.material = equirectMaterial;
+
+	      var fov = 90;
+	      var aspect = 1;
+
+	      var cameras = [];
+	      cameras[0] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[0].up.set(0, -1, 0);
+	      cameras[0].lookAt(new _three2.default.Vector3(1, 0, 0));
+	      cameras[0].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[0]);
+
+	      cameras[1] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[1].up.set(0, -1, 0);
+	      cameras[1].lookAt(new _three2.default.Vector3(-1, 0, 0));
+	      cameras[1].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[1]);
+
+	      cameras[2] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[2].up.set(0, 0, 1);
+	      cameras[2].lookAt(new _three2.default.Vector3(0, 1, 0));
+	      cameras[2].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[2]);
+
+	      cameras[3] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[3].up.set(0, 0, -1);
+	      cameras[3].lookAt(new _three2.default.Vector3(0, -1, 0));
+	      cameras[3].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[3]);
+
+	      cameras[4] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[4].up.set(0, -1, 0);
+	      cameras[4].lookAt(new _three2.default.Vector3(0, 0, 1));
+	      cameras[4].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[4]);
+
+	      cameras[5] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[5].up.set(0, -1, 0);
+	      cameras[5].lookAt(new _three2.default.Vector3(0, 0, -1));
+	      cameras[5].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[5]);
+
+	      // const renderTarget = this.getRuntimeData();
+	      var renderer = this.getThreeRenderer();
+
+	      targetCubeMap.texture.generateMipmaps = false;
+
+	      renderer.setViewport(0, 0, targetCubeMap.width, targetCubeMap.height);
+	      for (var i = 0; i < 5; i++) {
+	        targetCubeMap.activeCubeFace = i;
+	        renderer.render(skyboxScene, cameras[i], targetCubeMap);
+	      }
+	      targetCubeMap.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
+
+	      targetCubeMap.activeCubeFace = 5;
+	      renderer.render(skyboxScene, cameras[5], targetCubeMap);
+	      return targetCubeMap;
+	    }
+
+	    // renderToCube() {
+	    //   if (this.hasThreeData()) {
+
+	    //     this.equirectMaterial.uniforms.inputTexture.value = this.inputTexture.runtimeData;
+	    //     var renderTarget = this.getRuntimeData();
+	    //     var renderer = this.getThreeRenderer();
+
+	    //     renderTarget.texture.generateMipmaps = false;
+
+	    //     renderer.setViewport(0, 0, renderTarget.width, renderTarget.height);
+	    //     for (var i = 0; i < 5; i++) {
+	    //       renderTarget.activeCubeFace = i;
+	    //       renderer.render(this.skyboxScene, this.cameras[i], renderTarget);
+	    //     }
+	    //     renderTarget.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
+
+	    //     renderTarget.activeCubeFace = 5;
+	    //     renderer.render(this.skyboxScene, this.cameras[5], renderTarget);
+	    //   }
+	    // }
+
+	  }]);
+
+	  return PMREMGenerator;
+	}(_Box3DComponent3.default);
+
+	exports.default = PMREMGenerator;
+
+/***/ },
+/* 48 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
 	 * @vid panorama_to_cubemap_script
 	 * @vname Panorama To Cube Map
 	 * @vdescription A controller that allows a camera to easily orbit a target object.
@@ -77622,7 +77930,7 @@
 	  function PanoramaToCubeMap() {
 	    _classCallCheck(this, PanoramaToCubeMap);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PanoramaToCubeMap).call(this));
+	    var _this = _possibleConstructorReturn(this, (PanoramaToCubeMap.__proto__ || Object.getPrototypeOf(PanoramaToCubeMap)).call(this));
 
 	    _this.skyboxScene = undefined;
 	    _this.cameras = new Array(6);
@@ -77772,7 +78080,7 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77825,7 +78133,7 @@
 	  function PreviewAxisRotation() {
 	    _classCallCheck(this, PreviewAxisRotation);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewAxisRotation).call(this));
+	    var _this = _possibleConstructorReturn(this, (PreviewAxisRotation.__proto__ || Object.getPrototypeOf(PreviewAxisRotation)).call(this));
 
 	    _this.time = 0;
 	    _this.target = new _three2.default.Quaternion();
@@ -78177,7 +78485,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78347,7 +78655,7 @@
 	  function PreviewCamera() {
 	    _classCallCheck(this, PreviewCamera);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewCamera).call(this));
+	    var _this = _possibleConstructorReturn(this, (PreviewCamera.__proto__ || Object.getPrototypeOf(PreviewCamera)).call(this));
 
 	    _this._moveVector = new _three2.default.Vector3();
 	    _this._tempVector = new _three2.default.Vector3();
@@ -79181,7 +79489,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79230,7 +79538,7 @@
 	  function PreviewCameraFocus() {
 	    _classCallCheck(this, PreviewCameraFocus);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PreviewCameraFocus).call(this));
+	    var _this = _possibleConstructorReturn(this, (PreviewCameraFocus.__proto__ || Object.getPrototypeOf(PreviewCameraFocus)).call(this));
 
 	    _this.previewCamControl = null;
 	    _this.mouseVector = null;
@@ -79455,7 +79763,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79509,7 +79817,7 @@
 	  function ReflectionCapture() {
 	    _classCallCheck(this, ReflectionCapture);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ReflectionCapture).call(this));
+	    var _this = _possibleConstructorReturn(this, (ReflectionCapture.__proto__ || Object.getPrototypeOf(ReflectionCapture)).call(this));
 
 	    _this.framesElapsed = 0;
 	    _this.perspectiveCamera = null;
@@ -79736,7 +80044,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79862,7 +80170,7 @@
 	  function RenderFilters() {
 	    _classCallCheck(this, RenderFilters);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderFilters).call(this));
+	    var _this = _possibleConstructorReturn(this, (RenderFilters.__proto__ || Object.getPrototypeOf(RenderFilters)).call(this));
 
 	    _this.shaderDefs = {
 	      video: {
@@ -80301,7 +80609,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80464,7 +80772,7 @@
 	  function RenderModes() {
 	    _classCallCheck(this, RenderModes);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderModes).call(this));
+	    var _this = _possibleConstructorReturn(this, (RenderModes.__proto__ || Object.getPrototypeOf(RenderModes)).call(this));
 
 	    _this.wireframeCache = {};
 	    _this.overrideMaterialEnabled = false;
@@ -81056,7 +81364,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81121,7 +81429,7 @@
 	  function RenderView() {
 	    _classCallCheck(this, RenderView);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderView).call(this));
+	    var _this = _possibleConstructorReturn(this, (RenderView.__proto__ || Object.getPrototypeOf(RenderView)).call(this));
 
 	    _this.renderEventName = 'render';
 	    _this.enablePostProcess = true;
@@ -81409,7 +81717,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81541,7 +81849,7 @@
 	  function DefaultRenderer() {
 	    _classCallCheck(this, DefaultRenderer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DefaultRenderer).call(this));
+	    var _this = _possibleConstructorReturn(this, (DefaultRenderer.__proto__ || Object.getPrototypeOf(DefaultRenderer)).call(this));
 
 	    _this.threeRenderer = null;
 	    _this.caps = {};
@@ -81979,7 +82287,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82075,7 +82383,7 @@
 	  function Rotate() {
 	    _classCallCheck(this, Rotate);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Rotate).call(this));
+	    var _this = _possibleConstructorReturn(this, (Rotate.__proto__ || Object.getPrototypeOf(Rotate)).call(this));
 
 	    _this.quaternion = new _three2.default.Quaternion();
 	    _this.currentGlobalQuaternion = new _three2.default.Quaternion();
@@ -82201,7 +82509,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82245,7 +82553,7 @@
 	  function SceneLoader() {
 	    _classCallCheck(this, SceneLoader);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneLoader).call(this));
+	    var _this = _possibleConstructorReturn(this, (SceneLoader.__proto__ || Object.getPrototypeOf(SceneLoader)).call(this));
 
 	    _this.m_bHierarchy = false;
 	    _this.m_bDependencies = false;
@@ -82309,7 +82617,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82405,7 +82713,7 @@
 	  function SimplexNoiseRenderer() {
 	    _classCallCheck(this, SimplexNoiseRenderer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SimplexNoiseRenderer).call(this));
+	    var _this = _possibleConstructorReturn(this, (SimplexNoiseRenderer.__proto__ || Object.getPrototypeOf(SimplexNoiseRenderer)).call(this));
 
 	    _this.m_Uniforms = null;
 	    _this.m_NoiseMat = null;
@@ -82538,7 +82846,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82596,7 +82904,7 @@
 	  function SkyboxRenderer() {
 	    _classCallCheck(this, SkyboxRenderer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkyboxRenderer).call(this));
+	    var _this = _possibleConstructorReturn(this, (SkyboxRenderer.__proto__ || Object.getPrototypeOf(SkyboxRenderer)).call(this));
 
 	    _this.currentTexLayout = null;
 	    _this.skyboxMesh = null;
@@ -82964,7 +83272,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -83010,7 +83318,7 @@
 	  function TextRenderer() {
 	    _classCallCheck(this, TextRenderer);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TextRenderer).call(this));
+	    var _this = _possibleConstructorReturn(this, (TextRenderer.__proto__ || Object.getPrototypeOf(TextRenderer)).call(this));
 
 	    _this.m_Material = null;
 	    _this.m_Canvas = null;
@@ -83167,7 +83475,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -83216,7 +83524,7 @@
 	  function Texture2dToCubeMap() {
 	    _classCallCheck(this, Texture2dToCubeMap);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Texture2dToCubeMap).call(this));
+	    var _this = _possibleConstructorReturn(this, (Texture2dToCubeMap.__proto__ || Object.getPrototypeOf(Texture2dToCubeMap)).call(this));
 
 	    _this.skyboxScene = undefined;
 	    _this.cameras = new Array(6);
@@ -83409,10 +83717,10 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(63)
+	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(64)
 	  , root = typeof window === 'undefined' ? global : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -83488,7 +83796,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -83524,10 +83832,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(64)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -83559,17 +83867,45 @@
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
 	        return setTimeout(fun, 0);
-	    } else {
-	        return cachedSetTimeout.call(null, fun, 0);
 	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+
+
 	}
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
-	        clearTimeout(marker);
-	    } else {
-	        cachedClearTimeout.call(null, marker);
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
 	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+
+
+
 	}
 	var queue = [];
 	var draining = false;
@@ -83665,7 +84001,7 @@
 
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -83885,7 +84221,7 @@
 	exports.default = UserAgent;
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84051,7 +84387,7 @@
 
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84233,7 +84569,7 @@
 
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84340,7 +84676,7 @@
 
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84408,7 +84744,7 @@
 
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84487,7 +84823,7 @@
 
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84581,7 +84917,7 @@
 
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84647,7 +84983,7 @@
 
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84717,12 +85053,11 @@
 
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)
-		, __webpack_require__(94)
-		, __webpack_require__(76)
+		, __webpack_require__(95)
 		, __webpack_require__(77)
 		, __webpack_require__(78)
 		, __webpack_require__(79)
@@ -84740,8 +85075,8 @@
 		, __webpack_require__(91)
 		, __webpack_require__(92)
 		, __webpack_require__(93)
-		, __webpack_require__(75)
-		, __webpack_require__(95)
+		, __webpack_require__(94)
+		, __webpack_require__(76)
 		, __webpack_require__(96)
 		, __webpack_require__(97)
 		, __webpack_require__(98)
@@ -84758,7 +85093,8 @@
 		, __webpack_require__(109)
 		, __webpack_require__(110)
 		, __webpack_require__(111)
-		, __webpack_require__(112)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(112)
+		, __webpack_require__(113)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -84843,7 +85179,7 @@
 
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84949,7 +85285,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85022,7 +85358,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85093,7 +85429,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85151,7 +85487,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85283,7 +85619,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85669,7 +86005,7 @@
 
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85734,7 +86070,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85789,7 +86125,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85845,7 +86181,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85953,7 +86289,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86006,7 +86342,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86060,7 +86396,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86125,7 +86461,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86200,7 +86536,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86301,7 +86637,7 @@
 
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86394,7 +86730,7 @@
 
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86505,7 +86841,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86603,7 +86939,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86685,7 +87021,7 @@
 
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86723,7 +87059,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86808,7 +87144,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86877,7 +87213,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86949,7 +87285,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87025,7 +87361,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87093,7 +87429,7 @@
 
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87174,7 +87510,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87240,7 +87576,7 @@
 
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87300,7 +87636,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87364,7 +87700,7 @@
 
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87427,7 +87763,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87724,7 +88060,7 @@
 
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87809,7 +88145,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87962,7 +88298,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88026,7 +88362,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88126,7 +88462,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88195,7 +88531,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88267,7 +88603,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88338,7 +88674,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88393,7 +88729,7 @@
 
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -89021,7 +89357,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89067,7 +89403,7 @@
 	  function AnimationAsset(json) {
 	    _classCallCheck(this, AnimationAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (AnimationAsset.__proto__ || Object.getPrototypeOf(AnimationAsset)).call(this, json));
 
 	    _this.clips = {};
 	    return _this;
@@ -89411,7 +89747,7 @@
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89444,14 +89780,14 @@
 	  function ApplicationAsset(json) {
 	    _classCallCheck(this, ApplicationAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ApplicationAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (ApplicationAsset.__proto__ || Object.getPrototypeOf(ApplicationAsset)).call(this, json));
 	  }
 
 	  _createClass(ApplicationAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(ApplicationAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(ApplicationAsset.prototype.__proto__ || Object.getPrototypeOf(ApplicationAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -89486,7 +89822,7 @@
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89521,7 +89857,7 @@
 	  function AudioAsset(json) {
 	    _classCallCheck(this, AudioAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AudioAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (AudioAsset.__proto__ || Object.getPrototypeOf(AudioAsset)).call(this, json));
 	  }
 
 	  _createClass(AudioAsset, [{
@@ -89532,7 +89868,7 @@
 	        this.runtimeData.pause();
 	      }
 
-	      _get(Object.getPrototypeOf(AudioAsset.prototype), 'uninitialize', this).call(this);
+	      _get(AudioAsset.prototype.__proto__ || Object.getPrototypeOf(AudioAsset.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /** @inheritdoc */
@@ -89540,7 +89876,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(AudioAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(AudioAsset.prototype.__proto__ || Object.getPrototypeOf(AudioAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (this.runtimeData) {
 	        if (changes.hasOwnProperty('loop')) {
@@ -89569,7 +89905,7 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89615,7 +89951,7 @@
 	  function BufferAsset(json) {
 	    _classCallCheck(this, BufferAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BufferAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (BufferAsset.__proto__ || Object.getPrototypeOf(BufferAsset)).call(this, json));
 
 	    _this.buffer = null;
 	    _this.arrays = {};
@@ -89869,7 +90205,7 @@
 	exports.default = BufferAsset;
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89888,7 +90224,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(120);
+	var _JSONLoader = __webpack_require__(121);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -89912,7 +90248,7 @@
 	  function DocumentAsset(json) {
 	    _classCallCheck(this, DocumentAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DocumentAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (DocumentAsset.__proto__ || Object.getPrototypeOf(DocumentAsset)).call(this, json));
 	  }
 
 	  /**
@@ -89989,12 +90325,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(3), __webpack_require__(121)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6), __webpack_require__(3), __webpack_require__(122)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -90154,15 +90490,15 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 121 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(122);
-	var v1 = __webpack_require__(123);
-	var v2 = __webpack_require__(124);
-	var v3 = __webpack_require__(148);
+	var _ = __webpack_require__(123);
+	var v1 = __webpack_require__(124);
+	var v2 = __webpack_require__(125);
+	var v3 = __webpack_require__(149);
 
 	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
 	  'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
@@ -90564,7 +90900,7 @@
 	};
 
 /***/ },
-/* 122 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -91913,12 +92249,12 @@
 
 
 /***/ },
-/* 123 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(122);
+	var _ = __webpack_require__(123);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -91976,13 +92312,13 @@
 
 
 /***/ },
-/* 124 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(122);
-	var uuid = __webpack_require__(125);
+	var _ = __webpack_require__(123);
+	var uuid = __webpack_require__(126);
 
 	/**
 	 * Returns the basename of a filename (i.e., the final element in the path).
@@ -92063,7 +92399,7 @@
 
 
 /***/ },
-/* 125 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(Buffer) {//     uuid.js
@@ -92124,7 +92460,7 @@
 	    // Moderately fast, high quality
 	    if (true) {
 	      try {
-	        var _rb = __webpack_require__(130).randomBytes;
+	        var _rb = __webpack_require__(131).randomBytes;
 	        _nodeRNG = _rng = _rb && function() {return _rb(16);};
 	        _rng();
 	      } catch(e) {}
@@ -92339,10 +92675,10 @@
 	  }
 	})('undefined' !== typeof window ? window : null);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
 
 /***/ },
-/* 126 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -92355,16 +92691,13 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(127)
-	var ieee754 = __webpack_require__(128)
-	var isArray = __webpack_require__(129)
+	var base64 = __webpack_require__(128)
+	var ieee754 = __webpack_require__(129)
+	var isArray = __webpack_require__(130)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
 	exports.INSPECT_MAX_BYTES = 50
-	Buffer.poolSize = 8192 // not used by this implementation
-
-	var rootParent = {}
 
 	/**
 	 * If `Buffer.TYPED_ARRAY_SUPPORT`:
@@ -92382,9 +92715,6 @@
 	 *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
 	 *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
 	 *
-	 *   - Safari 5-7 lacks support for changing the `Object.prototype.constructor` property
-	 *     on objects.
-	 *
 	 *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
 	 *
 	 *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
@@ -92397,14 +92727,16 @@
 	  ? global.TYPED_ARRAY_SUPPORT
 	  : typedArraySupport()
 
+	/*
+	 * Export kMaxLength after typed array support is determined.
+	 */
+	exports.kMaxLength = kMaxLength()
+
 	function typedArraySupport () {
-	  function Bar () {}
 	  try {
 	    var arr = new Uint8Array(1)
-	    arr.foo = function () { return 42 }
-	    arr.constructor = Bar
+	    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
 	    return arr.foo() === 42 && // typed array instances can be augmented
-	        arr.constructor === Bar && // constructor can be set
 	        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
 	        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
 	  } catch (e) {
@@ -92418,184 +92750,252 @@
 	    : 0x3fffffff
 	}
 
-	/**
-	 * Class: Buffer
-	 * =============
-	 *
-	 * The Buffer constructor returns instances of `Uint8Array` that are augmented
-	 * with function properties for all the node `Buffer` API functions. We use
-	 * `Uint8Array` so that square bracket notation works as expected -- it returns
-	 * a single octet.
-	 *
-	 * By augmenting the instances, we can avoid modifying the `Uint8Array`
-	 * prototype.
-	 */
-	function Buffer (arg) {
-	  if (!(this instanceof Buffer)) {
-	    // Avoid going through an ArgumentsAdaptorTrampoline in the common case.
-	    if (arguments.length > 1) return new Buffer(arg, arguments[1])
-	    return new Buffer(arg)
+	function createBuffer (that, length) {
+	  if (kMaxLength() < length) {
+	    throw new RangeError('Invalid typed array length')
+	  }
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    // Return an augmented `Uint8Array` instance, for best performance
+	    that = new Uint8Array(length)
+	    that.__proto__ = Buffer.prototype
+	  } else {
+	    // Fallback: Return an object instance of the Buffer class
+	    if (that === null) {
+	      that = new Buffer(length)
+	    }
+	    that.length = length
 	  }
 
-	  if (!Buffer.TYPED_ARRAY_SUPPORT) {
-	    this.length = 0
-	    this.parent = undefined
+	  return that
+	}
+
+	/**
+	 * The Buffer constructor returns instances of `Uint8Array` that have their
+	 * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+	 * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+	 * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+	 * returns a single octet.
+	 *
+	 * The `Uint8Array` prototype remains unmodified.
+	 */
+
+	function Buffer (arg, encodingOrOffset, length) {
+	  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+	    return new Buffer(arg, encodingOrOffset, length)
 	  }
 
 	  // Common case.
 	  if (typeof arg === 'number') {
-	    return fromNumber(this, arg)
+	    if (typeof encodingOrOffset === 'string') {
+	      throw new Error(
+	        'If encoding is specified then the first argument must be a string'
+	      )
+	    }
+	    return allocUnsafe(this, arg)
 	  }
-
-	  // Slightly less common case.
-	  if (typeof arg === 'string') {
-	    return fromString(this, arg, arguments.length > 1 ? arguments[1] : 'utf8')
-	  }
-
-	  // Unusual.
-	  return fromObject(this, arg)
+	  return from(this, arg, encodingOrOffset, length)
 	}
 
-	function fromNumber (that, length) {
-	  that = allocate(that, length < 0 ? 0 : checked(length) | 0)
+	Buffer.poolSize = 8192 // not used by this implementation
+
+	// TODO: Legacy, not needed anymore. Remove in next major version.
+	Buffer._augment = function (arr) {
+	  arr.__proto__ = Buffer.prototype
+	  return arr
+	}
+
+	function from (that, value, encodingOrOffset, length) {
+	  if (typeof value === 'number') {
+	    throw new TypeError('"value" argument must not be a number')
+	  }
+
+	  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+	    return fromArrayBuffer(that, value, encodingOrOffset, length)
+	  }
+
+	  if (typeof value === 'string') {
+	    return fromString(that, value, encodingOrOffset)
+	  }
+
+	  return fromObject(that, value)
+	}
+
+	/**
+	 * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+	 * if value is a number.
+	 * Buffer.from(str[, encoding])
+	 * Buffer.from(array)
+	 * Buffer.from(buffer)
+	 * Buffer.from(arrayBuffer[, byteOffset[, length]])
+	 **/
+	Buffer.from = function (value, encodingOrOffset, length) {
+	  return from(null, value, encodingOrOffset, length)
+	}
+
+	if (Buffer.TYPED_ARRAY_SUPPORT) {
+	  Buffer.prototype.__proto__ = Uint8Array.prototype
+	  Buffer.__proto__ = Uint8Array
+	  if (typeof Symbol !== 'undefined' && Symbol.species &&
+	      Buffer[Symbol.species] === Buffer) {
+	    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+	    Object.defineProperty(Buffer, Symbol.species, {
+	      value: null,
+	      configurable: true
+	    })
+	  }
+	}
+
+	function assertSize (size) {
+	  if (typeof size !== 'number') {
+	    throw new TypeError('"size" argument must be a number')
+	  } else if (size < 0) {
+	    throw new RangeError('"size" argument must not be negative')
+	  }
+	}
+
+	function alloc (that, size, fill, encoding) {
+	  assertSize(size)
+	  if (size <= 0) {
+	    return createBuffer(that, size)
+	  }
+	  if (fill !== undefined) {
+	    // Only pay attention to encoding if it's a string. This
+	    // prevents accidentally sending in a number that would
+	    // be interpretted as a start offset.
+	    return typeof encoding === 'string'
+	      ? createBuffer(that, size).fill(fill, encoding)
+	      : createBuffer(that, size).fill(fill)
+	  }
+	  return createBuffer(that, size)
+	}
+
+	/**
+	 * Creates a new filled Buffer instance.
+	 * alloc(size[, fill[, encoding]])
+	 **/
+	Buffer.alloc = function (size, fill, encoding) {
+	  return alloc(null, size, fill, encoding)
+	}
+
+	function allocUnsafe (that, size) {
+	  assertSize(size)
+	  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
 	  if (!Buffer.TYPED_ARRAY_SUPPORT) {
-	    for (var i = 0; i < length; i++) {
+	    for (var i = 0; i < size; ++i) {
 	      that[i] = 0
 	    }
 	  }
 	  return that
 	}
 
+	/**
+	 * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+	 * */
+	Buffer.allocUnsafe = function (size) {
+	  return allocUnsafe(null, size)
+	}
+	/**
+	 * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+	 */
+	Buffer.allocUnsafeSlow = function (size) {
+	  return allocUnsafe(null, size)
+	}
+
 	function fromString (that, string, encoding) {
-	  if (typeof encoding !== 'string' || encoding === '') encoding = 'utf8'
+	  if (typeof encoding !== 'string' || encoding === '') {
+	    encoding = 'utf8'
+	  }
 
-	  // Assumption: byteLength() return value is always < kMaxLength.
+	  if (!Buffer.isEncoding(encoding)) {
+	    throw new TypeError('"encoding" must be a valid string encoding')
+	  }
+
 	  var length = byteLength(string, encoding) | 0
-	  that = allocate(that, length)
+	  that = createBuffer(that, length)
 
-	  that.write(string, encoding)
-	  return that
-	}
+	  var actual = that.write(string, encoding)
 
-	function fromObject (that, object) {
-	  if (Buffer.isBuffer(object)) return fromBuffer(that, object)
-
-	  if (isArray(object)) return fromArray(that, object)
-
-	  if (object == null) {
-	    throw new TypeError('must start with number, buffer, array or string')
+	  if (actual !== length) {
+	    // Writing a hex string, for example, that contains invalid characters will
+	    // cause everything after the first invalid character to be ignored. (e.g.
+	    // 'abxxcd' will be treated as 'ab')
+	    that = that.slice(0, actual)
 	  }
 
-	  if (typeof ArrayBuffer !== 'undefined') {
-	    if (object.buffer instanceof ArrayBuffer) {
-	      return fromTypedArray(that, object)
-	    }
-	    if (object instanceof ArrayBuffer) {
-	      return fromArrayBuffer(that, object)
-	    }
-	  }
-
-	  if (object.length) return fromArrayLike(that, object)
-
-	  return fromJsonObject(that, object)
-	}
-
-	function fromBuffer (that, buffer) {
-	  var length = checked(buffer.length) | 0
-	  that = allocate(that, length)
-	  buffer.copy(that, 0, 0, length)
-	  return that
-	}
-
-	function fromArray (that, array) {
-	  var length = checked(array.length) | 0
-	  that = allocate(that, length)
-	  for (var i = 0; i < length; i += 1) {
-	    that[i] = array[i] & 255
-	  }
-	  return that
-	}
-
-	// Duplicate of fromArray() to keep fromArray() monomorphic.
-	function fromTypedArray (that, array) {
-	  var length = checked(array.length) | 0
-	  that = allocate(that, length)
-	  // Truncating the elements is probably not what people expect from typed
-	  // arrays with BYTES_PER_ELEMENT > 1 but it's compatible with the behavior
-	  // of the old Buffer constructor.
-	  for (var i = 0; i < length; i += 1) {
-	    that[i] = array[i] & 255
-	  }
-	  return that
-	}
-
-	function fromArrayBuffer (that, array) {
-	  if (Buffer.TYPED_ARRAY_SUPPORT) {
-	    // Return an augmented `Uint8Array` instance, for best performance
-	    array.byteLength
-	    that = Buffer._augment(new Uint8Array(array))
-	  } else {
-	    // Fallback: Return an object instance of the Buffer class
-	    that = fromTypedArray(that, new Uint8Array(array))
-	  }
 	  return that
 	}
 
 	function fromArrayLike (that, array) {
-	  var length = checked(array.length) | 0
-	  that = allocate(that, length)
+	  var length = array.length < 0 ? 0 : checked(array.length) | 0
+	  that = createBuffer(that, length)
 	  for (var i = 0; i < length; i += 1) {
 	    that[i] = array[i] & 255
 	  }
 	  return that
 	}
 
-	// Deserialize { type: 'Buffer', data: [1,2,3,...] } into a Buffer object.
-	// Returns a zero-length buffer for inputs that don't conform to the spec.
-	function fromJsonObject (that, object) {
-	  var array
-	  var length = 0
+	function fromArrayBuffer (that, array, byteOffset, length) {
+	  array.byteLength // this throws if `array` is not a valid ArrayBuffer
 
-	  if (object.type === 'Buffer' && isArray(object.data)) {
-	    array = object.data
-	    length = checked(array.length) | 0
+	  if (byteOffset < 0 || array.byteLength < byteOffset) {
+	    throw new RangeError('\'offset\' is out of bounds')
 	  }
-	  that = allocate(that, length)
 
-	  for (var i = 0; i < length; i += 1) {
-	    that[i] = array[i] & 255
+	  if (array.byteLength < byteOffset + (length || 0)) {
+	    throw new RangeError('\'length\' is out of bounds')
 	  }
-	  return that
-	}
 
-	if (Buffer.TYPED_ARRAY_SUPPORT) {
-	  Buffer.prototype.__proto__ = Uint8Array.prototype
-	  Buffer.__proto__ = Uint8Array
-	} else {
-	  // pre-set for values that may exist in the future
-	  Buffer.prototype.length = undefined
-	  Buffer.prototype.parent = undefined
-	}
+	  if (byteOffset === undefined && length === undefined) {
+	    array = new Uint8Array(array)
+	  } else if (length === undefined) {
+	    array = new Uint8Array(array, byteOffset)
+	  } else {
+	    array = new Uint8Array(array, byteOffset, length)
+	  }
 
-	function allocate (that, length) {
 	  if (Buffer.TYPED_ARRAY_SUPPORT) {
 	    // Return an augmented `Uint8Array` instance, for best performance
-	    that = Buffer._augment(new Uint8Array(length))
+	    that = array
 	    that.__proto__ = Buffer.prototype
 	  } else {
 	    // Fallback: Return an object instance of the Buffer class
-	    that.length = length
-	    that._isBuffer = true
+	    that = fromArrayLike(that, array)
 	  }
-
-	  var fromPool = length !== 0 && length <= Buffer.poolSize >>> 1
-	  if (fromPool) that.parent = rootParent
-
 	  return that
 	}
 
+	function fromObject (that, obj) {
+	  if (Buffer.isBuffer(obj)) {
+	    var len = checked(obj.length) | 0
+	    that = createBuffer(that, len)
+
+	    if (that.length === 0) {
+	      return that
+	    }
+
+	    obj.copy(that, 0, 0, len)
+	    return that
+	  }
+
+	  if (obj) {
+	    if ((typeof ArrayBuffer !== 'undefined' &&
+	        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+	      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+	        return createBuffer(that, 0)
+	      }
+	      return fromArrayLike(that, obj)
+	    }
+
+	    if (obj.type === 'Buffer' && isArray(obj.data)) {
+	      return fromArrayLike(that, obj.data)
+	    }
+	  }
+
+	  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+	}
+
 	function checked (length) {
-	  // Note: cannot use `length < kMaxLength` here because that fails when
+	  // Note: cannot use `length < kMaxLength()` here because that fails when
 	  // length is NaN (which is otherwise coerced to zero.)
 	  if (length >= kMaxLength()) {
 	    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
@@ -92604,12 +93004,11 @@
 	  return length | 0
 	}
 
-	function SlowBuffer (subject, encoding) {
-	  if (!(this instanceof SlowBuffer)) return new SlowBuffer(subject, encoding)
-
-	  var buf = new Buffer(subject, encoding)
-	  delete buf.parent
-	  return buf
+	function SlowBuffer (length) {
+	  if (+length != length) { // eslint-disable-line eqeqeq
+	    length = 0
+	  }
+	  return Buffer.alloc(+length)
 	}
 
 	Buffer.isBuffer = function isBuffer (b) {
@@ -92626,17 +93025,12 @@
 	  var x = a.length
 	  var y = b.length
 
-	  var i = 0
-	  var len = Math.min(x, y)
-	  while (i < len) {
-	    if (a[i] !== b[i]) break
-
-	    ++i
-	  }
-
-	  if (i !== len) {
-	    x = a[i]
-	    y = b[i]
+	  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+	    if (a[i] !== b[i]) {
+	      x = a[i]
+	      y = b[i]
+	      break
+	    }
 	  }
 
 	  if (x < y) return -1
@@ -92650,9 +93044,9 @@
 	    case 'utf8':
 	    case 'utf-8':
 	    case 'ascii':
+	    case 'latin1':
 	    case 'binary':
 	    case 'base64':
-	    case 'raw':
 	    case 'ucs2':
 	    case 'ucs-2':
 	    case 'utf16le':
@@ -92664,32 +93058,46 @@
 	}
 
 	Buffer.concat = function concat (list, length) {
-	  if (!isArray(list)) throw new TypeError('list argument must be an Array of Buffers.')
+	  if (!isArray(list)) {
+	    throw new TypeError('"list" argument must be an Array of Buffers')
+	  }
 
 	  if (list.length === 0) {
-	    return new Buffer(0)
+	    return Buffer.alloc(0)
 	  }
 
 	  var i
 	  if (length === undefined) {
 	    length = 0
-	    for (i = 0; i < list.length; i++) {
+	    for (i = 0; i < list.length; ++i) {
 	      length += list[i].length
 	    }
 	  }
 
-	  var buf = new Buffer(length)
+	  var buffer = Buffer.allocUnsafe(length)
 	  var pos = 0
-	  for (i = 0; i < list.length; i++) {
-	    var item = list[i]
-	    item.copy(buf, pos)
-	    pos += item.length
+	  for (i = 0; i < list.length; ++i) {
+	    var buf = list[i]
+	    if (!Buffer.isBuffer(buf)) {
+	      throw new TypeError('"list" argument must be an Array of Buffers')
+	    }
+	    buf.copy(buffer, pos)
+	    pos += buf.length
 	  }
-	  return buf
+	  return buffer
 	}
 
 	function byteLength (string, encoding) {
-	  if (typeof string !== 'string') string = '' + string
+	  if (Buffer.isBuffer(string)) {
+	    return string.length
+	  }
+	  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+	      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+	    return string.byteLength
+	  }
+	  if (typeof string !== 'string') {
+	    string = '' + string
+	  }
 
 	  var len = string.length
 	  if (len === 0) return 0
@@ -92699,13 +93107,12 @@
 	  for (;;) {
 	    switch (encoding) {
 	      case 'ascii':
+	      case 'latin1':
 	      case 'binary':
-	      // Deprecated
-	      case 'raw':
-	      case 'raws':
 	        return len
 	      case 'utf8':
 	      case 'utf-8':
+	      case undefined:
 	        return utf8ToBytes(string).length
 	      case 'ucs2':
 	      case 'ucs-2':
@@ -92728,13 +93135,39 @@
 	function slowToString (encoding, start, end) {
 	  var loweredCase = false
 
-	  start = start | 0
-	  end = end === undefined || end === Infinity ? this.length : end | 0
+	  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+	  // property of a typed array.
+
+	  // This behaves neither like String nor Uint8Array in that we set start/end
+	  // to their upper/lower bounds if the value passed is out of range.
+	  // undefined is handled specially as per ECMA-262 6th Edition,
+	  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+	  if (start === undefined || start < 0) {
+	    start = 0
+	  }
+	  // Return early if start > this.length. Done here to prevent potential uint32
+	  // coercion fail below.
+	  if (start > this.length) {
+	    return ''
+	  }
+
+	  if (end === undefined || end > this.length) {
+	    end = this.length
+	  }
+
+	  if (end <= 0) {
+	    return ''
+	  }
+
+	  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+	  end >>>= 0
+	  start >>>= 0
+
+	  if (end <= start) {
+	    return ''
+	  }
 
 	  if (!encoding) encoding = 'utf8'
-	  if (start < 0) start = 0
-	  if (end > this.length) end = this.length
-	  if (end <= start) return ''
 
 	  while (true) {
 	    switch (encoding) {
@@ -92748,8 +93181,9 @@
 	      case 'ascii':
 	        return asciiSlice(this, start, end)
 
+	      case 'latin1':
 	      case 'binary':
-	        return binarySlice(this, start, end)
+	        return latin1Slice(this, start, end)
 
 	      case 'base64':
 	        return base64Slice(this, start, end)
@@ -92766,6 +93200,53 @@
 	        loweredCase = true
 	    }
 	  }
+	}
+
+	// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+	// Buffer instances.
+	Buffer.prototype._isBuffer = true
+
+	function swap (b, n, m) {
+	  var i = b[n]
+	  b[n] = b[m]
+	  b[m] = i
+	}
+
+	Buffer.prototype.swap16 = function swap16 () {
+	  var len = this.length
+	  if (len % 2 !== 0) {
+	    throw new RangeError('Buffer size must be a multiple of 16-bits')
+	  }
+	  for (var i = 0; i < len; i += 2) {
+	    swap(this, i, i + 1)
+	  }
+	  return this
+	}
+
+	Buffer.prototype.swap32 = function swap32 () {
+	  var len = this.length
+	  if (len % 4 !== 0) {
+	    throw new RangeError('Buffer size must be a multiple of 32-bits')
+	  }
+	  for (var i = 0; i < len; i += 4) {
+	    swap(this, i, i + 3)
+	    swap(this, i + 1, i + 2)
+	  }
+	  return this
+	}
+
+	Buffer.prototype.swap64 = function swap64 () {
+	  var len = this.length
+	  if (len % 8 !== 0) {
+	    throw new RangeError('Buffer size must be a multiple of 64-bits')
+	  }
+	  for (var i = 0; i < len; i += 8) {
+	    swap(this, i, i + 7)
+	    swap(this, i + 1, i + 6)
+	    swap(this, i + 2, i + 5)
+	    swap(this, i + 3, i + 4)
+	  }
+	  return this
 	}
 
 	Buffer.prototype.toString = function toString () {
@@ -92791,63 +93272,197 @@
 	  return '<Buffer ' + str + '>'
 	}
 
-	Buffer.prototype.compare = function compare (b) {
-	  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-	  if (this === b) return 0
-	  return Buffer.compare(this, b)
+	Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+	  if (!Buffer.isBuffer(target)) {
+	    throw new TypeError('Argument must be a Buffer')
+	  }
+
+	  if (start === undefined) {
+	    start = 0
+	  }
+	  if (end === undefined) {
+	    end = target ? target.length : 0
+	  }
+	  if (thisStart === undefined) {
+	    thisStart = 0
+	  }
+	  if (thisEnd === undefined) {
+	    thisEnd = this.length
+	  }
+
+	  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+	    throw new RangeError('out of range index')
+	  }
+
+	  if (thisStart >= thisEnd && start >= end) {
+	    return 0
+	  }
+	  if (thisStart >= thisEnd) {
+	    return -1
+	  }
+	  if (start >= end) {
+	    return 1
+	  }
+
+	  start >>>= 0
+	  end >>>= 0
+	  thisStart >>>= 0
+	  thisEnd >>>= 0
+
+	  if (this === target) return 0
+
+	  var x = thisEnd - thisStart
+	  var y = end - start
+	  var len = Math.min(x, y)
+
+	  var thisCopy = this.slice(thisStart, thisEnd)
+	  var targetCopy = target.slice(start, end)
+
+	  for (var i = 0; i < len; ++i) {
+	    if (thisCopy[i] !== targetCopy[i]) {
+	      x = thisCopy[i]
+	      y = targetCopy[i]
+	      break
+	    }
+	  }
+
+	  if (x < y) return -1
+	  if (y < x) return 1
+	  return 0
 	}
 
-	Buffer.prototype.indexOf = function indexOf (val, byteOffset) {
-	  if (byteOffset > 0x7fffffff) byteOffset = 0x7fffffff
-	  else if (byteOffset < -0x80000000) byteOffset = -0x80000000
-	  byteOffset >>= 0
+	// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+	// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+	//
+	// Arguments:
+	// - buffer - a Buffer to search
+	// - val - a string, Buffer, or number
+	// - byteOffset - an index into `buffer`; will be clamped to an int32
+	// - encoding - an optional encoding, relevant is val is a string
+	// - dir - true for indexOf, false for lastIndexOf
+	function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+	  // Empty buffer means no match
+	  if (buffer.length === 0) return -1
 
-	  if (this.length === 0) return -1
-	  if (byteOffset >= this.length) return -1
+	  // Normalize byteOffset
+	  if (typeof byteOffset === 'string') {
+	    encoding = byteOffset
+	    byteOffset = 0
+	  } else if (byteOffset > 0x7fffffff) {
+	    byteOffset = 0x7fffffff
+	  } else if (byteOffset < -0x80000000) {
+	    byteOffset = -0x80000000
+	  }
+	  byteOffset = +byteOffset  // Coerce to Number.
+	  if (isNaN(byteOffset)) {
+	    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+	    byteOffset = dir ? 0 : (buffer.length - 1)
+	  }
 
-	  // Negative offsets start from the end of the buffer
-	  if (byteOffset < 0) byteOffset = Math.max(this.length + byteOffset, 0)
+	  // Normalize byteOffset: negative offsets start from the end of the buffer
+	  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+	  if (byteOffset >= buffer.length) {
+	    if (dir) return -1
+	    else byteOffset = buffer.length - 1
+	  } else if (byteOffset < 0) {
+	    if (dir) byteOffset = 0
+	    else return -1
+	  }
 
+	  // Normalize val
 	  if (typeof val === 'string') {
-	    if (val.length === 0) return -1 // special case: looking for empty string always fails
-	    return String.prototype.indexOf.call(this, val, byteOffset)
-	  }
-	  if (Buffer.isBuffer(val)) {
-	    return arrayIndexOf(this, val, byteOffset)
-	  }
-	  if (typeof val === 'number') {
-	    if (Buffer.TYPED_ARRAY_SUPPORT && Uint8Array.prototype.indexOf === 'function') {
-	      return Uint8Array.prototype.indexOf.call(this, val, byteOffset)
-	    }
-	    return arrayIndexOf(this, [ val ], byteOffset)
+	    val = Buffer.from(val, encoding)
 	  }
 
-	  function arrayIndexOf (arr, val, byteOffset) {
-	    var foundIndex = -1
-	    for (var i = 0; byteOffset + i < arr.length; i++) {
-	      if (arr[byteOffset + i] === val[foundIndex === -1 ? 0 : i - foundIndex]) {
-	        if (foundIndex === -1) foundIndex = i
-	        if (i - foundIndex + 1 === val.length) return byteOffset + foundIndex
+	  // Finally, search either indexOf (if dir is true) or lastIndexOf
+	  if (Buffer.isBuffer(val)) {
+	    // Special case: looking for empty string/buffer always fails
+	    if (val.length === 0) {
+	      return -1
+	    }
+	    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+	  } else if (typeof val === 'number') {
+	    val = val & 0xFF // Search for a byte value [0-255]
+	    if (Buffer.TYPED_ARRAY_SUPPORT &&
+	        typeof Uint8Array.prototype.indexOf === 'function') {
+	      if (dir) {
+	        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
 	      } else {
-	        foundIndex = -1
+	        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
 	      }
 	    }
-	    return -1
+	    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
 	  }
 
 	  throw new TypeError('val must be string, number or Buffer')
 	}
 
-	// `get` is deprecated
-	Buffer.prototype.get = function get (offset) {
-	  console.log('.get() is deprecated. Access using array indexes instead.')
-	  return this.readUInt8(offset)
+	function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+	  var indexSize = 1
+	  var arrLength = arr.length
+	  var valLength = val.length
+
+	  if (encoding !== undefined) {
+	    encoding = String(encoding).toLowerCase()
+	    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+	        encoding === 'utf16le' || encoding === 'utf-16le') {
+	      if (arr.length < 2 || val.length < 2) {
+	        return -1
+	      }
+	      indexSize = 2
+	      arrLength /= 2
+	      valLength /= 2
+	      byteOffset /= 2
+	    }
+	  }
+
+	  function read (buf, i) {
+	    if (indexSize === 1) {
+	      return buf[i]
+	    } else {
+	      return buf.readUInt16BE(i * indexSize)
+	    }
+	  }
+
+	  var i
+	  if (dir) {
+	    var foundIndex = -1
+	    for (i = byteOffset; i < arrLength; i++) {
+	      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+	        if (foundIndex === -1) foundIndex = i
+	        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+	      } else {
+	        if (foundIndex !== -1) i -= i - foundIndex
+	        foundIndex = -1
+	      }
+	    }
+	  } else {
+	    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+	    for (i = byteOffset; i >= 0; i--) {
+	      var found = true
+	      for (var j = 0; j < valLength; j++) {
+	        if (read(arr, i + j) !== read(val, j)) {
+	          found = false
+	          break
+	        }
+	      }
+	      if (found) return i
+	    }
+	  }
+
+	  return -1
 	}
 
-	// `set` is deprecated
-	Buffer.prototype.set = function set (v, offset) {
-	  console.log('.set() is deprecated. Access using array indexes instead.')
-	  return this.writeUInt8(v, offset)
+	Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+	  return this.indexOf(val, byteOffset, encoding) !== -1
+	}
+
+	Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+	  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+	}
+
+	Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+	  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
 	}
 
 	function hexWrite (buf, string, offset, length) {
@@ -92864,14 +93479,14 @@
 
 	  // must be an even number of digits
 	  var strLen = string.length
-	  if (strLen % 2 !== 0) throw new Error('Invalid hex string')
+	  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
 
 	  if (length > strLen / 2) {
 	    length = strLen / 2
 	  }
-	  for (var i = 0; i < length; i++) {
+	  for (var i = 0; i < length; ++i) {
 	    var parsed = parseInt(string.substr(i * 2, 2), 16)
-	    if (isNaN(parsed)) throw new Error('Invalid hex string')
+	    if (isNaN(parsed)) return i
 	    buf[offset + i] = parsed
 	  }
 	  return i
@@ -92885,7 +93500,7 @@
 	  return blitBuffer(asciiToBytes(string), buf, offset, length)
 	}
 
-	function binaryWrite (buf, string, offset, length) {
+	function latin1Write (buf, string, offset, length) {
 	  return asciiWrite(buf, string, offset, length)
 	}
 
@@ -92920,17 +93535,16 @@
 	    }
 	  // legacy write(string, encoding, offset, length) - remove in v0.13
 	  } else {
-	    var swap = encoding
-	    encoding = offset
-	    offset = length | 0
-	    length = swap
+	    throw new Error(
+	      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+	    )
 	  }
 
 	  var remaining = this.length - offset
 	  if (length === undefined || length > remaining) length = remaining
 
 	  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-	    throw new RangeError('attempt to write outside buffer bounds')
+	    throw new RangeError('Attempt to write outside buffer bounds')
 	  }
 
 	  if (!encoding) encoding = 'utf8'
@@ -92948,8 +93562,9 @@
 	      case 'ascii':
 	        return asciiWrite(this, string, offset, length)
 
+	      case 'latin1':
 	      case 'binary':
-	        return binaryWrite(this, string, offset, length)
+	        return latin1Write(this, string, offset, length)
 
 	      case 'base64':
 	        // Warning: maxLength not taken into account in base64Write
@@ -93084,17 +93699,17 @@
 	  var ret = ''
 	  end = Math.min(buf.length, end)
 
-	  for (var i = start; i < end; i++) {
+	  for (var i = start; i < end; ++i) {
 	    ret += String.fromCharCode(buf[i] & 0x7F)
 	  }
 	  return ret
 	}
 
-	function binarySlice (buf, start, end) {
+	function latin1Slice (buf, start, end) {
 	  var ret = ''
 	  end = Math.min(buf.length, end)
 
-	  for (var i = start; i < end; i++) {
+	  for (var i = start; i < end; ++i) {
 	    ret += String.fromCharCode(buf[i])
 	  }
 	  return ret
@@ -93107,7 +93722,7 @@
 	  if (!end || end < 0 || end > len) end = len
 
 	  var out = ''
-	  for (var i = start; i < end; i++) {
+	  for (var i = start; i < end; ++i) {
 	    out += toHex(buf[i])
 	  }
 	  return out
@@ -93145,16 +93760,15 @@
 
 	  var newBuf
 	  if (Buffer.TYPED_ARRAY_SUPPORT) {
-	    newBuf = Buffer._augment(this.subarray(start, end))
+	    newBuf = this.subarray(start, end)
+	    newBuf.__proto__ = Buffer.prototype
 	  } else {
 	    var sliceLen = end - start
 	    newBuf = new Buffer(sliceLen, undefined)
-	    for (var i = 0; i < sliceLen; i++) {
+	    for (var i = 0; i < sliceLen; ++i) {
 	      newBuf[i] = this[i + start]
 	    }
 	  }
-
-	  if (newBuf.length) newBuf.parent = this.parent || this
 
 	  return newBuf
 	}
@@ -93324,16 +93938,19 @@
 	}
 
 	function checkInt (buf, value, offset, ext, max, min) {
-	  if (!Buffer.isBuffer(buf)) throw new TypeError('buffer must be a Buffer instance')
-	  if (value > max || value < min) throw new RangeError('value is out of bounds')
-	  if (offset + ext > buf.length) throw new RangeError('index out of range')
+	  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+	  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+	  if (offset + ext > buf.length) throw new RangeError('Index out of range')
 	}
 
 	Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
 	  value = +value
 	  offset = offset | 0
 	  byteLength = byteLength | 0
-	  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+	  if (!noAssert) {
+	    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+	    checkInt(this, value, offset, byteLength, maxBytes, 0)
+	  }
 
 	  var mul = 1
 	  var i = 0
@@ -93349,7 +93966,10 @@
 	  value = +value
 	  offset = offset | 0
 	  byteLength = byteLength | 0
-	  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+	  if (!noAssert) {
+	    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+	    checkInt(this, value, offset, byteLength, maxBytes, 0)
+	  }
 
 	  var i = byteLength - 1
 	  var mul = 1
@@ -93372,7 +93992,7 @@
 
 	function objectWriteUInt16 (buf, value, offset, littleEndian) {
 	  if (value < 0) value = 0xffff + value + 1
-	  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; i++) {
+	  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
 	    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
 	      (littleEndian ? i : 1 - i) * 8
 	  }
@@ -93406,7 +94026,7 @@
 
 	function objectWriteUInt32 (buf, value, offset, littleEndian) {
 	  if (value < 0) value = 0xffffffff + value + 1
-	  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; i++) {
+	  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
 	    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
 	  }
 	}
@@ -93452,9 +94072,12 @@
 
 	  var i = 0
 	  var mul = 1
-	  var sub = value < 0 ? 1 : 0
+	  var sub = 0
 	  this[offset] = value & 0xFF
 	  while (++i < byteLength && (mul *= 0x100)) {
+	    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+	      sub = 1
+	    }
 	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
 	  }
 
@@ -93472,9 +94095,12 @@
 
 	  var i = byteLength - 1
 	  var mul = 1
-	  var sub = value < 0 ? 1 : 0
+	  var sub = 0
 	  this[offset + i] = value & 0xFF
 	  while (--i >= 0 && (mul *= 0x100)) {
+	    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+	      sub = 1
+	    }
 	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
 	  }
 
@@ -93549,9 +94175,8 @@
 	}
 
 	function checkIEEE754 (buf, value, offset, ext, max, min) {
-	  if (value > max || value < min) throw new RangeError('value is out of bounds')
-	  if (offset + ext > buf.length) throw new RangeError('index out of range')
-	  if (offset < 0) throw new RangeError('index out of range')
+	  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+	  if (offset < 0) throw new RangeError('Index out of range')
 	}
 
 	function writeFloat (buf, value, offset, littleEndian, noAssert) {
@@ -93616,142 +94241,90 @@
 
 	  if (this === target && start < targetStart && targetStart < end) {
 	    // descending copy from end
-	    for (i = len - 1; i >= 0; i--) {
+	    for (i = len - 1; i >= 0; --i) {
 	      target[i + targetStart] = this[i + start]
 	    }
 	  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
 	    // ascending copy from start
-	    for (i = 0; i < len; i++) {
+	    for (i = 0; i < len; ++i) {
 	      target[i + targetStart] = this[i + start]
 	    }
 	  } else {
-	    target._set(this.subarray(start, start + len), targetStart)
+	    Uint8Array.prototype.set.call(
+	      target,
+	      this.subarray(start, start + len),
+	      targetStart
+	    )
 	  }
 
 	  return len
 	}
 
-	// fill(value, start=0, end=buffer.length)
-	Buffer.prototype.fill = function fill (value, start, end) {
-	  if (!value) value = 0
-	  if (!start) start = 0
-	  if (!end) end = this.length
+	// Usage:
+	//    buffer.fill(number[, offset[, end]])
+	//    buffer.fill(buffer[, offset[, end]])
+	//    buffer.fill(string[, offset[, end]][, encoding])
+	Buffer.prototype.fill = function fill (val, start, end, encoding) {
+	  // Handle string cases:
+	  if (typeof val === 'string') {
+	    if (typeof start === 'string') {
+	      encoding = start
+	      start = 0
+	      end = this.length
+	    } else if (typeof end === 'string') {
+	      encoding = end
+	      end = this.length
+	    }
+	    if (val.length === 1) {
+	      var code = val.charCodeAt(0)
+	      if (code < 256) {
+	        val = code
+	      }
+	    }
+	    if (encoding !== undefined && typeof encoding !== 'string') {
+	      throw new TypeError('encoding must be a string')
+	    }
+	    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+	      throw new TypeError('Unknown encoding: ' + encoding)
+	    }
+	  } else if (typeof val === 'number') {
+	    val = val & 255
+	  }
 
-	  if (end < start) throw new RangeError('end < start')
+	  // Invalid ranges are not set to a default, so can range check early.
+	  if (start < 0 || this.length < start || this.length < end) {
+	    throw new RangeError('Out of range index')
+	  }
 
-	  // Fill 0 bytes; we're done
-	  if (end === start) return
-	  if (this.length === 0) return
+	  if (end <= start) {
+	    return this
+	  }
 
-	  if (start < 0 || start >= this.length) throw new RangeError('start out of bounds')
-	  if (end < 0 || end > this.length) throw new RangeError('end out of bounds')
+	  start = start >>> 0
+	  end = end === undefined ? this.length : end >>> 0
+
+	  if (!val) val = 0
 
 	  var i
-	  if (typeof value === 'number') {
-	    for (i = start; i < end; i++) {
-	      this[i] = value
+	  if (typeof val === 'number') {
+	    for (i = start; i < end; ++i) {
+	      this[i] = val
 	    }
 	  } else {
-	    var bytes = utf8ToBytes(value.toString())
+	    var bytes = Buffer.isBuffer(val)
+	      ? val
+	      : utf8ToBytes(new Buffer(val, encoding).toString())
 	    var len = bytes.length
-	    for (i = start; i < end; i++) {
-	      this[i] = bytes[i % len]
+	    for (i = 0; i < end - start; ++i) {
+	      this[i + start] = bytes[i % len]
 	    }
 	  }
 
 	  return this
 	}
 
-	/**
-	 * Creates a new `ArrayBuffer` with the *copied* memory of the buffer instance.
-	 * Added in Node 0.12. Only available in browsers that support ArrayBuffer.
-	 */
-	Buffer.prototype.toArrayBuffer = function toArrayBuffer () {
-	  if (typeof Uint8Array !== 'undefined') {
-	    if (Buffer.TYPED_ARRAY_SUPPORT) {
-	      return (new Buffer(this)).buffer
-	    } else {
-	      var buf = new Uint8Array(this.length)
-	      for (var i = 0, len = buf.length; i < len; i += 1) {
-	        buf[i] = this[i]
-	      }
-	      return buf.buffer
-	    }
-	  } else {
-	    throw new TypeError('Buffer.toArrayBuffer not supported in this browser')
-	  }
-	}
-
 	// HELPER FUNCTIONS
 	// ================
-
-	var BP = Buffer.prototype
-
-	/**
-	 * Augment a Uint8Array *instance* (not the Uint8Array class!) with Buffer methods
-	 */
-	Buffer._augment = function _augment (arr) {
-	  arr.constructor = Buffer
-	  arr._isBuffer = true
-
-	  // save reference to original Uint8Array set method before overwriting
-	  arr._set = arr.set
-
-	  // deprecated
-	  arr.get = BP.get
-	  arr.set = BP.set
-
-	  arr.write = BP.write
-	  arr.toString = BP.toString
-	  arr.toLocaleString = BP.toString
-	  arr.toJSON = BP.toJSON
-	  arr.equals = BP.equals
-	  arr.compare = BP.compare
-	  arr.indexOf = BP.indexOf
-	  arr.copy = BP.copy
-	  arr.slice = BP.slice
-	  arr.readUIntLE = BP.readUIntLE
-	  arr.readUIntBE = BP.readUIntBE
-	  arr.readUInt8 = BP.readUInt8
-	  arr.readUInt16LE = BP.readUInt16LE
-	  arr.readUInt16BE = BP.readUInt16BE
-	  arr.readUInt32LE = BP.readUInt32LE
-	  arr.readUInt32BE = BP.readUInt32BE
-	  arr.readIntLE = BP.readIntLE
-	  arr.readIntBE = BP.readIntBE
-	  arr.readInt8 = BP.readInt8
-	  arr.readInt16LE = BP.readInt16LE
-	  arr.readInt16BE = BP.readInt16BE
-	  arr.readInt32LE = BP.readInt32LE
-	  arr.readInt32BE = BP.readInt32BE
-	  arr.readFloatLE = BP.readFloatLE
-	  arr.readFloatBE = BP.readFloatBE
-	  arr.readDoubleLE = BP.readDoubleLE
-	  arr.readDoubleBE = BP.readDoubleBE
-	  arr.writeUInt8 = BP.writeUInt8
-	  arr.writeUIntLE = BP.writeUIntLE
-	  arr.writeUIntBE = BP.writeUIntBE
-	  arr.writeUInt16LE = BP.writeUInt16LE
-	  arr.writeUInt16BE = BP.writeUInt16BE
-	  arr.writeUInt32LE = BP.writeUInt32LE
-	  arr.writeUInt32BE = BP.writeUInt32BE
-	  arr.writeIntLE = BP.writeIntLE
-	  arr.writeIntBE = BP.writeIntBE
-	  arr.writeInt8 = BP.writeInt8
-	  arr.writeInt16LE = BP.writeInt16LE
-	  arr.writeInt16BE = BP.writeInt16BE
-	  arr.writeInt32LE = BP.writeInt32LE
-	  arr.writeInt32BE = BP.writeInt32BE
-	  arr.writeFloatLE = BP.writeFloatLE
-	  arr.writeFloatBE = BP.writeFloatBE
-	  arr.writeDoubleLE = BP.writeDoubleLE
-	  arr.writeDoubleBE = BP.writeDoubleBE
-	  arr.fill = BP.fill
-	  arr.inspect = BP.inspect
-	  arr.toArrayBuffer = BP.toArrayBuffer
-
-	  return arr
-	}
 
 	var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
 
@@ -93784,7 +94357,7 @@
 	  var leadSurrogate = null
 	  var bytes = []
 
-	  for (var i = 0; i < length; i++) {
+	  for (var i = 0; i < length; ++i) {
 	    codePoint = string.charCodeAt(i)
 
 	    // is surrogate component
@@ -93859,7 +94432,7 @@
 
 	function asciiToBytes (str) {
 	  var byteArray = []
-	  for (var i = 0; i < str.length; i++) {
+	  for (var i = 0; i < str.length; ++i) {
 	    // Node's code seems to be doing this and not & 0x7F..
 	    byteArray.push(str.charCodeAt(i) & 0xFF)
 	  }
@@ -93869,7 +94442,7 @@
 	function utf16leToBytes (str, units) {
 	  var c, hi, lo
 	  var byteArray = []
-	  for (var i = 0; i < str.length; i++) {
+	  for (var i = 0; i < str.length; ++i) {
 	    if ((units -= 2) < 0) break
 
 	    c = str.charCodeAt(i)
@@ -93887,147 +94460,136 @@
 	}
 
 	function blitBuffer (src, dst, offset, length) {
-	  for (var i = 0; i < length; i++) {
+	  for (var i = 0; i < length; ++i) {
 	    if ((i + offset >= dst.length) || (i >= src.length)) break
 	    dst[i + offset] = src[i]
 	  }
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer, (function() { return this; }())))
+	function isnan (val) {
+	  return val !== val // eslint-disable-line no-self-compare
+	}
 
-/***/ },
-/* 127 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-	;(function (exports) {
-		'use strict';
-
-	  var Arr = (typeof Uint8Array !== 'undefined')
-	    ? Uint8Array
-	    : Array
-
-		var PLUS   = '+'.charCodeAt(0)
-		var SLASH  = '/'.charCodeAt(0)
-		var NUMBER = '0'.charCodeAt(0)
-		var LOWER  = 'a'.charCodeAt(0)
-		var UPPER  = 'A'.charCodeAt(0)
-		var PLUS_URL_SAFE = '-'.charCodeAt(0)
-		var SLASH_URL_SAFE = '_'.charCodeAt(0)
-
-		function decode (elt) {
-			var code = elt.charCodeAt(0)
-			if (code === PLUS ||
-			    code === PLUS_URL_SAFE)
-				return 62 // '+'
-			if (code === SLASH ||
-			    code === SLASH_URL_SAFE)
-				return 63 // '/'
-			if (code < NUMBER)
-				return -1 //no match
-			if (code < NUMBER + 10)
-				return code - NUMBER + 26 + 26
-			if (code < UPPER + 26)
-				return code - UPPER
-			if (code < LOWER + 26)
-				return code - LOWER + 26
-		}
-
-		function b64ToByteArray (b64) {
-			var i, j, l, tmp, placeHolders, arr
-
-			if (b64.length % 4 > 0) {
-				throw new Error('Invalid string. Length must be a multiple of 4')
-			}
-
-			// the number of equal signs (place holders)
-			// if there are two placeholders, than the two characters before it
-			// represent one byte
-			// if there is only one, then the three characters before it represent 2 bytes
-			// this is just a cheap hack to not do indexOf twice
-			var len = b64.length
-			placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
-
-			// base64 is 4/3 + up to two characters of the original data
-			arr = new Arr(b64.length * 3 / 4 - placeHolders)
-
-			// if there are placeholders, only get up to the last complete 4 chars
-			l = placeHolders > 0 ? b64.length - 4 : b64.length
-
-			var L = 0
-
-			function push (v) {
-				arr[L++] = v
-			}
-
-			for (i = 0, j = 0; i < l; i += 4, j += 3) {
-				tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
-				push((tmp & 0xFF0000) >> 16)
-				push((tmp & 0xFF00) >> 8)
-				push(tmp & 0xFF)
-			}
-
-			if (placeHolders === 2) {
-				tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
-				push(tmp & 0xFF)
-			} else if (placeHolders === 1) {
-				tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
-				push((tmp >> 8) & 0xFF)
-				push(tmp & 0xFF)
-			}
-
-			return arr
-		}
-
-		function uint8ToBase64 (uint8) {
-			var i,
-				extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
-				output = "",
-				temp, length
-
-			function encode (num) {
-				return lookup.charAt(num)
-			}
-
-			function tripletToBase64 (num) {
-				return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
-			}
-
-			// go through the array every three bytes, we'll deal with trailing stuff later
-			for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
-				temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-				output += tripletToBase64(temp)
-			}
-
-			// pad the end with zeros, but make sure to not forget the extra bytes
-			switch (extraBytes) {
-				case 1:
-					temp = uint8[uint8.length - 1]
-					output += encode(temp >> 2)
-					output += encode((temp << 4) & 0x3F)
-					output += '=='
-					break
-				case 2:
-					temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
-					output += encode(temp >> 10)
-					output += encode((temp >> 4) & 0x3F)
-					output += encode((temp << 2) & 0x3F)
-					output += '='
-					break
-			}
-
-			return output
-		}
-
-		exports.toByteArray = b64ToByteArray
-		exports.fromByteArray = uint8ToBase64
-	}( false ? (this.base64js = {}) : exports))
-
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer, (function() { return this; }())))
 
 /***/ },
 /* 128 */
+/***/ function(module, exports) {
+
+	'use strict'
+
+	exports.toByteArray = toByteArray
+	exports.fromByteArray = fromByteArray
+
+	var lookup = []
+	var revLookup = []
+	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+	function init () {
+	  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+	  for (var i = 0, len = code.length; i < len; ++i) {
+	    lookup[i] = code[i]
+	    revLookup[code.charCodeAt(i)] = i
+	  }
+
+	  revLookup['-'.charCodeAt(0)] = 62
+	  revLookup['_'.charCodeAt(0)] = 63
+	}
+
+	init()
+
+	function toByteArray (b64) {
+	  var i, j, l, tmp, placeHolders, arr
+	  var len = b64.length
+
+	  if (len % 4 > 0) {
+	    throw new Error('Invalid string. Length must be a multiple of 4')
+	  }
+
+	  // the number of equal signs (place holders)
+	  // if there are two placeholders, than the two characters before it
+	  // represent one byte
+	  // if there is only one, then the three characters before it represent 2 bytes
+	  // this is just a cheap hack to not do indexOf twice
+	  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+
+	  // base64 is 4/3 + up to two characters of the original data
+	  arr = new Arr(len * 3 / 4 - placeHolders)
+
+	  // if there are placeholders, only get up to the last complete 4 chars
+	  l = placeHolders > 0 ? len - 4 : len
+
+	  var L = 0
+
+	  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+	    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
+	    arr[L++] = (tmp >> 16) & 0xFF
+	    arr[L++] = (tmp >> 8) & 0xFF
+	    arr[L++] = tmp & 0xFF
+	  }
+
+	  if (placeHolders === 2) {
+	    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
+	    arr[L++] = tmp & 0xFF
+	  } else if (placeHolders === 1) {
+	    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
+	    arr[L++] = (tmp >> 8) & 0xFF
+	    arr[L++] = tmp & 0xFF
+	  }
+
+	  return arr
+	}
+
+	function tripletToBase64 (num) {
+	  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+	}
+
+	function encodeChunk (uint8, start, end) {
+	  var tmp
+	  var output = []
+	  for (var i = start; i < end; i += 3) {
+	    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+	    output.push(tripletToBase64(tmp))
+	  }
+	  return output.join('')
+	}
+
+	function fromByteArray (uint8) {
+	  var tmp
+	  var len = uint8.length
+	  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+	  var output = ''
+	  var parts = []
+	  var maxChunkLength = 16383 // must be multiple of 3
+
+	  // go through the array every three bytes, we'll deal with trailing stuff later
+	  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+	    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+	  }
+
+	  // pad the end with zeros, but make sure to not forget the extra bytes
+	  if (extraBytes === 1) {
+	    tmp = uint8[len - 1]
+	    output += lookup[tmp >> 2]
+	    output += lookup[(tmp << 4) & 0x3F]
+	    output += '=='
+	  } else if (extraBytes === 2) {
+	    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
+	    output += lookup[tmp >> 10]
+	    output += lookup[(tmp >> 4) & 0x3F]
+	    output += lookup[(tmp << 2) & 0x3F]
+	    output += '='
+	  }
+
+	  parts.push(output)
+
+	  return parts.join('')
+	}
+
+
+/***/ },
+/* 129 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -94117,7 +94679,7 @@
 
 
 /***/ },
-/* 129 */
+/* 130 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -94128,10 +94690,10 @@
 
 
 /***/ },
-/* 130 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(131)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(132)
 
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -94142,9 +94704,9 @@
 	    ].join('\n'))
 	}
 
-	exports.createHash = __webpack_require__(133)
+	exports.createHash = __webpack_require__(134)
 
-	exports.createHmac = __webpack_require__(145)
+	exports.createHmac = __webpack_require__(146)
 
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -94165,7 +94727,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 
-	var p = __webpack_require__(146)(exports)
+	var p = __webpack_require__(147)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 
@@ -94185,16 +94747,16 @@
 	  }
 	})
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
 
 /***/ },
-/* 131 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(132)
+	    g.crypto || g.msCrypto || __webpack_require__(133)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -94218,22 +94780,22 @@
 	  }
 	}())
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(126).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(127).Buffer))
 
 /***/ },
-/* 132 */
+/* 133 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 133 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(134)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(135)
 
-	var md5 = toConstructor(__webpack_require__(142))
-	var rmd160 = toConstructor(__webpack_require__(144))
+	var md5 = toConstructor(__webpack_require__(143))
+	var rmd160 = toConstructor(__webpack_require__(145))
 
 	function toConstructor (fn) {
 	  return function () {
@@ -94261,10 +94823,10 @@
 	  return createHash(alg)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
 
 /***/ },
-/* 134 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -94273,16 +94835,16 @@
 	  return new Alg()
 	}
 
-	var Buffer = __webpack_require__(126).Buffer
-	var Hash   = __webpack_require__(135)(Buffer)
+	var Buffer = __webpack_require__(127).Buffer
+	var Hash   = __webpack_require__(136)(Buffer)
 
-	exports.sha1 = __webpack_require__(136)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(140)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(141)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(137)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(141)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(142)(Buffer, Hash)
 
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -94365,7 +94927,7 @@
 
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -94377,7 +94939,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 
-	var inherits = __webpack_require__(137).inherits
+	var inherits = __webpack_require__(138).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -94509,7 +95071,7 @@
 
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -95037,7 +95599,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(138);
+	exports.isBuffer = __webpack_require__(139);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -95081,7 +95643,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(139);
+	exports.inherits = __webpack_require__(140);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -95099,10 +95661,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(64)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(65)))
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -95113,7 +95675,7 @@
 	}
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -95142,7 +95704,7 @@
 
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -95154,7 +95716,7 @@
 	 *
 	 */
 
-	var inherits = __webpack_require__(137).inherits
+	var inherits = __webpack_require__(138).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -95295,10 +95857,10 @@
 
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(137).inherits
+	var inherits = __webpack_require__(138).inherits
 
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -95545,7 +96107,7 @@
 
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -95557,7 +96119,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 
-	var helpers = __webpack_require__(143);
+	var helpers = __webpack_require__(144);
 
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -95706,7 +96268,7 @@
 
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -95744,10 +96306,10 @@
 
 	module.exports = { hash: hash };
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -95956,13 +96518,13 @@
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(133)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(134)
 
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -96006,13 +96568,13 @@
 	}
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(147)
+	var pbkdf2Export = __webpack_require__(148)
 
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -96027,7 +96589,7 @@
 
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -96115,16 +96677,16 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(122);
-	var uuid = __webpack_require__(125);
+	var _ = __webpack_require__(123);
+	var uuid = __webpack_require__(126);
 
 	/**
 	 * Map a v3 entity to v4.
@@ -96197,7 +96759,7 @@
 
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96236,7 +96798,7 @@
 	  function ImageAsset(json) {
 	    _classCallCheck(this, ImageAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ImageAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (ImageAsset.__proto__ || Object.getPrototypeOf(ImageAsset)).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    return _this;
@@ -96256,7 +96818,7 @@
 
 	        _log2.default.info(this.box3DRuntime.engineName + ' - Unloading image, ' + this.getName());
 
-	        _get(Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
+	        _get(ImageAsset.prototype.__proto__ || Object.getPrototypeOf(ImageAsset.prototype), 'unload', this).call(this, options);
 	      }
 
 	      this.loadedBytes = 0;
@@ -96509,7 +97071,7 @@
 	exports.default = ImageAsset;
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96532,7 +97094,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(151);
+	var _BaseGeometryAsset2 = __webpack_require__(152);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -96555,7 +97117,7 @@
 	  function MeshGeometryAsset(json) {
 	    _classCallCheck(this, MeshGeometryAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MeshGeometryAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (MeshGeometryAsset.__proto__ || Object.getPrototypeOf(MeshGeometryAsset)).call(this, json));
 	  }
 
 	  _createClass(MeshGeometryAsset, [{
@@ -96826,7 +97388,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96874,7 +97436,7 @@
 	  function BaseGeometryAsset(json) {
 	    _classCallCheck(this, BaseGeometryAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BaseGeometryAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (BaseGeometryAsset.__proto__ || Object.getPrototypeOf(BaseGeometryAsset)).call(this, json));
 
 	    _this.loadedBytes = 0;
 	    _this.geometries = {};
@@ -96889,7 +97451,7 @@
 	  _createClass(BaseGeometryAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(BaseGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(BaseGeometryAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: 'unload',
@@ -96906,7 +97468,7 @@
 	      });
 
 	      this.geometries = {};
-	      _get(Object.getPrototypeOf(BaseGeometryAsset.prototype), 'unload', this).call(this);
+	      _get(BaseGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(BaseGeometryAsset.prototype), 'unload', this).call(this);
 	    }
 
 	    /**
@@ -97074,7 +97636,7 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97117,13 +97679,13 @@
 	  function PrefabAsset(json) {
 	    _classCallCheck(this, PrefabAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrefabAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (PrefabAsset.__proto__ || Object.getPrototypeOf(PrefabAsset)).call(this, json));
 	  }
 
 	  _createClass(PrefabAsset, [{
 	    key: 'verifyProperty',
 	    value: function verifyProperty(propertyName, valueObj) {
-	      if (_get(Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
+	      if (_get(PrefabAsset.prototype.__proto__ || Object.getPrototypeOf(PrefabAsset.prototype), 'verifyProperty', this).call(this, propertyName, valueObj)) {
 	        return true;
 	      }
 	      var originalType = this.get('originalType') || 'node';
@@ -97169,7 +97731,7 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97190,7 +97752,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(151);
+	var _BaseGeometryAsset2 = __webpack_require__(152);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -97213,13 +97775,13 @@
 	  function PrimitiveGeometryAsset(json) {
 	    _classCallCheck(this, PrimitiveGeometryAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PrimitiveGeometryAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (PrimitiveGeometryAsset.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset)).call(this, json));
 	  }
 
 	  _createClass(PrimitiveGeometryAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(PrimitiveGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: 'createRuntimeData',
@@ -97237,7 +97799,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(PrimitiveGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(PrimitiveGeometryAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (reason !== 'init') {
 	        // Currently, any property changes cause the runtimeData to be re-created.
@@ -97388,7 +97950,7 @@
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97403,7 +97965,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _ImageAsset = __webpack_require__(149);
+	var _ImageAsset = __webpack_require__(150);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97411,7 +97973,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(155);
+	var _BaseRenderTextureAsset = __webpack_require__(156);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97434,7 +97996,7 @@
 	  function RenderTexture2DAsset(json) {
 	    _classCallCheck(this, RenderTexture2DAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTexture2DAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (RenderTexture2DAsset.__proto__ || Object.getPrototypeOf(RenderTexture2DAsset)).call(this, json));
 	  }
 
 	  /** @inheritdoc */
@@ -97464,7 +98026,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97481,7 +98043,7 @@
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _ImageAsset = __webpack_require__(149);
+	var _ImageAsset = __webpack_require__(150);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97504,7 +98066,7 @@
 	  function BaseRenderTextureAsset(json) {
 	    _classCallCheck(this, BaseRenderTextureAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(BaseRenderTextureAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (BaseRenderTextureAsset.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset)).call(this, json));
 	  }
 
 	  /**
@@ -97519,7 +98081,7 @@
 	    /** @inheritdoc */
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(BaseRenderTextureAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(BaseRenderTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -97569,7 +98131,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(BaseRenderTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(BaseRenderTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseRenderTextureAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If something changed that necessitates the texture being recreated, do so.
 	      if (changes.hasOwnProperty('format') || changes.hasOwnProperty('type') || changes.hasOwnProperty('width') || changes.hasOwnProperty('height')) {
@@ -97614,7 +98176,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97631,7 +98193,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _ImageAsset = __webpack_require__(149);
+	var _ImageAsset = __webpack_require__(150);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97639,7 +98201,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(155);
+	var _BaseRenderTextureAsset = __webpack_require__(156);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97661,7 +98223,7 @@
 	  function RenderTextureCubeAsset(json) {
 	    _classCallCheck(this, RenderTextureCubeAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderTextureCubeAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (RenderTextureCubeAsset.__proto__ || Object.getPrototypeOf(RenderTextureCubeAsset)).call(this, json));
 	  }
 
 	  /**
@@ -97698,7 +98260,7 @@
 	  }, {
 	    key: 'getDataSizeInMemory',
 	    value: function getDataSizeInMemory() {
-	      var oneFaceSize = _get(Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
+	      var oneFaceSize = _get(RenderTextureCubeAsset.prototype.__proto__ || Object.getPrototypeOf(RenderTextureCubeAsset.prototype), 'getDataSizeInMemory', this).call(this);
 	      return oneFaceSize * 6;
 	    }
 	  }]);
@@ -97720,7 +98282,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97771,14 +98333,14 @@
 	  function SceneAsset(json) {
 	    _classCallCheck(this, SceneAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SceneAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (SceneAsset.__proto__ || Object.getPrototypeOf(SceneAsset)).call(this, json));
 	  }
 
 	  _createClass(SceneAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
 	      this.loadComponents = true;
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('prefabDeleted', this.onPrefabDeleted, this);
 	      this.on('load', this._sceneLoaded, this);
 	    }
@@ -97787,7 +98349,7 @@
 	    value: function uninitialize(properties) {
 	      this.box3DRuntime.off('prefabDeleted', this.onPrefabDeleted, this);
 	      this.off('load', this._sceneLoaded, this);
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), 'uninitialize', this).call(this, properties);
+	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'uninitialize', this).call(this, properties);
 	    }
 	  }, {
 	    key: '_sceneLoaded',
@@ -97906,7 +98468,7 @@
 	    key: 'getDataSizeGeometryDownload',
 	    value: function getDataSizeGeometryDownload() {
 	      var totalSize = 0;
-	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
+	      totalSize = _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
 
 	      return totalSize;
 	    }
@@ -97914,7 +98476,7 @@
 	    key: 'getDataSizeGeometryInMemory',
 	    value: function getDataSizeGeometryInMemory() {
 	      var totalSize = 0;
-	      totalSize = _get(Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
+	      totalSize = _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
 	      return totalSize;
 	    }
 
@@ -97934,7 +98496,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (!this.getProperty('fogEnabled')) {
 	        this.runtimeData.fog = null;
@@ -97968,7 +98530,7 @@
 	      if (this.runtimeData) {
 	        _log2.default.info('Unloading scene, ' + this.getName());
 
-	        _get(Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
+	        _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
 	      }
 	    }
 	  }, {
@@ -98015,7 +98577,7 @@
 	exports.default = SceneAsset;
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
@@ -98041,7 +98603,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _APIUtilities = __webpack_require__(159);
+	var _APIUtilities = __webpack_require__(160);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
@@ -98059,13 +98621,13 @@
 	  function ScriptAsset(json) {
 	    _classCallCheck(this, ScriptAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ScriptAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (ScriptAsset.__proto__ || Object.getPrototypeOf(ScriptAsset)).call(this, json));
 	  }
 
 	  _createClass(ScriptAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(ScriptAsset.prototype.__proto__ || Object.getPrototypeOf(ScriptAsset.prototype), 'initialize', this).call(this, properties);
 	      var category = this.getProperty('category');
 	      if (!category) {
 	        this.setProperty('category', 'User Defined');
@@ -98075,7 +98637,7 @@
 	  }, {
 	    key: 'uninitialize',
 	    value: function uninitialize() {
-	      _get(Object.getPrototypeOf(ScriptAsset.prototype), 'uninitialize', this).apply(this, arguments);
+	      _get(ScriptAsset.prototype.__proto__ || Object.getPrototypeOf(ScriptAsset.prototype), 'uninitialize', this).apply(this, arguments);
 	    }
 	  }, {
 	    key: 'initializeComponents',
@@ -98180,7 +98742,7 @@
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -98254,7 +98816,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98279,7 +98841,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR = __webpack_require__(161);
+	var _Box3DShaderPBR = __webpack_require__(162);
 
 	var _Box3DShaderPBR2 = _interopRequireDefault(_Box3DShaderPBR);
 
@@ -98297,13 +98859,13 @@
 	  function ShaderAsset(json) {
 	    _classCallCheck(this, ShaderAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ShaderAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (ShaderAsset.__proto__ || Object.getPrototypeOf(ShaderAsset)).call(this, json));
 	  }
 
 	  _createClass(ShaderAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(ShaderAsset.prototype.__proto__ || Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this, properties);
 	      this.buildParamDependencies();
 	    }
 
@@ -98538,12 +99100,12 @@
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(162), __webpack_require__(163), __webpack_require__(164)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(8), __webpack_require__(163), __webpack_require__(164), __webpack_require__(165)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -98612,7 +99174,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -99216,19 +99778,19 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n// Removed chunk from physical material <uv_pars_vertex>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n// Removed chunk from physical material <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\nvoid main() {\n\n\t// Removed chunk from physical material <uv_vertex>\n\t#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\t\tvUv = uv;\n\t\tvUv.y = 1.0 - vUv.y;\n\t#endif\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\n#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n\n\tvNormal = normalize( transformedNormal );\n\n#endif\n\n\t#include <begin_vertex>\n\t#include <displacementmap_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\n\tvViewPosition = - mvPosition.xyz;\n\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\n}"
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\tfresnel = 0.0;\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\n\t#ifdef CLEAR_COAT\n\t\tfresnel += BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\t\tfresnel = clamp(fresnel, 0.0, 1.0);\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * fresnel;\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE_ENCODING_SRGB\n\t\tenvMapColor.rgb = sRGBToLinear( envMapColor ).rgb;\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = roughness * 2.0;\n\t\t\treturn mix(mix(refRadiance, refRadianceHalf, min(interp, 1.0)), refIrradiance, max(interp - 1.0, 0.0));\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\t#ifdef ENV_MAP_RADIANCE_ENCODING_SRGB\n\t\t\tenvMapColorRadiance.rgb = sRGBToLinear( envMapColorRadiance ).rgb;\n\t\t#endif\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE_ENCODING_SRGB)\n\t\t\t\tenvMapColorIrradiance.rgb = sRGBToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS_ENCODING_SRGB)\n\t\t\t\t\tenvMapColorRadianceHalf.rgb = sRGBToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\t#endif\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel = 0.0;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99266,7 +99828,7 @@
 	  function SkinAsset(json) {
 	    _classCallCheck(this, SkinAsset);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SkinAsset).call(this, json));
+	    var _this = _possibleConstructorReturn(this, (SkinAsset.__proto__ || Object.getPrototypeOf(SkinAsset)).call(this, json));
 
 	    _this.bindShapeMatrix = new _three2.default.Matrix4();
 	    _this.inverseBindMatrices = [];
@@ -99463,7 +100025,7 @@
 	exports.default = SkinAsset;
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99492,7 +100054,7 @@
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
-	var _VideoAsset = __webpack_require__(167);
+	var _VideoAsset = __webpack_require__(168);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -99514,13 +100076,13 @@
 	  function Texture2DAsset(json) {
 	    _classCallCheck(this, Texture2DAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Texture2DAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (Texture2DAsset.__proto__ || Object.getPrototypeOf(Texture2DAsset)).call(this, json));
 	  }
 
 	  _createClass(Texture2DAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(Texture2DAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(Texture2DAsset.prototype.__proto__ || Object.getPrototypeOf(Texture2DAsset.prototype), 'initialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -99625,7 +100187,7 @@
 	        this.hdrSource.dispose();
 	        this.hdrSource = undefined;
 	      }
-	      _get(Object.getPrototypeOf(Texture2DAsset.prototype), 'unload', this).call(this, options);
+	      _get(Texture2DAsset.prototype.__proto__ || Object.getPrototypeOf(Texture2DAsset.prototype), 'unload', this).call(this, options);
 	    }
 	  }]);
 
@@ -99636,7 +100198,7 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 167 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99675,13 +100237,13 @@
 	  function VideoAsset(json) {
 	    _classCallCheck(this, VideoAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(VideoAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (VideoAsset.__proto__ || Object.getPrototypeOf(VideoAsset)).call(this, json));
 	  }
 
 	  _createClass(VideoAsset, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
+	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('update', this.onUpdate, this);
 	      this.on('pause', this.pause, this);
 	      this.on('play', this.play, this);
@@ -99702,7 +100264,7 @@
 	        this.runtimeData.image.pause();
 	      }
 
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
+	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), 'uninitialize', this).call(this);
 	    }
 
 	    /** @inheritdoc */
@@ -99753,7 +100315,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 	      var videoEl = this.runtimeData.imageData;
 	      if (videoEl) {
 
@@ -99874,7 +100436,7 @@
 	exports.default = VideoAsset;
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99911,7 +100473,7 @@
 	  function TextureCubeAsset(json) {
 	    _classCallCheck(this, TextureCubeAsset);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(TextureCubeAsset).call(this, json));
+	    return _possibleConstructorReturn(this, (TextureCubeAsset.__proto__ || Object.getPrototypeOf(TextureCubeAsset)).call(this, json));
 	  }
 
 	  /**
@@ -99977,7 +100539,7 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100022,7 +100584,7 @@
 	  function Box3DObject(json) {
 	    _classCallCheck(this, Box3DObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Box3DObject).call(this, json));
+	    return _possibleConstructorReturn(this, (Box3DObject.__proto__ || Object.getPrototypeOf(Box3DObject)).call(this, json));
 	  }
 
 	  _createClass(Box3DObject, [{
@@ -100067,7 +100629,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(Box3DObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(Box3DObject.prototype.__proto__ || Object.getPrototypeOf(Box3DObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('static')) {
 	        var isStatic = this.getProperty('static');
@@ -100719,7 +101281,7 @@
 	exports.default = Box3DObject;
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100736,7 +101298,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(169);
+	var _Box3DObject2 = __webpack_require__(170);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100758,7 +101320,7 @@
 	  function CameraObject(json) {
 	    _classCallCheck(this, CameraObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CameraObject).call(this, json));
+	    return _possibleConstructorReturn(this, (CameraObject.__proto__ || Object.getPrototypeOf(CameraObject)).call(this, json));
 	  }
 
 	  _createClass(CameraObject, [{
@@ -100785,7 +101347,7 @@
 	  }, {
 	    key: '_applyPropertiesLoaded',
 	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(Object.getPrototypeOf(CameraObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(CameraObject.prototype.__proto__ || Object.getPrototypeOf(CameraObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If the camera type changed, we need to re-create runtimeData.
 	      if (changes.hasOwnProperty('cameraType') && reason !== 'init') {
@@ -100878,7 +101440,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100899,7 +101461,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(169);
+	var _Box3DObject2 = __webpack_require__(170);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100921,13 +101483,13 @@
 	  function LightObject(json) {
 	    _classCallCheck(this, LightObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(LightObject).call(this, json));
+	    return _possibleConstructorReturn(this, (LightObject.__proto__ || Object.getPrototypeOf(LightObject)).call(this, json));
 	  }
 
 	  _createClass(LightObject, [{
 	    key: 'initialize',
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(LightObject.prototype), 'initialize', this).call(this, properties);
+	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), 'initialize', this).call(this, properties);
 
 	      this.on('setColor', this.setColor, this);
 	      this.on('setIntensity', this.setIntensity, this);
@@ -100970,7 +101532,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this2 = this;
 
-	      _get(Object.getPrototypeOf(LightObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      // If the light type changed, we need to re-create the runtimeData.
 	      if (changes.hasOwnProperty('lightType') && reason !== 'init') {
@@ -101067,7 +101629,7 @@
 	        }
 	      }
 
-	      _get(Object.getPrototypeOf(LightObject.prototype), 'unload', this).call(this, options);
+	      _get(LightObject.prototype.__proto__ || Object.getPrototypeOf(LightObject.prototype), 'unload', this).call(this, options);
 	    }
 	  }, {
 	    key: 'setColor',
@@ -101254,7 +101816,7 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101279,7 +101841,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _Box3DObject2 = __webpack_require__(169);
+	var _Box3DObject2 = __webpack_require__(170);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101302,7 +101864,7 @@
 	  function MeshObject(json) {
 	    _classCallCheck(this, MeshObject);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MeshObject).call(this, json));
+	    return _possibleConstructorReturn(this, (MeshObject.__proto__ || Object.getPrototypeOf(MeshObject)).call(this, json));
 	  }
 
 	  _createClass(MeshObject, [{
@@ -101311,7 +101873,7 @@
 
 	    /** @inheritdoc */
 	    value: function initialize(properties) {
-	      _get(Object.getPrototypeOf(MeshObject.prototype), 'initialize', this).call(this, properties);
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'initialize', this).call(this, properties);
 	      this.box3DRuntime.on('materialDeleted', this.onMaterialDeleted, this);
 	      this.on('setMaterial', this.setMaterial, this);
 	      this.on('castShadowsEnable', this.castShadowsEnable, this);
@@ -101329,7 +101891,7 @@
 	      this.off('castShadowsDisable', this.castShadowsDisable, this);
 	      this.off('castShadowsToggle', this.castShadowsToggle, this);
 	      this.box3DRuntime.off('materialDeleted', this.onMaterialDeleted, this);
-	      _get(Object.getPrototypeOf(MeshObject.prototype), 'uninitialize', this).call(this, properties);
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'uninitialize', this).call(this, properties);
 	    }
 
 	    /** @inheritdoc */
@@ -101349,7 +101911,7 @@
 	        this.runtimeData.geometry = null;
 	      }
 
-	      _get(Object.getPrototypeOf(MeshObject.prototype), 'unload', this).call(this, options);
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), 'unload', this).call(this, options);
 	    }
 
 	    /** @inheritdoc */
@@ -101359,7 +101921,7 @@
 	    value: function _applyPropertiesLoaded(changes, reason) {
 	      var _this2 = this;
 
-	      _get(Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
 
 	      if (changes.hasOwnProperty('geometryId')) {
 	        var prevGeometryId = this.getPreviousProperty('geometryId');
@@ -102192,7 +102754,7 @@
 	exports.default = MeshObject;
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -102218,7 +102780,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
