@@ -198,7 +198,7 @@ class Model3d extends Box3D {
             if (!this.renderer.instance) {
                 return;
             }
-            if (!this.renderer.vrEnabled) {
+            if (this.renderer.vrEnabled) {
                 this.renderer.instance.alignToPosition(position, alignmentVector);
             }
         }
