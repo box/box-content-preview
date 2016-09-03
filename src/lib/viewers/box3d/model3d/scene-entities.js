@@ -75,7 +75,6 @@ function sceneEntities(prefix) {
         components: {
             rendererComponent: {
                 componentData: {
-                    antialias: !Browser.isMobile(),
                     renderOnDemand: true,
                     maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,

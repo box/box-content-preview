@@ -548,9 +548,9 @@ class Model3dRenderer extends Box3DRenderer {
         if (this.dynamicOptimizer) {
             this.dynamicOptimizer.setQualityChangeLevels(this.vrQualityChangeLevels);
             if (Browser.isMobile()) {
-                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR);
-            } else {
                 this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR);
+            } else {
+                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR);
             }
         }
         this.instance.scaleToSize(this.modelVrSize);
