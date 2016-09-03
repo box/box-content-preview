@@ -236,7 +236,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_0',
             name: 'HDR Env Map 0',
-            type: 'halfFloat',
+            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
@@ -248,7 +248,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_1',
             name: 'HDR Env Map 1',
-            type: 'halfFloat',
+            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
@@ -260,7 +260,7 @@ function sceneEntities(prefix) {
         properties: {
             imageId: 'HDR_ENV_IMG_2',
             name: 'HDR Env Map 2',
-            type: 'halfFloat',
+            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
             minFilter: 'linear',
             magFilter: 'linear',
             vMapping: 'clamp',
@@ -271,7 +271,7 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 0',
-            type: 'halfFloat',
+            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
             width: 512,
             height: 512,
             generateMipmaps: true,
@@ -293,7 +293,7 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 1',
-            type: 'halfFloat',
+            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
             width: 256,
             height: 256,
             generateMipmaps: true,
@@ -315,7 +315,7 @@ function sceneEntities(prefix) {
         type: 'renderTextureCube',
         properties: {
             name: 'HDR Cube Env Map 2',
-            type: 'halfFloat',
+            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
             width: 128,
             height: 128,
             generateMipmaps: true,
