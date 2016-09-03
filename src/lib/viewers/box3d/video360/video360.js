@@ -181,7 +181,12 @@ class Video360 extends Dash {
     handleToggleVr() {
         this.renderer.toggleVr();
 
-        if (this.renderer.vrEnabled) {
+        if (!this.renderer.vrEnabled) {
+            // On switching to VR mode begin playing video
+            if (this.mediaEl.paused) {
+                this.mediaEl.play();
+            }
+
             this.skybox.setAttribute('stereoEnabled', true);
         } else {
             this.skybox.setAttribute('stereoEnabled', false);
