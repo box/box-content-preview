@@ -4,6 +4,8 @@ import DocHighlightDialog from '../../doc/doc-highlight-dialog';
 import DocHighlightThread from '../../doc/doc-highlight-thread';
 import AnnotationService from '../../annotation-service';
 import * as constants from '../../annotation-constants';
+import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
+
 
 let highlightThread;
 const sandbox = sinon.sandbox.create();
@@ -379,6 +381,170 @@ describe('doc-highlight-thread', () => {
             expect(addListenerStub).to.have.been.calledWith('annotationcreate', sinon.match.func);
             expect(addListenerStub).to.have.been.calledWith('annotationcancel', sinon.match.func);
             expect(addListenerStub).to.have.been.calledWith('annotationdelete', sinon.match.func);
+        });
+    });
+
+    describe('_isInHighlight()', () => {
+        it('should not scale points if there is no dimensionScale', () => {
+            const pageEl = {
+                getBoundingClientRect: sandbox.stub()
+            };
+            pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
+            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            const dimensionScaleStub = sandbox.stub(docAnnotatorUtil, 'getDimensionScale').returns(false);
+            const quadPoint = {
+                map: sandbox.stub()
+            };
+            highlightThread._location.quadPoints = [quadPoint, quadPoint, quadPoint];
+            const convertStub = sandbox.stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace').returns([0, 0, 0, 0, 0, 0, 0, 0]);
+
+            highlightThread._isInHighlight({ clientX: 0, clientY: 0 });
+            expect(pageElStub).to.be.called;
+            expect(pageEl.getBoundingClientRect).to.be.called;
+            expect(dimensionScaleStub).to.be.called;
+            expect(quadPoint.map).to.not.be.called;
+            expect(convertStub).to.be.called;
+        });
+
+        it('should scale points if there is a dimensionScale', () => {
+            const pageEl = {
+                getBoundingClientRect: sandbox.stub()
+            };
+            pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
+            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            const dimensionScaleStub = sandbox.stub(docAnnotatorUtil, 'getDimensionScale').returns(true);
+            const quadPoint = {
+                map: sandbox.stub()
+            };
+            highlightThread._location.quadPoints = [quadPoint, quadPoint, quadPoint];
+            const convertStub = sandbox.stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace').returns([0, 0, 0, 0, 0, 0, 0, 0]);
+
+            highlightThread._isInHighlight({ clientX: 0, clientY: 0 });
+            expect(pageElStub).to.be.called;
+            expect(pageEl.getBoundingClientRect).to.be.called;
+            expect(dimensionScaleStub).to.be.called;
+            expect(quadPoint.map).to.be.called;
+            expect(convertStub).to.be.called;
+        });
+
+        it('get the quad points and return if the point isInPolyOpt', () => {
+            const pageEl = {
+                getBoundingClientRect: sandbox.stub()
+            };
+            pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
+            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            const dimensionScaleStub = sandbox.stub(docAnnotatorUtil, 'getDimensionScale').returns(false);
+            const quadPoint = {
+                map: sandbox.stub()
+            };
+            highlightThread._location.quadPoints = [quadPoint, quadPoint, quadPoint];
+            const convertStub = sandbox.stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace').returns([0, 0, 0, 0, 0, 0, 0, 0]);
+            const pointInPolyStub = sandbox.stub(docAnnotatorUtil, 'isPointInPolyOpt');
+
+            highlightThread._isInHighlight({ clientX: 0, clientY: 0 });
+            expect(pageElStub).to.be.called;
+            expect(pageEl.getBoundingClientRect).to.be.called;
+            expect(dimensionScaleStub).to.be.called;
+            expect(quadPoint.map).to.not.be.called;
+            expect(convertStub).to.be.called;
+            expect(pointInPolyStub).to.be.called;
+        });
+    });
+
+    describe('_isInDialog()', () => {
+        it('should return true if the event is in the given dialog', () => {
+            const dimensions = {
+                left: 0,
+                right: 10,
+                top: 0,
+                bottom: 10
+            };
+            const dimensionsStub = sandbox.stub(highlightThread._dialog, 'getDimensions').returns(dimensions);
+            const result = highlightThread._isInDialog({ clientX: 0, clientY: 0 });
+
+            expect(result).to.be.true;
+            expect(dimensionsStub).to.be.called;
+        });
+
+        it('should return false if the event is in the given dialog', () => {
+            const dimensions = {
+                left: 0,
+                right: 10,
+                top: 0,
+                bottom: 10
+            };
+            const dimensionsStub = sandbox.stub(highlightThread._dialog, 'getDimensions').returns(dimensions);
+            const result = highlightThread._isInDialog({ clientX: 100, clientY: 100 });
+
+            expect(result).to.be.false;
+            expect(dimensionsStub).to.be.called;
+        });
+    });
+
+    describe('_getPageEl()', () => {
+        it('should return the result of querySelector', () => {
+            const queryStub = sandbox.stub(highlightThread._annotatedElement, 'querySelector');
+
+            highlightThread._getPageEl();
+            expect(queryStub).to.be.called;
+        });
+    });
+
+    describe('_getContext()', () => {
+        it('should return null if there is no pageEl', () => {
+            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(false);
+            const result = highlightThread._getContext();
+
+            expect(pageElStub).to.be.called;
+            expect(result).to.equal(null);
+        });
+
+        it('should not insert the pageEl if the annotationLayerEl already exists', () => {
+            const pageEl = {
+                querySelector: sandbox.stub(),
+                getBoundingClientRect: sandbox.stub(),
+                insertBefore: sandbox.stub()
+            };
+            const annotationLayer = {
+                width: 0,
+                height: 0,
+                getContext: sandbox.stub()
+            };
+            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            pageEl.querySelector.returns(annotationLayer);
+            annotationLayer.getContext.returns('2d context');
+
+            highlightThread._getContext();
+            expect(pageElStub).to.be.called;
+            expect(annotationLayer.getContext).to.be.called;
+            expect(pageEl.insertBefore).to.not.be.called;
+        });
+
+        it('should insert the pageEl if the annotationLayerEl does not exist', () => {
+            const pageEl = {
+                querySelector: sandbox.stub(),
+                getBoundingClientRect: sandbox.stub(),
+                insertBefore: sandbox.stub()
+            };
+            const annotationLayer = {
+                width: 0,
+                height: 0,
+                getContext: sandbox.stub(),
+                classList: {
+                    add: sandbox.stub()
+                }
+            };
+            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            pageEl.querySelector.returns(undefined);
+            const docStub = sandbox.stub(document, 'createElement').returns(annotationLayer);
+            annotationLayer.getContext.returns('2d context');
+            pageEl.getBoundingClientRect.returns({ width: 0, height: 0 });
+
+            highlightThread._getContext();
+            expect(pageElStub).to.be.called;
+            expect(docStub).to.be.called;
+            expect(annotationLayer.getContext).to.be.called;
+            expect(pageEl.insertBefore).to.be.called;
         });
     });
 });
