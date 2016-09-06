@@ -449,7 +449,7 @@ describe('doc-annotator', () => {
             expect(result).to.be.true;
         });
 
-        it('should do nothing if there are pending, active, or active hover highlight threads', () => {
+        it('should do nothing if there are pending, pending-active, active, or active hover highlight threads', () => {
             annotator._throttledHighlightMousemoveHandler = false;
             const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns(['thread1', 'thread2']);
             const result = annotator._highlightMousemoveHandler()({ x: 1, y: 2 });
