@@ -13,6 +13,7 @@ const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_IMAGE = 'box-preview-image';
 const IMAGE_PADDING = 15;
+const IMAGE_ZOOM_SCALE = 1.2;
 
 const Box = global.Box || {};
 
@@ -289,17 +290,17 @@ class Image extends Base {
         switch (type) {
             case 'in':
                 if (modifyWidthInsteadOfHeight) {
-                    newWidth = width + 100;
+                    newWidth = width * IMAGE_ZOOM_SCALE;
                 } else {
-                    newHeight = height + 100;
+                    newHeight = height * IMAGE_ZOOM_SCALE;
                 }
                 break;
 
             case 'out':
                 if (modifyWidthInsteadOfHeight) {
-                    newWidth = width - 100;
+                    newWidth = width / IMAGE_ZOOM_SCALE;
                 } else {
-                    newHeight = height - 100;
+                    newHeight = height / IMAGE_ZOOM_SCALE;
                 }
                 break;
 
