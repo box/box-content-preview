@@ -70,8 +70,8 @@ class ImageBase extends Base {
      * Handles keyboard events for media
      *
      * @private
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
+     * @param {string} key keydown key
+     * @returns {boolean} consumed or not
      */
     onKeydown(key) {
         // Return false when media controls are not ready or are focused

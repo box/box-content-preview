@@ -65,9 +65,9 @@ function createDownloadIframe() {
  *     get(url, type)
  *     get(url)
  *
- * @param {String} url - The URL to fetch
+ * @param {string} url - The URL to fetch
  * @param {Object} [headers] - Key-value map of headers
- * @param {String} [type] - response type json (default), text, blob or any
+ * @param {string} [type] - response type json (default), text, blob or any
  * @returns {Promise} - HTTP response
  */
 export function get(url, ...rest) {
@@ -109,7 +109,7 @@ export function get(url, ...rest) {
 /**
  * HTTP POSTs a URL with JSON data
  *
- * @param {String} url - The URL to fetch
+ * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
  * @returns {Promise} - HTTP response
@@ -121,7 +121,7 @@ export function post(...rest) {
 /**
  * HTTP PUTs a URL with JSON data
  *
- * @param {String} url - The URL to fetch
+ * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
  * @returns {Promise} - HTTP response
@@ -133,7 +133,7 @@ export function del(...rest) {
 /**
  * HTTP PUTs a URL with JSON data
  *
- * @param {String} url - The URL to fetch
+ * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
  * @returns {Promise} - HTTP response
@@ -147,7 +147,7 @@ export function put(...rest) {
  * Used for downloads
  *
  * @public
- * @param {String} api api url
+ * @param {string} api api url
  * @returns {HTMLElement}
  */
 export function openUrlInsideIframe(url) {
@@ -161,7 +161,7 @@ export function openUrlInsideIframe(url) {
  * Used for printing
  *
  * @public
- * @param {String} content html content
+ * @param {string} content html content
  * @returns {HTMLElement}
  */
 export function openContentInsideIframe(content) {
@@ -175,7 +175,7 @@ export function openContentInsideIframe(content) {
  * Deduces box app url from api url
  *
  * @public
- * @param {String} api api url
+ * @param {string} api api url
  * @returns {HTMLElement}
  */
 export function deduceBoxUrl(api) {
@@ -201,7 +201,7 @@ export function deduceBoxUrl(api) {
  *
  * @public
  * @param {Element} node dom node
- * @param {String} template  html template
+ * @param {string} template  html template
  * @returns {HTMLElement}
  */
 export function createFragment(node, template) {
@@ -215,7 +215,7 @@ export function createFragment(node, template) {
  *
  * @public
  * @param {Element} node dom node
- * @param {String} template  html template
+ * @param {string} template  html template
  * @returns {void}
  */
 export function insertTemplate(node, template) {
@@ -226,7 +226,7 @@ export function insertTemplate(node, template) {
  * Create <script> element to load external script
  *
  * @public
- * @param {String} url  asset url
+ * @param {string} url  asset url
  * @returns {Array} script element
  */
 export function createScript(url) {
@@ -270,9 +270,9 @@ export function createStylesheet(url) {
  *
  * @public
  * @param {Object} [headers] optional headers
- * @param {String} [token] optional auth token
- * @param {String} [sharedLink] optional shared link
- * @param {String} [password] optional shared link password
+ * @param {string} [token] optional auth token
+ * @param {string} [sharedLink] optional shared link
+ * @param {string} [password] optional shared link password
  * @returns {Object} Headers
  */
 export function getHeaders(headers = {}, token = '', sharedLink = '', password = '') {
@@ -295,11 +295,11 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
  * Creates the content URLs
  *
  * @public
- * @param {String} url content url
- * @param {String} [token] optional auth token
- * @param {String} [sharedLink] optional shared link
- * @param {String} [password] optional shared link password
- * @returns {String} content urls
+ * @param {string} url content url
+ * @param {string} [token] optional auth token
+ * @param {string} [sharedLink] optional shared link
+ * @param {string} [password] optional shared link password
+ * @returns {string} content urls
  */
 export function createContentUrl(url, token = '', sharedLink = '', password = '') {
     if (!token && !sharedLink) {
@@ -420,7 +420,7 @@ export function loadScripts(urls) {
  *
  * @public
  * @param {Event} event keydown event
- * @returns {String} decoded keydown key
+ * @returns {string} decoded keydown key
  */
 export function decodeKeydown(event) {
     let modifier = '';

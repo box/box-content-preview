@@ -12,7 +12,7 @@ class VideoBase extends MediaBase {
 
     /**
      * [constructor]
-     * @param {String|HTMLElement} container The container DOM node
+     * @param {string|HTMLElement} container The container DOM node
      * @param {Object} [options] some options
      * @returns {VideoBase} VideoBase instance
      */
@@ -171,7 +171,7 @@ class VideoBase extends MediaBase {
      * should be shown and won't intefere with viewer
      *
      * @protected
-     * @returns {Boolean} true
+     * @returns {boolean} true
      */
     allowNavigationArrows() {
         return !this.mediaControls || !this.mediaControls.isSettingsVisible();

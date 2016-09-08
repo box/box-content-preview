@@ -113,7 +113,7 @@ class DocFindBar extends EventEmitter {
     /**
      * Dispatch custom find event based specified type
      * @param  {string} type
-     * @param  {Boolean} findPrev
+     * @param  {boolean} findPrev
      * @returns {void}
      */
     dispatchFindEvent(type, findPrev) {
@@ -127,7 +127,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Update Find Bar UI to current match state
-     * @param  {Number} state FindState from PDFFindController
+     * @param  {number} state FindState from PDFFindController
      * @returns {void}
      */
     updateUIState(state) {
@@ -301,7 +301,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Handler to find next match count and update match count accordingly
-     * @param  {Boolean} clicked False when triggered through keyboard shortcut
+     * @param  {boolean} clicked False when triggered through keyboard shortcut
      * @returns {void}
      * @private
      */
@@ -323,7 +323,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Handler to find previous match and update match count accordingly
-     * @param  {Boolean} clicked False when triggered through keyboard shortcut
+     * @param  {boolean} clicked False when triggered through keyboard shortcut
      * @returns {void}
      * @private
      */

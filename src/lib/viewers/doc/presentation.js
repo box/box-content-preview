@@ -57,8 +57,8 @@ class Presentation extends DocBase {
      * Handles keyboard events for presentation viewer.
      *
      * @override
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
+     * @param {string} key keydown key
+     * @returns {boolean} consumed or not
      */
     onKeydown(key) {
         if (key === 'ArrowUp') {
@@ -80,7 +80,7 @@ class Presentation extends DocBase {
      * Loads PDF.js with provided PDF.
      *
      * @override
-     * @param {String} pdfUrl The URL of the PDF to load
+     * @param {string} pdfUrl The URL of the PDF to load
      * @returns {void}
      * @protected
      */

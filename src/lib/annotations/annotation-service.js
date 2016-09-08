@@ -43,10 +43,10 @@ class AnnotationService {
     /**
      * The data object for constructing an Annotation Service.
      * @typedef {Object} AnnotationServiceData
-     * @property {String} api API root
-     * @property {String} fileID File ID
-     * @property {String} token Access token
-     * @property {Boolean} canAnnotate Can user annotate
+     * @property {string} api API root
+     * @property {string} fileID File ID
+     * @property {string} token Access token
+     * @property {boolean} canAnnotate Can user annotate
      */
 
     //--------------------------------------------------------------------------
@@ -240,7 +240,7 @@ class AnnotationService {
     /**
      * Gets canAnnotate.
      *
-     * @returns {Boolean} Whether or not user can create or modify annotations.
+     * @returns {boolean} Whether or not user can create or modify annotations.
      */
     get canAnnotate() {
         return this._canAnnotate;

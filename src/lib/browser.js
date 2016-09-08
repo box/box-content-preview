@@ -42,9 +42,9 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement|MDN}
      *
      * @public
-     * @param {String} type The mime type to check.
-     * @param {String} probability Should either be 'maybe' or 'probably'
-     * @returns {Boolean} true if browser supports a particular type
+     * @param {string} type The mime type to check.
+     * @param {string} probability Should either be 'maybe' or 'probably'
+     * @returns {boolean} true if browser supports a particular type
      */
     static canPlayType(type, probability) {
         let elem;
@@ -67,7 +67,7 @@ class Browser {
      *
      * @public
      * @param {string} mime information about the AVC profile codec
-     * @returns {Boolean} true if browser supports HTML5 H264 main video playback
+     * @returns {boolean} true if browser supports HTML5 H264 main video playback
      */
     static canPlayH264(mime) {
         return Browser.canPlayType(mime, 'maybe') || Browser.canPlayType(mime, 'probably');
@@ -80,7 +80,7 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      *
      * @public
-     * @returns {Boolean} true if browser supports HTML5 H264 baseline video playback
+     * @returns {boolean} true if browser supports HTML5 H264 baseline video playback
      */
     static canPlayH264Baseline() {
         return Browser.canPlayH264(MIME_H264_BASELINE);
@@ -93,7 +93,7 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      *
      * @public
-     * @returns {Boolean} true if browser supports HTML5 H264 main video playback
+     * @returns {boolean} true if browser supports HTML5 H264 main video playback
      */
     static canPlayH264Main() {
         return Browser.canPlayH264(MIME_H264_MAIN);
@@ -106,7 +106,7 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      *
      * @public
-     * @returns {Boolean} true if browser supports HTML5 H264 high video playback
+     * @returns {boolean} true if browser supports HTML5 H264 high video playback
      */
     static canPlayH264High() {
         return Browser.canPlayH264(MIME_H264_HIGH);
@@ -120,7 +120,7 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      *
      * @public
-     * @returns {Boolean} true if browser supports HTML5 MP3 audio playback
+     * @returns {boolean} true if browser supports HTML5 MP3 audio playback
      */
     static canPlayMP3() {
         return Browser.canPlayType('audio/mpeg', 'maybe') || Browser.canPlayType('audio/mpeg', 'probably');
@@ -132,7 +132,7 @@ class Browser {
      * to the H264 container (since we use H264 and not webm)
      *
      * @public
-     * @returns {Boolean} true if dash is usable
+     * @returns {boolean} true if dash is usable
      */
     static canPlayDash() {
         const mse = global.MediaSource;
@@ -151,7 +151,7 @@ class Browser {
      * Checks the browser for Media Source Extensions support
      *
      * @public
-     * @returns {Boolean} true if MediaSource extensions are enabled
+     * @returns {boolean} true if MediaSource extensions are enabled
      */
     static hasMSE() {
         return !!global.MediaSource;
@@ -161,7 +161,7 @@ class Browser {
      * Returns true if the browser supports webgl or experimental webgl
      *
      * @public
-     * @returns {Boolean} - returns true if the browser supports WebGL
+     * @returns {boolean} - returns true if the browser supports WebGL
      */
     static hasWebGL() {
         if (!gl) {
@@ -183,7 +183,7 @@ class Browser {
      * the Box3DRuntime for displaying Model Preview
      *
      * @public
-     * @returns {Boolean} true if browser fully supports Model Previewing
+     * @returns {boolean} true if browser fully supports Model Previewing
      */
     static supportsModel3D() {
         if (!Browser.hasWebGL()) {
@@ -199,7 +199,7 @@ class Browser {
      * Determines if flash is installed.
      *
      * @public
-     * @returns {Boolean} true if browser has flash
+     * @returns {boolean} true if browser has flash
      */
     static hasFlash() {
         let hasFlash = false;
@@ -215,7 +215,7 @@ class Browser {
      * Returns true if the browser supports SVG
      *
      * @public
-     * @returns {Boolean} is svg supported
+     * @returns {boolean} is svg supported
      */
     static hasSVG() {
         return document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
@@ -225,7 +225,7 @@ class Browser {
      * Returns whether the browser is a mobile browser. Taken from Modernizr:
      * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/touchevents.js
      *
-     * @returns {Boolean} true if browser is mobile
+     * @returns {boolean} true if browser is mobile
      */
     static isMobile() {
         return (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch));
@@ -234,7 +234,7 @@ class Browser {
     /**
      * Returns whether or not the device is running IOS
      *
-     * @returns {Boolean} true if the device is running IOS
+     * @returns {boolean} true if the device is running IOS
      */
     static isIOS() {
         return /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
@@ -243,7 +243,7 @@ class Browser {
     /**
      * Returns whether or not the device is running Android
      *
-     * @returns {Boolean} true if the device is running Android
+     * @returns {boolean} true if the device is running Android
      */
     static isAndroid() {
         return /Android/g.test(navigator.userAgent);

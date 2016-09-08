@@ -47,7 +47,7 @@ class RepStatus {
      * Handles the pending response
      *
      * @private
-     * @returns {Boolean} true if we should consider success
+     * @returns {boolean} true if we should consider success
      */
     handlePending() {
         // If no files to compare then return false

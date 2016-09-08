@@ -15,7 +15,7 @@ class PreviewError extends Base {
     /**
      * [constructor]
      *
-     * @param {String|HTMLElement} container The container
+     * @param {string|HTMLElement} container The container
      * @param {Object} options some options
      * @returns {Error} Error instance
      */
@@ -31,8 +31,8 @@ class PreviewError extends Base {
      * Shows an error message to the user.
      *
      * @public
-     * @param {String} url rep to load
-     * @param {String} reason error reason
+     * @param {string} url rep to load
+     * @param {string} reason error reason
      * @returns {void}
      */
     load(url, reason) {

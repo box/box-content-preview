@@ -31,10 +31,10 @@ class AnnotationThread extends EventEmitter {
      * @property {Annotation[]} [annotations] Annotations in thread - none if
      * this is a new thread
      * @property {LocalStorageAnnotationService} annotationService Annotations CRUD service
-     * @property {String} fileVersionID File version ID
+     * @property {string} fileVersionID File version ID
      * @property {Object} location Location object
-     * @property {String} threadID Thread ID
-     * @property {String} type Type of thread
+     * @property {string} threadID Thread ID
+     * @property {string} type Type of thread
      */
 
     //--------------------------------------------------------------------------
@@ -117,7 +117,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Hides the appropriate annotation dialog for this thread.
      *
-     * @param {Boolean} [noDelay] Whether or not to have a timeout delay
+     * @param {boolean} [noDelay] Whether or not to have a timeout delay
      * @returns {void}
      */
     hideDialog(noDelay = false) {
@@ -129,8 +129,8 @@ class AnnotationThread extends EventEmitter {
     /**
      * Saves an annotation.
      *
-     * @param {String} type Type of annotation
-     * @param {String} text Text of annotation to save
+     * @param {string} type Type of annotation
+     * @param {string} text Text of annotation to save
      * @returns {void}
      */
     saveAnnotation(type, text) {
@@ -176,8 +176,8 @@ class AnnotationThread extends EventEmitter {
     /**
      * Deletes an annotation.
      *
-     * @param {String} annotationID ID of annotation to delete
-     * @param {Boolean} [useServer] Whether or not to delete on server, default true
+     * @param {string} annotationID ID of annotation to delete
+     * @param {boolean} [useServer] Whether or not to delete on server, default true
      * @returns {void}
      */
     deleteAnnotation(annotationID, useServer = true) {
@@ -257,7 +257,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Gets threadID.
      *
-     * @returns {String} threadID
+     * @returns {string} threadID
      */
     get threadID() {
         return this._threadID;
@@ -266,7 +266,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Gets type.
      *
-     * @returns {String} type
+     * @returns {string} type
      */
     get type() {
         return this._type;
@@ -275,7 +275,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Gets state.
      *
-     * @returns {String} state
+     * @returns {string} state
      */
     get state() {
         return this._state;
@@ -442,8 +442,8 @@ class AnnotationThread extends EventEmitter {
     /**
      * Create an annotation data object to pass to annotation service.
      *
-     * @param {String} type Type of annotation
-     * @param {String} text Annotation text
+     * @param {string} type Type of annotation
+     * @param {string} text Annotation text
      * @returns {Object} Annotation data
      * @private
      */

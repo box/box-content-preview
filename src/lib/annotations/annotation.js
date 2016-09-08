@@ -16,16 +16,16 @@ class Annotation {
      * The data object for constructing an annotation.
      *
      * @typedef {Object} AnnotationData
-     * @property {String} annotationID Annotation ID
-     * @property {String} fileVersionID File version ID for this annotation
-     * @property {String} threadID Thread ID
-     * @property {String} type Annotation type, e.g. 'point' or 'highlight'
-     * @property {String} text Annotation text
+     * @property {string} annotationID Annotation ID
+     * @property {string} fileVersionID File version ID for this annotation
+     * @property {string} threadID Thread ID
+     * @property {string} type Annotation type, e.g. 'point' or 'highlight'
+     * @property {string} text Annotation text
      * @property {Object} location Location object
      * @property {Object} user User creating/that created this annotation
      * @property {Object} permissions Permissions user has
-     * @property {Number} created Created timestamp
-     * @property {Number} modified Modified timestamp
+     * @property {number} created Created timestamp
+     * @property {number} modified Modified timestamp
      */
 
     //--------------------------------------------------------------------------
@@ -58,7 +58,7 @@ class Annotation {
     /**
      * Gets annotationID.
      *
-     * @returns {String} annotationID
+     * @returns {string} annotationID
      */
     get annotationID() {
         return this._annotationID;
@@ -67,7 +67,7 @@ class Annotation {
     /**
      * Gets fileVersionID.
      *
-     * @returns {String} fileVersionID
+     * @returns {string} fileVersionID
      */
     get fileVersionID() {
         return this._fileVersionID;
@@ -76,7 +76,7 @@ class Annotation {
     /**
      * Gets threadID.
      *
-     * @returns {String} threadID
+     * @returns {string} threadID
      */
     get threadID() {
         return this._threadID;
@@ -85,7 +85,7 @@ class Annotation {
     /**
      * Gets type.
      *
-     * @returns {String} type
+     * @returns {string} type
      */
     get type() {
         return this._type;
@@ -94,7 +94,7 @@ class Annotation {
     /**
      * Gets text.
      *
-     * @returns {String} text
+     * @returns {string} text
      */
     get text() {
         return this._text;
@@ -130,7 +130,7 @@ class Annotation {
     /**
      * Gets created.
      *
-     * @returns {Number} created
+     * @returns {number} created
      */
     get created() {
         return this._created;
@@ -139,7 +139,7 @@ class Annotation {
     /**
      * Gets modified.
      *
-     * @returns {Number} modified
+     * @returns {number} modified
      */
     get modified() {
         return this._modified;

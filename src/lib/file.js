@@ -15,9 +15,9 @@ const fields = [
  * Returns the box file content api url
  *
  * @public
- * @param {String} id box file id
- * @param {String} api box api base url
- * @returns {String} API url
+ * @param {string} id box file id
+ * @param {string} api box api base url
+ * @returns {string} API url
  */
 export function getURL(id, api) {
     return `${api}/2.0/files/${id}?fields=${fields.join(',')}`;
@@ -27,9 +27,9 @@ export function getURL(id, api) {
  * Returns the box file content api url
  *
  * @public
- * @param {String} id box file id
- * @param {String} api box api base url
- * @returns {String} API url
+ * @param {string} id box file id
+ * @param {string} api box api base url
+ * @returns {string} API url
  */
 export function getDownloadURL(id, api) {
     return `${api}/2.0/files/${id}?fields=download_url`;
@@ -67,7 +67,7 @@ export function checkPermission(file, operation) {
  * @public
  * @param {object} viewer viewer instance
  * @param {string} primary operation
- * @param {string|void} [secondary] operation
+ * @param {string} [secondary] operation
  * @returns {boolean} available or not
  */
 export function checkFeature(viewer, primary, secondary) {

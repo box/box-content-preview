@@ -31,7 +31,7 @@ class Document extends DocBase {
     /**
      * [constructor]
      *
-     * @param {String|HTMLElement} container Container node
+     * @param {string|HTMLElement} container Container node
      * @param {Object} [options] Configuration options
      * @returns {Document} Document instance
      */
@@ -44,8 +44,8 @@ class Document extends DocBase {
      * Handles keyboard events for document viewer.
      *
      * @override
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
+     * @param {string} key keydown key
+     * @returns {boolean} consumed or not
      */
     onKeydown(key) {
         if (key === 'Shift++') {

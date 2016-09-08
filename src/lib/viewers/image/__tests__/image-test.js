@@ -10,7 +10,7 @@ let clock;
  * Creates and returns a blob from a base64 data URL
  *
  * @private
- * @param {String} dataURL The data URL to convert.
+ * @param {string} dataURL The data URL to convert.
  * @returns {Blob} A blob representing the array buffer data.
  */
 function dataURLToBlob(dataURL) {

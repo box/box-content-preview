@@ -172,8 +172,8 @@ class Settings extends EventEmitter {
     /**
      * Handles option selection
      *
-     * @param {String} type of menu option
-     * @param {String} value of menu option
+     * @param {string} type of menu option
+     * @param {string} value of menu option
      * @returns {void}
      */
     chooseOption(type, value) {
@@ -219,7 +219,7 @@ class Settings extends EventEmitter {
      * Getter for the value of quality
      *
      * @public
-     * @returns {String} The quality
+     * @returns {string} The quality
      */
     isVisible() {
         return this.visible;

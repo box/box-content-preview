@@ -11,7 +11,7 @@ class PlainText extends TextBase {
 
     /**
      * [constructor]
-     * @param {String|HTMLElement} container The container
+     * @param {string|HTMLElement} container The container
      * @param {Object} options some options
      * @returns {PlainText} PlainText instance
      */
@@ -26,7 +26,7 @@ class PlainText extends TextBase {
     /**
      * Loads a text file.
      *
-     * @param {String} textUrl The text file to load
+     * @param {string} textUrl The text file to load
      * @public
      * @returns {Promise} Promise to load a text file
      */
@@ -46,7 +46,7 @@ class PlainText extends TextBase {
      * Loads highlight.js to highlight the file
      *
      * @private
-     * @param {String} txt The text content to load
+     * @param {string} txt The text content to load
      * @returns {void}
      */
     finishLoading(txt) {

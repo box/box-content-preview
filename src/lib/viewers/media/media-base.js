@@ -71,7 +71,7 @@ class MediaBase extends Base {
     /**
      * Loads a media source.
      *
-     * @param {String} mediaUrl The media url
+     * @param {string} mediaUrl The media url
      * @public
      * @returns {Promise} Promise to load media
      */
@@ -324,8 +324,8 @@ class MediaBase extends Base {
      * Handles keyboard events for media
      *
      * @private
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
+     * @param {string} key keydown key
+     * @returns {boolean} consumed or not
      */
     onKeydown(key) {
         // Return false when media controls are not ready or are focused

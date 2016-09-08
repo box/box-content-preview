@@ -18,7 +18,7 @@ class Dash extends VideoBase {
 
     /**
      * [constructor]
-     * @param {String|HTMLElement} container The container DOM node
+     * @param {string|HTMLElement} container The container DOM node
      * @param {Object} [options] some options
      * @returns {Dash} Dash instance
      */
@@ -57,7 +57,7 @@ class Dash extends VideoBase {
     /**
      * Loads a media source.
      *
-     * @param {String} mediaUrl The media url
+     * @param {string} mediaUrl The media url
      * @pubic
      * @returns {Promise} Promise to load the media
      */
@@ -131,7 +131,7 @@ class Dash extends VideoBase {
      * Handler for hd video
      *
      * @private
-     * @param {Number} id rep id
+     * @param {number} id rep id
      * @returns {Object|undefined}
      */
     getVideoRepresentation(id) {
@@ -150,7 +150,7 @@ class Dash extends VideoBase {
      * Shows the loading indicator
      *
      * @private
-     * @param {Number} id rep id
+     * @param {number} id rep id
      * @returns {void}
      */
     showLoadingIcon(id) {
@@ -188,7 +188,7 @@ class Dash extends VideoBase {
      * Handler for dd/sd/auto video
      *
      * @private
-     * @param {Boolean|void} [adapt] enable or disable adaptation
+     * @param {boolean} [adapt] enable or disable adaptation
      * @returns {void}
      */
     enableAdaptation(adapt = true) {
@@ -462,8 +462,8 @@ class Dash extends VideoBase {
      * Handles keyboard events for media
      *
      * @private
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
+     * @param {string} key keydown key
+     * @returns {boolean} consumed or not
      */
     onKeydown(key) {
         if (key === 'Shift+I' && this.player) {

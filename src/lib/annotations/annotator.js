@@ -29,7 +29,7 @@ class Annotator extends EventEmitter {
      * @typedef {Object} AnnotatorData
      * @property {HTMLElement} annotatedElement HTML element to annotate on
      * @property {AnnotationService|LocalStorageAnnotationService} [annotationService] Annotations CRUD service
-     * @property {String} fileVersionID File version ID
+     * @property {string} fileVersionID File version ID
      */
 
     //--------------------------------------------------------------------------
@@ -151,7 +151,7 @@ class Annotator extends EventEmitter {
     /**
      * Sets the zoom scale.
      *
-     * @param {Number} scale
+     * @param {number} scale
      * @returns {void}
      */
     setScale(scale) {
@@ -226,7 +226,7 @@ class Annotator extends EventEmitter {
      *
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
-     * @param {String} type Annotation type
+     * @param {string} type Annotation type
      * @returns {AnnotationThread} Created annotation thread
      */
     /* eslint-disable no-unused-vars */
@@ -418,7 +418,7 @@ class Annotator extends EventEmitter {
     /**
      * Returns whether or not annotator is in point mode.
      *
-     * @returns {Boolean} Whether or not in point mode
+     * @returns {boolean} Whether or not in point mode
      * @protected
      */
     isInPointMode() {
@@ -432,7 +432,7 @@ class Annotator extends EventEmitter {
     /**
      * Destroys pending threads.
      *
-     * @returns {Boolean} Whether or not any pending threads existed on the
+     * @returns {boolean} Whether or not any pending threads existed on the
      * current file
      * @private
      */

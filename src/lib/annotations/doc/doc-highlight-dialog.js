@@ -184,7 +184,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * comments dialog. This accounts for when a blank highlight is created and
      * then the user tries to add a comment after the fact.
      *
-     * @param  {Boolean} hasAnnotations Whether or not the dialog has comments
+     * @param  {boolean} hasAnnotations Whether or not the dialog has comments
      * @returns {void}
      */
     toggleHighlightCommentsReply(hasAnnotations) {

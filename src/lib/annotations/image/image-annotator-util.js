@@ -12,12 +12,12 @@ const ROTATION_THRICE_DEG = -270;
 
 /**
  * Adjust initial annotation location according to current image rotation
- * @param {Number} x Annotation location x coordinate
- * @param {Number} y Annotation location y coordinate
- * @param {Number} rotation Current image rotation
+ * @param {number} x Annotation location x coordinate
+ * @param {number} y Annotation location y coordinate
+ * @param {number} rotation Current image rotation
  * @param {Object} imageDimensions
- * @param {Number} scale
- * @returns {Number[]} [x,y] browser coordinates
+ * @param {number} scale
+ * @returns {number[]} [x,y] browser coordinates
  */
 export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
     const { height, width } = imageDimensions;
@@ -37,12 +37,12 @@ export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
 
 /**
  * Adjust initial annotation location according to current image rotation
- * @param {Number} x Annotation location x coordinate
- * @param {Number} y Annotation location y coordinate
- * @param {Number} rotation Current image rotation
+ * @param {number} x Annotation location x coordinate
+ * @param {number} y Annotation location y coordinate
+ * @param {number} rotation Current image rotation
  * @param {Object} imageDimensions
- * @param {Number} scale
- * @returns {Number[]} [x,y] browser coordinates
+ * @param {number} scale
+ * @returns {number[]} [x,y] browser coordinates
  */
 export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scale) {
     const { height, width } = imageDimensions;
@@ -66,7 +66,7 @@ export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scal
  * the HTML element being annotated on.
  * @param {Object} location Annotation location object
  * @param {HTMLElement} annotatedElement HTML element being annotated on
- * @returns {Number[]} [x,y] browser coordinates
+ * @returns {number[]} [x,y] browser coordinates
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const imageEl = annotatedElement.querySelector('img');

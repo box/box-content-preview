@@ -120,7 +120,7 @@ class Box3DControls extends EventEmitter {
     /**
      * Set visibility of an element
      * @param {HTMLElement} element The element we are setting visibility on
-     * @param {Boolean} visible True for visible, false for hidden
+     * @param {boolean} visible True for visible, false for hidden
      * @returns {void}
      */
     setElementVisibility(element, visible) {

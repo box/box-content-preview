@@ -164,7 +164,7 @@ The Preview SDK needs an authentication token to make Box Content API calls. The
 ```javascript
 /**
  * Auth token generator function.
- * @param {String|Array} id File id or array of file ids
+ * @param {string|Array} id File id or array of file ids
  * @returns {Promise} Promise to resolve to a map of ids and tokens or just a string token
  */
 function tokenGenerator(id) {
