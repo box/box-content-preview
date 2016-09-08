@@ -489,7 +489,7 @@ class DocBase extends Base {
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
-            enhanceTextSelection: true // improves text selection in many cases
+            enhanceTextSelection: false // improves text selection if true
         });
 
         // Load PDF from representation URL
