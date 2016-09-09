@@ -261,6 +261,14 @@ describe('doc-highlight-thread', () => {
             expect(result).to.be.false;
         });
 
+        it('should not delay drawing highlight if highlight is pending active', () => {
+            highlightThread._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+
+            const result = highlightThread.onMousemove({});
+
+            expect(result).to.be.false;
+        });
+
         it('should delay drawing highlight if mouse is hovering over an active highlight or dialog', () => {
             sandbox.stub(highlightThread, 'isOnHighlight').returns(true);
             sandbox.stub(highlightThread._dialog, 'mouseenterHandler');
@@ -308,7 +316,7 @@ describe('doc-highlight-thread', () => {
         it('should not delay drawing highlight if mouse is not in highlight and the state is not already inactive', () => {
             sandbox.stub(highlightThread, 'isOnHighlight').returns(false);
             sandbox.stub(highlightThread, 'reset');
-            highlightThread._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+            highlightThread._state = constants.ANNOTATION_STATE_HOVER;
 
             const result = highlightThread.onMousemove({});
 

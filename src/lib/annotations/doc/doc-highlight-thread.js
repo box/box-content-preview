@@ -176,7 +176,8 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
-        if (this._state === constants.ANNOTATION_STATE_PENDING) {
+        if (this._state === constants.ANNOTATION_STATE_PENDING ||
+            this._state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
             return false;
         }
 
