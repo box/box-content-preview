@@ -129,6 +129,7 @@ Box.Preview.show(FILE_ID, {
     collection: [FILE_ID, '123', '234', ...],
     header: 'light',
     logoUrl: 'http://i.imgur.com/xh8j3E2.png',
+    showAnnotations: true,
     showDownload: true,
     viewers: {
         VIEWERNAME: {
@@ -150,6 +151,7 @@ Box.Preview.show(FILE_ID, {
 | collection | Optional |  | List of file IDs to iterate over for previewing |
 | header | Optional | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
 | logoUrl | Optional |  | URL of logo to show in header |
+| showAnnotations | Optional | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. |
 | showDownload | Optional | false | Whether download button is shown |
 | viewers | Optional |  | Arguments to pass on to viewers |
 | { VIEWERNAME } |  |  | Name of the viewer, see below for more details |
