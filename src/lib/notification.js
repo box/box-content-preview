@@ -22,6 +22,7 @@ class Notification {
 
         this.notificationEl = document.createElement('div');
         this.notificationEl.className = 'notification box-preview-is-hidden';
+        this.notificationEl.addEventListener('click', this.clickHandler);
 
         // ARIA for accessibility
         this.notificationEl.setAttribute('role', 'alert');
@@ -32,10 +33,11 @@ class Notification {
             <button class="close-btn">${__('notification_button_default_text')}</button>
         `.trim();
 
+        // Save references to message and button
         this.messageEl = this.notificationEl.querySelector(`#${uniqueLabel}`);
         this.buttonEl = this.notificationEl.querySelector('button');
-        this.buttonEl.addEventListener('click', this.hide);
 
+        // Append and position notification
         const notificationWrapperEl = document.createElement('div');
         notificationWrapperEl.className = 'notifications-wrapper';
         notificationWrapperEl.appendChild(this.notificationEl);
@@ -72,6 +74,20 @@ class Notification {
      */
     hide() {
         this.notificationEl.classList.add(CLASS_HIDDEN);
+    }
+
+    /**
+     * Click handler for notification.
+     *
+     * @param {Event} event DOM event
+     * @returns {void}
+     */
+    clickHandler(event) {
+        event.stopPropagation();
+
+        if (event.target === this.buttonEl) {
+            this.hide();
+        }
     }
 }
 
