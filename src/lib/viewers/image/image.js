@@ -446,9 +446,15 @@ class Image extends Base {
             return false;
         }
 
+        // Respect viewer-specific annotation option if it is set
+        const viewers = this.options.viewers;
         const viewerName = this.options.viewerName;
-        return this.options.viewers && this.options.viewers[viewerName] &&
-            this.options.viewers[viewerName].annotations;
+        if (viewers && viewers[viewerName] && typeof viewers[viewerName].annotations === 'boolean') {
+            return viewers[viewerName].annotations;
+        }
+
+        // Otherwise, use global preview annotation option
+        return this.options.showAnnotations;
     }
 
     /**

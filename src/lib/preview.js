@@ -108,6 +108,9 @@ class Preview extends EventEmitter {
         // Whether download button should be shown
         this.options.showDownload = !!options.showDownload;
 
+        // Whether annotations and annotation controls should be shown
+        this.options.showAnnotations = !!options.showAnnotations;
+
         // Save the files to iterate through
         this.collection = options.collection || [];
 

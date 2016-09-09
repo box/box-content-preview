@@ -417,20 +417,26 @@ class DocBase extends Base {
     }
 
     /**
-     * Returns whether or not viewer is annotatable with the provided annotation
-     * type.
+     * Returns whether or not viewer is annotatable. If an optional type is
+     * passed in, we check if that type of annotation is allowed.
      *
-     * @param {string} type Type of annotation
+     * @param {string} [type] Type of annotation
      * @returns {boolean} Whether or not viewer is annotatable
      */
     isAnnotatable(type) {
-        if (type !== 'point' && type !== 'highlight') {
+        if (typeof type === 'string' && type !== 'point' && type !== 'highlight') {
             return false;
         }
 
+        // Respect viewer-specific annotation option if it is set
+        const viewers = this.options.viewers;
         const viewerName = this.options.viewerName;
-        return this.options.viewers && this.options.viewers[viewerName] &&
-            this.options.viewers[viewerName].annotations;
+        if (viewers && viewers[viewerName] && typeof viewers[viewerName].annotations === 'boolean') {
+            return viewers[viewerName].annotations;
+        }
+
+        // Otherwise, use global preview annotation option
+        return this.options.showAnnotations;
     }
 
     /**
@@ -846,9 +852,7 @@ class DocBase extends Base {
         this.pdfViewer.currentScaleValue = 'auto';
 
         // Initialize annotations before other UI
-        // @TODO maybe this should move out to individual viewers
-        if ((this.options.viewers.Document && this.options.viewers.Document.annotations) ||
-            (this.options.viewers.Presentation && this.options.viewers.Presentation.annotations)) {
+        if (this.isAnnotatable()) {
             this.initAnnotations();
         }
 
