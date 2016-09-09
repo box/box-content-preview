@@ -220,7 +220,7 @@ class Preview extends EventEmitter {
         // Finally load the viewer
         this.loadViewer();
 
-        // Refresh from server too
+        // Also refresh from server to update cache
         this.loadFromServer();
     }
 
@@ -255,13 +255,11 @@ class Preview extends EventEmitter {
             this.file = file;
             this.logger.setFile(file);
 
-            // Get exiting cache before updating it to latest version
+            // Get existing cache before updating it to latest version
             const cached = cache.get(file.id);
-
-            // Cache the new file object if not watermarked
             cache.set(file.id, file);
 
-            // Finally load the viewer if file sha mismatches
+            // Finally re-load the viewer if cached file sha1 doesn't match loaded file sha1
             if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
                 this.logger.setCacheStale();
                 this.loadViewer();
@@ -794,6 +792,7 @@ class Preview extends EventEmitter {
      * Updates files to navigate between
      *
      * @public
+     * @param {Array} [collection] Updated collection of file IDs
      * @returns {void}
      */
     updateCollection(collection = []) {
@@ -934,6 +933,22 @@ class Preview extends EventEmitter {
                 openUrlInsideIframe(data.download_url);
             });
         }
+    }
+
+    /**
+     * Caches the provided file metadata. Can be used to improve performance if
+     * file metadata can be fetched at some point before a file is previewed.
+     * Note that we do not validate the cache, the file metadata objects must
+     * have the properties FIELDS as defined in file.js.
+     *
+     * @public
+     * @param {Array} [files] Array of file metadata to cache
+     * @returns {void}
+     */
+    cacheFiles(files = []) {
+        files.forEach((file) => {
+            cache.set(file.id, file);
+        });
     }
 }
 
