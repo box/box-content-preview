@@ -23,7 +23,7 @@ class Image extends Base {
     /**
      * [constructor]
      *
-     * @param {String|HTMLElement} container The container
+     * @param {string|HTMLElement} container The container
      * @param {Object} options some options
      * @returns {Image} Image instance
      */
@@ -73,7 +73,7 @@ class Image extends Base {
      * Loads an image.
      *
      * @public
-     * @param {String} imageUrl The image url
+     * @param {string} imageUrl The image url
      * @returns {void}
      */
     load(imageUrl) {
@@ -438,8 +438,8 @@ class Image extends Base {
      * Returns whether or not viewer is annotatable with the provided annotation
      * type.
      *
-     * @param {String} type Type of annotation
-     * @returns {Boolean} Whether or not viewer is annotatable
+     * @param {string} type Type of annotation
+     * @returns {boolean} Whether or not viewer is annotatable
      */
     isAnnotatable(type) {
         if (type !== 'point') {

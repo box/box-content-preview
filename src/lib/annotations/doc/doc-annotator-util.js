@@ -43,10 +43,10 @@ export function getPageElAndPageNumber(element) {
 /**
  * Fast test if a given point is within a polygon. Taken from
  * http://jsperf.com/ispointinpath-boundary-test-speed/6
- * @param {Number[]} poly Polygon defined by array of [x,y] coordinates
- * @param {Number} x X coordinate of point to Test
- * @param {Number} y Y coordinate of point to Test
- * @returns {Boolean} Whether or not point is in the polygon
+ * @param {number[]} poly Polygon defined by array of [x,y] coordinates
+ * @param {number} x X coordinate of point to Test
+ * @param {number} y Y coordinate of point to Test
+ * @returns {boolean} Whether or not point is in the polygon
  */
 export function isPointInPolyOpt(poly, x, y) {
     /* eslint-disable */
@@ -84,7 +84,7 @@ export function getHighlightAndHighlightEls(highlighter, pageEl) {
 
 /**
  * Returns whether or not there currently is a non-empty selection.
- * @returns {Boolean} Whether there is a non-empty selection
+ * @returns {boolean} Whether there is a non-empty selection
  */
 export function isSelectionPresent() {
     const selection = window.getSelection();
@@ -98,7 +98,7 @@ export function isSelectionPresent() {
 /**
  * Returns whether or not the annotation type is 'highlight' or
  * 'highlight-comment'
- * @return {Boolean} Whether or not annotation is a highlight
+ * @return {boolean} Whether or not annotation is a highlight
  */
 export function isHighlightAnnotation(type) {
     return (type === constants.ANNOTATION_TYPE_HIGHLIGHT ||
@@ -111,12 +111,12 @@ export function isHighlightAnnotation(type) {
 
 /**
  * Converts coordinates in PDF space to coordinates in DOM space.
- * @param {Number[]} coordinates Either a [x,y] coordinate location or
+ * @param {number[]} coordinates Either a [x,y] coordinate location or
  * quad points in the format of 8xn numbers in PDF space in PDF units
- * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
+ * @param {number} pageHeight Height of page in CSS pixels, needed to convert
  * coordinate origin from bottom left (PDF) to top left (DOM)
- * @param {Number} scale Document zoom scale
- * @returns {Number[]} Either [x,y] or 8xn coordinates in DOM space in CSS
+ * @param {number} scale Document zoom scale
+ * @returns {number[]} Either [x,y] or 8xn coordinates in DOM space in CSS
  * pixels
  */
 export function convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale) {
@@ -141,12 +141,12 @@ export function convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale) {
 
 /**
  * Converts coordinates in DOM space to coordinates in PDF space.
- * @param {Number[]} coordinates Either a [x,y] coordinate location or
+ * @param {number[]} coordinates Either a [x,y] coordinate location or
  * quad points in the format of 8xn numbers in DOM space in CSS pixels
- * @param {Number} pageHeight Height of page in CSS pixels, needed to convert
+ * @param {number} pageHeight Height of page in CSS pixels, needed to convert
  * coordinate origin from top left (DOM) to bottom left (PDF)
- * @param {Number} scale Document zoom scale
- * @returns {Number[]} Either [x,y] or 8xn coordinates in PDF space in PDF
+ * @param {number} scale Document zoom scale
+ * @returns {number[]} Either [x,y] or 8xn coordinates in PDF space in PDF
  * units
  */
 export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
@@ -178,7 +178,7 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
  *
  * @param {Object} dimensions Dimensions saved in annotation
  * @param {Object} pageDimensions Current page dimensions
- * @param {Number} zoomScale Zoom scale
+ * @param {number} zoomScale Zoom scale
  * @returns {Object|null} {x, y} dimension scale if needed, null otherwise
  */
 export function getDimensionScale(dimensions, pageDimensions, zoomScale) {
@@ -206,7 +206,7 @@ export function getDimensionScale(dimensions, pageDimensions, zoomScale) {
  * element being annotated on.
  * @param {Object} location Annotation location object
  * @param {HTMLElement} annotatedElement HTML element being annotated on
- * @returns {Number[]} [x,y] browser coordinates
+ * @returns {number[]} [x,y] browser coordinates
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const pageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement;
@@ -236,8 +236,8 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
  * See http://stackoverflow.com/a/17098667
  * @param {HTMLElement} element Element to get quad points for
  * @param {HTMLElement} pageEl Page element quad points are relative to
- * @param {Number} scale Document zoom scale
- * @returns {Number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3,
+ * @param {number} scale Document zoom scale
+ * @returns {number[]} Coordinates in the form of [x1, y1, x2, y2, x3, y3,
  * x4, y4] with (x1, y1) being the lower left (untransformed) corner of the
  * element and the other 3 vertices in counterclockwise order. These are
  * in PDF default user space.
@@ -293,8 +293,8 @@ export function getQuadPoints(element, pageEl, scale) {
  * Returns the lower right corner of the last quad point. This should provide
  * the same location the add highlight button is shown at given that the
  * quad points are stored in the correct order, ie left to right, top to bottom.
- * @param {Number[]} quadPoints Quad points in PDF space in PDF units
- * @returns {Number[]} [x,y] of lower right corner of last quad point
+ * @param {number[]} quadPoints Quad points in PDF space in PDF units
+ * @returns {number[]} [x,y] of lower right corner of last quad point
  */
 export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
     const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints[quadPoints.length - 1];
@@ -310,12 +310,12 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
  * as the bottom center of the rectangle representing the bottom-most
  * annotation. Note that these coordinates are in PDF default user space, with
  * the origin at the bottom left corner of the document.
- * @param {Number[]} quadPoints Quad points of annotation to get lower
+ * @param {number[]} quadPoints Quad points of annotation to get lower
  * center for in PDF space in PDF units
- * @returns {Number[]} [x,y] of lower center of quad points in PDF
+ * @returns {number[]} [x,y] of lower center of quad points in PDF
  * space in PDF units
- * @param {Number[]} quadPoints Quad points in PDF space in PDF units
- * @returns {Number[]} [x,y] of lower center of last quad point
+ * @param {number[]} quadPoints Quad points in PDF space in PDF units
+ * @returns {number[]} [x,y] of lower center of last quad point
  */
 export function getLowerCenterPoint(quadPoints) {
     let [maxX, minX, minY] = [0, 99999, 99999];

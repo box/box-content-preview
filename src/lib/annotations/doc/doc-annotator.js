@@ -165,7 +165,7 @@ class DocAnnotator extends Annotator {
      * @override
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
-     * @param {String} [type] Optional annotation type
+     * @param {string} [type] Optional annotation type
      * @returns {AnnotationThread} Created annotation thread
      */
     createAnnotationThread(annotations, location, type) {
@@ -503,7 +503,7 @@ class DocAnnotator extends Annotator {
     /**
      * Returns the highlight threads on the specified page.
      *
-     * @param {Number} page Page to get highlight threads for
+     * @param {number} page Page to get highlight threads for
      * @returns {DocHighlightThread[]} Highlight annotation threads
      * @private
      */
@@ -515,7 +515,7 @@ class DocAnnotator extends Annotator {
     /**
      * Returns highlight threads with a state in the specified states.
      *
-     * @param {...String} states States of highlight threads to find
+     * @param {...string} states States of highlight threads to find
      * @returns {DocHighlightThread[]} Highlight threads with the specified states
      * @private
      */
@@ -541,7 +541,7 @@ class DocAnnotator extends Annotator {
      * Shows highlight annotations for the specified page by re-drawing all
      * highlight annotations currently in memory for the specified page.
      *
-     * @param {Number} page Page to draw annotations for
+     * @param {number} page Page to draw annotations for
      * @returns {void}
      * @private
      */

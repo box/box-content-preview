@@ -352,7 +352,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Show, hide or toggle the 'helpers' in the scene. These include the grid display
      * and axis markings.
      * @private
-     * @param {Boolean} show True or false to show or hide. If not specified, the helpers will be toggled.
+     * @param {boolean} show True or false to show or hide. If not specified, the helpers will be toggled.
      * @returns {void}
      */
     toggleHelpers(show) {
@@ -464,7 +464,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Set the rendering quality being used. Called by UI event handlers.
      * @method setQualityLevel
      * @private
-     * @param {String} level Level name
+     * @param {string} level Level name
      */
     setQualityLevel(level) {
         if (!this.box3d) {

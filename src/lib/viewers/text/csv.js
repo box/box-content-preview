@@ -15,7 +15,7 @@ class CSV extends TextBase {
     /**
      * [constructor]
      *
-     * @param {String|HTMLElement} container The container
+     * @param {string|HTMLElement} container The container
      * @param {Object} options some options
      * @returns {CSV} CSV instance
      */
@@ -29,7 +29,7 @@ class CSV extends TextBase {
      * Loads a csv file.
      *
      * @public
-     * @param {String} csvUrl The text to load
+     * @param {string} csvUrl The text to load
      * @returns {Promise} Promise to load a CSV
      */
     load(csvUrl) {
@@ -91,7 +91,7 @@ class CSV extends TextBase {
      * Renders cell
      *
      * @private
-     * @param {Number} cellIndex index of cell
+     * @param {number} cellIndex index of cell
      * @returns {function} Cell renderer function
      */
     renderCell(cellIndex) {

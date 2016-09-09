@@ -79,7 +79,7 @@ class ImageAnnotator extends Annotator {
      * @override
      * @param {Annotation[]} annotations Annotations in thread
      * @param {Object} location Location object
-     * @param {String} [type] Optional annotation type
+     * @param {string} [type] Optional annotation type
      * @returns {AnnotationThread} Created annotation thread
      */
     createAnnotationThread(annotations, location, type) {
@@ -137,7 +137,7 @@ class ImageAnnotator extends Annotator {
      * Renders annotations from memory. Hides annotations if image is rotated
      *
      * @override
-     * @param {Number} [rotationAngle] current angle image is rotated
+     * @param {number} [rotationAngle] current angle image is rotated
      * @returns {void}
      * @private
      */

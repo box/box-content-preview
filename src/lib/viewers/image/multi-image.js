@@ -17,7 +17,7 @@ class MultiImage extends ImageBase {
     /**
      * [constructor]
      *
-     * @param {String|HTMLElement} container The container
+     * @param {string|HTMLElement} container The container
      * @param {Object} options some options
      * @returns {MultiImage} MultiImage instance
      */

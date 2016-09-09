@@ -61,7 +61,7 @@ class Controls {
      *
      * @private
      * @param {HTMLElement|null} element button element
-     * @returns {Boolean} true if element is a preview control button
+     * @returns {boolean} true if element is a preview control button
      */
     isPreviewControlButton(element) {
         return !!element && element.classList.contains('box-preview-controls-btn');
@@ -132,10 +132,10 @@ class Controls {
      * Adds buttons to controls
      *
      * @private
-     * @param {String} text button text
+     * @param {string} text button text
      * @param {Function} handler button handler
-     * @param {String} [classList] optional class list
-     * @param {String} [buttonContent] Optional button content HTML
+     * @param {string} [classList] optional class list
+     * @param {string} [buttonContent] Optional button content HTML
      * @returns {void}
      */
     add(text, handler, classList = '', buttonContent = '') {

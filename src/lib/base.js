@@ -22,7 +22,7 @@ class Base extends EventEmitter {
 
     /**
      * [constructor]
-     * @param {String|HTMLElement} container The container
+     * @param {string|HTMLElement} container The container
      * @param {Object} [options] some options
      * @returns {Base} Instance of base
      */
@@ -108,7 +108,7 @@ class Base extends EventEmitter {
      * Loads content.
      *
      * @protected
-     * @returns {Boolean} loaded
+     * @returns {boolean} loaded
      */
     isLoaded() {
         return this.loaded;
@@ -118,7 +118,7 @@ class Base extends EventEmitter {
      * If preview destroyed
      *
      * @protected
-     * @returns {Boolean} destroyed
+     * @returns {boolean} destroyed
      */
     isDestroyed() {
         return this.destroyed;
@@ -128,7 +128,7 @@ class Base extends EventEmitter {
      * Headers for fetch
      *
      * @protected
-     * @param {String} url url to attach param to
+     * @param {string} url url to attach param to
      * @returns {Object} fetch headers
      */
     appendAuthParam(url) {
@@ -191,7 +191,7 @@ class Base extends EventEmitter {
      * should be shown and won't intefere with viewer
      *
      * @protected
-     * @returns {Boolean} true
+     * @returns {boolean} true
      */
     allowNavigationArrows() {
         return true;
@@ -215,7 +215,7 @@ class Base extends EventEmitter {
      * Emits a generic viewer event
      *
      * @protected
-     * @param {String} event Event name
+     * @param {string} event Event name
      * @param {Object} data Event data
      * @returns {void}
      */

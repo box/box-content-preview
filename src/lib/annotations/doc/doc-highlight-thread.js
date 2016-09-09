@@ -88,8 +88,8 @@ class DocHighlightThread extends AnnotationThread {
      * Saves an annotation.
      *
      * @override
-     * @param {String} type Type of annotation
-     * @param {String} text Text of annotation to save
+     * @param {string} type Type of annotation
+     * @param {string} text Text of annotation to save
      * @returns {void}
      */
     saveAnnotation(type, text) {
@@ -127,9 +127,9 @@ class DocHighlightThread extends AnnotationThread {
      * threads have been reset.
      *
      * @param {Event} event Mouse event
-     * @param {Boolean} consumed Whether event previously activated another
+     * @param {boolean} consumed Whether event previously activated another
      * highlight
-     * @returns {Boolean} Whether click was in a non-pending highlight
+     * @returns {boolean} Whether click was in a non-pending highlight
      */
     onClick(event, consumed) {
         // Don't show any dialog if on a mobile device, if this highlight is a
@@ -158,7 +158,7 @@ class DocHighlightThread extends AnnotationThread {
      * dialog
      *
      * @param  {Event} event Mouse event
-     * @return {Boolean} Whether or not Mouse event is in highlight or over
+     * @return {boolean} Whether or not Mouse event is in highlight or over
      * the annotations dialog
      */
     isOnHighlight(event) {
@@ -172,7 +172,7 @@ class DocHighlightThread extends AnnotationThread {
      * to delay that drawing until all inactive threads have been reset.
      *
      * @param {Event} event Mouse event
-     * @returns {Boolean} Whether we should delay drawing highlight
+     * @returns {boolean} Whether we should delay drawing highlight
      */
     onMousemove(event) {
         // Pending check should be first - do nothing if highlight is pending
@@ -345,7 +345,7 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Draws the highlight with the specified fill style.
      *
-     * @param {String} fillStyle RGBA fill style
+     * @param {string} fillStyle RGBA fill style
      * @returns {void}
      * @private
      */
@@ -400,7 +400,7 @@ class DocHighlightThread extends AnnotationThread {
      * Checks whether mouse is inside the highlight represented by this thread.
      *
      * @param {Event} event Mouse event
-     * @returns {Boolean} Whether or not mouse is inside highlight
+     * @returns {boolean} Whether or not mouse is inside highlight
      * @private
      */
     _isInHighlight(event) {
@@ -440,7 +440,7 @@ class DocHighlightThread extends AnnotationThread {
      * Checks whether mouse is inside the dialog represented by this thread.
      *
      * @param {Event} event Mouse event
-     * @returns {Boolean} Whether or not mouse is inside dialog
+     * @returns {boolean} Whether or not mouse is inside dialog
      * @private
      */
     _isInDialog(event) {

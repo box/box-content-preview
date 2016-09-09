@@ -18,8 +18,8 @@ class AssetLoader {
      *
      * @public
      * @param {Object} file box file
-     * @param {Array|void} [disabledViewers] List of disabled viewers
-     * @returns {Boolean} Is file supported
+     * @param {Array} [disabledViewers] List of disabled viewers
+     * @returns {boolean} Is file supported
      */
     canLoad(file, disabledViewers = []) {
         return !!this.determineViewer(file, disabledViewers);
@@ -40,7 +40,7 @@ class AssetLoader {
      *
      * @public
      * @param {Object} file box file
-     * @param {Array|void} [disabledViewers] List of disabled viewers
+     * @param {Array} [disabledViewers] List of disabled viewers
      * @returns {Object} the viewer to use
      */
     determineViewer(file, disabledViewers = []) {
@@ -103,10 +103,10 @@ class AssetLoader {
      *
      * @public
      * @param {Object} file box file
-     * @param {String} token auth token
+     * @param {string} token auth token
      * @param {Object} location asset location
-     * @param {String} sharedLink shared link
-     * @param {String} password shared link password
+     * @param {string} sharedLink shared link
+     * @param {string} password shared link password
      * @returns {void}
      */
     prefetch(file, token, location, sharedLink, sharedLinkPassword) {

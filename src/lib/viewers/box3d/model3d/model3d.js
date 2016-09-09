@@ -372,7 +372,7 @@ class Model3d extends Box3D {
 
     /**
      *  Handle set render mode event
-     * @param  {String} mode The selected render mode string
+     * @param  {string} mode The selected render mode string
      * @returns {void}
      */
     @autobind
@@ -385,7 +385,7 @@ class Model3d extends Box3D {
      * and axis markings.
      * @method handleToggleHelpers
      * @private
-     * @param {Boolean} show True or false to show or hide. If not specified, the helpers will be toggled.
+     * @param {boolean} show True or false to show or hide. If not specified, the helpers will be toggled.
      * @returns {void}
      */
     @autobind

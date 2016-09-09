@@ -112,7 +112,7 @@ class DocBase extends Base {
     /**
      * Loads a document.
      *
-     * @param {String} pdfUrl The pdf to load
+     * @param {string} pdfUrl The pdf to load
      * @returns {Promise} Promise to load a pdf
      */
     load(pdfUrl) {
@@ -262,7 +262,7 @@ class DocBase extends Base {
     /**
      * Gets the cached current page.
      *
-     * @returns {Number} Current page
+     * @returns {number} Current page
      */
     getCachedPage() {
         let page = 1;
@@ -279,7 +279,7 @@ class DocBase extends Base {
      * Sets the current page into localstorage if available. Otherwise saves
      * it in-memory as a property on the document viewer.
      *
-     * @param {Number} page Current page
+     * @param {number} page Current page
      * @returns {void}
      */
     cachePage(page) {
@@ -339,7 +339,7 @@ class DocBase extends Base {
     /**
      * Zoom into document.
      *
-     * @param {Number} ticks Number of times to zoom in
+     * @param {number} ticks Number of times to zoom in
      * @returns {void}
      */
     zoomIn(ticks = 1) {
@@ -357,7 +357,7 @@ class DocBase extends Base {
     /**
      * Zoom out of document.
      *
-     * @param {Number} ticks Number of times to zoom out
+     * @param {number} ticks Number of times to zoom out
      * @returns {void}
      */
     zoomOut(ticks = 1) {
@@ -375,7 +375,7 @@ class DocBase extends Base {
     /**
      * Sets zoom scale.
      *
-     * @param {Number} scale Numerical zoom scale
+     * @param {number} scale Numerical zoom scale
      * @returns {void}
      */
     setScale(scale) {
@@ -420,8 +420,8 @@ class DocBase extends Base {
      * Returns whether or not viewer is annotatable with the provided annotation
      * type.
      *
-     * @param {String} type Type of annotation
-     * @returns {Boolean} Whether or not viewer is annotatable
+     * @param {string} type Type of annotation
+     * @returns {boolean} Whether or not viewer is annotatable
      */
     isAnnotatable(type) {
         if (type !== 'point' && type !== 'highlight') {
@@ -449,8 +449,8 @@ class DocBase extends Base {
     /**
      * Handles keyboard events for document viewer.
      *
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
+     * @param {string} key keydown key
+     * @returns {boolean} consumed or not
      */
     onKeydown(key) {
         switch (key) {
@@ -480,7 +480,7 @@ class DocBase extends Base {
     /**
      * Loads PDF.js with provided PDF.
      *
-     * @param {String} pdfUrl The URL of the PDF to load
+     * @param {string} pdfUrl The URL of the PDF to load
      * @returns {void}
      * @protected
      */
@@ -637,7 +637,7 @@ class DocBase extends Base {
     /**
      * Fetches PDF and converts to blob for printing.
      *
-     * @param {String} pdfUrl URL to PDF
+     * @param {string} pdfUrl URL to PDF
      * @returns {Promise} Promise setting print blob
      * @private
      */

@@ -22,7 +22,7 @@ class Cache {
      *
      * @param {string} key The cache key
      * @param {*} value The cache value
-     * @param {Boolean} useLocalStorage Whether or not to use localStorage
+     * @param {boolean} useLocalStorage Whether or not to use localStorage
      * @returns {void}
      */
     set(key, value, useLocalStorage) {
@@ -51,7 +51,7 @@ class Cache {
      * Checks if cache has provided key.
      *
      * @param {string} key The cache key
-     * @returns {Boolean} Whether the cache has key
+     * @returns {boolean} Whether the cache has key
      */
     has(key) {
         return this.inCache(key) || this.inLocalStorage(key);
@@ -92,7 +92,7 @@ class Cache {
      * Checks if memory cache has provided key.
      *
      * @param {string} key The cache key
-     * @returns {Boolean} Whether the cache has key
+     * @returns {boolean} Whether the cache has key
      */
     inCache(key) {
         return this.cache.hasOwnProperty(key);
@@ -102,7 +102,7 @@ class Cache {
      * Checks if memory cache has provided key.
      *
      * @param {string} key The cache key
-     * @returns {Boolean} Whether the cache has key
+     * @returns {boolean} Whether the cache has key
      */
     inLocalStorage(key) {
         if (!this.localStorageAvailable()) {
@@ -121,7 +121,7 @@ class Cache {
      * localStorage was available the first time this is called, but becomes
      * unavailable at a later time.
      *
-     * @returns {Boolean} Whether or not localStorage is available or not.
+     * @returns {boolean} Whether or not localStorage is available or not.
      * @private
      */
     localStorageAvailable() {
@@ -143,8 +143,8 @@ class Cache {
      * Generates a key to use for localStorage from the provided key. This
      * should prevent name collisions.
      *
-     * @param {String} key Generate key from this key
-     * @returns {String} Generated key for localStorage
+     * @param {string} key Generate key from this key
+     * @returns {string} Generated key for localStorage
      * @private
      */
     generateKey(key) {

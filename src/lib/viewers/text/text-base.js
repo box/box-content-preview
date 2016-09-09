@@ -27,7 +27,7 @@ class TextBase extends Base {
     /**
      * Zooms by increasing or decreasing font size
      * @public
-     * @param {String} inOrOut in or out
+     * @param {string} inOrOut in or out
      * @returns {void}
      */
     zoom(inOrOut) {
@@ -78,8 +78,8 @@ class TextBase extends Base {
      * Handles keyboard events for media
      *
      * @private
-     * @param {String} key keydown key
-     * @returns {Boolean} consumed or not
+     * @param {string} key keydown key
+     * @returns {boolean} consumed or not
      */
     onKeydown(key) {
         // Return false when media controls are not ready or are focused

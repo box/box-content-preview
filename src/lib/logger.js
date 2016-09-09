@@ -22,7 +22,7 @@ class Logger {
 
     /**
      * [constructor]
-     * @param {String} locale locale
+     * @param {string} locale locale
      * @returns {Logger} Logger instance
      */
     constructor(locale) {
@@ -85,7 +85,7 @@ class Logger {
     /**
      * Sets the file type.
      * @public
-     * @param {String} type content type
+     * @param {string} type content type
      * @returns {void}
      */
     setType(type) {

@@ -11,7 +11,7 @@ class MP3 extends MediaBase {
 
     /**
      * [constructor]
-     * @param {String|HTMLElement} container The container DOM node
+     * @param {string|HTMLElement} container The container DOM node
      * @param {Object} [options] some options
      * @returns {MP3} MP3 instance
      */

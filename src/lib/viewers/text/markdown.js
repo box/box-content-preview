@@ -13,7 +13,7 @@ class MarkDown extends TextBase {
 
     /**
      * [constructor]
-     * @param {String|HTMLElement} container The container
+     * @param {string|HTMLElement} container The container
      * @param {Object} options some options
      * @returns {MarkDown} MarkDown instance
      */
@@ -28,7 +28,7 @@ class MarkDown extends TextBase {
     /**
      * Loads a md file.
      *
-     * @param {String} textUrl The text file to load
+     * @param {string} textUrl The text file to load
      * @public
      * @returns {Promise} Promise to load a text file
      */

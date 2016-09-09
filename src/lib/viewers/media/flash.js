@@ -19,7 +19,7 @@ class Flash extends Base {
 
     /**
      * [constructor]
-     * @param {String|HTMLElement} container The container DOM node
+     * @param {string|HTMLElement} container The container DOM node
      * @param {Object} [options] some options
      * @returns {MP4} MP4 instance
      */

@@ -24,7 +24,7 @@ class ErrorLoader extends AssetLoader {
      * Determines if this loader can be used
      *
      * @override
-     * @returns {Boolean} always true
+     * @returns {boolean} always true
      */
     canLoad() {
         return true;

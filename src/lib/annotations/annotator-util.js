@@ -14,7 +14,7 @@ const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
 /**
  * Finds the closest ancestor DOM element with the specified class.
  * @param {HTMLElement} element Element to search ancestors of
- * @param {String} className Class name to query
+ * @param {string} className Class name to query
  * @returns {HTMLElement|null} Closest ancestor with given class or null
  */
 export function findClosestElWithClass(element, className) {
@@ -32,7 +32,7 @@ export function findClosestElWithClass(element, className) {
  * an attributeName is provided, search for that data atttribute instead of
  * data type.
  * @param {HTMLElement} element Element to find closest data type for
- * @param {String} [attributeName] Optional different data attribute to search
+ * @param {string} [attributeName] Optional different data attribute to search
  * for
  * @returns {string} Closest data type or empty string
  */
@@ -50,7 +50,7 @@ export function findClosestDataType(element, attributeName) {
 
 /**
  * Shows the specified element or element with specified selector.
- * @param {HTMLElement|String} elementOrSelector Element or CSS selector
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
  * @returns {void}
  */
 export function showElement(elementOrSelector) {
@@ -66,7 +66,7 @@ export function showElement(elementOrSelector) {
 
 /**
  * Hides the specified element or element with specified selector.
- * @param {HTMLElement|String} elementOrSelector Element or CSS selector
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
  * @returns {void}
  */
 export function hideElement(elementOrSelector) {
@@ -100,7 +100,7 @@ export function resetTextarea(element) {
 
 /**
  * Checks whether element is fully in viewport.
- * @returns {Boolean} Whether element is fully in viewport
+ * @returns {boolean} Whether element is fully in viewport
  */
 export function isElementInViewport(element) {
     const dimensions = element.getBoundingClientRect();
@@ -117,10 +117,10 @@ export function isElementInViewport(element) {
  * Returns avatar image HTML for annotation dialog. This will be either an
  * image with the supplied avatar URL as a source if there is a URL passed in
  * or one generated using the initials of the annotator.
- * @param {String} avatarUrl URL of avatar photo
- * @param {String} userId User ID of annotator
- * @param {String} userName Username of annotator
- * @returns {String} HTML for profile image
+ * @param {string} avatarUrl URL of avatar photo
+ * @param {string} userId User ID of annotator
+ * @param {string} userName Username of annotator
+ * @returns {string} HTML for profile image
  */
 export function getAvatarHtml(avatarUrl, userId, userName) {
     if (avatarUrl !== '') {
@@ -138,7 +138,7 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
 /**
  * Returns zoom scale of annotated element.
  * @param {HTMLElement} annotatedElement HTML element being annotated on
- * @returns {Number} Zoom scale
+ * @returns {number} Zoom scale
  */
 export function getScale(annotatedElement) {
     return parseFloat(annotatedElement.getAttribute('data-scale')) || 1;
@@ -150,8 +150,8 @@ export function getScale(annotatedElement) {
 
 /**
  * Escapes HTML.
- * @param {String} str Input string
- * @returns {String} HTML escaped string
+ * @param {string} str Input string
+ * @returns {string} HTML escaped string
  */
 export function htmlEscape(str) {
     return `${str}`.replace(/&/g, '&amp;') // first!

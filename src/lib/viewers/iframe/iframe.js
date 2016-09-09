@@ -10,7 +10,7 @@ class IFrame extends Base {
     /**
      * [constructor]
      *
-     * @param {String|HTMLElement} container The container
+     * @param {string|HTMLElement} container The container
      * @param {Object} options some options
      * @returns {SWF} SWF instance
      */

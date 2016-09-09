@@ -184,9 +184,9 @@ class MediaControls extends EventEmitter {
     /**
      * Formats a number of seconds as a time string
      *
-     * @param {Number} seconds seconds
+     * @param {number} seconds seconds
      * @private
-     * @returns {String} A string formatted like 03:57:35
+     * @returns {string} A string formatted like 03:57:35
      */
     formatTime(seconds) {
         const h = Math.floor(seconds / 3600);
@@ -200,7 +200,7 @@ class MediaControls extends EventEmitter {
 
     /**
      * Updates the time duration of the media file
-     * @param {Number} time the time length of the media file
+     * @param {number} time the time length of the media file
      * @returns {void}
      */
     setDuration(time) {
@@ -209,7 +209,7 @@ class MediaControls extends EventEmitter {
 
     /**
      * Updates the current time/playback position of the media file
-     * @param {Number} time current playback position of the media file
+     * @param {number} time current playback position of the media file
      * @returns {void}
      */
     setTimeCode(time) {
@@ -286,7 +286,7 @@ class MediaControls extends EventEmitter {
 
     /**
      * Tells if settings menu is open
-     * @returns {Boolean} true or false
+     * @returns {boolean} true or false
      */
     isSettingsVisible() {
         return !!this.settings && this.settings.isVisible();
@@ -314,7 +314,7 @@ class MediaControls extends EventEmitter {
 
     /**
      * Sets the volume
-     * @param {Number} volume volume
+     * @param {number} volume volume
      * @returns {void}
      */
     updateVolumeIcon(volume) {
@@ -431,9 +431,9 @@ class MediaControls extends EventEmitter {
      * Sets up the filmstrip
      *
      * @private
-     * @param {String} url filmstrip url
+     * @param {string} url filmstrip url
      * @param {RepStatus} status status of filmstrip
-     * @param {Number} aspect ratio
+     * @param {number} aspect ratio
      * @returns {void}
      */
     initFilmstrip(url, status, aspect) {
@@ -572,7 +572,7 @@ class MediaControls extends EventEmitter {
      * Determines if controls are focused
      *
      * @public
-     * @returns {Boolean} true if controls are focused
+     * @returns {boolean} true if controls are focused
      */
     isFocused() {
         return this.wrapperEl.contains(document.activeElement);

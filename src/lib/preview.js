@@ -125,7 +125,7 @@ class Preview extends EventEmitter {
     /**
      * Loads the preview for a file.
      *
-     * @param {String|Object} file File to preview
+     * @param {string|Object} file File to preview
      * @private
      * @returns {void}
      */
@@ -171,7 +171,7 @@ class Preview extends EventEmitter {
     /**
      * Loads the preview for a file.
      *
-     * @param {String|Object} file File to preview
+     * @param {string|Object} file File to preview
      * @private
      * @returns {void}
      */
@@ -225,7 +225,7 @@ class Preview extends EventEmitter {
      * Loads a preview from the server.
      *
      * @private
-     * @param {String} id File id to preview
+     * @param {string} id File id to preview
      * @returns {void}
      */
     loadFromServer() {
@@ -443,7 +443,7 @@ class Preview extends EventEmitter {
      * Triggers an error due to fetch.
      *
      * @private
-     * @param {String|null|undefined|Error} reason error
+     * @param {string|null|undefined|Error} reason error
      * @returns {void}
      */
     triggerFetchError() {
@@ -528,7 +528,7 @@ class Preview extends EventEmitter {
      * Builds a list of required XHR headers.
      *
      * @private
-     * @param {String} [token] auth token
+     * @param {string} [token] auth token
      * @returns {Object} Headers
      */
     getRequestHeaders(token) {
@@ -635,7 +635,7 @@ class Preview extends EventEmitter {
      * Shows the preview at an index
      *
      * @private
-     * @param {Number} index index of preview
+     * @param {number} index index of preview
      * @returns {void}
      */
     navigateToIndex(index) {
@@ -750,7 +750,7 @@ class Preview extends EventEmitter {
      * Primary function to show a preview.
      *
      * @public
-     * @param {String|Object} file box file object or id
+     * @param {string|Object} file box file object or id
      * @param {Object} options options
      * @returns {void}
      */
@@ -859,7 +859,7 @@ class Preview extends EventEmitter {
      * Disables one or more viewers
      *
      * @public
-     * @param {String|Array} viewers destroys the container contents
+     * @param {string|Array} viewers destroys the container contents
      * @returns {void}
      */
     disableViewers(viewers) {
@@ -876,7 +876,7 @@ class Preview extends EventEmitter {
      * Enables one or more viewers
      *
      * @public
-     * @param {String|Array} viewers destroys the container contents
+     * @param {string|Array} viewers destroys the container contents
      * @returns {void}
      */
     enableViewers(viewers) {

@@ -25,7 +25,7 @@ class Fullscreen extends EventEmitter {
      * Returns true if the browser supports fullscreen natively
      *
      * @private
-     * @returns {Boolean} Fullscreen supported or not
+     * @returns {boolean} Fullscreen supported or not
      */
     isSupported() {
         return document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled;
@@ -36,7 +36,7 @@ class Fullscreen extends EventEmitter {
      *
      * @public
      * @param {HTMLElement} [element] fullscreen element
-     * @returns {Boolean} In fullscreen or not
+     * @returns {boolean} In fullscreen or not
      */
     isFullscreen(element) {
         let fullscreen;

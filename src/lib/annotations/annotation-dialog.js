@@ -31,7 +31,7 @@ class AnnotationDialog extends EventEmitter {
      * @property {Annotation[]} annotations Annotations in dialog, can be an
      * empty array for a new thread
      * @property {Object} location Location object
-     * @property {Boolean} canAnnotate Whether or not user can annotate
+     * @property {boolean} canAnnotate Whether or not user can annotate
      */
 
     //--------------------------------------------------------------------------
@@ -103,7 +103,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Hides the dialog.
      *
-     * @param {Boolean} [noDelay] Whether or not to have a timeout delay
+     * @param {boolean} [noDelay] Whether or not to have a timeout delay
      * @returns {void}
      */
     hide(noDelay = false) {
@@ -142,7 +142,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Removes an annotation from the dialog.
      *
-     * @param {String} annotationID ID of annotation to remove
+     * @param {string} annotationID ID of annotation to remove
      * @returns {void}
      */
     removeAnnotation(annotationID) {
@@ -509,7 +509,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Shows delete confirmation.
      *
-     * @param {String} annotationID ID of annotation to delete
+     * @param {string} annotationID ID of annotation to delete
      * @returns {void}
      * @private
      */
@@ -524,7 +524,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Hides delete confirmation.
      *
-     * @param {String} annotationID ID of annotation to delete
+     * @param {string} annotationID ID of annotation to delete
      * @returns {void}
      * @private
      */
@@ -539,7 +539,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Broadcasts message to delete an annotation.
      *
-     * @param {String} annotationID ID of annotation to delete
+     * @param {string} annotationID ID of annotation to delete
      * @returns {void}
      * @private
      */
