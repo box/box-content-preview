@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import Controls from '../../controls';
-import Base from '../../base';
+import Base from '../base';
 import {
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT

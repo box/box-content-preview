@@ -1,6 +1,6 @@
 /* global BoxSDK */
 import './box3d.scss';
-import Base from '../../base';
+import Base from '../base';
 import autobind from 'autobind-decorator';
 import fullscreen from '../../fullscreen';
 import Box3DControls from './box3d-controls';

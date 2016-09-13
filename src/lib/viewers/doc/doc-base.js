@@ -6,7 +6,7 @@
 
 import autobind from 'autobind-decorator';
 import AnnotationService from '../../annotations/annotation-service';
-import Base from '../../base';
+import Base from '../base';
 import Browser from '../../browser';
 import cache from '../../cache';
 import Controls from '../../controls';

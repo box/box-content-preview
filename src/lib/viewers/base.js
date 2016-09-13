@@ -1,9 +1,9 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import fullscreen from './fullscreen';
-import { createContentUrl, getHeaders } from './util';
+import fullscreen from '../fullscreen';
+import { createContentUrl, getHeaders } from '../util';
 import debounce from 'lodash.debounce';
-import Browser from './browser';
+import Browser from '../browser';
 
 import {
     CLASS_FULLSCREEN,
@@ -12,7 +12,7 @@ import {
     CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW
-} from './constants';
+} from '../constants';
 
 const LOAD_TIMEOUT_MS = 60000; // 1m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
@@ -129,7 +129,7 @@ class Base extends EventEmitter {
      *
      * @protected
      * @param {string} url url to attach param to
-     * @returns {Object} fetch headers
+     * @returns {string} url with appended auth params
      */
     appendAuthParam(url) {
         return createContentUrl(url, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
