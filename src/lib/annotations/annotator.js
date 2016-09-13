@@ -259,7 +259,6 @@ class Annotator extends EventEmitter {
     fetchAnnotations() {
         this._threads = {};
 
-        // @TODO(tjin): Load/unload annotations by page based on pages loaded from document viewer
         return this._annotationService.getThreadMap(this._fileVersionID)
             .then((threadMap) => {
                 // Generate map of page to threads
