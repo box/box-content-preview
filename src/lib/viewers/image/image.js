@@ -248,15 +248,13 @@ class Image extends Base {
      * @returns {void}
      */
     rotateLeft() {
-        const angle = this.currentRotationAngle - 90;
-        this.currentRotationAngle = (angle === -3600) ? 0 : angle;
-        const rotationAngle = this.currentRotationAngle % 3600 % 360;
-        this.imageEl.setAttribute('data-rotation-angle', rotationAngle);
+        this.currentRotationAngle = (this.currentRotationAngle - 90) % 3600 % 360;
+        this.imageEl.setAttribute('data-rotation-angle', this.currentRotationAngle);
         this.imageEl.style.transform = `rotate(${this.currentRotationAngle}deg)`;
         this.emit('rotate');
 
         if (this.canAnnotate) {
-            this.annotator.renderAnnotations(rotationAngle);
+            this.annotator.renderAnnotations(this.currentRotationAngle);
         }
     }
 
