@@ -40,8 +40,9 @@ class DocHighlightDialog extends AnnotationDialog {
     addAnnotation(annotation) {
         // If annotation is blank then display who highlighted the text
         if (annotation.text === '') {
+            const name = annotation.user.name || 'Some User';
             const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
-            highlightLabelEl.innerHTML = `${annotation.user.name} highlighted`.trim();
+            highlightLabelEl.textContent = `${name} highlighted`;
         }
 
         super.addAnnotation(annotation);
@@ -236,9 +237,10 @@ class DocHighlightDialog extends AnnotationDialog {
                 </section>
             </section>`.trim();
 
-        if (annotations.length === 1 && annotations[0].text === '') {
+        if (annotatorUtil.isPlainHighlight(annotations)) {
+            const name = annotations[0].user.name || 'Some User';
             const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
-            highlightLabelEl.innerHTML = `${annotations[0].user.name} highlighted`.trim();
+            highlightLabelEl.textContent = `${name} highlighted`;
         }
 
         // Add annotation elements
@@ -369,19 +371,20 @@ class DocHighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * Calculates the dialog width if the highlighter's name is to be displayed in the
-     * annotations dialog
+     * Calculates the dialog width if the highlighter's name is to be displayed
+     * in the annotations dialog
      * @returns {number} Annotations dialog width
      */
     _getDialogWidth() {
         const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
 
         // If highlight annotation hasn't been saved yet
-        if (highlightLabelEl.innerHTML === '') {
+        if (highlightLabelEl.textContent === '') {
             return HIGHLIGHT_BUTTONS_DIALOG_WIDTH;
 
-        // If highlight dimensions haven't been calculated already OR user's name gets populated in annotation
-        } else if (!this.highlightDialogWidth && highlightLabelEl.innerHTML !== 'Some User highlighted') {
+        // If highlight dimensions haven't been calculated already OR user's
+        // name gets populated in annotation
+        } else if (!this.highlightDialogWidth && !highlightLabelEl.textContent.includes('Some User')) {
             annotatorUtil.showElement(this._element);
             this.highlightDialogWidth = this._element.getBoundingClientRect().width;
             annotatorUtil.hideElement(this._element);
@@ -391,8 +394,9 @@ class DocHighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * Repositions caret if annotations dialog will run off the right or left side of the page
-     * Else positions caret at the center of the annotations dialog
+     * Repositions caret if annotations dialog will run off the right or left
+     * side of the page. Otherwise positions caret at the center of the
+     * annotations dialog and the updated left corner x coordinate.
      * @param  {number} dialogX Left corner x coordinate of the annotations dialog
      * @param  {number} highlightDialogWidth Width of the annotations dialog
      * @param  {number} browserX X coordinate of the mouse position
@@ -400,7 +404,8 @@ class DocHighlightDialog extends AnnotationDialog {
      * @return {number} Adjusted left corner x coordinate of the annotations dialog
      */
     _repositionCaret(dialogX, highlightDialogWidth, browserX, pageWidth) {
-        // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
+        // Reposition to avoid sides - left side of page is 0px, right side is
+        // ${pageWidth}px
         const dialogPastLeft = dialogX < 0;
         const dialogPastRight = dialogX + highlightDialogWidth > pageWidth;
         const annotationCaretEl = this._element.querySelector('.box-preview-annotation-caret');
@@ -411,13 +416,12 @@ class DocHighlightDialog extends AnnotationDialog {
             annotationCaretEl.style.left = `${caretLeftX}px`;
 
             return 0;
-
-        // Fix the dialog and move caret appropriately
         } else if (dialogPastRight && !dialogPastLeft) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
             const caretRightX = Math.max(10, pageWidth - browserX);
 
-            // We set the 'left' property even when we have caretRightX for IE10/11
+            // We set the 'left' property even when we have caretRightX for
+            // IE10/11
             annotationCaretEl.style.left = `${highlightDialogWidth - caretRightX}px`;
 
             return pageWidth - highlightDialogWidth;

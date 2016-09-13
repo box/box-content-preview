@@ -191,8 +191,7 @@ class AnnotationThread extends EventEmitter {
         this._annotations = this._annotations.filter((annot) => annot.annotationID !== annotationID);
 
         // If this annotation was the last one in the thread, destroy the thread
-        if (this._annotations.length === 0 ||
-            (this._annotations.length === 1 && this._annotations[0].text === '')) {
+        if (this._annotations.length === 0 || annotatorUtil.isPlainHighlight(this._annotations)) {
             this.destroy();
 
         // Otherwise, remove deleted annotation from dialog
@@ -206,7 +205,7 @@ class AnnotationThread extends EventEmitter {
             .then(() => {
                 // Ensures that blank highlight comment is also deleted when removing
                 // the last comment on a highlight
-                if (this._annotations.length === 1 && this._annotations[0].text === '') {
+                if (annotatorUtil.isPlainHighlight(this._annotations)) {
                     this._annotationService.delete(this._annotations[0].annotationID);
                 }
 

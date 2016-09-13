@@ -147,6 +147,19 @@ export function getScale(annotatedElement) {
 }
 
 //------------------------------------------------------------------------------
+// Highlight Utils
+//------------------------------------------------------------------------------
+
+/**
+ * Whether or not a highlight annotation has comments or is a plain highlight
+ * @param {Annotation[]} Annotations in highlight thread
+ * @return {Boolean} Whether annotation is a plain highlight annotation
+ */
+export function isPlainHighlight(annotations) {
+    return annotations.length === 1 && annotations[0].text === '';
+}
+
+//------------------------------------------------------------------------------
 // General Utils
 //------------------------------------------------------------------------------
 

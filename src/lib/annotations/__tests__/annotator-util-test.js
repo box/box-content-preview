@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import {
     findClosestElWithClass,
     findClosestDataType,
@@ -7,6 +8,7 @@ import {
     isElementInViewport,
     getAvatarHtml,
     getScale,
+    isPlainHighlight,
     htmlEscape
 } from '../annotator-util';
 
@@ -133,6 +135,26 @@ describe('annotator-util', () => {
 
         it('should return a zoom scale of 1 if no stored zoom is found on the element', () => {
             assert.equal(getScale(childEl), 1);
+        });
+    });
+
+    describe('isPlainHighlight()', () => {
+        it('should return true if highlight annotation is a plain highlight', () => {
+            const annotations = [{ text: '' }];
+
+            expect(isPlainHighlight(annotations)).to.be.true;
+        });
+
+        it('should return false if a plain highlight annotation had comments added to it', () => {
+            const annotations = [{ text: '' }, { text: 'bleh' }];
+
+            expect(isPlainHighlight(annotations)).to.be.false;
+        });
+
+        it('should return false if highlight annotation has comments', () => {
+            const annotations = [{ text: 'bleh' }];
+
+            expect(isPlainHighlight(annotations)).to.be.false;
         });
     });
 

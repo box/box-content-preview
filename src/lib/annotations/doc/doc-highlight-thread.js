@@ -32,7 +32,7 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {void}
      */
     cancelFirstComment() {
-        if (this._annotations.length === 1 && this._annotations[0].text === '') {
+        if (annotatorUtil.isPlainHighlight(this._annotations)) {
             this._dialog.toggleHighlightDialogs();
             this.reset();
 
