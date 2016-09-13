@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import Base from '../../base';
+import Base from '../base';
 import cache from '../../cache';
 import MediaControls from './media-controls';
 import { CLASS_PREVIEW_LOADED } from '../../constants';

@@ -1,6 +1,6 @@
 import './error.scss';
 import autobind from 'autobind-decorator';
-import Base from '../../base';
+import Base from '../base';
 import {
     ICON_FILE_DEFAULT,
     ICON_FILE_ZIP,

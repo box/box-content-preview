@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import Base from '../../base';
+import Base from '../base';
 import { deduceBoxUrl } from '../../util';
 
 const Box = global.Box || {};

@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import Base from '../../base';
+import Base from '../base';
 import { createAssetUrlCreator } from '../../util';
 
 const CSS_CLASS_FLASH = 'box-preview-media-flash';
