@@ -876,14 +876,20 @@ class DocBase extends Base {
      * @private
      */
     pagerenderedHandler(event) {
+        // Render annotations by page
         if (this.annotator) {
-            // we should get a page number from pdfViewer most of the time
+            // We should get a page number from pdfViewer most of the time
             if (event.detail && event.detail.pageNumber) {
                 this.annotator.renderAnnotationsOnPage(event.detail.pageNumber);
-            // if not, we re-render all annotations to be safe
+            // If not, we re-render all annotations to be safe
             } else {
                 this.annotator.renderAnnotations();
             }
+        }
+
+        // If text layer is disabled due to permissions, we still want to show annotations
+        if (PDFJS.disableTextLayer) {
+            this.textlayerrenderedHandler();
         }
     }
 
