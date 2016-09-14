@@ -2,6 +2,7 @@ import shellTemplate from 'raw!./shell.html';
 import { insertTemplate } from './util';
 import {
     CLASS_HIDDEN,
+    CLASS_INVISIBLE,
     CLASS_BOX_PREVIEW_HAS_HEADER,
     CLASS_BOX_PREVIEW_HEADER,
     CLASS_BOX_PREVIEW_THEME_DARK,
@@ -11,9 +12,11 @@ import {
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
+    SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT
 } from './constants';
+import { ICON_FILE_DEFAULT } from './icons/icons';
 
 let container;
 let contentContainer;
@@ -28,7 +31,6 @@ let keydownHandler;
  * @param {string} headerTheme Header theme - either 'light' or 'dark'
  * @param {string} logoUrl URL of logo to use
  * @returns {void}
- * @private
  */
 function setupHeader(headerTheme, logoUrl) {
     const headerEl = container.firstElementChild;
@@ -52,9 +54,29 @@ function setupHeader(headerTheme, logoUrl) {
 }
 
 /**
+ * Sets up preview loading indicator.
+ *
+ * @returns {void}
+ */
+function setupLoading() {
+    const loadingWrapperEl = container.querySelector('.box-preview-loading-wrapper');
+    if (!loadingWrapperEl) {
+        return;
+    }
+
+    const iconWrapperEl = loadingWrapperEl.querySelector('.box-preview-icon');
+    iconWrapperEl.innerHTML = ICON_FILE_DEFAULT;
+
+    const loadingTextEl = loadingWrapperEl.querySelector('.box-preview-loading-text');
+    loadingTextEl.textContent = __('generating_preview');
+
+    const loadingDownloadButtonEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
+    loadingDownloadButtonEl.textContent = __('download_file');
+}
+
+/**
  * Shows navigation arrows if there is a need
  *
- * @private
  * @returns {void}
  */
 export function showNavigation(id, collection) {
@@ -109,7 +131,6 @@ export function showNavigation(id, collection) {
 /**
  * Shows the point annotate button if the viewers implement annotations
  *
- * @private
  * @returns {void}
  */
 export function showAnnotateButton(handler) {
@@ -122,7 +143,7 @@ export function showAnnotateButton(handler) {
 /**
  * Shows the print button if the viewers implement print
  *
- * @private
+ * @param {Function} handler Print click handler
  * @returns {void}
  */
 export function showPrintButton(handler) {
@@ -133,15 +154,28 @@ export function showPrintButton(handler) {
 }
 
 /**
- * Shows the print button if the viewers implement print
+ * Shows the download button if the viewers implement download
  *
- * @private
+ * @param {Function} handler Download click handler
  * @returns {void}
  */
 export function showDownloadButton(handler) {
     const downloadButton = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
     downloadButton.title = __('download');
     downloadButton.classList.remove(CLASS_HIDDEN);
+    downloadButton.addEventListener('click', handler);
+}
+
+/**
+ * Shows the loading download button if the viewers implement download
+ *
+ * @param {Function} handler Download click handler
+ * @returns {void}
+ */
+export function showLoadingDownloadButton(handler) {
+    const downloadButton = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
+    downloadButton.title = __('download');
+    downloadButton.classList.remove(CLASS_INVISIBLE);
     downloadButton.addEventListener('click', handler);
 }
 
@@ -192,7 +226,7 @@ export function cleanup() {
  * Initializes the container for preview.
  *
  * @private
- * @returns {void}
+ * @returns {HTMLElement} Preview container
  */
 export function setup(options, keydown, navigateLeft, navigateRight, mousemove) {
     container = options.container;
@@ -227,6 +261,9 @@ export function setup(options, keydown, navigateLeft, navigateRight, mousemove) 
     if (options.header !== 'none') {
         setupHeader(options.header, options.logoUrl);
     }
+
+    // Setup loading indicator
+    setupLoading();
 
     // Attach keyboard events
     document.addEventListener('keydown', keydownHandler);
