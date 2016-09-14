@@ -19,10 +19,33 @@ import {
     get,
     post,
     del,
-    put
+    put,
+    checkStatus
 } from '../util';
 
 describe('util', () => {
+    describe('checkStatus()', () => {
+        it('should return the response if it is some kind of 200', () => {
+            const responsePromise = new Promise((resolve) => {
+                resolve({ status: 200, statusText: 'success' });
+            });
+            responsePromise.then(checkStatus).then((value) => {
+                expect(value.status).to.equal(200);
+            });
+        });
+
+        it('should throw an error if the response is not successful', () => {
+            const responsePromise = new Promise((resolve) => {
+                resolve({ status: 400, statusText: 'error' });
+            });
+            try {
+                responsePromise.then(checkStatus);
+            } catch (e) {
+                expect(e.response).to.equal('error');
+            }
+        });
+    });
+
     describe('xhr()', () => {
         afterEach(() => {
             fetchMock.restore();
