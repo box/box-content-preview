@@ -36,7 +36,7 @@ class Image extends Base {
         // hides image tag until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
 
-        if (this.options.viewers.Image && this.options.viewers.Image.annotations) {
+        if (this.isAnnotatable()) {
             this.initAnnotations();
         }
 
@@ -442,7 +442,7 @@ class Image extends Base {
      * @returns {boolean} Whether or not viewer is annotatable
      */
     isAnnotatable(type) {
-        if (type !== 'point') {
+        if (typeof type === 'string' && type !== 'point') {
             return false;
         }
 
