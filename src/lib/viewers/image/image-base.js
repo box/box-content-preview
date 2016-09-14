@@ -89,6 +89,18 @@ class ImageBase extends Base {
 
         return false;
     }
+
+
+    //--------------------------------------------------------------------------
+    // Abstract
+    //--------------------------------------------------------------------------
+
+    /**
+     * Must be implemented to zoom image
+     *
+     * @returns {void}
+     */
+    zoom() {}
 }
 
 export default ImageBase;
