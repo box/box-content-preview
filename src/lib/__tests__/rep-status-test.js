@@ -112,9 +112,11 @@ describe('RepStatus', () => {
         it('should log that file needs conversion if status is pending and logger exists', () => {
             repStatus.logger = { setUnConverted: sandbox.stub() };
             repStatus.representation.status = 'pending';
+            const updateStatusStub = sandbox.stub(repStatus, 'handlePending').returns(true);
 
             repStatus.handleResponse();
             assert.isTrue(repStatus.logger.setUnConverted.called);
+            assert.isTrue(updateStatusStub.called);
         });
 
         it('should resolve if handlePending is true', () => {
@@ -133,7 +135,7 @@ describe('RepStatus', () => {
             repStatus.logger = false;
             const handlePendingStub = sandbox.stub(repStatus, 'handlePending').returns(false);
             const resolveStub = sandbox.spy(repStatus, 'resolve');
-            const updateStatusStub = sandbox.spy(repStatus, 'updateStatus');
+            const updateStatusStub = sandbox.stub(repStatus, 'updateStatus');
             repStatus.representation.status = 'pending';
 
             repStatus.handleResponse();
