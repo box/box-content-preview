@@ -48,4 +48,50 @@ describe('Logger', () => {
         assert.ok(log.cache.hit, 'Cache should be hit');
         assert.ok(log.cache.stale, 'Cache should be stale');
     });
+
+    describe('setCached()', () => {
+        it('should indicate a cache hit', () => {
+            const logger = new Logger('FOO');
+            logger.setCached();
+
+            assert.ok(logger.log.cache.hit);
+        });
+    });
+
+    describe('setUnConverted()', () => {
+        it('should set converted to false', () => {
+            const logger = new Logger('FOO');
+            logger.setUnConverted();
+
+            assert.notOk(logger.log.converted);
+        });
+    });
+
+    describe('setFile()', () => {
+        it('should set the file', () => {
+            const logger = new Logger('FOO');
+            logger.setFile('file');
+
+            assert.equal(logger.log.file, 'file');
+        });
+    });
+
+    describe('setType()', () => {
+        it('should set the type', () => {
+            const logger = new Logger('FOO');
+            logger.setType('type');
+
+            assert.equal(logger.log.type, 'type');
+        });
+    });
+
+    describe('done()', () => {
+        it('should set the count, rendering time, and return the log', () => {
+            const logger = new Logger('FOO');
+            const log = logger.done(0);
+
+            assert.equal(logger.log.count, 0);
+            assert.equal(log, logger.log);
+        });
+    });
 });
