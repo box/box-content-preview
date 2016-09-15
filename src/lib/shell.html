@@ -9,38 +9,48 @@
         <img class="box-preview-is-hidden box-preview-custom-logo"></img>
         <div class="box-preview-header-btns">
             <button class="box-preview-btn-plain box-preview-btn-annotate box-preview-is-hidden">
-                <svg width="22" height="20" xmlns="http://www.w3.org/2000/svg"><g fill-rule="evenodd"><path d="M15 16l-4 4-4-4H1.99C.89 16 0 15.105 0 14.006V1.994C0 .894.89 0 1.99 0h18.02C21.11 0 22 .895 22 1.994v12.012c0 1.1-.89 1.994-1.99 1.994H15z"/><path d="M-1-2h24v24H-1" fill="none"/><path fill="#FFF" d="M5 7h10v2H5m8 3H5v-2h8m4-4H5V4h12"/></g></svg>
+                <svg width="22" height="20"><g fill-rule="evenodd"><path d="M15 16l-4 4-4-4H1.99C.89 16 0 15.105 0 14.006V1.994C0 .894.89 0 1.99 0h18.02C21.11 0 22 .895 22 1.994v12.012c0 1.1-.89 1.994-1.99 1.994H15z"/><path d="M-1-2h24v24H-1" fill="none"/><path fill="#FFF" d="M5 7h10v2H5m8 3H5v-2h8m4-4H5V4h12"/></g></svg>
             </button>
             <button class="box-preview-btn-plain box-preview-btn-print box-preview-is-hidden">
-                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <svg height="24" viewBox="0 0 24 24" width="24">
                     <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
                     <path d="M0 0h24v24H0z" fill="none"/>
                 </svg>
             </button>
             <button class="box-preview-btn-plain box-preview-btn-download box-preview-is-hidden">
-                <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <svg height="24" viewBox="0 0 24 24" width="24">
                     <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                     <path d="M0 0h24v24H0z" fill="none"/>
                 </svg>
             </button>
         </div>
     </div>
-    <div class="box-preview"></div>
-    <div class="box-preview-crawler-wrapper">
-        <div class="box-preview-crawler">
-            <div></div>
-            <div></div>
-            <div></div>
+    <div class="box-preview">
+        <div class="box-preview-loading-wrapper">
+            <div class="box-preview-loading">
+                <div class="box-preview-icon"></div>
+                <div class="box-preview-crawler-wrapper">
+                    <div class="box-preview-crawler">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <span class="box-preview-loading-text"></span>
+            </div>
+            <div class="box-preview-loading-btn-container">
+                <button class="box-preview-btn-plain box-preview-btn-loading-download box-preview-is-invisible"></button>
+            </div>
         </div>
     </div>
     <button class="box-preview-btn-plain box-preview-navigate box-preview-navigate-left box-preview-is-hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <svg viewBox="0 0 48 48">
             <path fill="#494949" stroke="#DCDCDC" stroke-miterlimit="10" d="M30.8,33.2L21.7,24l9.2-9.2L28,12L16,24l12,12L30.8,33.2z"/>
             <path display="none" fill="none" d="M0,0h48v48H0V0z"/>
         </svg>
     </button>
     <button class="box-preview-btn-plain box-preview-navigate box-preview-navigate-right box-preview-is-hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <svg viewBox="0 0 48 48">
             <path fill="#494949" stroke="#DCDCDC" stroke-miterlimit="10" d="M17.2,14.8l9.2,9.2l-9.2,9.2L20,36l12-12L20,12L17.2,14.8z"/>
             <path display="none" fill="none" d="M48,48H0L0,0l48,0V48z"/>
         </svg>

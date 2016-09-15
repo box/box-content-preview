@@ -28,8 +28,8 @@ li {
     box-sizing: border-box;
     cursor: pointer;
     display: inline-block;
-    font-size: 11px;
-    line-height: 12px;
+    font-size: 13px;
+    line-height: 10px;
     margin: 5px;
     padding: 10px 16px;
     position: relative;
@@ -73,12 +73,10 @@ li {
     border-radius: 2px;
     color: $sunset-grey;
     cursor: pointer;
-    font-size: 80%;
     -webkit-font-smoothing: antialiased;
-    font-weight: bold;
+    font-weight: 400;
     letter-spacing: 1px;
     text-shadow: none;
-    text-transform: uppercase;
     -webkit-transition: border-color linear .15s, box-shadow linear .15s, background-color linear .15s;
     transition: background-color .05s ease-in-out, border-color .05s ease-in-out;
 

@@ -12,7 +12,7 @@ import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLo
 import throttle from 'lodash.throttle';
 import getTokens from './tokens';
 import { getURL, getDownloadURL, checkPermission, checkFeature } from './file';
-import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
+import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
 const PREFETCH_COUNT = 3; // number of files to prefetch
@@ -288,6 +288,11 @@ class Preview extends EventEmitter {
         this.destroy();
 
         showLoadingIndicator();
+
+        // Setup download button during load
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
+            showLoadingDownloadButton(this.download);
+        }
 
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {

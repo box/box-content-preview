@@ -411,7 +411,7 @@ class AnnotationDialog extends EventEmitter {
                 <div class="comment-date">${created}</div>
             </div>
             <div class="comment-text">${text}</div>
-            <button class="box-preview-btn-plain delete-comment-btn ${annotation.permissions.can_delete ? '' : 'box-preview-is-hidden'}" data-type="delete-btn" title="${__('annotation_delete_comment')}">
+            <button class="box-preview-btn-plain delete-comment-btn ${annotation.permissions.can_delete ? '' : 'box-preview-is-hidden'}" data-type="delete-btn" title="${__('annotation_delete')}">
                 ${ICON_DELETE}
             </button>
             <div class="delete-confirmation ${CLASS_HIDDEN}">

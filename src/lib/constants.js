@@ -28,6 +28,7 @@ export const SELECTOR_NAVIGATION_RIGHT = '.box-preview-navigate-right';
 export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE = '.box-preview-btn-annotate';
 export const SELECTOR_BOX_PREVIEW_BTN_PRINT = '.box-preview-btn-print';
 export const SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD = '.box-preview-btn-download';
+export const SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD = '.box-preview-btn-loading-download';
 export const SELECTOR_BOX_PREVIEW_HEADER = `.${CLASS_BOX_PREVIEW_HEADER}`;
 
 export const PERMISSION_DOWNLOAD = 'can_download';
