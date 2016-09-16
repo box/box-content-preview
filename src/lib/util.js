@@ -525,3 +525,22 @@ export function findScriptLocation(name, currentScript = null) {
         staticBaseURI
     };
 }
+
+/**
+ * Replaces variable place holders specified between {} in the string with specified custom value
+ * @param  {string} string String to be interpolated
+ * @param  {string[]} placeholderValues Custom values to replace into string
+ * @return {string} Properly translated string with replaced custom variable
+ */
+export function replacePlaceholders(string, placeholderValues) {
+    const regex = /\{\d+\}/g;
+    let placeholderIndex = 0;
+
+    if (!string || !string.length) {
+        return string;
+    }
+
+    return string.replace(regex, (match) => {
+        return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex++] : match;
+    });
+}

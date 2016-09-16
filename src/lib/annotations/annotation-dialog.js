@@ -390,7 +390,7 @@ class AnnotationDialog extends EventEmitter {
         if (userId === '0') {
             userName = __('annotation_posting_message');
         } else {
-            userName = annotatorUtil.htmlEscape(annotation.user.name || '');
+            userName = annotatorUtil.htmlEscape(annotation.user.name) || __('annotation_anonymous_user_name');
         }
 
         const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
