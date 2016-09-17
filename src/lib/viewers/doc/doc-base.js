@@ -535,11 +535,6 @@ class DocBase extends Base {
      * @private
      */
     setupPdfjs() {
-        // Disable worker in IE and Edge due to a CORS origin bug: https://goo.gl/G9iR54
-        if (Browser.getName() === 'Edge' || Browser.getName() === 'Explorer') {
-            PDFJS.disableWorker = true;
-        }
-
         // Set PDFJS worker & character maps
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.js');
