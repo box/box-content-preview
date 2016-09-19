@@ -10,7 +10,7 @@ import fetch from 'isomorphic-fetch';
 import { getHeaders } from '../util';
 
 const ANONYMOUS_USER = {
-    id: 0,
+    id: '0',
     name: __('annotation_anonymous_user_name')
 };
 
@@ -103,7 +103,7 @@ class AnnotationService {
                     const createdAnnotation = this._createAnnotation(tempData);
 
                     // Set user if not set already
-                    if (this._user.id === 0) {
+                    if (this._user.id === '0') {
                         this._user = createdAnnotation.user;
                     }
 

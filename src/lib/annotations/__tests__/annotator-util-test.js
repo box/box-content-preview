@@ -116,12 +116,12 @@ describe('annotator-util', () => {
     describe('getAvatarHtml()', () => {
         it('should return avatar HTML with img if avatarUrl is provided', () => {
             const expectedHtml = '<img src="https://example.com" alt="Avatar">';
-            assert.equal(getAvatarHtml('https://example.com', 1, 'Some Name'), expectedHtml);
+            assert.equal(getAvatarHtml('https://example.com', '1', 'Some Name'), expectedHtml);
         });
 
         it('should return avatar HTML initials if no avatarUrl is provided', () => {
             const expectedHtml = '<div class="box-preview-annotation-profile avatar-color-1">SN</div>'.trim();
-            assert.equal(getAvatarHtml('', 1, 'Some Name'), expectedHtml);
+            assert.equal(getAvatarHtml('', '1', 'Some Name'), expectedHtml);
         });
     });
 
