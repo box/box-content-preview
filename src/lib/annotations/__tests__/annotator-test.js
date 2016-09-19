@@ -297,7 +297,7 @@ describe('annotator', () => {
             expect(annotator.getLocationFromEvent).to.not.have.been.called;
             expect(thread.show).to.not.have.been.called;
             expect(annotator.bindCustomListenersOnThread).to.not.have.been.called;
-            expect(annotator.togglePointModeHandler).to.have.been.called;
+            expect(annotator.togglePointModeHandler).to.not.have.been.called;
         });
 
         it('should not create a thread if a location object cannot be inferred from the event', () => {

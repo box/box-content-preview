@@ -28,14 +28,17 @@ describe('image-annotator', () => {
 
     describe('getLocationFromEvent()', () => {
         it('should not return a location if image isn\'t inside viewer', () => {
-            sandbox.stub(annotatorUtil, 'findClosestElWithClass').returns(document.createElement('div'));
+            const tempAnnotator = new ImageAnnotator({
+                annotatedElement: document.createElement('div'),
+                annotationService: {},
+                fileVersionID: 1
+            });
 
-            const location = annotator.getLocationFromEvent({});
+            const location = tempAnnotator.getLocationFromEvent({});
             expect(location).to.be.null;
         });
 
         it('should not return a location if click is on dialog', () => {
-            sandbox.stub(annotatorUtil, 'findClosestElWithClass').returns(annotator._annotatedElement);
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-dialog');
 
             const location = annotator.getLocationFromEvent({});
@@ -43,7 +46,6 @@ describe('image-annotator', () => {
         });
 
         it('should not return a location if click is on annotation indicator', () => {
-            sandbox.stub(annotatorUtil, 'findClosestElWithClass').returns(annotator._annotatedElement);
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-indicator');
 
             const location = annotator.getLocationFromEvent({});
@@ -51,7 +53,6 @@ describe('image-annotator', () => {
         });
 
         it('should not return a location if click isn\'t in image area', () => {
-            sandbox.stub(annotatorUtil, 'findClosestElWithClass').returns(annotator._annotatedElement);
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
 
             const location = annotator.getLocationFromEvent({
@@ -69,7 +70,6 @@ describe('image-annotator', () => {
                 y: 200
             };
             const imageEl = annotator._annotatedElement.querySelector('img');
-            sandbox.stub(annotatorUtil, 'findClosestElWithClass').returns(annotator._annotatedElement);
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
             sandbox.stub(imageAnnotatorUtil, 'getLocationWithoutRotation').returns([x, y]);
