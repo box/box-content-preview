@@ -128,11 +128,13 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
     }
 
     let initials = '';
-    if (userId !== 0) {
+    if (userId !== '0') {
         // http://stackoverflow.com/questions/8133630/spliting-the-first-character-of-the-words
         initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
     }
-    return `<div class="box-preview-annotation-profile avatar-color-${userId % AVATAR_COLOR_COUNT}">${initials}</div>`.trim();
+
+    const index = parseInt(userId, 10) || 0;
+    return `<div class="box-preview-annotation-profile avatar-color-${index % AVATAR_COLOR_COUNT}">${initials}</div>`.trim();
 }
 
 /**

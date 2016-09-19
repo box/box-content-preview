@@ -18,9 +18,9 @@ describe('annotation-thread', () => {
             annotatedElement: document.querySelector('.annotated-element'),
             annotations: [],
             annotationService: {},
-            fileVersionID: 1,
+            fileVersionID: '1',
             location: {},
-            threadID: 2,
+            threadID: '2',
             type: 'point'
         });
 
@@ -34,7 +34,7 @@ describe('annotation-thread', () => {
         };
 
         annotationThread._annotationService = {
-            user: { id: 1 }
+            user: { id: '1' }
         };
     });
 
@@ -97,9 +97,9 @@ describe('annotation-thread', () => {
                 annotatedElement: document.querySelector('.annotated-element'),
                 annotations: [],
                 annotationService,
-                fileVersionID: 1,
+                fileVersionID: '1',
                 location: {},
-                threadID: 2,
+                threadID: '2',
                 type: 'point'
             });
         });
@@ -109,10 +109,10 @@ describe('annotation-thread', () => {
             annotationThread.saveAnnotation('point', 'blah');
 
             expect(createStub).to.have.been.calledWith(sinon.match({
-                fileVersionID: 1,
+                fileVersionID: '1',
                 type: 'point',
                 text: 'blah',
-                threadID: 2
+                threadID: '2'
             }));
         });
 
@@ -144,9 +144,9 @@ describe('annotation-thread', () => {
                     annotationID: 'someID'
                 }],
                 annotationService,
-                fileVersionID: 1,
+                fileVersionID: '1',
                 location: {},
-                threadID: 2,
+                threadID: '2',
                 type: 'point'
             });
 
@@ -218,9 +218,9 @@ describe('annotation-thread', () => {
                 annotatedElement: document.querySelector('.annotated-element'),
                 annotations: [{}],
                 annotationService: {},
-                fileVersionID: 1,
+                fileVersionID: '1',
                 location: {},
-                threadID: 2,
+                threadID: '2',
                 type: 'point'
             });
             const createDialogStub = sandbox.stub(annotationThread, 'createDialog');
@@ -326,8 +326,8 @@ describe('annotation-thread', () => {
         it('should call hideDialog if there are annotations in the thread', () => {
             const hideStub = sandbox.stub(annotationThread, 'hideDialog');
             const annotation1 = new Annotation({
-                fileVersionID: 2,
-                threadID: 1,
+                fileVersionID: '2',
+                threadID: '1',
                 type: 'point',
                 text: 'blah',
                 location: { x: 0, y: 0 },
@@ -346,8 +346,8 @@ describe('annotation-thread', () => {
             const pushStub = sandbox.stub(annotationThread._annotations, 'push');
             const resetStub = sandbox.stub(annotationThread, 'reset');
             const annotation1 = new Annotation({
-                fileVersionID: 2,
-                threadID: 1,
+                fileVersionID: '2',
+                threadID: '1',
                 type: 'point',
                 text: 'blah',
                 location: { x: 0, y: 0 },
@@ -363,8 +363,8 @@ describe('annotation-thread', () => {
         it('should not try to push an annotation to the dialog if it doesn\'t exist', () => {
             const addStub = sandbox.stub(annotationThread._dialog, 'addAnnotation');
             const annotation1 = new Annotation({
-                fileVersionID: 2,
-                threadID: 1,
+                fileVersionID: '2',
+                threadID: '1',
                 type: 'point',
                 text: 'blah',
                 location: { x: 0, y: 0 },
@@ -383,7 +383,7 @@ describe('annotation-thread', () => {
 
             expect(annotationData.location).to.equal(annotationThread._location);
             expect(annotationData.fileVersionID).to.equal(annotationThread._fileVersionID);
-            expect(annotationData.user.id).to.equal(1);
+            expect(annotationData.user.id).to.equal('1');
         });
     });
 });

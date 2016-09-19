@@ -383,11 +383,11 @@ class AnnotationDialog extends EventEmitter {
             return;
         }
 
-        const userId = parseInt(annotatorUtil.htmlEscape(annotation.user.id || 0), 10);
+        const userId = annotatorUtil.htmlEscape(annotation.user.id || '0');
 
         // Temporary until annotation user API is available
         let userName;
-        if (userId === 0) {
+        if (userId === '0') {
             userName = __('annotation_posting_message');
         } else {
             userName = annotatorUtil.htmlEscape(annotation.user.name || '');
