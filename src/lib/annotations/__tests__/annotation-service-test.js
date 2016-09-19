@@ -287,4 +287,74 @@ describe('annotation-service', () => {
             assert.equal(annotation1 instanceof Annotation, true);
         });
     });
+
+    describe('_readFromMarker()', () => {
+        it('should get subsequent annotations if a marker is present', () => {
+            const markerUrl = annotationService._getReadUrl(2, 'a', 1);
+
+            const annotation2 = new Annotation({
+                fileVersionID: 2,
+                threadID: AnnotationService.generateID(),
+                type: 'highlight',
+                text: 'blah2',
+                location: { x: 0, y: 0 }
+            });
+
+            fetchMock.mock(markerUrl, {
+                body: {
+                    entries: [{
+                        id: AnnotationService.generateID(),
+                        item: {
+                            id: annotation2.fileVersionID
+                        },
+                        details: {
+                            type: annotation2.type,
+                            threadID: annotation2.threadID,
+                            location: annotation2.location
+                        },
+                        message: annotation2.text,
+                        created_by: {}
+                    }]
+                }
+            });
+
+            let resolve;
+            let reject;
+            const promise = new Promise((success, failure) => {
+                resolve = success;
+                reject = failure;
+            });
+
+            annotationService._annotations = [];
+            annotationService._readFromMarker(resolve, reject, 2, 'a', 1);
+            promise.then((result) => {
+                assert.equal(result.length, 1);
+                assert.equal(result[0]._text, 'blah2');
+            });
+        });
+    });
+
+    describe('_getReadUrl()', () => {
+        it('should return the original url if no limit or marker exists', () => {
+            annotationService._api = 'box';
+            annotationService._fileID = 1;
+            const fileVersionID = 2;
+            const url = `${annotationService._api}/2.0/files/${annotationService._fileID}/annotations?version=${fileVersionID}&fields=item,details,message,created_by,created_at,modified_at,permissions`;
+
+            const result = annotationService._getReadUrl(fileVersionID);
+            assert.equal(result, url);
+        });
+
+        it('should add a marker and limit if provided', () => {
+            annotationService._api = 'box';
+            annotationService._fileID = 1;
+            const fileVersionID = 2;
+            const marker = 'next_annotation';
+            const limit = 1;
+            const url = `${annotationService._api}/2.0/files/${annotationService._fileID}/annotations?version=${fileVersionID}&fields=item,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
+
+            const result = annotationService._getReadUrl(fileVersionID, marker, limit);
+            assert.equal(result, url);
+        });
+    });
 });
