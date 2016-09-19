@@ -8,7 +8,6 @@ import Annotator from '../annotator';
 import ImagePointThread from './image-point-thread';
 import * as annotatorUtil from '../annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
-import * as constants from '../annotation-constants';
 import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../../constants';
 
 @autobind
@@ -30,17 +29,15 @@ class ImageAnnotator extends Annotator {
      */
     getLocationFromEvent(event) {
         let location = null;
-        const eventTarget = event.target;
-        const wrapperEl = annotatorUtil.findClosestElWithClass(eventTarget, constants.CLASS_ANNOTATION_POINT_MODE);
 
         // Get image tag inside viewer
-        const imageEl = wrapperEl.querySelector('img');
+        const imageEl = this._annotatedElement.querySelector('img');
         if (!imageEl) {
             return location;
         }
 
         // If click is inside an annotation dialog, ignore
-        const dataType = annotatorUtil.findClosestDataType(eventTarget);
+        const dataType = annotatorUtil.findClosestDataType(this._annotatedElement);
         if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
             return location;
         }
