@@ -376,9 +376,6 @@ class Annotator extends EventEmitter {
     pointClickHandler(event) {
         event.stopPropagation();
 
-        // Exits point annotation mode on first click
-        this.togglePointModeHandler();
-
         // Determine if a point annotation dialog is already open and close the
         // current open dialog
         const hasPendingThreads = this._destroyPendingThreads();
@@ -389,8 +386,12 @@ class Annotator extends EventEmitter {
         // Get annotation location from click event, ignore click if location is invalid
         const location = this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_POINT);
         if (!location) {
+            this.togglePointModeHandler();
             return;
         }
+
+        // Exits point annotation mode on first click
+        this.togglePointModeHandler();
 
         // Create new thread with no annotations, show indicator, and show dialog
         const thread = this.createAnnotationThread([], location, constants.ANNOTATION_TYPE_POINT);
