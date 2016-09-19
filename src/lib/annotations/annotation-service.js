@@ -125,31 +125,16 @@ class AnnotationService {
      * @returns {Promise} Promise that resolves with fetched annotations
      */
     read(fileVersionID) {
-        return new Promise((resolve, reject) => {
-            fetch(`${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}&fields=item,details,message,created_by,created_at,modified_at,permissions`, {
-                headers: this._headers
-            })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.type === 'error') {
-                    reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
-                }
-
-                if (data.entries) {
-                    // @TODO(tjin) load more than 100 annotations
-                    const annotations = [];
-                    data.entries.forEach((annotationData) => {
-                        annotations.push(this._createAnnotation(annotationData));
-                    });
-                    resolve(annotations);
-                } else {
-                    reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
-                }
-            })
-            .catch(() => {
-                reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
-            });
+        this._annotations = [];
+        let resolve;
+        let reject;
+        const promise = new Promise((success, failure) => {
+            resolve = success;
+            reject = failure;
         });
+
+        this._readFromMarker(resolve, reject, fileVersionID);
+        return promise;
     }
 
     /**
@@ -311,6 +296,59 @@ class AnnotationService {
             modified: data.modified_at
         });
     }
-}
 
+    /**
+     * Construct the URL to read annotations with a marker or limit added
+     *
+     * @param {string} fileVersionID File version ID to fetch annotations for
+     * @param {string} marker marker to use if there are more than limit annotations
+     *  * @param {int} limit the amout of annotations the API will return per call
+     * @returns {Promise} Promise that resolves with fetched annotations
+     */
+    _getReadUrl(fileVersionID, marker = null, limit = null) {
+        let apiUrl = `${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}&fields=item,details,message,created_by,created_at,modified_at,permissions`;
+        if (marker) {
+            apiUrl += `&marker=${marker}`;
+        }
+
+        if (limit) {
+            apiUrl += `&limit=${limit}`;
+        }
+
+        return apiUrl;
+    }
+
+    /**
+     * Reads annotations from file version ID starting at a marker. The default
+     * limit is 100 annotations per API call.
+     *
+     * @param {string} fileVersionID File version ID to fetch annotations for
+     * @param {string} marker marker to use if there are more than limit annotations
+     * @param {int} limit the amout of annotations the API will return per call
+     * @returns {void}
+     */
+    _readFromMarker(resolve, reject, fileVersionID, marker = null, limit = null) {
+        fetch(this._getReadUrl(fileVersionID, marker, limit), {
+            headers: this._headers })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.type === 'error' || !Array.isArray(data.entries)) {
+                throw new Error('error');
+            }
+
+            data.entries.forEach((annotationData) => {
+                this._annotations.push(this._createAnnotation(annotationData));
+            });
+
+            if (data.next_marker) {
+                this._readFromMarker(resolve, reject, fileVersionID, data.next_marker, limit);
+            } else {
+                resolve(this._annotations);
+            }
+        })
+        .catch(() => {
+            reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
+        });
+    }
+}
 export default AnnotationService;
