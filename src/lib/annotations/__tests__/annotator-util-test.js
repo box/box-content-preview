@@ -1,12 +1,16 @@
+/* eslint-disable no-unused-expressions */
 import {
     findClosestElWithClass,
     findClosestDataType,
     showElement,
     hideElement,
+    showInvisibleElement,
+    hideElementVisibility,
     resetTextarea,
     isElementInViewport,
     getAvatarHtml,
     getScale,
+    isPlainHighlight,
     htmlEscape
 } from '../annotator-util';
 
@@ -81,6 +85,34 @@ describe('annotator-util', () => {
         });
     });
 
+    describe('showInvisibleElement()', () => {
+        it('should remove invisible class from element with matching selector', () => {
+            // Hide element before testing show function
+            childEl.classList.add('box-preview-is-invisible');
+            showInvisibleElement('.child');
+            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.false;
+        });
+
+        it('should remove invisible class from provided element', () => {
+            // Hide element before testing show function
+            childEl.classList.add('box-preview-is-invisible');
+            showInvisibleElement(childEl);
+            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.false;
+        });
+    });
+
+    describe('hideElementVisibility()', () => {
+        it('should add invisible class to matching element', () => {
+            hideElementVisibility('.child');
+            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.true;
+        });
+
+        it('should add invisible class to provided element', () => {
+            hideElementVisibility(childEl);
+            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.true;
+        });
+    });
+
     describe('resetTextarea()', () => {
         it('should reset text area', () => {
             const textAreaEl = document.querySelector('.textarea');
@@ -133,6 +165,26 @@ describe('annotator-util', () => {
 
         it('should return a zoom scale of 1 if no stored zoom is found on the element', () => {
             assert.equal(getScale(childEl), 1);
+        });
+    });
+
+    describe('isPlainHighlight()', () => {
+        it('should return true if highlight annotation is a plain highlight', () => {
+            const annotations = [{ text: '' }];
+
+            expect(isPlainHighlight(annotations)).to.be.true;
+        });
+
+        it('should return false if a plain highlight annotation had comments added to it', () => {
+            const annotations = [{ text: '' }, { text: 'bleh' }];
+
+            expect(isPlainHighlight(annotations)).to.be.false;
+        });
+
+        it('should return false if highlight annotation has comments', () => {
+            const annotations = [{ text: 'bleh' }];
+
+            expect(isPlainHighlight(annotations)).to.be.false;
         });
     });
 

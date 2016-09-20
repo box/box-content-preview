@@ -3,7 +3,7 @@
  * @author tjin
  */
 
-import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
+import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
 
 const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
 
@@ -81,6 +81,39 @@ export function hideElement(elementOrSelector) {
 }
 
 /**
+ * Shows the specified element or element with specified selector.
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
+ * @returns {void}
+ */
+export function showInvisibleElement(elementOrSelector) {
+    let element = elementOrSelector;
+    if (typeof elementOrSelector === 'string' || elementOrSelector instanceof String) {
+        element = document.querySelector(elementOrSelector);
+    }
+
+    if (element) {
+        element.classList.remove(CLASS_INVISIBLE);
+    }
+}
+
+/**
+ * Hides the specified element or element with specified selector. The element
+ * will still take up DOM space but not be visible in the UI
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
+ * @returns {void}
+ */
+export function hideElementVisibility(elementOrSelector) {
+    let element = elementOrSelector;
+    if (typeof elementOrSelector === 'string' || elementOrSelector instanceof String) {
+        element = document.querySelector(elementOrSelector);
+    }
+
+    if (element) {
+        element.classList.add(CLASS_INVISIBLE);
+    }
+}
+
+/**
  * Reset textarea element - clears value, resets styles, and remove active
  * state.
  * @param {HTMLElement} element Textarea to reset
@@ -144,6 +177,19 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
  */
 export function getScale(annotatedElement) {
     return parseFloat(annotatedElement.getAttribute('data-scale')) || 1;
+}
+
+//------------------------------------------------------------------------------
+// Highlight Utils
+//------------------------------------------------------------------------------
+
+/**
+ * Whether or not a highlight annotation has comments or is a plain highlight
+ * @param {Annotation[]} Annotations in highlight thread
+ * @return {Boolean} Whether annotation is a plain highlight annotation
+ */
+export function isPlainHighlight(annotations) {
+    return annotations.length === 1 && annotations[0].text === '';
 }
 
 //------------------------------------------------------------------------------

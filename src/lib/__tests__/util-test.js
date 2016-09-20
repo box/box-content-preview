@@ -20,7 +20,8 @@ import {
     post,
     del,
     put,
-    checkStatus
+    checkStatus,
+    replacePlaceholders
 } from '../util';
 
 describe('util', () => {
@@ -483,6 +484,20 @@ describe('util', () => {
             assert.equal(decodeKeydown({
                 key: 'U+0041'
             }), 'A');
+        });
+    });
+
+    describe('replacePlaceholders()', () => {
+        it('should replace only the placeholder with the custom value in the given string', () => {
+            expect(replacePlaceholders('{1} highlighted', ['Bob'])).to.equal('Bob highlighted');
+        });
+
+        it('should replace all placeholders with the custom value in the given string', () => {
+            expect(replacePlaceholders('{1} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Bob highlighted Suzy');
+        });
+
+        it('should replace only placeholders that have custom value in the given string', () => {
+            expect(replacePlaceholders('{1} highlighted {2}', ['Bob'])).to.equal('Bob highlighted {2}');
         });
     });
 });
