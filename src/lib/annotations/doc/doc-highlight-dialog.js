@@ -37,6 +37,7 @@ class DocHighlightDialog extends AnnotationDialog {
      */
     addAnnotation(annotation) {
         // If annotation is blank then display who highlighted the text
+        // Will be displayed as '{name} highlighted'
         if (annotation.text === '' && annotation.user.id !== '0') {
             const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
             highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [annotation.user.name]);
@@ -236,6 +237,8 @@ class DocHighlightDialog extends AnnotationDialog {
                 </section>
             </section>`.trim();
 
+        // Checks if highlight is a plain highlight annotation and if user name
+        // has been populated. If userID is 0, user name will be 'Some User'
         if (annotatorUtil.isPlainHighlight(annotations) && annotations[0].user.id !== '0') {
             const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
             highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [annotations[0].user.name]);
@@ -375,9 +378,17 @@ class DocHighlightDialog extends AnnotationDialog {
      * @returns {number} Annotations dialog width
      */
     _getDialogWidth() {
+        // Switches to 'visibility: hidden' to ensure that dialog takes up DOM
+        // space while still being invisible
+        annotatorUtil.hideElementVisibility(this._element);
         annotatorUtil.showElement(this._element);
+
         this.highlightDialogWidth = this._element.getBoundingClientRect().width;
+
+        // Switches back to 'display: none' to so that it no longer takes up place
+        // in the DOM while remaining hidden
         annotatorUtil.hideElement(this._element);
+        annotatorUtil.showInvisibleElement(this._element);
 
         return this.highlightDialogWidth;
     }
@@ -427,7 +438,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * plain highlights
      * @param  {DOMRect} pageDimensions Dimensions of the highlight annotations dialog element
      * @param  {number} pageHeight Document page height
-     * @returns {number[]} Either [x,y] or 8xn coordinates in DOM space in CSS
+     * @returns {number[]} [x,y] coordinates in DOM space in CSS
      */
     _getScaledPDFCoordinates(pageDimensions, pageHeight) {
         const zoomScale = annotatorUtil.getScale(this._annotatedElement);

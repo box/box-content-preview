@@ -527,7 +527,8 @@ export function findScriptLocation(name, currentScript = null) {
 }
 
 /**
- * Replaces variable place holders specified between {} in the string with specified custom value
+ * Replaces variable place holders specified between {} in the string with
+ * specified custom value. Localizes strings that include variables.
  * @param  {string} string String to be interpolated
  * @param  {string[]} placeholderValues Custom values to replace into string
  * @return {string} Properly translated string with replaced custom variable

@@ -4,6 +4,8 @@ import {
     findClosestDataType,
     showElement,
     hideElement,
+    showInvisibleElement,
+    hideElementVisibility,
     resetTextarea,
     isElementInViewport,
     getAvatarHtml,
@@ -80,6 +82,34 @@ describe('annotator-util', () => {
         it('should add hidden class to provided element', () => {
             hideElement(childEl);
             assert.ok(childEl.classList.contains('box-preview-is-hidden'));
+        });
+    });
+
+    describe('showInvisibleElement()', () => {
+        it('should remove invisible class from element with matching selector', () => {
+            // Hide element before testing show function
+            childEl.classList.add('box-preview-is-invisible');
+            showInvisibleElement('.child');
+            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.false;
+        });
+
+        it('should remove invisible class from provided element', () => {
+            // Hide element before testing show function
+            childEl.classList.add('box-preview-is-invisible');
+            showInvisibleElement(childEl);
+            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.false;
+        });
+    });
+
+    describe('hideElementVisibility()', () => {
+        it('should add invisible class to matching element', () => {
+            hideElementVisibility('.child');
+            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.true;
+        });
+
+        it('should add invisible class to provided element', () => {
+            hideElementVisibility(childEl);
+            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.true;
         });
     });
 

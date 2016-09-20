@@ -254,8 +254,7 @@ describe('doc-highlight-dialog', () => {
         });
 
         it('should return previously set dialog width if already calculated', () => {
-            const highlightLabelEl = highlightDialog._element.querySelector('.box-preview-annotation-highlight-label');
-            highlightLabelEl.innerHTML = 'Some User highlighted';
+            highlightDialog._element.style.width = '252px';
 
             const width = highlightDialog._getDialogWidth();
 
