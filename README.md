@@ -14,11 +14,11 @@ The browser needs to have the Promise API implemented. If not, it can be polyfil
 
 Current Version
 ---------------
-* Version: 0.77.0
+* Version: 0.78.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.77.0/en-US/preview.js  
-https://cdn01.boxcdn.net/content-experience/0.77.0/en-US/preview.css
+https://cdn01.boxcdn.net/content-experience/0.78.0/en-US/preview.js  
+https://cdn01.boxcdn.net/content-experience/0.78.0/en-US/preview.css
 
 Usage
 -----
@@ -33,8 +33,8 @@ Usage
     <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
 
     <!-- Latest version of Preview SDK for en-US locale -->
-    <script src="https://cdn01.boxcdn.net/content-experience/0.77.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/content-experience/0.77.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/content-experience/0.78.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/content-experience/0.78.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
