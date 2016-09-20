@@ -15,8 +15,6 @@ import { replacePlaceholders, decodeKeydown } from '../../util.js';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 
 const CLASS_HIGHLIGHT_DIALOG = 'box-preview-highlight-dialog';
-const HIGHLIGHT_COMMENTS_DIALOG_WIDTH = 282;
-const HIGHLIGHT_BUTTONS_DIALOG_WIDTH = 81;
 const HIGHLIGHT_DIALOG_HEIGHT = 38;
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
@@ -39,11 +37,11 @@ class DocHighlightDialog extends AnnotationDialog {
      */
     addAnnotation(annotation) {
         // If annotation is blank then display who highlighted the text
-        if (annotation.text === '') {
-            const name = annotation.user.name || __('annotation_anonymous_user_name');
+        if (annotation.text === '' && annotation.user.id !== '0') {
             const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
-            highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [name]);
+            highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [annotation.user.name]);
             annotatorUtil.showElement(highlightLabelEl);
+            this.position();
         }
 
         super.addAnnotation(annotation);
@@ -81,7 +79,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
         pageEl.appendChild(this._element);
 
-        const highlightDialogWidth = this._hasComments ? HIGHLIGHT_COMMENTS_DIALOG_WIDTH : this._getDialogWidth();
+        const highlightDialogWidth = this._getDialogWidth();
 
         let dialogX = browserX - highlightDialogWidth / 2; // Center dialog
         // Shorten extra transparent border top if showing comments dialog
@@ -238,10 +236,9 @@ class DocHighlightDialog extends AnnotationDialog {
                 </section>
             </section>`.trim();
 
-        if (annotatorUtil.isPlainHighlight(annotations)) {
-            const name = annotations[0].user.name || __('annotation_anonymous_user_name');
+        if (annotatorUtil.isPlainHighlight(annotations) && annotations[0].user.id !== '0') {
             const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
-            highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [name]);
+            highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [annotations[0].user.name]);
             annotatorUtil.showElement(highlightLabelEl);
         }
 
@@ -378,19 +375,9 @@ class DocHighlightDialog extends AnnotationDialog {
      * @returns {number} Annotations dialog width
      */
     _getDialogWidth() {
-        const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
-
-        // If highlight annotation hasn't been saved yet
-        if (highlightLabelEl.textContent === '') {
-            return HIGHLIGHT_BUTTONS_DIALOG_WIDTH;
-
-        // If highlight dimensions haven't been calculated already and user's
-        // name gets populated in annotation
-        } else if (!this.highlightDialogWidth && !highlightLabelEl.textContent.includes('Some User')) {
-            annotatorUtil.showElement(this._element);
-            this.highlightDialogWidth = this._element.getBoundingClientRect().width;
-            annotatorUtil.hideElement(this._element);
-        }
+        annotatorUtil.showElement(this._element);
+        this.highlightDialogWidth = this._element.getBoundingClientRect().width;
+        annotatorUtil.hideElement(this._element);
 
         return this.highlightDialogWidth;
     }

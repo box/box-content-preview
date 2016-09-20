@@ -39,12 +39,16 @@ describe('doc-highlight-dialog', () => {
 
     describe('addAnnotation()', () => {
         it('should add a highlight comment annotation', () => {
+            sandbox.stub(highlightDialog, 'position');
+
             highlightDialog.addAnnotation({});
 
             expect(highlightDialog._hasAnnotations).to.be.true;
         });
 
         it('should add a plain highlight annotation', () => {
+            sandbox.stub(highlightDialog, 'position');
+
             highlightDialog.addAnnotation({
                 text: '',
                 user: {
@@ -96,7 +100,7 @@ describe('doc-highlight-dialog', () => {
             highlightDialog.position();
 
             expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
-            expect(highlightDialog._getDialogWidth).to.not.have.been.called;
+            expect(highlightDialog._getDialogWidth).to.have.been.called;
             expect(highlightDialog._repositionCaret).to.have.been.called;
             expect(annotatorUtil.showElement).to.have.been.called;
             expect(highlightDialog._element.style.left).to.equal('10px');
@@ -239,12 +243,6 @@ describe('doc-highlight-dialog', () => {
     });
 
     describe('_getDialogWidth', () => {
-        it('should return default buttons dialog width if highlight has not been saved yet', () => {
-            const width = highlightDialog._getDialogWidth();
-
-            expect(width).to.equal(HIGHLIGHT_BUTTONS_DIALOG_WIDTH);
-        });
-
         it('should calculate dialog width once annotator\'s user name has been populated', () => {
             const highlightLabelEl = highlightDialog._element.querySelector('.box-preview-annotation-highlight-label');
             highlightLabelEl.innerHTML = 'Bob highlighted';
@@ -258,11 +256,10 @@ describe('doc-highlight-dialog', () => {
         it('should return previously set dialog width if already calculated', () => {
             const highlightLabelEl = highlightDialog._element.querySelector('.box-preview-annotation-highlight-label');
             highlightLabelEl.innerHTML = 'Some User highlighted';
-            highlightDialog.highlightDialogWidth = 200;
 
             const width = highlightDialog._getDialogWidth();
 
-            expect(width).to.equal(200);
+            expect(width).to.equal(252); // Default comments dialog width
         });
     });
 
