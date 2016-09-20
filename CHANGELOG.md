@@ -1,5 +1,19 @@
 # Change Log
 
+## [v0.78.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.78.0) (2016-09-20)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.77.0...v0.78.0)
+
+**Merged pull requests:**
+
+- Make sure annotator user ID works as a string [\#618](https://gitenterprise.inside-box.net/Preview/Preview/pull/618) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing image annotations to toggle out of point annotation mode only after annotation location is determined [\#617](https://gitenterprise.inside-box.net/Preview/Preview/pull/617) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Fix Box3D positioning in IE [\#616](https://gitenterprise.inside-box.net/Preview/Preview/pull/616) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Enable worker for IE/Edge [\#615](https://gitenterprise.inside-box.net/Preview/Preview/pull/615) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update changelog for v0.77.0 [\#614](https://gitenterprise.inside-box.net/Preview/Preview/pull/614) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- fixing promise errors in rep-status [\#613](https://gitenterprise.inside-box.net/Preview/Preview/pull/613) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Handle loading more than limit annotations [\#602](https://gitenterprise.inside-box.net/Preview/Preview/pull/602) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Specify who made the highlight annotation when there's 0 comments [\#601](https://gitenterprise.inside-box.net/Preview/Preview/pull/601) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.77.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.77.0) (2016-09-15)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.76.0...v0.77.0)
 
