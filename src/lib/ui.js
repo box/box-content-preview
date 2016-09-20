@@ -266,7 +266,8 @@ export function setup(options, keydown, navigateLeft, navigateRight, mousemove) 
     setupLoading();
 
     // Attach keyboard events
-    document.addEventListener('keydown', keydownHandler);
+    container.addEventListener('keydown', keydownHandler);
+    container.focus();
 
     return container;
 }

@@ -53,9 +53,9 @@ class DocPointThread extends AnnotationThread {
         const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
 
         // Position and append to page
-        this._element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+        this._element.style.left = `${browserX - (POINT_ANNOTATION_ICON_WIDTH / 2)}px`;
         // Add 15px for vertical padding on page
-        this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_HEIGHT + POINT_ANNOTATION_ICON_DOT_HEIGHT / 2 + PAGE_PADDING_TOP}px`;
+        this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_HEIGHT + (POINT_ANNOTATION_ICON_DOT_HEIGHT / 2) + PAGE_PADDING_TOP}px`;
         pageEl.appendChild(this._element);
 
         annotatorUtil.showElement(this._element);

@@ -14,8 +14,14 @@ import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../../fullscreen';
 import throttle from 'lodash.throttle';
-import { CLASS_BOX_PREVIEW_FIND_BAR } from '../../constants';
-import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
+import {
+    CLASS_BOX_PREVIEW_FIND_BAR
+} from '../../constants';
+import {
+    get,
+    createAssetUrlCreator,
+    decodeKeydown
+} from '../../util';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -167,7 +173,7 @@ class DocBase extends Base {
                 this.emit('printsuccess');
             }
 
-        // For other browsers, open and print in a new tab
+            // For other browsers, open and print in a new tab
         } else {
             const printURL = URL.createObjectURL(this.printBlob);
             const printResult = window.open(printURL);
@@ -182,7 +188,7 @@ class DocBase extends Base {
                         printResult.print();
                     });
 
-                // Safari print on load produces blank page, so we use a timeout
+                    // Safari print on load produces blank page, so we use a timeout
                 } else if (browser === 'Safari') {
                     setTimeout(() => {
                         printResult.print();
@@ -349,7 +355,8 @@ class DocBase extends Base {
             newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(2);
             newScale = Math.ceil(newScale * 10) / 10;
             newScale = Math.min(MAX_SCALE, newScale);
-        } while (--numTicks > 0 && newScale < MAX_SCALE);
+            numTicks -= 1;
+        } while (numTicks > 0 && newScale < MAX_SCALE);
 
         this.setScale(newScale);
     }
@@ -367,7 +374,8 @@ class DocBase extends Base {
             newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(2);
             newScale = Math.floor(newScale * 10) / 10;
             newScale = Math.max(MIN_SCALE, newScale);
-        } while (--numTicks > 0 && newScale > MIN_SCALE);
+            numTicks -= 1;
+        } while (numTicks > 0 && newScale > MIN_SCALE);
 
         this.setScale(newScale);
     }
@@ -660,12 +668,12 @@ class DocBase extends Base {
         this.initPageNumEl();
     }
 
-	/**
-	 * Replaces the page number display with an input box that allows the user to type in a page number
+    /**
+     * Replaces the page number display with an input box that allows the user to type in a page number
      *
-	 * @returns {void}
+     * @returns {void}
      * @private
-	 */
+     */
     showPageNumInput() {
         // show the input box with the current page number selected within it
         this.controls.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
@@ -680,11 +688,11 @@ class DocBase extends Base {
     }
 
     /**
-	 * Hide the page number input
-	 *
-	 * @returns {void}
+     * Hide the page number input
+     *
+     * @returns {void}
      * @private
-	 */
+     */
     hidePageNumInput() {
         this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
         this.pageNumInputEl.removeEventListener('blur', this.pageNumInputBlurHandler);
@@ -745,7 +753,9 @@ class DocBase extends Base {
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
         // We set passive: true to make page more responsive
-        this.docEl.addEventListener('wheel', this.wheelHandler(), { passive: true });
+        this.docEl.addEventListener('wheel', this.wheelHandler(), {
+            passive: true
+        });
 
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
@@ -766,7 +776,9 @@ class DocBase extends Base {
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
 
             // We set passive: true to make page more responsive
-            this.docEl.removeEventListener('wheel', this.wheelHandler(), { passive: true });
+            this.docEl.removeEventListener('wheel', this.wheelHandler(), {
+                passive: true
+            });
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
@@ -782,12 +794,12 @@ class DocBase extends Base {
     bindControlListeners() {}
 
     /**
-	 * Blur handler for page number input.
+     * Blur handler for page number input.
      *
-	 * @param  {Event} event Blur event
-	 * @returns {void}
+     * @param  {Event} event Blur event
+     * @returns {void}
      * @private
-	 */
+     */
     pageNumInputBlurHandler(event) {
         const target = event.target;
         const pageNum = parseInt(target.value, 10);
@@ -799,13 +811,13 @@ class DocBase extends Base {
         this.hidePageNumInput();
     }
 
-	/**
-	 * Keydown handler for page number input.
+    /**
+     * Keydown handler for page number input.
      *
-	 * @param {Event} event Keydown event
-	 * @returns {void}
+     * @param {Event} event Keydown event
+     * @returns {void}
      * @private
-	 */
+     */
     pageNumInputKeydownHandler(event) {
         const key = decodeKeydown(event);
 
@@ -876,7 +888,7 @@ class DocBase extends Base {
             // We should get a page number from pdfViewer most of the time
             if (event.detail && event.detail.pageNumber) {
                 this.annotator.renderAnnotationsOnPage(event.detail.pageNumber);
-            // If not, we re-render all annotations to be safe
+                // If not, we re-render all annotations to be safe
             } else {
                 this.annotator.renderAnnotations();
             }

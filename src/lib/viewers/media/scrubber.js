@@ -105,7 +105,7 @@ class Scrubber extends EventEmitter {
 
         const handleWidth = 16; // 16px from the CSS
         const scrubberWidth = this.scrubberEl.clientWidth;
-        const handlePosition = (this.value * scrubberWidth - (handleWidth / 2)) * 100 / scrubberWidth;
+        const handlePosition = (((this.value * scrubberWidth) - (handleWidth / 2)) * 100) / scrubberWidth;
 
         this.handleEl.style.left = `${handlePosition}%`;
     }

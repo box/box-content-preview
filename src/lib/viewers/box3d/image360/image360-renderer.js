@@ -1,4 +1,3 @@
-/* global THREE */
 import Box3DRenderer from '../box3d-renderer';
 import autobind from 'autobind-decorator';
 import sceneEntities from './scene-entities';

@@ -332,14 +332,12 @@ class Image extends Base {
 
                 // If the image is smaller than the new viewport, zoom up to a
                 // max of the original file size
+                } else if (modifyWidthInsteadOfHeight) {
+                    const originalWidth = isRotated ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
+                    newWidth = Math.min(viewport.width, originalWidth);
                 } else {
-                    if (modifyWidthInsteadOfHeight) {
-                        const originalWidth = isRotated ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
-                        newWidth = Math.min(viewport.width, originalWidth);
-                    } else {
-                        const originalHeight = isRotated ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
-                        newHeight = Math.min(viewport.height, originalHeight);
-                    }
+                    const originalHeight = isRotated ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
+                    newHeight = Math.min(viewport.height, originalHeight);
                 }
         }
 

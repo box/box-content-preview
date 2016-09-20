@@ -6,9 +6,9 @@ const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
 const EXT_STANDARD_DERIVATIVES = 'OES_standard_derivatives';
 const USER_AGENT = navigator.userAgent;
 
-let name = undefined;
-let gl = undefined;
-let supportsWebGL = undefined;
+let name;
+let gl;
+let supportsWebGL;
 
 @autobind
 class Browser {

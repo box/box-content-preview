@@ -530,7 +530,7 @@ class MediaControls extends EventEmitter {
 
         const rect = this.containerEl.getBoundingClientRect();
         const pageX = event.pageX; // get the mouse X position
-        const time = (pageX - rect.left) * this.mediaEl.duration / rect.width; // given the mouse X position, get the relative time
+        const time = ((pageX - rect.left) * this.mediaEl.duration) / rect.width; // given the mouse X position, get the relative time
         const frame = Math.floor(time); // filmstrip has frames every 1sec, get the frame number to show
         let frameWidth = this.filmstripEl.naturalWidth / 100; // calculate the frame width based on the filmstrip width with each row having 100 frames
         let left = -1 * (frame % 100) * frameWidth; // there are 100 frames per row, get the frame position in a given row

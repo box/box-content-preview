@@ -61,10 +61,8 @@ class Fullscreen extends EventEmitter {
             if (this.isFullscreen()) {
                 enter = true;
             }
-        } else {
-            if (!this.isFullscreen(el)) {
-                enter = true;
-            }
+        } else if (!this.isFullscreen(el)) {
+            enter = true;
         }
 
         if (enter) {
@@ -95,16 +93,14 @@ class Fullscreen extends EventEmitter {
                 } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
                 }
-            } else {
-                if (element.requestFullscreen) {
-                    element.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                } else if (element.msRequestFullscreen) {
-                    element.msRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                } else if (element.mozRequestFullScreen) {
-                    element.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-                } else if (element.webkitRequestFullscreen) {
-                    element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                }
+            } else if (element.requestFullscreen) {
+                element.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
             }
         } else {
             this.fullscreenchangeHandler(element);

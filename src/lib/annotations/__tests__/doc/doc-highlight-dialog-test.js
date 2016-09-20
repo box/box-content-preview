@@ -266,7 +266,7 @@ describe('doc-highlight-dialog', () => {
         it('should position the dialog on the left edge of the page and adjust caret location accordingly', () => {
             const browserX = 1;
             const pageWidth = 100;
-            const initX = browserX - HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2;
+            const initX = browserX - (HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2);
 
             const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
 
@@ -278,7 +278,7 @@ describe('doc-highlight-dialog', () => {
         it('should position the dialog on the right edge of the page and adjust caret location accordingly', () => {
             const browserX = 400;
             const pageWidth = 100;
-            const initX = browserX - HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2;
+            const initX = browserX - (HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2);
 
             const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
 
@@ -290,7 +290,7 @@ describe('doc-highlight-dialog', () => {
         it('should position the caret in the center of the dialog and return top left corner coordinate', () => {
             const browserX = 100;
             const pageWidth = 1000;
-            const initX = browserX - HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2;
+            const initX = browserX - (HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2);
 
             const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
 

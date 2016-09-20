@@ -95,7 +95,7 @@ class Cache {
      * @returns {boolean} Whether the cache has key
      */
     inCache(key) {
-        return this.cache.hasOwnProperty(key);
+        return {}.hasOwnProperty.call(this.cache, key);
     }
 
     /**

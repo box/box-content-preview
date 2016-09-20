@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Notification from '../notification';
+
 let notif;
 
 const sandbox = sinon.sandbox.create();

@@ -335,15 +335,15 @@ class Model3d extends Box3D {
         const metadata = this.boxSdk.getMetadataClient();
         const operations = [];
 
-        operations.push(metadata.createOperation(!!this.renderMode ? 'replace' : 'add', '/defaultRenderMode', renderMode));
-        operations.push(metadata.createOperation(!!this.projection ? 'replace' : 'add', '/cameraProjection', projection));
+        operations.push(metadata.createOperation(this.renderMode ? 'replace' : 'add', '/defaultRenderMode', renderMode));
+        operations.push(metadata.createOperation(this.projection ? 'replace' : 'add', '/cameraProjection', projection));
 
         this.renderMode = renderMode;
         this.projection = projection;
 
         this.renderer.getAxes().then((axes) => {
-            operations.push(metadata.createOperation(!!this.axes.up ? 'replace' : 'add', '/upAxis', axes.up));
-            operations.push(metadata.createOperation(!!this.axes.forward ? 'replace' : 'add', '/forwardAxis', axes.forward));
+            operations.push(metadata.createOperation(this.axes.up ? 'replace' : 'add', '/upAxis', axes.up));
+            operations.push(metadata.createOperation(this.axes.forward ? 'replace' : 'add', '/forwardAxis', axes.forward));
 
             this.axes.up = axes.up;
             this.axes.forward = axes.forward;

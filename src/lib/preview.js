@@ -15,7 +15,7 @@ import { getURL, getDownloadURL, checkPermission, checkFeature } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
-const PREFETCH_COUNT = 3; // number of files to prefetch
+const PREFETCH_COUNT = 20; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const RETRY_TIMEOUT = 500; // retry network request interval for a file
 const RETRY_COUNT = 5; // number of times to retry network request for a file
@@ -160,7 +160,7 @@ class Preview extends EventEmitter {
         // If we are trying to load the same file again, only try 5 times
         // Don't want to try to load the file multiple times in
         if (this.file.id === current) {
-            this.retryCount++;
+            this.retryCount += 1;
         } else {
             this.retryCount = 0;
         }
@@ -400,7 +400,7 @@ class Preview extends EventEmitter {
         hideLoadingIndicator();
 
         // Bump up preview count
-        this.count.success++;
+        this.count.success += 1;
 
         // Finally emit the viewer instance back with a load event
         this.emit('load', {
@@ -515,7 +515,7 @@ class Preview extends EventEmitter {
             }
 
             // Bump up preview count
-            this.count.error++;
+            this.count.error += 1;
 
             this.emit('load', {
                 error: reason,
@@ -647,7 +647,7 @@ class Preview extends EventEmitter {
     navigateToIndex(index) {
         const file = this.collection[index];
         this.emit('navigate', file);
-        this.count.navigation++;
+        this.count.navigation += 1;
         this.load(file);
     }
 
