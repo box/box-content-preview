@@ -542,6 +542,8 @@ export function replacePlaceholders(string, placeholderValues) {
     }
 
     return string.replace(regex, (match) => {
+        /* eslint-disable no-plusplus */
         return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex++] : match;
+        /* eslint-enable no-plusplus */
     });
 }
