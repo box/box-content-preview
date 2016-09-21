@@ -11,7 +11,7 @@ import ErrorLoader from './viewers/error/error-loader';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import throttle from 'lodash.throttle';
 import getTokens from './tokens';
-import { getURL, getDownloadURL, checkPermission, checkFeature } from './file';
+import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
@@ -198,7 +198,7 @@ class Preview extends EventEmitter {
             this.collection = [this.file.id];
         }
 
-        if (this.file.representations && Array.isArray(this.file.representations.entries)) { // @TODO we need a better check to validate file object
+        if (checkFileValid(this.file)) {
             // Cache hit, use that.
             this.loadFromCache();
         } else {
@@ -570,29 +570,40 @@ class Preview extends EventEmitter {
         .then((tokens) => {
             filesToPrefetch.forEach((id) => {
                 const token = tokens[id];
-                const cached = cache.get(id);
 
-                if (cached && cached.representations) {
+                // If file was already cached, just prefetch content
+                const cachedFile = cache.get(id);
+                if (checkFileValid(cachedFile)) {
+                    this.prefetchContent(cachedFile, token);
                     return;
                 }
 
-                // Pre-fetch the file information
+                // Otherwise prefetch and cache file information and content
                 get(getURL(id, this.options.api), this.getRequestHeaders(token))
                 .then((file) => {
-                    // Save the returned file
                     cache.set(file.id, file);
-
-                    // Pre-fetch content if applicable so that the
-                    // Browser caches the content
-                    const loader = this.getLoader(file);
-                    if (loader && typeof loader.prefetch === 'function') {
-                        loader.prefetch(file, token, this.location, this.options.sharedLink, this.options.sharedLinkPassword);
-                    }
+                    this.prefetchContent(file, token);
                 })
                 .catch(() => {});
             });
         })
         .catch(() => {});
+    }
+
+    /**
+     * Prefetches a file's content if possible so the browser can cache the
+     * content and significantly improve preview load time.
+     *
+     * @private
+     * @param {Object} file File metadata
+     * @param {string} token Access token to fetch content with
+     * @returns {void}
+     */
+    prefetchContent(file, token) {
+        const loader = this.getLoader(file);
+        if (loader && typeof loader.prefetch === 'function') {
+            loader.prefetch(file, token, this.location, this.options.sharedLink, this.options.sharedLinkPassword);
+        }
     }
 
     /**
@@ -947,7 +958,13 @@ class Preview extends EventEmitter {
      */
     cacheFiles(files = []) {
         files.forEach((file) => {
-            cache.set(file.id, file);
+            if (checkFileValid(file)) {
+                cache.set(file.id, file);
+            } else {
+                /* eslint-disable no-console */
+                console.error('[Preview SDK] Tried to cache invalid file: ', file);
+                /* eslint-enable no-console */
+            }
         });
     }
 }

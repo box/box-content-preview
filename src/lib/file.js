@@ -1,4 +1,5 @@
-const FIELDS = [
+// List of Box Content API fields that the Preview SDK requires for every file
+const FILE_FIELDS = [
     'permissions',
     'parent',
     'shared_link',
@@ -20,7 +21,7 @@ const FIELDS = [
  * @returns {string} API url
  */
 export function getURL(id, api) {
-    return `${api}/2.0/files/${id}?fields=${FIELDS.join(',')}`;
+    return `${api}/2.0/files/${id}?fields=${FILE_FIELDS.join(',')}`;
 }
 
 /**
@@ -71,4 +72,18 @@ export function checkPermission(file, operation) {
 export function checkFeature(viewer, primary, secondary) {
     const available = !!viewer && typeof viewer[primary] === 'function';
     return available && (!secondary || viewer[primary](secondary));
+}
+
+/**
+ * Checks whether file metadata is valid by checking whether each property
+ * in FIELDS on the specified file object is defined.
+ *
+ * @public
+ * @param {Object} file Box file metadata to check
+ * @returns {boolean} Whether or not file metadata structure is valid
+ */
+export function checkFileValid(file) {
+    return FILE_FIELDS.every((field) => {
+        return typeof file[field] !== 'undefined';
+    });
 }

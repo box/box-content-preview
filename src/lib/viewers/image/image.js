@@ -100,7 +100,7 @@ class Image extends Base {
             this.imageEl.src = URL.createObjectURL(img);
         }).catch((err) => {
             /* eslint-disable no-console */
-            console.log(err);
+            console.error(err);
             /* eslint-enable no-console */
         });
 
