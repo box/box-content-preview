@@ -1,4 +1,4 @@
-const fields = [
+const FIELDS = [
     'permissions',
     'parent',
     'shared_link',
@@ -12,37 +12,35 @@ const fields = [
 ];
 
 /**
- * Returns the box file content api url
+ * Returns the Box file Content API URL with relevant fields
  *
  * @public
- * @param {string} id box file id
- * @param {string} api box api base url
+ * @param {string} id Box file id
+ * @param {string} api Box API base url
  * @returns {string} API url
  */
 export function getURL(id, api) {
-    return `${api}/2.0/files/${id}?fields=${fields.join(',')}`;
+    return `${api}/2.0/files/${id}?fields=${FIELDS.join(',')}`;
 }
 
 /**
- * Returns the box file content api url
+ * Returns the Box file Content API URL
  *
  * @public
- * @param {string} id box file id
- * @param {string} api box api base url
+ * @param {string} id Box file id
+ * @param {string} api Box API base URL
  * @returns {string} API url
  */
 export function getDownloadURL(id, api) {
     return `${api}/2.0/files/${id}?fields=download_url`;
 }
 
-
 /**
  * Is Watermarked
  *
  * @public
- * @param {object} file box file
- * @param {operation} operation
- * @returns {boolean} allowed or not
+ * @param {object} file Box file
+ * @returns {boolean} Whether or not file is watermarked
  */
 export function isWatermarked(file) {
     return !!file && !!file.watermark_info && file.watermark_info.is_watermarked;
@@ -53,9 +51,9 @@ export function isWatermarked(file) {
  * Checks permission
  *
  * @public
- * @param {object} file box file
- * @param {operation} operation
- * @returns {boolean} allowed or not
+ * @param {object} file Box file
+ * @param {string} operation Action to check permission for
+ * @returns {boolean} Whether or not action is permitted
  */
 export function checkPermission(file, operation) {
     return !!file && !!file.permissions && !!file.permissions[operation];
@@ -65,10 +63,10 @@ export function checkPermission(file, operation) {
  * Checks feature
  *
  * @public
- * @param {object} viewer viewer instance
- * @param {string} primary operation
- * @param {string} [secondary] operation
- * @returns {boolean} available or not
+ * @param {object} viewer Viewer instance
+ * @param {string} primary Primary feature to check
+ * @param {string} [secondary] Secondary feature to check
+ * @returns {boolean} Whether or not feature is available
  */
 export function checkFeature(viewer, primary, secondary) {
     const available = !!viewer && typeof viewer[primary] === 'function';
