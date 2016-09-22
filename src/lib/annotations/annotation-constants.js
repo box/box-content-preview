@@ -33,3 +33,7 @@ export const ANNOTATION_STATE_PENDING_ACTIVE = 'pending-active'; // not saved an
 export const ANNOTATION_TYPE_POINT = 'point';
 export const ANNOTATION_TYPE_HIGHLIGHT = 'highlight';
 export const ANNOTATION_TYPE_HIGHLIGHT_COMMENT = 'highlight-comment';
+
+export const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(255, 245, 132, 0.9)';
+export const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 213, 34, 1)';
+export const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 245, 132, 1)';

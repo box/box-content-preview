@@ -1,6 +1,8 @@
 @import 'node_modules/box-ui/src/common/variables';
 
-$highlight-yellow: #ffc900;
+$highlight-yellow: #FFF584;
+$highlight-yellow-active-hover: #FFD522;
+$highlight-yellow-hover: #F5B31B;
 
 // Taken from Box React UI avatar
 $avatar-color-1: #18bbf7;
@@ -13,7 +15,8 @@ $avatar-color-7: #159f45;
 $avatar-color-8: #b800b2;
 $avatar-color-9: #f22c44;
 
-.box-preview-annotation-caret {
+.box-preview-annotation-caret,
+.box-preview-dark-annotation-caret {
     left: 50%;
     position: absolute;
 
@@ -44,11 +47,14 @@ $avatar-color-9: #f22c44;
     }
 }
 
+.box-preview-dark-annotation-caret::after {
+    border-color: transparent transparent lighten($twos, 5%) lighten($twos, 5%);
+}
+
 // Icon buttons
-.box-preview-add-highlight-btn,
 .delete-comment-btn {
     svg {
-        fill: lighten($better-black, 15%);
+        fill: lighten($better-black, 10%);
     }
 
     &:hover svg {
@@ -59,33 +65,38 @@ $avatar-color-9: #f22c44;
 .box-preview-annotation-highlight-dialog .box-preview-btn-plain {
     padding-left: 5px;
     padding-right: 5px;
+
+    .icon, svg {
+        fill: darken($white, 30%);
+    }
 }
 
-.box-preview-highlight-comment-btn {
-    .icon {
-        fill: lighten($better-black, 15%);
-    }
+.box-preview-highlight-comment-btn:hover .icon {
+    fill: $white;
+}
 
-    &:hover .icon {
-        fill: $box-blue;
-    }
-
+.box-preview-add-highlight-btn:hover svg {
+    fill: $highlight-yellow;
 }
 
 // scss-lint:disable SelectorDepth
-.box-preview-is-text-highlighted .box-preview-annotation-highlight-dialog .box-preview-btn-plain svg {
-    fill: $highlight-yellow;
+.box-preview-is-text-highlighted .box-preview-annotation-highlight-dialog .box-preview-btn-plain {
+    svg {
+        fill: $highlight-yellow;
+    }
+
+    &.highlight-active svg {
+        fill: $highlight-yellow-active-hover;
+    }
+
+    &:hover svg {
+        fill: $highlight-yellow-hover;
+    }
 }
 // scss-lint:enable SelectorDepth
 
-.box-preview-btn-plain {
-    &.box-preview-btn-annotate.box-preview-is-active svg {
-        fill: $box-blue;
-    }
-
-    &.box-preview-btn-highlight.box-preview-is-active svg {
-        fill: $highlight-yellow;
-    }
+.box-preview-btn-plain .box-preview-btn-annotate.box-preview-is-active svg {
+    fill: $box-blue;
 }
 
 //------------------------------------------------------------------------------
@@ -311,6 +322,7 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 
 .box-preview-annotation-layer {
+    mix-blend-mode: multiply;
     cursor: text;
     left: 0;
     position: absolute;
@@ -325,8 +337,7 @@ $avatar-color-9: #f22c44;
 
 .box-preview-annotation-highlight-dialog,
 .box-preview-annotation-highlight-dialog:hover {
-    background-color: $white;
-    border: 1px solid $seesee;
+    background-color: lighten($twos, 5%);
     border-radius: 2px;
     padding: 5px 6px;
 
@@ -393,6 +404,8 @@ $avatar-color-9: #f22c44;
 
 .box-preview-annotation-highlight-label {
     width: 100%;
+    color: $white;
+    padding-left: 5px;
     padding-right: 10px;
     border-right: 1px solid $sf-fog;
 }
