@@ -24,11 +24,11 @@ export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
 
     switch (rotation) {
         case ROTATION_ONCE_DEG:
-            return [y, height / scale - x];
+            return [y, (height / scale) - x];
         case ROTATION_TWICE_DEG:
-            return [width / scale - x, height / scale - y];
+            return [(width / scale) - x, (height / scale) - y];
         case ROTATION_THRICE_DEG:
-            return [width / scale - y, x];
+            return [(width / scale) - y, x];
         default:
             break;
     }
@@ -49,11 +49,11 @@ export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scal
 
     switch (rotation) {
         case ROTATION_ONCE_DEG:
-            return [width / scale - y, x];
+            return [(width / scale) - y, x];
         case ROTATION_TWICE_DEG:
-            return [width / scale - x, height / scale - y];
+            return [(width / scale) - x, (height / scale) - y];
         case ROTATION_THRICE_DEG:
-            return [y, height / scale - x];
+            return [y, (height / scale) - x];
         default:
             break;
     }

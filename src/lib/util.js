@@ -425,8 +425,8 @@ export function loadScripts(urls) {
 export function decodeKeydown(event) {
     let modifier = '';
 
-    // KeyboardEvent.key is the new spec supported in Firefox and IE.
-    // KeyboardEvent.keyIdentifier is the old spec supported in Chrome and Safari.
+    // KeyboardEvent.key is the new spec supported in Chrome, Firefox and IE.
+    // KeyboardEvent.keyIdentifier is the old spec supported in Safari.
     // Priority is given to the new spec.
     let key = event.key || event.keyIdentifier || '';
 
@@ -542,6 +542,8 @@ export function replacePlaceholders(string, placeholderValues) {
     }
 
     return string.replace(regex, (match) => {
+        /* eslint-disable no-plusplus */
         return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex++] : match;
+        /* eslint-enable no-plusplus */
     });
 }

@@ -1,4 +1,3 @@
-/* global Box3D, Box3DResourceLoader */
 import Box3DRenderer from '../box3d-renderer';
 
 class Video360Renderer extends Box3DRenderer {

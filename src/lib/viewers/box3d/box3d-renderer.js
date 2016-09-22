@@ -1,4 +1,4 @@
-/* global Box3D, Box3DResourceLoader, WEBVR, THREE */
+/* global Box3D, Box3DResourceLoader, THREE */
 import Browser from '../../browser';
 import EventEmitter from 'events';
 import Cache from '../../cache';

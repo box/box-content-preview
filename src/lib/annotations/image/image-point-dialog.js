@@ -38,7 +38,7 @@ class ImagePointDialog extends AnnotationDialog {
         const wrapperWidth = wrapperDimensions.width;
 
         // Center middle of dialog with point - this coordinate is with respect to the page
-        let dialogLeftX = browserX - dialogWidth / 2;
+        let dialogLeftX = browserX - (dialogWidth / 2);
 
         // Position 7px below location and transparent border pushes it down
         // further - this coordinate is with respect to the page

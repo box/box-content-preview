@@ -327,6 +327,6 @@ export function getLowerCenterPoint(quadPoints) {
         minY = Math.min(y1, y2, y3, y4, minY);
     });
 
-    const x = minX + (maxX - minX) / 2;
+    const x = minX + ((maxX - minX) / 2);
     return [x, minY];
 }

@@ -82,7 +82,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
         const highlightDialogWidth = this._getDialogWidth();
 
-        let dialogX = browserX - highlightDialogWidth / 2; // Center dialog
+        let dialogX = browserX - (highlightDialogWidth / 2); // Center dialog
         // Shorten extra transparent border top if showing comments dialog
         let dialogY = this._hasComments ? browserY - 10 : browserY;
 
