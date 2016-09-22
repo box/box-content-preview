@@ -173,7 +173,7 @@ class DocBase extends Base {
                 this.emit('printsuccess');
             }
 
-            // For other browsers, open and print in a new tab
+        // For other browsers, open and print in a new tab
         } else {
             const printURL = URL.createObjectURL(this.printBlob);
             const printResult = window.open(printURL);
@@ -188,7 +188,7 @@ class DocBase extends Base {
                         printResult.print();
                     });
 
-                    // Safari print on load produces blank page, so we use a timeout
+                // Safari print on load produces blank page, so we use a timeout
                 } else if (browser === 'Safari') {
                     setTimeout(() => {
                         printResult.print();

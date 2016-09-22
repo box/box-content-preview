@@ -15,10 +15,11 @@ import { getURL, getDownloadURL, checkPermission, checkFeature } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
-const PREFETCH_COUNT = 20; // number of files to prefetch
+const PREFETCH_COUNT = 3; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const RETRY_TIMEOUT = 500; // retry network request interval for a file
 const RETRY_COUNT = 5; // number of times to retry network request for a file
+const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
 
 const Box = global.Box || {};
 
@@ -715,6 +716,15 @@ class Preview extends EventEmitter {
      * @returns {void}
      */
     keydownHandler(event) {
+        const target = event.target;
+
+        // Ignore key events when we are inside certain fields
+        if (!target
+            || KEYDOWN_EXCEPTIONS.indexOf(target.nodeName) > -1
+            || (target.nodeName === 'DIV' && !!target.getAttribute('contenteditable'))) {
+            return;
+        }
+
         let consumed = false;
         const key = decodeKeydown(event);
 
