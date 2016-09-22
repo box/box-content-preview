@@ -3,6 +3,7 @@ require('babel-polyfill');
 const commonConfig = require('./webpack.common.config');
 const path = require('path');
 const RsyncPlugin = require('./build/RsyncPlugin');
+const webpack = require('webpack');
 
 const lib = path.join(__dirname, 'src/lib');
 const thirdParty = path.join(__dirname, 'src/third-party');
@@ -88,8 +89,25 @@ module.exports = languages.map((language, index) => {
     //      add the Rsync plugin for local development where copying to dev VM is needed.
     //      change source maps to be inline
     if (!isRelease && !isCI) {
+        /* eslint-disable no-template-curly-in-string */
         config.plugins.push(new RsyncPlugin('dist/.', '${USER}@${USER}.dev.box.net:/box/www/assets/content-experience'));
+        /* eslint-enable no-template-curly-in-string */
         config.devtool = '#inline-source-map';
+    }
+
+    if (isRelease) {
+        // http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
+        config.plugins.push(new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false, // Don't output warnings
+                drop_console: true // Drop console statements
+            },
+            comments: false, // Remove comments
+            sourceMap: false
+        }));
+
+        // http://webpack.github.io/docs/list-of-plugins.html#occurrenceorderplugin
+        config.plugins.push(new webpack.optimize.OccurrenceOrderPlugin());
     }
 
     // Add the babel loader
