@@ -826,6 +826,33 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Updates the file cache with the provided file metadata. Can be used to
+     * improve performance if file metadata can be fetched at some point before
+     * a file is previewed. Note that we do not validate the cache, the file
+     * metadata objects must have the properties FIELDS as defined in file.js.
+     *
+     * @public
+     * @param {Array|Object} [fileMetadata] Array or single file metadata to cache
+     * @returns {void}
+     */
+    updateFileCache(fileMetadata = []) {
+        let files = fileMetadata;
+        if (!Array.isArray(files)) {
+            files = [fileMetadata];
+        }
+
+        files.forEach((file) => {
+            if (checkFileValid(file)) {
+                cache.set(file.id, file);
+            } else {
+                /* eslint-disable no-console */
+                console.error('[Preview SDK] Tried to cache invalid file: ', file);
+                /* eslint-enable no-console */
+            }
+        });
+    }
+
+    /**
      * Returns the current viewer
      *
      * @public
@@ -954,28 +981,6 @@ class Preview extends EventEmitter {
                 openUrlInsideIframe(data.download_url);
             });
         }
-    }
-
-    /**
-     * Caches the provided file metadata. Can be used to improve performance if
-     * file metadata can be fetched at some point before a file is previewed.
-     * Note that we do not validate the cache, the file metadata objects must
-     * have the properties FIELDS as defined in file.js.
-     *
-     * @public
-     * @param {Array} [files] Array of file metadata to cache
-     * @returns {void}
-     */
-    cacheFiles(files = []) {
-        files.forEach((file) => {
-            if (checkFileValid(file)) {
-                cache.set(file.id, file);
-            } else {
-                /* eslint-disable no-console */
-                console.error('[Preview SDK] Tried to cache invalid file: ', file);
-                /* eslint-enable no-console */
-            }
-        });
     }
 }
 
