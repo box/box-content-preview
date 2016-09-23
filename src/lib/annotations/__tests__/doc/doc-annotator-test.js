@@ -652,7 +652,7 @@ describe('doc-annotator', () => {
             annotator._highlightClickHandler({ x: 1, y: 1 });
 
             expect(stubs.cancelFirstComment).to.be.called;
-            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
+            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING);
         });
 
         it('should not show a thread if it is not active', () => {
@@ -662,7 +662,7 @@ describe('doc-annotator', () => {
             annotator._threads = { thread: 1 };
 
             annotator._highlightClickHandler(event);
-            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
+            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING);
             expect(stubs.onClick).to.be.calledWith(event, false);
             expect(threadsOnPageStub).to.be.called;
             expect(stubs.show).to.not.be.called;
@@ -676,7 +676,7 @@ describe('doc-annotator', () => {
             annotator._threads = { thread: 1 };
 
             annotator._highlightClickHandler(event);
-            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
+            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING);
             expect(stubs.onClick).to.be.calledWith(event, false);
             expect(threadsOnPageStub).to.be.called;
             expect(stubs.show).to.be.called;

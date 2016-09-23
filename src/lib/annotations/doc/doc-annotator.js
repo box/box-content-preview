@@ -453,7 +453,7 @@ class DocAnnotator extends Annotator {
      */
     _highlightClickHandler(event) {
         // Destroy any pending highlights on click outside the highlight
-        const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
+        const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING);
         pendingThreads.forEach((thread) => {
             thread.cancelFirstComment();
         });
