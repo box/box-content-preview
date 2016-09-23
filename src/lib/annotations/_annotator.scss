@@ -333,6 +333,7 @@ $avatar-color-9: #f22c44;
     border-top: 10px solid transparent; // Transparent border for hover detection
     position: absolute;
     z-index: 9999;
+    display: table;
 }
 
 .box-preview-annotation-highlight-dialog,
