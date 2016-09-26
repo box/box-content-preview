@@ -10,8 +10,8 @@ import AnnotationDialog from '../annotation-dialog';
 import * as annotatorUtil from '../annotator-util';
 import * as docAnnotatorUtil from './doc-annotator-util';
 import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../constants';
-import * as constants from '../annotation-constants.js';
-import { replacePlaceholders, decodeKeydown } from '../../util.js';
+import * as constants from '../annotation-constants';
+import { replacePlaceholders, decodeKeydown } from '../../util';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 
 const CLASS_HIGHLIGHT_DIALOG = 'box-preview-highlight-dialog';

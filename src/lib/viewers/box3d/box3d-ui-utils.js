@@ -14,7 +14,7 @@ import {
     CLASS_BOX_PREVIEW_OVERLAY_WRAPPER,
     CLASS_BOX_PREVIEW_TOGGLE_OVERLAY,
     CLASS_IS_VISIBLE
-} from '../../constants.js';
+} from '../../constants';
 
 /**
  * Create a label

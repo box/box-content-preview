@@ -15,7 +15,7 @@ import AnnotationService from './annotation-service';
 import EventEmitter from 'events';
 import * as annotatorUtil from './annotator-util';
 import * as constants from './annotation-constants';
-import { ICON_PLACED_ANNOTATION } from '../icons/icons.js';
+import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 
 @autobind
 class AnnotationThread extends EventEmitter {

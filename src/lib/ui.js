@@ -134,10 +134,14 @@ export function showNavigation(id, collection) {
  * @returns {void}
  */
 export function showAnnotateButton(handler) {
-    const annotateButton = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-    annotateButton.title = __('annotation_point_toggle');
-    annotateButton.classList.remove(CLASS_HIDDEN);
-    annotateButton.addEventListener('click', handler);
+    const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+    if (!annotateButtonEl) {
+        return;
+    }
+
+    annotateButtonEl.title = __('annotation_point_toggle');
+    annotateButtonEl.classList.remove(CLASS_HIDDEN);
+    annotateButtonEl.addEventListener('click', handler);
 }
 
 /**
@@ -147,10 +151,14 @@ export function showAnnotateButton(handler) {
  * @returns {void}
  */
 export function showPrintButton(handler) {
-    const printButton = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
-    printButton.title = __('print');
-    printButton.classList.remove(CLASS_HIDDEN);
-    printButton.addEventListener('click', handler);
+    const printButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
+    if (!printButtonEl) {
+        return;
+    }
+
+    printButtonEl.title = __('print');
+    printButtonEl.classList.remove(CLASS_HIDDEN);
+    printButtonEl.addEventListener('click', handler);
 }
 
 /**
@@ -160,10 +168,14 @@ export function showPrintButton(handler) {
  * @returns {void}
  */
 export function showDownloadButton(handler) {
-    const downloadButton = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
-    downloadButton.title = __('download');
-    downloadButton.classList.remove(CLASS_HIDDEN);
-    downloadButton.addEventListener('click', handler);
+    const downloadButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
+    if (!downloadButtonEl) {
+        return;
+    }
+
+    downloadButtonEl.title = __('download');
+    downloadButtonEl.classList.remove(CLASS_HIDDEN);
+    downloadButtonEl.addEventListener('click', handler);
 }
 
 /**
@@ -173,10 +185,14 @@ export function showDownloadButton(handler) {
  * @returns {void}
  */
 export function showLoadingDownloadButton(handler) {
-    const downloadButton = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
-    downloadButton.title = __('download');
-    downloadButton.classList.remove(CLASS_INVISIBLE);
-    downloadButton.addEventListener('click', handler);
+    const downloadButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
+    if (!downloadButtonEl) {
+        return;
+    }
+
+    downloadButtonEl.title = __('download');
+    downloadButtonEl.classList.remove(CLASS_INVISIBLE);
+    downloadButtonEl.addEventListener('click', handler);
 }
 
 /**

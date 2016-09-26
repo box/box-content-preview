@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import { decodeKeydown } from '../../util.js';
+import { decodeKeydown } from '../../util';
 import { CLASS_HIDDEN } from '../../constants';
 import {
     ICON_FIND_DROP_DOWN,

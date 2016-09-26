@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import ImageBase from '../image-base';
-import Base from '../../base.js';
+import Base from '../../base';
 
 const sandbox = sinon.sandbox.create();
 let imageBase;
