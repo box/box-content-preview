@@ -185,7 +185,13 @@ class Image extends Base {
         if (!this.imageEl || (this.annotator && this.annotator.isInPointMode())) {
             return;
         }
-        this.isPannable = this.imageEl.clientWidth > this.wrapperEl.clientWidth || this.imageEl.clientHeight > this.wrapperEl.clientHeight;
+
+        if (this.isRotated()) {
+            this.isPannable = this.imageEl.height > this.wrapperEl.clientWidth || this.imageEl.width > this.wrapperEl.clientHeight;
+        } else {
+            this.isPannable = this.imageEl.width > this.wrapperEl.clientWidth || this.imageEl.height > this.wrapperEl.clientHeight;
+        }
+
         this.didPan = false;
         this.updateCursor();
     }
@@ -268,7 +274,6 @@ class Image extends Base {
         let ratio = 1; // default scaling ratio is 1:1
         let newWidth;
         let newHeight;
-        const isRotated = Math.abs(this.currentRotationAngle) % 180 === 90;
         const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
         const width = imageCurrentDimensions.width;
         const height = imageCurrentDimensions.height;
@@ -331,10 +336,10 @@ class Image extends Base {
                 // If the image is smaller than the new viewport, zoom up to a
                 // max of the original file size
                 } else if (modifyWidthInsteadOfHeight) {
-                    const originalWidth = isRotated ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
+                    const originalWidth = this.isRotated() ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
                     newWidth = Math.min(viewport.width, originalWidth);
                 } else {
-                    const originalHeight = isRotated ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
+                    const originalHeight = this.isRotated() ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
                     newHeight = Math.min(viewport.height, originalHeight);
                 }
         }
@@ -342,7 +347,7 @@ class Image extends Base {
         // If the image has been rotated, we need to swap the width and height
         // getBoundingClientRect always gives values based on how its rendered on the screen
         // But when setting width or height, transforms / rotates are ignored.
-        if (isRotated) {
+        if (this.isRotated()) {
             const temp = newWidth;
             newWidth = newHeight;
             newHeight = temp;
@@ -468,6 +473,14 @@ class Image extends Base {
             this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
             this.annotator.togglePointModeHandler(event);
         };
+    }
+
+    /**
+     * Determines if Image file has been rotated 90 or 270 degrees to the left
+     * @return {Boolean} Whether image has been rotated -90 or -270 degrees
+     */
+    isRotated() {
+        return Math.abs(this.currentRotationAngle) % 180 === 90;
     }
 }
 
