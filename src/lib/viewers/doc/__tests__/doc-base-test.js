@@ -310,11 +310,32 @@ describe('doc-base', () => {
         describe('setPage()', () => {
             it('should set the pdfViewer\'s page and cache it', () => {
                 docBase.pdfViewer = {
-                    currentPageNumber: 0
+                    currentPageNumber: 1,
+                    pagesCount: 3
                 };
 
-                docBase.setPage();
+                docBase.setPage(2);
+
+                expect(docBase.pdfViewer.currentPageNumber).to.equal(2);
                 expect(stubs.cachePage).to.be.called;
+            });
+
+            it('should not do anything if setting an invalid page', () => {
+                docBase.pdfViewer = {
+                    currentPageNumber: 1,
+                    pagesCount: 3
+                };
+
+                // Too low
+                docBase.setPage(0);
+
+                expect(docBase.pdfViewer.currentPageNumber).to.equal(1);
+                expect(stubs.cachePage).to.not.be.called;
+
+                // Too high
+                docBase.setPage(4);
+                expect(docBase.pdfViewer.currentPageNumber).to.equal(1);
+                expect(stubs.cachePage).to.not.be.called;
             });
         });
     });
