@@ -129,7 +129,6 @@ class ImageAnnotator extends Annotator {
         annotatorUtil.showElement(annotateButton);
     }
 
-
     /**
      * Renders annotations from memory. Hides annotations if image is rotated
      *
@@ -145,10 +144,12 @@ class ImageAnnotator extends Annotator {
         // TODO(@spramod) actually adjust getLocationFromEvent method in
         // annotator to get correct location rather than disabling the creation
         // of annotations on rotated images
+        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+
         if (rotationAngle !== 0) {
-            this.hideAllAnnotations();
+            annotatorUtil.hideElement(annotateButton);
         } else {
-            this.showAllAnnotations();
+            annotatorUtil.showElement(annotateButton);
         }
     }
 }
