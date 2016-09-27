@@ -13,6 +13,11 @@ import {
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD,
+    SELECTOR_BOX_PREVIEW_ICON,
+    SELECTOR_BOX_PREVIEW_LOADING_TEXT,
+    SELECTOR_BOX_PREVIEW_LOADING_WRAPPER,
+    SELECTOR_BOX_PREVIEW_LOGO_CUSTOM,
+    SELECTOR_BOX_PREVIEW_LOGO_DEFAULT,
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT
 } from './constants';
@@ -44,10 +49,10 @@ function setupHeader(headerTheme, logoUrl) {
 
     // Set custom logo
     if (logoUrl) {
-        const defaultLogoEl = headerEl.querySelector('.box-preview-default-logo');
+        const defaultLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_DEFAULT);
         defaultLogoEl.classList.add(CLASS_HIDDEN);
 
-        const customLogoEl = headerEl.querySelector('.box-preview-custom-logo');
+        const customLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
         customLogoEl.src = logoUrl;
         customLogoEl.classList.remove(CLASS_HIDDEN);
     }
@@ -59,15 +64,15 @@ function setupHeader(headerTheme, logoUrl) {
  * @returns {void}
  */
 function setupLoading() {
-    const loadingWrapperEl = container.querySelector('.box-preview-loading-wrapper');
+    const loadingWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
     if (!loadingWrapperEl) {
         return;
     }
 
-    const iconWrapperEl = loadingWrapperEl.querySelector('.box-preview-icon');
+    const iconWrapperEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_ICON);
     iconWrapperEl.innerHTML = ICON_FILE_DEFAULT;
 
-    const loadingTextEl = loadingWrapperEl.querySelector('.box-preview-loading-text');
+    const loadingTextEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_LOADING_TEXT);
     loadingTextEl.textContent = __('generating_preview');
 
     const loadingDownloadButtonEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
