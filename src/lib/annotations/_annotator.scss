@@ -1,7 +1,7 @@
 @import 'node_modules/box-ui/src/common/variables';
 
-$highlight-yellow: #FFF584;
-$highlight-yellow-active-hover: #FFD522;
+$highlight-yellow: #FED94E;
+$highlight-yellow-active-hover: #FFC900;
 $highlight-yellow-hover: #F5B31B;
 
 // Taken from Box React UI avatar
@@ -15,8 +15,7 @@ $avatar-color-7: #159f45;
 $avatar-color-8: #b800b2;
 $avatar-color-9: #f22c44;
 
-.box-preview-annotation-caret,
-.box-preview-dark-annotation-caret {
+.box-preview-annotation-caret {
     left: 50%;
     position: absolute;
 
@@ -47,10 +46,6 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-dark-annotation-caret::after {
-    border-color: transparent transparent lighten($twos, 5%) lighten($twos, 5%);
-}
-
 // Icon buttons
 .delete-comment-btn {
     svg {
@@ -67,7 +62,11 @@ $avatar-color-9: #f22c44;
     padding-right: 5px;
 
     .icon, svg {
-        fill: darken($white, 30%);
+        fill: lighten($better-black, 10%);
+    }
+
+    &:hover .icon, &:hover svg {
+        fill: $better-black;
     }
 }
 
@@ -339,7 +338,8 @@ $avatar-color-9: #f22c44;
 
 .box-preview-annotation-highlight-dialog,
 .box-preview-annotation-highlight-dialog:hover {
-    background-color: lighten($twos, 5%);
+    background-color: $white;
+    border: 1px solid $seesee;
     border-radius: 2px;
     padding: 5px 6px;
 
@@ -406,7 +406,6 @@ $avatar-color-9: #f22c44;
 
 .box-preview-annotation-highlight-label {
     width: 100%;
-    color: $white;
     padding-left: 5px;
     padding-right: 5px;
 }
