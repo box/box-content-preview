@@ -15,12 +15,6 @@ const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const PRESENTATION_MODE_STATE = {
-    UNKNOWN: 0,
-    NORMAL: 1,
-    CHANGING: 2,
-    FULLSCREEN: 3
-};
 const MIN_RANGE_REQUEST_SIZE_BYTES = 5242880; // 5MB
 
 
@@ -322,19 +316,6 @@ describe('doc-base', () => {
                 docBase.setPage();
                 expect(stubs.cachePage).to.be.called;
             });
-
-            it('should update the pdfViewer if in fullscreen mode', () => {
-                docBase.pdfViewer = {
-                    currentPageNumber: 0,
-                    update: sandbox.stub()
-                };
-                const fullscreenStub = sandbox.stub(fullscreen, 'isFullscreen').returns(true);
-
-                docBase.setPage();
-                expect(stubs.cachePage).to.be.called;
-                expect(fullscreenStub).to.be.called;
-                expect(docBase.pdfViewer.update).to.be.called;
-            });
         });
     });
 
@@ -531,21 +512,6 @@ describe('doc-base', () => {
             expect(setPageStub).to.be.called;
             expect(docBase.pdfViewer.update).to.be.called;
             expect(docBase.pdfViewer.pagesRotation).to.equal(rotation);
-        });
-    });
-
-    describe('toggleFullscreen()', () => {
-        it('should call the base toggleFullscreen, and change the pdf viewer\'s presentationModeState', () => {
-            Object.defineProperty(Object.getPrototypeOf(DocBase.prototype), 'toggleFullscreen', {
-                value: sandbox.stub()
-            });
-            docBase.pdfViewer = {
-                presentationModeState: PRESENTATION_MODE_STATE.UNKNOWN
-            };
-
-            docBase.toggleFullscreen();
-            expect(Base.prototype.toggleFullscreen).to.be.called;
-            expect(docBase.pdfViewer.presentationModeState).to.equal(PRESENTATION_MODE_STATE.CHANGING);
         });
     });
 
@@ -928,7 +894,6 @@ describe('doc-base', () => {
             expect(addEventListenerStub).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(addEventListenerStub).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(addEventListenerStub).to.be.calledWith('pagechange', docBase.pagechangeHandler);
-            expect(addEventListenerStub).to.be.calledWith('wheel', docBase.wheelHandler(), { passive: true });
 
             expect(addListenerStub).to.be.calledWith('enter', docBase.enterfullscreenHandler);
             expect(addListenerStub).to.be.calledWith('exit', docBase.exitfullscreenHandler);
@@ -947,7 +912,6 @@ describe('doc-base', () => {
             expect(stubs.removeEventListenerStub).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.removeEventListenerStub).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.removeEventListenerStub).to.be.calledWith('pagechange', docBase.pagechangeHandler);
-            expect(stubs.removeEventListenerStub).to.be.calledWith('wheel', docBase.wheelHandler(), { passive: true });
         });
 
         it('should not remove the doc element listeners if the doc element does not exist', () => {
@@ -1177,7 +1141,7 @@ describe('doc-base', () => {
     });
 
     describe('enterfullscreenHandler()', () => {
-        it('should change the presentation mode state, scale value, and resize the page', () => {
+        it('should update the scale value, and resize the page', () => {
             docBase.pdfViewer = {
                 presentationModeState: 'normal',
                 currentScaleValue: 'normal'
@@ -1186,13 +1150,12 @@ describe('doc-base', () => {
 
             docBase.enterfullscreenHandler();
             expect(resizeStub).to.be.called;
-            expect(docBase.pdfViewer.presentationModeState).to.equal(PRESENTATION_MODE_STATE.FULLSCREEN);
             expect(docBase.pdfViewer.currentScaleValue).to.equal('page-fit');
         });
     });
 
     describe('exitfullscreenHandler()', () => {
-        it('should change the presentation mode state, scale value, and resize the page', () => {
+        it('should update the scale value, and resize the page', () => {
             docBase.pdfViewer = {
                 presentationModeState: 'fullscreen',
                 currentScaleValue: 'pagefit'
@@ -1201,47 +1164,7 @@ describe('doc-base', () => {
 
             docBase.exitfullscreenHandler();
             expect(resizeStub).to.be.called;
-            expect(docBase.pdfViewer.presentationModeState).to.equal(PRESENTATION_MODE_STATE.NORMAL);
             expect(docBase.pdfViewer.currentScaleValue).to.equal('auto');
-        });
-    });
-
-    describe('wheelHandler()', () => {
-        beforeEach(() => {
-            stubs.nextPage = sandbox.stub(docBase, 'nextPage');
-            stubs.previousPage = sandbox.stub(docBase, 'previousPage');
-
-            docBase.event = {
-                deltaY: 5
-            };
-        });
-
-        it('should create a new throttle if the wheel handler does not exist', () => {
-            const result = docBase.wheelHandler();
-
-            expect(result).to.equal(docBase.throttledWheelHandler);
-        });
-
-        it('should call next page if the event delta is positive', () => {
-            docBase.wheelHandler();
-
-            docBase.throttledWheelHandler(docBase.event);
-            expect(stubs.nextPage).to.be.called;
-        });
-
-        it('should call previous page if the event delta is negative', () => {
-            docBase.event.deltaY = -5;
-
-            docBase.wheelHandler();
-            docBase.throttledWheelHandler(docBase.event);
-            expect(stubs.previousPage).to.be.called;
-        });
-
-        it('should return the original function if the wheel handler already exists', () => {
-            docBase.throttledWheelHandler = true;
-            const result = docBase.wheelHandler();
-
-            expect(result).to.be.truthy;
         });
     });
 });
