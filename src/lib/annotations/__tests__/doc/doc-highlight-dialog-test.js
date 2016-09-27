@@ -6,7 +6,6 @@ import { CLASS_HIDDEN } from '../../../constants';
 import * as constants from '../../annotation-constants';
 
 let highlightDialog;
-let annotationCaretEl;
 const sandbox = sinon.sandbox.create();
 
 const CLASS_HIGHLIGHT_DIALOG = 'box-preview-highlight-dialog';
@@ -157,11 +156,6 @@ describe('doc-highlight-dialog', () => {
             const commentsDialogEl = highlightDialog._element.querySelector('.annotation-container');
             commentsDialogEl.classList.remove(CLASS_HIDDEN);
 
-            // Reset to light dialog + caret
-            const caretEl = highlightDialog._element.querySelector('.box-preview-dark-annotation-caret');
-            caretEl.classList.remove('box-preview-dark-annotation-caret');
-            caretEl.classList.add('box-preview-annotation-caret');
-
             sandbox.stub(annotatorUtil, 'hideElement');
             sandbox.stub(highlightDialog, 'position');
 
@@ -294,7 +288,7 @@ describe('doc-highlight-dialog', () => {
 
             const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
 
-            annotationCaretEl = highlightDialog._element.querySelector('.box-preview-dark-annotation-caret');
+            const annotationCaretEl = highlightDialog._element.querySelector('.box-preview-annotation-caret');
             expect(dialogX).to.equal(0); // dialog aligned to the left
             expect(annotationCaretEl.style.left).to.equal('10px'); // caret aligned to the left
         });
@@ -306,7 +300,7 @@ describe('doc-highlight-dialog', () => {
 
             const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
 
-            annotationCaretEl = highlightDialog._element.querySelector('.box-preview-dark-annotation-caret');
+            const annotationCaretEl = highlightDialog._element.querySelector('.box-preview-annotation-caret');
             expect(dialogX).to.equal(19); // dialog aligned to the right
             expect(annotationCaretEl.style.left).to.equal('71px'); // caret aligned to the right
         });
@@ -318,7 +312,7 @@ describe('doc-highlight-dialog', () => {
 
             const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
 
-            annotationCaretEl = highlightDialog._element.querySelector('.box-preview-dark-annotation-caret');
+            const annotationCaretEl = highlightDialog._element.querySelector('.box-preview-annotation-caret');
             expect(dialogX).to.equal(initX); // dialog x unchanged
             expect(annotationCaretEl.style.left).to.equal('50%'); // caret centered with dialog
         });
