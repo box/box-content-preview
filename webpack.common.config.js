@@ -1,13 +1,14 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const I18nPlugin = require('i18n-webpack-plugin');
+
 const i18n = path.join(__dirname, 'src/i18n/json');
 
 module.exports = function commonConfig(language) {
     // Language json
-    /* eslint-disable global-require */
+    /* eslint-disable global-require, import/no-dynamic-require */
     const langJson = require(`${i18n}/${language}.json`);
-    /* eslint-enable global-require */
+    /* eslint-enable global-require, import/no-dynamic-require */
 
     return {
         module: {

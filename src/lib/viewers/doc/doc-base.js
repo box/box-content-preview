@@ -13,7 +13,6 @@ import Controls from '../../controls';
 import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../../fullscreen';
-import throttle from 'lodash.throttle';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR
 } from '../../constants';
@@ -30,15 +29,8 @@ const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const MIN_RANGE_REQUEST_SIZE_BYTES = 5242880; // 5MB
-const PRESENTATION_MODE_STATE = {
-    UNKNOWN: 0,
-    NORMAL: 1,
-    CHANGING: 2,
-    FULLSCREEN: 3
-};
 const RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
-const WHEEL_THROTTLE = 200;
 
 @autobind
 class DocBase extends Base {
@@ -256,13 +248,12 @@ class DocBase extends Base {
      * @returns {void}
      */
     setPage(pageNum) {
+        if (pageNum <= 0 || pageNum > this.pdfViewer.pagesCount) {
+            return;
+        }
+
         this.pdfViewer.currentPageNumber = pageNum;
         this.cachePage(this.pdfViewer.currentPageNumber);
-
-        // Forces rendering of page - without this, fullscreen pages sometimes don't load
-        if (fullscreen.isFullscreen(this.containerEl)) {
-            this.pdfViewer.update();
-        }
     }
 
     /**
@@ -412,16 +403,6 @@ class DocBase extends Base {
         // Re-render and scroll to appropriate page
         this.pdfViewer.update();
         this.setPage(currentPageNum);
-    }
-
-    /**
-     * Enters or exits fullscreen.
-     *
-     * @returns {void}
-     */
-    toggleFullscreen() {
-        super.toggleFullscreen();
-        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.CHANGING;
     }
 
     /**
@@ -752,11 +733,6 @@ class DocBase extends Base {
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
-        // We set passive: true to make page more responsive
-        this.docEl.addEventListener('wheel', this.wheelHandler(), {
-            passive: true
-        });
-
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
@@ -774,11 +750,6 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
-
-            // We set passive: true to make page more responsive
-            this.docEl.removeEventListener('wheel', this.wheelHandler(), {
-                passive: true
-            });
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
@@ -943,7 +914,6 @@ class DocBase extends Base {
      * @private
      */
     enterfullscreenHandler() {
-        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.FULLSCREEN;
         this.pdfViewer.currentScaleValue = 'page-fit';
 
         // Force resize for annotations
@@ -958,31 +928,10 @@ class DocBase extends Base {
      * @private
      */
     exitfullscreenHandler() {
-        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE.NORMAL;
         this.pdfViewer.currentScaleValue = 'auto';
 
         // Force resize for annotations
         this.resize();
-    }
-
-    /**
-     * Mousewheel handler - scrolls presentations by page
-     *
-     * @returns {Function} Throttled mousewheel handler
-     * @private
-     */
-    wheelHandler() {
-        if (!this.throttledWheelHandler) {
-            this.throttledWheelHandler = throttle((event) => {
-                if (event.deltaY > 0) {
-                    this.nextPage();
-                } else if (event.deltaY < 0) {
-                    this.previousPage();
-                }
-            }, WHEEL_THROTTLE);
-        }
-
-        return this.throttledWheelHandler;
     }
 }
 
