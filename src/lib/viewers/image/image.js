@@ -259,6 +259,9 @@ class Image extends Base {
         this.imageEl.style.transform = `rotate(${this.currentRotationAngle}deg)`;
         this.emit('rotate');
 
+        // Re-adjust image position after rotation
+        this.adjustImageZoomPadding();
+
         if (this.canAnnotate) {
             this.annotator.renderAnnotations(this.currentRotationAngle);
         }
@@ -360,10 +363,7 @@ class Image extends Base {
         this.imageEl.style.height = newHeight ? `${newHeight}px` : '';
 
         // Adjust image position after transformations
-        const [leftPadding, topPadding] = this.getImageZoomPadding();
-
-        this.imageEl.style.left = `${leftPadding}px`;
-        this.imageEl.style.top = `${topPadding}px`;
+        this.adjustImageZoomPadding();
 
         // Fix the scroll position of the image to be centered
         this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
@@ -491,12 +491,13 @@ class Image extends Base {
     }
 
     /**
-     * Determines the left and right padding for the image file on zoom
+     * Determines the left and top padding for the image file on zoom and
+     * re-positions the image accordingly
      *
-     * @return {number[]} [left padding, top padding]
+     * @returns {void}
      * @private
      */
-    getImageZoomPadding() {
+    adjustImageZoomPadding() {
         let leftPadding = 0;
         let topPadding = 0;
         let largerWidth = 0;
@@ -514,7 +515,8 @@ class Image extends Base {
         leftPadding = (largerWidth - this.imageEl.clientWidth) / 2;
         topPadding = (largerHeight - this.imageEl.clientHeight) / 2;
 
-        return [leftPadding, topPadding];
+        this.imageEl.style.left = `${leftPadding}px`;
+        this.imageEl.style.top = `${topPadding}px`;
     }
 }
 
