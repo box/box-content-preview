@@ -526,7 +526,7 @@ class DocBase extends Base {
     setupPdfjs() {
         // Set PDFJS worker & character maps
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
-        PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.js');
+        PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.min.js');
         PDFJS.cMapUrl = `${this.options.location.staticBaseURI}third-party/doc/cmaps/`;
         PDFJS.cMapPacked = true;
 
