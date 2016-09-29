@@ -25,18 +25,6 @@ major_release=false
 minor_release=false
 
 
-# Maven info
-MAVEN="maven-vip.dev.box.net"
-MAVEN_PORT="8150"
-MAVEN_PATH="nexus/content/repositories"
-MAVEN_URL="http://$MAVEN:$MAVEN_PORT/$MAVEN_PATH"
-credentialsFile="/home/jenkins/.ivy2/boxmaven.credentials"
-[ -r "$credentialsFile" ] || (echo "Error: maven credentials file not found" && exit 1)
-mavenUser=$(grep '^user=' $credentialsFile | sed 's/^user=//')
-mavenPassword=$(grep '^password=' $credentialsFile | sed 's/^password=//')
-
-
-
 increment_version() {
     if $major_release; then
         echo "----------------------------------------------------"
@@ -81,16 +69,14 @@ push_to_github() {
 }
 
 
-push_to_maven() {
+push_to_artifactory() {
 
     echo "----------------------------------------------------"
-    echo "Starting a Maven & Artifactory push for" $KIND-$VERSION
+    echo "Starting a Artifactory push for" $KIND-$VERSION
     echo "----------------------------------------------------"
 
 
     rpm="$KIND-$VERSION.noarch.rpm"
-    publishURL="$MAVEN_URL/releases/net/box/$KIND/$VERSION/$rpm"
-
 
     shopt -s dotglob
 
@@ -100,7 +86,7 @@ push_to_maven() {
     cd dist
     fpm -s dir -t rpm --prefix $installDir --rpm-os linux --architecture all --package $rpmDir/$rpm --directories . --name "$KIND-$VERSION" --version $VERSION --rpm-user box --rpm-group box --rpm-compression none --description 'content experience assets bundle' .
     cd ..
-    
+
     REPO_NAME="box-rpm-releases" REPO_PATH='net/box' SERVICE_KIND=$KIND SERVICE_VERSION=$VERSION rpm-to-artifactory $rpmDir/$rpm
     status=$?
 
@@ -123,6 +109,11 @@ build_assets() {
         echo "----------------------------------------------------"
         echo "Installed node modules."
         echo "----------------------------------------------------"
+    else
+        echo "----------------------------------------------------"
+        echo "Failed to install node modules!"
+        echo "----------------------------------------------------"
+        exit 1;
     fi
 
 
@@ -156,10 +147,10 @@ push_new_release() {
     # Webpack build
     build_assets
 
-    # Pushes artifact to maven
-    if ! push_to_maven; then
+    # Pushes artifact to artifactory
+    if ! push_to_artifactory; then
         echo "----------------------------------------------------"
-        echo "Error in push_to_maven.sh!"
+        echo "Error in push_to_artifactory.sh!"
         echo "----------------------------------------------------"
         exit 1
     fi
