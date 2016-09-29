@@ -1,4 +1,6 @@
-// Include only necessary parts from Box UI
+// Necessary components from Box UI
+
+@import 'boxui-variables';
 
 //------------------------------------------------------------------------------
 // Typography
@@ -221,6 +223,92 @@ li {
                 }
             }
 
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+// Notifications
+//------------------------------------------------------------------------------
+.box-preview-notifications-wrapper {
+    height: 0; /* allows elements around notifications to be clickable */
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 130;
+}
+
+.box-preview-notification {
+    align-items: center;
+    background-color: $sunset-grey;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px fade-out($black, 0.85);
+    color: $white;
+    display: flex;
+    font-weight: bold;
+    margin: 10px auto;
+    max-width: 572px;
+    min-height: 48px;
+    padding: 10px 10px 10px 20px;
+    transition: opacity 0.1s ease-out;
+    overflow: hidden;
+
+    &.info {
+        background-color: $thats-mint;
+    }
+
+    &.warn {
+        background-color: $dehydrated;
+    }
+
+    &.error {
+        background-color: $amaranth;
+    }
+
+    &.is-hidden {
+        box-shadow: none; /* to improve compositing performance */
+        opacity: 0;
+    }
+
+    > span {
+        font-size: 15px;
+        padding-right: 10px;
+        margin-right: auto;
+    }
+
+    &.wrap > span {
+        overflow: hidden;
+        word-wrap: break-word; /* Include legacy name to support older browsers */
+        overflow-wrap: break-word;
+    }
+
+    &.ellipsis > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    button,
+    a {
+        color: $white;
+        flex: none;
+
+        &.btn,
+        &.btn:active:focus {
+            background-color: transparent;
+            border-color: $off-white;
+            margin: 0 5px;
+            padding: 7px 13px;
+        }
+
+        &.close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0.6;
+            outline: none;
         }
     }
 }
