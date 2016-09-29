@@ -22,7 +22,7 @@ describe('Notification', () => {
 
     describe('Notification()', () => {
         it('should have the right classes assigned', () => {
-            assert.equal(notif.notificationEl.className, 'notification box-preview-is-hidden');
+            assert.equal(notif.notificationEl.className, 'box-preview-notification box-preview-is-hidden');
         });
 
         it('shouldn\'t have any message or button text', () => {
@@ -32,14 +32,14 @@ describe('Notification', () => {
 
         it('should have the correct parent wrapper', () => {
             assert.notEqual(notif.notificationEl.parentNode, 'undefined');
-            assert.equal(notif.notificationEl.parentNode.className, 'notifications-wrapper');
+            assert.equal(notif.notificationEl.parentNode.className, 'box-preview-notifications-wrapper');
         });
     });
 
     describe('show()', () => {
         it('should properly show the notification', () => {
             notif.show('test', 'test');
-            assert.equal(notif.notificationEl.className, 'notification');
+            assert.equal(notif.notificationEl.className, 'box-preview-notification');
         });
 
         it('should add text to both the button and the message', () => {
@@ -60,7 +60,7 @@ describe('Notification', () => {
     describe('hide()', () => {
         it('should be properly hidden', () => {
             notif.hide();
-            assert.equal(notif.notificationEl.className, 'notification box-preview-is-hidden');
+            assert.equal(notif.notificationEl.className, 'box-preview-notification box-preview-is-hidden');
         });
     });
 

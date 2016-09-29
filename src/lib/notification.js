@@ -21,7 +21,7 @@ class Notification {
         const uniqueLabel = `notification_${(new Date()).getTime()}_label`;
 
         this.notificationEl = document.createElement('div');
-        this.notificationEl.className = 'notification box-preview-is-hidden';
+        this.notificationEl.className = 'box-preview-notification box-preview-is-hidden';
         this.notificationEl.addEventListener('click', this.clickHandler);
 
         // ARIA for accessibility
@@ -39,7 +39,7 @@ class Notification {
 
         // Append and position notification
         const notificationWrapperEl = document.createElement('div');
-        notificationWrapperEl.className = 'notifications-wrapper';
+        notificationWrapperEl.className = 'box-preview-notifications-wrapper';
         notificationWrapperEl.appendChild(this.notificationEl);
         containerEl.appendChild(notificationWrapperEl);
     }
