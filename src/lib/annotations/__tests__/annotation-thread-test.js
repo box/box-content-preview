@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import AnnotationThread from '../annotation-thread';
 import Annotation from '../annotation';
+import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
 
 let annotationThread;
@@ -196,6 +197,40 @@ describe('annotation-thread', () => {
 
             annotationThread.deleteAnnotation('someID', true);
             expect(deleteStub).to.have.been.called;
+        });
+
+        it('should toggle highlight dialogs with the delete of the last comment if user does not have permission to delete the entire annotation', () => {
+            annotationThread._annotations.push({
+                annotationID: 'someID2',
+                permissions: {
+                    can_delete: false
+                }
+            });
+
+            sandbox.stub(annotatorUtil, 'isPlainHighlight').returns(true);
+            sandbox.stub(annotationThread, 'cancelFirstComment');
+            sandbox.stub(annotationThread, 'destroy');
+
+            annotationThread.deleteAnnotation('someID', false);
+            expect(annotationThread.cancelFirstComment).to.have.been.called;
+            expect(annotationThread.destroy).to.not.have.been.called;
+        });
+
+        it('should destroy the annotation with the delete of the last comment if the user has permissions', () => {
+            annotationThread._annotations.push({
+                annotationID: 'someID2',
+                permissions: {
+                    can_delete: true
+                }
+            });
+
+            sandbox.stub(annotatorUtil, 'isPlainHighlight').returns(true);
+            sandbox.stub(annotationThread, 'cancelFirstComment');
+            sandbox.stub(annotationThread, 'destroy');
+
+            annotationThread.deleteAnnotation('someID', false);
+            expect(annotationThread.cancelFirstComment).to.not.have.been.called;
+            expect(annotationThread.destroy).to.have.been.called;
         });
     });
 
