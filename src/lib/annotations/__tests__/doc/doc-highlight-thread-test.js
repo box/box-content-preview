@@ -4,6 +4,7 @@ import DocHighlightDialog from '../../doc/doc-highlight-dialog';
 import DocHighlightThread from '../../doc/doc-highlight-thread';
 import AnnotationService from '../../annotation-service';
 import * as constants from '../../annotation-constants';
+import * as annotatorUtil from '../../annotator-util';
 import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
 
 
@@ -134,6 +135,64 @@ describe('doc-highlight-thread', () => {
             highlightThread.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, 'bleh');
 
             assert.equal(highlightThread._state, constants.ANNOTATION_STATE_HOVER);
+        });
+    });
+
+    describe('deleteAnnotation()', () => {
+        it('should hide the add highlight button if the user does not have permissions', () => {
+            const plainHighlightThread = new DocHighlightThread({
+                annotatedElement: document.querySelector('.annotated-element'),
+                annotations: [
+                    { permissions: { can_delete: false } }
+                ],
+                annotationService: new AnnotationService({
+                    api: 'https://app.box.com/api',
+                    fileID: 1,
+                    token: 'someToken',
+                    canAnnotate: true
+                }),
+                fileVersionID: 1,
+                location: {},
+                threadID: 2,
+                type: 'highlight'
+            });
+
+            Object.defineProperty(Object.getPrototypeOf(DocHighlightThread.prototype), 'deleteAnnotation', {
+                value: sandbox.stub()
+            });
+            sandbox.stub(annotatorUtil, 'hideElement');
+
+            plainHighlightThread.deleteAnnotation(1);
+
+            expect(annotatorUtil.hideElement).to.be.called;
+        });
+
+        it('should display the add highlight button if the user has permissions', () => {
+            const plainHighlightThread = new DocHighlightThread({
+                annotatedElement: document.querySelector('.annotated-element'),
+                annotations: [
+                    { permissions: { can_delete: true } }
+                ],
+                annotationService: new AnnotationService({
+                    api: 'https://app.box.com/api',
+                    fileID: 1,
+                    token: 'someToken',
+                    canAnnotate: true
+                }),
+                fileVersionID: 1,
+                location: {},
+                threadID: 2,
+                type: 'highlight'
+            });
+
+            Object.defineProperty(Object.getPrototypeOf(DocHighlightThread.prototype), 'deleteAnnotation', {
+                value: sandbox.stub()
+            });
+            sandbox.stub(annotatorUtil, 'hideElement');
+
+            plainHighlightThread.deleteAnnotation(1);
+
+            expect(annotatorUtil.hideElement).to.not.be.called;
         });
     });
 
