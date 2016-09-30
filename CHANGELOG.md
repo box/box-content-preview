@@ -1,5 +1,46 @@
 # Change Log
 
+## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
+
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.79.0...HEAD)
+
+**Merged pull requests:**
+
+- Use public NPM registry [\#648](https://gitenterprise.inside-box.net/Preview/Preview/pull/648) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Remove Box UI dependency [\#647](https://gitenterprise.inside-box.net/Preview/Preview/pull/647) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing pdf.js upgrade script & re-updating pdf.js [\#646](https://gitenterprise.inside-box.net/Preview/Preview/pull/646) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Re-center zoomed images on rotation [\#645](https://gitenterprise.inside-box.net/Preview/Preview/pull/645) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Update compatability, keep original pdf.js files [\#641](https://gitenterprise.inside-box.net/Preview/Preview/pull/641) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
+## [v0.79.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.79.0) (2016-09-29)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.78.0...v0.79.0)
+
+**Merged pull requests:**
+
+- Cleaning up build scripts [\#643](https://gitenterprise.inside-box.net/Preview/Preview/pull/643) ([phora](https://gitenterprise.inside-box.net/phora))
+- Additional Doc Viewer Tests [\#640](https://gitenterprise.inside-box.net/Preview/Preview/pull/640) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Reverts dark highlight annotation design. [\#639](https://gitenterprise.inside-box.net/Preview/Preview/pull/639) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Upgrade PDFJS to v1.5.492 [\#638](https://gitenterprise.inside-box.net/Preview/Preview/pull/638) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add tests for setPage\(\) in doc-base [\#637](https://gitenterprise.inside-box.net/Preview/Preview/pull/637) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix full-page scrolling for documents [\#636](https://gitenterprise.inside-box.net/Preview/Preview/pull/636) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Re-enabling showing annotations no matter what angle the image is rotated [\#635](https://gitenterprise.inside-box.net/Preview/Preview/pull/635) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Unit tests for ui [\#634](https://gitenterprise.inside-box.net/Preview/Preview/pull/634) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing positioning of image annotations on rotation & zoom [\#633](https://gitenterprise.inside-box.net/Preview/Preview/pull/633) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Image rotation changes [\#632](https://gitenterprise.inside-box.net/Preview/Preview/pull/632) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Add null checks before setting button titles [\#631](https://gitenterprise.inside-box.net/Preview/Preview/pull/631) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Rename cacheFiles to updateFileCache [\#630](https://gitenterprise.inside-box.net/Preview/Preview/pull/630) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Highlight annotation fixes [\#629](https://gitenterprise.inside-box.net/Preview/Preview/pull/629) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Highlight comments dialog flickers back to buttons dialog when adding a comment to an existing plain highlight [\#628](https://gitenterprise.inside-box.net/Preview/Preview/pull/628) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Tweaking webpack/uglifyjs config [\#627](https://gitenterprise.inside-box.net/Preview/Preview/pull/627) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add file validation util [\#626](https://gitenterprise.inside-box.net/Preview/Preview/pull/626) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Removing border between who highlighted text and highlight annotation buttons [\#625](https://gitenterprise.inside-box.net/Preview/Preview/pull/625) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Ensuring that who highlighted dialog is full width and doesn't resize on mouse move [\#624](https://gitenterprise.inside-box.net/Preview/Preview/pull/624) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Update changelog for v0.78.0 [\#623](https://gitenterprise.inside-box.net/Preview/Preview/pull/623) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Expose public method for caching file metadata that could be prefetched [\#622](https://gitenterprise.inside-box.net/Preview/Preview/pull/622) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Document Viewer Tests [\#621](https://gitenterprise.inside-box.net/Preview/Preview/pull/621) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Changing highlight buttons dialog to dark for feature discoverability [\#620](https://gitenterprise.inside-box.net/Preview/Preview/pull/620) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Updating packages [\#619](https://gitenterprise.inside-box.net/Preview/Preview/pull/619) ([phora](https://gitenterprise.inside-box.net/phora))
+
 ## [v0.78.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.78.0) (2016-09-20)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.77.0...v0.78.0)
 
