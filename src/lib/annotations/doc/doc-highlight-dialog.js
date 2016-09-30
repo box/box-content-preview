@@ -243,6 +243,13 @@ class DocHighlightDialog extends AnnotationDialog {
             const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
             highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [annotations[0].user.name]);
             annotatorUtil.showElement(highlightLabelEl);
+
+            // Hide delete button on plain highlights if user doesn't have
+            // permissions
+            if (annotations[0].permissions && !annotations[0].permissions.can_delete) {
+                const addHighlightBtn = this._element.querySelector('.box-preview-add-highlight-btn');
+                annotatorUtil.hideElement(addHighlightBtn);
+            }
         }
 
         // Add annotation elements
@@ -362,10 +369,9 @@ class DocHighlightDialog extends AnnotationDialog {
             this._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             this.emit('annotationcreate');
 
-        // Deletes blank highlight annotation
+        // Deletes blank highlight annotation if user has permission
         } else {
             this._hasComments = true;
-            this._element.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             this.emit('annotationdelete');
         }
     }

@@ -102,6 +102,24 @@ class DocHighlightThread extends AnnotationThread {
     }
 
     /**
+     * Deletes an annotation.
+     *
+     * @param {string} annotationID ID of annotation to delete
+     * @param {boolean} [useServer] Whether or not to delete on server, default true
+     * @returns {void}
+     */
+    deleteAnnotation(annotationID, useServer = true) {
+        super.deleteAnnotation(annotationID, useServer);
+
+        // Hide delete button on plain highlights if user doesn't have
+        // permissions
+        if (this._annotations[0].permissions && !this._annotations[0].permissions.can_delete) {
+            const addHighlightBtn = this._dialog._element.querySelector('.box-preview-add-highlight-btn');
+            annotatorUtil.hideElement(addHighlightBtn);
+        }
+    }
+
+    /**
      * Mousedown handler for thread. Deletes this thread if it is still pending.
      *
      * @returns {void}

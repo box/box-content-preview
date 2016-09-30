@@ -190,8 +190,14 @@ class AnnotationThread extends EventEmitter {
         // Delete annotation on client
         this._annotations = this._annotations.filter((annot) => annot.annotationID !== annotationID);
 
+        // If the user doesn't have permission to delete the entire highlight
+        // annotation, display the annotation as a plain highlight
+        const canDeleteAnnotation = this._annotations[0] && this._annotations[0].permissions && this._annotations[0].permissions.can_delete;
+        if (annotatorUtil.isPlainHighlight(this._annotations) && !canDeleteAnnotation) {
+            this.cancelFirstComment();
+
         // If this annotation was the last one in the thread, destroy the thread
-        if (this._annotations.length === 0 || annotatorUtil.isPlainHighlight(this._annotations)) {
+        } else if (this._annotations.length === 0 || annotatorUtil.isPlainHighlight(this._annotations)) {
             this.destroy();
 
         // Otherwise, remove deleted annotation from dialog
@@ -205,7 +211,7 @@ class AnnotationThread extends EventEmitter {
             .then(() => {
                 // Ensures that blank highlight comment is also deleted when removing
                 // the last comment on a highlight
-                if (annotatorUtil.isPlainHighlight(this._annotations)) {
+                if (annotatorUtil.isPlainHighlight(this._annotations) && canDeleteAnnotation) {
                     this._annotationService.delete(this._annotations[0].annotationID);
                 }
 
@@ -224,6 +230,13 @@ class AnnotationThread extends EventEmitter {
     //--------------------------------------------------------------------------
     // Abstract
     //--------------------------------------------------------------------------
+
+    /**
+     * Cancels the first comment on the thread
+     *
+     * @returns {void}
+     */
+    cancelFirstComment() {}
 
     /**
      * Must be implemented to show the annotation indicator.

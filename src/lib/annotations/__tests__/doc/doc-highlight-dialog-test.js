@@ -216,7 +216,6 @@ describe('doc-highlight-dialog', () => {
             highlightDialog._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
 
             highlightDialog._toggleHighlight();
-            expect(highlightDialog._element.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED)).to.be.false;
             expect(highlightDialog._hasComments).to.be.true;
             expect(emitStub).to.be.calledWith('annotationdelete');
         });
