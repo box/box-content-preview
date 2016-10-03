@@ -14,7 +14,7 @@ The browser needs to have the Promise API implemented. If not, it can be polyfil
 
 Current Version
 ---------------
-* Version: 0.78.0
+* Version: 0.79.0
 * Locale: en-US
 
 https://cdn01.boxcdn.net/content-experience/0.78.0/en-US/preview.js  
