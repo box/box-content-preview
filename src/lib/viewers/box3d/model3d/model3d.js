@@ -9,13 +9,13 @@ import {
     EVENT_METADATA_UPDATE_FAILURE,
     EVENT_METADATA_UPDATE_SUCCESS,
     EVENT_ROTATE_ON_AXIS,
-    EVENT_SET_RENDER_MODE,
-    EVENT_TOGGLE_HELPERS,
+    EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
-    EVENT_SAVE_SCENE_DEFAULTS,
+    EVENT_SET_RENDER_MODE,
+    EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
-
 } from './model3d-constants';
 
 import {
@@ -73,12 +73,13 @@ class Model3d extends Box3D {
         super.attachEventHandlers();
 
         if (this.controls) {
-            this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
-            this.controls.on(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
-            this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
-            this.controls.on(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
+            this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+            this.controls.on(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
+            this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+            this.controls.on(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
+            this.controls.on(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
         this.renderer.on(EVENT_CLOSE_UI, this.handleCloseUi);
 
@@ -93,12 +94,13 @@ class Model3d extends Box3D {
         super.detachEventHandlers();
 
         if (this.controls) {
-            this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
-            this.controls.removeListener(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
-            this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
-            this.controls.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
+            this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
+            this.controls.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
+            this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+            this.controls.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
+            this.controls.removeListener(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
         this.renderer.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
         window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange);
@@ -411,6 +413,17 @@ class Model3d extends Box3D {
     @autobind
     handleSetQualityLevel(level) {
         this.renderer.setQualityLevel(level);
+    }
+
+    /**
+     * Handle setting wireframe visibility.
+     * @private
+     * @param {Boolean} visible Indicates whether or not wireframes are visible.
+     * @returns {void}
+     */
+    @autobind
+    handleShowWireframes(visible) {
+        this.renderer.setWireframesVisible(visible);
     }
 }
 

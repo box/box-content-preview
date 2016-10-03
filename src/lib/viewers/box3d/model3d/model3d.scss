@@ -40,8 +40,9 @@ $arrow-top-bottom: 4px solid transparent;
     }
 
     .box-preview-settings-panel-label {
+        display: inline;
         color: $seventy-sixers;
-        margin-bottom: 4px;
+        margin: 4px;
         line-height: 1;
         white-space: nowrap;
     }

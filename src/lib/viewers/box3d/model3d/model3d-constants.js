@@ -6,6 +6,7 @@ export const EVENT_SAVE_SCENE_DEFAULTS = 'sceneSave';
 export const EVENT_SET_RENDER_MODE = 'setRenderMode';
 export const EVENT_SET_CAMERA_PROJECTION = 'setCameraProjection';
 export const EVENT_SET_QUALITY_LEVEL = 'setQualityLevel';
+export const EVENT_SET_WIREFRAMES_VISIBLE = 'setWireframesVisible';
 export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 
 // 3D Scene Params

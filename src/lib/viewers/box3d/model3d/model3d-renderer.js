@@ -3,14 +3,15 @@ import autobind from 'autobind-decorator';
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
 import {
-    EVENT_CLOSE_UI,
-    EVENT_SET_RENDER_MODE,
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
-    QUALITY_LEVEL_FULL,
+    EVENT_CLOSE_UI,
+    EVENT_SET_RENDER_MODE,
+    EVENT_SET_WIREFRAMES_VISIBLE,
     GRID_SIZE,
     GRID_SECTIONS,
-    GRID_COLOR
+    GRID_COLOR,
+    QUALITY_LEVEL_FULL
 } from './model3d-constants';
 import Browser from '../../../browser';
 
@@ -173,7 +174,7 @@ class Model3dRenderer extends Box3DRenderer {
     * @returns {void}
     */
     addIblToMaterials() {
-        const materials = this.box3d.assetRegistry.Materials.assets;
+        const materials = this.box3d.assetRegistry.getAssetsByType('material');
 
         Object.keys(materials).forEach((id) => {
             const mat = materials[id];
@@ -530,6 +531,19 @@ class Model3dRenderer extends Box3DRenderer {
             this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
         } else {
             this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
+        }
+    }
+
+    /**
+     * Set the visibility of wireframes.
+     * @method setWireframesVisible
+     * @private
+     * @param {Boolean} visible Indicates whether or not wireframes are visible.
+     * @returns {void}
+     */
+    setWireframesVisible(visible) {
+        if (this.box3d) {
+            Box3D.globalEvents.trigger(EVENT_SET_WIREFRAMES_VISIBLE, visible);
         }
     }
 
