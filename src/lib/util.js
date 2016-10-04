@@ -535,15 +535,17 @@ export function findScriptLocation(name, currentScript = null) {
  */
 export function replacePlaceholders(string, placeholderValues) {
     const regex = /\{\d+\}/g;
-    let placeholderIndex = 0;
 
     if (!string || !string.length) {
         return string;
     }
 
     return string.replace(regex, (match) => {
+        // extracting the index that is supposed to replace the matched placeholder
+        const placeholderIndex = parseInt(match.replace(/^\D+/g, ''), 10) - 1;
+
         /* eslint-disable no-plusplus */
-        return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex++] : match;
+        return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex] : match;
         /* eslint-enable no-plusplus */
     });
 }
