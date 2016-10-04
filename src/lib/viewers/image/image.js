@@ -44,6 +44,10 @@ class Image extends Base {
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
         this.currentRotationAngle = 0;
+
+        if (Browser.isMobile()) {
+            this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
+        }
     }
 
     /**
@@ -66,6 +70,11 @@ class Image extends Base {
 
         document.removeEventListener('mousemove', this.pan);
         document.removeEventListener('mouseup', this.stopPanning);
+
+        if (Browser.isMobile()) {
+            this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
+        }
+
         super.destroy();
     }
 
@@ -157,6 +166,25 @@ class Image extends Base {
     handleDragStart(event) {
         event.preventDefault();
         event.stopPropogation();
+    }
+
+    /**
+     * Adjust padding on image rotation/zoom of images when the view port
+     * orientation changes from landscape to portrait and vice versa. Especially
+     * important for mobile devices because rotating the device doesn't triggers
+     * rotateLeft()
+     *
+     * @returns {void}
+     */
+    handleOrientationChange() {
+        this.adjustImageZoomPadding();
+
+        if (this.annotator) {
+            const scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
+            const rotationAngle = this.currentRotationAngle % 3600 % 360;
+            this.annotator.setScale(scale);
+            this.annotator.renderAnnotations(rotationAngle);
+        }
     }
 
     /**
@@ -260,9 +288,9 @@ class Image extends Base {
         this.emit('rotate');
 
         // Re-adjust image position after rotation
-        this.adjustImageZoomPadding();
+        this.handleOrientationChange();
 
-        if (this.canAnnotate) {
+        if (this.annotator) {
             this.annotator.renderAnnotations(this.currentRotationAngle);
         }
     }
@@ -374,7 +402,7 @@ class Image extends Base {
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
 
-        if (this.canAnnotate) {
+        if (this.annotator) {
             const scale = newWidth ? (newWidth / this.imageEl.naturalWidth) : (newHeight / this.imageEl.naturalHeight);
             const rotationAngle = this.currentRotationAngle % 3600 % 360;
             this.annotator.setScale(scale);
