@@ -317,6 +317,8 @@ class Image extends Base {
                 this.imageEl.style.width = '';
                 this.imageEl.style.height = '';
 
+                this.adjustImageZoomPadding();
+
                 // Image may still overflow the page, so do the default zoom by calling zoom again
                 // This will go through the same workflow but end up in another case block.
                 this.zoom();
