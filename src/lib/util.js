@@ -1,6 +1,12 @@
 import fetch from 'isomorphic-fetch';
 
-const parseJSON = (response) => response.json();
+const parseJSON = (response) => {
+    if (response.status === 204) {
+        return response;
+    }
+
+    return response.json();
+};
 const parseText = (response) => response.text();
 const parseBlob = (response) => response.blob();
 const parseThrough = (response) => response;

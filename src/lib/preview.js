@@ -20,6 +20,8 @@ const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const RETRY_TIMEOUT = 500; // retry network request interval for a file
 const RETRY_COUNT = 5; // number of times to retry network request for a file
 const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
+const LOG_RETRY_TIMEOUT = 500; // retry interval for logging preview event
+const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 
 const Box = global.Box || {};
 
@@ -412,7 +414,7 @@ class Preview extends EventEmitter {
 
         // If there wasn't an error, use Events API to log a preview
         if (typeof data.error !== 'string') {
-            this.logPreviewEvent();
+            this.logPreviewEvent(this.file.id, this.options);
         }
 
         // Hookup for phantom JS health check
@@ -429,21 +431,41 @@ class Preview extends EventEmitter {
      * preview happened for access stats, unlike the Logger, which logs preview
      * errors and performance metrics.
      *
+     * @param {string} fileID File ID to log preview event for
+     * @param {Object} options File options, e.g. token, shared link
      * @returns {void}
      * @private
      */
-    logPreviewEvent() {
-        const { api, token, sharedLink, sharedLinkPassword } = this.options;
+    logPreviewEvent(fileID, options) {
+        this.logRetryCount = this.logRetryCount || 0;
+
+        const { api, token, sharedLink, sharedLinkPassword } = options;
         const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
 
         post(`${api}/2.0/events`, headers, {
             event_type: 'preview',
             source: {
                 type: 'file',
-                id: this.file.id
+                id: fileID
             }
         })
-        .catch(() => {});
+        .then(() => {
+            // Reset retry count after successfully logging
+            this.logRetryCount = 0;
+        })
+        .catch(() => {
+            // Don't retry more than the retry limit
+            this.logRetryCount += 1;
+            if (this.logRetryCount > LOG_RETRY_COUNT) {
+                this.logRetryCount = 0;
+                return;
+            }
+
+            clearTimeout(this.logRetryTimeout);
+            this.logRetryTimeout = setTimeout(() => {
+                this.logPreviewEvent(fileID, options);
+            }, LOG_RETRY_TIMEOUT * this.logRetryCount);
+        });
     }
 
     /**
@@ -471,7 +493,7 @@ class Preview extends EventEmitter {
         clearTimeout(this.retryTimeout);
         this.retryTimeout = setTimeout(() => {
             this.load(this.file.id);
-        }, RETRY_TIMEOUT * RETRY_COUNT);
+        }, RETRY_TIMEOUT * this.retryCount);
     }
 
     /**
