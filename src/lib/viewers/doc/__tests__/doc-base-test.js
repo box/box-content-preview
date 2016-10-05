@@ -689,7 +689,13 @@ describe('doc-base', () => {
             expect(PDFJS.workerSrc).to.equal('asset');
         });
 
-        it('should disable range requests if the file is too big', () => {
+        it('should set external link settings', () => {
+            docBase.setupPdfjs();
+            expect(PDFJS.externalLinkTarget).to.equal(PDFJS.LinkTarget.BLANK);
+            expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer');
+        });
+
+        it('should disable range requests if the file is not too big', () => {
             stubs.browser.returns('Chrome');
 
             docBase.setupPdfjs();
