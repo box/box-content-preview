@@ -70,10 +70,12 @@ class ImagePointDialog extends AnnotationDialog {
             return dialogX;
         }
 
+        const largerWidth = (imageEl.clientWidth > this._annotatedElement.clientWidth) ? imageEl.clientWidth : this._annotatedElement.clientWidth;
+
         // Reposition to avoid sides - left side of page is 0px, right side is
         // ${wrapperWidth}px
         const dialogPastLeft = dialogX < 0;
-        const dialogPastRight = dialogX + dialogWidth > imageEl.clientWidth;
+        const dialogPastRight = dialogX + dialogWidth > largerWidth;
 
         if (dialogPastLeft && !dialogPastRight) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
@@ -85,12 +87,12 @@ class ImagePointDialog extends AnnotationDialog {
         // Fix the dialog and move caret appropriately
         } else if (dialogPastRight && !dialogPastLeft) {
             // Leave a minimum of 10 pixels so caret doesn't go off edge
-            const caretRightX = Math.max(10, imageEl.clientWidth - browserX);
+            const caretRightX = Math.max(10, largerWidth - browserX);
 
             // We set the 'left' property even when we have caretRightX for IE10/11
             annotationCaretEl.style.left = `${dialogWidth - caretRightX}px`;
 
-            return imageEl.clientWidth - dialogWidth;
+            return largerWidth - dialogWidth;
         }
 
         // Reset caret to center
