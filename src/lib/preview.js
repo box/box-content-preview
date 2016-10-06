@@ -927,7 +927,7 @@ class Preview extends EventEmitter {
      * @param {array} [viewerNames] Names of specific viewers to prefetch assets for
      * @returns {void}
      */
-    prefetchViewers(...viewerNames) {
+    prefetchViewers(viewerNames = []) {
         let viewers = this.getViewers();
 
         // Filter down to specified viewers
