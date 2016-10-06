@@ -532,8 +532,8 @@ class Model3dRenderer extends Box3DRenderer {
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
 
-        const alignPosition = this.vrEnabled ? this.modelVrAlignmentPosition: this.modelAlignmentPosition;
-        const alignVector = this.vrEnabled? this.modelVrAlignmentVector : this.modelAlignmentVector;
+        const alignPosition = this.vrEnabled ? this.modelVrAlignmentPosition : this.modelAlignmentPosition;
+        const alignVector = this.vrEnabled ? this.modelVrAlignmentVector : this.modelAlignmentVector;
 
         this.listenToRotateComplete(alignPosition, alignVector);
     }
