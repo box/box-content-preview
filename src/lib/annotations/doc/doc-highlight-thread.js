@@ -113,7 +113,7 @@ class DocHighlightThread extends AnnotationThread {
 
         // Hide delete button on plain highlights if user doesn't have
         // permissions
-        if (this._annotations[0].permissions && !this._annotations[0].permissions.can_delete) {
+        if (this._annotations.length && this._annotations[0].permissions && !this._annotations[0].permissions.can_delete) {
             const addHighlightBtn = this._dialog._element.querySelector('.box-preview-add-highlight-btn');
             annotatorUtil.hideElement(addHighlightBtn);
         }
