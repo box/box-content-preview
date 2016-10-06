@@ -518,15 +518,17 @@ class Preview extends EventEmitter {
         // Destroy anything still showing
         this.destroy();
 
-        const reason = err instanceof Error ? err.message : __('error_default');
-        const viewer = ErrorLoader.determineViewer();
+        // Figure out what error message to log and what error message to display
+        const logMessage = err instanceof Error ? err.message : __('error_default');
+        const displayMessage = err && err.displayMessage ? err.displayMessage : logMessage;
 
+        const viewer = ErrorLoader.determineViewer();
         ErrorLoader.load(viewer, this.options.location).then(() => {
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
                 file: this.file
             }));
 
-            this.viewer.load('', reason);
+            this.viewer.load('', displayMessage);
             hideLoadingIndicator();
 
             // Add listeners for viewer events
@@ -541,7 +543,7 @@ class Preview extends EventEmitter {
             this.count.error += 1;
 
             this.emit('load', {
-                error: reason,
+                error: logMessage,
                 metrics: this.logger.done(this.count),
                 file: this.file
             });
