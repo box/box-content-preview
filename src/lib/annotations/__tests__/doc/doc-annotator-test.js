@@ -499,6 +499,7 @@ describe('doc-annotator', () => {
             annotator._throttledHighlightMousemoveHandler = false;
             const thread = {
                 onMousemove: sandbox.stub(),
+                hideDialog: sandbox.stub(),
                 show: sandbox.stub()
             };
             const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates');

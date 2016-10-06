@@ -344,6 +344,14 @@ class DocAnnotator extends Annotator {
                     });
                 }
 
+                // Hide all other threads that are open besides the one currently being hovered over
+                const pendingHideThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_INACTIVE);
+                if (delayThreads.length) {
+                    pendingHideThreads.forEach((thread) => {
+                        thread.hideDialog(true);
+                    });
+                }
+
                 // If we are hovering over a highlight, we should use a hand cursor
                 if (delayThreads.some((thread) => {
                     return thread.state === constants.ANNOTATION_STATE_HOVER ||
