@@ -1,5 +1,3 @@
-import autobind from 'autobind-decorator';
-
 import {
     createContentUrl,
     prefetchAssets,
@@ -10,7 +8,6 @@ import {
     get
 } from './util';
 
-@autobind
 class AssetLoader {
 
     /**
