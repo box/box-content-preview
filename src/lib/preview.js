@@ -919,13 +919,24 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Prefetches the viewers
+     * Prefetches the viewers. If specific viewer names are passed in, only
+     * prefetch assets for those viewers. Otherwise, prefetch assets for
+     * all viewers.
      *
      * @public
+     * @param {array} [viewerNames] Names of specific viewers to prefetch assets for
      * @returns {void}
      */
-    prefetchViewers() {
-        const viewers = this.getViewers();
+    prefetchViewers(...viewerNames) {
+        let viewers = this.getViewers();
+
+        // Filter down to specified viewers
+        if (viewerNames.length) {
+            viewers = viewers.filter((viewer) => {
+                return viewerNames.indexOf(viewer.CONSTRUCTOR) !== -1;
+            });
+        }
+
         const loader = this.loaders[0]; // use any loader
         viewers.forEach((viewer) => {
             loader.prefetchAssets(viewer, this.location);

@@ -12,12 +12,12 @@ import ErrorLoader from './viewers/error/error-loader';
 
 // Order in this list matters
 export default [
-    SwfLoader,
-    Video360Loader,
-    MediaLoader,
     // OfficeLoader, // should come before document
     TextLoader, // should come before document
     DocLoader, // should come after text
+    SwfLoader,
+    Video360Loader,
+    MediaLoader,
     Image360Loader,
     ImageLoader,
     Model3dLoader,
