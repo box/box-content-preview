@@ -57,6 +57,7 @@ class AnnotationThread extends EventEmitter {
         this._location = data.location;
         this._threadID = data.threadID || AnnotationService.generateID();
         this._type = data.type;
+        this._locale = data.locale;
 
         this.setup();
     }

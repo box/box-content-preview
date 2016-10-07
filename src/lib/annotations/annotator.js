@@ -48,6 +48,7 @@ class Annotator extends EventEmitter {
         this._annotatedElement = data.annotatedElement;
         this._annotationService = data.annotationService || new LocalStorageAnnotationService();
         this._fileVersionID = data.fileVersionID;
+        this._locale = data.locale;
 
         this.notification = new Notification(this._annotatedElement);
     }

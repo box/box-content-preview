@@ -453,7 +453,8 @@ class Image extends Base {
         this.annotator = new ImageAnnotator({
             annotatedElement: this.wrapperEl,
             annotationService,
-            fileVersionID
+            fileVersionID,
+            locale: this.options.location.locale
         });
         this.annotator.init(this);
 
