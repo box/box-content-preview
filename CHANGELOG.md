@@ -1,11 +1,25 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.79.0...HEAD)
+## [v0.80.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.80.0) (2016-10-07)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.79.0...v0.80.0)
 
 **Merged pull requests:**
 
+- Fixing plain highlight annotations permissions check [\#665](https://gitenterprise.inside-box.net/Preview/Preview/pull/665) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Revert "Prevents creation of overlapping highlight annotations" [\#663](https://gitenterprise.inside-box.net/Preview/Preview/pull/663) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Change pdf.js unfriendly error message [\#662](https://gitenterprise.inside-box.net/Preview/Preview/pull/662) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Change params for prefetchViewers to be array [\#661](https://gitenterprise.inside-box.net/Preview/Preview/pull/661) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Allow prefetching of specific viewers' assets [\#660](https://gitenterprise.inside-box.net/Preview/Preview/pull/660) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add retries to preview event logging [\#659](https://gitenterprise.inside-box.net/Preview/Preview/pull/659) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add rel='noopener' to document links [\#658](https://gitenterprise.inside-box.net/Preview/Preview/pull/658) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Use wrapper width to calculate annotation positioning when image doesn't take up the whole viewport [\#657](https://gitenterprise.inside-box.net/Preview/Preview/pull/657) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Fixing image annotations on mobile [\#656](https://gitenterprise.inside-box.net/Preview/Preview/pull/656) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Bug fixes for image annotations positioning on zoomed images [\#655](https://gitenterprise.inside-box.net/Preview/Preview/pull/655) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Allowing replacePlaceholders to order replacements [\#654](https://gitenterprise.inside-box.net/Preview/Preview/pull/654) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Update README.md [\#653](https://gitenterprise.inside-box.net/Preview/Preview/pull/653) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Mousing out when adding a comment to a highlight annotation doesn't get stuck in the PENDING\_ACTIVE state [\#652](https://gitenterprise.inside-box.net/Preview/Preview/pull/652) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Updating changelog for v0.79.0 [\#650](https://gitenterprise.inside-box.net/Preview/Preview/pull/650) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Properly accounting for user permissions when deleting highlights from the UI [\#649](https://gitenterprise.inside-box.net/Preview/Preview/pull/649) ([spramod](https://gitenterprise.inside-box.net/spramod))
 - Use public NPM registry [\#648](https://gitenterprise.inside-box.net/Preview/Preview/pull/648) ([tjin](https://gitenterprise.inside-box.net/tjin))
 - Remove Box UI dependency [\#647](https://gitenterprise.inside-box.net/Preview/Preview/pull/647) ([tjin](https://gitenterprise.inside-box.net/tjin))
 - Fixing pdf.js upgrade script & re-updating pdf.js [\#646](https://gitenterprise.inside-box.net/Preview/Preview/pull/646) ([tjin](https://gitenterprise.inside-box.net/tjin))
