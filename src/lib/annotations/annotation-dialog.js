@@ -51,6 +51,7 @@ class AnnotationDialog extends EventEmitter {
         this._location = data.location;
         this._hasAnnotations = data.annotations.length > 0;
         this._canAnnotate = data.canAnnotate;
+        this._locale = data.locale;
 
         this.setup(data.annotations);
     }
@@ -395,9 +396,8 @@ class AnnotationDialog extends EventEmitter {
 
         const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
         const avatarHtml = annotatorUtil.getAvatarHtml(avatarUrl, userId, userName);
-        const created = new Date(annotation.created).toLocaleDateString(
-            'en-US',
-            { hour: '2-digit', minute: '2-digit' }
+        const created = new Date(annotation.created).toLocaleString(
+            this._locale, { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
         );
         const text = annotatorUtil.htmlEscape(annotation.text);
 

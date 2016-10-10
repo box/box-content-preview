@@ -433,6 +433,21 @@ describe('annotation-dialog', () => {
 
             expect(deleteConfirmation.classList.contains('box-preview-is-hidden')).to.be.true;
         });
+        it('should correctly format the date and time in a different locale', () => {
+            const date = new Date();
+            const toLocaleStringStub = sandbox.stub(Date.prototype, 'toLocaleString');
+            annotationDialog._locale = 'en-GB';
+            annotationDialog._addAnnotationElement({
+                annotationID: 1,
+                text: 'the preview sdk is amazing!',
+                user: { id: 1, name: 'user' },
+                permissions: { can_delete: true },
+                created: date
+            });
+
+
+            expect(toLocaleStringStub).to.be.calledWith('en-GB');
+        });
     });
 
     describe('_postAannotation()', () => {

@@ -174,6 +174,7 @@ class DocAnnotator extends Annotator {
             annotations,
             annotationService: this._annotationService,
             fileVersionID: this._fileVersionID,
+            locale: this._locale,
             location,
             type
         };

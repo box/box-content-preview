@@ -54,6 +54,7 @@ class ImagePointThread extends AnnotationThread {
             annotatedElement: this._annotatedElement,
             annotations: this._annotations,
             location: this._location,
+            locale: this._locale,
             canAnnotate: this._annotationService.canAnnotate
         });
     }
