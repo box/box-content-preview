@@ -119,7 +119,7 @@ class Image360Renderer extends Box3DRenderer {
                 return true;
             }
             return false;
-        }).then((url) => {
+        }, undefined, { headers: { 'x-rep-hints': 'original|jpeg|png' } }).then((url) => {
             this.imageAsset.set('representations', [{
                 src: url,
                 compression
