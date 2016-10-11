@@ -2,26 +2,26 @@
     <title>Zip File Icon</title>
     <path fill="#75818C" d="M24.5,27.5h-17c-0.6,0-1-0.4-1-1v-21c0-0.6,0.4-1,1-1h12l6,6v16 C25.5,27.1,25.1,27.5,24.5,27.5z"></path>
     <path fill="#FFFFFF" d="M24,26.5H8c-0.3,0-0.5-0.2-0.5-0.5V6c0-0.3,0.2-0.5,0.5-0.5h11.5 l5,5V26C24.5,26.3,24.3,26.5,24,26.5z"></path>
-    <path fill="#75818C" d="M19.5,4.5l6,6h-5c-0.6,0-1-0.4-1-1V4.5z" ></path>
-    <rect x="10.5" y="25.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="24.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="23.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="22.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="21.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="19.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="17.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="15.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="13.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="11.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="9.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="7.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="10.5" y="5.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="20.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="18.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="16.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="14.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="12.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="10.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="8.5" fill="#75818C" width="1" height="1" ></rect>
-    <rect x="11.5" y="6.5" fill="#75818C" width="1" height="1" ></rect>
+    <path fill="#75818C" d="M19.5,4.5l6,6h-5c-0.6,0-1-0.4-1-1V4.5z"></path>
+    <rect x="10.5" y="25.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="24.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="23.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="22.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="21.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="19.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="17.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="15.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="13.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="11.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="9.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="7.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="10.5" y="5.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="20.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="18.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="16.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="14.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="12.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="10.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="8.5" fill="#75818C" width="1" height="1"></rect>
+    <rect x="11.5" y="6.5" fill="#75818C" width="1" height="1"></rect>
 </svg>
