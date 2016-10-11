@@ -486,6 +486,13 @@ class Model3dRenderer extends Box3DRenderer {
         }
     }
 
+    /**
+     * Setup listeners for the axis rotation events, to properly align a model over time
+     *
+     * @param {Object} position {x, y, z} The position to align the model to.
+     * @param {Object} alignment {x, y, z} The alignment for setting rotation of the model.
+     * @returns {void}
+     */
     listenToRotateComplete(position, alignment) {
         this.isRotating = true;
         const postUpdate = () => {
