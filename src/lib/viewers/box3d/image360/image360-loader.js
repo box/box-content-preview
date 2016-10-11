@@ -1,5 +1,4 @@
 import Base360Loader from '../base360-loader';
-import autobind from 'autobind-decorator';
 
 const STATIC_URI = 'third-party/model3d/';
 const VIEWERS = [
@@ -21,7 +20,6 @@ const VIEWERS = [
     }
 ];
 
-@autobind
 class Image360Loader extends Base360Loader {
 
     /**

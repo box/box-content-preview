@@ -487,28 +487,40 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
+     * Setup listeners for the axis rotation events, to properly align a model over time
+     *
+     * @param {Object} position {x, y, z} The position to align the model to.
+     * @param {Object} alignment {x, y, z} The alignment for setting rotation of the model.
+     * @returns {void}
+     */
+    listenToRotateComplete(position, alignment) {
+        this.isRotating = true;
+        const postUpdate = () => {
+            this.instance.alignToPosition(position, alignment);
+        };
+        // Start listening to post update, to centre the object
+        this.box3d.on('postUpdate', postUpdate);
+        // Once transition complete, start updating and allow for another rotation
+        this.instance.once('axis_transition_complete', () => {
+            postUpdate();
+            this.box3d.off('postUpdate', postUpdate);
+            this.isRotating = false;
+        });
+    }
+
+    /**
      * Rotates the loaded model on the provided axis
      * @param  {Object}  axis The axis
      * @returns {void}
      */
     rotateOnAxis(axis) {
-        if (this.instance && this.box3d && !this.isRotating) {
-            this.isRotating = true;
-            const postUpdate = () => {
-                this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
-            };
-
-            // Kick off rotation
-            this.box3d.trigger('rotate_on_axis', axis, true);
-            // Start listening to post update, to centre the object
-            this.box3d.on('postUpdate', postUpdate);
-            // Once transition complete, start updating and allow for another rotation
-            this.instance.once('axis_transition_complete', () => {
-                postUpdate();
-                this.box3d.off('postUpdate', postUpdate);
-                this.isRotating = false;
-            });
+        if (!this.instance || !this.box3d || this.isRotating) {
+            return;
         }
+        // Kick off rotation
+        this.box3d.trigger('rotate_on_axis', axis, true);
+
+        this.listenToRotateComplete(this.modelAlignmentPosition, this.modelAlignmentVector);
     }
 
     /**
@@ -526,11 +538,11 @@ class Model3dRenderer extends Box3DRenderer {
         // Save these values back to forward and up, for metadata save
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
-        if (this.vrEnabled) {
-            this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
-        } else {
-            this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
-        }
+
+        const alignPosition = this.vrEnabled ? this.modelVrAlignmentPosition : this.modelAlignmentPosition;
+        const alignVector = this.vrEnabled ? this.modelVrAlignmentVector : this.modelAlignmentVector;
+
+        this.listenToRotateComplete(alignPosition, alignVector);
     }
 
     /**

@@ -555,3 +555,16 @@ export function replacePlaceholders(string, placeholderValues) {
         /* eslint-enable no-plusplus */
     });
 }
+/**
+ * Check to see if a file requires a Box3D viewer to be viewed
+ *
+ * @public
+ * @param file {Object} The file to check
+ * @returns {Boolean} True if the file needs a Box3D 360 degree viewer to be viewed
+ */
+export function requires360Viewer(file) {
+    // For now, we'll only support this preview if the filename has a secondary
+    // extension of '360' (e.g. file.360.mp4)
+    const basename = file.name.slice(0, file.name.lastIndexOf('.'));
+    return basename.endsWith('360');
+}
