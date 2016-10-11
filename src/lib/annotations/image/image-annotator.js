@@ -86,7 +86,8 @@ class ImageAnnotator extends Annotator {
             annotationService: this._annotationService,
             fileVersionID: this._fileVersionID,
             location,
-            type
+            type,
+            locale: this.locale
         };
 
         // Set existing thread ID if created with annotations

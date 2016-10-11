@@ -174,6 +174,7 @@ class DocAnnotator extends Annotator {
             annotations,
             annotationService: this._annotationService,
             fileVersionID: this._fileVersionID,
+            locale: this._locale,
             location,
             type
         };
@@ -340,6 +341,14 @@ class DocAnnotator extends Annotator {
                         if (shouldDelay) {
                             delayThreads.push(thread);
                         }
+                    });
+                }
+
+                // Hide all other threads that are open besides the one currently being hovered over
+                const pendingHideThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_INACTIVE);
+                if (delayThreads.length) {
+                    pendingHideThreads.forEach((thread) => {
+                        thread.hideDialog(true);
                     });
                 }
 

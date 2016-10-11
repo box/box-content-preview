@@ -596,7 +596,8 @@ class DocBase extends Base {
         this.annotator = new DocAnnotator({
             annotatedElement: this.docEl,
             annotationService,
-            fileVersionID
+            fileVersionID,
+            locale: this.options.location.locale
         });
         this.annotator.init();
         this.annotator.setScale(this.pdfViewer.currentScale);

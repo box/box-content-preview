@@ -760,6 +760,9 @@ describe('doc-base', () => {
                     permissions: {
                         can_annotate: true
                     }
+                },
+                location: {
+                    locale: 'en-US'
                 }
             };
             docBase.pdfViewer = {

@@ -2,7 +2,7 @@ module.exports = {
 
     basePath: '',
 
-    frameworks: ['mocha', 'sinon-stub-promise', 'chai-sinon', 'chai-as-promised', 'chai', 'sinon', 'fixture', 'source-map-support'],
+    frameworks: ['mocha', 'sinon-stub-promise', 'chai-sinon', 'chai-as-promised', 'chai-dom', 'chai', 'sinon', 'fixture', 'source-map-support'],
 
     files: [
         'node_modules/babel-polyfill/dist/polyfill.js',
