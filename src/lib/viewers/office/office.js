@@ -33,8 +33,12 @@ class Office extends Base {
      * @returns {void}
      */
     load() {
-        let src = `${deduceBoxUrl(this.options.api)}`;
-        src = `${src}/integrations/officeonline/openExcelOnlinePreviewer?fileId=${this.options.file.id}`;
+        let src = `${deduceBoxUrl(this.options.api)}/integrations/officeonline/openExcelOnlinePreviewer`;
+        if (this.options.sharedLink) {
+            src += `?s=${this.options.sharedLink.split('/s/')[1]}`;
+        } else {
+            src += `?fileId=${this.options.file.id}`;
+        }
         this.iframeEl.src = src;
         this.loaded = true;
         this.emit('load');
