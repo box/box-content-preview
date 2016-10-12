@@ -91,7 +91,7 @@ class Image360Renderer extends Box3DRenderer {
         const scene = this.box3d.getEntityById('SCENE_ID');
         this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
-        this.imageAsset = this.box3d.assetRegistry.createAsset({
+        this.imageAsset = this.box3d.createAsset({
             type: 'image',
             properties: {
                 // layout: 'stereo2dOverUnder',
@@ -125,7 +125,7 @@ class Image360Renderer extends Box3DRenderer {
                 compression
             }]);
 
-            this.textureAsset = this.box3d.assetRegistry.createAsset({
+            this.textureAsset = this.box3d.createAsset({
                 type: 'texture2D',
                 properties: {
                     imageId: this.imageAsset.id,
