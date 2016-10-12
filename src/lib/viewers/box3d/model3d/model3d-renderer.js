@@ -207,9 +207,6 @@ class Model3dRenderer extends Box3DRenderer {
         // Add the instance to the scene.
         scene.getRootObject().addChild(instance);
 
-        // Add the instance to the global list, to be removed later.
-        this.instances.push(instance);
-
         this.instance = instance;
 
         return true;
@@ -237,29 +234,19 @@ class Model3dRenderer extends Box3DRenderer {
 
         // Should wait until all textures are fully loaded before trying to measure performance.
         // Once they're loaded, start the dynamic optimizer.
-        const images = this.box3d.getEntitiesByType('image').filter((img) => img.isLoading());
-        const imagePromises = images.map((image) => new Promise((resolve) => {
-            image.when('load', resolve);
+        const images = this.box3d.getEntitiesByType('image');
+        const videos = this.box3d.getEntitiesByType('video');
+        const media = images.concat(videos).filter((asset) => asset.isLoading());
+        const mediaPromises = media.map((asset) => new Promise((resolve) => {
+            asset.when('load', resolve);
         }));
 
-        Promise.all(imagePromises).then(() => {
+        Promise.all(mediaPromises).then(() => {
             this.startOptimizer();
+            videos.forEach((video) => video.play());
         });
 
-        this.playVideos();
-
         this.resize();
-    }
-
-    /**
-     * Play all video assets.
-     * @method playVideos
-     * @private
-     * @returns {void}
-     */
-    playVideos() {
-        const videos = this.box3d.getAssetsByType('video');
-        videos.forEach((video) => video.when('load', () => video.play()));
     }
 
     /**
@@ -365,16 +352,15 @@ class Model3dRenderer extends Box3DRenderer {
     cleanupScene() {
         this.cleanupHelpers();
 
-        this.instances.forEach((instance) => {
-            instance.destroy();
-        });
+        if (this.instance) {
+            this.instance.destroy();
+            this.instance = null;
+        }
 
         this.assets.forEach((asset) => {
             asset.destroy();
         });
 
-        this.instance = null;
-        this.instances.length = 0;
         this.assets.length = 0;
     }
 
@@ -462,19 +448,24 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
-     * Setup listeners for the axis rotation events, to properly align a model over time
-     *
+     * Setup listeners for the axis rotation events, to properly align a model over time.
+     * @method listenToRotateComplete
      * @param {Object} position {x, y, z} The position to align the model to.
      * @param {Object} alignment {x, y, z} The alignment for setting rotation of the model.
      * @returns {void}
      */
     listenToRotateComplete(position, alignment) {
         this.isRotating = true;
+
         const postUpdate = () => {
-            this.instance.alignToPosition(position, alignment);
+            if (this.instance) {
+                this.instance.alignToPosition(position, alignment);
+            }
         };
+
         // Start listening to post update, to centre the object
         this.box3d.on('postUpdate', postUpdate);
+
         // Once transition complete, start updating and allow for another rotation
         this.instance.once('axis_transition_complete', () => {
             postUpdate();
@@ -484,18 +475,17 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
-     * Rotates the loaded model on the provided axis
-     * @param  {Object}  axis The axis
+     * Rotates the loaded model on the provided axis.
+     * @method rotateOnAxis
+     * @public
+     * @param {Object} axis The rotation axis.
      * @returns {void}
      */
     rotateOnAxis(axis) {
-        if (!this.instance || !this.box3d || this.isRotating) {
-            return;
+        if (this.instance && this.box3d && !this.isRotating) {
+            this.box3d.trigger('rotate_on_axis', axis, true);
+            this.listenToRotateComplete(this.modelAlignmentPosition, this.modelAlignmentVector);
         }
-        // Kick off rotation
-        this.box3d.trigger('rotate_on_axis', axis, true);
-
-        this.listenToRotateComplete(this.modelAlignmentPosition, this.modelAlignmentVector);
     }
 
     /**
@@ -512,16 +502,18 @@ class Model3dRenderer extends Box3DRenderer {
             return;
         }
 
+        // Set up the rotation listener before triggering "set_axes". The order is important because
+        // when useTransition is false, the "axis_transition_complete" event is fired immediately.
+        const alignPosition = this.vrEnabled ? this.modelVrAlignmentPosition : this.modelAlignmentPosition;
+        const alignVector = this.vrEnabled ? this.modelVrAlignmentVector : this.modelAlignmentVector;
+        this.listenToRotateComplete(alignPosition, alignVector);
+
+        // Modify the axes.
         this.box3d.trigger('set_axes', upAxis, forwardAxis, useTransition);
 
         // Save these values back to forward and up, for metadata save.
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
-
-        const alignPosition = this.vrEnabled ? this.modelVrAlignmentPosition : this.modelAlignmentPosition;
-        const alignVector = this.vrEnabled ? this.modelVrAlignmentVector : this.modelAlignmentVector;
-
-        this.listenToRotateComplete(alignPosition, alignVector);
     }
 
     /** @inheritdoc */
