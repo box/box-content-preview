@@ -3,7 +3,7 @@ import Browser from '../../../browser';
 export default [{
     id: 'CAMERA_ID',
     type: 'camera',
-    parentId: 'SCENE_ID',
+    parentId: 'SCENE_ROOT_ID',
     parentAssetId: 'SCENE_ID',
     properties: {
         position: {
@@ -44,10 +44,9 @@ export default [{
     id: 'SCENE_ID',
     type: 'scene',
     parentAssetId: 'SCENE_ID',
-    // The scene contains the lights and camera
-    children: [
-        'CAMERA_ID'
-    ],
+    properties: {
+        rootObjectId: 'SCENE_ROOT_ID'
+    },
     components: {
         skybox: {
             componentData: {
@@ -57,6 +56,14 @@ export default [{
             scriptId: 'skybox_renderer'
         }
     }
+}, {
+    id: 'SCENE_ROOT_ID',
+    type: 'node',
+    parentAssetId: 'SCENE_ID',
+    // The scene contains the lights and camera
+    children: [
+        'CAMERA_ID'
+    ]
 }, {
     id: 'APP_ASSET_ID',
     type: 'application',

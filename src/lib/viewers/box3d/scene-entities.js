@@ -6,7 +6,7 @@ function sceneEntities() {
     return [{
         id: 'CAMERA_ID',
         type: 'camera',
-        parentId: 'SCENE_ID',
+        parentId: 'SCENE_ROOT_ID',
         parentAssetId: 'SCENE_ID',
         properties: {
             position: {
@@ -55,6 +55,13 @@ function sceneEntities() {
         id: 'SCENE_ID',
         type: 'scene',
         parentAssetId: 'SCENE_ID',
+        properties: {
+            rootObjectId: 'SCENE_ROOT_ID'
+        }
+    }, {
+        id: 'SCENE_ROOT_ID',
+        type: 'node',
+        parentAssetId: 'SCENE_ID',
         // The scene contains the lights and camera
         children: [
             'CAMERA_ID',
@@ -63,7 +70,7 @@ function sceneEntities() {
     }, {
         id: 'AMBIENT_LIGHT_ID',
         type: 'light',
-        parentAssetId: 'SCENE_ID',
+        parentAssetId: 'SCENE_ROOT_ID',
         properties: {
             lightType: 'ambient'
         }

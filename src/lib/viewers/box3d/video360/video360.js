@@ -132,7 +132,7 @@ class Video360 extends Dash {
         const scene = this.renderer.getBox3D().getEntityById('SCENE_ID');
         this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
-        this.videoAsset = this.renderer.getBox3D().assetRegistry.createAsset({
+        this.videoAsset = this.renderer.getBox3D().createAsset({
             id: 'VIDEO_ID',
             type: 'video',
             properties: {
@@ -144,7 +144,7 @@ class Video360 extends Dash {
             }
         });
 
-        this.textureAsset = this.renderer.getBox3D().assetRegistry.createAsset({
+        this.textureAsset = this.renderer.getBox3D().createAsset({
             id: 'VIDEO_TEX_ID',
             type: 'texture2D',
             properties: {

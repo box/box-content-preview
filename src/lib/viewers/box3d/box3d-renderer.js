@@ -152,8 +152,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {Box3DEntity} The camera instance
      */
     getCamera() {
-        const scene = this.getScene();
-        return scene ? scene.getChildById('CAMERA_ID') : null;
+        return this.box3d ? this.box3d.getObjectById('CAMERA_ID') : null;
     }
 
     /**
@@ -172,7 +171,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {Box3DEntity} The scene asset
      */
     getScene() {
-        return this.box3d ? this.box3d.assetRegistry.getAssetById('SCENE_ID') : null;
+        return this.box3d ? this.box3d.getAssetById('SCENE_ID') : null;
     }
 
     /**
@@ -237,7 +236,7 @@ class Box3DRenderer extends EventEmitter {
                 inputSettings: options.inputSettings || INPUT_SETTINGS,
                 resourceLoader
             }, () => {
-                const app = this.box3d.assetRegistry.getAssetById('APP_ASSET_ID');
+                const app = this.box3d.getAssetById('APP_ASSET_ID');
                 app.load(() => {
                     Cache.set(CACHE_KEY_BOX3D, this.box3d);
                     resolve(this.box3d);

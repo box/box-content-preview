@@ -50,11 +50,11 @@
 	
 	var _representationLoaderRm2 = _interopRequireDefault(_representationLoaderRm);
 	
-	var _representationLoaderV = __webpack_require__(7);
+	var _representationLoaderV = __webpack_require__(6);
 	
 	var _representationLoaderV2 = _interopRequireDefault(_representationLoaderV);
 	
-	var _metadata = __webpack_require__(10);
+	var _metadata = __webpack_require__(9);
 	
 	var _metadata2 = _interopRequireDefault(_metadata);
 	
@@ -69,7 +69,7 @@
 	 * @returns {void}
 	 */
 	function BoxSDK() {
-	  var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	  var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
 	
 	  if (opts.hasOwnProperty('token')) {
@@ -149,7 +149,7 @@
 	
 	var _lie2 = _interopRequireDefault(_lie);
 	
-	var _baseRepresentationLoader = __webpack_require__(5);
+	var _baseRepresentationLoader = __webpack_require__(4);
 	
 	var _baseRepresentationLoader2 = _interopRequireDefault(_baseRepresentationLoader);
 	
@@ -174,15 +174,13 @@
 	   * file is shared
 	   * @returns {void}
 	   */
-	
 	  function RepresentationLoaderRM() {
-	    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
 	    _classCallCheck(this, RepresentationLoaderRM);
 	
 	    //for creating URLs with a shared name appended
-	
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RepresentationLoaderRM).call(this, opts));
+	    var _this = _possibleConstructorReturn(this, (RepresentationLoaderRM.__proto__ || Object.getPrototypeOf(RepresentationLoaderRM)).call(this, opts));
 	
 	    _this.sharedName = opts.sharedName;
 	    return _this;
@@ -231,7 +229,7 @@
 	    value: function getFileIds(filePath, baseFileId) {
 	      var _this3 = this;
 	
-	      var data = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	      var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	
 	
 	      if (!filePath) {
@@ -306,7 +304,7 @@
 	  }, {
 	    key: 'get',
 	    value: function get(url) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	      var progress = arguments[2];
 	
 	
@@ -316,7 +314,7 @@
 	
 	      params.withCredentials = true;
 	
-	      return _get(Object.getPrototypeOf(RepresentationLoaderRM.prototype), 'get', this).call(this, url, params, progress);
+	      return _get(RepresentationLoaderRM.prototype.__proto__ || Object.getPrototypeOf(RepresentationLoaderRM.prototype), 'get', this).call(this, url, params, progress);
 	    }
 	
 	    /**
@@ -344,7 +342,7 @@
 	    key: 'destroy',
 	    value: function destroy() {
 	
-	      _get(Object.getPrototypeOf(RepresentationLoaderRM.prototype), 'destroy', this).call(this);
+	      _get(RepresentationLoaderRM.prototype.__proto__ || Object.getPrototypeOf(RepresentationLoaderRM.prototype), 'destroy', this).call(this);
 	      delete this.sharedName;
 	    }
 	  }]);
@@ -358,8 +356,8 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-	var immediate = __webpack_require__(4);
+	'use strict';
+	var immediate = __webpack_require__(3);
 	
 	/* istanbul ignore next */
 	function INTERNAL() {}
@@ -369,13 +367,8 @@
 	var REJECTED = ['REJECTED'];
 	var FULFILLED = ['FULFILLED'];
 	var PENDING = ['PENDING'];
-	/* istanbul ignore else */
-	if (!process.browser) {
-	  // in which we actually take advantage of JS scoping
-	  var UNHANDLED = ['UNHANDLED'];
-	}
 	
-	module.exports = exports = Promise;
+	module.exports = Promise;
 	
 	function Promise(resolver) {
 	  if (typeof resolver !== 'function') {
@@ -384,16 +377,12 @@
 	  this.state = PENDING;
 	  this.queue = [];
 	  this.outcome = void 0;
-	  /* istanbul ignore else */
-	  if (!process.browser) {
-	    this.handled = UNHANDLED;
-	  }
 	  if (resolver !== INTERNAL) {
 	    safelyResolveThenable(this, resolver);
 	  }
 	}
 	
-	Promise.prototype.catch = function (onRejected) {
+	Promise.prototype["catch"] = function (onRejected) {
 	  return this.then(null, onRejected);
 	};
 	Promise.prototype.then = function (onFulfilled, onRejected) {
@@ -402,12 +391,6 @@
 	    return this;
 	  }
 	  var promise = new this.constructor(INTERNAL);
-	  /* istanbul ignore else */
-	  if (!process.browser) {
-	    if (typeof onRejected === 'function' && this.handled === UNHANDLED) {
-	      this.handled = null;
-	    }
-	  }
 	  if (this.state !== PENDING) {
 	    var resolver = this.state === FULFILLED ? onFulfilled : onRejected;
 	    unwrap(promise, resolver, this.outcome);
@@ -480,16 +463,6 @@
 	handlers.reject = function (self, error) {
 	  self.state = REJECTED;
 	  self.outcome = error;
-	  /* istanbul ignore else */
-	  if (!process.browser) {
-	    if (self.handled === UNHANDLED) {
-	      immediate(function () {
-	        if (self.handled === UNHANDLED) {
-	          process.emit('unhandledRejection', error, self);
-	        }
-	      });
-	    }
-	  }
 	  var i = -1;
 	  var len = self.queue.length;
 	  while (++i < len) {
@@ -549,7 +522,7 @@
 	  return out;
 	}
 	
-	exports.resolve = resolve;
+	Promise.resolve = resolve;
 	function resolve(value) {
 	  if (value instanceof this) {
 	    return value;
@@ -557,13 +530,13 @@
 	  return handlers.resolve(new this(INTERNAL), value);
 	}
 	
-	exports.reject = reject;
+	Promise.reject = reject;
 	function reject(reason) {
 	  var promise = new this(INTERNAL);
 	  return handlers.reject(promise, reason);
 	}
 	
-	exports.all = all;
+	Promise.all = all;
 	function all(iterable) {
 	  var self = this;
 	  if (Object.prototype.toString.call(iterable) !== '[object Array]') {
@@ -602,7 +575,7 @@
 	  }
 	}
 	
-	exports.race = race;
+	Promise.race = race;
 	function race(iterable) {
 	  var self = this;
 	  if (Object.prototype.toString.call(iterable) !== '[object Array]') {
@@ -636,116 +609,18 @@
 	    });
 	  }
 	}
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
 
 /***/ },
 /* 3 */
 /***/ function(module, exports) {
 
-	// shim for using process in browser
-	
-	var process = module.exports = {};
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-	
-	function cleanUpNextTick() {
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-	
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = setTimeout(cleanUpNextTick);
-	    draining = true;
-	
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    clearTimeout(timeout);
-	}
-	
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
-	    }
-	};
-	
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-	
-	function noop() {}
-	
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-	
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-	
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global, process) {'use strict';
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
 	var Mutation = global.MutationObserver || global.WebKitMutationObserver;
 	
 	var scheduleDrain;
 	
-	if (process.browser) {
+	{
 	  if (Mutation) {
 	    var called = 0;
 	    var observer = new Mutation(nextTick);
@@ -782,10 +657,6 @@
 	      setTimeout(nextTick, 0);
 	    };
 	  }
-	} else {
-	  scheduleDrain = function () {
-	    process.nextTick(nextTick);
-	  };
 	}
 	
 	var draining;
@@ -814,10 +685,10 @@
 	  }
 	}
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -828,7 +699,7 @@
 	
 	var _lie2 = _interopRequireDefault(_lie);
 	
-	var _xhr = __webpack_require__(6);
+	var _xhr = __webpack_require__(5);
 	
 	var _xhr2 = _interopRequireDefault(_xhr);
 	
@@ -850,7 +721,6 @@
 	   * the base url for all Box API calls
 	   * @returns {void}
 	   */
-	
 	  function BaseRepresentationLoader(opts) {
 	    _classCallCheck(this, BaseRepresentationLoader);
 	
@@ -892,7 +762,7 @@
 	    value: function getRepresentation(url, progress) {
 	      var _this = this;
 	
-	      var params = arguments.length <= 2 || arguments[2] === undefined ? { responseType: 'arraybuffer' } : arguments[2];
+	      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : { responseType: 'arraybuffer' };
 	
 	
 	      return new _lie2.default(function (resolve, reject) {
@@ -970,7 +840,7 @@
 	  }, {
 	    key: 'get',
 	    value: function get(url) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? { withCredentials: true, responseType: null } : arguments[1];
+	      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { withCredentials: true, responseType: null };
 	      var progress = arguments[2];
 	
 	      return this.xhr.get(url, progress, params);
@@ -1035,7 +905,7 @@
 	module.exports = BaseRepresentationLoader;
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1044,7 +914,7 @@
 	  value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -1064,7 +934,6 @@
 	   * automatically be sent with requests
 	   * @returns {void}
 	   */
-	
 	  function XHR(token) {
 	    _classCallCheck(this, XHR);
 	
@@ -1176,15 +1045,15 @@
 	  }, {
 	    key: 'makeRequest',
 	    value: function makeRequest(url) {
-	      var method = arguments.length <= 1 || arguments[1] === undefined ? 'GET' : arguments[1];
-	      var params = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+	      var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'GET';
+	      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 	
 	      var _this = this;
 	
 	      var progress = arguments[3];
-	      var options = arguments.length <= 4 || arguments[4] === undefined ? { withCredentials: true,
+	      var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : { withCredentials: true,
 	        xhrKey: undefined, responseType: undefined, info: undefined, headers: undefined,
-	        sendToken: true } : arguments[4];
+	        sendToken: true };
 	
 	
 	      if (!url) {
@@ -1439,11 +1308,11 @@
 	
 	  return XHR;
 	}();
-
+	
 	exports.default = XHR;
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1458,15 +1327,15 @@
 	
 	var _lie2 = _interopRequireDefault(_lie);
 	
-	var _search = __webpack_require__(8);
+	var _search = __webpack_require__(7);
 	
 	var _search2 = _interopRequireDefault(_search);
 	
-	var _baseRepresentationLoader = __webpack_require__(5);
+	var _baseRepresentationLoader = __webpack_require__(4);
 	
 	var _baseRepresentationLoader2 = _interopRequireDefault(_baseRepresentationLoader);
 	
-	var _utils = __webpack_require__(9);
+	var _utils = __webpack_require__(8);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -1500,9 +1369,8 @@
 	   * requests to allow Box File access, from shares
 	   * @returns {Object} The RepresentationLoaderV2 instance
 	   */
-	
 	  function RepresentationLoaderV2() {
-	    var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
 	    _classCallCheck(this, RepresentationLoaderV2);
 	
@@ -1510,7 +1378,7 @@
 	      throw new Error('No OAuth Token Provided!');
 	    }
 	
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RepresentationLoaderV2).call(this, opts));
+	    var _this = _possibleConstructorReturn(this, (RepresentationLoaderV2.__proto__ || Object.getPrototypeOf(RepresentationLoaderV2)).call(this, opts));
 	
 	    _this.xhr.setAuthToken(opts.token);
 	
@@ -1540,7 +1408,7 @@
 	  _createClass(RepresentationLoaderV2, [{
 	    key: 'get',
 	    value: function get(url) {
-	      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	      var progress = arguments[2];
 	
 	      // The options object used in XHR.makeRequest
@@ -1745,6 +1613,7 @@
 	     * True for a valid representation to fetch.
 	     * @param {Object} [properties] Additional properties of the representation to encode and add to
 	     * the content url.
+	     * @param {Object} [requestOptions] Additional options for the request.
 	     * @returns {Promise} A promise that resolves in the content url to get the representation
 	     */
 	
@@ -1753,8 +1622,8 @@
 	    value: function getRepresentationUrl(fileId, entryValidator) {
 	      var _this4 = this;
 	
-	      var properties = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
-	      var requestOptions = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+	      var properties = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	      var requestOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 	
 	
 	      if (!entryValidator) {
@@ -1859,7 +1728,7 @@
 	    value: function pollInfoStatus(url) {
 	      var _this6 = this;
 	
-	      var waitTime = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	      var waitTime = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 	
 	
 	      var timesPolled = this.incrementPollCount(url);
@@ -1930,7 +1799,7 @@
 	  }, {
 	    key: 'destroy',
 	    value: function destroy() {
-	      _get(Object.getPrototypeOf(RepresentationLoaderV2.prototype), 'destroy', this).call(this);
+	      _get(RepresentationLoaderV2.prototype.__proto__ || Object.getPrototypeOf(RepresentationLoaderV2.prototype), 'destroy', this).call(this);
 	      delete this.search;
 	      delete this.contentBaseCache;
 	    }
@@ -1942,7 +1811,7 @@
 	module.exports = RepresentationLoaderV2;
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1953,7 +1822,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _utils = __webpack_require__(9);
+	var _utils = __webpack_require__(8);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -1969,9 +1838,8 @@
 	   * @param {string} [sharedLink] Used for GET requests, if File is served through a Shared Link
 	   * @returns {void}
 	   */
-	
 	  function Search(xhr) {
-	    var apiBase = arguments.length <= 1 || arguments[1] === undefined ? DEFAULT_API_BASE : arguments[1];
+	    var apiBase = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_API_BASE;
 	    var sharedLink = arguments[2];
 	
 	    _classCallCheck(this, Search);
@@ -2044,11 +1912,11 @@
 	
 	  return Search;
 	}();
-
+	
 	exports.default = Search;
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2068,7 +1936,7 @@
 	exports.sharedLinkForHeader = sharedLinkForHeader;
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2079,11 +1947,11 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _xhr = __webpack_require__(6);
+	var _xhr = __webpack_require__(5);
 	
 	var _xhr2 = _interopRequireDefault(_xhr);
 	
-	var _utils = __webpack_require__(9);
+	var _utils = __webpack_require__(8);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -2103,7 +1971,6 @@
 	  * @param {string} [sharedLink] Used for GET requests, if File is served through a Shared Link
 	  * @returns {void}
 	  */
-	
 	  function Metadata(token, apiBase, sharedLink) {
 	    _classCallCheck(this, Metadata);
 	
@@ -2333,7 +2200,7 @@
 	
 	  return Metadata;
 	}();
-
+	
 	exports.default = Metadata;
 
 /***/ }

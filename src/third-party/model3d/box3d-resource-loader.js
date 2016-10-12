@@ -60,7 +60,7 @@
 
 	var _v2Loader2 = _interopRequireDefault(_v2Loader);
 
-	var _runmodeLoader = __webpack_require__(7);
+	var _runmodeLoader = __webpack_require__(6);
 
 	var _runmodeLoader2 = _interopRequireDefault(_runmodeLoader);
 
@@ -80,9 +80,8 @@
 	   * @param {Object} [options] Loading options.
 	   * @param {Integer} [options.maxConcurrentLoads] The maximum number of concurrent loads.
 	   */
-
 	  function Box3DResourceLoader(boxSdk) {
-	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	    _classCallCheck(this, Box3DResourceLoader);
 
@@ -155,12 +154,13 @@
 	     * @public
 	     * @param {Box3DAsset} asset The Box3DAsset to load.
 	     * @param {Object} [options] Loading options.
+	     * @param {String} [options.xhrKey] The ID of the request.
 	     * @param {Integer} [options.priority] The loading priority, where lower numbers indicate higher
 	     * priority. Must be greater than or equal to 0.
-	     * @param {Integer} [options.maxSize] The maximum texture size.
 	     * @param {Array} [options.channels] The preferred texture channel layout.
 	     * @param {String} [options.compression] The preferred texture compression.
-	     * @param {String} [options.xhrKey] The ID of the request.
+	     * @param {Integer} [options.maxSize] The maximum texture size.
+	     * @param {Integer} [options.maxHeight] The maximum video height.
 	     * @param {Function} [progressFn] Called with progress events.
 	     * @returns {Promise} A promise that resolves to the asset data.
 	     */
@@ -170,7 +170,7 @@
 	    value: function load(asset) {
 	      var _this = this;
 
-	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	      var progressFn = arguments[2];
 
 	      // Figure out the priority and then add the asset to the queue in the appropriate priority
@@ -276,11 +276,10 @@
 	   * @constructor
 	   * @param {BoxSDK} boxSdk An instance of BoxSDK.
 	   */
-
 	  function V2Loader(boxSdk) {
 	    _classCallCheck(this, V2Loader);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(V2Loader).call(this, boxSdk));
+	    return _possibleConstructorReturn(this, (V2Loader.__proto__ || Object.getPrototypeOf(V2Loader)).call(this, boxSdk));
 	  }
 
 	  /** @inheritdoc */
@@ -300,7 +299,7 @@
 	  }, {
 	    key: 'getGzippedLength',
 	    value: function getGzippedLength(xhr, url) {
-	      return _get(Object.getPrototypeOf(V2Loader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: false });
+	      return _get(V2Loader.prototype.__proto__ || Object.getPrototypeOf(V2Loader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: false });
 	    }
 	  }]);
 
@@ -342,8 +341,8 @@
 	};
 
 	var DEFAULT_CHANNELS = ['red', 'green', 'blue'];
-
 	var MAX_IMAGE_SIZE = 16384;
+	var MAX_VIDEO_HEIGHT = 1080;
 
 	var BaseLoader = function () {
 	  /**
@@ -351,7 +350,6 @@
 	   * @constructor
 	   * @param {BoxSDK} boxSdk An instance of BoxSDK.
 	   */
-
 	  function BaseLoader(boxSdk) {
 	    _classCallCheck(this, BaseLoader);
 
@@ -377,7 +375,7 @@
 	  _createClass(BaseLoader, [{
 	    key: 'loadAsset',
 	    value: function loadAsset(asset) {
-	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	      var progressFn = arguments[2];
 
 	      var loadFn = this.getLoadFunction(asset.type);
@@ -405,6 +403,9 @@
 
 	        case 'image':
 	          return this.loadImage;
+
+	        case 'video':
+	          return this.loadVideo;
 	      }
 	    }
 
@@ -559,8 +560,9 @@
 	    }
 
 	    /**
-	     * Sub-classes may override this method to modify the image URL prior to the request being made.
-	     * @method modifyImageUrl
+	     * Sub-classes may override this method to modify image and video URLs prior to the request being
+	     * made.
+	     * @method modifyMediaUrl
 	     * @protected
 	     * @param {String} url The URL defined in the representation.
 	     * @returns {String} The fully qualified URL for the representation.
@@ -568,8 +570,8 @@
 	     */
 
 	  }, {
-	    key: 'modifyImageUrl',
-	    value: function modifyImageUrl(url) {
+	    key: 'modifyMediaUrl',
+	    value: function modifyMediaUrl(url) {
 	      return url;
 	    }
 
@@ -586,7 +588,7 @@
 	  }, {
 	    key: 'loadBuffer',
 	    value: function loadBuffer(asset) {
-	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	      var progressFn = arguments[2];
 
 	      var url = void 0;
@@ -639,9 +641,8 @@
 	      }
 
 	      var url = void 0;
-
 	      try {
-	        url = this.modifyImageUrl(representation.src);
+	        url = this.modifyMediaUrl(representation.src);
 	      } catch (err) {
 	        return _lie2.default.reject(err);
 	      }
@@ -665,7 +666,7 @@
 	  }, {
 	    key: 'loadResourceFromUrl',
 	    value: function loadResourceFromUrl(url) {
-	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var _this4 = this;
 
@@ -691,6 +692,47 @@
 	      }
 
 	      return this.cache[url];
+	    }
+
+	    /**
+	     * Load a video asset.
+	     * @method loadVideo
+	     * @private
+	     * @param {Box3DAsset} asset The asset to load.
+	     * @param {Object} options Loading options (@see Box3DResourceLoader.prototype.load()).
+	     * @param {Function} [progressFn] The progress callback.
+	     * @returns {Promise} A promise that resolves the video data.
+	     */
+
+	  }, {
+	    key: 'loadVideo',
+	    value: function loadVideo(asset, options, progressFn) {
+	      var _this5 = this;
+
+	      var representation = this.findVideoRepresentation(asset, options);
+	      if (!representation) {
+	        return _lie2.default.reject(new Error('No matching representations found'));
+	      }
+
+	      var credentials = this.getCredentialOptions(representation.isExternal);
+	      var requestOptions = Object.assign({ responseType: 'blob' }, credentials);
+
+	      if (representation.isExternal) {
+	        return this.sdkLoader.xhr.get(representation.src, progressFn, requestOptions).then(function (xhr) {
+	          return _this5.processVideo(xhr.response, representation);
+	        });
+	      }
+
+	      var url = void 0;
+	      try {
+	        url = this.modifyMediaUrl(representation.src);
+	      } catch (err) {
+	        return _lie2.default.reject(err);
+	      }
+
+	      return this.loadResourceFromUrl(url, requestOptions, function (response) {
+	        return _this5.processVideo(response, representation);
+	      }, progressFn);
 	    }
 
 	    /**
@@ -728,7 +770,7 @@
 	  }, {
 	    key: 'findImageRepresentation',
 	    value: function findImageRepresentation(asset) {
-	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var representations = asset.get('representations');
 	      if (!representations || representations.length === 0) {
@@ -792,6 +834,44 @@
 	    }
 
 	    /**
+	     * Find the video representation that best matches the specified criteria.
+	     * @method findVideoRepresentation
+	     * @private
+	     * @param {Box3DAsset} asset The video asset.
+	     * @param {Object} options Loading options (@see Box3DResourceLoader.prototype.load()).
+	     * @returns {Object} the representation that best matches the search criteria or null if none were
+	     * found.
+	     */
+
+	  }, {
+	    key: 'findVideoRepresentation',
+	    value: function findVideoRepresentation(asset) {
+	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	      var representations = asset.get('representations');
+	      if (!representations || representations.length === 0) {
+	        return null;
+	      }
+
+	      var optionsEx = Object.assign({ maxHeight: MAX_VIDEO_HEIGHT }, options);
+
+	      // For each representation, compute the difference between its height and the max height.
+	      var sizeDiffs = representations.map(function (representation) {
+	        return optionsEx.maxHeight - (representation.video || {}).height || 0;
+	      });
+
+	      // Find the index of the minimum, *positive* “diff”. This is equivalent to the largest video
+	      // that is less than or equal to the max specified.
+	      var bestIdx = sizeDiffs.reduce(function (bestIdx, currentDiff, currentIdx) {
+	        var bestDiff = bestIdx >= 0 ? sizeDiffs[bestIdx] : Number.MAX_VALUE;
+	        return currentDiff >= 0 && currentDiff < bestDiff ? currentIdx : bestIdx;
+	      }, -1);
+
+	      // Locate the match.
+	      return bestIdx >= 0 ? representations[bestIdx] : null;
+	    }
+
+	    /**
 	     * Post-processes an image response, resolving to an object that contains an
 	     * Image or an ArrayBuffer.
 	     * @method processImage
@@ -844,6 +924,53 @@
 	    }
 
 	    /**
+	     * Post-processes a video response, resolving to an object that contains a Video.
+	     * @method processVideo
+	     * @private
+	     * @param {Object} response An XHR response object.
+	     * @param {Object} representation The video representation that was loaded.
+	     * @returns {Promise} A promise that resolves the video data.
+	     */
+
+	  }, {
+	    key: 'processVideo',
+	    value: function processVideo(response, representation) {
+	      return new _lie2.default(function (resolve, reject) {
+	        var data = {
+	          properties: {
+	            width: (representation.video || {}).width,
+	            height: (representation.video || {}).height
+	          }
+	        };
+
+	        if (response instanceof Blob) {
+	          try {
+	            (function () {
+	              var url = URL.createObjectURL(response);
+	              var video = document.createElement('video');
+
+	              video.addEventListener('loadeddata', function () {
+	                data.data = video;
+	                resolve(data);
+	              });
+
+	              video.addEventListener('error', function () {
+	                reject(new Error('Failed to load video'));
+	              });
+
+	              video.src = url;
+	              video.load();
+	            })();
+	          } catch (err) {
+	            return reject(err);
+	          }
+	        } else {
+	          return reject(new Error('Video data has unexpected type'));
+	        }
+	      });
+	    }
+
+	    /**
 	     * Abort all requests associated with the specified key.
 	     * @method abortRequest
 	     * @public
@@ -868,11 +995,11 @@
 	  }, {
 	    key: 'abortRequests',
 	    value: function abortRequests() {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      // Clear all progress listeners.
 	      Object.keys(this.progressListeners).forEach(function (key) {
-	        _this5.removeProgressListeners(key);
+	        _this6.removeProgressListeners(key);
 	      });
 
 	      this.sdkLoader.xhr.abortRequests();
@@ -906,8 +1033,8 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-	var immediate = __webpack_require__(6);
+	'use strict';
+	var immediate = __webpack_require__(5);
 
 	/* istanbul ignore next */
 	function INTERNAL() {}
@@ -917,13 +1044,8 @@
 	var REJECTED = ['REJECTED'];
 	var FULFILLED = ['FULFILLED'];
 	var PENDING = ['PENDING'];
-	/* istanbul ignore else */
-	if (!process.browser) {
-	  // in which we actually take advantage of JS scoping
-	  var UNHANDLED = ['UNHANDLED'];
-	}
 
-	module.exports = exports = Promise;
+	module.exports = Promise;
 
 	function Promise(resolver) {
 	  if (typeof resolver !== 'function') {
@@ -932,16 +1054,12 @@
 	  this.state = PENDING;
 	  this.queue = [];
 	  this.outcome = void 0;
-	  /* istanbul ignore else */
-	  if (!process.browser) {
-	    this.handled = UNHANDLED;
-	  }
 	  if (resolver !== INTERNAL) {
 	    safelyResolveThenable(this, resolver);
 	  }
 	}
 
-	Promise.prototype.catch = function (onRejected) {
+	Promise.prototype["catch"] = function (onRejected) {
 	  return this.then(null, onRejected);
 	};
 	Promise.prototype.then = function (onFulfilled, onRejected) {
@@ -950,12 +1068,6 @@
 	    return this;
 	  }
 	  var promise = new this.constructor(INTERNAL);
-	  /* istanbul ignore else */
-	  if (!process.browser) {
-	    if (this.handled === UNHANDLED) {
-	      this.handled = null;
-	    }
-	  }
 	  if (this.state !== PENDING) {
 	    var resolver = this.state === FULFILLED ? onFulfilled : onRejected;
 	    unwrap(promise, resolver, this.outcome);
@@ -1028,16 +1140,6 @@
 	handlers.reject = function (self, error) {
 	  self.state = REJECTED;
 	  self.outcome = error;
-	  /* istanbul ignore else */
-	  if (!process.browser) {
-	    if (self.handled === UNHANDLED) {
-	      immediate(function () {
-	        if (self.handled === UNHANDLED) {
-	          process.emit('unhandledRejection', error, self);
-	        }
-	      });
-	    }
-	  }
 	  var i = -1;
 	  var len = self.queue.length;
 	  while (++i < len) {
@@ -1097,7 +1199,7 @@
 	  return out;
 	}
 
-	exports.resolve = resolve;
+	Promise.resolve = resolve;
 	function resolve(value) {
 	  if (value instanceof this) {
 	    return value;
@@ -1105,13 +1207,13 @@
 	  return handlers.resolve(new this(INTERNAL), value);
 	}
 
-	exports.reject = reject;
+	Promise.reject = reject;
 	function reject(reason) {
 	  var promise = new this(INTERNAL);
 	  return handlers.reject(promise, reason);
 	}
 
-	exports.all = all;
+	Promise.all = all;
 	function all(iterable) {
 	  var self = this;
 	  if (Object.prototype.toString.call(iterable) !== '[object Array]') {
@@ -1150,7 +1252,7 @@
 	  }
 	}
 
-	exports.race = race;
+	Promise.race = race;
 	function race(iterable) {
 	  var self = this;
 	  if (Object.prototype.toString.call(iterable) !== '[object Array]') {
@@ -1185,115 +1287,17 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
 /* 5 */
 /***/ function(module, exports) {
 
-	// shim for using process in browser
-
-	var process = module.exports = {};
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-
-	function cleanUpNextTick() {
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = setTimeout(cleanUpNextTick);
-	    draining = true;
-
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    clearTimeout(timeout);
-	}
-
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
-	    }
-	};
-
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-
-	function noop() {}
-
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global, process) {'use strict';
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
 	var Mutation = global.MutationObserver || global.WebKitMutationObserver;
 
 	var scheduleDrain;
 
-	if (process.browser) {
+	{
 	  if (Mutation) {
 	    var called = 0;
 	    var observer = new Mutation(nextTick);
@@ -1330,10 +1334,6 @@
 	      setTimeout(nextTick, 0);
 	    };
 	  }
-	} else {
-	  scheduleDrain = function () {
-	    process.nextTick(nextTick);
-	  };
 	}
 
 	var draining;
@@ -1362,10 +1362,10 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(5)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1401,11 +1401,10 @@
 	   * @constructor
 	   * @param {BoxSDK} boxSdk An instance of BoxSDK.
 	   */
-
 	  function RunmodeLoader(boxSdk) {
 	    _classCallCheck(this, RunmodeLoader);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RunmodeLoader).call(this, boxSdk));
+	    return _possibleConstructorReturn(this, (RunmodeLoader.__proto__ || Object.getPrototypeOf(RunmodeLoader)).call(this, boxSdk));
 	  }
 
 	  /** @inheritdoc */
@@ -1426,17 +1425,17 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'modifyImageUrl',
-	    value: function modifyImageUrl(url) {
+	    key: 'modifyMediaUrl',
+	    value: function modifyMediaUrl(url) {
 	      // This code assumes that url is actually the fully qualified path.
 	      // Convert V2 src to runmode path
 	      // (e.g., images/1024/0.jpg -> 3dcg_image_1024_jpg/0.jpg)
-	      var urlTokens = url.match(/^(.*)images\/(\d+)\/(\d+)\.(.+)$/);
+	      var urlTokens = url.match(/^(.*)(image|video)s\/(\d+)\/(\d+)\.(.+)$/);
 	      if (!urlTokens) {
 	        // Try to match this form - images/1024/rgbe/0.jpg
-	        urlTokens = url.match(/^(.*)images\/(\d+)\/(\w+)\/(\d+)\.(.+)$/);
+	        urlTokens = url.match(/^(.*)(image)s\/(\d+)\/(\w+)\/(\d+)\.(.+)$/);
 	        if (!urlTokens) {
-	          throw new Error('Unexpected image URL format: ' + url);
+	          throw new Error('Unexpected media URL format: ' + url);
 	        }
 	      }
 
@@ -1445,11 +1444,12 @@
 	      var fileExtension = urlTokens[length - 1];
 
 	      var baseUrl = urlTokens[1];
-	      var folder1 = urlTokens[2];
-	      var folder2 = urlTokens.length > 5 ? '_' + urlTokens[3] : '';
+	      var type = urlTokens[2]; // "image" or "video"
+	      var folder1 = urlTokens[3]; // size
+	      var folder2 = urlTokens.length > 6 ? '_' + urlTokens[4] : ''; // optional encoding
 
 	      // Construct the runmode URL.
-	      return baseUrl + '3dcg_image_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
+	      return baseUrl + '3dcg_' + type + '_' + folder1 + folder2 + '_' + fileExtension + '/' + filename;
 	    }
 
 	    /** @inheritdoc */
@@ -1457,7 +1457,7 @@
 	  }, {
 	    key: 'getGzippedLength',
 	    value: function getGzippedLength(xhr, url) {
-	      return _get(Object.getPrototypeOf(RunmodeLoader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: true });
+	      return _get(RunmodeLoader.prototype.__proto__ || Object.getPrototypeOf(RunmodeLoader.prototype), 'getGzippedLength', this).call(this, xhr, url, { withCredentials: true });
 	    }
 	  }]);
 
