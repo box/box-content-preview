@@ -198,6 +198,7 @@ describe('base', () => {
             sandbox.stub(fullscreen, 'removeAllListeners');
             sandbox.stub(document.defaultView, 'removeEventListener');
             sandbox.stub(base, 'removeAllListeners');
+            sandbox.stub(base, 'emit');
 
             base.destroy();
 
@@ -206,6 +207,7 @@ describe('base', () => {
             expect(base.removeAllListeners).to.have.been.called;
             expect(base.containerEl.innerHTML).to.equal('');
             expect(base.destroyed).to.be.true;
+            expect(base.emit).to.be.calledWith('destroy');
         });
     });
 
