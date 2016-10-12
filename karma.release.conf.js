@@ -19,12 +19,7 @@ module.exports = function karmaReleaseConf(config) {
             type: 'cobertura'
         },
 
-        junitReporter: {
-            outputDir: 'reports/junit/',
-            outputFile: 'webapp-client-test-results.xml'
-        },
-
-        reporters: ['dots', 'junit', 'coverage', 'threshold'],
+        reporters: ['dots', 'coverage', 'threshold'],
 
         singleRun: true
 
