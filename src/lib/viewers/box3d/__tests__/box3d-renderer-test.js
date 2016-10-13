@@ -30,9 +30,9 @@ describe('box3d-renderer', () => {
     describe('constructor()', () => {
         it('should correctly set container element, BoxSDK and add a render event listener', () => {
             expect(renderer.containerEl).to.equal(containerEl);
-            expect(renderer.boxSdk).to.not.be.undefined;
-            expect(renderer._events).to.not.be.undefined;
-            expect(renderer._events.triggerRender).to.not.be.undefined;
+            expect(renderer.boxSdk).to.exist;
+            expect(renderer._events).to.exist;
+            expect(renderer._events.triggerRender).to.exist;
         });
     });
 
@@ -65,7 +65,7 @@ describe('box3d-renderer', () => {
             renderer.destroy();
 
             expect(hideBox3dSpy.called).to.be.false;
-            expect(renderer._events.triggerRender).to.be.undefined;
+            expect(renderer._events.triggerRender).to.not.exist;
         });
     });
 
@@ -115,12 +115,12 @@ describe('box3d-renderer', () => {
             };
 
             const camera = renderer.getCamera();
-            expect(camera).to.not.be.null;
+            expect(camera).to.exist;
         });
 
         it('should return null if no scene present', () => {
             const camera = renderer.getCamera();
-            expect(camera).to.be.null;
+            expect(camera).to.not.exist;
         });
     });
 
@@ -142,18 +142,18 @@ describe('box3d-renderer', () => {
             };
 
             const scene = renderer.getScene();
-            expect(scene).to.not.be.null;
+            expect(scene).to.exist;
         });
 
         it('should return null if the Box3D runtime is missing', () => {
             const scene = renderer.getScene();
-            expect(scene).to.be.null;
+            expect(scene).to.not.exist;
         });
     });
 
     describe('getBox3D()', () => {
         it('should return whatever exists in the box3d reference', () => {
-            expect(renderer.getBox3D()).to.be.null;
+            expect(renderer.getBox3D()).to.not.exist;
 
             renderer.box3d = {};
             expect(renderer.getBox3D()).to.be.an('object');
@@ -372,7 +372,7 @@ describe('box3d-renderer', () => {
             window.Box3D = Box3DFake;
 
             renderer.createBox3d({}, {}).catch(() => {
-                expect(renderer.box3d).to.be.null;
+                expect(renderer.box3d).to.not.exist;
                 done();
             });
         });
@@ -396,7 +396,7 @@ describe('box3d-renderer', () => {
             window.Box3D = Box3DFake;
 
             renderer.createBox3d({}, {}).catch(() => {
-                expect(renderer.box3d).to.be.null;
+                expect(renderer.box3d).to.not.exist;
                 done();
             });
         });
@@ -451,7 +451,7 @@ describe('box3d-renderer', () => {
             renderer.showBox3d();
 
             const canvas = containerEl.querySelector('canvas');
-            expect(canvas).to.not.be.undefined;
+            expect(canvas).to.exist;
         });
     });
 
@@ -480,7 +480,7 @@ describe('box3d-renderer', () => {
             expect(triggerSpy.withArgs('update').calledOnce).to.be.true;
             expect(triggerSpy.withArgs('render').calledOnce).to.be.true;
             expect(pauseSpy.calledOnce).to.be.true;
-            expect(renderer.box3d.container).to.be.null;
+            expect(renderer.box3d.container).to.not.exist;
         });
 
         it('should remove the Box3D canvas from the containerEl', () => {
@@ -496,9 +496,9 @@ describe('box3d-renderer', () => {
 
             renderer.hideBox3d();
 
-            expect(renderer.box3d.container).to.be.null;
-            expect(containerEl.querySelector('canvas')).to.be.null;
-            expect(canvasEl.parentNode).to.be.null;
+            expect(renderer.box3d.container).to.not.exist;
+            expect(containerEl.querySelector('canvas')).to.not.exist;
+            expect(canvasEl.parentNode).to.not.exist;
         });
     });
 
