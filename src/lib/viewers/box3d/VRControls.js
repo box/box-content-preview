@@ -4,6 +4,8 @@
  * @author mrdoob / http://mrdoob.com
  */
 
+const THREE = window.THREE || {};
+
 THREE.VRControls = function ( object, onError ) {
 
     var scope = this;
