@@ -1,5 +1,21 @@
 # Change Log
 
+## [v0.81.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.81.0) (2016-10-12)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.80.0...v0.81.0)
+
+**Merged pull requests:**
+
+- removing junit reporting from the release config [\#676](https://gitenterprise.inside-box.net/Preview/Preview/pull/676) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- COXP-2904 - Add video texture support [\#675](https://gitenterprise.inside-box.net/Preview/Preview/pull/675) ([ikerr](https://gitenterprise.inside-box.net/ikerr))
+- Fixing image360 get rep call. [\#674](https://gitenterprise.inside-box.net/Preview/Preview/pull/674) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Remove unused packages and move to ^ [\#673](https://gitenterprise.inside-box.net/Preview/Preview/pull/673) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Highlight annotation fixes [\#670](https://gitenterprise.inside-box.net/Preview/Preview/pull/670) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Unit tests for error and office viewers and loaders [\#669](https://gitenterprise.inside-box.net/Preview/Preview/pull/669) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update README.md [\#668](https://gitenterprise.inside-box.net/Preview/Preview/pull/668) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Update changelog for v0.80.0 [\#667](https://gitenterprise.inside-box.net/Preview/Preview/pull/667) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding localization to annotation dates [\#666](https://gitenterprise.inside-box.net/Preview/Preview/pull/666) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Bug fixes october 6 2016 [\#664](https://gitenterprise.inside-box.net/Preview/Preview/pull/664) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+
 ## [v0.80.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.80.0) (2016-10-07)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.79.0...v0.80.0)
 
