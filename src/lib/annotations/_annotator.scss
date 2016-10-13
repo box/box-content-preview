@@ -1,8 +1,8 @@
 @import '../boxui-variables';
 
-$highlight-yellow: #FED94E;
-$highlight-yellow-active-hover: #FFC900;
-$highlight-yellow-hover: #F5B31B;
+$highlight-yellow: #fed94e;
+$highlight-yellow-active-hover: #ffc900;
+$highlight-yellow-hover: #f5b31b;
 
 // Taken from Box React UI avatar
 $avatar-color-1: #18bbf7;
@@ -61,11 +61,13 @@ $avatar-color-9: #f22c44;
     padding-left: 5px;
     padding-right: 5px;
 
-    .icon, svg {
+    .icon,
+    svg {
         fill: lighten($better-black, 10%);
     }
 
-    &:hover .icon, &:hover svg {
+    &:hover .icon,
+    &:hover svg {
         fill: $better-black;
     }
 }
@@ -94,7 +96,7 @@ $avatar-color-9: #f22c44;
 }
 // scss-lint:enable SelectorDepth
 
-.box-preview-btn-plain .box-preview-btn-annotate.box-preview-is-active svg {
+.box-preview-btn-plain.box-preview-btn-annotate.box-preview-is-active svg {
     fill: $box-blue;
 }
 
@@ -322,18 +324,18 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 
 .box-preview-annotation-layer {
-    mix-blend-mode: multiply;
     cursor: text;
     left: 0;
+    mix-blend-mode: multiply;
     position: absolute;
     top: 15px; // Match 15px padding top on page
 }
 
 .box-preview-highlight-dialog {
     border-top: 10px solid transparent; // Transparent border for hover detection
+    display: table;
     position: absolute;
     z-index: 9999;
-    display: table;
 }
 
 .box-preview-annotation-highlight-dialog,
@@ -405,9 +407,9 @@ $avatar-color-9: #f22c44;
 }
 
 .box-preview-annotation-highlight-label {
-    width: 100%;
     padding-left: 5px;
     padding-right: 5px;
+    width: 100%;
 }
 
 //------------------------------------------------------------------------------
