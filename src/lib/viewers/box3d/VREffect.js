@@ -12,6 +12,8 @@
 
 import Browser from '../../browser';
 
+const THREE = window.THREE || {};
+
 THREE.VREffect = function ( renderer, boxRenderer, onError ) {
 
     var isWebVR1 = true;
