@@ -268,7 +268,7 @@ class Preview extends EventEmitter {
                 this.loadViewer();
             }
         } catch (err) {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
         }
     }
 
@@ -315,13 +315,13 @@ class Preview extends EventEmitter {
         // Load all the static assets
         const promiseToLoadStaticAssets = loader.load(viewer, this.options.location);
         promiseToLoadStaticAssets.catch((err) => {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_static_assets_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
         });
 
         // Load the representation assets
         const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
         promiseToGetRepresentationStatusSuccess.catch((err) => {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_representation_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_reupload')));
         });
 
         // Proceed only when both static and representation assets have been loaded
@@ -342,7 +342,7 @@ class Preview extends EventEmitter {
             // Load the representation into the viewer
             this.viewer.load(representation.links.content.url);
         }).catch((err) => {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
         });
     }
 
@@ -486,7 +486,7 @@ class Preview extends EventEmitter {
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
-            this.triggerError(new Error(__('error_network_fetch')));
+            this.triggerError(new Error(__('error_refresh')));
             return;
         }
 

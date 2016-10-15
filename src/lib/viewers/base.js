@@ -99,7 +99,7 @@ class Base extends EventEmitter {
                 return;
             }
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.emit('error', new Error(__('error_timeout')));
+                this.emit('error', new Error(__('error_refresh')));
             }
         }, this.loadTimeout);
     }
