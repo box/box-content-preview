@@ -72,7 +72,7 @@ class MediaLoader extends AssetLoader {
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
         if (viewer && requires360Viewer(file)) {
-            throw new Error(__('error_no_360_playback_support'));
+            throw new Error(__('error_unsupported'));
         }
 
         return viewer;

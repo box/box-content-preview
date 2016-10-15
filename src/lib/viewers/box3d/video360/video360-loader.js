@@ -61,7 +61,7 @@ class Video360Loader extends Base360Loader {
             // OR
             // if a 360 viewer but it is on IOS
             if (!isSupportedBrowser || isIOS) {
-                throw new Error(__('error_no_360_playback_support'));
+                throw new Error(__('error_unsupported'));
             }
         }
 

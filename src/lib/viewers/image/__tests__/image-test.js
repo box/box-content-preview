@@ -117,7 +117,7 @@ describe('image.js', () => {
 
         // Detect error event due to timeout
         image.on('error', (error) => {
-            expect(error.message).to.contain('preview timed out');
+            expect(error.message).to.contain('preview didn\'t load');
             done();
         });
 

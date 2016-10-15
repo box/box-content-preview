@@ -511,7 +511,7 @@ class DocBase extends Base {
             // Display a generic error message but log the real one
             const error = err;
             if (err instanceof Error) {
-                error.displayMessage = __('error_document_load');
+                error.displayMessage = __('error_document');
             }
             this.emit('error', error);
         });
