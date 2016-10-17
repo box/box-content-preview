@@ -81,12 +81,13 @@ class RepStatus {
                 break;
 
             case 'success':
+            case 'viewable':
                 this.resolve();
                 break;
 
             case 'none':
             case 'pending':
-                // If we are doing some loggin, log that the file needed conversion
+                // If we are doing some logging, log that the file needed conversion
                 if (this.logger) {
                     this.logger.setUnConverted();
                 }
