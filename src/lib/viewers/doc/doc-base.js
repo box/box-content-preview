@@ -57,6 +57,8 @@ class DocBase extends Base {
 
         this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
+
+        this.scaling = false;
     }
 
     /**
@@ -746,6 +748,17 @@ class DocBase extends Base {
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
+
+        if (Browser.isMobile()) {
+            if (Browser.isIOS()) {
+                this.docEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
+                this.docEl.addEventListener('gestureend', this.mobileZoomEndHandler);
+            } else {
+                this.docEl.addEventListener('touchstart', this.mobileZoomStartHandler);
+                this.docEl.addEventListener('touchmove', this.mobileZoomChangeHandler);
+                this.docEl.addEventListener('touchend', this.mobileZoomEndHandler);
+            }
+        }
     }
 
     /**
@@ -760,6 +773,17 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
+
+            if (Browser.isMobile()) {
+                if (Browser.isIOS()) {
+                    this.docEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
+                    this.docEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
+                } else {
+                    this.docEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
+                    this.docEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
+                    this.docEl.removeEventListener('touchend', this.mobileZoomEndHandler);
+                }
+            }
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);

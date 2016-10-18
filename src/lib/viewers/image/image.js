@@ -45,8 +45,17 @@ class Image extends Base {
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
         this.currentRotationAngle = 0;
 
+
         if (Browser.isMobile()) {
             this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
+            if (Browser.isIOS()) {
+                this.imageEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
+                this.imageEl.addEventListener('gestureend', this.mobileZoomEndHandler);
+            } else {
+                this.imageEl.addEventListener('touchstart', this.mobileZoomStartHandler);
+                this.imageEl.addEventListener('touchmove', this.mobileZoomChangeHandler);
+                this.imageEl.addEventListener('touchend', this.mobileZoomEndHandler);
+            }
         }
     }
 
@@ -73,6 +82,14 @@ class Image extends Base {
 
         if (Browser.isMobile()) {
             this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
+            if (Browser.isIOS()) {
+                this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
+                this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
+            } else {
+                this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
+                this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
+                this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
+            }
         }
 
         super.destroy();
