@@ -1,30 +1,26 @@
 @import 'node_modules/fixed-data-table/dist/fixed-data-table';
+@import '../../boxui-variables';
 
 .box-preview-text-csv {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    word-break: normal !important;
-    word-wrap: normal !important;
-    white-space: pre !important;
-    margin: 0;
-    color: #000;
-
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webit-flex-direction: column;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -webkit-align-items: center;
-    -ms-flex-align: center;
     align-items: center;
+    bottom: 0;
+    color: $black;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    left: 0;
+    margin: 0;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    user-select: none;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+
+    .box-preview-is-selectable & {
+        user-select: auto;
+    }
 }

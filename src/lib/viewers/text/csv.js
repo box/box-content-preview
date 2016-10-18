@@ -1,13 +1,13 @@
 import './csv.scss';
 import autobind from 'autobind-decorator';
 import TextBase from './text-base';
-import Browser from '../../browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Table, Column, Cell } from 'fixed-data-table';
 import { createAssetUrlCreator, get } from '../../util';
 
 const Box = global.Box || {};
+const HORIZONTAL_PADDING = 50;
 
 @autobind
 class CSV extends TextBase {
@@ -33,16 +33,16 @@ class CSV extends TextBase {
      * @returns {Promise} Promise to load a CSV
      */
     load(csvUrl) {
-        /* global Papa */
-
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.js');
 
         get(papaWorkerUrl, 'blob')
         .then((papaWorkerBlob) => {
-            Papa.SCRIPT_PATH = URL.createObjectURL(papaWorkerBlob);
+            const workerSrc = URL.createObjectURL(papaWorkerBlob);
+
+            /* global Papa */
+            Papa.SCRIPT_PATH = workerSrc;
             Papa.parse(csvUrl, {
-                worker: Browser.getName() !== 'Edge' && Browser.getName() !== 'Explorer', // IE and Edge don't work with worker
                 download: true,
                 token: this.options.token,
                 sharedLink: this.options.sharedLink,
@@ -55,7 +55,7 @@ class CSV extends TextBase {
                     }
                     this.data = results.data;
                     this.finishLoading();
-                    URL.revokeObjectURL(papaWorkerBlob);
+                    URL.revokeObjectURL(workerSrc);
                 }
             });
         });
@@ -107,7 +107,7 @@ class CSV extends TextBase {
      * @returns {Array} columns
      */
     renderColumn() {
-        return this.data[0].map((val, cellIndex) => <Column width={150} allowCellsRecycling cell={this.renderCell(cellIndex)} />);
+        return this.data[0].map((val, cellIndex) => <Column width={100} allowCellsRecycling cell={this.renderCell(cellIndex)} key={cellIndex} flexGrow={1} />);
     }
 
     /**
@@ -118,7 +118,7 @@ class CSV extends TextBase {
      */
     renderCSV() {
         ReactDOM.render(
-            <Table rowHeight={50} rowsCount={this.data.length} width={this.csvEl.clientWidth} maxHeight={this.csvEl.clientHeight} headerHeight={0}>
+            <Table rowHeight={50} rowsCount={this.data.length} width={this.csvEl.clientWidth - (HORIZONTAL_PADDING * 2)} maxHeight={this.csvEl.clientHeight} headerHeight={0}>
                 {this.renderColumn()}
             </Table>,
             this.csvEl
