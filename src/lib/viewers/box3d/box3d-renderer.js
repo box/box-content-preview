@@ -30,7 +30,7 @@ const INPUT_SETTINGS = {
  * Detect is WebVR is available with latest API
  * @returns {Boolean} True is we can support WebVR
  */
-function isLatestVRAvailable() {
+function isVRAvailable() {
     return navigator.getVRDisplays !== undefined;
 }
 
@@ -89,6 +89,11 @@ class Box3DRenderer extends EventEmitter {
         }
 
         this.disableVr();
+
+        if (this.vrEffect) {
+            this.vrEffect.dispose();
+        }
+
         this.hideBox3d();
         this.box3d.resourceLoader.destroy();
     }
@@ -134,7 +139,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {Box3DEntity} The scene asset
      */
     getScene() {
-        return this.box3d ? this.box3d.getAssetById('SCENE_ID') : null;
+        return this.box3d ? this.box3d.getEntityById('SCENE_ID') : null;
     }
 
     /**
@@ -331,8 +336,7 @@ class Box3DRenderer extends EventEmitter {
         this.box3d.on('preUpdate', this.updateVrControls, this);
 
         // Start rendering to the VR device.
-        // #TODO(@mbond): Can we remove this setTimeout?
-        setTimeout(this.renderVR.bind(this), 100);
+        this.renderVR();
 
         // Render every frame to make sure that we're as responsive as possible.
         const renderer = this.box3d.getRenderer();
@@ -340,20 +344,14 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     * Render a single frame with the VR effect applied
+     * Request WebVR to begin rendering to the VR device.
      *
      * @returns {void}
      */
     renderVR() {
         if (this.vrEffect) {
-            return;
+            this.vrEffect.requestPresent();
         }
-        // Because of a current bug in Chromium, we need to update the controls before
-        // presenting so that device.getPose() is called before device.submitFrame().
-        // Otherwise, crashes ensue. We need the setTimeout so that the controls have a
-        // chance to receive the vr device list from the browser.
-        this.updateVrControls();
-        this.vrEffect.requestPresent();
     }
 
     /**
@@ -366,8 +364,10 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        this.vrControls.dispose();
-        this.vrControls = undefined;
+        if (this.vrControls) {
+            this.vrControls.dispose();
+            this.vrControls = undefined;
+        }
 
         this.enableCameraControls();
         this.reset();
@@ -471,7 +471,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {void}
      */
     initVrIfPresent() {
-        if (!isLatestVRAvailable() || Box3D.isTablet()) {
+        if (!isVRAvailable() || Box3D.isTablet()) {
             return;
         }
 

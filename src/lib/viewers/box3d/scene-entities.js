@@ -1,3 +1,4 @@
+import Browser from '../../browser';
 /**
  * Returns the default scene entities array for a base 3d preview. Comes with a box!
  * @returns {array} Array of scene entities
@@ -7,21 +8,20 @@ function sceneEntities() {
         id: 'CAMERA_ID',
         type: 'camera',
         parentId: 'SCENE_ROOT_ID',
-        parentAssetId: 'SCENE_ID',
         properties: {
             position: {
-                x: 49.0,
-                y: 35.3,
-                z: 70.3
+                x: -0.559,
+                y: 0.197,
+                z: 0.712
             }, // Default position of camera
             quaternion: {
-                x: -0.185,
-                y: 0.294,
-                z: 0.058,
-                w: 0.936
+                x: -0.101,
+                y: -0.325,
+                z: -0.035,
+                w: 0.940
             }, // Default position of camera
-            near: 1, // Camera near-plane distance
-            far: 600
+            near: 0.01, // Camera near-plane distance
+            far: 6
         },
         components: {
             // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.
@@ -32,36 +32,29 @@ function sceneEntities() {
             // An orbit controller for rotating around the 3D model, made for preview
             previewCameraController: {
                 componentData: {
-                    orbitDistanceMin: 2, // Minimum camera distance
-                    orbitDistanceMax: 300, // Maximum camera distance
+                    orbitDistanceMin: 0.02, // Minimum camera distance
+                    orbitDistanceMax: 3, // Maximum camera distance
                     useKeyboard: false,
                     enablePan: true
                 },
                 enabled: true,
                 scriptId: 'preview_camera_controller'
             },
-            previewVrController: {
+            previewCameraFocus: {
                 componentData: {},
-                enabled: false,
-                scriptId: 'preview_vr_controls'
-            },
-            vrDisplayController: {
-                componentData: {},
-                enabled: false,
-                scriptId: 'hmd_renderer_script'
+                enabled: true,
+                scriptId: 'preview_camera_focus'
             }
         }
     }, {
         id: 'SCENE_ID',
-        type: 'scene',
-        parentAssetId: 'SCENE_ID',
+        type: 'prefab',
         properties: {
             rootObjectId: 'SCENE_ROOT_ID'
         }
     }, {
         id: 'SCENE_ROOT_ID',
-        type: 'node',
-        parentAssetId: 'SCENE_ID',
+        type: 'scene',
         // The scene contains the lights and camera
         children: [
             'CAMERA_ID',
@@ -70,30 +63,82 @@ function sceneEntities() {
     }, {
         id: 'AMBIENT_LIGHT_ID',
         type: 'light',
-        parentAssetId: 'SCENE_ROOT_ID',
+        parentId: 'SCENE_ROOT_ID',
         properties: {
-            lightType: 'ambient'
+            lightType: 'ambient',
+            color: { r: 0.0, g: 0.0, b: 0.0 }
         }
     }, {
         id: 'APP_ASSET_ID',
         type: 'application',
-        parentAssetId: 'APP_ASSET_ID',
         properties: {
             startupScene: 'SCENE_ID' // The scene to load
         },
         components: {
             rendererComponent: {
                 componentData: {
-                    antialias: true
+                    renderOnDemand: true,
+                    maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
+                    maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
+                    preserveDrawingBuffer: false,
+                    precision: Browser.isMobile() ? 'highp' : 'mediump',
+                    clearAlpha: 1.0,
+                    clearColor: { r: 0.95, g: 0.95, b: 0.95 }
                 },
                 scriptId: 'box3d_renderer',
-                isBuiltIn: true,
                 enabled: true
+            },
+            dynamicOptimizer: {
+                scriptId: 'dynamic_optimizer',
+                enabled: false,
+                componentData: {
+                    testInterval: 4000.0
+                }
+            },
+            debugPerformance: {
+                scriptId: 'debug_performance',
+                enabled: false
             },
             inputController: {
                 scriptId: 'input_controller_component',
-                isBuiltIn: true,
-                enabled: true
+                enabled: true,
+                componentData: {
+                    mouseEvents: {
+                        enable: true,
+                        scroll: true,
+                        scroll_preventDefault: true,
+                        move: true,
+                        down: true,
+                        down_preventDefault: false,
+                        up: true,
+                        double_click: true,
+                        leave: true,
+                        contextMenu: true,
+                        contextMenu_preventDefault: true,
+                        dragBufferDistance: 12,
+                        eventHandler: true
+                    },
+                    touchEvents: {
+                        enable: true,
+                        start: true,
+                        start_preventDefault: false,
+                        end: true,
+                        doubleTap: true,
+                        cancel: true,
+                        leave: true,
+                        move: true,
+                        move_preventDefault: true,
+                        dragBufferDistance: 12,
+                        eventHandler: true
+                    },
+                    keyEvents: {
+                        enable: true,
+                        down: true,
+                        up: true,
+                        preventDefault: false,
+                        eventHandler: true
+                    }
+                }
             },
             renderModesComponent: {
                 componentData: {},

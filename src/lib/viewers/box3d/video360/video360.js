@@ -129,31 +129,25 @@ class Video360 extends Dash {
      * @returns {void}
      */
     create360Environment() {
-        const scene = this.renderer.getBox3D().getEntityById('SCENE_ID');
+        const scene = this.renderer.getBox3D().getEntityById('SCENE_ROOT_ID');
         this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
-        this.videoAsset = this.renderer.getBox3D().createAsset({
-            id: 'VIDEO_ID',
-            type: 'video',
-            properties: {
-                // layout: 'stereo2dOverUnder',
-                loop: false,
-                generateMipmaps: false,
-                querySelector: `.${this.mediaContainerEl.className} video`,
-                autoPlay: false
-            }
+        this.videoAsset = this.renderer.getBox3D().createVideo('VIDEO_ID');
+        this.videoAsset.setProperties({
+            // layout: 'stereo2dOverUnder',
+            loop: false,
+            generateMipmaps: false,
+            querySelector: `.${this.mediaContainerEl.className} video`,
+            autoPlay: false
         });
 
-        this.textureAsset = this.renderer.getBox3D().createAsset({
-            id: 'VIDEO_TEX_ID',
-            type: 'texture2D',
-            properties: {
-                imageId: 'VIDEO_ID',
-                minFilter: 'linear',
-                magFilter: 'linear',
-                uMapping: 'clamp',
-                vMapping: 'clamp'
-            }
+        this.textureAsset = this.renderer.getBox3D().createTexture2d('VIDEO_TEX_ID');
+        this.textureAsset.setProperties({
+            imageId: 'VIDEO_ID',
+            minFilter: 'linear',
+            magFilter: 'linear',
+            uMapping: 'clamp',
+            vMapping: 'clamp'
         });
         return new Promise((resolve) => {
             this.textureAsset.load(() => {
