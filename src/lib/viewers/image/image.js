@@ -36,27 +36,8 @@ class Image extends Base {
         // hides image tag until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
 
-        if (this.isAnnotatable()) {
-            this.initAnnotations();
-        }
-
-        this.imageEl.addEventListener('mousedown', this.handleMouseDown);
-        this.imageEl.addEventListener('mouseup', this.handleMouseUp);
-        this.imageEl.addEventListener('dragstart', this.handleDragStart);
+        this.initAnnotations();
         this.currentRotationAngle = 0;
-
-
-        if (Browser.isMobile()) {
-            this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
-            if (Browser.isIOS()) {
-                this.imageEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
-                this.imageEl.addEventListener('gestureend', this.mobileZoomEndHandler);
-            } else {
-                this.imageEl.addEventListener('touchstart', this.mobileZoomStartHandler);
-                this.imageEl.addEventListener('touchmove', this.mobileZoomChangeHandler);
-                this.imageEl.addEventListener('touchend', this.mobileZoomEndHandler);
-            }
-        }
     }
 
     /**
@@ -71,26 +52,7 @@ class Image extends Base {
         }
 
         // Remove listeners
-        if (this.imageEl) {
-            this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
-            this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
-            this.imageEl.removeEventListener('dragstart', this.handleDragStart);
-        }
-
-        document.removeEventListener('mousemove', this.pan);
-        document.removeEventListener('mouseup', this.stopPanning);
-
-        if (Browser.isMobile()) {
-            this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
-            if (Browser.isIOS()) {
-                this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
-                this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
-            } else {
-                this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
-                this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
-                this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
-            }
-        }
+        this.unbindDOMListeners();
 
         super.destroy();
     }
@@ -103,22 +65,14 @@ class Image extends Base {
      * @returns {void}
      */
     load(imageUrl) {
-        this.imageEl.addEventListener('load', () => {
-            if (this.destroyed) {
-                return;
-            }
+        this.imageEl.addEventListener('load', this.onLoadHandler);
+        this.bindDOMListeners();
+        this.fetchImageUrl(imageUrl);
+        super.load();
+    }
 
-            URL.revokeObjectURL(this.imageEl.src);
-            this.loaded = true;
-            this.emit('load');
-            this.zoom();
-            this.imageEl.classList.remove(CLASS_INVISIBLE);
-
-            this.loadUI();
-        });
-
-        get(imageUrl, this.appendAuthHeader(), 'blob')
-        .then((img) => {
+    fetchImageUrl(imageUrl) {
+        get(imageUrl, this.appendAuthHeader(), 'blob').then((img) => {
             if (this.destroyed) {
                 return;
             }
@@ -129,79 +83,6 @@ class Image extends Base {
             console.error(err);
             /* eslint-enable no-console */
         });
-
-        super.load();
-    }
-
-    /**
-     * Handles mouse down event.
-     * @param {Event} event The mousemove event
-     * @returns {void}
-     */
-    handleMouseDown(event) {
-        this.didPan = false;
-
-        // If this is not a left click, then ignore
-        // If this is a CTRL or CMD click, then ignore
-        if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-            this.startPanning(event.clientX, event.clientY);
-            event.preventDefault();
-        }
-    }
-
-    /**
-     * Handles mouse down event.
-     * @param {Event} event The mousemove event
-     * @returns {void}
-     */
-    handleMouseUp(event) {
-        // Ignore zoom/pan mouse events if in annotation mode
-        if (this.annotator && this.annotator.isInPointMode()) {
-            return;
-        }
-
-        // If this is not a left click, then ignore
-        // If this is a CTRL or CMD click, then ignore
-        if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-            if (!this.isPannable && this.isZoomable) {
-                // If the mouse up was not due to panning, and the image is zoomable, then zoom in.
-                this.zoom('in');
-            } else if (!this.didPan) {
-                // If the mouse up was not due to ending of panning, then assume it was a regular
-                // click mouse up. In that case reset the image size, mimicking single-click-unzoom.
-                this.zoom('reset');
-            }
-            event.preventDefault();
-        }
-    }
-
-    /**
-     * Prevents drag events on the image
-     * @param {Event} event The mousemove event
-     * @returns {void}
-     */
-    handleDragStart(event) {
-        event.preventDefault();
-        event.stopPropogation();
-    }
-
-    /**
-     * Adjust padding on image rotation/zoom of images when the view port
-     * orientation changes from landscape to portrait and vice versa. Especially
-     * important for mobile devices because rotating the device doesn't triggers
-     * rotateLeft()
-     *
-     * @returns {void}
-     */
-    handleOrientationChange() {
-        this.adjustImageZoomPadding();
-
-        if (this.annotator) {
-            const scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
-            const rotationAngle = this.currentRotationAngle % 3600 % 360;
-            this.annotator.setScale(scale);
-            this.annotator.renderAnnotations(rotationAngle);
-        }
     }
 
     /**
@@ -454,6 +335,11 @@ class Image extends Base {
      * @private
      */
     initAnnotations() {
+        // Ignore if viewer/file type is not annotatable
+        if (!this.isAnnotatable()) {
+            return;
+        }
+
         // Users can currently only view annotations on mobile
         const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
         this.canAnnotate = canAnnotate;
@@ -513,23 +399,6 @@ class Image extends Base {
     }
 
     /**
-     * Returns click handler for toggling point annotation mode.
-     *
-     * @returns {Function|null} Click handler
-     */
-    getPointModeClickHandler() {
-        if (!this.isAnnotatable('point')) {
-            return null;
-        }
-
-        return (event = {}) => {
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.annotator.togglePointModeHandler(event);
-        };
-    }
-
-    /**
      * Determines if Image file has been rotated 90 or 270 degrees to the left
      *
      * @return {Boolean} Whether image has been rotated -90 or -270 degrees
@@ -565,6 +434,168 @@ class Image extends Base {
 
         this.imageEl.style.left = `${leftPadding}px`;
         this.imageEl.style.top = `${topPadding}px`;
+    }
+
+    //--------------------------------------------------------------------------
+    // Event Listeners
+    //--------------------------------------------------------------------------
+
+    /**
+     * Binds DOM listeners for image viewer.
+     *
+     * @returns {void}
+     * @protected
+     */
+    bindDOMListeners() {
+        this.imageEl.addEventListener('mousedown', this.handleMouseDown);
+        this.imageEl.addEventListener('mouseup', this.handleMouseUp);
+        this.imageEl.addEventListener('dragstart', this.handleDragStart);
+
+        if (Browser.isMobile()) {
+            this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
+            if (Browser.isIOS()) {
+                this.imageEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
+                this.imageEl.addEventListener('gestureend', this.mobileZoomEndHandler);
+            } else {
+                this.imageEl.addEventListener('touchstart', this.mobileZoomStartHandler);
+                this.imageEl.addEventListener('touchmove', this.mobileZoomChangeHandler);
+                this.imageEl.addEventListener('touchend', this.mobileZoomEndHandler);
+            }
+        }
+    }
+
+    /**
+     * Unbinds DOM listeners for image viewer.
+     *
+     * @returns {void}
+     * @protected
+     */
+    unbindDOMListeners() {
+        if (this.imageEl) {
+            this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
+            this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
+            this.imageEl.removeEventListener('dragstart', this.handleDragStart);
+        }
+
+        document.removeEventListener('mousemove', this.pan);
+        document.removeEventListener('mouseup', this.stopPanning);
+
+        if (Browser.isMobile()) {
+            this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
+            if (Browser.isIOS()) {
+                this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
+                this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
+            } else {
+                this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
+                this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
+                this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
+            }
+        }
+    }
+
+    /**
+     * Handles the loading of an image once the 'load' event has been fired
+     * @returns {void}
+     */
+    onLoadHandler() {
+        if (this.destroyed) {
+            return;
+        }
+
+        URL.revokeObjectURL(this.imageEl.src);
+        this.loaded = true;
+        this.emit('load');
+        this.zoom();
+        this.imageEl.classList.remove(CLASS_INVISIBLE);
+
+        this.loadUI();
+    }
+
+    /**
+     * Handles mouse down event.
+     * @param {Event} event The mousemove event
+     * @returns {void}
+     */
+    handleMouseDown(event) {
+        this.didPan = false;
+
+        // If this is not a left click, then ignore
+        // If this is a CTRL or CMD click, then ignore
+        if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
+            this.startPanning(event.clientX, event.clientY);
+            event.preventDefault();
+        }
+    }
+
+    /**
+     * Handles mouse down event.
+     * @param {Event} event The mousemove event
+     * @returns {void}
+     */
+    handleMouseUp(event) {
+        // Ignore zoom/pan mouse events if in annotation mode
+        if (this.annotator && this.annotator.isInPointMode()) {
+            return;
+        }
+
+        // If this is not a left click, then ignore
+        // If this is a CTRL or CMD click, then ignore
+        if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
+            if (!this.isPannable && this.isZoomable) {
+                // If the mouse up was not due to panning, and the image is zoomable, then zoom in.
+                this.zoom('in');
+            } else if (!this.didPan) {
+                // If the mouse up was not due to ending of panning, then assume it was a regular
+                // click mouse up. In that case reset the image size, mimicking single-click-unzoom.
+                this.zoom('reset');
+            }
+            event.preventDefault();
+        }
+    }
+    /**
+    * Adjust padding on image rotation/zoom of images when the view port
+    * orientation changes from landscape to portrait and vice versa. Especially
+    * important for mobile devices because rotating the device doesn't triggers
+    * rotateLeft()
+    *
+    * @returns {void}
+    */
+    handleOrientationChange() {
+        this.adjustImageZoomPadding();
+
+        if (this.annotator) {
+            const scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
+            const rotationAngle = this.currentRotationAngle % 3600 % 360;
+            this.annotator.setScale(scale);
+            this.annotator.renderAnnotations(rotationAngle);
+        }
+    }
+
+    /**
+     * Prevents drag events on the image
+     * @param {Event} event The mousemove event
+     * @returns {void}
+     */
+    handleDragStart(event) {
+        event.preventDefault();
+        event.stopPropogation();
+    }
+
+    /**
+     * Returns click handler for toggling point annotation mode.
+     *
+     * @returns {Function|null} Click handler
+     */
+    getPointModeClickHandler() {
+        if (!this.isAnnotatable('point')) {
+            return null;
+        }
+
+        return (event = {}) => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            this.annotator.togglePointModeHandler(event);
+        };
     }
 }
 
