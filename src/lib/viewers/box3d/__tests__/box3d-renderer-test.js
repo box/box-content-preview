@@ -47,7 +47,7 @@ describe('box3d-renderer', () => {
             };
         });
 
-        it('should fully shutdown by disabling vr, hiding canvas, unbinding events and destryoing resourceLoader', () => {
+        it('should fully shutdown by disabling vr, hiding canvas, unbinding events and destroying resourceLoader', () => {
             const hideBox3dSpy = sandbox.spy(renderer, 'hideBox3d');
             const disableVrSpy = sandbox.spy(renderer, 'disableVr');
 
@@ -136,9 +136,9 @@ describe('box3d-renderer', () => {
     });
 
     describe('getScene()', () => {
-        it('should return the scene that exists in the Box3D asset registry', () => {
+        it('should return the scene prefab that exists in the Box3D runtime', () => {
             renderer.box3d = {
-                getAssetById: sandbox.stub().returns({})
+                getEntityById: sandbox.stub().returns({})
             };
 
             const scene = renderer.getScene();

@@ -87,9 +87,9 @@ class Box3DRenderer extends EventEmitter {
         if (!this.box3d) {
             return;
         }
-        if (this.vrEnabled) {
-            this.disableVr();
-        }
+
+        this.disableVr();
+
         if (this.vrEffect) {
             this.vrEffect.dispose();
         }
