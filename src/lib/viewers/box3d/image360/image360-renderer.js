@@ -60,7 +60,7 @@ class Image360Renderer extends Box3DRenderer {
             this.textureAsset.destroy();
             this.textureAsset = undefined;
         }
-        const scene = this.box3d.getEntityById('SCENE_ID');
+        const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
         const skyboxComponent = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
         skyboxComponent.setAttribute('skyboxTexture', null);
     }
@@ -88,17 +88,11 @@ class Image360Renderer extends Box3DRenderer {
      * @returns {void}
      */
     loadPanoramaFile(fileProperties) {
-        const scene = this.box3d.getEntityById('SCENE_ID');
+        const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
         this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
 
-        this.imageAsset = this.box3d.createAsset({
-            type: 'image',
-            properties: {
-                // layout: 'stereo2dOverUnder',
-                stream: false
-            },
-            representations: []
-        });
+        this.imageAsset = this.box3d.createImage();
+        this.imageAsset.setProperty('stream', false);
 
         // FIXME - when we get support for '3d' representations on image files, the logic below
         // should no longer be needed.
@@ -125,13 +119,11 @@ class Image360Renderer extends Box3DRenderer {
                 compression
             }]);
 
-            this.textureAsset = this.box3d.createAsset({
-                type: 'texture2D',
-                properties: {
-                    imageId: this.imageAsset.id,
-                    uMapping: 'clamp',
-                    vMapping: 'clamp'
-                }
+            this.textureAsset = this.box3d.createTexture2d();
+            this.textureAsset.setProperties({
+                imageId: this.imageAsset.id,
+                uMapping: 'clamp',
+                vMapping: 'clamp'
             });
             return new Promise((resolve) => {
                 this.textureAsset.load(() => {

@@ -146,7 +146,8 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     createPrefabInstances() {
-        const prefabs = this.box3d.getAssetsByType('prefab');
+        const prefabs =
+            this.box3d.getAssets((asset) => asset.type === 'prefab' && asset.id !== 'SCENE_ID');
         if (prefabs.length === 0) {
             return true;
         }
@@ -162,9 +163,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     addIblToMaterials() {
-        const materials = this.box3d.getAssetsByType('material');
-
-        materials.forEach((mat) => {
+        this.box3d.getAssetsByType('material').forEach((mat) => {
             mat.setProperty('envMapIrradiance', 'HDR_ENV_MAP_CUBE_2');
             mat.setProperty('envMapRadiance', 'HDR_ENV_MAP_CUBE_0');
             mat.setProperty('envMapRadianceHalfGloss', 'HDR_ENV_MAP_CUBE_1');
@@ -297,7 +296,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     addHelpersToScene() {
-        const scene = this.getScene().runtimeData;
+        const scene = this.getScene().getRootObject().runtimeData;
         this.grid = new THREE.GridHelper(GRID_SIZE, GRID_SECTIONS, GRID_COLOR, GRID_COLOR);
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
@@ -316,7 +315,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     cleanupHelpers() {
-        const scene = this.getScene().runtimeData;
+        const scene = this.getScene().getRootObject().runtimeData;
         if (this.grid) {
             scene.remove(this.grid);
             this.grid.material.dispose();

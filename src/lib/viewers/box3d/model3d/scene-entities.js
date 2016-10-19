@@ -9,7 +9,6 @@ function sceneEntities(prefix) {
         id: 'CAMERA_ID',
         type: 'camera',
         parentId: 'SCENE_ROOT_ID',
-        parentAssetId: 'SCENE_ID',
         properties: {
             position: {
                 x: -0.559,
@@ -50,15 +49,14 @@ function sceneEntities(prefix) {
         }
     }, {
         id: 'SCENE_ID',
-        type: 'scene',
-        parentAssetId: 'SCENE_ID',
+        type: 'prefab',
+        // The scene contains the lights and camera
         properties: {
             rootObjectId: 'SCENE_ROOT_ID'
         }
     }, {
         id: 'SCENE_ROOT_ID',
-        type: 'node',
-        parentAssetId: 'SCENE_ID',
+        type: 'scene',
         // The scene contains the lights and camera
         children: [
             'CAMERA_ID',
@@ -68,7 +66,6 @@ function sceneEntities(prefix) {
         id: 'AMBIENT_LIGHT_ID',
         type: 'light',
         parentId: 'SCENE_ROOT_ID',
-        parentAssetId: 'SCENE_ID',
         properties: {
             lightType: 'ambient',
             color: { r: 0.0, g: 0.0, b: 0.0 }
@@ -76,7 +73,6 @@ function sceneEntities(prefix) {
     }, {
         id: 'APP_ASSET_ID',
         type: 'application',
-        parentAssetId: 'APP_ASSET_ID',
         properties: {
             startupScene: 'SCENE_ID' // The scene to load
         },

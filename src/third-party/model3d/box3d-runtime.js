@@ -78,161 +78,163 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _UserAgent = __webpack_require__(66);
+	var _UserAgent = __webpack_require__(68);
 
 	var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
-	var _EffectComposer = __webpack_require__(67);
+	var _EffectComposer = __webpack_require__(69);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(68);
+	var _BloomPass = __webpack_require__(70);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(69);
+	var _BokehPass = __webpack_require__(71);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(70);
+	var _DotScreenPass = __webpack_require__(72);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(71);
+	var _FilmPass = __webpack_require__(73);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(72);
+	var _MaskPass = __webpack_require__(74);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(73);
+	var _RenderPass = __webpack_require__(75);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(74);
+	var _SavePass = __webpack_require__(76);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(75);
+	var _ShaderPass = __webpack_require__(77);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(114);
+	var _TexturePass = __webpack_require__(116);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(115);
+	var _AdaptiveToneMappingPass = __webpack_require__(117);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(116);
+	var _AnimationAsset = __webpack_require__(118);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(118);
+	var _ApplicationAsset = __webpack_require__(120);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(119);
+	var _AudioAsset = __webpack_require__(121);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _BufferAsset = __webpack_require__(117);
+	var _BufferAsset = __webpack_require__(119);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
-	var _DocumentAsset = __webpack_require__(120);
+	var _DocumentAsset = __webpack_require__(122);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
 
-	var _ImageAsset = __webpack_require__(151);
+	var _ImageAsset = __webpack_require__(153);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _MaterialAsset = __webpack_require__(20);
+	var _MaterialAsset = __webpack_require__(21);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(152);
+	var _MeshGeometryAsset = __webpack_require__(154);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(154);
+	var _PrefabAsset = __webpack_require__(156);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(155);
+	var _PrimitiveGeometryAsset = __webpack_require__(157);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(156);
+	var _RenderTexture2DAsset = __webpack_require__(158);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(158);
+	var _RenderTextureCubeAsset = __webpack_require__(160);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _SceneAsset = __webpack_require__(159);
-
-	var _SceneAsset2 = _interopRequireDefault(_SceneAsset);
-
-	var _ScriptAsset = __webpack_require__(160);
+	var _ScriptAsset = __webpack_require__(161);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _ShaderAsset = __webpack_require__(162);
+	var _ShaderAsset = __webpack_require__(163);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _SkinAsset = __webpack_require__(167);
+	var _SkinAsset = __webpack_require__(168);
 
 	var _SkinAsset2 = _interopRequireDefault(_SkinAsset);
 
-	var _Texture2DAsset = __webpack_require__(168);
+	var _Texture2DAsset = __webpack_require__(169);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(170);
+	var _TextureCubeAsset = __webpack_require__(171);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _VideoAsset = __webpack_require__(169);
+	var _VideoAsset = __webpack_require__(170);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
-	var _Box3DObject = __webpack_require__(171);
+	var _Box3DObject = __webpack_require__(172);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(172);
+	var _CameraObject = __webpack_require__(173);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(173);
+	var _LightObject = __webpack_require__(174);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _MeshObject = __webpack_require__(174);
+	var _MeshObject = __webpack_require__(175);
 
 	var _MeshObject2 = _interopRequireDefault(_MeshObject);
 
-	var _APIUtilities = __webpack_require__(161);
+	var _SceneObject = __webpack_require__(176);
+
+	var _SceneObject2 = _interopRequireDefault(_SceneObject);
+
+	var _APIUtilities = __webpack_require__(162);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(175);
+	var _DOMUtilities = __webpack_require__(177);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(121);
+	var _JSONLoader = __webpack_require__(123);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(176);
+	var _DevResourceLoader = __webpack_require__(178);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
+
+	__webpack_require__(179);
 
 	var _three = __webpack_require__(10);
 
@@ -242,16 +244,16 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// Utilities
-
-
 	// Objects
+
+
+	// Assets
 	var applicationContexts = {};
 
 	/** @global Box3D */
 
 
-	// Assets
+	// Utilities
 	var Box3D = window.Box3D || {};
 
 	Object.assign(Box3D, _UserAgent2.default, {
@@ -281,7 +283,6 @@
 	  PrimitiveGeometryAsset: _PrimitiveGeometryAsset2.default,
 	  RenderTexture2DAsset: _RenderTexture2DAsset2.default,
 	  RenderTextureCubeAsset: _RenderTextureCubeAsset2.default,
-	  SceneAsset: _SceneAsset2.default,
 	  ScriptAsset: _ScriptAsset2.default,
 	  ShaderAsset: _ShaderAsset2.default,
 	  SkinAsset: _SkinAsset2.default,
@@ -290,6 +291,7 @@
 	  VideoAsset: _VideoAsset2.default,
 
 	  Box3DObject: _Box3DObject2.default,
+	  SceneObject: _SceneObject2.default,
 	  CameraObject: _CameraObject2.default,
 	  LightObject: _LightObject2.default,
 	  MeshObject: _MeshObject2.default,
@@ -651,7 +653,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	var _lodash = __webpack_require__(4);
 
@@ -13295,6 +13297,8 @@
 	  value: true
 	});
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(7);
@@ -13317,15 +13321,15 @@
 
 	var _EntityDispatcher2 = _interopRequireDefault(_EntityDispatcher);
 
-	var _EntityRegistry = __webpack_require__(13);
+	var _EntityRegistry = __webpack_require__(14);
 
 	var _EntityRegistry2 = _interopRequireDefault(_EntityRegistry);
 
-	var _GeometryUtilities = __webpack_require__(18);
+	var _GeometryUtilities = __webpack_require__(19);
 
 	var _GeometryUtilities2 = _interopRequireDefault(_GeometryUtilities);
 
-	var _MaterialUtilities = __webpack_require__(19);
+	var _MaterialUtilities = __webpack_require__(20);
 
 	var _MaterialUtilities2 = _interopRequireDefault(_MaterialUtilities);
 
@@ -13333,13 +13337,13 @@
 
 	var _RuntimeEvents2 = _interopRequireDefault(_RuntimeEvents);
 
-	var _ScriptRegistry = __webpack_require__(23);
+	var _ScriptRegistry = __webpack_require__(24);
 
 	var _ScriptRegistry2 = _interopRequireDefault(_ScriptRegistry);
 
 	var _mixwith = __webpack_require__(2);
 
-	var _raf = __webpack_require__(63);
+	var _raf = __webpack_require__(65);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -13534,10 +13538,10 @@
 	        // This code is temporary until we remove all asset registry logic
 	        this.scriptRegistry = new _ScriptRegistry2.default(this);
 	        Object.keys(Box3D.ShaderAsset.builtInAssetDescriptors).forEach(function (key) {
-	          _this2.createAsset(Box3D.ShaderAsset.builtInAssetDescriptors[key]);
+	          _this2.createEntity(Box3D.ShaderAsset.builtInAssetDescriptors[key]);
 	        });
 	        Object.keys(Box3D.MaterialAsset.builtInAssetDescriptors).forEach(function (key) {
-	          _this2.createAsset(Box3D.MaterialAsset.builtInAssetDescriptors[key]);
+	          _this2.createEntity(Box3D.MaterialAsset.builtInAssetDescriptors[key]);
 	        });
 	        done();
 	      }
@@ -13655,7 +13659,9 @@
 	  }, {
 	    key: 'uninitialize',
 	    value: function uninitialize() {
-	      delete window[this.engineName];
+	      if (window[this.engineName]) {
+	        delete window[this.engineName];
+	      }
 
 	      if (this.initTimeoutId) {
 	        clearTimeout(this.initTimeoutId);
@@ -13686,7 +13692,7 @@
 
 	      _raf2.default.cancel(this.animationRequestID);
 
-	      if (this.canvasCreatedByEngine) {
+	      if (this.canvas && this.canvasCreatedByEngine) {
 	        this.canvas.parentNode.removeChild(this.canvas);
 	      }
 
@@ -13706,7 +13712,6 @@
 	      this._threeRenderer = undefined;
 	      this._baseRenderer = undefined;
 	      this.engineName = undefined;
-	      this.resourceLoader = undefined;
 	      this.entityDispatcher = undefined;
 	      this.state = 'uninitialized';
 	    }
@@ -13753,7 +13758,7 @@
 
 	      loadEvent = loadEvent || 'load';
 	      Promise.all(entityArray.map(function (id) {
-	        if (_lodash2.default.isObject(id)) {
+	        if ((typeof id === 'undefined' ? 'undefined' : _typeof(id)) === 'object') {
 	          id = id.id;
 	        }
 	        return new Promise(function (resolve, reject) {
@@ -13770,11 +13775,11 @@
 	          }
 	        });
 	      })).then(function () {
-	        if (_lodash2.default.isFunction(callback)) {
+	        if (typeof callback === 'function') {
 	          callback.call(_this6);
 	        }
 	      }).catch(function (err) {
-	        if (_lodash2.default.isFunction(callback)) {
+	        if (typeof callback === 'function') {
 	          _log2.default.error('loadEntities error: ' + err);
 	          callback.call(_this6, err);
 	        }
@@ -13817,7 +13822,7 @@
 	  }, {
 	    key: 'setRenderer',
 	    value: function setRenderer(newRenderer) {
-	      if (this._baseRenderer && _lodash2.default.isFunction(this._baseRenderer.shutdown)) {
+	      if (this._baseRenderer && typeof this._baseRenderer.shutdown === 'function') {
 	        this._baseRenderer.shutdown();
 	      }
 	      this._baseRenderer = newRenderer;
@@ -14000,7 +14005,7 @@
 	  }]);
 
 	  return Engine;
-	}((0, _mixwith.mix)(_EntityRegistry2.default).with(_RuntimeEvents2.default));
+	}((0, _mixwith.mix)().with(_EntityRegistry2.default, _RuntimeEvents2.default));
 
 	window.Box3D = window.Box3D || {};
 	window.Box3D.Engine = Engine;
@@ -14031,7 +14036,7 @@
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	/*! loglevel - v1.3.1 - https://github.com/pimterry/loglevel - (c) 2015 Tim Perry - licensed MIT */
 	(function (root, definition) {
@@ -56152,6 +56157,10 @@
 
 	var _uuid2 = _interopRequireDefault(_uuid);
 
+	var _deepClone = __webpack_require__(13);
+
+	var _deepClone2 = _interopRequireDefault(_deepClone);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -56248,61 +56257,51 @@
 	      });
 
 	      // Create the entity object in each engine
-	      newEntities.forEach(function (entityJson) {
-	        return entityJson.id = _this.dispatchCreatedEntity(entityJson);
+	      newEntities.forEach(function (json) {
+	        return json.id = _this.dispatchCreatedEntity(json.id, json.type);
 	      });
 
 	      // Initialize the entity in each engine
-	      newEntities.forEach(function (entityJson) {
-	        return _this.dispatchInitEntity(entityJson.id);
+	      newEntities.forEach(function (json) {
+	        return _this.dispatchInitEntity(json.id);
 	      });
 
 	      // Set the initial properties of the entity in each engine.
-	      newEntities.forEach(function (entityJson) {
-	        return _this.dispatchPropertiesChanged(entityJson.id, entityJson.properties);
+	      newEntities.forEach(function (json) {
+	        return _this.dispatchPropertiesChanged(json.id, json.properties || {});
 	      });
 
+	      newEntities.forEach(function (json) {
+	        return _this.dispatchComponentsChanged(json.id, json.components || {});
+	      });
+
+	      // Set the initial children
+	      newEntities.forEach(function (json) {
+	        return _this.dispatchChildChanged(json.id, json.children || []);
+	      });
+
+	      // Set the initial attributes for objects
+	      newEntities.forEach(function (json) {
+	        if (json.sid) {
+	          _this.dispatchAttributeChanged(json.id, 'sid', json.sid || '');
+	        }
+	        if (json.parentId) {
+	          _this.dispatchAttributeChanged(json.id, 'parentId', json.parentId || null);
+	        }
+	        if (json.representations) {
+	          _this.dispatchAttributeChanged(json.id, 'representations', json.representations || []);
+	        }
+	        if (json.prefabAssetId) {
+	          _this.dispatchAttributeChanged(json.id, 'prefabAssetId', json.prefabAssetId);
+	        }
+	        if (json.prefabObjectId) {
+	          _this.dispatchAttributeChanged(json.id, 'prefabObjectId', json.prefabObjectId);
+	        }
+	        if (json.prefabInstanceId) {
+	          _this.dispatchAttributeChanged(json.id, 'prefabInstanceId', json.prefabInstanceId);
+	        }
+	      });
 	      return newEntities;
-	    }
-
-	    /**
-	     * Serializes the entities into a format that can be saved.
-	     * @method serializeEntities
-	     * @public
-	     * @return {Array} Array of json descriptors for all entities.
-	     */
-
-	  }, {
-	    key: 'serializeEntities',
-	    value: function serializeEntities() {
-	      var _this2 = this;
-
-	      var serialize = function serialize(entity) {
-	        var descriptor = entity.sharedData;
-	        var returnJson = {
-	          id: descriptor.id,
-	          type: descriptor.type,
-	          parentAssetId: descriptor.parentAssetId,
-	          parentId: descriptor.parentId,
-	          prefabAssetId: descriptor.prefabAssetId,
-	          prefabObjectId: descriptor.prefabObjectId,
-	          prefabInstanceId: descriptor.prefabInstanceId,
-	          properties: entity.getOwnProperties(),
-	          children: entity.getChildren(),
-	          components: entity.componentRegistry.get()
-	        };
-	        return returnJson;
-	      };
-	      var serializedEntities = [];
-	      if (this.engines.length) {
-	        (function () {
-	          var entities = _this2.engines[0].entities;
-	          Object.keys(entities).forEach(function (id) {
-	            return serializedEntities.push(serialize(entities[id]));
-	          });
-	        })();
-	      }
-	      return serializedEntities;
 	    }
 
 	    /**
@@ -56316,10 +56315,10 @@
 	  }, {
 	    key: 'getEntityDescriptors',
 	    value: function getEntityDescriptors() {
-	      var _this3 = this;
+	      var _this2 = this;
 
 	      return Object.keys(this.entities).map(function (id) {
-	        return _this3.entities[id];
+	        return _this2.entities[id];
 	      });
 	    }
 
@@ -56353,35 +56352,25 @@
 
 	  }, {
 	    key: 'dispatchCreatedEntity',
-	    value: function dispatchCreatedEntity(jsonDescriptor) {
-	      if (this.entities[jsonDescriptor.id]) {
-	        return jsonDescriptor.id;
+	    value: function dispatchCreatedEntity(entityId, type) {
+	      if (this.entities[entityId]) {
+	        return entityId;
 	      }
 	      // If an ID hasn't been given or the ID is already in use, generate a new one.
-	      var id = !jsonDescriptor.id ? (0, _uuid2.default)() : jsonDescriptor.id;
+	      var id = !entityId ? (0, _uuid2.default)() : entityId;
 	      var json = {
 	        id: id,
-	        sid: jsonDescriptor.sid,
-	        type: jsonDescriptor.type,
-	        parentId: jsonDescriptor.parentId,
-	        parentAssetId: jsonDescriptor.parentAssetId,
-	        prefabAssetId: jsonDescriptor.prefabAssetId,
-	        prefabObjectId: jsonDescriptor.prefabObjectId,
-	        prefabInstanceId: jsonDescriptor.prefabInstanceId,
-	        children: jsonDescriptor.children ? jsonDescriptor.children.slice() : [],
-	        previousChildren: [],
-	        properties: jsonDescriptor.properties || {},
+	        sid: id,
+	        type: type,
+	        properties: {},
 	        previousProperties: {},
-	        components: jsonDescriptor.components || {},
+	        components: {},
 	        previousComponents: {}
 	      };
-	      if (jsonDescriptor.representations) {
-	        json.representations = jsonDescriptor.representations;
-	      }
 
 	      this.entities[json.id] = json;
 
-	      this.fireExternalUpdate(jsonDescriptor.id, json, 'createEntity');
+	      this.fireExternalUpdate(id, json, 'createEntity');
 	      // Apply changes in each engine
 	      // Register object
 	      this.engines.forEach(function (engine) {
@@ -56415,8 +56404,12 @@
 	  }, {
 	    key: 'dispatchAttributeChanged',
 	    value: function dispatchAttributeChanged(entityId, attrib, value) {
-	      var json = {};
+	      if (!this.entities[entityId]) {
+	        return;
+	      }
+	      var json = this.entities[entityId];
 	      json[attrib] = value;
+
 	      this.fireExternalUpdate(entityId, json);
 
 	      // Apply changes in each engine
@@ -56427,18 +56420,30 @@
 	    }
 	  }, {
 	    key: 'dispatchPropertyChanged',
-	    value: function dispatchPropertyChanged(entityId, property, value) {
+	    value: function dispatchPropertyChanged(entityId, property, value, silent) {
 	      var propertyDescriptor = {};
 	      propertyDescriptor[property] = value;
-	      this.dispatchPropertiesChanged(entityId, propertyDescriptor);
+	      this.dispatchPropertiesChanged(entityId, propertyDescriptor, silent);
 	    }
 	  }, {
 	    key: 'dispatchPropertiesChanged',
 	    value: function dispatchPropertiesChanged(entityId) {
-	      var json = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	      var newProperties = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var silent = arguments[2];
 
-	      this.fireExternalUpdate(entityId, { properties: json });
+	      if (!this.entities[entityId]) {
+	        return;
+	      }
+	      var json = this.entities[entityId];
+	      Object.keys(newProperties).forEach(function (property) {
+	        json.previousProperties[property] = (0, _deepClone2.default)(json.properties[property]);
+	        json.properties[property] = (0, _deepClone2.default)(newProperties[property]);
+	      });
+	      this.fireExternalUpdate(entityId, { properties: json.properties });
 
+	      if (silent) {
+	        return;
+	      }
 	      // Apply changes in each engine
 	      this.engines.forEach(function (engine) {
 	        var entityToChange = engine.getEntityById(entityId);
@@ -56447,10 +56452,9 @@
 	        }
 	        Object.keys(json).forEach(function (id) {
 	          var value = json[id];
-	          // TODO - if this property is an object id, translate to an entity
 	          entityToChange.trigger('change:properties.' + id, value);
 	        });
-	        entityToChange.trigger('change:properties', json);
+	        entityToChange.trigger('change:properties', newProperties);
 	      });
 	    }
 
@@ -56460,19 +56464,26 @@
 	     * @private
 	     * @param {string} entityId The ID of the entity to add the child to.
 	     * @param {string} newChildId The ID of the new child entity
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'dispatchChildAdded',
-	    value: function dispatchChildAdded(entityId, newChildId) {
+	    value: function dispatchChildAdded(entityId, newChildId, silent) {
 	      var entityJson = this.entities[entityId];
 	      if (!entityJson) {
 	        return;
 	      }
-	      var children = this.entities[entityId].children || [];
+	      var children = entityJson.children = entityJson.children || [];
+	      entityJson.previousChildren = entityJson.children.slice();
+	      entityJson.children.push(newChildId);
+
 	      this.fireExternalUpdate(entityId, { children: children });
 
+	      if (silent) {
+	        return;
+	      }
 	      // Apply changes in each engine
 	      this.engines.forEach(function (engine) {
 	        var entityToChange = engine.getEntityById(entityId);
@@ -56487,18 +56498,29 @@
 	     * @private
 	     * @param {string} entityId The ID of the entity to remove the child from.
 	     * @param {string} childToRemoveId The ID of the child entity to remove
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'dispatchChildRemoved',
-	    value: function dispatchChildRemoved(entityId, childToRemoveId) {
+	    value: function dispatchChildRemoved(entityId, childToRemoveId, silent) {
 	      var entityJson = this.entities[entityId];
 	      if (!entityJson) {
 	        return;
 	      }
-	      var children = this.entities[entityId].children || [];
+	      var children = entityJson.children = entityJson.children || [];
+	      entityJson.previousChildren = entityJson.children.slice();
+	      var index = entityJson.children.indexOf(childToRemoveId);
+	      if (index !== -1) {
+	        entityJson.children.splice(index, 1);
+	      }
+
 	      this.fireExternalUpdate(entityId, { children: children });
+
+	      if (silent) {
+	        return;
+	      }
 	      // Apply changes in each engine
 	      this.engines.forEach(function (engine) {
 	        var entityToChange = engine.getEntityById(entityId);
@@ -56515,18 +56537,46 @@
 	     * @param {string} entityId The ID of the parent entity
 	     * @param {array} addedChildren Array of child ID's that have been added.
 	     * @param {array} removedChildren Array of child ID's that have been removed.
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'dispatchChildChanged',
-	    value: function dispatchChildChanged(entityId, addedChildren, removedChildren) {
+	    value: function dispatchChildChanged(entityId) {
+	      var _this3 = this;
+
+	      var newChildren = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+	      var silent = arguments[2];
+
 	      var entityJson = this.entities[entityId];
 	      if (!entityJson) {
 	        return;
 	      }
-	      var children = this.entities[entityId].children || [];
+	      entityJson.previousChildren = entityJson.children ? entityJson.children.slice() : [];
+	      var children = entityJson.children = newChildren.slice();
 	      this.fireExternalUpdate(entityId, { children: children });
+	      if (silent) {
+	        return;
+	      }
+
+	      // Sort out a list of added and removed children to pass to each engine.
+	      var previousEntityMap = {};
+	      var newEntityMap = {};
+	      entityJson.previousChildren.forEach(function (id) {
+	        return previousEntityMap[id] = _this3.entities[id];
+	      });
+	      children.forEach(function (id) {
+	        return newEntityMap[id] = _this3.entities[id];
+	      });
+	      var addedChildren = children.filter(function (id) {
+	        var entity = _this3.entities[id];
+	        return entity && !previousEntityMap[id];
+	      });
+	      var removedChildren = entityJson.previousChildren.filter(function (id) {
+	        var entity = _this3.entities[id];
+	        return entity && !newEntityMap[id];
+	      });
 
 	      // Apply changes in each engine
 	      this.engines.forEach(function (engine) {
@@ -56543,41 +56593,29 @@
 	    }
 
 	    /**
-	     * Called by an engine instance when the given component has been added.
-	     * @method dispatchComponentAdded
-	     * @private
-	     * @param  {Box3DEntity} entity       The entity that the change was made on.
-	     * @param  {Array} newComponentIds   Array of ID's for components that have been added
-	     */
-
-	  }, {
-	    key: 'dispatchComponentsAdded',
-	    value: function dispatchComponentsAdded(entity, newComponentIds) {
-	      this.fireExternalUpdate(entity.id, { components: entity.componentRegistry.getDescriptors() });
-
-	      // Apply changes in each engine
-	      this.engines.forEach(function (engine) {
-	        var entityToChange = engine.getEntityById(entity.id);
-	        entityToChange.trigger('add:components', newComponentIds);
-	      });
-	    }
-
-	    /**
 	     * Remove the given component attached to the given entity.
 	     * @method dispatchComponentRemoved
 	     * @private
-	     * @param  {Box3DEntity} entity       The entity that the change was made on.
+	     * @param  {string} entityId The ID of the entity that the change was made on.
 	     * @param  {Array} componentIds  Array of IDs for components that have been removed
 	     */
 
 	  }, {
 	    key: 'dispatchComponentsRemoved',
-	    value: function dispatchComponentsRemoved(entity, componentIds) {
-	      this.fireExternalUpdate(entity.id, { components: entity.componentRegistry.getDescriptors() });
+	    value: function dispatchComponentsRemoved(entityId, componentIds) {
+	      if (!this.entities[entityId]) {
+	        return;
+	      }
+	      var json = this.entities[entityId];
+	      componentIds.forEach(function (componentId) {
+	        json.previousComponents[componentId] = (0, _deepClone2.default)(json.components[componentId]);
+	        delete json.components[componentId];
+	      });
+	      this.fireExternalUpdate(entityId, { components: json.components });
 
 	      // Apply changes in each engine
 	      this.engines.forEach(function (engine) {
-	        var entityToChange = engine.getEntityById(entity.id);
+	        var entityToChange = engine.getEntityById(entityId);
 	        entityToChange.trigger('remove:components', componentIds);
 	      });
 	    }
@@ -56586,18 +56624,30 @@
 	     * Called by an engine when the list of components attached to the given entity has changed.
 	     * @method  dispatchComponentChanged
 	     * @private
-	     * @param  {Box3DEntity} entity       The entity that the change was made on.
-	     * @param  {Array} changedComponents   Array of ids for components that have been changed.
+	     * @param  {string} entityId The ID of the entity that the change was made on.
+	     * @param  {Object} changedComponents Dictionary that maps ids for components to json descriptors.
 	     */
 
 	  }, {
 	    key: 'dispatchComponentsChanged',
-	    value: function dispatchComponentsChanged(entity, changedComponents) {
-	      this.fireExternalUpdate(entity.id, { components: entity.componentRegistry.getDescriptors() });
+	    value: function dispatchComponentsChanged(entityId, changedComponents) {
+	      if (!this.entities[entityId]) {
+	        return;
+	      }
+	      var json = this.entities[entityId];
+	      Object.keys(changedComponents).forEach(function (componentId) {
+	        json.previousComponents[componentId] = (0, _deepClone2.default)(json.components[componentId]);
+	        if (json.components[componentId]) {
+	          Object.assign(json.components[componentId], (0, _deepClone2.default)(changedComponents[componentId]));
+	        } else {
+	          json.components[componentId] = (0, _deepClone2.default)(changedComponents[componentId]);
+	        }
+	      });
+	      this.fireExternalUpdate(entityId, { components: json.components });
 
 	      // Apply changes in each engine
 	      this.engines.forEach(function (engine) {
-	        var entityToChange = engine.getEntityById(entity.id);
+	        var entityToChange = engine.getEntityById(entityId);
 	        entityToChange.trigger('change:components', changedComponents);
 	      });
 	    }
@@ -56633,6 +56683,37 @@
 
 /***/ },
 /* 13 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/**
+	 * Returns a deep clone of the given data. This method doesn't copy
+	 * functions and is intended for POJO's and primitive types.
+	 * @param {mixed} json The data to clone.
+	 * @return {mixed} The cloned data.
+	 */
+	var deepClone = function deepClone(data) {
+	  switch (typeof data === 'undefined' ? 'undefined' : _typeof(data)) {
+	    case 'object':
+	      return JSON.parse(JSON.stringify(data));
+	    case 'function':
+	      return null;
+	    default:
+	      return data;
+	  }
+	};
+
+	exports.default = deepClone;
+
+/***/ },
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56641,17 +56722,17 @@
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _RuntimeEvents = __webpack_require__(3);
-
-	var _RuntimeEvents2 = _interopRequireDefault(_RuntimeEvents);
-
-	var _Box3DAsset = __webpack_require__(14);
+	var _Box3DAsset = __webpack_require__(15);
 
 	var _Box3DAsset2 = _interopRequireDefault(_Box3DAsset);
 
-	var _mixwith = __webpack_require__(2);
+	var _deepClone = __webpack_require__(13);
+
+	var _deepClone2 = _interopRequireDefault(_deepClone);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56669,692 +56750,976 @@
 	 * @class EntityRegistry
 	 * @constructor
 	 */
-	var EntityRegistry = function (_mix$with) {
-	  _inherits(EntityRegistry, _mix$with);
+	var EntityRegistry = function EntityRegistry(superclass) {
+	  return function (_superclass) {
+	    _inherits(_class, _superclass);
 
-	  function EntityRegistry() {
-	    _classCallCheck(this, EntityRegistry);
+	    function _class() {
+	      _classCallCheck(this, _class);
 
-	    var _this = _possibleConstructorReturn(this, (EntityRegistry.__proto__ || Object.getPrototypeOf(EntityRegistry)).call(this));
+	      var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this));
 
-	    _this.assets = {};
-	    _this.objects = {};
-	    return _this;
-	  }
-
-	  /**
-	   * Shutdown the entity registry, destroying all entities.
-	   * @method destroy
-	   * @public
-	   * @return {void}
-	   */
-
-
-	  _createClass(EntityRegistry, [{
-	    key: 'destroy',
-	    value: function destroy() {
-	      var _this2 = this;
-
-	      this.getAssets().forEach(function (asset) {
-	        return _this2.unregisterEntity(asset);
-	      });
-	      this.getObjects().forEach(function (object) {
-	        return _this2.unregisterEntity(object);
-	      });
+	      _this.assets = {};
+	      _this.objects = {};
+	      return _this;
 	    }
 
 	    /**
-	     * Returns the first asset that is validated by the provided function.
-	     * @method getAsset
+	     * Shutdown the entity registry, destroying all entities.
+	     * @method destroy
 	     * @public
-	     * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
-	     * which asset to return.
-	     * @return {Box3DAsset}        The first asset that matches the querry
-	     */
-
-	  }, {
-	    key: 'getAsset',
-	    value: function getAsset(predicate) {
-	      return this.getEntity(predicate, this.assets);
-	    }
-
-	    /**
-	     * Returns an array of assets that satisfy the given filter function.
-	     * @method getAssets
-	     * @public
-	     * @param  {Function} predicate A function which returns 'true' or 'false'. Used to determine
-	     * which assets to return.
-	     * @return {Array}        Array of assets that match the querry
-	     */
-
-	  }, {
-	    key: 'getAssets',
-	    value: function getAssets(predicate) {
-	      return this.getEntities(predicate, this.assets);
-	    }
-
-	    /**
-	     * Returns the asset with the provided Id.
-	     * @method getAssetById
-	     * @public
-	     * @param  {String} assetId The ID of the asset
-	     * @return {Box3DAsset} The asset or null if not found.
-	     */
-
-	  }, {
-	    key: 'getAssetById',
-	    value: function getAssetById(assetId) {
-	      return this.assets[assetId] || null;
-	    }
-
-	    /**
-	     * Returns the first asset with the provided name.
-	     * Note: Care should be taken when calling this function often (such as every frame)
-	     * because it is not built for high performance.
-	     * @method getAssetByName
-	     * @public
-	     * @param  {String} assetName The name of the asset
-	     * @return {Box3DAsset} The asset, if found, or null if not found.
-	     */
-
-	  }, {
-	    key: 'getAssetByName',
-	    value: function getAssetByName(assetName) {
-	      return this.getAsset(function (obj) {
-	        return obj.getName() === assetName;
-	      });
-	    }
-
-	    /**
-	     * Returns the assets with the provided name.
-	     * Note: Care should be taken when calling this function often (such as every frame)
-	     * because it is not built for high performance.
-	     * @method getAssetsByName
-	     * @public
-	     * @param  {String} assetName The name of the asset
-	     * @return {array} Array of matching assets
-	     */
-
-	  }, {
-	    key: 'getAssetsByName',
-	    value: function getAssetsByName(assetName) {
-	      return this.getAssets(function (obj) {
-	        return obj.getName() === assetName;
-	      });
-	    }
-
-	    /**
-	     * Returns the first asset with the provided type.
-	     * @method getAssetByType
-	     * @public
-	     * @param  {String} assetType The type of the asset
-	     * @return {Asset} The first matching asset
-	     */
-
-	  }, {
-	    key: 'getAssetByType',
-	    value: function getAssetByType(assetType) {
-	      return this.getAsset(function (obj) {
-	        return obj.type === assetType;
-	      });
-	    }
-
-	    /**
-	     * Returns the assets with the provided type.
-	     * @method getAssetsByType
-	     * @public
-	     * @param  {String} assetType The type of the asset
-	     * @return {Array} Array of matching assets
-	     */
-
-	  }, {
-	    key: 'getAssetsByType',
-	    value: function getAssetsByType(assetType) {
-	      return this.getAssets(function (obj) {
-	        return obj.type === assetType;
-	      });
-	    }
-
-	    /**
-	     * Returns the first object that is validated by the provided function.
-	     * @method getObject
-	     * @public
-	     * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
-	     * which object to return.
-	     * @return {Box3DObject}        The first object that matches the querry
-	     */
-
-	  }, {
-	    key: 'getObject',
-	    value: function getObject(predicate) {
-	      return this.getEntity(predicate, this.objects);
-	    }
-
-	    /**
-	     * Returns an array of objects that satisfy the given filter function.
-	     * @method getObjects
-	     * @public
-	     * @param  {Function} predicate A function which returns 'true' or 'false'. Used to determine
-	     * which objects to return.
-	     * @return {Array}        Array of objects that match the querry
-	     */
-
-	  }, {
-	    key: 'getObjects',
-	    value: function getObjects(predicate) {
-	      return this.getEntities(predicate, this.objects);
-	    }
-
-	    /**
-	     * Returns the object with the provided Id.
-	     * @method getObjectById
-	     * @public
-	     * @param  {String} objectId The ID of the object
-	     * @return {Box3DObject} The object or null if not found.
-	     */
-
-	  }, {
-	    key: 'getObjectById',
-	    value: function getObjectById(objectId) {
-	      return this.objects[objectId] || null;
-	    }
-
-	    /**
-	     * Returns the first object with the provided name.
-	     * Note: Care should be taken when calling this function often (such as every frame)
-	     * because it is not built for high performance.
-	     * @method getObjectByName
-	     * @public
-	     * @param  {String} objectName The name of the object
-	     * @return {Box3DObject} The object, if found, or null if not found.
-	     */
-
-	  }, {
-	    key: 'getObjectByName',
-	    value: function getObjectByName(objectName) {
-	      return this.getObject(function (obj) {
-	        return obj.getName() === objectName;
-	      });
-	    }
-
-	    /**
-	     * Returns the objects with the provided name.
-	     * Note: Care should be taken when calling this function often (such as every frame)
-	     * because it is not built for high performance.
-	     * @method getObjectsByName
-	     * @public
-	     * @param  {String} objectName The name of the object
-	     * @return {array} Array of matching objects
-	     */
-
-	  }, {
-	    key: 'getObjectsByName',
-	    value: function getObjectsByName(objectName) {
-	      return this.getObjects(function (obj) {
-	        return obj.getName() === objectName;
-	      });
-	    }
-
-	    /**
-	     * Returns the first object with the provided type.
-	     * @method getObjectByType
-	     * @public
-	     * @param  {String} objectType The type of the object
-	     * @return {Object} The first matching object
-	     */
-
-	  }, {
-	    key: 'getObjectByType',
-	    value: function getObjectByType(objectType) {
-	      return this.getObject(function (obj) {
-	        return obj.type === objectType;
-	      });
-	    }
-
-	    /**
-	     * Returns the objects with the provided type.
-	     * @method getObjectsByType
-	     * @public
-	     * @param  {String} objectType The type of the object
-	     * @return {Array} Array of matching objects
-	     */
-
-	  }, {
-	    key: 'getObjectsByType',
-	    value: function getObjectsByType(objectType) {
-	      return this.getObjects(function (obj) {
-	        return obj.type === objectType;
-	      });
-	    }
-
-	    /**
-	     * Returns the first entity that is selected by the provided function.
-	     * @method getEntity
-	     * @public
-	     * @param  {Function} predicate A function which returns 'true' or 'false'. Used to determine
-	     * which entity to return.
-	     * @param {Object} [entities] Optional dictionary of entities, keyed by ID, to search within.
-	     * @return {Box3DEntity} The first entity that matches the query
-	     */
-
-	  }, {
-	    key: 'getEntity',
-	    value: function getEntity(predicate, entities) {
-	      if (!entities) {
-	        return this.getAsset(predicate) || this.getObject(predicate);
-	      }
-	      var entityId = Object.keys(entities).find(function (id) {
-	        return predicate(entities[id]);
-	      });
-	      return entities[entityId];
-	    }
-
-	    /**
-	     * Returns all entities that are selected by the provided function.
-	     * @method getEntities
-	     * @public
-	     * @param {Function} predicate A function which returns 'true' or 'false'. Used to determine
-	     * which entities to return.
-	     * @param {Object} [entities] Optional dictionary of entities, keyed by ID, to search within.
-	     * @return {Array} Array of entities that matches the query
-	     */
-
-	  }, {
-	    key: 'getEntities',
-	    value: function getEntities(predicate, entities) {
-	      if (!entities) {
-	        return [].concat(_toConsumableArray(this.getObjects(predicate)), _toConsumableArray(this.getAssets(predicate)));
-	      }
-	      var all = typeof predicate !== 'function';
-
-	      return Object.keys(entities).filter(function (id) {
-	        return all || predicate(entities[id]);
-	      }).map(function (id) {
-	        return entities[id];
-	      });
-	    }
-
-	    /**
-	     * Returns the entity with the provided Id. This includes ALL entities,
-	     * both assets and objects
-	     * @method getEntityById
-	     * @public
-	     * @param  {String} entityId The ID of the entity.
-	     * @return {Box3DEntity} The entity or null if not found.
-	     */
-
-	  }, {
-	    key: 'getEntityById',
-	    value: function getEntityById(entityId) {
-	      return this.assets[entityId] || this.objects[entityId];
-	    }
-
-	    /**
-	     * Returns all entities with the provided type.
-	     * @method getEntitiesByType
-	     * @public
-	     * @param  {String} type The type of the entity (e.g. 'material', 'scene', etc.)
-	     * @return {Array} An array of matching entities
-	     */
-
-	  }, {
-	    key: 'getEntitiesByType',
-	    value: function getEntitiesByType(type) {
-	      return this.getEntities(function (entity) {
-	        return entity.type === type;
-	      });
-	    }
-
-	    /**
-	     * Returns the first entity with the provided name.
-	     * @method getEntityByName
-	     * @public
-	     * @param  {String} name The name of the entity
-	     * @return {Box3DEntity} The entity, if found, or null if not found.
-	     */
-
-	  }, {
-	    key: 'getEntityByName',
-	    value: function getEntityByName(name) {
-	      return this.getEntity(function (obj) {
-	        return obj.getName() === name;
-	      });
-	    }
-
-	    /**
-	     * Returns all entities with the provided name.
-	     * @method getEntitiesByName
-	     * @public
-	     * @param  {String} name The name of the entity
-	     * @return {Array} An array of matching entities
-	     */
-
-	  }, {
-	    key: 'getEntitiesByName',
-	    value: function getEntitiesByName(name) {
-	      return this.getEntities(function (entity) {
-	        return entity.getName() === name;
-	      });
-	    }
-
-	    /**
-	     * Creates a new asset and stores it in the registry.
-	     * @method createAsset
-	     * @public
-	     * @param  {Object} json    The definition of the asset. Needs to at least include and 'id'
-	     * and a 'type' (e.g. 'material', 'prefab', etc.)
-	     * @return {Object} The newly created asset
-	     */
-
-	  }, {
-	    key: 'createAsset',
-	    value: function createAsset(json) {
-	      json.properties = json.properties || {};
-	      json.components = json.components || {};
-	      var classType = this.getEntityClass(json.type);
-	      if (!classType) {
-	        throw new Error('Unknown asset type, ' + json.type + ', given as argument to createAsset');
-	      }
-
-	      var id = this.entityDispatcher.dispatchCreatedEntity(json);
-	      this.entityDispatcher.dispatchInitEntity(id);
-	      this.entityDispatcher.dispatchPropertiesChanged(id, json.properties);
-	      return this.getAssetById(id);
-	    }
-
-	    /**
-	     * Creates a new object and stores it in the asset. Note that this doesn't add the object
-	     * as a child. You will need to call addChild to do this.
-	     * @public
-	     * @param  {Object} json    Object definition.
-	     * @return {Object} The newly created object
-	     */
-
-	  }, {
-	    key: 'createObject',
-	    value: function createObject(json) {
-	      var jsonEx = Object.assign({
-	        type: 'node',
-	        sid: '',
-	        properties: {},
-	        components: {},
-	        parentAssetId: null
-	      }, json);
-
-	      var id = this.entityDispatcher.dispatchCreatedEntity(jsonEx);
-	      this.entityDispatcher.dispatchInitEntity(id);
-	      this.entityDispatcher.dispatchPropertiesChanged(id, jsonEx.properties);
-	      return this.getObjectById(id);
-	    }
-
-	    /**
-	     * Deletes the asset and its hierarchy from the project.
-	     * Force-unloads the asset, if it is loaded.
-	     * @method destroyAssetById
-	     * @public
-	     * @param  {String} assetId The ID of the asset to destroy
 	     * @return {void}
 	     */
 
-	  }, {
-	    key: 'destroyAssetById',
-	    value: function destroyAssetById(assetId) {
-	      var asset = this.getAssetById(assetId);
-	      this.destroyAsset(asset);
-	    }
 
-	    /**
-	     * Deletes the asset and its hierarchy from the project.
-	     * Force-unloads the asset, if it is loaded.
-	     * @method destroyAsset
-	     * @public
-	     * @param  {Box3DAsset} asset The Box3DAsset to destroy
-	     * @return {void}
-	     */
+	    _createClass(_class, [{
+	      key: 'destroy',
+	      value: function destroy() {
+	        var _this2 = this;
 
-	  }, {
-	    key: 'destroyAsset',
-	    value: function destroyAsset(asset) {
-	      var _this3 = this;
-
-	      if (!asset || !asset instanceof _Box3DAsset2.default) {
-	        throw new Error('destroyAsset : You must specify a valid asset to destroy.');
+	        this.getAssets().forEach(function (asset) {
+	          return _this2.unregisterEntity(asset);
+	        });
+	        this.getObjects().forEach(function (object) {
+	          return _this2.unregisterEntity(object);
+	        });
 	      }
-	      var options = { recursive: false };
-	      asset.unload();
-	      var objects = asset.getObjects();
-	      objects.forEach(function (obj) {
-	        _this3.destroyObject(obj, options);
-	      });
-	      this.entityDispatcher.dispatchDestroyedEntity(asset.id);
-	    }
 
-	    /**
-	     * Deletes the object and its hierarchy from this asset.
-	     * @method destroyObjectById
-	     * @public
-	     * @param  {String} objectId The ID of the object to destroy
-	     * @return {void}
-	     */
+	      /**
+	       * Returns the first asset that is validated by the provided function.
+	       * @method getAsset
+	       * @public
+	       * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
+	       * which asset to return.
+	       * @return {Box3DAsset}        The first asset that matches the querry
+	       */
 
-	  }, {
-	    key: 'destroyObjectById',
-	    value: function destroyObjectById(objectId) {
-	      var object = this.getObjectById(objectId);
-	      this.destroyObject(object);
-	    }
-
-	    /**
-	     * Deletes the object and removes it from a hierarchy, if it was part of one.
-	     * @method destroyObject
-	     * @public
-	     * @param  {Object} object The Box3DObject to destroy
-	     * @return {void}
-	     */
-
-	  }, {
-	    key: 'destroyObject',
-	    value: function destroyObject(object) {
-	      if (!object || !object instanceof Box3D.Box3DObject) {
-	        throw new Error('destroyObject : You must specify a valid object to destroy.');
+	    }, {
+	      key: 'getAsset',
+	      value: function getAsset(predicate) {
+	        return this.getEntity(predicate, this.assets);
 	      }
-	      var parent = object.getParentObject();
-	      if (parent) {
-	        parent.removeChild(object);
+
+	      /**
+	       * Returns an array of assets that satisfy the given filter function.
+	       * @method getAssets
+	       * @public
+	       * @param  {Function} predicate A function which returns 'true' or 'false'. Used to determine
+	       * which assets to return.
+	       * @return {Array}        Array of assets that match the querry
+	       */
+
+	    }, {
+	      key: 'getAssets',
+	      value: function getAssets(predicate) {
+	        return this.getEntities(predicate, this.assets);
 	      }
-	      this.entityDispatcher.dispatchDestroyedEntity(object.id);
-	    }
 
-	    /**
-	     * Called when each registered asset loads and triggers an engine-wide
-	     * event that can be listened to.
-	     * @method onAssetLoaded
-	     * @private
-	     * @param  {Box3DAsset} asset The asset that just loaded.
-	     * @return {void}
-	     */
+	      /**
+	       * Returns the asset with the provided Id.
+	       * @method getAssetById
+	       * @public
+	       * @param  {String} assetId The ID of the asset
+	       * @return {Box3DAsset} The asset or null if not found.
+	       */
 
-	  }, {
-	    key: 'onAssetLoaded',
-	    value: function onAssetLoaded(asset) {
-	      this.trigger('assetLoaded', asset);
-	    }
-
-	    /**
-	     * Called when each registered asset unloads and triggers an engine-wide
-	     * event that can be listened to.
-	     * @method onAssetUnloaded
-	     * @private
-	     * @param  {Box3DAsset} asset The asset that just unloaded.
-	     * @return {void}
-	     */
-
-	  }, {
-	    key: 'onAssetUnloaded',
-	    value: function onAssetUnloaded(asset) {
-	      this.trigger('assetUnloaded', asset);
-	    }
-
-	    /**
-	     * Returns the class for the given entity type.
-	     * @method getEntityClass
-	     * @private
-	     * @param  {String} type The name of the entity type. e.g. 'scene', 'material', etc.
-	     * @return {Object} The entity class
-	     */
-
-	  }, {
-	    key: 'getEntityClass',
-	    value: function getEntityClass(type) {
-	      switch (type) {
-	        case 'animation':
-	          return Box3D.AnimationAsset;
-
-	        case 'application':
-	          return Box3D.ApplicationAsset;
-
-	        case 'asset':
-	          return Box3D.Box3DAsset;
-
-	        case 'buffer':
-	          return Box3D.BufferAsset;
-
-	        case 'camera':
-	          return Box3D.CameraObject;
-
-	        case 'document':
-	          return Box3D.DocumentAsset;
-
-	        case 'image':
-	          return Box3D.ImageAsset;
-
-	        case 'light':
-	          return Box3D.LightObject;
-
-	        case 'material':
-	          return Box3D.MaterialAsset;
-
-	        case 'mesh':
-	          return Box3D.MeshObject;
-
-	        case 'meshGeometry':
-	          return Box3D.MeshGeometryAsset;
-
-	        case 'node':
-	          return Box3D.Box3DObject;
-
-	        case 'object':
-	          return Box3D.Box3DObject;
-
-	        case 'prefab':
-	          return Box3D.PrefabAsset;
-
-	        case 'primitiveGeometry':
-	          return Box3D.PrimitiveGeometryAsset;
-
-	        case 'renderTexture2D':
-	          return Box3D.RenderTexture2DAsset;
-
-	        case 'renderTextureCube':
-	          return Box3D.RenderTextureCubeAsset;
-
-	        case 'scene':
-	          return Box3D.SceneAsset;
-
-	        case 'script':
-	          return Box3D.ScriptAsset;
-
-	        case 'shader':
-	          return Box3D.ShaderAsset;
-
-	        case 'skin':
-	          return Box3D.SkinAsset;
-
-	        case 'texture2D':
-	          return Box3D.Texture2DAsset;
-
-	        case 'textureCube':
-	          return Box3D.TextureCubeAsset;
-
-	        case 'video':
-	          return Box3D.VideoAsset;
-
-	        default:
-	          return null;
+	    }, {
+	      key: 'getAssetById',
+	      value: function getAssetById(assetId) {
+	        return this.assets[assetId] || null;
 	      }
-	    }
 
-	    /**
-	     * Internal method for registering a new entity. This is called in each engine instance
-	     * after calling createObject/Asset().
-	     * @method registerEntity
-	     * @private
-	     * @param  {Object} jsonDesc Descriptor of new entity
-	     * @return {void}
-	     */
+	      /**
+	       * Returns the first asset with the provided name.
+	       * Note: Care should be taken when calling this function often (such as every frame)
+	       * because it is not built for high performance.
+	       * @method getAssetByName
+	       * @public
+	       * @param  {String} assetName The name of the asset
+	       * @return {Box3DAsset} The asset, if found, or null if not found.
+	       */
 
-	  }, {
-	    key: 'registerEntity',
-	    value: function registerEntity(jsonDesc) {
-	      var newEntity = new (this.getEntityClass(jsonDesc.type))(jsonDesc);
-	      newEntity.box3DRuntime = this;
-	      if (newEntity instanceof _Box3DAsset2.default) {
-	        this.assets[newEntity.id] = newEntity;
-	        newEntity.on('load', this.onAssetLoaded, this);
-	        newEntity.on('unload', this.onAssetUnloaded, this);
-	      } else {
-	        this.objects[newEntity.id] = newEntity;
+	    }, {
+	      key: 'getAssetByName',
+	      value: function getAssetByName(assetName) {
+	        return this.getAsset(function (obj) {
+	          return obj.getName() === assetName;
+	        });
 	      }
-	    }
 
-	    /**
-	     * This is called to remove the entity from this engine only. The entity will
-	     * still be available to other running engine instances.
-	     * @method unregisterEntityById
-	     * @public
-	     * @param  {string} entityId The ID of the entity to unregister.
-	     * @return {void}
-	     */
+	      /**
+	       * Returns the assets with the provided name.
+	       * Note: Care should be taken when calling this function often (such as every frame)
+	       * because it is not built for high performance.
+	       * @method getAssetsByName
+	       * @public
+	       * @param  {String} assetName The name of the asset
+	       * @return {array} Array of matching assets
+	       */
 
-	  }, {
-	    key: 'unregisterEntityById',
-	    value: function unregisterEntityById(entityId) {
-	      this.unregisterEntity(this.getEntityById(entityId));
-	    }
-
-	    /**
-	     * This is called to remove the object from this engine only. The entity will
-	     * still be available to other running engine instances.
-	     * @method unregisterEntity
-	     * @public
-	     * @param  {Box3DEntity} object The object to unregister.
-	     * @return {void}
-	     */
-
-	  }, {
-	    key: 'unregisterEntity',
-	    value: function unregisterEntity(entity) {
-	      if (!entity) {
-	        return;
+	    }, {
+	      key: 'getAssetsByName',
+	      value: function getAssetsByName(assetName) {
+	        return this.getAssets(function (obj) {
+	          return obj.getName() === assetName;
+	        });
 	      }
-	      entity.uninitialize();
-	      if (this.objects[entity.id]) {
-	        delete this.objects[entity.id];
-	      } else {
-	        entity.off('load', this.onAssetLoaded, this);
-	        entity.off('unload', this.onAssetUnloaded, this);
-	        delete this.assets[entity.id];
-	      }
-	    }
-	  }]);
 
-	  return EntityRegistry;
-	}((0, _mixwith.mix)().with(_RuntimeEvents2.default));
+	      /**
+	       * Returns the first asset with the provided type.
+	       * @method getAssetByType
+	       * @public
+	       * @param  {String} assetType The type of the asset
+	       * @return {Asset} The first matching asset
+	       */
+
+	    }, {
+	      key: 'getAssetByType',
+	      value: function getAssetByType(assetType) {
+	        return this.getAsset(function (obj) {
+	          return obj.type === assetType;
+	        });
+	      }
+
+	      /**
+	       * Returns the assets with the provided type.
+	       * @method getAssetsByType
+	       * @public
+	       * @param  {String} assetType The type of the asset
+	       * @return {Array} Array of matching assets
+	       */
+
+	    }, {
+	      key: 'getAssetsByType',
+	      value: function getAssetsByType(assetType) {
+	        return this.getAssets(function (obj) {
+	          return obj.type === assetType;
+	        });
+	      }
+
+	      /**
+	       * Returns the first object that is validated by the provided function.
+	       * @method getObject
+	       * @public
+	       * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
+	       * which object to return.
+	       * @return {Box3DObject}        The first object that matches the querry
+	       */
+
+	    }, {
+	      key: 'getObject',
+	      value: function getObject(predicate) {
+	        return this.getEntity(predicate, this.objects);
+	      }
+
+	      /**
+	       * Returns an array of objects that satisfy the given filter function.
+	       * @method getObjects
+	       * @public
+	       * @param  {Function} predicate A function which returns 'true' or 'false'. Used to determine
+	       * which objects to return.
+	       * @return {Array}        Array of objects that match the querry
+	       */
+
+	    }, {
+	      key: 'getObjects',
+	      value: function getObjects(predicate) {
+	        return this.getEntities(predicate, this.objects);
+	      }
+
+	      /**
+	       * Returns the object with the provided Id.
+	       * @method getObjectById
+	       * @public
+	       * @param  {String} objectId The ID of the object
+	       * @return {Box3DObject} The object or null if not found.
+	       */
+
+	    }, {
+	      key: 'getObjectById',
+	      value: function getObjectById(objectId) {
+	        return this.objects[objectId] || null;
+	      }
+
+	      /**
+	       * Returns the first object with the provided name.
+	       * Note: Care should be taken when calling this function often (such as every frame)
+	       * because it is not built for high performance.
+	       * @method getObjectByName
+	       * @public
+	       * @param  {String} objectName The name of the object
+	       * @return {Box3DObject} The object, if found, or null if not found.
+	       */
+
+	    }, {
+	      key: 'getObjectByName',
+	      value: function getObjectByName(objectName) {
+	        return this.getObject(function (obj) {
+	          return obj.getName() === objectName;
+	        });
+	      }
+
+	      /**
+	       * Returns the objects with the provided name.
+	       * Note: Care should be taken when calling this function often (such as every frame)
+	       * because it is not built for high performance.
+	       * @method getObjectsByName
+	       * @public
+	       * @param  {String} objectName The name of the object
+	       * @return {array} Array of matching objects
+	       */
+
+	    }, {
+	      key: 'getObjectsByName',
+	      value: function getObjectsByName(objectName) {
+	        return this.getObjects(function (obj) {
+	          return obj.getName() === objectName;
+	        });
+	      }
+
+	      /**
+	       * Returns the first object with the provided type.
+	       * @method getObjectByType
+	       * @public
+	       * @param  {String} objectType The type of the object
+	       * @return {Object} The first matching object
+	       */
+
+	    }, {
+	      key: 'getObjectByType',
+	      value: function getObjectByType(objectType) {
+	        return this.getObject(function (obj) {
+	          return obj.type === objectType;
+	        });
+	      }
+
+	      /**
+	       * Returns the objects with the provided type.
+	       * @method getObjectsByType
+	       * @public
+	       * @param  {String} objectType The type of the object
+	       * @return {Array} Array of matching objects
+	       */
+
+	    }, {
+	      key: 'getObjectsByType',
+	      value: function getObjectsByType(objectType) {
+	        return this.getObjects(function (obj) {
+	          return obj.type === objectType;
+	        });
+	      }
+
+	      /**
+	       * Returns the first entity that is selected by the provided function.
+	       * @method getEntity
+	       * @public
+	       * @param  {Function} predicate A function which returns 'true' or 'false'. Used to determine
+	       * which entity to return.
+	       * @param {Object} [entities] Optional dictionary of entities, keyed by ID, to search within.
+	       * @return {Box3DEntity} The first entity that matches the query
+	       */
+
+	    }, {
+	      key: 'getEntity',
+	      value: function getEntity(predicate, entities) {
+	        if (!entities) {
+	          return this.getAsset(predicate) || this.getObject(predicate);
+	        }
+	        var entityId = Object.keys(entities).find(function (id) {
+	          return predicate(entities[id]);
+	        });
+	        return entities[entityId];
+	      }
+
+	      /**
+	       * Returns all entities that are selected by the provided function.
+	       * @method getEntities
+	       * @public
+	       * @param {Function} predicate A function which returns 'true' or 'false'. Used to determine
+	       * which entities to return.
+	       * @param {Object} [entities] Optional dictionary of entities, keyed by ID, to search within.
+	       * @return {Array} Array of entities that matches the query
+	       */
+
+	    }, {
+	      key: 'getEntities',
+	      value: function getEntities(predicate, entities) {
+	        if (!entities) {
+	          return [].concat(_toConsumableArray(this.getObjects(predicate)), _toConsumableArray(this.getAssets(predicate)));
+	        }
+	        var all = typeof predicate !== 'function';
+
+	        return Object.keys(entities).filter(function (id) {
+	          return all || predicate(entities[id]);
+	        }).map(function (id) {
+	          return entities[id];
+	        });
+	      }
+
+	      /**
+	       * Returns the entity with the provided Id. This includes ALL entities,
+	       * both assets and objects
+	       * @method getEntityById
+	       * @public
+	       * @param  {String} entityId The ID of the entity.
+	       * @return {Box3DEntity} The entity or null if not found.
+	       */
+
+	    }, {
+	      key: 'getEntityById',
+	      value: function getEntityById(entityId) {
+	        return this.assets[entityId] || this.objects[entityId];
+	      }
+
+	      /**
+	       * Returns all entities with the provided type.
+	       * @method getEntitiesByType
+	       * @public
+	       * @param  {String} type The type of the entity (e.g. 'material', 'scene', etc.)
+	       * @return {Array} An array of matching entities
+	       */
+
+	    }, {
+	      key: 'getEntitiesByType',
+	      value: function getEntitiesByType(type) {
+	        return this.getEntities(function (entity) {
+	          return entity.type === type;
+	        });
+	      }
+
+	      /**
+	       * Returns the first entity with the provided name.
+	       * @method getEntityByName
+	       * @public
+	       * @param  {String} name The name of the entity
+	       * @return {Box3DEntity} The entity, if found, or null if not found.
+	       */
+
+	    }, {
+	      key: 'getEntityByName',
+	      value: function getEntityByName(name) {
+	        return this.getEntity(function (obj) {
+	          return obj.getName() === name;
+	        });
+	      }
+
+	      /**
+	       * Returns all entities with the provided name.
+	       * @method getEntitiesByName
+	       * @public
+	       * @param  {String} name The name of the entity
+	       * @return {Array} An array of matching entities
+	       */
+
+	    }, {
+	      key: 'getEntitiesByName',
+	      value: function getEntitiesByName(name) {
+	        return this.getEntities(function (entity) {
+	          return entity.getName() === name;
+	        });
+	      }
+
+	      /**
+	       * Create an audio asset.
+	       * @method createAudio
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {AudioAsset}
+	       */
+
+	    }, {
+	      key: 'createAudio',
+	      value: function createAudio(id) {
+	        return this.createEntityByType(id, 'audio');
+	      }
+
+	      /**
+	       * Create a buffer asset.
+	       * @method createAudio
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {BufferAsset}
+	       */
+
+	    }, {
+	      key: 'createBuffer',
+	      value: function createBuffer(id) {
+	        return this.createEntityByType(id, 'buffer');
+	      }
+
+	      /**
+	       * Create a camera object.
+	       * @method createCamera
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {CameraObject}
+	       */
+
+	    }, {
+	      key: 'createCamera',
+	      value: function createCamera(id) {
+	        return this.createEntityByType(id, 'camera');
+	      }
+
+	      /**
+	       * Create an image asset.
+	       * @method createImage
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {ImageAsset}
+	       */
+
+	    }, {
+	      key: 'createImage',
+	      value: function createImage(id) {
+	        return this.createEntityByType(id, 'image');
+	      }
+
+	      /**
+	       * Create a light object.
+	       * @method createLight
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {LightObject}
+	       */
+
+	    }, {
+	      key: 'createLight',
+	      value: function createLight(id) {
+	        return this.createEntityByType(id, 'light');
+	      }
+
+	      /**
+	       * Create a material asset.
+	       * @method createAudio
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {MaterialAsset}
+	       */
+
+	    }, {
+	      key: 'createMaterial',
+	      value: function createMaterial(id) {
+	        return this.createEntityByType(id, 'material');
+	      }
+
+	      /**
+	       * Create a mesh object.
+	       * @method createMesh
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {MeshObject}
+	       */
+
+	    }, {
+	      key: 'createMesh',
+	      value: function createMesh(id) {
+	        return this.createEntityByType(id, 'mesh');
+	      }
+
+	      /**
+	       * Create a mesh geometry asset.
+	       * @method createMeshGeometry
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {MeshGeometryAsset}
+	       */
+
+	    }, {
+	      key: 'createMeshGeometry',
+	      value: function createMeshGeometry(id) {
+	        return this.createEntityByType(id, 'meshGeometry');
+	      }
+
+	      /**
+	       * Create an empty node object.
+	       * @method createObject
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {Box3DObject}
+	       */
+
+	    }, {
+	      key: 'createObject',
+	      value: function createObject(id) {
+	        return this.createEntityByType(id, 'node');
+	      }
+
+	      /**
+	       * Create a prefab asset.
+	       * @method createAudio
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {PrefabAsset}
+	       */
+
+	    }, {
+	      key: 'createPrefab',
+	      value: function createPrefab(id) {
+	        return this.createEntityByType(id, 'prefab');
+	      }
+
+	      /**
+	       * Create a primitive geometry asset.
+	       * @method createPrimitiveGeometry
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {PrimitiveGeometryAsset}
+	       */
+
+	    }, {
+	      key: 'createPrimitiveGeometry',
+	      value: function createPrimitiveGeometry(id) {
+	        return this.createEntityByType(id, 'primitiveGeometry');
+	      }
+
+	      /**
+	       * Create a 2D render texture asset.
+	       * @method createRenderTexture2d
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {RenderTexture2dAsset}
+	       */
+
+	    }, {
+	      key: 'createRenderTexture2d',
+	      value: function createRenderTexture2d(id) {
+	        return this.createEntityByType(id, 'renderTexture2D');
+	      }
+
+	      /**
+	       * Create a cube render texture asset.
+	       * @method createRenderTextureCube
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {RenderTextureCubeAsset}
+	       */
+
+	    }, {
+	      key: 'createRenderTextureCube',
+	      value: function createRenderTextureCube(id) {
+	        return this.createEntityByType(id, 'renderTextureCube');
+	      }
+
+	      /**
+	       * Create a script asset.
+	       * @method createScript
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {ScriptAsset}
+	       */
+
+	    }, {
+	      key: 'createScript',
+	      value: function createScript(id) {
+	        return this.createEntityByType(id, 'script');
+	      }
+
+	      /**
+	       * Create a shader asset.
+	       * @method createShader
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {ShaderAsset}
+	       */
+
+	    }, {
+	      key: 'createShader',
+	      value: function createShader(id) {
+	        return this.createEntityByType(id, 'shader');
+	      }
+
+	      /**
+	       * Create a skin asset.
+	       * @method createSkin
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {SkinAsset}
+	       */
+
+	    }, {
+	      key: 'createSkin',
+	      value: function createSkin(id) {
+	        return this.createEntityByType(id, 'skin');
+	      }
+
+	      /**
+	       * Create a 2D texture asset.
+	       * @method createTexture2d
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {Texture2DAsset}
+	       */
+
+	    }, {
+	      key: 'createTexture2d',
+	      value: function createTexture2d(id) {
+	        return this.createEntityByType(id, 'texture2D');
+	      }
+
+	      /**
+	       * Create a cube texture asset.
+	       * @method createTextureCube
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {TextureCubeAsset}
+	       */
+
+	    }, {
+	      key: 'createTextureCube',
+	      value: function createTextureCube(id) {
+	        return this.createEntityByType(id, 'textureCube');
+	      }
+
+	      /**
+	       * Create a video asset.
+	       * @method createVideo
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {VideoAsset}
+	       */
+
+	    }, {
+	      key: 'createVideo',
+	      value: function createVideo(id) {
+	        return this.createEntityByType(id, 'video');
+	      }
+
+	      /**
+	       * Create an entity with the defined type.
+	       * @method createEntityByType
+	       * @public
+	       * @param {string} id The ID for the new entity.
+	       * @param {string} type The type for the entity
+	       * @return {Box3DEntity}
+	       */
+
+	    }, {
+	      key: 'createEntityByType',
+	      value: function createEntityByType(id, type) {
+	        return this.createEntity({ id: id, type: type });
+	      }
+
+	      /**
+	       * Creates a new entity from a JSON descriptor.
+	       * @method createEntity
+	       * @public
+	       * @param  {Object} entityDef Entity definition of the form:
+	       * {
+	       *   id: <string>,
+	       *   type: <string>,
+	       *   properties: <Object>
+	       *   components: <Object>
+	       * }
+	       * @return {Box3DEntity} The newly created entity
+	       */
+
+	    }, {
+	      key: 'createEntity',
+	      value: function createEntity(entityDef) {
+	        var entityDesc = _extends({
+	          type: 'node',
+	          properties: {},
+	          components: {}
+	        }, (0, _deepClone2.default)(entityDef));
+
+	        var id = this.entityDispatcher.dispatchCreatedEntity(entityDef.id, entityDesc.type);
+	        this.entityDispatcher.dispatchInitEntity(id);
+	        this.entityDispatcher.dispatchPropertiesChanged(id, entityDesc.properties);
+	        this.entityDispatcher.dispatchComponentsChanged(id, entityDesc.components);
+
+	        if (entityDesc.sid) {
+	          this.entityDispatcher.dispatchAttributeChanged(id, 'sid', entityDesc.sid || '');
+	        }
+	        var entity = this.getEntityById(id);
+	        if (entity instanceof Box3D.Box3DAsset) {
+	          this.entityDispatcher.dispatchAttributeChanged(id, 'representations', entityDesc.representations || []);
+	        }
+	        if (entity instanceof Box3D.Box3DObject) {
+	          this.entityDispatcher.dispatchChildChanged(id, entityDesc.children || []);
+	          this.entityDispatcher.dispatchAttributeChanged(id, 'parentId', entityDesc.parentId || null);
+	          this.entityDispatcher.dispatchAttributeChanged(id, 'prefabAssetId', entityDesc.prefabAssetId || null);
+	          this.entityDispatcher.dispatchAttributeChanged(id, 'prefabObjectId', entityDesc.prefabObjectId || null);
+	          this.entityDispatcher.dispatchAttributeChanged(id, 'prefabInstanceId', entityDesc.prefabInstanceId || null);
+	        }
+
+	        return this.getEntityById(id);
+	      }
+
+	      /**
+	       * Deletes the asset and its hierarchy from the project.
+	       * Force-unloads the asset, if it is loaded.
+	       * @method destroyAssetById
+	       * @public
+	       * @param  {String} assetId The ID of the asset to destroy
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'destroyAssetById',
+	      value: function destroyAssetById(assetId) {
+	        var asset = this.getAssetById(assetId);
+	        this.destroyAsset(asset);
+	      }
+
+	      /**
+	       * Deletes the asset and its hierarchy from the project.
+	       * Force-unloads the asset, if it is loaded.
+	       * @method destroyAsset
+	       * @public
+	       * @param  {Box3DAsset} asset The Box3DAsset to destroy
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'destroyAsset',
+	      value: function destroyAsset(asset) {
+	        var _this3 = this;
+
+	        if (!asset || !asset instanceof _Box3DAsset2.default) {
+	          throw new Error('destroyAsset : You must specify a valid asset to destroy.');
+	        }
+	        asset.unload();
+	        if (asset.getRootObject) {
+	          var rootObject = asset.getRootObject();
+	          if (rootObject) {
+	            var objects = rootObject.getDescendants();
+	            objects.forEach(function (obj) {
+	              _this3.destroyObject(obj);
+	            });
+	            rootObject.destroy();
+	          }
+	        }
+	        this.entityDispatcher.dispatchDestroyedEntity(asset.id);
+	      }
+
+	      /**
+	       * Deletes the object and its hierarchy from this asset.
+	       * @method destroyObjectById
+	       * @public
+	       * @param  {String} objectId The ID of the object to destroy
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'destroyObjectById',
+	      value: function destroyObjectById(objectId) {
+	        var object = this.getObjectById(objectId);
+	        this.destroyObject(object);
+	      }
+
+	      /**
+	       * Deletes the object and removes it from a hierarchy, if it was part of one.
+	       * @method destroyObject
+	       * @public
+	       * @param  {Object} object The Box3DObject to destroy
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'destroyObject',
+	      value: function destroyObject(object) {
+	        if (!object || !object instanceof Box3D.Box3DObject) {
+	          throw new Error('destroyObject : You must specify a valid object to destroy.');
+	        }
+	        var parent = object.getParentObject();
+	        if (parent) {
+	          parent.removeChild(object);
+	        }
+	        this.entityDispatcher.dispatchDestroyedEntity(object.id);
+	      }
+
+	      /**
+	       * Called when each registered asset loads and triggers an engine-wide
+	       * event that can be listened to.
+	       * @method onAssetLoaded
+	       * @private
+	       * @param  {Box3DAsset} asset The asset that just loaded.
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'onAssetLoaded',
+	      value: function onAssetLoaded(asset) {
+	        this.trigger('assetLoaded', asset);
+	      }
+
+	      /**
+	       * Called when each registered asset unloads and triggers an engine-wide
+	       * event that can be listened to.
+	       * @method onAssetUnloaded
+	       * @private
+	       * @param  {Box3DAsset} asset The asset that just unloaded.
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'onAssetUnloaded',
+	      value: function onAssetUnloaded(asset) {
+	        this.trigger('assetUnloaded', asset);
+	      }
+
+	      /**
+	       * Returns the class for the given entity type.
+	       * @method getEntityClass
+	       * @private
+	       * @param  {String} type The name of the entity type. e.g. 'scene', 'material', etc.
+	       * @return {Object} The entity class
+	       */
+
+	    }, {
+	      key: 'getEntityClass',
+	      value: function getEntityClass(type) {
+	        switch (type) {
+	          case 'animation':
+	            return Box3D.AnimationAsset;
+
+	          case 'application':
+	            return Box3D.ApplicationAsset;
+
+	          case 'asset':
+	            return Box3D.Box3DAsset;
+
+	          case 'buffer':
+	            return Box3D.BufferAsset;
+
+	          case 'camera':
+	            return Box3D.CameraObject;
+
+	          case 'document':
+	            return Box3D.DocumentAsset;
+
+	          case 'image':
+	            return Box3D.ImageAsset;
+
+	          case 'light':
+	            return Box3D.LightObject;
+
+	          case 'material':
+	            return Box3D.MaterialAsset;
+
+	          case 'mesh':
+	            return Box3D.MeshObject;
+
+	          case 'meshGeometry':
+	            return Box3D.MeshGeometryAsset;
+
+	          case 'node':
+	            return Box3D.Box3DObject;
+
+	          case 'object':
+	            return Box3D.Box3DObject;
+
+	          case 'prefab':
+	            return Box3D.PrefabAsset;
+
+	          case 'primitiveGeometry':
+	            return Box3D.PrimitiveGeometryAsset;
+
+	          case 'renderTexture2D':
+	            return Box3D.RenderTexture2DAsset;
+
+	          case 'renderTextureCube':
+	            return Box3D.RenderTextureCubeAsset;
+
+	          case 'scene':
+	            return Box3D.SceneObject;
+
+	          case 'script':
+	            return Box3D.ScriptAsset;
+
+	          case 'shader':
+	            return Box3D.ShaderAsset;
+
+	          case 'skin':
+	            return Box3D.SkinAsset;
+
+	          case 'texture2D':
+	            return Box3D.Texture2DAsset;
+
+	          case 'textureCube':
+	            return Box3D.TextureCubeAsset;
+
+	          case 'video':
+	            return Box3D.VideoAsset;
+
+	          default:
+	            return null;
+	        }
+	      }
+
+	      /**
+	       * Internal method for registering a new entity. This is called in each engine instance
+	       * after calling createEntity().
+	       * @method registerEntity
+	       * @private
+	       * @param  {Object} jsonDesc Descriptor of new entity
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'registerEntity',
+	      value: function registerEntity(jsonDesc) {
+	        var newEntity = new (this.getEntityClass(jsonDesc.type))(jsonDesc);
+	        newEntity.box3DRuntime = this;
+	        if (newEntity instanceof _Box3DAsset2.default) {
+	          this.assets[newEntity.id] = newEntity;
+	          newEntity.on('load', this.onAssetLoaded, this);
+	          newEntity.on('unload', this.onAssetUnloaded, this);
+	        } else {
+	          this.objects[newEntity.id] = newEntity;
+	        }
+	      }
+
+	      /**
+	       * This is called to remove the entity from this engine only. The entity will
+	       * still be available to other running engine instances.
+	       * @method unregisterEntityById
+	       * @public
+	       * @param  {string} entityId The ID of the entity to unregister.
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'unregisterEntityById',
+	      value: function unregisterEntityById(entityId) {
+	        this.unregisterEntity(this.getEntityById(entityId));
+	      }
+
+	      /**
+	       * This is called to remove the object from this engine only. The entity will
+	       * still be available to other running engine instances.
+	       * @method unregisterEntity
+	       * @public
+	       * @param  {Box3DEntity} object The object to unregister.
+	       * @return {void}
+	       */
+
+	    }, {
+	      key: 'unregisterEntity',
+	      value: function unregisterEntity(entity) {
+	        if (!entity) {
+	          return;
+	        }
+	        entity.uninitialize();
+	        if (this.objects[entity.id]) {
+	          delete this.objects[entity.id];
+	        } else {
+	          entity.off('load', this.onAssetLoaded, this);
+	          entity.off('unload', this.onAssetUnloaded, this);
+	          delete this.assets[entity.id];
+	        }
+	      }
+	    }]);
+
+	    return _class;
+	  }(superclass);
+	};
 
 	exports.default = EntityRegistry;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57371,7 +57736,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DEntity2 = __webpack_require__(15);
+	var _Box3DEntity2 = __webpack_require__(16);
 
 	var _Box3DEntity3 = _interopRequireDefault(_Box3DEntity2);
 
@@ -57524,128 +57889,6 @@
 	      return this.box3DRuntime.getAssetById(assetId);
 	    }
 
-	    /**
-	     * Returns the first object inside this asset that is validated by the provided function.
-	     * @method getObject
-	     * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
-	     * which entities to return.
-	     * @return {Box3DObject}        The first object that matches the query
-	     */
-
-	  }, {
-	    key: 'getObject',
-	    value: function getObject(predicate) {
-	      var _this2 = this;
-
-	      var all = typeof predicate !== 'function';
-	      return this.box3DRuntime.getObject(function (obj) {
-	        return obj.get('parentAssetId') === _this2.id && (all || predicate(obj));
-	      });
-	    }
-
-	    /**
-	     * Returns an array of objects inside this asset that match any of the provided filters.
-	     * @method getObjects
-	     * @public
-	     * @param  {Function} predicate A function which returns 'true' or 'false', used to determine
-	     * which objects to return.
-	     * @return {Array}        Array of objects that match the query
-	     */
-
-	  }, {
-	    key: 'getObjects',
-	    value: function getObjects(predicate) {
-	      var _this3 = this;
-
-	      var all = typeof predicate !== 'function';
-	      return this.box3DRuntime.getObjects(function (obj) {
-	        return obj.get('parentAssetId') === _this3.id && (all || predicate(obj));
-	      });
-	    }
-
-	    /**
-	     * Returns the object with the provided Id, if it exists in the current asset.
-	     * If the objectId is the ID of this asset, returns this asset.
-	     * @method getObjectById
-	     * @public
-	     * @param  {String} objectId The ID of the object
-	     * @return {Box3DObject} The object or null if not found.
-	     */
-
-	  }, {
-	    key: 'getObjectById',
-	    value: function getObjectById(objectId) {
-	      return this.box3DRuntime.getObjectById(objectId);
-	    }
-
-	    /**
-	     * Returns the first object with the provided name, if it exists in the current asset.
-	     * Note: Care should be taken when calling this function often (such as every frame)
-	     * because it is not build for high performance.
-	     * @method getObjectByName
-	     * @public
-	     * @param  {String} objectName The name of the object
-	     * @return {Box3DObject} The object, if found, or null if not found.
-	     */
-
-	  }, {
-	    key: 'getObjectByName',
-	    value: function getObjectByName(objectName) {
-	      return this.getObject(function (obj) {
-	        return obj.getName() === objectName;
-	      });
-	    }
-
-	    /**
-	     * Returns the objects with the provided name, if any exist in the current asset.
-	     * Note: Care should be taken when calling this function often (such as every frame)
-	     * because it is not build for high performance.
-	     * @method getObjectsByName
-	     * @public
-	     * @param  {String} objectName The name of the object
-	     * @return {Array} Array of matching objects
-	     */
-
-	  }, {
-	    key: 'getObjectsByName',
-	    value: function getObjectsByName(objectName) {
-	      return this.getObjects(function (obj) {
-	        return obj.getName() === objectName;
-	      });
-	    }
-
-	    /**
-	     * Returns the first object with the provided type, if any exist in the current asset.
-	     * @method getObjectsByType
-	     * @public
-	     * @param  {String} objectType The type of the object
-	     * @return {Box3DObject} The first matching object
-	     */
-
-	  }, {
-	    key: 'getObjectByType',
-	    value: function getObjectByType(objectType) {
-	      return this.getObject(function (obj) {
-	        return obj.type === objectType;
-	      });
-	    }
-
-	    /**
-	     * Returns the objects with the provided type, if any exist in the current asset.
-	     * @method getObjectsByType
-	     * @public
-	     * @param  {String} objectType The type of the object
-	     * @return {Array} Array of matching objects
-	     */
-
-	  }, {
-	    key: 'getObjectsByType',
-	    value: function getObjectsByType(objectType) {
-	      return this.getObjects(function (obj) {
-	        return obj.type === objectType;
-	      });
-	    }
-
 	    /** @inheritdoc */
 
 	  }, {
@@ -57670,33 +57913,14 @@
 	      this.box3DRuntime.destroyAsset(this);
 	    }
 
-	    //Clones the asset in the database as well as the threeJS data, if loaded.
+	    /** @inheritdoc */
 
 	  }, {
 	    key: 'clone',
-	    value: function clone() {
-	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-
-	      var newAssetJSON = {};
-
-	      newAssetJSON.id = options.id || this.id;
-	      newAssetJSON.sid = options.sid || this.get('sid');
-	      newAssetJSON.type = this.getType();
-	      newAssetJSON.properties = _lodash2.default.cloneDeep(this.getOwnProperties());
-	      newAssetJSON.components = _lodash2.default.cloneDeep(this.componentRegistry.getDescriptors());
-
-	      var newAsset = this.box3DRuntime.createAsset(newAssetJSON);
-	      // Clone all this asset's objects into the new asset
-	      var objectMap = this.cloneObjectsInto(newAsset);
-	      // Link up the asset's immediate children.
-	      var children = this.getChildIds();
-	      var newChildren = [];
-	      children.forEach(function (childId) {
-	        newChildren.push(objectMap[childId].id);
-	      });
-	      newAsset.setChildIds(newChildren);
-	      return newAsset;
+	    value: function clone(id) {
+	      var clonedAsset = _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'clone', this).call(this, id);
+	      clonedAsset.set('representations', this.get('representations'));
+	      return clonedAsset;
 	    }
 	  }]);
 
@@ -57718,7 +57942,7 @@
 	exports.default = Box3DAsset;
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57727,29 +57951,37 @@
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _log = __webpack_require__(7);
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _lodash = __webpack_require__(4);
+	var _uuid = __webpack_require__(11);
 
-	var _lodash2 = _interopRequireDefault(_lodash);
+	var _uuid2 = _interopRequireDefault(_uuid);
 
 	var _RuntimeEvents = __webpack_require__(3);
 
 	var _RuntimeEvents2 = _interopRequireDefault(_RuntimeEvents);
 
-	var _DependencyRegistry = __webpack_require__(16);
+	var _DependencyRegistry = __webpack_require__(17);
 
 	var _DependencyRegistry2 = _interopRequireDefault(_DependencyRegistry);
 
-	var _ComponentRegistry = __webpack_require__(17);
+	var _ComponentRegistry = __webpack_require__(18);
 
 	var _ComponentRegistry2 = _interopRequireDefault(_ComponentRegistry);
 
 	var _mixwith = __webpack_require__(2);
+
+	var _deepClone = __webpack_require__(13);
+
+	var _deepClone2 = _interopRequireDefault(_deepClone);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57836,9 +58068,6 @@
 	              break;
 	            case Box3DEntity.STATE_TYPE.DEPENDENCIES:
 	              this.trigger('loadDependencies', this);
-	              break;
-	            case Box3DEntity.STATE_TYPE.COMPONENTS:
-	              this.trigger('loadComponents', this);
 	          }
 
 	          // If this entity isn't finished loading then it won't affect the parent's state.
@@ -57863,20 +58092,11 @@
 	     * @return {void}
 	     */
 	    value: function initialize() {
-	      var _this2 = this;
-
 	      this.on('change:properties', this._propertyChanged, this);
 	      this.on('startTimer', this.startTimer, this);
 
-	      Object.keys(this.sharedData.properties).forEach(function (key) {
-	        Box3DEntity._setValueObj.value = _this2.sharedData.properties[key];
-	        if (!_this2.verifyProperty(key, Box3DEntity._setValueObj)) {
-	          _log2.default.warn('Property, ' + key + ' does not exist or has an invalid property.');
-	        }
-	      });
-
+	      this.initializeProperties();
 	      this.initializeComponents();
-	      this.registerPermanentDependencies();
 	    }
 
 	    /**
@@ -57916,6 +58136,37 @@
 	      this.runtimeData = null;
 	      this.box3DRuntime = undefined;
 	    }
+
+	    /**
+	     * Called when an entity is initialized. This ensures that an event is triggered
+	     * for all the initial properties being set.
+	     * @method initializeProperties
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'initializeProperties',
+	    value: function initializeProperties() {
+	      var _this2 = this;
+
+	      var properties = this.getProperties();
+	      Object.keys(properties).forEach(function (key) {
+	        Box3DEntity._setValueObj.value = properties[key];
+	        if (!_this2.verifyProperty(key, Box3DEntity._setValueObj)) {
+	          _log2.default.warn('Property, ' + key + ' does not exist or has an invalid property.');
+	        }
+	      });
+	      this._applyPropertiesUnloaded(properties);
+	    }
+
+	    /**
+	     * Called when an entity is initialized. This creates the component registry.
+	     * @method initializeComponents
+	     * @private
+	     * @return {void}
+	     */
+
 	  }, {
 	    key: 'initializeComponents',
 	    value: function initializeComponents() {
@@ -57925,20 +58176,6 @@
 	        });
 	        this.componentRegistry.initialize();
 	      }
-	    }
-
-	    /**
-	     * Returns the top-level asset that this entity is part of.
-	     * If this entity is an asset, the returned entity will be this one.
-	     * @method getParentAsset
-	     * @public
-	     * @return {Box3DEntity} The parent asset of this entity.
-	     */
-
-	  }, {
-	    key: 'getParentAsset',
-	    value: function getParentAsset() {
-	      return this.box3DRuntime.getAssetById(this.get('parentAssetId'));
 	    }
 
 	    /**
@@ -57975,14 +58212,14 @@
 	     * @method setName
 	     * @public
 	     * @param {String} newName       : The entity's new name
-	     * @param {Object} options :    Options object.
+	     * @param {boolean} [silent=false] Supress change event.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'setName',
-	    value: function setName(newName, options) {
-	      this.setProperty('name', newName, options);
+	    value: function setName(newName, silent) {
+	      this.setProperty('name', newName, silent);
 	    }
 
 	    /**
@@ -57993,46 +58230,62 @@
 	     * @method setSid
 	     * @public
 	     * @param {String} newId   : The entity's new scoped ID
-	     * @param {Object} options :    Options object.
+	     * @param {boolean} [silent=false] Supress change event.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'setSid',
-	    value: function setSid(newId, options) {
-	      this.set('sid', newId, options);
+	    value: function setSid(newId, silent) {
+	      this.set('sid', newId, silent);
 	    }
+
+	    /**
+	     * Get an attribute value for the entity.
+	     * @method get
+	     * @public
+	     * @param {string} attrib The name of the attribute
+	     * @return {mixed} The attribute's value
+	     */
+
 	  }, {
 	    key: 'get',
 	    value: function get(attrib) {
 	      return this.sharedData[attrib];
 	    }
+
+	    /**
+	     * Set an attribute value for the entity.
+	     * @method set
+	     * @public
+	     * @param {string} attrib The name of the attribute
+	     * @param {mixed} value Value of attribute
+	     * @param {boolean} [silent=false] Supress change event.
+	     * @return {void}
+	     */
+
 	  }, {
 	    key: 'set',
-	    value: function set(attrib, value, options) {
-	      if (_lodash2.default.isObject(attrib)) {
-	        _log2.default.error('set being passed an object!!');
-	        return;
-	      }
-	      if (this.sharedData.hasOwnProperty(attrib)) {
-	        this.sharedData[attrib] = value;
-	      }
-	      if (!options || !options.silent) {
-	        this.box3DRuntime.entityDispatcher.dispatchAttributeChanged(this.id, attrib, value);
-	      }
+	    value: function set(attrib, value, silent) {
+	      this.box3DRuntime.entityDispatcher.dispatchAttributeChanged(this.id, attrib, value, silent);
 	    }
 
-	    // TODO - Is there a use-case for unset outside of prefab instances??
+	    /**
+	     * Delete an attribute value for the entity.
+	     * @method unset
+	     * @public
+	     * @param {string} attrib The name of the attribute
+	     * @param {boolean} [silent=false] Supress change event.
+	     * @return {void}
+	     */
 
 	  }, {
 	    key: 'unset',
-	    value: function unset(attrib, options) {
+	    value: function unset(attrib, silent) {
 	      if (this.sharedData.hasOwnProperty(attrib)) {
 	        delete this.sharedData[attrib];
 	      }
-	      if (!options || !options.silent) {
-	        this.box3DRuntime.entityDispatcher.dispatchAttributeChanged(this.id, attrib, undefined, options);
-	      }
+	      this.box3DRuntime.entityDispatcher.dispatchAttributeChanged(this.id, attrib, undefined, silent);
 	    }
 	  }, {
 	    key: 'verifyProperty',
@@ -58044,37 +58297,37 @@
 	        switch (this.constructor.schema[propertyName].type) {
 	          case 'string':
 	          case 'id':
-	            if (_lodash2.default.isString(value)) {
+	            if (typeof value === 'string') {
 	              return true;
 	            }
 	            break;
 	          case 'integer':
-	            if (_lodash2.default.isNumber(value) && Math.round(value) === value) {
+	            if (typeof value === 'number' && Math.round(value) === value) {
 	              return true;
 	            }
 	            break;
 	          case 'float':
-	            if (_lodash2.default.isNumber(value)) {
+	            if (typeof value === 'number') {
 	              return true;
 	            }
 	            break;
 	          case 'boolean':
-	            if (_lodash2.default.isBoolean(value)) {
+	            if (typeof value === 'boolean') {
 	              return true;
 	            }
 	            break;
 	          case 'object':
-	            if (_lodash2.default.isObject(value)) {
+	            if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
 	              return true;
 	            }
 	            break;
 	          case 'array':
-	            if (_lodash2.default.isArray(value)) {
+	            if (Array.isArray(value)) {
 	              return true;
 	            }
 	            break;
 	          case 'vector2':
-	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.size(value) === 2) {
+	            if (typeof value.x === 'number' && typeof value.y === 'number' && Object.keys(value).length === 2) {
 	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
 	                newValue = this.sharedData.properties[propertyName];
 	                newValue.x = value.x;
@@ -58086,7 +58339,7 @@
 	            }
 	            break;
 	          case 'vector3':
-	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.isNumber(value.z) && _lodash2.default.size(value) === 3) {
+	            if (typeof value.x === 'number' && typeof value.y === 'number' && typeof value.z === 'number' && Object.keys(value).length === 3) {
 	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
 	                newValue = this.sharedData.properties[propertyName];
 	                newValue.x = value.x;
@@ -58098,7 +58351,7 @@
 	            }
 	            break;
 	          case 'vector4':
-	            if (_lodash2.default.isNumber(value.x) && _lodash2.default.isNumber(value.y) && _lodash2.default.isNumber(value.z) && _lodash2.default.isNumber(value.w) && _lodash2.default.size(value) === 4) {
+	            if (typeof value.x === 'number' && typeof value.y === 'number' && typeof value.z === 'number' && typeof value.w === 'number' && Object.keys(value).length === 4) {
 	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
 	                newValue = this.sharedData.properties[propertyName];
 	                newValue.x = value.x;
@@ -58111,7 +58364,7 @@
 	            }
 	            break;
 	          case 'color':
-	            if (_lodash2.default.isNumber(value.r) && _lodash2.default.isNumber(value.g) && _lodash2.default.isNumber(value.b) && _lodash2.default.size(value) === 3) {
+	            if (typeof value.r === 'number' && typeof value.g === 'number' && typeof value.b === 'number' && Object.keys(value).length === 3) {
 	              if (this.sharedData.properties.hasOwnProperty(propertyName)) {
 	                newValue = this.sharedData.properties[propertyName];
 	                newValue.r = value.r;
@@ -58142,20 +58395,16 @@
 	     * @public
 	     * @param  {String} propertyName Name of the property to set.
 	     * @param  {Mixed} value        Value of the property.
-	     * @param  {Object} options      Options object. Can contain things like silent: true, etc.
-	     * @returns {Boolean} True if the set was successful. False otherwise.
+	     * @param {boolean} [silent=false] Supress change event.
+	     * @return {void}
 	     */
-	    value: function setProperty(propertyName, value, options) {
+	    value: function setProperty(propertyName, value, silent) {
 	      Box3DEntity._setValueObj.value = value;
 	      if (this.verifyProperty(propertyName, Box3DEntity._setValueObj)) {
 	        var newValue = Box3DEntity._setValueObj.value;
-	        // Copy the previous value.
-	        this.sharedData.previousProperties[propertyName] = _lodash2.default.clone(this.sharedData.properties[propertyName]);
-	        this.sharedData.properties[propertyName] = newValue;
+
 	        // Dispatch change event
-	        if (!options || !options.silent) {
-	          this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this.id, propertyName, newValue);
-	        }
+	        this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this.id, propertyName, newValue, silent);
 	      }
 	    }
 
@@ -58164,17 +58413,14 @@
 	     * @method unsetProperty
 	     * @public
 	     * @param  {String} propertyName Name of the property to remove.
-	     * @param  {Object} options      Options object. Can contain things like silent: true, etc.
+	     * @param {boolean} [silent=false] Supress change event.
+	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'unsetProperty',
-	    value: function unsetProperty(propertyName, options) {
-	      this.sharedData.previousProperties[propertyName] = this.sharedData.properties[propertyName];
-	      delete this.sharedData.properties[propertyName];
-	      if (!options || !options.silent) {
-	        this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this.id, propertyName, undefined);
-	      }
+	    value: function unsetProperty(propertyName, silent) {
+	      this.box3DRuntime.entityDispatcher.dispatchPropertyChanged(this.id, propertyName, undefined, silent);
 	    }
 
 	    /**
@@ -58182,23 +58428,16 @@
 	     * existing properties
 	     * @method setProperties
 	     * @public
-	     * @param  {Object} json Key-value pairs of properties.
-	     * @param  {Object} options      Options object. Can contain things like silent: true, etc.
+	     * @param {Object} properties Key-value pairs of properties.
+	     * @param {boolean} [silent=false] Supress change event.
+	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'setProperties',
-	    value: function setProperties(json, options) {
-	      //TODO - verify  property values against schema.
-	      _lodash2.default.each(this.sharedData.properties, function (value, key) {
-	        this.sharedData.previousProperties[key] = _lodash2.default.clone(this.sharedData.properties[key]);
-	      }, this);
-	      _lodash2.default.each(json, function (value, key) {
-	        this.sharedData.properties[key] = json[key];
-	      }, this);
-	      if (!options || !options.silent) {
-	        this.box3DRuntime.entityDispatcher.dispatchPropertiesChanged(this.id, json);
-	      }
+	    value: function setProperties(properties, silent) {
+	      // TODO - verify  property values against schema.
+	      this.box3DRuntime.entityDispatcher.dispatchPropertiesChanged(this.id, properties, silent);
 	    }
 
 	    /**
@@ -58253,38 +58492,28 @@
 	     * Copy the properties of the given object to this object, overwriting
 	     * any of the same name.
 	     * @method copyProperties
-	     * @param  {Box3DEntity} object  The object to copy properties from.
-	     * @param  {Object} options The standard options object
+	     * @param {Box3DEntity} object  The object to copy properties from.
+	     * @param {boolean} [silent=false] Supress change event.
 	     */
 
 	  }, {
 	    key: 'copyProperties',
-	    value: function copyProperties(object, options) {
-	      var newProperties = {};
-	      var objProperties = object.getOwnProperties();
-
-	      Object.assign(newProperties, this.sharedData.properties, objProperties);
-
-	      this.setProperties(newProperties, options);
+	    value: function copyProperties(object, silent) {
+	      this.setProperties(object.getOwnProperties(), silent);
 	    }
 
 	    /**
 	     * Copy the properties of the given object to this object, leaving
 	     * any of the same name unmodified.
 	     * @method mergeProperties
-	     * @param  {Box3DEntity} object  The object to copy properties from.
-	     * @param  {Object} options The standard options object
+	     * @param {Box3DEntity} object  The object to copy properties from.
+	     * @param {boolean} [silent=false] Supress change event.
 	     */
 
 	  }, {
 	    key: 'mergeProperties',
-	    value: function mergeProperties(object, options) {
-	      var newProperties = {};
-	      var objProperties = object.getOwnProperties();
-
-	      Object.assign(newProperties, objProperties, this.sharedData.properties);
-
-	      this.setProperties(newProperties, options);
+	    value: function mergeProperties(object, silent) {
+	      this.setProperties(_extends({}, object.getOwnProperties(), this.sharedData.properties), silent);
 	    }
 
 	    /**
@@ -58301,12 +58530,7 @@
 	      var value = void 0;
 	      var schemaDef = this.constructor.schema[propertyName];
 	      value = schemaDef ? schemaDef.default : undefined;
-
-	      if (value instanceof Object) {
-	        return _lodash2.default.clone(value);
-	      } else {
-	        return value;
-	      }
+	      return (0, _deepClone2.default)(value);
 	    }
 
 	    /**
@@ -58319,9 +58543,12 @@
 	  }, {
 	    key: 'getDefaultProperties',
 	    value: function getDefaultProperties() {
+	      var _this3 = this;
+
 	      var defaults = {};
-	      _lodash2.default.each(this.constructor.schema, function (val, key) {
-	        defaults[key] = val.default instanceof Object ? _lodash2.default.clone(val) : val.default;
+	      Object.keys(this.constructor.schema).forEach(function (key) {
+	        var value = _this3.constructor.schema[key].default;
+	        defaults[key] = value instanceof Object ? (0, _deepClone2.default)(value) : value;
 	      });
 	      return defaults;
 	    }
@@ -58388,6 +58615,24 @@
 	    }
 
 	    /**
+	     * Clones the entity.
+	     * @method clone
+	     * @public
+	     * @param  {string} id The new ID for the clone.
+	     * @return {Box3DEntity} The newly-created clone
+	     */
+
+	  }, {
+	    key: 'clone',
+	    value: function clone(id) {
+	      var clonedEntity = this.box3DRuntime.createEntityByType(id || (0, _uuid2.default)(), this.getType());
+	      clonedEntity.set('sid', this.get('sid'));
+	      clonedEntity.setProperties(this.getOwnProperties());
+	      clonedEntity.componentRegistry.set(this.componentRegistry.getDescriptors());
+	      return clonedEntity;
+	    }
+
+	    /**
 	     * get the three data associated with this entity
 	     * @method getRuntimeData
 	     * @param  {Object} [options]
@@ -58419,8 +58664,8 @@
 	  }, {
 	    key: 'when',
 	    value: function when(eventName, callback, context) {
-	      if (_lodash2.default.isFunction(callback)) {
-	        if (eventName === 'load' && this.isLoaded() || eventName === 'loadBase' && this.isBaseLoaded() || eventName === 'loadDependencies' && this.isDependenciesLoaded() || eventName === 'loadComponents' && this.isComponentsLoaded()) {
+	      if (typeof callback === 'function') {
+	        if (eventName === 'load' && this.isLoaded() || eventName === 'loadBase' && this.isBaseLoaded() || eventName === 'loadDependencies' && this.isDependenciesLoaded()) {
 	          callback.call(context, this);
 	        } else {
 	          if (context) {
@@ -58450,11 +58695,11 @@
 	  }, {
 	    key: 'load',
 	    value: function load(callback) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      this.when('load', function () {
-	        if (_lodash2.default.isFunction(callback)) {
-	          callback(_this3);
+	        if (typeof callback === 'function') {
+	          callback(_this4);
 	        }
 	      }, this);
 
@@ -58484,11 +58729,11 @@
 	  }, {
 	    key: 'loadBase',
 	    value: function loadBase(callback) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      if (this.isBaseLoaded()) {
 	        this.trigger('loadBase', this);
-	        if (_lodash2.default.isFunction(callback)) {
+	        if (typeof callback === 'function') {
 	          callback(this);
 	        }
 	      } else if (this.isBaseUnloaded()) {
@@ -58500,10 +58745,10 @@
 
 	        this.createRuntimeData(function () {
 	          // Apply the initial set of properties.
-	          _this4._applyPropertiesLoaded(_this4.getProperties(), 'init');
+	          _this5._applyPropertiesLoaded(_this5.getProperties(), 'init');
 
-	          if (_this4.state[Box3DEntity.STATE_TYPE.BASE] <= Box3DEntity.STATE.SUCCEEDED) {
-	            _this4.setState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.SUCCEEDED);
+	          if (_this5.state[Box3DEntity.STATE_TYPE.BASE] <= Box3DEntity.STATE.SUCCEEDED) {
+	            _this5.setState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.SUCCEEDED);
 	          }
 	        });
 	      }
@@ -58584,7 +58829,6 @@
 
 	      this.setState(Box3DEntity.STATE_TYPE.BASE, Box3DEntity.STATE.PENDING);
 	      this.setState(Box3DEntity.STATE_TYPE.DEPENDENCIES, Box3DEntity.STATE.PENDING);
-	      this.setState(Box3DEntity.STATE_TYPE.COMPONENTS, Box3DEntity.STATE.PENDING);
 	      this.runtimeData = null;
 	    }
 
@@ -58611,7 +58855,6 @@
 	    value: function isUnloaded() {
 	      var combinedState = Box3DEntity.STATE.PENDING;
 	      combinedState &= this.state[Box3DEntity.STATE_TYPE.BASE];
-	      combinedState &= this.state[Box3DEntity.STATE_TYPE.COMPONENTS];
 	      return Box3DEntity.STATE.PENDING === combinedState;
 	    }
 
@@ -58743,33 +58986,6 @@
 	    }
 
 	    /**
-	     * Returns true if all the components on this entity are created and initialized with
-	     * initial attribute values.
-	     * @public
-	     * @method isComponentsLoaded
-	     * @return {Boolean} True, if the components are all loaded
-	     */
-
-	  }, {
-	    key: 'isComponentsLoaded',
-	    value: function isComponentsLoaded() {
-	      return Box3DEntity.checkLoadFinished(this.state[Box3DEntity.STATE_TYPE.COMPONENTS]);
-	    }
-
-	    /**
-	     * Returns true if all the components on this entity are fully unloaded
-	     * @public
-	     * @method isComponentsUnloaded
-	     * @return {Boolean} True, if the components are all unloaded
-	     */
-
-	  }, {
-	    key: 'isComponentsUnloaded',
-	    value: function isComponentsUnloaded() {
-	      return Box3DEntity.STATE.PENDING === this.state[Box3DEntity.STATE_TYPE.COMPONENTS];
-	    }
-
-	    /**
 	     * Update runtime data based on property changes. This method is called in
 	     * two situations: during initialization (just before 'loadBase' is
 	     * triggered), and for property changes that occur between 'loadBase' and
@@ -58843,15 +59059,15 @@
 	     * @method setDescription
 	     * @public
 	     * @param {String} newDescription : The entity's new description
-	     * @param {Object} options :    Options object.
+	     * @param {boolean} [silent=false] Supress change event.
 	     */
 
 	  }, {
 	    key: 'setDescription',
-	    value: function setDescription(newDescription, options) {
+	    value: function setDescription(newDescription, silent) {
 	      return this.set({
 	        description: newDescription
-	      }, options);
+	      }, silent);
 	    }
 	  }, {
 	    key: 'registerComponentEvent',
@@ -58931,8 +59147,7 @@
 	};
 	Box3DEntity.STATE_TYPE = {
 	  BASE: 0,
-	  DEPENDENCIES: 1,
-	  COMPONENTS: 2
+	  DEPENDENCIES: 1
 	};
 	Box3DEntity.schema = {
 	  name: {
@@ -58986,7 +59201,7 @@
 	exports.default = Box3DEntity;
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58997,7 +59212,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DEntity = __webpack_require__(15);
+	var _Box3DEntity = __webpack_require__(16);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
@@ -59479,13 +59694,13 @@
 	exports.default = DependencyRegistry;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	/* global Box3D */
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -59508,10 +59723,6 @@
 	var _RuntimeEvents = __webpack_require__(3);
 
 	var _RuntimeEvents2 = _interopRequireDefault(_RuntimeEvents);
-
-	var _Box3DEntity = __webpack_require__(15);
-
-	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
 	var _mixwith = __webpack_require__(2);
 
@@ -59568,8 +59779,6 @@
 	  _createClass(ComponentRegistry, [{
 	    key: 'initialize',
 	    value: function initialize() {
-	      var _this2 = this;
-
 	      function onScriptDeleted(scriptId) {
 	        var comps = this.getByScriptId(scriptId);
 	        for (var i = 0; i < comps.length; i++) {
@@ -59579,42 +59788,7 @@
 	      }
 	      this.listenTo(this.box3DEntity.box3DRuntime, 'scriptDeleted', onScriptDeleted, this);
 	      this.listenTo(this.box3DEntity, 'change:components', this.onComponentsChanged, this);
-	      this.listenTo(this.box3DEntity, 'add:components', this.onComponentsAdded, this);
 	      this.listenTo(this.box3DEntity, 'remove:components', this.onComponentsRemoved, this);
-
-	      var componentJson = this.getDescriptors();
-	      var keys = _lodash2.default.keys(componentJson);
-	      Promise.all(keys.map(function (componentId) {
-	        return new Promise(function (resolve) {
-	          var componentDesc = componentJson[componentId];
-	          _this2.createComponentObject(componentId, componentDesc, function (component) {
-	            _this2.assignAttributeValues(component);
-	            resolve();
-	          });
-	        });
-	      })).then(function () {
-	        // Copy component attribute values
-	        var sharedData = _this2.box3DEntity.sharedData;
-	        sharedData.previousComponents = _lodash2.default.cloneDeep(sharedData.components);
-	        // Call awake() on each component
-	        for (var i = 0; i < keys.length; i++) {
-	          var component = _this2.getById(keys[i]);
-	          if (typeof component.awake === 'function') {
-	            component.awake();
-	          }
-	        }
-
-	        // Call attributesChanged() on each component that was just added
-	        for (var _i = 0; _i < keys.length; _i++) {
-	          var _component = _this2.getById(keys[_i]);
-	          if (typeof _component.attributesChanged === 'function') {
-	            var attributes = _component.getAttributes();
-	            _component.attributesChanged(Object.keys(attributes));
-	          }
-	        }
-	      }).catch(function (err) {
-	        _log2.default.error('Failed to initialize component registry.', err);
-	      });
 	    }
 	  }, {
 	    key: 'uninitialize',
@@ -59696,21 +59870,19 @@
 	  }, {
 	    key: 'add',
 	    value: function add(script) {
-	      var componentData = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	      var name = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+	      var componentData = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var name = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
 
 	      var id = (0, _uuid2.default)();
-	      var newComponent = {
+	      var newComponent = {};
+	      newComponent[id] = {
 	        scriptId: _lodash2.default.isString(script) ? script : script.id,
 	        componentData: componentData,
 	        enabled: true,
 	        name: name
 	      };
-	      var sharedData = this.box3DEntity.sharedData;
-	      sharedData.previousComponents = _lodash2.default.cloneDeep(sharedData.components);
-	      sharedData.components[id] = newComponent;
 	      var entityDispatcher = this.box3DEntity.box3DRuntime.entityDispatcher;
-	      entityDispatcher.dispatchComponentsAdded(this.box3DEntity, [id]);
+	      entityDispatcher.dispatchComponentsChanged(this.box3DEntity.id, newComponent);
 	      return this.components[id];
 	    }
 
@@ -59730,7 +59902,7 @@
 	        sharedData.previousComponents = _lodash2.default.cloneDeep(sharedData.components);
 	        delete sharedData.components[componentId];
 	        var entityDispatcher = this.box3DEntity.box3DRuntime.entityDispatcher;
-	        entityDispatcher.dispatchComponentsRemoved(this.box3DEntity, [component.getId()]);
+	        entityDispatcher.dispatchComponentsRemoved(this.box3DEntity.id, [component.getId()]);
 	        return true;
 	      }
 	      return false;
@@ -59858,15 +60030,15 @@
 	  }, {
 	    key: 'get',
 	    value: function get(predicate) {
-	      var _this3 = this;
+	      var _this2 = this;
 
 	      if (!_lodash2.default.isFunction(predicate)) {
 	        return this.components;
 	      } else {
 	        var _ret2 = function () {
 	          var results = {};
-	          Object.keys(_this3.components).forEach(function (id) {
-	            var component = _this3.components[id];
+	          Object.keys(_this2.components).forEach(function (id) {
+	            var component = _this2.components[id];
 	            if (predicate(component)) {
 	              results[id] = component;
 	            }
@@ -59887,20 +60059,15 @@
 	     * @public
 	     * @param {Object} componentDescriptors Dictionary of component descriptors, keyed
 	     * on the component Id.
-	     * @param  {Object} options Standard options structure. Can contain {silent: true}
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     */
 
 	  }, {
 	    key: 'set',
-	    value: function set(componentDescriptors) {
-	      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-	      var addComponentIds = [];
+	    value: function set(componentDescriptors, silent) {
 	      var removeComponentIds = [];
-	      var changedComponents = {};
 	      var sharedData = this.box3DEntity.sharedData;
 	      var entityDispatcher = this.box3DEntity.box3DRuntime.entityDispatcher;
-	      sharedData.previousComponents = _lodash2.default.cloneDeep(sharedData.components);
 
 	      // Delete components that have been removed.
 	      Object.keys(sharedData.components).forEach(function (id) {
@@ -59908,27 +60075,10 @@
 	          removeComponentIds.push(id);
 	        }
 	      });
-	      removeComponentIds.forEach(function (compId) {
-	        delete sharedData.components[compId];
-	      });
-
-	      // Add and update other components
-	      Object.keys(componentDescriptors).forEach(function (id) {
-	        if (!sharedData.components[id]) {
-	          sharedData.components[id] = componentDescriptors[id];
-	          addComponentIds.push(id);
-	        } else {
-	          Object.assign(sharedData.components[id], componentDescriptors[id]);
-	          changedComponents[id] = componentDescriptors[id];
-	        }
-	      });
 
 	      // Dispatch events for changes
-	      if (!options.silent) {
-	        entityDispatcher.dispatchComponentsRemoved(this.box3DEntity, removeComponentIds);
-	        entityDispatcher.dispatchComponentsAdded(this.box3DEntity, addComponentIds);
-	        entityDispatcher.dispatchComponentsChanged(this.box3DEntity, changedComponents);
-	      }
+	      entityDispatcher.dispatchComponentsRemoved(this.box3DEntity.id, removeComponentIds, silent);
+	      entityDispatcher.dispatchComponentsChanged(this.box3DEntity.id, componentDescriptors, silent);
 	    }
 
 	    /**
@@ -59977,73 +60127,43 @@
 	  }, {
 	    key: 'onComponentsChanged',
 	    value: function onComponentsChanged(componentDescriptors) {
-	      var _this4 = this;
+	      var _this3 = this;
 
 	      Object.keys(componentDescriptors).forEach(function (id) {
 	        var desc = componentDescriptors[id];
-	        if (!desc) {
-	          return;
+	        var needsLoad = false;
+	        var newComponent = false;
+	        var component = _this3.getById(id);
+	        if (!component) {
+	          newComponent = true;
+	          component = _this3.createComponentObject(id, desc);
+	          if (typeof component.awake === 'function') {
+	            component.awake();
+	          }
+	          //If the entity is already loaded when the component is created,
+	          //explicitly load the component.
+	          if (!_this3.box3DEntity.isBaseUnloaded()) {
+	            needsLoad = true;
+	          }
 	        }
-	        var component = _this4.getById(id);
+	        _this3.assignAttributeValues(component);
+
+	        // Get a list of attribute changes and call the attributeChanged function
+	        // on the component.
 	        var scriptAsset = component.getScriptAsset();
-	        if (!scriptAsset || !component) {
-	          return;
-	        }
 	        var changedAttributes = [];
 	        var scriptAttributes = scriptAsset.getProperty('attributes') || {};
 	        Object.keys(scriptAttributes).forEach(function (attrName) {
 	          var attrDef = scriptAttributes[attrName];
-	          var attribValue = component.getAttribute(attrDef.name);
-	          _this4.translateAttributeValue(component, attrDef.name, attrDef, attribValue);
-	          if (component.getAttribute(attrDef.name) !== component.getPreviousAttribute(attrDef.name)) {
+	          if (newComponent || component.getAttribute(attrDef.name) !== component.getPreviousAttribute(attrDef.name)) {
 	            changedAttributes.push(attrDef.name);
 	          }
 	        });
 	        component.attributesChanged(changedAttributes);
+	        if (needsLoad) {
+	          _this3.loadComponent(id);
+	        }
 	      });
-	    }
-
-	    /**
-	     * Called when one or more components have been added to this entity.
-	     * @param  {Array} addedComponentIds Array of new component ids.
-	     * @method onComponentsAdded
-	     * @private
-	     * @return {void}
-	     */
-
-	  }, {
-	    key: 'onComponentsAdded',
-	    value: function onComponentsAdded(addedComponentIds) {
-	      var _this5 = this;
-
-	      for (var i = 0; i < addedComponentIds.length; i++) {
-	        var componentDesc = this.getDescriptorById(addedComponentIds[i]);
-	        this.createComponentObject(addedComponentIds[i], componentDesc, function (component) {
-	          _this5.assignAttributeValues(component);
-	        });
-	      }
-	      // Call awake() on each component that was just added
-	      for (var _i2 = 0; _i2 < addedComponentIds.length; _i2++) {
-	        var component = this.getById(addedComponentIds[_i2]);
-	        if (typeof component.awake === 'function') {
-	          component.awake();
-	        }
-	      }
-	      // Call attributesChanged() on each component that was just added
-	      for (var _i3 = 0; _i3 < addedComponentIds.length; _i3++) {
-	        var _component2 = this.getById(addedComponentIds[_i3]);
-	        if (typeof _component2.attributesChanged === 'function') {
-	          var attributes = _component2.getAttributes();
-	          _component2.attributesChanged(Object.keys(attributes));
-	        }
-	      }
-	      //If the object is already loaded when the component is created,
-	      //explicitly load the component
-	      if (!this.box3DEntity.isComponentsUnloaded()) {
-	        for (var _i4 = 0; _i4 < addedComponentIds.length; _i4++) {
-	          this.loadComponent(addedComponentIds[_i4]);
-	        }
-	      }
 	    }
 
 	    /**
@@ -60091,7 +60211,7 @@
 	  }, {
 	    key: 'translateAttributeValue',
 	    value: function translateAttributeValue(obj, attributeName, attributeDef, attributeValue) {
-	      var _this6 = this;
+	      var _this4 = this;
 
 	      var runtime = this.box3DEntity.box3DRuntime;
 	      switch (attributeDef.type) {
@@ -60104,7 +60224,7 @@
 	        case 'custom':
 	          obj[attributeName] = obj[attributeName] || {};
 	          Object.keys(attributeValue).forEach(function (key) {
-	            _this6.translateAttributeValue(obj[attributeName], key, attributeDef.attributes[key], attributeValue[key]);
+	            _this4.translateAttributeValue(obj[attributeName], key, attributeDef.attributes[key], attributeValue[key]);
 	          });
 	          break;
 	        case 'c':
@@ -60122,14 +60242,14 @@
 	              break;
 	            case 'object':
 	              attributeValue.forEach(function (id, idx) {
-	                obj[attributeName][idx] = _this6.box3DEntity.getObjectById(id);
+	                obj[attributeName][idx] = runtime.getObjectById(id);
 	              });
 	              break;
 	            case 'custom':
 	              attributeValue.forEach(function (subObj, idx) {
 	                obj[attributeName][idx] = obj[attributeName] || {};
 	                Object.keys(subObj).forEach(function (key) {
-	                  _this6.translateAttributeValue(obj[attributeName][idx], key, attributeDef.subType.attributes[key], attributeValue[idx][key]);
+	                  _this4.translateAttributeValue(obj[attributeName][idx], key, attributeDef.subType.attributes[key], attributeValue[idx][key]);
 	                });
 	              });
 	              break;
@@ -60167,25 +60287,25 @@
 	  }, {
 	    key: 'assignAttributeValues',
 	    value: function assignAttributeValues(component) {
-	      var _this7 = this;
+	      var _this5 = this;
 
 	      var scriptAsset = component.getScriptAsset();
 	      var scriptAttributes = scriptAsset.getProperty('attributes') || {};
 	      Object.keys(scriptAttributes).forEach(function (attribName) {
 	        var attrDef = scriptAttributes[attribName];
 	        var attribValue = component.getAttribute(attrDef.name);
-	        _this7.translateAttributeValue(component, attrDef.name, attrDef, attribValue);
+	        _this5.translateAttributeValue(component, attrDef.name, attrDef, attribValue);
 	      });
 	    }
 	  }, {
 	    key: '_buildEvents',
 	    value: function _buildEvents(scriptAsset) {
-	      var _this8 = this;
+	      var _this6 = this;
 
 	      var eventList = scriptAsset.getProperty('events') || {};
 	      Object.keys(eventList).forEach(function (name) {
 	        var params = eventList[name];
-	        _this8.box3DEntity.registerComponentEvent(name, params.parameters, params.scope, params.action, params.category, params.filter);
+	        _this6.box3DEntity.registerComponentEvent(name, params.parameters, params.scope, params.action, params.category, params.filter);
 	      }, this);
 	    }
 
@@ -60201,9 +60321,7 @@
 
 	  }, {
 	    key: 'createComponentObject',
-	    value: function createComponentObject(componentId, componentDesc, fn) {
-	      var _this9 = this;
-
+	    value: function createComponentObject(componentId, componentDesc) {
 	      var classConstructor = void 0,
 	          scriptName = void 0,
 	          component = void 0;
@@ -60222,36 +60340,33 @@
 	        return;
 	      }
 
-	      scriptAsset.load(function () {
-	        classConstructor = scriptAsset.sharedData.classConstructor;
-	        scriptName = scriptAsset.getName();
+	      scriptAsset.load();
+	      classConstructor = scriptAsset.sharedData.classConstructor;
+	      scriptName = scriptAsset.getName();
 
-	        component = new classConstructor();
+	      component = new classConstructor();
 
-	        _this9.components[componentId] = component;
+	      this.components[componentId] = component;
 
-	        component.__box3d__ = {
-	          id: componentId,
-	          scriptName: scriptName,
-	          scriptId: scriptId,
-	          enabled: enabled
-	        };
+	      component.__box3d__ = {
+	        id: componentId,
+	        scriptName: scriptName,
+	        scriptId: scriptId,
+	        enabled: enabled
+	      };
 
-	        component.box3DEntity = _this9.box3DEntity;
+	      component.box3DEntity = this.box3DEntity;
 
-	        _this9._buildEvents(scriptAsset);
+	      this._buildEvents(scriptAsset);
 
-	        _this9.trigger('add', componentId);
+	      this.trigger('add', componentId);
 
-	        if (_lodash2.default.isFunction(fn)) {
-	          return fn(component);
-	        }
-	      });
+	      return component;
 	    }
 	  }, {
 	    key: 'loadComponent',
 	    value: function loadComponent(component) {
-	      var _this10 = this;
+	      var _this7 = this;
 
 	      component = _lodash2.default.isObject(component) ? component : this.components[component];
 	      if (!component) {
@@ -60272,27 +60387,19 @@
 	      Object.keys(engineEventMap).forEach(function (eventName) {
 	        var fnName = engineEventMap[eventName];
 	        if (typeof component[fnName] === 'function') {
-	          _this10.box3DEntity.box3DRuntime.on(eventName, component[fnName], component);
+	          _this7.box3DEntity.box3DRuntime.on(eventName, component[fnName], component);
 	        }
 	      });
 
 	      Object.keys(box3dEntityEventMap).forEach(function (eventName) {
 	        var fnName = box3dEntityEventMap[eventName];
 	        if (typeof component[fnName] === 'function') {
-	          _this10.box3DEntity.when(eventName, component[fnName], component);
+	          _this7.box3DEntity.when(eventName, component[fnName], component);
 	        }
 	      });
 
-	      if (typeof component.componentsLoaded === 'function') {
-	        if (this.box3DEntity.isComponentsLoaded()) {
-	          component.componentsLoaded();
-	        } else {
-	          this.box3DEntity.once('loadComponents', component.componentsLoaded, component);
-	        }
-	      }
-
 	      if (this.box3DEntity instanceof Box3D.Box3DObject && typeof component.sceneLoaded === 'function') {
-	        var scene = this.box3DEntity.getParentAsset();
+	        var scene = this.box3DEntity.getRootObject();
 	        if (scene) {
 	          scene.when('load', component.sceneLoaded, component);
 	        }
@@ -60301,7 +60408,7 @@
 	  }, {
 	    key: 'unloadComponent',
 	    value: function unloadComponent(component) {
-	      var _this11 = this;
+	      var _this8 = this;
 
 	      // If the component is already unloaded, don't shut it down again.
 	      if (this.box3DEntity.isUnloaded()) {
@@ -60319,14 +60426,14 @@
 	      Object.keys(engineEventMap).forEach(function (eventName) {
 	        var fnName = engineEventMap[eventName];
 	        if (typeof component[fnName] === 'function') {
-	          _this11.box3DEntity.box3DRuntime.off(eventName, component[fnName], component);
+	          _this8.box3DEntity.box3DRuntime.off(eventName, component[fnName], component);
 	        }
 	      });
 
 	      Object.keys(box3dEntityEventMap).forEach(function (eventName) {
 	        var fnName = box3dEntityEventMap[eventName];
 	        if (typeof component[fnName] === 'function') {
-	          _this11.box3DEntity.off(eventName, component[fnName], component);
+	          _this8.box3DEntity.off(eventName, component[fnName], component);
 	        }
 	      });
 
@@ -60339,10 +60446,6 @@
 	        component.stopListening();
 	      }
 
-	      if (typeof component.componentsLoaded === 'function') {
-	        this.box3DEntity.off('loadComponents', component.componentsLoaded, component);
-	      }
-
 	      if (typeof component.init === 'function') {
 	        this.box3DEntity.off('loadStarted', component.init, component);
 	      }
@@ -60350,23 +60453,22 @@
 	  }, {
 	    key: 'unloadComponents',
 	    value: function unloadComponents() {
-	      var _this12 = this;
+	      var _this9 = this;
 
 	      Object.keys(this.components).forEach(function (id) {
-	        var comp = _this12.components[id];
-	        _this12.unloadComponent(comp);
+	        var comp = _this9.components[id];
+	        _this9.unloadComponent(comp);
 	      });
 	    }
 	  }, {
 	    key: 'loadComponents',
 	    value: function loadComponents() {
-	      var _this13 = this;
+	      var _this10 = this;
 
 	      Object.keys(this.components).forEach(function (id) {
-	        var comp = _this13.components[id];
-	        _this13.loadComponent(comp);
+	        var comp = _this10.components[id];
+	        _this10.loadComponent(comp);
 	      });
-	      this.box3DEntity.setState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
 	    }
 	  }]);
 
@@ -60378,7 +60480,7 @@
 	module.exports = ComponentRegistry;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60428,8 +60530,10 @@
 	  _createClass(GeometryUtilities, [{
 	    key: 'destroy',
 	    value: function destroy() {
-	      this.defaultGeometry.dispose();
-	      this.defaultGeometry = undefined;
+	      if (this.defaultGeometry) {
+	        this.defaultGeometry.dispose();
+	        this.defaultGeometry = undefined;
+	      }
 	    }
 
 	    /**
@@ -60453,7 +60557,7 @@
 	exports.default = GeometryUtilities;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60464,11 +60568,11 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _MaterialAsset = __webpack_require__(20);
+	var _MaterialAsset = __webpack_require__(21);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _BaseTextureAsset = __webpack_require__(21);
+	var _BaseTextureAsset = __webpack_require__(22);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
@@ -60651,7 +60755,7 @@
 	exports.default = MaterialUtilities;
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60676,7 +60780,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -61348,9 +61452,15 @@
 	        this.box3DRuntime.needsRender = true;
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: '_applyPropertiesUnloaded',
-	    value: function _applyPropertiesUnloaded(changes) {
+	    value: function _applyPropertiesUnloaded() {
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	      _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      var shaderAsset = this.getShader();
 	      var shaderParams = shaderAsset.getProperty('parameters');
 	      var value, prevValue;
@@ -62048,7 +62158,7 @@
 	exports.default = MaterialAsset;
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62069,15 +62179,15 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DEntity = __webpack_require__(15);
+	var _Box3DEntity = __webpack_require__(16);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _BaseImageAsset = __webpack_require__(22);
+	var _BaseImageAsset = __webpack_require__(23);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
@@ -62285,14 +62395,22 @@
 	      this.box3DRuntime.needsRender = true;
 	    }
 
-	    /** @inheritdocs */
+	    /** @inheritdoc */
 
 	  }, {
 	    key: '_applyPropertiesUnloaded',
-	    value: function _applyPropertiesUnloaded(changes) {
+	    value: function _applyPropertiesUnloaded() {
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.hasOwnProperty('imageId')) {
-	        this.unregisterDependencyById(this.getPreviousProperty('imageId'));
-	        this.registerDependencyById(this.getProperty('imageId'));
+	        var prevImg = this.getPreviousProperty('imageId');
+	        if (prevImg) {
+	          this.unregisterDependencyById(prevImg);
+	        }
+	        if (changes.imageId) {
+	          this.registerDependencyById(this.getProperty('imageId'));
+	        }
 	      }
 	      this.box3DRuntime.trigger('textureChanged', this.id, changes);
 	    }
@@ -62448,10 +62566,12 @@
 	      if (!this.isMipmapsEnabled()) {
 	        switch (filter) {
 	          default:
+	          case 'nearest':
 	          case 'nearestWithNearestMipmap':
 	          case 'nearestWithLinearMipmap':
 	            return 'nearest';
 
+	          case 'linear':
 	          case 'linearWithNearestMipmap':
 	          case 'linearWithLinearMipmap':
 	            return 'linear';
@@ -62977,9 +63097,9 @@
 	});
 
 	BaseTextureAsset.createColorTexture = function () {
-	  var r = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 255;
-	  var g = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 255;
-	  var b = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 255;
+	  var r = arguments.length <= 0 || arguments[0] === undefined ? 255 : arguments[0];
+	  var g = arguments.length <= 1 || arguments[1] === undefined ? 255 : arguments[1];
+	  var b = arguments.length <= 2 || arguments[2] === undefined ? 255 : arguments[2];
 	  var a = arguments[3];
 
 	  var format = THREE.RGBFormat;
@@ -62999,9 +63119,9 @@
 	};
 
 	BaseTextureAsset.createColorTextureCube = function () {
-	  var r = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 255;
-	  var g = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 255;
-	  var b = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 255;
+	  var r = arguments.length <= 0 || arguments[0] === undefined ? 255 : arguments[0];
+	  var g = arguments.length <= 1 || arguments[1] === undefined ? 255 : arguments[1];
+	  var b = arguments.length <= 2 || arguments[2] === undefined ? 255 : arguments[2];
 	  var a = arguments[3];
 
 	  var sides = new Array(6);
@@ -63040,7 +63160,7 @@
 	exports.default = BaseTextureAsset;
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63051,11 +63171,13 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -63127,7 +63249,10 @@
 
 
 	    /** @inheritdoc */
-	    value: function _applyPropertiesUnloaded(changes) {
+	    value: function _applyPropertiesUnloaded() {
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	      _get(BaseImageAsset.prototype.__proto__ || Object.getPrototypeOf(BaseImageAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      this.box3DRuntime.trigger('imageChanged', this.id, changes);
 	    }
 
@@ -63455,7 +63580,7 @@
 	exports.default = BaseImageAsset;
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -63493,9 +63618,11 @@
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _componentsBuiltin = __webpack_require__(24);
+	var _componentsBuiltin = __webpack_require__(25);
 
 	var _componentsBuiltin2 = _interopRequireDefault(_componentsBuiltin);
 
@@ -63507,7 +63634,7 @@
 	var scripts = {};
 
 	/**
-	 * All SceneAssets are manged by this registry.
+	 * All ScriptAssets are manged by this registry.
 	 * @class ScriptRegistry
 	 * @constructor
 	 */
@@ -63541,10 +63668,8 @@
 
 	      Object.keys(scripts).forEach(function (scriptId) {
 	        var script = scripts[scriptId];
-	        var componentDef = script.def;
+	        var scriptAsset = _this.engine.createEntity(_extends({}, script.def, { type: 'script' }));
 	        var constructor = script.constructor.default;
-	        var json = Object.assign({}, componentDef, { type: 'script' });
-	        var scriptAsset = _this.engine.createAsset(json);
 	        scriptAsset.sharedData.classConstructor = constructor;
 	      });
 	    }
@@ -63573,13 +63698,13 @@
 	exports.default = ScriptRegistry;
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(27),__webpack_require__(45),__webpack_require__(28),__webpack_require__(29),__webpack_require__(30),__webpack_require__(31),__webpack_require__(33),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(25),__webpack_require__(46),__webpack_require__(47),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(62) 
+	  __webpack_require__(28),__webpack_require__(47),__webpack_require__(29),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(26),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(62),__webpack_require__(63),__webpack_require__(64) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
-	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderer,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
+	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPMREMGenerator,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderer,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
 	   Box3D.ScriptRegistry.registerScript({
 	  "id": "audio_listener",
@@ -66138,6 +66263,45 @@
 	    "path": "Box3DRuntime/Components/BuiltIn/PanoramaToCubeMap"
 	  }
 	}, ComponentPanoramaToCubeMap);  Box3D.ScriptRegistry.registerScript({
+	  "id": "texture2d_to_pmrem_cubeuv",
+	  "sid": "GeneratePMREM",
+	  "properties": {
+	    "name": "GeneratePMREM",
+	    "description": "Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI, input environment map. The entire result will be stored in this texture in the CubeUV layout.",
+	    "attributes": {
+	      "inputTexture": {
+	        "name": "inputTexture",
+	        "type": "asset",
+	        "default": null,
+	        "filter": {
+	          "texture2D": true,
+	          "renderTexture2D": true,
+	          "textureCube": true,
+	          "renderTextureCube": true
+	        },
+	        "description": "The texture to generate the PMREM for."
+	      }
+	    },
+	    "attributesOrder": [
+	      "inputTexture"
+	    ],
+	    "events": {},
+	    "externalDependencies": [],
+	    "filter": [
+	      "renderTexture2D"
+	    ],
+	    "category": "Rendering",
+	    "parsedComments": true,
+	    "flags": {
+	      "addremove": true,
+	      "disable": true,
+	      "persist": true,
+	      "unique": false,
+	      "display": true
+	    },
+	    "path": "Box3DRuntime/Components/BuiltIn/PMREMGenerator"
+	  }
+	}, ComponentPMREMGenerator);  Box3D.ScriptRegistry.registerScript({
 	  "id": "preview_axis_rotation",
 	  "sid": "Preview Axis Rotation",
 	  "properties": {
@@ -67624,87 +67788,47 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
 	/**
-	 * @vid object_animator_component
-	 * @vname Object Animator
-	 * @vcategory Animation
-	 * @vfilter Object
-	 * @vevent local playAnimateAlongCurve {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'curve', 'type' : 'object', 'componentFilter': { 'Curve' : true }},
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'orientation', 'description': 'Orient the object following the curve to either the direction of the curve or to the objects defining the curve.', 'type': 'opt', 'default': 'toCurve', 'options' : { 'None': 'None', 'To Curve' : 'toCurve', 'To Nodes' : 'toNode'}},
-	 *     {name: 'loop', 'type' : 'b', 'description': '', 'default': false}
-	 *   ]
+	 * @vid object_picker
+	 * @vname Object Picker
+	 * @vfilter Scene
+	 * @vcategory General
+	 * @vattr Dropdown pickTrigger {
+	 *   description: 'What mouse action will trigger the pick?',
+	 *   default: 'leftMouseClick',
+	 *   options: {
+	 *     'Left Mouse Click': 'leftMouseClick',
+	 *     'Middle Mouse Click': 'middleMouseClick',
+	 *     'Right Mouse Click': 'rightMouseClick',
+	 *     'Left Mouse Down': 'leftMouseDown',
+	 *     'Middle Mouse Down': 'middleMouseDown',
+	 *     'Right Mouse Down': 'rightMouseDown',
+	 *     'Left Mouse Up': 'leftMouseUp',
+	 *     'Middle Mouse Up': 'middleMouseUp',
+	 *     'Right Mouse Up': 'rightMouseUp'
+	 *   }
 	 * }
-	 * @vevent local playAnimateToObject {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'object', 'type' : 'object', 'default': null},
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Total time that the animation will take. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'update orientation', 'type' : 'b', 'default': true}
-	 *   ]
+	 * @vattr Boolean enableHoverByDefault {
+	 *   default: false,
+	 *   advanced: true,
+	 *   description: 'Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact.'
 	 * }
-	 * @vevent local playAnimateTranslation {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -1.0, 'max': 1.0},
-	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s position represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *   ]
+	 * @vattr Integer hoverFrameSkip {
+	 *   description: 'Skip this many frames inbetween hover checks.',
+	 *   default: 1,
+	 *   min: 0,
+	 *   max: 60
 	 * }
-	 * @vevent local playAnimateRotation {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'angularVelocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -100.0, 'max': 100.0},
-	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s rotation represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *     {name: 'axisOrder', 'type' : 'opt', 'description': 'Specify the axis order that the angular velocity will be applied in.', 'default': 'YXZ', 'options': {
-	 *       'XYZ': 'XYZ',
-	 *       'YXZ': 'YXZ',
-	 *       'ZXY': 'ZXY',
-	 *       'XZY': 'XZY',
-	 *       'YZX': 'YZX',
-	 *       'ZYX': 'ZYX'}
-	 *     }
-	 *   ]
-	 * }
-	 * @vevent local playAnimateScale {
-	 *   action: true,
-	 *   category: 'Animation',
-	 *   parameters: [
-	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
-	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
-	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -10.0, 'max': 10.0},
-	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s scale represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
-	 *   ]
-	 * }
-	 * @vevent local pauseCurveAnimation { 'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local stopCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local unpauseCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
-	 * @vevent local endAnimateAlongCurve {'action': false, 'category': 'Animation', 'parameters': []}
-	 * @vevent local endAnimateToObject {'action': false, 'category': 'Animation', 'parameters': []}
-	 * @vevent lcoal endAnimateTranslation {'action': false, 'category': 'Animation', 'parameters': []}
+	 * @vevent other pick { action: false, category: 'General', parameters: [] }
+	 * @vevent other beginHover { action: false, category: 'General', parameters: [] }
+	 * @vevent other endHover { action: false, category: 'General', parameters: []}
 	 */
-	/* eslint-enable*/
+	/* eslint-enable */
+	/* global Box3D */
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -67713,21 +67837,21 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _log = __webpack_require__(7);
-
-	var _log2 = _interopRequireDefault(_log);
-
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _lodash = __webpack_require__(4);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -67735,571 +67859,527 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ObjectAnimator = function (_Box3DComponent) {
-	  _inherits(ObjectAnimator, _Box3DComponent);
+	var ObjectPicker = function (_Box3DComponent) {
+	  _inherits(ObjectPicker, _Box3DComponent);
 
-	  function ObjectAnimator() {
-	    _classCallCheck(this, ObjectAnimator);
+	  function ObjectPicker() {
+	    _classCallCheck(this, ObjectPicker);
 
-	    var _this = _possibleConstructorReturn(this, (ObjectAnimator.__proto__ || Object.getPrototypeOf(ObjectAnimator)).call(this));
+	    var _this = _possibleConstructorReturn(this, (ObjectPicker.__proto__ || Object.getPrototypeOf(ObjectPicker)).call(this));
 
-	    _this.playingCurveAnimation = false;
-	    _this.curveAnim = undefined;
+	    _this.pickingMaterialDef = undefined;
+	    _this.meshRegistry = {};
+	    _this.meshList = [];
+	    _this.pickingTexture = undefined;
+	    _this.currentHoverObject = undefined;
+	    _this.currentFrame = 0;
+
+	    _this.enableHoverByDefault = false;
+	    _this.pickTrigger = null;
+	    _this.hoverEnabled = false;
 	    return _this;
 	  }
 
-	  /**
-	   * Called immediately after after component creation
-	   */
+	  _createClass(ObjectPicker, [{
+	    key: 'awake',
+	    value: function awake() {
+	      this.getRuntime().once('endHover:bound', this._enableHover, this);
+	      this.getRuntime().once('beginHover:bound', this._enableHover, this);
+	    }
+	    /**
+	     * Called immediately after after component creation
+	     */
 
-
-	  _createClass(ObjectAnimator, [{
+	  }, {
 	    key: 'init',
 	    value: function init() {
-	      this.getEntity().on('playAnimateAlongCurve', this.animateAlongCurve, this);
-	      this.getEntity().on('playAnimateToObject', this.animateToObject, this);
-	      this.getEntity().on('playAnimateTranslation', this.animateTranslation, this);
-	      this.getEntity().on('playAnimateRotation', this.animateRotation, this);
-	      this.getEntity().on('playAnimateScale', this.animateScale, this);
-	      this.getEntity().on('pauseCurveAnimation', this.onPauseCurveAnimation, this);
-	      this.getEntity().on('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
-	      this.getEntity().on('stopCurveAnimation', this.stopCurveAnimation, this);
+	      // this.box3DEntity is available
+	      this.getRuntime().on('resize', this.resize, this);
 
-	      this.on('disable', this.onDisable, this);
+	      this.initPickingEvents();
+	      this.initPickingMaterial();
+	      this.initMeshRegistry();
+
+	      //listen to register objects
+	      this.getGlobalEvents().on('registerPickingObject', this.registerObject, this);
+	      this.getGlobalEvents().on('unregisterPickingObject', this.unregisterObject, this);
+
+	      this.resize();
 	    }
+
+	    /**
+	     * Called when a verold object is destroyed or this component is removed
+	     * from a verold object.
+	     */
+
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
-	      this.getEntity().off('playAnimateAlongCurve', this.animateAlongCurve, this);
-	      this.getEntity().off('playAnimateToObject', this.animateToObject, this);
-	      this.getEntity().off('playAnimateTranslation', this.animateTranslation, this);
-	      this.getEntity().off('playAnimateRotation', this.animateRotation, this);
-	      this.getEntity().off('playAnimateScale', this.animateScale, this);
-	      this.getEntity().off('pauseCurveAnimation', this.onPauseCurveAnimation, this);
-	      this.getEntity().off('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
-	      this.getEntity().off('stopCurveAnimation', this.stopCurveAnimation, this);
+	      // make sure to clean up any events or other bindings that you have created
+	      // to avoid memory leaks
+	      this.uninitPickingEvents();
 
-	      this.off('disable', this.onDisable, this);
-	    }
-	  }, {
-	    key: 'onDisable',
-	    value: function onDisable() {
-	      this.getRuntimeData().position.copy(this.getEntity().getPosition());
-	      this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
-	      this.getRuntimeData().scale.copy(this.getEntity().getScale());
-	    }
-	  }, {
-	    key: 'stopCurveAnimation',
-	    value: function stopCurveAnimation() {
-	      this.getRuntime().off('update', this.curveAnim, this);
-	      this.curveAnim = undefined;
-	    }
-	  }, {
-	    key: 'animateAlongCurve',
-	    value: function animateAlongCurve(curveObjectId, animationTime, easeIn, easeOut, orientation, loop) {
+	      this.getRuntime().off('resize', this.resize, this);
+	      this.getGlobalEvents().off('registerPickingObject', this.registerObject, this);
+	      this.getGlobalEvents().off('unregisterPickingObject', this.unregisterObject, this);
 
-	      function curveAnim(delta) {
-	        if (!this.box3DEntity || !this.isEnabled()) {
-	          engine.off('update', this.curveAnim, this);
-	          this.curveAnim = undefined;
-	          return;
-	        }
-	        if (curveComponent && this.playingCurveAnimation) {
-	          this.getRuntime().needsRender = true;
-	          currentTime += delta;
-	          var currentTimePercent = currentTime / animationTime;
-	          if (currentTimePercent >= 1.0) {
-	            currentTimePercent -= 1.0;
-	          }
-	          var easeOutStart = 1 - easeOut;
-
-	          //Ease in
-	          if (easeIn && currentTimePercent < easeIn) {
-	            var easeInProgress = currentTimePercent / easeIn;
-	            curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	          } else if (easeOut && currentTimePercent > easeOutStart) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	          } else {
-	            //Full speed animation
-	            curveProgressPercent += delta * fullSpeed / animationTime;
-	          }
-
-	          //If the animation is finished
-	          if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
-	            curveProgressPercent %= 1.0;
-	            currentTime = 0.0;
-	            if (!loop) {
-	              curveProgressPercent = 0.99999999;
-	              this.playingCurveAnimation = false;
-
-	              this.getRuntime().off('update', this.curveAnim, this);
-	              this.curveAnim = undefined;
-	            }
-	            this.getEntity().trigger('endAnimateAlongCurve');
-	          }
-
-	          var curve = curveComponent.curve;
-	          var curveProgress_NodeRelative = curve.getUtoTmapping(curveProgressPercent);
-	          runtimeData.position.copy(curve.getPoint(curveProgress_NodeRelative));
-
-	          if (orientation === 'toCurve') {
-	            var tangent = curve.getTangent(curveProgress_NodeRelative);
-	            tempVector1.set(0, -1, 0);
-	            tempVector2.crossVectors(tangent, tempVector1);
-	            tempVector3.crossVectors(tangent, tempVector2);
-	            tempVector1.copy(runtimeData.position);
-	            tempVector1.add(tangent);
-	            tempMatrix.lookAt(runtimeData.position, tempVector1, tempVector3);
-	            runtimeData.quaternion.setFromRotationMatrix(tempMatrix);
-	          } else if (orientation === 'toNode') {
-	            var curveSegments;
-	            if (curveComponent.closed) {
-	              curveSegments = curve.points.length;
-	            } else {
-	              curveSegments = curve.points.length - 1;
-	            }
-	            var prevNode = Math.floor(curveProgress_NodeRelative * curveSegments);
-	            var nextNode = Math.ceil(curveProgress_NodeRelative * curveSegments) % curve.points.length;
-
-	            if (prevNode !== currentPrevNode) {
-	              if (prevNode > 0) {
-	                curveComponent.controlPoints[prevNode].getQuaternionInWorldSpace(prevQuaternion);
-	              } else {
-	                curveComponent.controlPoints[0].getQuaternionInWorldSpace(prevQuaternion);
-	              }
-	            }
-	            if (nextNode !== currentNextNode) {
-	              if (nextNode > 0) {
-	                curveComponent.controlPoints[nextNode].getQuaternionInWorldSpace(nextQuaternion);
-	              } else {
-	                curveComponent.controlPoints[0].getQuaternionInWorldSpace(nextQuaternion);
-	              }
-	            }
-	            var interp = curveProgress_NodeRelative * curveSegments - prevNode;
-	            runtimeData.quaternion.copy(prevQuaternion);
-	            runtimeData.quaternion.slerp(nextQuaternion, interp);
-	          }
+	      // TODO - Listen to different events to make ObjectPicker work again.
+	      // var parentAsset = this.getEntity().getParentAsset();
+	      // parentAsset.off('meshLoaded', this.registerMesh, this);
+	      // parentAsset.off('meshUnloaded', this.unregisterMesh, this);
+	      if (this.pickingTexture) {
+	        this.pickingTexture.dispose();
+	        this.pickingTexture = undefined;
+	      }
+	      for (var x in this.meshRegistry) {
+	        if (this.meshRegistry[x].pickingMaterial) {
+	          this.meshRegistry[x].pickingMaterial.dispose();
 	        }
 	      }
-	      var that = this;
-	      var curveComponent;
-	      var curveObject;
-
-	      if (curveObjectId) {
-	        curveObject = this.getRuntime().getEntityById(curveObjectId);
-	        curveComponent = curveObject.getFirstByScriptId('curve_component');
+	      this.meshRegistry = {};
+	      this.meshList = [];
+	    }
+	  }, {
+	    key: 'initPickingEvents',
+	    value: function initPickingEvents() {
+	      if (this.pickTrigger.substr(-2) === 'Up') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchEnd', this.touchPick, this);
+	        } else {
+	          this.getRuntime().on('mouseUp', this.pick, this);
+	        }
+	      } else if (this.pickTrigger.substr(-4) === 'Down') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchStart', this.touchPick, this);
+	        } else {
+	          this.getRuntime().on('mouseDown', this.pick, this);
+	        }
+	      } else if (this.pickTrigger.substr(-5) === 'Click') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchEnd', this.touchPickNoDrag, this);
+	        } else {
+	          this.getRuntime().on('mouseUp', this.pickNoDrag, this);
+	        }
 	      }
-	      if (!curveComponent) {
+
+	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
+	        this._enableHover();
+	      }
+	    }
+	  }, {
+	    key: 'uninitPickingEvents',
+	    value: function uninitPickingEvents() {
+	      if (this.pickTrigger.substr(-2) === 'Up') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().off('touchEnd', this.touchPick, this);
+	        } else {
+	          this.getRuntime().off('mouseUp', this.pick, this);
+	        }
+	      } else {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().off('touchStart', this.touchPick, this);
+	        } else {
+	          this.getRuntime().off('mouseDown', this.pick, this);
+	        }
+	      }
+
+	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
+	        this.getRuntime().off('postRender', this.hoverUpdate, this);
+	      }
+	    }
+	  }, {
+	    key: 'initPickingMaterial',
+	    value: function initPickingMaterial() {
+	      this.pickingMaterialDef = {
+
+	        depthTest: true,
+	        depthWrite: true,
+	        transparent: false,
+	        side: THREE.DoubleSide,
+
+	        uniforms: {
+	          color: {
+	            type: 'c',
+	            value: 0xff0000
+	          }
+	        },
+
+	        vertexShader: [THREE.ShaderChunk['skinning_pars_vertex'], THREE.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', THREE.ShaderChunk['skinbase_vertex'], THREE.ShaderChunk['skinnormal_vertex'], THREE.ShaderChunk['defaultnormal_vertex'], THREE.ShaderChunk['skinning_vertex'], THREE.ShaderChunk['project_vertex'], THREE.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
+
+	        fragmentShader: ['uniform vec3 color;', THREE.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', THREE.ShaderChunk['logdepthbuf_fragment'], 'gl_FragColor = vec4( color, 1.0 );', '}'].join('\n')
+
+	      };
+	    }
+	  }, {
+	    key: 'initMeshRegistry',
+	    value: function initMeshRegistry() {
+	      var _this2 = this;
+
+	      // TODO - Listen to different events to make ObjectPicker work again.
+	      // var parentAsset = this.getEntity().getParentAsset();
+	      // parentAsset.on('meshLoaded', this.registerMesh, this);
+	      // parentAsset.on('meshUnloaded', this.unregisterMesh, this);
+
+	      this.getEntity().getParentObject().traverse(function (obj) {
+	        if (obj.type === 'mesh') {
+	          _this2.registerMesh(obj);
+	        }
+	      });
+	    }
+	  }, {
+	    key: '_enableHover',
+	    value: function _enableHover() {
+	      if (!this.hoverEnabled && !Box3D.isMobile()) {
+	        this.getRuntime().on('postRender', this.hoverUpdate, this);
+	        this.hoverEnabled = true;
+	      }
+	    }
+
+	    /**
+	    * reset the size of the texture used to test against geometry picking parameters
+	    * @method resize
+	    */
+
+	  }, {
+	    key: 'resize',
+	    value: function resize() {
+	      var oldPickingTexture = this.pickingTexture;
+	      var width = this.getRenderer().getWidth();
+	      var height = this.getRenderer().getHeight();
+	      this.pickingTexture = new THREE.WebGLRenderTarget(Math.floor(width / 4.0), Math.floor(height / 4.0), {
+	        minFilter: THREE.LinearFilter
+	      });
+	      this.pickingTexture.texture.generateMipmaps = false;
+	      if (oldPickingTexture) {
+	        oldPickingTexture.dispose();
+	      }
+	    }
+	  }, {
+	    key: 'registerObject',
+	    value: function registerObject(box3DObject, runtimeData) {
+
+	      if (!this.meshRegistry[runtimeData.id]) {
+	        this.meshRegistry[runtimeData.id] = {
+	          box3DEntity: box3DObject,
+	          runtimeData: runtimeData,
+	          prevMaterial: null,
+	          pickingMaterial: new THREE.ShaderMaterial(this.pickingMaterialDef)
+	        };
+	        //Array for fast iteration
+	        this.meshList.push(this.meshRegistry[runtimeData.id]);
+	        this.meshRegistry[runtimeData.id].index = this.meshList.length - 1;
+	        var material = this.meshRegistry[runtimeData.id].pickingMaterial;
+	        material.uniforms = THREE.UniformsUtils.clone(this.pickingMaterialDef.uniforms);
+	        material.uniforms.color.value = new THREE.Color(runtimeData.id);
+
+	        if (runtimeData instanceof THREE.SkinnedMesh) {
+	          material.skinning = true;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'unregisterObject',
+	    value: function unregisterObject(box3DObject, runtimeData) {
+	      if (runtimeData) {
+	        //remove the enitity data from the pick history, if it's there
+	        this.removeFromHistory(runtimeData.id);
+	        //The meshUnloaded event should fire just before the runtimeData is deleted.
+	        if (this.meshRegistry[runtimeData.id]) {
+	          this.meshRegistry[runtimeData.id].box3DEntity = null;
+	          this.meshRegistry[runtimeData.id].pickingMaterial.dispose();
+	          this.meshList.splice(this.meshRegistry[runtimeData.id].index, 1);
+	          delete this.meshRegistry[runtimeData.id];
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'registerMesh',
+	    value: function registerMesh(veroldMesh) {
+	      //When the THREE.Mesh is created, register it so that it can be selected.
+	      veroldMesh.when('loadBase', function (mesh) {
+	        this.registerObject(mesh, mesh.runtimeData);
+	      }, this);
+	    }
+	  }, {
+	    key: 'unregisterMesh',
+	    value: function unregisterMesh(veroldMesh) {
+	      if (veroldMesh) {
+	        this.unregisterObject(veroldMesh.runtimeData);
+	      }
+	    }
+	  }, {
+	    key: 'getThreeObjects',
+	    value: function getThreeObjects(objects) {
+	      var sceneObjects = [];
+	      _lodash2.default.each(objects, function (object) {
+	        if (object && object.runtimeData) {
+	          sceneObjects.push(object.runtimeData);
+	        }
+	      });
+
+	      return sceneObjects;
+	    }
+	  }, {
+	    key: 'touchPickNoDrag',
+	    value: function touchPickNoDrag(event, callback) {
+	      //Check drag state
+	      if (!this.getInput().touchDragStatePrevious) {
+	        this.touchPick(event, callback);
+	      }
+	    }
+	  }, {
+	    key: 'touchPick',
+	    value: function touchPick(event, callback) {
+
+	      if (!this.isEnabled()) {
 	        return;
 	      }
 
-	      var runtimeData = this.getRuntimeData();
-	      var engine = this.getRuntime();
-	      var currentTime = 0;
-	      var curveProgressPercent = 0.0;
+	      // if ( this.getInput().touchPosition.x ) {
+	      var x = this.getInput().touchPosition.x;
+	      var y = this.getInput().touchPosition.y;
 
-	      var tempVector1 = new THREE.Vector3();
-	      var tempVector2 = new THREE.Vector3();
-	      var tempVector3 = new THREE.Vector3();
-	      var tempMatrix = new THREE.Matrix4();
-	      var prevQuaternion = new THREE.Quaternion();
-	      var nextQuaternion = new THREE.Quaternion();
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh) {
 
-	      if (easeIn + easeOut > 1.0) {
-	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
-	      }
-
-	      var fullSpeedTime = 1.0 - easeIn - easeOut;
-	      var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
-
-	      if (animationTime > 0) {
-	        this.playingCurveAnimation = true;
-	        var currentPrevNode = -1;
-	        var currentNextNode = -1;
-	        if (curveComponent.isCurveInit()) {
-
-	          this.curveAnim = curveAnim;
-	          this.getRuntime().on('update', this.curveAnim, this);
-	        } else {
-	          curveComponent.on('curveInit', function () {
-	            this.curveAnim = curveAnim;
-	            that.getRuntime().on('update', this.curveAnim, that);
-	          }, this);
+	        mesh.trigger('pick');
+	        var parent = mesh.getParentObject();
+	        while (parent) {
+	          parent.trigger('pick');
+	          parent = parent.getParentObject();
+	        }
+	        if (_lodash2.default.isFunction(callback)) {
+	          callback(mesh);
 	        }
 	      }
 	    }
 	  }, {
-	    key: 'onPauseCurveAnimation',
-	    value: function onPauseCurveAnimation() {
-	      this.playingCurveAnimation = false;
+	    key: 'pickNoDrag',
+	    value: function pickNoDrag(event, callback) {
+	      //Check drag state
+	      if (!this.getInput().mouseDragStatePrevious[event.button]) {
+	        this.pick(event, callback);
+	      }
 	    }
 	  }, {
-	    key: 'onUnpauseCurveAnimation',
-	    value: function onUnpauseCurveAnimation() {
-	      this.playingCurveAnimation = true;
+	    key: 'pick',
+	    value: function pick(event, callback) {
+	      if (!this.isEnabled()) {
+	        return;
+	      }
+	      if (this.pickTrigger.substr(0, 4) === 'left') {
+	        if (event.button !== 0) {
+	          return;
+	        }
+	      } else if (this.pickTrigger.substr(0, 4) === 'right') {
+	        if (event.button !== 2) {
+	          return;
+	        }
+	      } else if (event.button !== 1) {
+	        return;
+	      }
+	      var x = event.clientX;
+	      var y = event.clientY;
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh) {
+	        mesh.trigger('pick');
+	        var parent = mesh.getParentObject();
+	        while (parent) {
+	          parent.trigger('pick');
+	          parent = parent.getParentObject();
+	        }
+	        if (_lodash2.default.isFunction(callback)) {
+	          callback(mesh);
+	        }
+	      }
 	    }
 	  }, {
-	    key: 'animateToObject',
-	    value: function animateToObject(objectId, animationTime, easeIn, easeOut, orientation) {
+	    key: 'hoverUpdate',
+	    value: function hoverUpdate() {
+	      if (!this.isEnabled()) {
+	        return;
+	      }
+	      if (this.currentFrame < this.hoverFrameSkip) {
+	        this.currentFrame++;
+	        return;
+	      }
+	      this.currentFrame = 0;
+	      var x = this.getInput().mousePosition.x;
+	      var y = this.getInput().mousePosition.y;
+	      var parent;
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh !== this.currentHoverObject) {
+	        if (this.currentHoverObject) {
+
+	          this.currentHoverObject.trigger('endHover');
+	          parent = this.currentHoverObject.getParentObject();
+	          while (parent) {
+	            parent.trigger('endHover');
+	            parent = parent.getParentObject();
+	          }
+	        }
+	        if (mesh) {
+	          this.currentHoverObject = mesh;
+
+	          mesh.trigger('beginHover');
+	          parent = mesh.getParentObject();
+	          while (parent) {
+	            parent.trigger('beginHover');
+	            parent = parent.getParentObject();
+	          }
+	        } else {
+	          this.currentHoverObject = null;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'pickMesh',
+	    value: function pickMesh(x, y) {
+
 	      var that = this;
-	      var engine = this.getRuntime();
+	      var scenes = this.getRuntime().getAssetsByType('scene');
+	      var i;
+	      var pickedMesh = null;
+	      _lodash2.default.each(scenes, function (scene) {
+	        var cameras = scene.getObjectsByType('camera');
 
-	      function _animateTo(threeObject) {
-
-	        var entity_data = that.getRuntimeData();
-	        var tempMatrix = new THREE.Matrix4();
-	        var currTime = 0;
-	        var curveProgressPercent = 0.0;
-
-	        if (easeIn + easeOut > 1.0) {
-	          _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	          easeIn = 0.5;
-	          easeOut = 0.5;
-	        }
-
-	        var fullSpeedTime = 1.0 - easeIn - easeOut;
-	        var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
-	        //var easeInDistance = easeIn * fullSpeed / 2.0;
-	        //var easeOutDistance = easeOut * fullSpeed / 2.0;
-
-	        var startPos = new THREE.Vector3();
-	        var startQuat;
-	        startPos.copy(entity_data.position);
-
-	        var targetPosition = threeObject.position;
-	        var targetQuaternion = threeObject.quaternion;
-
-	        if (targetQuaternion && orientation) {
-	          startQuat = new THREE.Quaternion();
-	          startQuat.copy(entity_data.quaternion);
-	        }
-	        threeObject.updateMatrixWorld();
-	        targetPosition.setFromMatrixPosition(threeObject.matrixWorld);
-	        tempMatrix.extractRotation(threeObject.matrixWorld);
-	        targetQuaternion.setFromRotationMatrix(tempMatrix);
-
-	        if (animationTime > 0) {
-	          that.getRuntime().on('update', function objAnim(delta) {
-	            if (!this.box3DEntity || !this.isEnabled()) {
-	              engine.off('update', objAnim, this);
-	              return;
+	        var renderViews = [];
+	        _lodash2.default.each(cameras, function (camera) {
+	          var renderViewComponents = camera.getByScriptId('render_view_component');
+	          _lodash2.default.each(renderViewComponents, function (renderViewComponent) {
+	            if (renderViewComponent.isEnabled()) {
+	              if (renderViews.length > 0) {
+	                for (i = 0; i < renderViews.length; i++) {
+	                  var renderView = renderViews[i];
+	                  if (renderViewComponent.renderGroup >= renderView.renderGroup) {
+	                    renderViews.splice(i, 0, renderViewComponent);
+	                    break;
+	                  }
+	                }
+	              } else {
+	                renderViews.push(renderViewComponent);
+	              }
 	            }
-	            that.getRuntime().needsRender = true;
-	            currTime += delta;
-	            var currentTimePercent = currTime / animationTime;
-	            var easeOutStart = 1 - easeOut;
-
-	            if (easeIn && currentTimePercent < easeIn) {
-	              //Ease in
-	              var easeInProgress = currentTimePercent / easeIn;
-	              curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	            } else if (easeOut && currentTimePercent > easeOutStart) {
-	              //Ease out
-	              var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	              curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	            } else {
-	              //Full speed animation
-	              curveProgressPercent += delta * fullSpeed / animationTime;
-	            }
-	            //clamp at 1
-	            curveProgressPercent = Math.min(curveProgressPercent, 1.0);
-
-	            if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
-	              that.getRuntime().off('update', objAnim, that);
-	              that.getEntity().trigger('endAnimateToObject');
-	            }
-
-	            entity_data.position.copy(startPos);
-	            entity_data.position.lerp(targetPosition, curveProgressPercent);
-	            if (targetQuaternion && orientation) {
-	              entity_data.quaternion.copy(startQuat);
-	              entity_data.quaternion.slerp(targetQuaternion, curveProgressPercent);
-	            }
-	          }, that);
-	        } else {
-	          entity_data.position.copy(targetPosition);
-	          if (targetQuaternion) {
-	            entity_data.quaternion.copy(targetQuaternion);
-	          }
-
-	          //complete
-	          that.getEntity().trigger('endAnimateToObject');
-	        }
-	      }
-
-	      var object = this.getRuntime().getEntityById(objectId);
-	      if (object.runtimeData) {
-	        _animateTo(object.runtimeData);
-	      } else {
-	        object.once('loadBase', function () {
-	          _animateTo(object.runtimeData);
+	          });
 	        }, this);
-	        object.load();
-	      }
-	    }
-	  }, {
-	    key: 'animateTranslation',
-	    value: function animateTranslation(animationTime, easeIn, easeOut, velocity, objectUsage) {
 
-	      var runtimeData = this.getRuntimeData();
-	      runtimeData.position.copy(this.getEntity().getPosition());
-	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	      runtimeData.scale.copy(this.getEntity().getScale());
+	        for (i = 0; i < renderViews.length; i++) {
+	          var renderView = renderViews[i];
+	          var canvas_height = that.getRenderer().getHeight();
+	          var viewport_offset = canvas_height - renderView._height - renderView._y;
+	          //Get the percentage x,y positions of the mouse on the viewport
+	          var mouseX = (x - renderView._x) / renderView._width;
+	          var mouseY = (y - viewport_offset) / renderView._height;
 
-	      var currTime = 0;
-	      var engine = this.getRuntime();
-
-	      if (easeIn + easeOut > 1.0) {
-	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
-	      }
-
-	      var easeInTime = animationTime * easeIn;
-	      // var easeOutTime = animationTime * easeOut;
-
-	      var currentVelocity = new THREE.Vector3();
-	      var direction = new THREE.Vector3();
-	      direction.copy(velocity);
-	      var speed = direction.length();
-	      runtimeData.updateMatrixWorld();
-	      // runtimeData.updateMatrix();
-	      direction.applyQuaternion(runtimeData.quaternion);
-	      direction.normalize();
-
-	      if (objectUsage) {
-	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	        //Based on the object usage, set the original position so that the
-	        //animation plays forward from there...
-	        if (objectUsage === 'middle') {
-	          //postiion - velocity * time * 0.5
-	          currentVelocity.copy(velocity);
-	          currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	          runtimeData.position.add(currentVelocity);
-	        } else if (objectUsage === 'end') {
-	          currentVelocity.copy(velocity);
-	          currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	          runtimeData.position.add(currentVelocity);
-	        }
-	      }
-
-	      if (animationTime > 0) {
-	        this.getRuntime().on('update', function objAnim(delta) {
-	          if (!this.box3DEntity || !this.isEnabled()) {
-	            engine.off('update', objAnim, this);
+	          // pickedMesh = this.doRaycastPick( scene, renderView.box3DEntity, mouseX, mouseY );
+	          pickedMesh = this.doGPUPick(scene, renderView.box3DEntity, mouseX, mouseY);
+	          if (pickedMesh) {
 	            return;
 	          }
-	          currentVelocity.copy(direction);
+	        }
+	      }, this);
 
-	          this.getRuntime().needsRender = true;
-	          currTime += delta;
-	          var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
-	          var easeOutStart = 1.0 - easeOut;
-	          var easeOutStartTime = animationTime * easeOutStart;
-
-	          if (easeIn && currTime < easeInTime) {
-	            //Ease in
-	            var easeInProgress = currentTimePercent / easeIn;
-	            currentVelocity.multiplyScalar(delta * speed * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
-	          } else if (easeOut && currTime > easeOutStartTime) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            currentVelocity.multiplyScalar(delta * speed * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
-	          } else {
-	            //Full speed animation
-	            currentVelocity.multiplyScalar(delta * speed);
-	          }
-
-	          if (currTime >= animationTime) {
-	            this.getRuntime().off('update', objAnim, this);
-	            this.getEntity().trigger('endAnimateTranslation');
-	          }
-
-	          runtimeData.position.add(currentVelocity);
-	        }, this);
-	      }
+	      return pickedMesh;
 	    }
 	  }, {
-	    key: 'animateRotation',
-	    value: function animateRotation(animationTime, easeIn, easeOut, velocity, objectUsage, axisOrder) {
+	    key: 'doRaycastPick',
+	    value: function doRaycastPick(scene, camera, mouseX, mouseY) {
+	      var x = mouseX * 2 - 1;
+	      var y = -mouseY * 2 + 1;
 
-	      var runtimeData = this.getRuntimeData();
-	      runtimeData.position.copy(this.getEntity().getPosition());
-	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	      runtimeData.scale.copy(this.getEntity().getScale());
+	      var vector = new THREE.Vector3(x, y, 0.5);
 
-	      var currTime = 0;
-	      var engine = this.getRuntime();
+	      vector.unproject(camera.runtimeData);
 
-	      if (easeIn + easeOut > 1.0) {
-	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
+	      var raycaster = new THREE.Raycaster(camera.runtimeData.position, vector.sub(camera.runtimeData.position).normalize());
+
+	      var sceneObjects = this.getThreeObjects(scene.getObjects());
+	      var intersections = raycaster.intersectObjects(sceneObjects, false);
+
+	      if (intersections.length > 0) {
+	        for (var i = 0; i < intersections.length; i++) {
+	          var parent = intersections[i].object.parent;
+	          var entityId = intersections[i].object.id;
+	          var isVisible = true;
+	          if (!intersections[i].object.visible) {
+	            isVisible = false;
+	            continue;
+	          }
+	          while (parent) {
+
+	            if (!parent.visible) {
+	              isVisible = false;
+	              break;
+	            }
+
+	            parent = parent.parent;
+	          }
+
+	          if (isVisible) {
+	            return this.meshRegistry[entityId].box3DEntity;
+	          }
+	        }
+	      }
+	      return null;
+	    }
+	  }, {
+	    key: 'doGPUPick',
+	    value: function doGPUPick(scene, camera, mouseX, mouseY) {
+
+	      if (mouseX < 0.0 || mouseY < 0.0 || mouseX > 1.0 || mouseY > 1.0) {
+	        return null;
 	      }
 
-	      var easeInTime = animationTime * easeIn;
-	      // var easeOutTime = animationTime * easeOut;
-	      var currentVelocity = new THREE.Quaternion();
-	      var fullSpeedQuat = new THREE.Quaternion();
+	      var i = 0;
+	      var material;
+	      for (i = 0; i < this.meshList.length; i++) {
+	        if (this.meshList[i].runtimeData) {
+	          material = this.meshList[i].runtimeData.material;
+	          this.meshList[i].prevMaterial = material;
+	          this.meshList[i].runtimeData.material = this.meshList[i].pickingMaterial;
+	        }
+	      }
+	      var renderer = this.getThreeRenderer();
+	      var currentShadowMapEnabled = renderer.shadowMap.enabled;
+	      renderer.shadowMap.enabled = false;
+	      // renderer.enableScissorTest( true );
+	      renderer.setViewport(0, 0, this.pickingTexture.width, this.pickingTexture.height);
+	      //render the picking scene off-screen
+	      var gl = renderer.getContext();
+	      renderer.render(scene.runtimeData, camera.runtimeData, this.pickingTexture, true);
 
-	      var tempVector1 = new THREE.Vector3();
-	      var eulerVelocity = new THREE.Euler(axisOrder);
-	      eulerVelocity.set(velocity.x, velocity.y, velocity.z);
-	      //Convert the euler angles to quaternion
-	      currentVelocity.setFromEuler(eulerVelocity);
-	      fullSpeedQuat.copy(currentVelocity);
-
-	      runtimeData.updateMatrixWorld();
-
-	      if (objectUsage) {
-	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	        //Based on the object usage, set the original rotation so that the
-	        //animation plays forward from there...
-	        if (objectUsage === 'middle') {
-	          //postiion - velocity * time * 0.5
-	          tempVector1.copy(velocity);
-	          tempVector1.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	          eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
-	          currentVelocity.setFromEuler(eulerVelocity);
-	          runtimeData.quaternion.multiply(currentVelocity);
-	        } else if (objectUsage === 'end') {
-	          tempVector1.copy(velocity);
-	          tempVector1.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	          eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
-	          currentVelocity.setFromEuler(eulerVelocity);
-	          runtimeData.quaternion.multiply(currentVelocity);
+	      //Return materials to their previous state
+	      for (i = 0; i < this.meshList.length; i++) {
+	        if (this.meshList[i].runtimeData) {
+	          this.meshList[i].runtimeData.material = this.meshList[i].prevMaterial;
 	        }
 	      }
 
-	      if (animationTime > 0) {
-	        this.getRuntime().on('update', function objAnim(delta) {
-	          if (!this.box3DEntity || !this.isEnabled()) {
-	            engine.off('update', objAnim, this);
-	            return;
-	          }
-	          var speed = 1.0;
+	      var pixelBuffer = new Uint8Array(4);
+	      //read the pixel under the mouse from the texture
+	      gl.readPixels(mouseX * this.pickingTexture.width, this.pickingTexture.height * (1.0 - mouseY), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
 
-	          this.getRuntime().needsRender = true;
-	          currTime += delta;
-	          var currentTimePercent = Math.min(currTime / animationTime, 1.0);
-	          var easeOutStart = 1.0 - easeOut;
-	          var easeOutStartTime = animationTime * easeOutStart;
+	      //interpret the pixel as an ID
+	      var id = pixelBuffer[0] << 16 | pixelBuffer[1] << 8 | pixelBuffer[2];
 
-	          if (easeIn && currTime < easeInTime) {
-	            //Ease in
-	            var easeInProgress = currentTimePercent / easeIn;
-	            speed *= delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
-	          } else if (easeOut && currTime > easeOutStartTime) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            speed *= delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
-	          } else {
-	            //Full speed animation
-	            speed *= delta;
-	          }
+	      renderer.shadowMap.enabled = currentShadowMapEnabled;
+	      renderer.setRenderTarget(null);
 
-	          if (currTime >= animationTime) {
-	            this.getRuntime().off('update', objAnim, this);
-	            this.getEntity().trigger('endAnimateTranslation');
-	          }
-	          currentVelocity.set(0.0, 0.0, 0.0, 1.0);
-	          currentVelocity.slerp(fullSpeedQuat, speed);
-	          runtimeData.quaternion.multiply(currentVelocity);
-	        }, this);
+	      if (this.meshRegistry[id]) {
+	        var entityId = this.meshRegistry[id].box3DEntity.id;
+	        return this.getRuntime().getEntityById(entityId);
 	      }
-	    }
-	  }, {
-	    key: 'animateScale',
-	    value: function animateScale(animationTime, easeIn, easeOut, velocity, objectUsage) {
-
-	      var runtimeData = this.getRuntimeData();
-	      runtimeData.position.copy(this.getEntity().getPosition());
-	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
-	      runtimeData.scale.copy(this.getEntity().getScale());
-
-	      var currTime = 0;
-	      var engine = this.getRuntime();
-
-	      if (easeIn + easeOut > 1.0) {
-	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
-	        easeIn = 0.5;
-	        easeOut = 0.5;
-	      }
-
-	      var easeInTime = animationTime * easeIn;
-	      // var easeOutTime = animationTime * easeOut;
-
-	      var currentVelocity = new THREE.Vector3();
-	      runtimeData.updateMatrixWorld();
-
-	      if (objectUsage) {
-	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
-	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
-	        //Based on the object usage, set the original scale so that the
-	        //animation plays forward from there...
-	        if (objectUsage === 'middle') {
-	          //postiion - velocity * time * 0.5
-	          currentVelocity.copy(velocity);
-	          currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
-	          runtimeData.scale.add(currentVelocity);
-	        } else if (objectUsage === 'end') {
-	          currentVelocity.copy(velocity);
-	          currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
-	          runtimeData.scale.add(currentVelocity);
-	        }
-	      }
-
-	      if (animationTime > 0) {
-	        this.getRuntime().on('update', function objAnim(delta) {
-	          if (!this.box3DEntity || !this.isEnabled()) {
-	            engine.off('update', objAnim, this);
-	            return;
-	          }
-	          currentVelocity.copy(velocity);
-
-	          this.getRuntime().needsRender = true;
-	          currTime += delta;
-	          var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
-	          var easeOutStart = 1.0 - easeOut;
-	          var easeOutStartTime = animationTime * easeOutStart;
-
-	          if (easeIn && currTime < easeInTime) {
-	            //Ease in
-	            var easeInProgress = currentTimePercent / easeIn;
-	            currentVelocity.multiplyScalar(delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
-	          } else if (easeOut && currTime > easeOutStartTime) {
-	            //Ease out
-	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
-	            currentVelocity.multiplyScalar(delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
-	          } else {
-	            //Full speed animation
-	            currentVelocity.multiplyScalar(delta);
-	          }
-
-	          if (currTime >= animationTime) {
-	            this.getRuntime().off('update', objAnim, this);
-	            this.getEntity().trigger('endAnimateTranslation');
-	          }
-
-	          runtimeData.scale.add(currentVelocity);
-	        }, this);
-	      }
+	      return null;
 	    }
 	  }]);
 
-	  return ObjectAnimator;
+	  return ObjectPicker;
 	}(_Box3DComponent3.default);
 
-	exports.default = ObjectAnimator;
+	exports.default = ObjectPicker;
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -68307,6 +68387,8 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -68497,38 +68579,24 @@
 	     * Set the specified attribute to the specified value. This works across engine instances.
 	     * @method setAttribute
 	     * @public
-	     * @param  {String} attrib  The attribute name
-	     * @param {Mixed} value   The new value of the attribute.
+	     * @param {string} attrib The attribute name
+	     * @param {mixed} value The new value for the attribute.
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     */
 
 	  }, {
 	    key: 'setAttribute',
-	    value: function setAttribute(attrib, value) {
-	      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-	      if (this.getEntity() && _lodash2.default.isString(attrib)) {
-	        var compId = this.getId();
-	        var componentJson = this.getEntity().sharedData.components[compId];
-	        this.getEntity().sharedData.previousComponents[compId] = this.getEntity().sharedData.previousComponents[compId] || {};
-	        var prevComponentJson = this.getEntity().sharedData.previousComponents[compId];
-	        var changedComponent = {};
-	        var entityDispatcher = this.getRuntime().entityDispatcher;
-
-	        changedComponent[this.getId()] = componentJson;
-	        if (!componentJson.componentData) {
-	          componentJson.componentData = {};
-	        }
-	        if (!prevComponentJson.componentData) {
-	          prevComponentJson.componentData = {};
-	        }
-	        // Copy the previous value.
-	        prevComponentJson.componentData[attrib] = _lodash2.default.clone(componentJson.componentData[attrib]);
-	        componentJson.componentData[attrib] = value;
-	        // Dispatch events for changes
-	        if (!options.silent) {
-	          entityDispatcher.dispatchComponentsChanged(this.box3DEntity, changedComponent);
-	        }
-	      }
+	    value: function setAttribute(attrib, value, silent) {
+	      var compId = this.getId();
+	      var json = {};
+	      json[compId] = {
+	        componentData: {}
+	      };
+	      json[compId].componentData[attrib] = value;
+	      var compDesc = this.getEntity().componentRegistry.getDescriptorById(this.getId());
+	      json[compId].componentData = _extends({}, compDesc.componentData, json[compId].componentData);
+	      var entityDispatcher = this.getRuntime().entityDispatcher;
+	      entityDispatcher.dispatchComponentsChanged(this.box3DEntity.id, json, silent);
 	    }
 
 	    /**
@@ -68779,27 +68847,36 @@
 	    }
 
 	    /**
-	     * Returns the scene that this component is a part of
-	     * @method getScene
-	     * @return {Box3D.SceneAsset} the SceneAsset object
+	     * Returns the Box3DObject at the top of the hierarchy that this component's entity
+	     * is a part of. If this component's entity is a non-prefab asset, this will return null.
+	     * @method getRootObject
+	     * @return {Box3DObject} the root object
 	     */
 
 	  }, {
-	    key: 'getScene',
-	    value: function getScene() {
-	      return this.box3DEntity.getParentAsset();
+	    key: 'getRootObject',
+	    value: function getRootObject() {
+	      if (this.box3DEntity.getRootObject) {
+	        return this.box3DEntity.getRootObject();
+	      }
+	      return null;
 	    }
 
 	    /**
-	     * Returns the THREE.Scene object that this entity is a part of.
-	     * @method getThreeScene
-	     * @return {THREE.Scene} the THREE.Scene object
+	     * Returns the THREE.Object3D at the top of the hierarchy that this component's entity
+	     * is a part of. If this component's entity is a non-prefab asset, this will return null.
+	     * @method getRootThreeObject
+	     * @return {THREE.Object3D} the THREE.Object3D object
 	     */
 
 	  }, {
-	    key: 'getThreeScene',
-	    value: function getThreeScene() {
-	      return this.box3DEntity.getParentAsset().runtimeData;
+	    key: 'getRootThreeObject',
+	    value: function getRootThreeObject() {
+	      if (this.box3DEntity.getRootObject) {
+	        var rootObject = this.box3DEntity.getRootObject();
+	        return rootObject ? rootObject.runtimeData : null;
+	      }
+	      return null;
 	    }
 
 	    /***
@@ -68946,7 +69023,7 @@
 	exports.default = Box3DComponent;
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -68972,7 +69049,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69029,7 +69106,7 @@
 	exports.default = AudioListener;
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -69098,7 +69175,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69151,7 +69228,7 @@
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
-	      this.getThreeScene().remove(this.cubeCamera);
+	      this.getRootThreeObject().remove(this.cubeCamera);
 	      this.getThreeObject().remove(this.boxMesh);
 	      this.boxMesh.geometry.dispose();
 	      this.boxMesh.material.dispose();
@@ -69169,15 +69246,12 @@
 	  }, {
 	    key: 'createTempRenderTexture',
 	    value: function createTempRenderTexture() {
-	      this.tempRenderTexture = this.getRuntime().createAsset({
-	        type: 'renderTextureCube',
-	        id: 'render_tex_cube',
-	        properties: {
-	          width: 512,
-	          height: 512,
-	          format: THREE.RGBAFormat,
-	          type: THREE.UnsignedByteType
-	        }
+	      this.tempRenderTexture = this.getRuntime().createRenderTextureCube('render_tex_cube');
+	      this.tempRenderTexture.setProperties({
+	        width: 512,
+	        height: 512,
+	        format: 'rgba',
+	        type: 'uByte'
 	      });
 	      this.tempRenderTexture.load();
 	    }
@@ -69228,7 +69302,7 @@
 	          if (obj instanceof THREE.PerspectiveCamera) {
 	            if (!obj.cameraHelper) {
 	              obj.cameraHelper = new THREE.CameraHelper(obj);
-	              _this2.getThreeScene().add(obj.cameraHelper);
+	              _this2.getRootThreeObject().add(obj.cameraHelper);
 	            }
 	            obj.cameraHelper.visible = !!_this2.debugView;
 	          }
@@ -69299,7 +69373,7 @@
 	      var _this3 = this;
 
 	      var renderer = this.getRenderer();
-	      var scene = this.getThreeScene();
+	      var scene = this.getRootThreeObject();
 	      var renderTarget = this.captureTexture ? this.captureTexture.runtimeData : this.tempRenderTexture.runtimeData;
 
 	      if (renderTarget) {
@@ -69359,7 +69433,7 @@
 	  }, {
 	    key: 'preRender',
 	    value: function preRender() {
-	      var scene = this.getScene();
+	      var scene = this.getRootObject();
 	      if (!scene.isLoaded()) {
 	        return;
 	      }
@@ -69377,7 +69451,7 @@
 	exports.default = CubeMapCapture;
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69417,7 +69491,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69542,7 +69616,7 @@
 	      }
 
 	      var that = this;
-	      var scene = this.getEntity().getParentAsset();
+	      var scene = this.getEntity().getRootObject();
 	      scene.when('loadDependencies', function (scene) {
 	        scene.runtimeData.updateMatrixWorld(true);
 	        _lodash2.default.each(that.controlPoints, function (point) {
@@ -69624,7 +69698,7 @@
 	    value: function cleanupOrientationHelpers() {
 	      var i = 0;
 	      for (i in this.orientationHelpers) {
-	        this.getThreeScene().remove(this.orientationHelpers[i]);
+	        this.getRootThreeObject().remove(this.orientationHelpers[i]);
 	      }
 	      this.orientationHelpers = [];
 	    }
@@ -69633,7 +69707,7 @@
 	    value: function cleanupCurveMesh() {
 	      if (this.isEditor && this.curveMesh) {
 	        this.getRuntime().globalEvents.trigger('studioApp::unregisterPickingObject', this.getEntity(), this.curveMesh);
-	        this.getThreeScene().remove(this.curveMesh);
+	        this.getRootThreeObject().remove(this.curveMesh);
 	        this.curveGeometry.dispose();
 	        this.curveMesh.material = undefined;
 	      }
@@ -69653,19 +69727,19 @@
 	        this.curveGeometry = new THREE.TubeGeometry(this.curve, this.curveTesselation, 2.5, 8, this.closed);
 	        this.curveMesh = new THREE.Mesh(this.curveGeometry, this.curveMaterial);
 
-	        this.getScene().once('loadBase', function () {
-	          this.getThreeScene().add(this.curveMesh);
+	        this.getRootObject().once('loadBase', function () {
+	          this.getRootThreeObject().add(this.curveMesh);
 	          _lodash2.default.each(this.orientationHelpers, function (helper) {
-	            this.getThreeScene().add(helper);
+	            this.getRootThreeObject().add(helper);
 	          }, this);
 	        }, this);
 
-	        this.getScene().once('load', function () {
+	        this.getRootObject().once('load', function () {
 	          this.getRuntime().globalEvents.trigger('studioApp::registerPickingObject', this.getEntity(), this.curveMesh);
 	          this.getGlobalEvents().on('studioApp::toggleVisualization', this.toggleVisualization, this);
 	        }, this);
 
-	        this.getScene().load();
+	        this.getRootObject().load();
 
 	        this.updateOrientationHelpers();
 	      }
@@ -69770,7 +69844,7 @@
 	exports.default = Curve;
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69789,7 +69863,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69849,7 +69923,7 @@
 	exports.default = DebugConsoleDisplay;
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69870,11 +69944,11 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _stats = __webpack_require__(32);
+	var _stats = __webpack_require__(33);
 
 	var _stats2 = _interopRequireDefault(_stats);
 
@@ -69943,7 +70017,7 @@
 	exports.default = DebugConsoleDisplay;
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 	// stats.js - http://github.com/mrdoob/stats.js
@@ -69953,7 +70027,7 @@
 	v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70001,7 +70075,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70388,7 +70462,7 @@
 	exports.default = DebugTextureViewer;
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70488,7 +70562,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70556,24 +70630,18 @@
 	    key: 'updateFilters',
 	    value: function updateFilters() {
 
-	      var that = this;
-
+	      var renderer = void 0;
 	      var toneMapping = this.toneMapping;
 	      if (toneMapping && toneMapping.enabled && this.isEnabled()) {
-
-	        setTimeout(function () {
-	          var renderer = that.getComponentRegistry().getFirstByScriptId('box3d_renderer');
-	          if (renderer) {
-	            renderer.setAttribute('gammaOutput', false);
-	          }
-	        }, 0);
+	        renderer = this.getComponentRegistry().getFirstByScriptId('box3d_renderer');
+	        if (renderer) {
+	          renderer.setAttribute('gammaOutput', false);
+	        }
 	      } else {
-	        setTimeout(function () {
-	          var renderer = that.getComponentRegistry().getFirstByScriptId('box3d_renderer');
-	          if (renderer) {
-	            renderer.setAttribute('gammaOutput', true);
-	          }
-	        }, 0);
+	        renderer = this.getComponentRegistry().getFirstByScriptId('box3d_renderer');
+	        if (renderer) {
+	          renderer.setAttribute('gammaOutput', true);
+	        }
 	      }
 
 	      this.getRuntime().trigger('defaultFiltersChanged');
@@ -70586,7 +70654,7 @@
 	exports.default = DefaultFilters;
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70618,7 +70686,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70973,7 +71041,7 @@
 	exports.default = DynamicOptimizer;
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71001,7 +71069,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71134,7 +71202,7 @@
 	exports.default = EventHandler;
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71177,7 +71245,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71396,7 +71464,7 @@
 	exports.default = Exploder;
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71444,7 +71512,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71566,7 +71634,7 @@
 	  }, {
 	    key: 'setTargetByID',
 	    value: function setTargetByID(targetID, interpTime) {
-	      var targetObj = this.getEntity().getParentAsset().getObjectById(targetID);
+	      var targetObj = this.getRuntime().getObjectById(targetID);
 	      this.setTarget(targetObj, interpTime);
 	    }
 	  }, {
@@ -71577,7 +71645,7 @@
 	      if (targetObj) {
 	        (function () {
 	          var targetPos = new THREE.Vector3();
-	          _this2.getScene().once('loadDependencies', function () {
+	          _this2.getRootObject().once('loadDependencies', function () {
 	            targetObj.getCenterInWorldSpace(targetPos);
 	            var dist = void 0;
 	            var bb = targetObj.getBounds();
@@ -71599,7 +71667,7 @@
 	            targetPos.add(distanceVector);
 	            runtimeData.position.copy(targetPos);
 	          }, _this2);
-	          _this2.getScene().loadDependencies();
+	          _this2.getRootObject().loadDependencies();
 	        })();
 	      }
 	    }
@@ -71972,7 +72040,7 @@
 	exports.default = FreeCamera;
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71995,7 +72063,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72097,7 +72165,7 @@
 	exports.default = Fullscreen;
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72208,7 +72276,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72224,8 +72292,8 @@
 	var DOUBLE_TAP_TIME = 300;
 
 	function Box3DMouseVector() {
-	  var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	  var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	  var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	  var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
 	  this.x = x;
 	  this.y = y;
@@ -72971,7 +73039,7 @@
 	  }, {
 	    key: 'getMouseDragState',
 	    value: function getMouseDragState() {
-	      var buttonId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	      var buttonId = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
 	      return this.mouseDragState[buttonId];
 	    }
@@ -72986,7 +73054,7 @@
 	  }, {
 	    key: 'getPreviousMouseDragState',
 	    value: function getPreviousMouseDragState() {
-	      var buttonId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	      var buttonId = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
 	      return this.mouseDragStatePrevious[buttonId];
 	    }
@@ -73141,7 +73209,7 @@
 	exports.default = InputController;
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73268,7 +73336,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -73777,7 +73845,7 @@
 	exports.default = Animation;
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73812,7 +73880,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -73951,7 +74019,7 @@
 	exports.default = LookAt;
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73978,7 +74046,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74115,7 +74183,7 @@
 	exports.default = MaterialCapture;
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74147,7 +74215,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74314,7 +74382,682 @@
 	exports.default = NormalMapGenerator;
 
 /***/ },
-/* 45 */
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* eslint-disable */
+	/**
+	 * @vid object_animator_component
+	 * @vname Object Animator
+	 * @vcategory Animation
+	 * @vfilter Object
+	 * @vevent local playAnimateAlongCurve {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'curve', 'type' : 'object', 'componentFilter': { 'Curve' : true }},
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'orientation', 'description': 'Orient the object following the curve to either the direction of the curve or to the objects defining the curve.', 'type': 'opt', 'default': 'toCurve', 'options' : { 'None': 'None', 'To Curve' : 'toCurve', 'To Nodes' : 'toNode'}},
+	 *     {name: 'loop', 'type' : 'b', 'description': '', 'default': false}
+	 *   ]
+	 * }
+	 * @vevent local playAnimateToObject {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'object', 'type' : 'object', 'default': null},
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Total time that the animation will take. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'update orientation', 'type' : 'b', 'default': true}
+	 *   ]
+	 * }
+	 * @vevent local playAnimateTranslation {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -1.0, 'max': 1.0},
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s position represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *   ]
+	 * }
+	 * @vevent local playAnimateRotation {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'angularVelocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -100.0, 'max': 100.0},
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s rotation represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *     {name: 'axisOrder', 'type' : 'opt', 'description': 'Specify the axis order that the angular velocity will be applied in.', 'default': 'YXZ', 'options': {
+	 *       'XYZ': 'XYZ',
+	 *       'YXZ': 'YXZ',
+	 *       'ZXY': 'ZXY',
+	 *       'XZY': 'XZY',
+	 *       'YZX': 'YZX',
+	 *       'ZYX': 'ZYX'}
+	 *     }
+	 *   ]
+	 * }
+	 * @vevent local playAnimateScale {
+	 *   action: true,
+	 *   category: 'Animation',
+	 *   parameters: [
+	 *     {name: 'animationTime', 'type': 'f', 'description': 'Time to animate to object. Defined in seconds', 'default': 3},
+	 *     {name: 'easeIn', 'type' : 'f', 'description': 'The percentage of animation time spent speeding up.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'easeOut', 'type' : 'f', 'description': 'The percentage of animation time spent slowing down.', 'default' : 0.25, 'min': 0.0, 'max': 1.0 },
+	 *     {name: 'velocity', 'description': '', 'type': 'v3', 'default': {x:0,y:0,z:1.0}, 'min': -10.0, 'max': 10.0},
+	 *     {name: 'objectUsage', 'type' : 'opt', 'description': 'Specify what part of the animation the current object\'s scale represents.', 'default': 'beginning', 'options': { 'Beginning': 'beginning', 'Middle': 'middle', 'End': 'end' } },
+	 *   ]
+	 * }
+	 * @vevent local pauseCurveAnimation { 'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local stopCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local unpauseCurveAnimation {'action': true, 'category': 'Animation', 'parameters': []}
+	 * @vevent local endAnimateAlongCurve {'action': false, 'category': 'Animation', 'parameters': []}
+	 * @vevent local endAnimateToObject {'action': false, 'category': 'Animation', 'parameters': []}
+	 * @vevent lcoal endAnimateTranslation {'action': false, 'category': 'Animation', 'parameters': []}
+	 */
+	/* eslint-enable*/
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _log = __webpack_require__(7);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _three = __webpack_require__(10);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _Box3DComponent2 = __webpack_require__(27);
+
+	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ObjectAnimator = function (_Box3DComponent) {
+	  _inherits(ObjectAnimator, _Box3DComponent);
+
+	  function ObjectAnimator() {
+	    _classCallCheck(this, ObjectAnimator);
+
+	    var _this = _possibleConstructorReturn(this, (ObjectAnimator.__proto__ || Object.getPrototypeOf(ObjectAnimator)).call(this));
+
+	    _this.playingCurveAnimation = false;
+	    _this.curveAnim = undefined;
+	    return _this;
+	  }
+
+	  /**
+	   * Called immediately after after component creation
+	   */
+
+
+	  _createClass(ObjectAnimator, [{
+	    key: 'init',
+	    value: function init() {
+	      this.getEntity().on('playAnimateAlongCurve', this.animateAlongCurve, this);
+	      this.getEntity().on('playAnimateToObject', this.animateToObject, this);
+	      this.getEntity().on('playAnimateTranslation', this.animateTranslation, this);
+	      this.getEntity().on('playAnimateRotation', this.animateRotation, this);
+	      this.getEntity().on('playAnimateScale', this.animateScale, this);
+	      this.getEntity().on('pauseCurveAnimation', this.onPauseCurveAnimation, this);
+	      this.getEntity().on('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
+	      this.getEntity().on('stopCurveAnimation', this.stopCurveAnimation, this);
+
+	      this.on('disable', this.onDisable, this);
+	    }
+	  }, {
+	    key: 'shutdown',
+	    value: function shutdown() {
+	      this.getEntity().off('playAnimateAlongCurve', this.animateAlongCurve, this);
+	      this.getEntity().off('playAnimateToObject', this.animateToObject, this);
+	      this.getEntity().off('playAnimateTranslation', this.animateTranslation, this);
+	      this.getEntity().off('playAnimateRotation', this.animateRotation, this);
+	      this.getEntity().off('playAnimateScale', this.animateScale, this);
+	      this.getEntity().off('pauseCurveAnimation', this.onPauseCurveAnimation, this);
+	      this.getEntity().off('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
+	      this.getEntity().off('stopCurveAnimation', this.stopCurveAnimation, this);
+
+	      this.off('disable', this.onDisable, this);
+	    }
+	  }, {
+	    key: 'onDisable',
+	    value: function onDisable() {
+	      this.getRuntimeData().position.copy(this.getEntity().getPosition());
+	      this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
+	      this.getRuntimeData().scale.copy(this.getEntity().getScale());
+	    }
+	  }, {
+	    key: 'stopCurveAnimation',
+	    value: function stopCurveAnimation() {
+	      this.getRuntime().off('update', this.curveAnim, this);
+	      this.curveAnim = undefined;
+	    }
+	  }, {
+	    key: 'animateAlongCurve',
+	    value: function animateAlongCurve(curveObjectId, animationTime, easeIn, easeOut, orientation, loop) {
+
+	      function curveAnim(delta) {
+	        if (!this.box3DEntity || !this.isEnabled()) {
+	          engine.off('update', this.curveAnim, this);
+	          this.curveAnim = undefined;
+	          return;
+	        }
+	        if (curveComponent && this.playingCurveAnimation) {
+	          this.getRuntime().needsRender = true;
+	          currentTime += delta;
+	          var currentTimePercent = currentTime / animationTime;
+	          if (currentTimePercent >= 1.0) {
+	            currentTimePercent -= 1.0;
+	          }
+	          var easeOutStart = 1 - easeOut;
+
+	          //Ease in
+	          if (easeIn && currentTimePercent < easeIn) {
+	            var easeInProgress = currentTimePercent / easeIn;
+	            curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	          } else if (easeOut && currentTimePercent > easeOutStart) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	          } else {
+	            //Full speed animation
+	            curveProgressPercent += delta * fullSpeed / animationTime;
+	          }
+
+	          //If the animation is finished
+	          if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
+	            curveProgressPercent %= 1.0;
+	            currentTime = 0.0;
+	            if (!loop) {
+	              curveProgressPercent = 0.99999999;
+	              this.playingCurveAnimation = false;
+
+	              this.getRuntime().off('update', this.curveAnim, this);
+	              this.curveAnim = undefined;
+	            }
+	            this.getEntity().trigger('endAnimateAlongCurve');
+	          }
+
+	          var curve = curveComponent.curve;
+	          var curveProgress_NodeRelative = curve.getUtoTmapping(curveProgressPercent);
+	          runtimeData.position.copy(curve.getPoint(curveProgress_NodeRelative));
+
+	          if (orientation === 'toCurve') {
+	            var tangent = curve.getTangent(curveProgress_NodeRelative);
+	            tempVector1.set(0, -1, 0);
+	            tempVector2.crossVectors(tangent, tempVector1);
+	            tempVector3.crossVectors(tangent, tempVector2);
+	            tempVector1.copy(runtimeData.position);
+	            tempVector1.add(tangent);
+	            tempMatrix.lookAt(runtimeData.position, tempVector1, tempVector3);
+	            runtimeData.quaternion.setFromRotationMatrix(tempMatrix);
+	          } else if (orientation === 'toNode') {
+	            var curveSegments;
+	            if (curveComponent.closed) {
+	              curveSegments = curve.points.length;
+	            } else {
+	              curveSegments = curve.points.length - 1;
+	            }
+	            var prevNode = Math.floor(curveProgress_NodeRelative * curveSegments);
+	            var nextNode = Math.ceil(curveProgress_NodeRelative * curveSegments) % curve.points.length;
+
+	            if (prevNode !== currentPrevNode) {
+	              if (prevNode > 0) {
+	                curveComponent.controlPoints[prevNode].getQuaternionInWorldSpace(prevQuaternion);
+	              } else {
+	                curveComponent.controlPoints[0].getQuaternionInWorldSpace(prevQuaternion);
+	              }
+	            }
+	            if (nextNode !== currentNextNode) {
+	              if (nextNode > 0) {
+	                curveComponent.controlPoints[nextNode].getQuaternionInWorldSpace(nextQuaternion);
+	              } else {
+	                curveComponent.controlPoints[0].getQuaternionInWorldSpace(nextQuaternion);
+	              }
+	            }
+	            var interp = curveProgress_NodeRelative * curveSegments - prevNode;
+	            runtimeData.quaternion.copy(prevQuaternion);
+	            runtimeData.quaternion.slerp(nextQuaternion, interp);
+	          }
+	        }
+	      }
+	      var that = this;
+	      var curveComponent;
+	      var curveObject;
+
+	      if (curveObjectId) {
+	        curveObject = this.getRuntime().getEntityById(curveObjectId);
+	        curveComponent = curveObject.getFirstByScriptId('curve_component');
+	      }
+	      if (!curveComponent) {
+	        return;
+	      }
+
+	      var runtimeData = this.getRuntimeData();
+	      var engine = this.getRuntime();
+	      var currentTime = 0;
+	      var curveProgressPercent = 0.0;
+
+	      var tempVector1 = new THREE.Vector3();
+	      var tempVector2 = new THREE.Vector3();
+	      var tempVector3 = new THREE.Vector3();
+	      var tempMatrix = new THREE.Matrix4();
+	      var prevQuaternion = new THREE.Quaternion();
+	      var nextQuaternion = new THREE.Quaternion();
+
+	      if (easeIn + easeOut > 1.0) {
+	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
+	      }
+
+	      var fullSpeedTime = 1.0 - easeIn - easeOut;
+	      var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
+
+	      if (animationTime > 0) {
+	        this.playingCurveAnimation = true;
+	        var currentPrevNode = -1;
+	        var currentNextNode = -1;
+	        if (curveComponent.isCurveInit()) {
+
+	          this.curveAnim = curveAnim;
+	          this.getRuntime().on('update', this.curveAnim, this);
+	        } else {
+	          curveComponent.on('curveInit', function () {
+	            this.curveAnim = curveAnim;
+	            that.getRuntime().on('update', this.curveAnim, that);
+	          }, this);
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'onPauseCurveAnimation',
+	    value: function onPauseCurveAnimation() {
+	      this.playingCurveAnimation = false;
+	    }
+	  }, {
+	    key: 'onUnpauseCurveAnimation',
+	    value: function onUnpauseCurveAnimation() {
+	      this.playingCurveAnimation = true;
+	    }
+	  }, {
+	    key: 'animateToObject',
+	    value: function animateToObject(objectId, animationTime, easeIn, easeOut, orientation) {
+	      var that = this;
+	      var engine = this.getRuntime();
+
+	      function _animateTo(threeObject) {
+
+	        var entity_data = that.getRuntimeData();
+	        var tempMatrix = new THREE.Matrix4();
+	        var currTime = 0;
+	        var curveProgressPercent = 0.0;
+
+	        if (easeIn + easeOut > 1.0) {
+	          _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	          easeIn = 0.5;
+	          easeOut = 0.5;
+	        }
+
+	        var fullSpeedTime = 1.0 - easeIn - easeOut;
+	        var fullSpeed = 1.0 / (easeIn / 2 + easeOut / 2 + fullSpeedTime);
+	        //var easeInDistance = easeIn * fullSpeed / 2.0;
+	        //var easeOutDistance = easeOut * fullSpeed / 2.0;
+
+	        var startPos = new THREE.Vector3();
+	        var startQuat;
+	        startPos.copy(entity_data.position);
+
+	        var targetPosition = threeObject.position;
+	        var targetQuaternion = threeObject.quaternion;
+
+	        if (targetQuaternion && orientation) {
+	          startQuat = new THREE.Quaternion();
+	          startQuat.copy(entity_data.quaternion);
+	        }
+	        threeObject.updateMatrixWorld();
+	        targetPosition.setFromMatrixPosition(threeObject.matrixWorld);
+	        tempMatrix.extractRotation(threeObject.matrixWorld);
+	        targetQuaternion.setFromRotationMatrix(tempMatrix);
+
+	        if (animationTime > 0) {
+	          that.getRuntime().on('update', function objAnim(delta) {
+	            if (!this.box3DEntity || !this.isEnabled()) {
+	              engine.off('update', objAnim, this);
+	              return;
+	            }
+	            that.getRuntime().needsRender = true;
+	            currTime += delta;
+	            var currentTimePercent = currTime / animationTime;
+	            var easeOutStart = 1 - easeOut;
+
+	            if (easeIn && currentTimePercent < easeIn) {
+	              //Ease in
+	              var easeInProgress = currentTimePercent / easeIn;
+	              curveProgressPercent += delta * fullSpeed / animationTime * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	            } else if (easeOut && currentTimePercent > easeOutStart) {
+	              //Ease out
+	              var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	              curveProgressPercent += delta * fullSpeed / animationTime * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	            } else {
+	              //Full speed animation
+	              curveProgressPercent += delta * fullSpeed / animationTime;
+	            }
+	            //clamp at 1
+	            curveProgressPercent = Math.min(curveProgressPercent, 1.0);
+
+	            if (curveProgressPercent >= 1.0 || curveProgressPercent < 0.0) {
+	              that.getRuntime().off('update', objAnim, that);
+	              that.getEntity().trigger('endAnimateToObject');
+	            }
+
+	            entity_data.position.copy(startPos);
+	            entity_data.position.lerp(targetPosition, curveProgressPercent);
+	            if (targetQuaternion && orientation) {
+	              entity_data.quaternion.copy(startQuat);
+	              entity_data.quaternion.slerp(targetQuaternion, curveProgressPercent);
+	            }
+	          }, that);
+	        } else {
+	          entity_data.position.copy(targetPosition);
+	          if (targetQuaternion) {
+	            entity_data.quaternion.copy(targetQuaternion);
+	          }
+
+	          //complete
+	          that.getEntity().trigger('endAnimateToObject');
+	        }
+	      }
+
+	      var object = this.getRuntime().getEntityById(objectId);
+	      if (object.runtimeData) {
+	        _animateTo(object.runtimeData);
+	      } else {
+	        object.once('loadBase', function () {
+	          _animateTo(object.runtimeData);
+	        }, this);
+	        object.load();
+	      }
+	    }
+	  }, {
+	    key: 'animateTranslation',
+	    value: function animateTranslation(animationTime, easeIn, easeOut, velocity, objectUsage) {
+
+	      var runtimeData = this.getRuntimeData();
+	      runtimeData.position.copy(this.getEntity().getPosition());
+	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	      runtimeData.scale.copy(this.getEntity().getScale());
+
+	      var currTime = 0;
+	      var engine = this.getRuntime();
+
+	      if (easeIn + easeOut > 1.0) {
+	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
+	      }
+
+	      var easeInTime = animationTime * easeIn;
+	      // var easeOutTime = animationTime * easeOut;
+
+	      var currentVelocity = new THREE.Vector3();
+	      var direction = new THREE.Vector3();
+	      direction.copy(velocity);
+	      var speed = direction.length();
+	      runtimeData.updateMatrixWorld();
+	      // runtimeData.updateMatrix();
+	      direction.applyQuaternion(runtimeData.quaternion);
+	      direction.normalize();
+
+	      if (objectUsage) {
+	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	        //Based on the object usage, set the original position so that the
+	        //animation plays forward from there...
+	        if (objectUsage === 'middle') {
+	          //postiion - velocity * time * 0.5
+	          currentVelocity.copy(velocity);
+	          currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	          runtimeData.position.add(currentVelocity);
+	        } else if (objectUsage === 'end') {
+	          currentVelocity.copy(velocity);
+	          currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	          runtimeData.position.add(currentVelocity);
+	        }
+	      }
+
+	      if (animationTime > 0) {
+	        this.getRuntime().on('update', function objAnim(delta) {
+	          if (!this.box3DEntity || !this.isEnabled()) {
+	            engine.off('update', objAnim, this);
+	            return;
+	          }
+	          currentVelocity.copy(direction);
+
+	          this.getRuntime().needsRender = true;
+	          currTime += delta;
+	          var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
+	          var easeOutStart = 1.0 - easeOut;
+	          var easeOutStartTime = animationTime * easeOutStart;
+
+	          if (easeIn && currTime < easeInTime) {
+	            //Ease in
+	            var easeInProgress = currentTimePercent / easeIn;
+	            currentVelocity.multiplyScalar(delta * speed * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
+	          } else if (easeOut && currTime > easeOutStartTime) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            currentVelocity.multiplyScalar(delta * speed * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
+	          } else {
+	            //Full speed animation
+	            currentVelocity.multiplyScalar(delta * speed);
+	          }
+
+	          if (currTime >= animationTime) {
+	            this.getRuntime().off('update', objAnim, this);
+	            this.getEntity().trigger('endAnimateTranslation');
+	          }
+
+	          runtimeData.position.add(currentVelocity);
+	        }, this);
+	      }
+	    }
+	  }, {
+	    key: 'animateRotation',
+	    value: function animateRotation(animationTime, easeIn, easeOut, velocity, objectUsage, axisOrder) {
+
+	      var runtimeData = this.getRuntimeData();
+	      runtimeData.position.copy(this.getEntity().getPosition());
+	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	      runtimeData.scale.copy(this.getEntity().getScale());
+
+	      var currTime = 0;
+	      var engine = this.getRuntime();
+
+	      if (easeIn + easeOut > 1.0) {
+	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
+	      }
+
+	      var easeInTime = animationTime * easeIn;
+	      // var easeOutTime = animationTime * easeOut;
+	      var currentVelocity = new THREE.Quaternion();
+	      var fullSpeedQuat = new THREE.Quaternion();
+
+	      var tempVector1 = new THREE.Vector3();
+	      var eulerVelocity = new THREE.Euler(axisOrder);
+	      eulerVelocity.set(velocity.x, velocity.y, velocity.z);
+	      //Convert the euler angles to quaternion
+	      currentVelocity.setFromEuler(eulerVelocity);
+	      fullSpeedQuat.copy(currentVelocity);
+
+	      runtimeData.updateMatrixWorld();
+
+	      if (objectUsage) {
+	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	        //Based on the object usage, set the original rotation so that the
+	        //animation plays forward from there...
+	        if (objectUsage === 'middle') {
+	          //postiion - velocity * time * 0.5
+	          tempVector1.copy(velocity);
+	          tempVector1.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	          eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
+	          currentVelocity.setFromEuler(eulerVelocity);
+	          runtimeData.quaternion.multiply(currentVelocity);
+	        } else if (objectUsage === 'end') {
+	          tempVector1.copy(velocity);
+	          tempVector1.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	          eulerVelocity.set(tempVector1.x, tempVector1.y, tempVector1.z);
+	          currentVelocity.setFromEuler(eulerVelocity);
+	          runtimeData.quaternion.multiply(currentVelocity);
+	        }
+	      }
+
+	      if (animationTime > 0) {
+	        this.getRuntime().on('update', function objAnim(delta) {
+	          if (!this.box3DEntity || !this.isEnabled()) {
+	            engine.off('update', objAnim, this);
+	            return;
+	          }
+	          var speed = 1.0;
+
+	          this.getRuntime().needsRender = true;
+	          currTime += delta;
+	          var currentTimePercent = Math.min(currTime / animationTime, 1.0);
+	          var easeOutStart = 1.0 - easeOut;
+	          var easeOutStartTime = animationTime * easeOutStart;
+
+	          if (easeIn && currTime < easeInTime) {
+	            //Ease in
+	            var easeInProgress = currentTimePercent / easeIn;
+	            speed *= delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5);
+	          } else if (easeOut && currTime > easeOutStartTime) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            speed *= delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0);
+	          } else {
+	            //Full speed animation
+	            speed *= delta;
+	          }
+
+	          if (currTime >= animationTime) {
+	            this.getRuntime().off('update', objAnim, this);
+	            this.getEntity().trigger('endAnimateTranslation');
+	          }
+	          currentVelocity.set(0.0, 0.0, 0.0, 1.0);
+	          currentVelocity.slerp(fullSpeedQuat, speed);
+	          runtimeData.quaternion.multiply(currentVelocity);
+	        }, this);
+	      }
+	    }
+	  }, {
+	    key: 'animateScale',
+	    value: function animateScale(animationTime, easeIn, easeOut, velocity, objectUsage) {
+
+	      var runtimeData = this.getRuntimeData();
+	      runtimeData.position.copy(this.getEntity().getPosition());
+	      runtimeData.quaternion.copy(this.getEntity().getQuaternion());
+	      runtimeData.scale.copy(this.getEntity().getScale());
+
+	      var currTime = 0;
+	      var engine = this.getRuntime();
+
+	      if (easeIn + easeOut > 1.0) {
+	        _log2.default.warn('Ease-In and Ease-Out value can\'t total more than 1.0.');
+	        easeIn = 0.5;
+	        easeOut = 0.5;
+	      }
+
+	      var easeInTime = animationTime * easeIn;
+	      // var easeOutTime = animationTime * easeOut;
+
+	      var currentVelocity = new THREE.Vector3();
+	      runtimeData.updateMatrixWorld();
+
+	      if (objectUsage) {
+	        var fullSpeedTime = (1.0 - easeIn - easeOut) * animationTime;
+	        var halfSpeedTime = (easeIn + easeOut) * 0.5 * animationTime;
+	        //Based on the object usage, set the original scale so that the
+	        //animation plays forward from there...
+	        if (objectUsage === 'middle') {
+	          //postiion - velocity * time * 0.5
+	          currentVelocity.copy(velocity);
+	          currentVelocity.multiplyScalar(-0.5 * (fullSpeedTime + halfSpeedTime));
+	          runtimeData.scale.add(currentVelocity);
+	        } else if (objectUsage === 'end') {
+	          currentVelocity.copy(velocity);
+	          currentVelocity.multiplyScalar(-1.0 * (fullSpeedTime + halfSpeedTime));
+	          runtimeData.scale.add(currentVelocity);
+	        }
+	      }
+
+	      if (animationTime > 0) {
+	        this.getRuntime().on('update', function objAnim(delta) {
+	          if (!this.box3DEntity || !this.isEnabled()) {
+	            engine.off('update', objAnim, this);
+	            return;
+	          }
+	          currentVelocity.copy(velocity);
+
+	          this.getRuntime().needsRender = true;
+	          currTime += delta;
+	          var currentTimePercent = Math.min(currTime / animationTime, 1.0); //clamp to 100%
+	          var easeOutStart = 1.0 - easeOut;
+	          var easeOutStartTime = animationTime * easeOutStart;
+
+	          if (easeIn && currTime < easeInTime) {
+	            //Ease in
+	            var easeInProgress = currentTimePercent / easeIn;
+	            currentVelocity.multiplyScalar(delta * (Math.cos(easeInProgress * Math.PI + Math.PI) * 0.5 + 0.5));
+	          } else if (easeOut && currTime > easeOutStartTime) {
+	            //Ease out
+	            var easeOutProgress = 1.0 - (currentTimePercent - easeOutStart) / easeOut;
+	            currentVelocity.multiplyScalar(delta * Math.max(Math.cos(easeOutProgress * Math.PI + Math.PI) * 0.5 + 0.5, 0.0));
+	          } else {
+	            //Full speed animation
+	            currentVelocity.multiplyScalar(delta);
+	          }
+
+	          if (currTime >= animationTime) {
+	            this.getRuntime().off('update', objAnim, this);
+	            this.getEntity().trigger('endAnimateTranslation');
+	          }
+
+	          runtimeData.scale.add(currentVelocity);
+	        }, this);
+	      }
+	    }
+	  }]);
+
+	  return ObjectAnimator;
+	}(_Box3DComponent3.default);
+
+	exports.default = ObjectAnimator;
+
+/***/ },
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -74363,7 +75106,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74713,595 +75456,7 @@
 	exports.default = AudioSource;
 
 /***/ },
-/* 46 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* eslint-disable */
-	/**
-	 * @vid object_picker
-	 * @vname Object Picker
-	 * @vfilter Scene
-	 * @vcategory General
-	 * @vattr Dropdown pickTrigger {
-	 *   description: 'What mouse action will trigger the pick?',
-	 *   default: 'leftMouseClick',
-	 *   options: {
-	 *     'Left Mouse Click': 'leftMouseClick',
-	 *     'Middle Mouse Click': 'middleMouseClick',
-	 *     'Right Mouse Click': 'rightMouseClick',
-	 *     'Left Mouse Down': 'leftMouseDown',
-	 *     'Middle Mouse Down': 'middleMouseDown',
-	 *     'Right Mouse Down': 'rightMouseDown',
-	 *     'Left Mouse Up': 'leftMouseUp',
-	 *     'Middle Mouse Up': 'middleMouseUp',
-	 *     'Right Mouse Up': 'rightMouseUp'
-	 *   }
-	 * }
-	 * @vattr Boolean enableHoverByDefault {
-	 *   default: false,
-	 *   advanced: true,
-	 *   description: 'Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact.'
-	 * }
-	 * @vattr Integer hoverFrameSkip {
-	 *   description: 'Skip this many frames inbetween hover checks.',
-	 *   default: 1,
-	 *   min: 0,
-	 *   max: 60
-	 * }
-	 * @vevent other pick { action: false, category: 'General', parameters: [] }
-	 * @vevent other beginHover { action: false, category: 'General', parameters: [] }
-	 * @vevent other endHover { action: false, category: 'General', parameters: []}
-	 */
-	/* eslint-enable */
-	/* global Box3D */
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _three = __webpack_require__(10);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _lodash = __webpack_require__(4);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _Box3DComponent2 = __webpack_require__(26);
-
-	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ObjectPicker = function (_Box3DComponent) {
-	  _inherits(ObjectPicker, _Box3DComponent);
-
-	  function ObjectPicker() {
-	    _classCallCheck(this, ObjectPicker);
-
-	    var _this = _possibleConstructorReturn(this, (ObjectPicker.__proto__ || Object.getPrototypeOf(ObjectPicker)).call(this));
-
-	    _this.pickingMaterialDef = undefined;
-	    _this.meshRegistry = {};
-	    _this.meshList = [];
-	    _this.pickingTexture = undefined;
-	    _this.currentHoverObject = undefined;
-	    _this.currentFrame = 0;
-
-	    _this.enableHoverByDefault = false;
-	    _this.pickTrigger = null;
-	    _this.hoverEnabled = false;
-	    return _this;
-	  }
-
-	  _createClass(ObjectPicker, [{
-	    key: 'awake',
-	    value: function awake() {
-	      this.getRuntime().once('endHover:bound', this._enableHover, this);
-	      this.getRuntime().once('beginHover:bound', this._enableHover, this);
-	    }
-	    /**
-	     * Called immediately after after component creation
-	     */
-
-	  }, {
-	    key: 'init',
-	    value: function init() {
-	      // this.box3DEntity is available
-	      this.getRuntime().on('resize', this.resize, this);
-
-	      this.initPickingEvents();
-	      this.initPickingMaterial();
-	      this.initMeshRegistry();
-
-	      //listen to register objects
-	      this.getGlobalEvents().on('registerPickingObject', this.registerObject, this);
-	      this.getGlobalEvents().on('unregisterPickingObject', this.unregisterObject, this);
-
-	      this.resize();
-	    }
-
-	    /**
-	     * Called when a verold object is destroyed or this component is removed
-	     * from a verold object.
-	     */
-
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
-	      // make sure to clean up any events or other bindings that you have created
-	      // to avoid memory leaks
-	      this.uninitPickingEvents();
-
-	      this.getRuntime().off('resize', this.resize, this);
-	      this.getGlobalEvents().off('registerPickingObject', this.registerObject, this);
-	      this.getGlobalEvents().off('unregisterPickingObject', this.unregisterObject, this);
-
-	      var parentAsset = this.getEntity().getParentAsset();
-	      parentAsset.off('meshLoaded', this.registerMesh, this);
-	      parentAsset.off('meshUnloaded', this.unregisterMesh, this);
-	      if (this.pickingTexture) {
-	        this.pickingTexture.dispose();
-	        this.pickingTexture = undefined;
-	      }
-	      for (var x in this.meshRegistry) {
-	        if (this.meshRegistry[x].pickingMaterial) {
-	          this.meshRegistry[x].pickingMaterial.dispose();
-	        }
-	      }
-	      this.meshRegistry = {};
-	      this.meshList = [];
-	    }
-	  }, {
-	    key: 'initPickingEvents',
-	    value: function initPickingEvents() {
-	      if (this.pickTrigger.substr(-2) === 'Up') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchEnd', this.touchPick, this);
-	        } else {
-	          this.getRuntime().on('mouseUp', this.pick, this);
-	        }
-	      } else if (this.pickTrigger.substr(-4) === 'Down') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchStart', this.touchPick, this);
-	        } else {
-	          this.getRuntime().on('mouseDown', this.pick, this);
-	        }
-	      } else if (this.pickTrigger.substr(-5) === 'Click') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchEnd', this.touchPickNoDrag, this);
-	        } else {
-	          this.getRuntime().on('mouseUp', this.pickNoDrag, this);
-	        }
-	      }
-
-	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
-	        this._enableHover();
-	      }
-	    }
-	  }, {
-	    key: 'uninitPickingEvents',
-	    value: function uninitPickingEvents() {
-	      if (this.pickTrigger.substr(-2) === 'Up') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().off('touchEnd', this.touchPick, this);
-	        } else {
-	          this.getRuntime().off('mouseUp', this.pick, this);
-	        }
-	      } else {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().off('touchStart', this.touchPick, this);
-	        } else {
-	          this.getRuntime().off('mouseDown', this.pick, this);
-	        }
-	      }
-
-	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
-	        this.getRuntime().off('postRender', this.hoverUpdate, this);
-	      }
-	    }
-	  }, {
-	    key: 'initPickingMaterial',
-	    value: function initPickingMaterial() {
-	      this.pickingMaterialDef = {
-
-	        depthTest: true,
-	        depthWrite: true,
-	        transparent: false,
-	        side: THREE.DoubleSide,
-
-	        uniforms: {
-	          color: {
-	            type: 'c',
-	            value: 0xff0000
-	          }
-	        },
-
-	        vertexShader: [THREE.ShaderChunk['skinning_pars_vertex'], THREE.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', THREE.ShaderChunk['skinbase_vertex'], THREE.ShaderChunk['skinnormal_vertex'], THREE.ShaderChunk['defaultnormal_vertex'], THREE.ShaderChunk['skinning_vertex'], THREE.ShaderChunk['project_vertex'], THREE.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
-
-	        fragmentShader: ['uniform vec3 color;', THREE.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', THREE.ShaderChunk['logdepthbuf_fragment'], 'gl_FragColor = vec4( color, 1.0 );', '}'].join('\n')
-
-	      };
-	    }
-	  }, {
-	    key: 'initMeshRegistry',
-	    value: function initMeshRegistry() {
-	      var parentAsset = this.getEntity().getParentAsset();
-	      parentAsset.on('meshLoaded', this.registerMesh, this);
-	      parentAsset.on('meshUnloaded', this.unregisterMesh, this);
-
-	      var that = this;
-	      parentAsset.traverse(function (obj) {
-	        if (obj.type === 'mesh') {
-	          that.registerMesh(obj);
-	        }
-	      });
-	    }
-	  }, {
-	    key: '_enableHover',
-	    value: function _enableHover() {
-	      if (!this.hoverEnabled && !Box3D.isMobile()) {
-	        this.getRuntime().on('postRender', this.hoverUpdate, this);
-	        this.hoverEnabled = true;
-	      }
-	    }
-
-	    /**
-	    * reset the size of the texture used to test against geometry picking parameters
-	    * @method resize
-	    */
-
-	  }, {
-	    key: 'resize',
-	    value: function resize() {
-	      var oldPickingTexture = this.pickingTexture;
-	      var width = this.getRenderer().getWidth();
-	      var height = this.getRenderer().getHeight();
-	      this.pickingTexture = new THREE.WebGLRenderTarget(Math.floor(width / 4.0), Math.floor(height / 4.0), {
-	        minFilter: THREE.LinearFilter
-	      });
-	      this.pickingTexture.texture.generateMipmaps = false;
-	      if (oldPickingTexture) {
-	        oldPickingTexture.dispose();
-	      }
-	    }
-	  }, {
-	    key: 'registerObject',
-	    value: function registerObject(box3DObject, runtimeData) {
-
-	      if (!this.meshRegistry[runtimeData.id]) {
-	        this.meshRegistry[runtimeData.id] = {
-	          box3DEntity: box3DObject,
-	          runtimeData: runtimeData,
-	          prevMaterial: null,
-	          pickingMaterial: new THREE.ShaderMaterial(this.pickingMaterialDef)
-	        };
-	        //Array for fast iteration
-	        this.meshList.push(this.meshRegistry[runtimeData.id]);
-	        this.meshRegistry[runtimeData.id].index = this.meshList.length - 1;
-	        var material = this.meshRegistry[runtimeData.id].pickingMaterial;
-	        material.uniforms = THREE.UniformsUtils.clone(this.pickingMaterialDef.uniforms);
-	        material.uniforms.color.value = new THREE.Color(runtimeData.id);
-
-	        if (runtimeData instanceof THREE.SkinnedMesh) {
-	          material.skinning = true;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'unregisterObject',
-	    value: function unregisterObject(box3DObject, runtimeData) {
-	      if (runtimeData) {
-	        //remove the enitity data from the pick history, if it's there
-	        this.removeFromHistory(runtimeData.id);
-	        //The meshUnloaded event should fire just before the runtimeData is deleted.
-	        if (this.meshRegistry[runtimeData.id]) {
-	          this.meshRegistry[runtimeData.id].box3DEntity = null;
-	          this.meshRegistry[runtimeData.id].pickingMaterial.dispose();
-	          this.meshList.splice(this.meshRegistry[runtimeData.id].index, 1);
-	          delete this.meshRegistry[runtimeData.id];
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'registerMesh',
-	    value: function registerMesh(veroldMesh) {
-	      //When the THREE.Mesh is created, register it so that it can be selected.
-	      veroldMesh.when('loadBase', function (mesh) {
-	        this.registerObject(mesh, mesh.runtimeData);
-	      }, this);
-	    }
-	  }, {
-	    key: 'unregisterMesh',
-	    value: function unregisterMesh(veroldMesh) {
-	      if (veroldMesh) {
-	        this.unregisterObject(veroldMesh.runtimeData);
-	      }
-	    }
-	  }, {
-	    key: 'getThreeObjects',
-	    value: function getThreeObjects(objects) {
-	      var sceneObjects = [];
-	      _lodash2.default.each(objects, function (object) {
-	        if (object && object.runtimeData) {
-	          sceneObjects.push(object.runtimeData);
-	        }
-	      });
-
-	      return sceneObjects;
-	    }
-	  }, {
-	    key: 'touchPickNoDrag',
-	    value: function touchPickNoDrag(event, callback) {
-	      //Check drag state
-	      if (!this.getInput().touchDragStatePrevious) {
-	        this.touchPick(event, callback);
-	      }
-	    }
-	  }, {
-	    key: 'touchPick',
-	    value: function touchPick(event, callback) {
-
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-
-	      // if ( this.getInput().touchPosition.x ) {
-	      var x = this.getInput().touchPosition.x;
-	      var y = this.getInput().touchPosition.y;
-
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh) {
-
-	        mesh.trigger('pick');
-	        var parent = mesh.getParentObject();
-	        while (parent) {
-	          parent.trigger('pick');
-	          parent = parent.getParentObject();
-	        }
-	        if (_lodash2.default.isFunction(callback)) {
-	          callback(mesh);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'pickNoDrag',
-	    value: function pickNoDrag(event, callback) {
-	      //Check drag state
-	      if (!this.getInput().mouseDragStatePrevious[event.button]) {
-	        this.pick(event, callback);
-	      }
-	    }
-	  }, {
-	    key: 'pick',
-	    value: function pick(event, callback) {
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-	      if (this.pickTrigger.substr(0, 4) === 'left') {
-	        if (event.button !== 0) {
-	          return;
-	        }
-	      } else if (this.pickTrigger.substr(0, 4) === 'right') {
-	        if (event.button !== 2) {
-	          return;
-	        }
-	      } else if (event.button !== 1) {
-	        return;
-	      }
-	      var x = event.clientX;
-	      var y = event.clientY;
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh) {
-	        mesh.trigger('pick');
-	        var parent = mesh.getParentObject();
-	        while (parent) {
-	          parent.trigger('pick');
-	          parent = parent.getParentObject();
-	        }
-	        if (_lodash2.default.isFunction(callback)) {
-	          callback(mesh);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'hoverUpdate',
-	    value: function hoverUpdate() {
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-	      if (this.currentFrame < this.hoverFrameSkip) {
-	        this.currentFrame++;
-	        return;
-	      }
-	      this.currentFrame = 0;
-	      var x = this.getInput().mousePosition.x;
-	      var y = this.getInput().mousePosition.y;
-	      var parent;
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh !== this.currentHoverObject) {
-	        if (this.currentHoverObject) {
-
-	          this.currentHoverObject.trigger('endHover');
-	          parent = this.currentHoverObject.getParentObject();
-	          while (parent) {
-	            parent.trigger('endHover');
-	            parent = parent.getParentObject();
-	          }
-	        }
-	        if (mesh) {
-	          this.currentHoverObject = mesh;
-
-	          mesh.trigger('beginHover');
-	          parent = mesh.getParentObject();
-	          while (parent) {
-	            parent.trigger('beginHover');
-	            parent = parent.getParentObject();
-	          }
-	        } else {
-	          this.currentHoverObject = null;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'pickMesh',
-	    value: function pickMesh(x, y) {
-
-	      var that = this;
-	      var scenes = this.getRuntime().getAssetsByType('scene');
-	      var i;
-	      var pickedMesh = null;
-	      _lodash2.default.each(scenes, function (scene) {
-	        var cameras = scene.getObjectsByType('camera');
-
-	        var renderViews = [];
-	        _lodash2.default.each(cameras, function (camera) {
-	          var renderViewComponents = camera.getByScriptId('render_view_component');
-	          _lodash2.default.each(renderViewComponents, function (renderViewComponent) {
-	            if (renderViewComponent.isEnabled()) {
-	              if (renderViews.length > 0) {
-	                for (i = 0; i < renderViews.length; i++) {
-	                  var renderView = renderViews[i];
-	                  if (renderViewComponent.renderGroup >= renderView.renderGroup) {
-	                    renderViews.splice(i, 0, renderViewComponent);
-	                    break;
-	                  }
-	                }
-	              } else {
-	                renderViews.push(renderViewComponent);
-	              }
-	            }
-	          });
-	        }, this);
-
-	        for (i = 0; i < renderViews.length; i++) {
-	          var renderView = renderViews[i];
-	          var canvas_height = that.getRenderer().getHeight();
-	          var viewport_offset = canvas_height - renderView._height - renderView._y;
-	          //Get the percentage x,y positions of the mouse on the viewport
-	          var mouseX = (x - renderView._x) / renderView._width;
-	          var mouseY = (y - viewport_offset) / renderView._height;
-
-	          // pickedMesh = this.doRaycastPick( scene, renderView.box3DEntity, mouseX, mouseY );
-	          pickedMesh = this.doGPUPick(scene, renderView.box3DEntity, mouseX, mouseY);
-	          if (pickedMesh) {
-	            return;
-	          }
-	        }
-	      }, this);
-
-	      return pickedMesh;
-	    }
-	  }, {
-	    key: 'doRaycastPick',
-	    value: function doRaycastPick(scene, camera, mouseX, mouseY) {
-	      var x = mouseX * 2 - 1;
-	      var y = -mouseY * 2 + 1;
-
-	      var vector = new THREE.Vector3(x, y, 0.5);
-
-	      vector.unproject(camera.runtimeData);
-
-	      var raycaster = new THREE.Raycaster(camera.runtimeData.position, vector.sub(camera.runtimeData.position).normalize());
-
-	      var sceneObjects = this.getThreeObjects(scene.getObjects());
-	      var intersections = raycaster.intersectObjects(sceneObjects, false);
-
-	      if (intersections.length > 0) {
-	        for (var i = 0; i < intersections.length; i++) {
-	          var parent = intersections[i].object.parent;
-	          var entityId = intersections[i].object.id;
-	          var isVisible = true;
-	          if (!intersections[i].object.visible) {
-	            isVisible = false;
-	            continue;
-	          }
-	          while (parent) {
-
-	            if (!parent.visible) {
-	              isVisible = false;
-	              break;
-	            }
-
-	            parent = parent.parent;
-	          }
-
-	          if (isVisible) {
-	            return this.meshRegistry[entityId].box3DEntity;
-	          }
-	        }
-	      }
-	      return null;
-	    }
-	  }, {
-	    key: 'doGPUPick',
-	    value: function doGPUPick(scene, camera, mouseX, mouseY) {
-
-	      if (mouseX < 0.0 || mouseY < 0.0 || mouseX > 1.0 || mouseY > 1.0) {
-	        return null;
-	      }
-
-	      var i = 0;
-	      var material;
-	      for (i = 0; i < this.meshList.length; i++) {
-	        if (this.meshList[i].runtimeData) {
-	          material = this.meshList[i].runtimeData.material;
-	          this.meshList[i].prevMaterial = material;
-	          this.meshList[i].runtimeData.material = this.meshList[i].pickingMaterial;
-	        }
-	      }
-	      var renderer = this.getThreeRenderer();
-	      var currentShadowMapEnabled = renderer.shadowMap.enabled;
-	      renderer.shadowMap.enabled = false;
-	      // renderer.enableScissorTest( true );
-	      renderer.setViewport(0, 0, this.pickingTexture.width, this.pickingTexture.height);
-	      //render the picking scene off-screen
-	      var gl = renderer.getContext();
-	      renderer.render(scene.runtimeData, camera.runtimeData, this.pickingTexture, true);
-
-	      //Return materials to their previous state
-	      for (i = 0; i < this.meshList.length; i++) {
-	        if (this.meshList[i].runtimeData) {
-	          this.meshList[i].runtimeData.material = this.meshList[i].prevMaterial;
-	        }
-	      }
-
-	      var pixelBuffer = new Uint8Array(4);
-	      //read the pixel under the mouse from the texture
-	      gl.readPixels(mouseX * this.pickingTexture.width, this.pickingTexture.height * (1.0 - mouseY), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
-
-	      //interpret the pixel as an ID
-	      var id = pixelBuffer[0] << 16 | pixelBuffer[1] << 8 | pixelBuffer[2];
-
-	      renderer.shadowMap.enabled = currentShadowMapEnabled;
-	      renderer.setRenderTarget(null);
-
-	      if (this.meshRegistry[id]) {
-	        var entityId = this.meshRegistry[id].box3DEntity.id;
-	        return this.getRuntime().getEntityById(entityId);
-	      }
-	      return null;
-	    }
-	  }]);
-
-	  return ObjectPicker;
-	}(_Box3DComponent3.default);
-
-	exports.default = ObjectPicker;
-
-/***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75439,7 +75594,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -75629,19 +75784,19 @@
 
 	      // that._tempVector.set(0,0,0);
 
-	      this.getScene().when('loadDependencies', function () {
+	      this.getRootObject().when('loadDependencies', function () {
 	        if (that.targetObject && that.targetObject !== that.getEntity() && that.targetObject.runtimeData) {
 	          that.targetObject.runtimeData.add(that.pivotPoint);
 	          that.pivotPoint.position.copy(that.targetOffset);
 	        } else {
-	          that.getThreeScene().add(that.pivotPoint);
+	          that.getRootThreeObject().add(that.pivotPoint);
 	          that.pivotPoint.position.copy(that.targetOffset);
 	        }
 	      }, this);
 	    }
 	  }, {
 	    key: 'setTargetOffset',
-	    value: function setTargetOffset(newOffset, options) {
+	    value: function setTargetOffset(newOffset) {
 	      this.targetMoved = true;
 	      this.pivotPoint.position.copy(newOffset);
 	      var json = {
@@ -75649,7 +75804,7 @@
 	        y: newOffset.y,
 	        z: newOffset.z
 	      };
-	      this.setAttribute('targetOffset', json, options);
+	      this.setAttribute('targetOffset', json);
 	    }
 	  }, {
 	    key: 'setOrbitDistance',
@@ -75658,19 +75813,19 @@
 	    }
 	  }, {
 	    key: 'setTarget',
-	    value: function setTarget(newObjectId, center, options) {
+	    value: function setTarget(newObjectId, center) {
 	      if (_lodash2.default.isString(newObjectId) || !newObjectId) {
 	        this.setAttribute('targetObject', newObjectId);
 	      } else if (_lodash2.default.isObject(newObjectId) && newObjectId.id) {
 	        this.setAttribute('targetObject', newObjectId.id);
 	      }
 	      if (center) {
-	        this.lookAtCenter(options);
+	        this.lookAtCenter();
 	      }
 	    }
 	  }, {
 	    key: 'lookAtCenter',
-	    value: function lookAtCenter(options) {
+	    value: function lookAtCenter() {
 	      this.targetMoved = true;
 	      var json = {
 	        x: 0,
@@ -75686,7 +75841,7 @@
 	          z: center.z
 	        };
 	      }
-	      this.setAttribute('targetOffset', json, options);
+	      this.setAttribute('targetOffset', json);
 	    }
 	  }, {
 	    key: 'focusOnTarget',
@@ -76306,7 +76461,7 @@
 	exports.default = OrbitCamera;
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76333,7 +76488,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76503,7 +76658,273 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 49 */
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @vid texture2d_to_pmrem_cubeuv
+	 * @vname GeneratePMREM
+	 * @vdescription Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI,
+	 * input environment map. The entire result will be stored in this texture in the CubeUV layout.
+	 * @vfilter renderTexture2D
+	 * @vcategory Rendering
+	 * @vattr asset inputTexture {
+	 *   default : null,
+	 *   filter : { texture2D: true, renderTexture2D: true, textureCube: true, renderTextureCube: true },
+	 *   description : 'The texture to generate the PMREM for.'
+	 * }
+	*/
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _three = __webpack_require__(10);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _Box3DComponent2 = __webpack_require__(27);
+
+	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
+
+	var _BaseImageAsset = __webpack_require__(23);
+
+	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
+
+	var _BaseTextureAsset = __webpack_require__(22);
+
+	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var PMREMGenerator = function (_Box3DComponent) {
+	  _inherits(PMREMGenerator, _Box3DComponent);
+
+	  function PMREMGenerator() {
+	    _classCallCheck(this, PMREMGenerator);
+
+	    return _possibleConstructorReturn(this, (PMREMGenerator.__proto__ || Object.getPrototypeOf(PMREMGenerator)).call(this));
+	  }
+
+	  _createClass(PMREMGenerator, [{
+	    key: 'attributesChanged',
+	    value: function attributesChanged(changes) {
+	      if (changes.indexOf('inputTexture') !== -1) {
+	        var prevTex = this.getPreviousAttribute('inputTexture');
+	        this.unregisterDependency(prevTex);
+	        this.registerDependency(this.inputTexture);
+	        this.updateTexture();
+	      }
+	    }
+
+	    // init() {
+	    //   this.registerDependency(this.inputTexture);
+	    //   // this.updateTexture();
+	    // }
+
+	  }, {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
+	      var _this2 = this;
+
+	      if (this.inputTexture) {
+	        this.inputTexture.when('load', function () {
+	          _this2.registerDependency(_this2.inputTexture);
+	          _this2.updateTexture();
+	        });
+	        if (this.inputTexture.isUnloaded()) {
+	          this.inputTexture.load();
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'shutdown',
+	    value: function shutdown() {
+	      if (this.inputTexture) {
+	        this.unregisterDependency(this.inputTexture);
+	        this.inputTexture.off('load', this.renderToCube, this);
+	      }
+	    }
+	  }, {
+	    key: 'updateTexture',
+	    value: function updateTexture() {
+	      if (this.inputTexture) {
+	        // let cubeSource = this.inputTexture.getThreeTexture();
+	        // if (this.inputTexture && (this.inputTexture.type === 'renderTexture2D' ||
+	        //   this.inputTexture.type === 'texture2D')) {
+	        var cubeSource = this.convertToCubeMap();
+	        // }
+
+
+	        this.generate(cubeSource);
+
+	        // skyboxMesh.material.dispose();
+
+	        // Setup appropriate material for transforming 2D texture to cube map
+	        // let shader;
+	        // let layout = this.inputTexture.getLayout();
+	        // if (layout === BaseImageAsset.LAYOUT.normal) {
+
+
+	        // Bind to texture loading
+	        // this.inputTexture.off('load', this.renderToCube, this);
+	        // this.inputTexture.when('load', this.renderToCube, this);
+	        // if (this.inputTexture.isUnloaded()) {
+	        //   this.inputTexture.load();
+	        // }
+
+	      }
+	    }
+	  }, {
+	    key: 'generate',
+	    value: function generate(sourceCubeMap) {
+	      var renderer = this.getThreeRenderer();
+	      var generator = new _three2.default.PMREMGenerator(sourceCubeMap);
+	      generator.update(renderer);
+	      var packer = new _three2.default.PMREMCubeUVPacker(generator.cubeLods);
+
+	      this.getEntity().getThreeTexture().mapping = _three2.default.EquirectangularReflectionMapping;
+	      packer.CubeUVRenderTarget = this.getEntity().getRuntimeData();
+	      packer.update(renderer);
+	    }
+	  }, {
+	    key: 'convertToCubeMap',
+	    value: function convertToCubeMap() {
+	      // Assume width is power of two so that dividing by 4 produces power of two size.
+	      // TODO: add code to ensure this is the case.
+	      // We're setting the size of the cubemap to be 1/4 the size of this render target because
+	      // that is the ratio hard-coded into the THREE.PMREMCubeUVPacker.
+	      var size = this.getEntity().getWidth() / 4;
+	      var params = {
+	        format: _BaseImageAsset2.default.FORMAT[this.getEntity().getProperty('format')],
+	        magFilter: _BaseTextureAsset2.default.FILTER[this.getEntity().getProperty('magFilter')],
+	        minFilter: _BaseTextureAsset2.default.FILTER[this.getEntity().getProperty('minFilter')],
+	        type: _BaseImageAsset2.default.TYPE[this.getEntity().getProperty('type')],
+	        generateMipmaps: this.getEntity().getProperty('generateMipmaps'),
+	        anisotropy: this.getEntity().getProperty('anisotropy'),
+	        encoding: this.getEntity().getProperty('encoding')
+	      };
+	      var targetCubeMap = new _three2.default.WebGLRenderTargetCube(size, size, params);
+	      var skyboxScene = new _three2.default.Scene();
+	      var skyboxGeometry = new _three2.default.BoxGeometry(100, 100, 100, 1, 1, 1);
+	      skyboxGeometry.dynamic = false;
+	      var skyboxMesh = new _three2.default.Mesh(skyboxGeometry);
+	      skyboxMesh.frustumCulled = false;
+	      skyboxMesh.castShadow = false;
+	      skyboxMesh.receiveShadow = false;
+	      if (this.isEnabled()) {
+	        skyboxScene.add(skyboxMesh);
+	      }
+
+	      var shader = _three2.default.ShaderLib['equirect'];
+	      shader.uniforms.tFlip.value = 1.0;
+	      var equirectMaterial = new _three2.default.ShaderMaterial({
+	        fragmentShader: shader.fragmentShader,
+	        vertexShader: shader.vertexShader,
+	        uniforms: shader.uniforms,
+	        depthWrite: false,
+	        side: _three2.default.BackSide
+	      });
+
+	      equirectMaterial.uniforms.tEquirect.value = this.inputTexture.getThreeTexture();
+	      skyboxMesh.material = equirectMaterial;
+
+	      var fov = 90;
+	      var aspect = 1;
+
+	      var cameras = [];
+	      cameras[0] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[0].up.set(0, -1, 0);
+	      cameras[0].lookAt(new _three2.default.Vector3(1, 0, 0));
+	      cameras[0].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[0]);
+
+	      cameras[1] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[1].up.set(0, -1, 0);
+	      cameras[1].lookAt(new _three2.default.Vector3(-1, 0, 0));
+	      cameras[1].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[1]);
+
+	      cameras[2] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[2].up.set(0, 0, 1);
+	      cameras[2].lookAt(new _three2.default.Vector3(0, 1, 0));
+	      cameras[2].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[2]);
+
+	      cameras[3] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[3].up.set(0, 0, -1);
+	      cameras[3].lookAt(new _three2.default.Vector3(0, -1, 0));
+	      cameras[3].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[3]);
+
+	      cameras[4] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[4].up.set(0, -1, 0);
+	      cameras[4].lookAt(new _three2.default.Vector3(0, 0, 1));
+	      cameras[4].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[4]);
+
+	      cameras[5] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
+	      cameras[5].up.set(0, -1, 0);
+	      cameras[5].lookAt(new _three2.default.Vector3(0, 0, -1));
+	      cameras[5].rotationAutoUpdate = false;
+	      skyboxScene.add(cameras[5]);
+
+	      // const renderTarget = this.getRuntimeData();
+	      var renderer = this.getThreeRenderer();
+
+	      targetCubeMap.texture.generateMipmaps = false;
+
+	      renderer.setViewport(0, 0, targetCubeMap.width, targetCubeMap.height);
+	      for (var i = 0; i < 5; i++) {
+	        targetCubeMap.activeCubeFace = i;
+	        renderer.render(skyboxScene, cameras[i], targetCubeMap);
+	      }
+	      targetCubeMap.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
+
+	      targetCubeMap.activeCubeFace = 5;
+	      renderer.render(skyboxScene, cameras[5], targetCubeMap);
+	      return targetCubeMap;
+	    }
+
+	    // renderToCube() {
+	    //   if (this.hasThreeData()) {
+
+	    //     this.equirectMaterial.uniforms.inputTexture.value = this.inputTexture.runtimeData;
+	    //     var renderTarget = this.getRuntimeData();
+	    //     var renderer = this.getThreeRenderer();
+
+	    //     renderTarget.texture.generateMipmaps = false;
+
+	    //     renderer.setViewport(0, 0, renderTarget.width, renderTarget.height);
+	    //     for (var i = 0; i < 5; i++) {
+	    //       renderTarget.activeCubeFace = i;
+	    //       renderer.render(this.skyboxScene, this.cameras[i], renderTarget);
+	    //     }
+	    //     renderTarget.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
+
+	    //     renderTarget.activeCubeFace = 5;
+	    //     renderer.render(this.skyboxScene, this.cameras[5], renderTarget);
+	    //   }
+	    // }
+
+	  }]);
+
+	  return PMREMGenerator;
+	}(_Box3DComponent3.default);
+
+	exports.default = PMREMGenerator;
+
+/***/ },
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -76536,7 +76957,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76910,7 +77331,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77049,7 +77470,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77237,12 +77658,12 @@
 	    value: function initTarget() {
 	      var _this2 = this;
 
-	      this.getScene().when('load', function () {
+	      this.getRootObject().when('load', function () {
 	        if (_this2.targetObject && _this2.targetObject !== _this2.getEntity() && _this2.targetObject.runtimeData) {
 	          _this2.targetObject.runtimeData.add(_this2.pivotPoint);
 	          _this2.pivotPoint.position.copy(_this2.targetOffset);
 	        } else {
-	          _this2.getThreeScene().add(_this2.pivotPoint);
+	          _this2.getRootThreeObject().add(_this2.pivotPoint);
 	          _this2.pivotPoint.position.copy(_this2.targetOffset);
 	        }
 	      });
@@ -77260,19 +77681,19 @@
 	    }
 	  }, {
 	    key: 'setTarget',
-	    value: function setTarget(newObjectId, center, options) {
+	    value: function setTarget(newObjectId, center) {
 	      if (_lodash2.default.isString(newObjectId) || !newObjectId) {
 	        this.setAttribute('targetObject', newObjectId);
 	      } else if (_lodash2.default.isObject(newObjectId) && newObjectId.id) {
 	        this.setAttribute('targetObject', newObjectId.id);
 	      }
 	      if (center) {
-	        this.lookAtCenter(options);
+	        this.lookAtCenter();
 	      }
 	    }
 	  }, {
 	    key: 'lookAtCenter',
-	    value: function lookAtCenter(options) {
+	    value: function lookAtCenter() {
 	      this.targetMoved = true;
 	      var json = { x: 0, y: 0, z: 0 };
 	      if (this.targetObject) {
@@ -77280,7 +77701,7 @@
 	        this.pivotPoint.position.copy(center);
 	        json = { x: center.x, y: center.y, z: center.z };
 	      }
-	      this.setAttribute('targetOffset', json, options);
+	      this.setAttribute('targetOffset', json);
 	    }
 	  }, {
 	    key: 'focusOnTarget',
@@ -77916,7 +78337,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77947,7 +78368,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77992,7 +78413,7 @@
 	      this.previewCamControl = this.getComponentRegistry().getFirstByScriptName('Preview Camera Controller');
 
 	      //explicit set of target
-	      this.previewCamControl.setTarget(this.getScene());
+	      this.previewCamControl.setTarget(this.getRootObject());
 	      this.getEntity().when('load', function () {
 	        _this2.cameraDistance = _this2.getRuntimeData().position.distanceTo(_this2.previewCamControl.pivotPoint.position);
 	      });
@@ -78082,7 +78503,7 @@
 	          return intersect.object.visible;
 	        };
 
-	        var intersections = this.raycaster.intersectObjects(this.getThreeScene().children, true).filter(visFilter);
+	        var intersections = this.raycaster.intersectObjects(this.getRootThreeObject().children, true).filter(visFilter);
 
 	        var intersection = intersections.length > 0 ? intersections[0] : null;
 
@@ -78195,7 +78616,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78231,7 +78652,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -78280,15 +78701,12 @@
 	  }, {
 	    key: 'createTempRenderTexture',
 	    value: function createTempRenderTexture() {
-	      this.tempRenderTexture = this.getRuntime().createAsset({
-	        type: 'renderTexture2D',
-	        id: 'render_tex_reflection',
-	        properties: {
-	          width: 512,
-	          height: 512,
-	          format: THREE.RGBAFormat,
-	          type: THREE.UnsignedByteType
-	        }
+	      this.tempRenderTexture = this.getRuntime().createRenderTexture2d('render_tex_reflection');
+	      this.tempRenderTexture.setProperties({
+	        width: 512,
+	        height: 512,
+	        format: 'rgba',
+	        type: 'uByte'
 	      });
 	      this.tempRenderTexture.load();
 	    }
@@ -78478,7 +78896,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78592,7 +79010,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79050,7 +79468,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79158,7 +79576,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79317,7 +79735,7 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      if (!this.getEntity().isComponentsLoaded()) {
+	      if (!this.getEntity().isBaseLoaded()) {
 	        return;
 	      }
 	      this.updateFilters(changes);
@@ -79618,7 +80036,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79656,7 +80074,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -79750,7 +80168,7 @@
 	 * @returns {Canvas} Returns a canvas containing the UV grid.
 	 */
 	function generateUvGrid() {
-	  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 	  var size = options.size || DEFAULT_GRID_SIZE;
 	  var divisions = options.divisions || DEFAULT_GRID_DIVISIONS;
@@ -79880,17 +80298,12 @@
 	      // Add a flat shaded material to the registry if it doesn't already exist.
 	      // TODO: We do we do this for the flat shaded material but not for the others?
 	      if (!this.getRuntime().getAssetById('flatShaded')) {
-	        this.getRuntime().createAsset({
-	          name: 'flatShaded',
-	          id: 'flatShaded',
-	          type: 'material',
-	          properties: {
-	            emissiveColor: { r: 0.9, g: 0.85, b: 0.8 }
-	          },
+	        var flatShadedMaterial = this.getRuntime().createMaterial('flatShaded');
+	        flatShadedMaterial.setProperties({
+	          emissiveColor: { r: 0.9, g: 0.85, b: 0.8 },
 	          side: THREE.DoubleSide
 	        });
 
-	        var flatShadedMaterial = this.getRuntime().getAssetById('flatShaded');
 	        flatShadedMaterial.enableFeature('albedo', false);
 	        flatShadedMaterial.enableFeature('emissive', true);
 	      }
@@ -80014,7 +80427,7 @@
 	      this.applyRenderModeGlobalSettings();
 
 	      // For each scene, set the render mode.
-	      var scenes = this.getRuntime().getAssetsByType('scene');
+	      var scenes = this.getRuntime().getObjectsByType('scene');
 	      scenes.forEach(function (scene) {
 	        if (scene.isDependenciesLoaded()) {
 	          _this3.applyRenderModeToScene(scene, null);
@@ -80162,7 +80575,7 @@
 	     * Apply the current render mode to the specified scene.
 	     * @method applyRenderModeToScene
 	     * @private
-	     * @param {SceneAsset} scene The scene to apply to render mode to.
+	     * @param {SceneObject} scene The scene to apply to render mode to.
 	     * @returns {void}
 	     */
 
@@ -80171,6 +80584,9 @@
 	    value: function applyRenderModeToScene(scene) {
 	      var _this5 = this;
 
+	      if (!scene) {
+	        return;
+	      }
 	      // Get the override material.
 	      var renderMode = this.renderModes[this.currentRenderMode];
 	      var overrideMaterial = void 0;
@@ -80183,24 +80599,20 @@
 	      } else {
 	        overrideMaterial = renderMode.overrideMaterial;
 	      }
-	      var rootObject = scene.getRootObject();
-	      if (!rootObject) {
-	        return;
-	      }
 
 	      // Apply override material for this render mode.
 	      if (overrideMaterial) {
 	        this.overrideMaterialEnabled = true;
 	        overrideMaterial.skinned.skinning = true; // TODO: this should be done in init()
 
-	        rootObject.traverse(function (obj) {
+	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
 	            _this5.applyOverrideMaterialToMesh(obj, overrideMaterial, renderMode.copyUniforms);
 	          }
 	        });
 	      } else if (this.overrideMaterialEnabled) {
 	        // Re-apply materials if they were previously overridden.
-	        rootObject.traverse(function (obj) {
+	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
 	            _this5.removeMaterialOverrideFromMesh(obj);
 	          }
@@ -80213,7 +80625,7 @@
 	      if (renderMode.disableLights) {
 	        this.lightsDisabled = true;
 
-	        rootObject.traverse(function (obj) {
+	        scene.traverse(function (obj) {
 	          if (obj.type === 'light') {
 	            if (obj.getProperty('lightType') === 'ambient') {
 	              obj.runtimeData.color.setRGB(1.0, 1.0, 1.0);
@@ -80226,7 +80638,7 @@
 	        // Re-enable lights if they were turned off.
 	        this.lightsDisabled = false;
 
-	        rootObject.traverse(function (obj) {
+	        scene.traverse(function (obj) {
 	          if (obj.type === 'light') {
 	            if (obj.getProperty('lightType') === 'ambient') {
 	              var colour = obj.getProperty('color');
@@ -80338,7 +80750,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80386,7 +80798,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -80447,8 +80859,8 @@
 	      this.stopListening();
 	    }
 	  }, {
-	    key: 'componentsLoaded',
-	    value: function componentsLoaded() {
+	    key: 'entityCreated',
+	    value: function entityCreated() {
 	      this.filters = this.getEntity().componentRegistry.getFirstByScriptId('camera_filters_script');
 	    }
 	  }, {
@@ -80612,7 +81024,7 @@
 	    key: 'renderView',
 	    value: function renderView(delta) {
 	      if (this.isEnabled()) {
-	        var scene = this.getScene();
+	        var scene = this.getRootObject();
 	        var renderTarget = null;
 	        if (this.renderTarget) {
 	          if (!this.renderTarget.runtimeData) {
@@ -80695,7 +81107,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80770,7 +81182,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -80919,7 +81331,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80945,7 +81357,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -81027,7 +81439,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81066,7 +81478,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -81258,7 +81670,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81293,7 +81705,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -81386,7 +81798,7 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changed) {
-	      if (!this.getEntity().isComponentsLoaded()) {
+	      if (!this.getEntity().isBaseLoaded()) {
 	        return;
 	      }
 	      if (changed.indexOf('skyboxTexture') !== -1 || changed.indexOf('stereoEnabled') !== -1) {
@@ -81694,7 +82106,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81722,7 +82134,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -81899,7 +82311,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -81926,11 +82338,11 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(26);
+	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _BaseImageAsset = __webpack_require__(22);
+	var _BaseImageAsset = __webpack_require__(23);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
@@ -82143,10 +82555,10 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 63 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(64)
+	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(66)
 	  , root = typeof window === 'undefined' ? global : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -82222,7 +82634,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 64 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -82258,10 +82670,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(67)))
 
 /***/ },
-/* 65 */
+/* 67 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -82275,40 +82687,25 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
-	function defaultSetTimout() {
-	    throw new Error('setTimeout has not been defined');
-	}
-	function defaultClearTimeout () {
-	    throw new Error('clearTimeout has not been defined');
-	}
 	(function () {
 	    try {
-	        if (typeof setTimeout === 'function') {
-	            cachedSetTimeout = setTimeout;
-	        } else {
-	            cachedSetTimeout = defaultSetTimout;
-	        }
+	        cachedSetTimeout = setTimeout;
 	    } catch (e) {
-	        cachedSetTimeout = defaultSetTimout;
+	        cachedSetTimeout = function () {
+	            throw new Error('setTimeout is not defined');
+	        }
 	    }
 	    try {
-	        if (typeof clearTimeout === 'function') {
-	            cachedClearTimeout = clearTimeout;
-	        } else {
-	            cachedClearTimeout = defaultClearTimeout;
-	        }
+	        cachedClearTimeout = clearTimeout;
 	    } catch (e) {
-	        cachedClearTimeout = defaultClearTimeout;
+	        cachedClearTimeout = function () {
+	            throw new Error('clearTimeout is not defined');
+	        }
 	    }
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
 	        //normal enviroments in sane situations
-	        return setTimeout(fun, 0);
-	    }
-	    // if setTimeout wasn't available but was latter defined
-	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-	        cachedSetTimeout = setTimeout;
 	        return setTimeout(fun, 0);
 	    }
 	    try {
@@ -82329,11 +82726,6 @@
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
 	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
-	    }
-	    // if clearTimeout wasn't available but was latter defined
-	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-	        cachedClearTimeout = clearTimeout;
 	        return clearTimeout(marker);
 	    }
 	    try {
@@ -82447,7 +82839,7 @@
 
 
 /***/ },
-/* 66 */
+/* 68 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -82667,7 +83059,7 @@
 	exports.default = UserAgent;
 
 /***/ },
-/* 67 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82833,7 +83225,7 @@
 
 
 /***/ },
-/* 68 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83015,7 +83407,7 @@
 
 
 /***/ },
-/* 69 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83122,7 +83514,7 @@
 
 
 /***/ },
-/* 70 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83190,7 +83582,7 @@
 
 
 /***/ },
-/* 71 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83269,7 +83661,7 @@
 
 
 /***/ },
-/* 72 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83363,7 +83755,7 @@
 
 
 /***/ },
-/* 73 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83429,7 +83821,7 @@
 
 
 /***/ },
-/* 74 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83499,13 +83891,11 @@
 
 
 /***/ },
-/* 75 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)
-		, __webpack_require__(95)
-		, __webpack_require__(77)
-		, __webpack_require__(78)
+		, __webpack_require__(97)
 		, __webpack_require__(79)
 		, __webpack_require__(80)
 		, __webpack_require__(81)
@@ -83522,9 +83912,9 @@
 		, __webpack_require__(92)
 		, __webpack_require__(93)
 		, __webpack_require__(94)
-		, __webpack_require__(76)
+		, __webpack_require__(95)
 		, __webpack_require__(96)
-		, __webpack_require__(97)
+		, __webpack_require__(78)
 		, __webpack_require__(98)
 		, __webpack_require__(99)
 		, __webpack_require__(100)
@@ -83540,7 +83930,9 @@
 		, __webpack_require__(110)
 		, __webpack_require__(111)
 		, __webpack_require__(112)
-		, __webpack_require__(113)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(113)
+		, __webpack_require__(114)
+		, __webpack_require__(115)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -83625,7 +84017,7 @@
 
 
 /***/ },
-/* 76 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83731,7 +84123,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 77 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83804,7 +84196,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 78 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83875,7 +84267,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 79 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83933,7 +84325,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 80 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84065,7 +84457,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 81 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84451,7 +84843,7 @@
 
 
 /***/ },
-/* 82 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84516,7 +84908,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84571,7 +84963,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 84 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84627,7 +85019,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 85 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84735,7 +85127,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 86 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84788,7 +85180,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 87 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84842,7 +85234,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 88 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84907,7 +85299,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 89 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84982,7 +85374,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 90 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85083,7 +85475,7 @@
 
 
 /***/ },
-/* 91 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85176,7 +85568,7 @@
 
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85287,7 +85679,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85385,7 +85777,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85467,7 +85859,7 @@
 
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85505,7 +85897,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85590,7 +85982,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85659,7 +86051,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 98 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85731,7 +86123,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 99 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85807,7 +86199,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 100 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85875,7 +86267,7 @@
 
 
 /***/ },
-/* 101 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85956,7 +86348,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 102 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86022,7 +86414,7 @@
 
 
 /***/ },
-/* 103 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86082,7 +86474,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 104 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86146,7 +86538,7 @@
 
 
 /***/ },
-/* 105 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86209,7 +86601,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 106 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86506,7 +86898,7 @@
 
 
 /***/ },
-/* 107 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86591,7 +86983,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 108 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86744,7 +87136,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86808,7 +87200,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 110 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86908,7 +87300,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86977,7 +87369,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 112 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87049,7 +87441,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 113 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87120,7 +87512,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 114 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87175,7 +87567,7 @@
 
 
 /***/ },
-/* 115 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87803,7 +88195,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 116 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -87813,6 +88205,8 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _log = __webpack_require__(7);
 
@@ -87826,11 +88220,11 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _BufferAsset = __webpack_require__(117);
+	var _BufferAsset = __webpack_require__(119);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
@@ -88158,8 +88552,26 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'registerPermanentDependencies',
-	    value: function registerPermanentDependencies() {
+	    key: '_applyPropertiesUnloaded',
+	    value: function _applyPropertiesUnloaded() {
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	      _get(AnimationAsset.prototype.__proto__ || Object.getPrototypeOf(AnimationAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
+	      if (changes.hasOwnProperty('channels')) {
+	        this.registerBufferDependency();
+	      }
+	    }
+
+	    /**
+	     * Register the buffer asset as a dependency.
+	     * @method registerBufferDependency
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'registerBufferDependency',
+	    value: function registerBufferDependency() {
 	      var _this6 = this;
 
 	      var channels = this.getChannels();
@@ -88207,7 +88619,7 @@
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 117 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88228,11 +88640,11 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DEntity = __webpack_require__(15);
+	var _Box3DEntity = __webpack_require__(16);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
@@ -88533,7 +88945,7 @@
 	exports.default = BufferAsset;
 
 /***/ },
-/* 118 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88544,7 +88956,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -88602,7 +89014,7 @@
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 119 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88615,7 +89027,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -88688,7 +89100,7 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 120 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88703,11 +89115,11 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(121);
+	var _JSONLoader = __webpack_require__(123);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -88805,12 +89217,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 121 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(4), __webpack_require__(122)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(4), __webpack_require__(124)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -88970,16 +89382,19 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 122 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(123);
-	var v1 = __webpack_require__(124);
-	var v2 = __webpack_require__(125);
-	var v3 = __webpack_require__(149);
-	var v4 = __webpack_require__(150);
+	var _ = __webpack_require__(125);
+	var v1 = __webpack_require__(126);
+	var v2 = __webpack_require__(127);
+	var v3 = __webpack_require__(151);
+	var v4 = __webpack_require__(152);
+
+	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
+	  'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
 
 	/**
 	 * Maps the specified values using the specified mapping function and flattens
@@ -89023,6 +89438,27 @@
 	  }
 
 	  return fns;
+	}
+
+	/**
+	 * Indicates whether or not a filename refers to a supported video format.
+	 * @function isVideoFormat
+	 * @param {String} filename The filename in question.
+	 * @returns {Boolean} Whether or not the filename refers to a supported video
+	 * format.
+	 */
+	function isVideoFormat(filename) {
+	  var tokens = filename.split('.');
+
+	  if (tokens.length === 0) {
+	    return false;
+	  }
+
+	  var extension = tokens[tokens.length - 1].toLowerCase();
+
+	  return SUPPORTED_VIDEO_FORMATS.some(function(supportedType) {
+	    return supportedType === extension;
+	  });
 	}
 
 	/**
@@ -89317,11 +89753,24 @@
 	 * Map the texture entity to the current runtime format.
 	 * @function mapTexture
 	 * @param {Object} texture The texture entity to map.
+	 * @param {Object} entitiesById All entities, indexed by ID.
 	 * @returns {Object} The mapped texture entity.
 	 */
-	function mapTexture(texture) {
+	function mapTexture(texture, entitiesById) {
 	  var textureProps = texture.properties;
 	  var properties = { name: textureProps.name, imageId: textureProps.imageId };
+	  var imageId;
+	  var documentOrImage;
+
+	  // Possibly change the texture2D to a videoTexture entity.
+	  if (texture.properties.imageId) {
+	    imageId = texture.properties.imageId.split('#')[0];
+	    documentOrImage = entitiesById[imageId];
+
+	    if (isVideoFormat(documentOrImage.properties.filename)) {
+	      texture.type = 'textureVideo';
+	    }
+	  }
 
 	  if (textureProps.hasOwnProperty('wrapModeU')) {
 	    properties.uMapping = textureProps.wrapModeU === 'repeat' ?
@@ -89347,9 +89796,8 @@
 	  mapEntities: mapEntities
 	};
 
-
 /***/ },
-/* 123 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -90698,12 +91146,12 @@
 
 
 /***/ },
-/* 124 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(123);
+	var _ = __webpack_require__(125);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -90761,13 +91209,13 @@
 
 
 /***/ },
-/* 125 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(123);
-	var uuid = __webpack_require__(126);
+	var _ = __webpack_require__(125);
+	var uuid = __webpack_require__(128);
 
 	/**
 	 * Returns the basename of a filename (i.e., the final element in the path).
@@ -90848,7 +91296,7 @@
 
 
 /***/ },
-/* 126 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(Buffer) {//     uuid.js
@@ -90909,7 +91357,7 @@
 	    // Moderately fast, high quality
 	    if (true) {
 	      try {
-	        var _rb = __webpack_require__(131).randomBytes;
+	        var _rb = __webpack_require__(133).randomBytes;
 	        _nodeRNG = _rng = _rb && function() {return _rb(16);};
 	        _rng();
 	      } catch(e) {}
@@ -91124,10 +91572,10 @@
 	  }
 	})('undefined' !== typeof window ? window : null);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
 
 /***/ },
-/* 127 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -91140,9 +91588,9 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(128)
-	var ieee754 = __webpack_require__(129)
-	var isArray = __webpack_require__(130)
+	var base64 = __webpack_require__(130)
+	var ieee754 = __webpack_require__(131)
+	var isArray = __webpack_require__(132)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -92920,15 +93368,14 @@
 	  return val !== val // eslint-disable-line no-self-compare
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 128 */
+/* 130 */
 /***/ function(module, exports) {
 
 	'use strict'
 
-	exports.byteLength = byteLength
 	exports.toByteArray = toByteArray
 	exports.fromByteArray = fromByteArray
 
@@ -92936,17 +93383,23 @@
 	var revLookup = []
 	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-	var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-	for (var i = 0, len = code.length; i < len; ++i) {
-	  lookup[i] = code[i]
-	  revLookup[code.charCodeAt(i)] = i
+	function init () {
+	  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+	  for (var i = 0, len = code.length; i < len; ++i) {
+	    lookup[i] = code[i]
+	    revLookup[code.charCodeAt(i)] = i
+	  }
+
+	  revLookup['-'.charCodeAt(0)] = 62
+	  revLookup['_'.charCodeAt(0)] = 63
 	}
 
-	revLookup['-'.charCodeAt(0)] = 62
-	revLookup['_'.charCodeAt(0)] = 63
+	init()
 
-	function placeHoldersCount (b64) {
+	function toByteArray (b64) {
+	  var i, j, l, tmp, placeHolders, arr
 	  var len = b64.length
+
 	  if (len % 4 > 0) {
 	    throw new Error('Invalid string. Length must be a multiple of 4')
 	  }
@@ -92956,19 +93409,9 @@
 	  // represent one byte
 	  // if there is only one, then the three characters before it represent 2 bytes
 	  // this is just a cheap hack to not do indexOf twice
-	  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
-	}
+	  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
 
-	function byteLength (b64) {
 	  // base64 is 4/3 + up to two characters of the original data
-	  return b64.length * 3 / 4 - placeHoldersCount(b64)
-	}
-
-	function toByteArray (b64) {
-	  var i, j, l, tmp, placeHolders, arr
-	  var len = b64.length
-	  placeHolders = placeHoldersCount(b64)
-
 	  arr = new Arr(len * 3 / 4 - placeHolders)
 
 	  // if there are placeholders, only get up to the last complete 4 chars
@@ -93043,7 +93486,7 @@
 
 
 /***/ },
-/* 129 */
+/* 131 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -93133,7 +93576,7 @@
 
 
 /***/ },
-/* 130 */
+/* 132 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -93144,10 +93587,10 @@
 
 
 /***/ },
-/* 131 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(132)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(134)
 
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -93158,9 +93601,9 @@
 	    ].join('\n'))
 	}
 
-	exports.createHash = __webpack_require__(134)
+	exports.createHash = __webpack_require__(136)
 
-	exports.createHmac = __webpack_require__(146)
+	exports.createHmac = __webpack_require__(148)
 
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -93181,7 +93624,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 
-	var p = __webpack_require__(147)(exports)
+	var p = __webpack_require__(149)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 
@@ -93201,16 +93644,16 @@
 	  }
 	})
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
 
 /***/ },
-/* 132 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(133)
+	    g.crypto || g.msCrypto || __webpack_require__(135)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -93234,22 +93677,22 @@
 	  }
 	}())
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(127).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(129).Buffer))
 
 /***/ },
-/* 133 */
+/* 135 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 134 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(135)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(137)
 
-	var md5 = toConstructor(__webpack_require__(143))
-	var rmd160 = toConstructor(__webpack_require__(145))
+	var md5 = toConstructor(__webpack_require__(145))
+	var rmd160 = toConstructor(__webpack_require__(147))
 
 	function toConstructor (fn) {
 	  return function () {
@@ -93277,10 +93720,10 @@
 	  return createHash(alg)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
 
 /***/ },
-/* 135 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -93289,16 +93732,16 @@
 	  return new Alg()
 	}
 
-	var Buffer = __webpack_require__(127).Buffer
-	var Hash   = __webpack_require__(136)(Buffer)
+	var Buffer = __webpack_require__(129).Buffer
+	var Hash   = __webpack_require__(138)(Buffer)
 
-	exports.sha1 = __webpack_require__(137)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(141)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(142)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(139)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(143)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(144)(Buffer, Hash)
 
 
 /***/ },
-/* 136 */
+/* 138 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -93381,7 +93824,7 @@
 
 
 /***/ },
-/* 137 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -93393,7 +93836,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 
-	var inherits = __webpack_require__(138).inherits
+	var inherits = __webpack_require__(140).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -93525,7 +93968,7 @@
 
 
 /***/ },
-/* 138 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -94053,7 +94496,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(139);
+	exports.isBuffer = __webpack_require__(141);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -94097,7 +94540,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(140);
+	exports.inherits = __webpack_require__(142);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -94115,10 +94558,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(65)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(67)))
 
 /***/ },
-/* 139 */
+/* 141 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -94129,7 +94572,7 @@
 	}
 
 /***/ },
-/* 140 */
+/* 142 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -94158,7 +94601,7 @@
 
 
 /***/ },
-/* 141 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -94170,7 +94613,7 @@
 	 *
 	 */
 
-	var inherits = __webpack_require__(138).inherits
+	var inherits = __webpack_require__(140).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -94311,10 +94754,10 @@
 
 
 /***/ },
-/* 142 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(138).inherits
+	var inherits = __webpack_require__(140).inherits
 
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -94561,7 +95004,7 @@
 
 
 /***/ },
-/* 143 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -94573,7 +95016,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 
-	var helpers = __webpack_require__(144);
+	var helpers = __webpack_require__(146);
 
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -94722,7 +95165,7 @@
 
 
 /***/ },
-/* 144 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -94760,10 +95203,10 @@
 
 	module.exports = { hash: hash };
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
 
 /***/ },
-/* 145 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -94972,13 +95415,13 @@
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
 
 /***/ },
-/* 146 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(134)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(136)
 
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -95022,13 +95465,13 @@
 	}
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
 
 /***/ },
-/* 147 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(148)
+	var pbkdf2Export = __webpack_require__(150)
 
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -95043,7 +95486,7 @@
 
 
 /***/ },
-/* 148 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -95131,16 +95574,16 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
 
 /***/ },
-/* 149 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(123);
-	var uuid = __webpack_require__(126);
+	var _ = __webpack_require__(125);
+	var uuid = __webpack_require__(128);
 
 	/**
 	 * Map a v3 entity to v4.
@@ -95213,13 +95656,13 @@
 
 
 /***/ },
-/* 150 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(123);
-	var uuid = __webpack_require__(126);
+	var _ = __webpack_require__(125);
+	var uuid = __webpack_require__(128);
 
 	/**
 	 * Map a v4 entity to v5.
@@ -95264,7 +95707,7 @@
 	};
 
 /***/ },
-/* 151 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95281,11 +95724,11 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DEntity = __webpack_require__(15);
+	var _Box3DEntity = __webpack_require__(16);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _BaseImageAsset2 = __webpack_require__(22);
+	var _BaseImageAsset2 = __webpack_require__(23);
 
 	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
 
@@ -95605,7 +96048,7 @@
 	exports.default = ImageAsset;
 
 /***/ },
-/* 152 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95615,6 +96058,8 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _lodash = __webpack_require__(4);
 
@@ -95628,15 +96073,15 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(153);
+	var _BaseGeometryAsset2 = __webpack_require__(155);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
-	var _Box3DEntity = __webpack_require__(15);
+	var _Box3DEntity = __webpack_require__(16);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _BufferAsset = __webpack_require__(117);
+	var _BufferAsset = __webpack_require__(119);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
@@ -95897,8 +96342,26 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'registerPermanentDependencies',
-	    value: function registerPermanentDependencies() {
+	    key: '_applyPropertiesUnloaded',
+	    value: function _applyPropertiesUnloaded() {
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	      _get(MeshGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(MeshGeometryAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
+	      if (changes.attributes || changes.indices) {
+	        this.registerBufferDependency();
+	      }
+	    }
+
+	    /**
+	     * Register the buffer asset as a dependency.
+	     * @method registerBufferDependency
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'registerBufferDependency',
+	    value: function registerBufferDependency() {
 	      var _this5 = this;
 
 	      var attributes = this.getProperty('attributes');
@@ -95933,12 +96396,12 @@
 	  attributes: {
 	    type: 'object',
 	    description: '',
-	    default: {}
+	    default: null
 	  },
 	  indices: {
 	    type: 'object',
 	    description: '',
-	    default: {}
+	    default: null
 	  },
 	  primitives: {
 	    type: 'array',
@@ -95952,7 +96415,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 153 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95977,7 +96440,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -96093,7 +96556,7 @@
 	  }, {
 	    key: 'getGeometry',
 	    value: function getGeometry() {
-	      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : BaseGeometryAsset.PrimitiveType.TRIANGLES;
+	      var type = arguments.length <= 0 || arguments[0] === undefined ? BaseGeometryAsset.PrimitiveType.TRIANGLES : arguments[0];
 
 	      return this.geometries[type];
 	    }
@@ -96121,7 +96584,7 @@
 	     * @returns {number} The maximum material index.
 	     */
 	    value: function getMaxMaterialIndex() {
-	      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : BaseGeometryAsset.PrimitiveType.TRIANGLES;
+	      var type = arguments.length <= 0 || arguments[0] === undefined ? BaseGeometryAsset.PrimitiveType.TRIANGLES : arguments[0];
 
 	      return this.maxMaterialIndices[type];
 	    }
@@ -96214,7 +96677,7 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 154 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96227,7 +96690,7 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -96397,6 +96860,9 @@
 	      if (!prefab) {
 	        throw new Error('No specified prefab to create an instance of.');
 	      }
+	      if (prefab === this) {
+	        throw new Error('Can\'t create an instance of a prefab inside itself.');
+	      }
 
 	      var rootObject = prefab.getRootObject();
 	      if (!rootObject) {
@@ -96404,36 +96870,34 @@
 	      }
 
 	      var newTopObjectId = id || (0, _uuid2.default)();
-	      var topInstanceJson = {
+	      var topInstanceDesc = {
 	        id: newTopObjectId,
 	        sid: rootObject.get('sid'),
-	        parentAssetId: this.id,
 	        prefabObjectId: rootObject.id,
 	        prefabAssetId: prefab.id,
 	        prefabInstanceId: newTopObjectId,
 	        type: rootObject.type,
-	        components: Object.assign({}, rootObject.componentRegistry.getDescriptors())
+	        components: rootObject.componentRegistry.getDescriptors()
 	      };
 
 	      // Create the top-level instance object
-	      var topInst = this.box3DRuntime.createObject(topInstanceJson);
+	      var topInst = this.box3DRuntime.createEntity(topInstanceDesc);
 	      var instanceMap = {};
 	      instanceMap[prefab.id] = topInst;
 
 	      // Create child instance objects
 	      var prefabObjects = rootObject.getDescendants();
 	      prefabObjects.forEach(function (prefabObject) {
-	        var instanceJson = {
+	        var instanceDesc = {
 	          sid: prefabObject.get('sid'),
-	          parentAssetId: _this3.id,
 	          prefabObjectId: prefabObject.id,
 	          prefabAssetId: prefab.id,
 	          prefabInstanceId: newTopObjectId,
 	          type: prefabObject.type,
 	          properties: {},
-	          components: Object.assign({}, prefabObject.componentRegistry.getDescriptors())
+	          components: prefabObject.componentRegistry.getDescriptors()
 	        };
-	        var inst = _this3.box3DRuntime.createObject(instanceJson);
+	        var inst = _this3.box3DRuntime.createEntity(instanceDesc);
 	        instanceMap[prefabObject.id] = inst;
 	      });
 
@@ -96469,28 +96933,19 @@
 
 	  }, {
 	    key: '_applyPropertiesUnloaded',
-	    value: function _applyPropertiesUnloaded(changes) {
-	      var _this4 = this;
+	    value: function _applyPropertiesUnloaded() {
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
+	      _get(PrefabAsset.prototype.__proto__ || Object.getPrototypeOf(PrefabAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.hasOwnProperty('rootObjectId')) {
-	        (function () {
-	          _this4.unregisterDependencyById(_this4.getPreviousProperty('rootObjectId'));
-	          _this4.registerDependencyById(_this4.getProperty('rootObjectId'));
-
-	          // The following code is temporary until we get rid of scene assets and replace them
-	          // with scene objects that form the root object of a prefab. COXP-2647
-	          var rootObject = _this4.box3DRuntime.getObjectById(_this4.getProperty('rootObjectId'));
-	          if (rootObject) {
-	            rootObject.set('parentAssetId', _this4.id);
-	            _this4.when('load', function () {
-	              rootObject.when('loadBase', function () {
-	                if (_this4.runtimeData) {
-	                  _this4.runtimeData.add(rootObject.runtimeData);
-	                }
-	              });
-	            });
-	          }
-	        })();
+	        var prevRoot = this.getPreviousProperty('rootObjectId');
+	        if (prevRoot) {
+	          this.unregisterDependencyById(prevRoot);
+	        }
+	        var rootObj = this.getProperty('rootObjectId');
+	        if (rootObj) {
+	          this.registerDependencyById(rootObj);
+	        }
 	      }
 	    }
 
@@ -96506,17 +96961,31 @@
 	  }, {
 	    key: 'onPrefabDeleted',
 	    value: function onPrefabDeleted(prefabId) {
-	      var _this5 = this;
-
 	      if (!this.runtimeData) {
 	        return;
 	      }
-	      var objects = this.box3DRuntime.getObjects(function (obj) {
-	        return obj.parentAssetId === _this5.id && obj.get('prefabObjectId') === prefabId;
+	      var rootObj = this.getRootObject();
+	      if (!rootObj) {
+	        return;
+	      }
+	      rootObj.traverse(function (obj) {
+	        if (obj.get('prefabObjectId') === prefabId) {
+	          obj.breakPrefabLink();
+	        }
 	      });
-	      objects.forEach(function (obj) {
-	        return obj.breakPrefabLink();
-	      });
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'clone',
+	    value: function clone(id) {
+	      var clonedAsset = _get(PrefabAsset.prototype.__proto__ || Object.getPrototypeOf(PrefabAsset.prototype), 'clone', this).call(this, id);
+	      var rootObject = this.getRootObject();
+	      if (rootObject) {
+	        clonedAsset.setRootObject(rootObject.clone());
+	      }
+	      return clonedAsset;
 	    }
 	  }]);
 
@@ -96526,7 +96995,7 @@
 	PrefabAsset.schema = Object.assign({}, _Box3DAsset3.default.schema, {
 	  rootObjectId: {
 	    type: 'string',
-	    default: 'null',
+	    default: null,
 	    description: 'The ID of the Box3DObject that serves as the root node of a hierarchy.'
 	  }
 	});
@@ -96536,7 +97005,7 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 155 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96557,7 +97026,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(153);
+	var _BaseGeometryAsset2 = __webpack_require__(155);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -96754,7 +97223,7 @@
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 156 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96769,15 +97238,15 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ImageAsset = __webpack_require__(151);
+	var _ImageAsset = __webpack_require__(153);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _BaseTextureAsset = __webpack_require__(21);
+	var _BaseTextureAsset = __webpack_require__(22);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(157);
+	var _BaseRenderTextureAsset = __webpack_require__(159);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -96832,7 +97301,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 157 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96845,11 +97314,11 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _BaseTextureAsset2 = __webpack_require__(21);
+	var _BaseTextureAsset2 = __webpack_require__(22);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _ImageAsset = __webpack_require__(151);
+	var _ImageAsset = __webpack_require__(153);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -96971,7 +97440,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 158 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96988,15 +97457,15 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ImageAsset = __webpack_require__(151);
+	var _ImageAsset = __webpack_require__(153);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _BaseTextureAsset = __webpack_require__(21);
+	var _BaseTextureAsset = __webpack_require__(22);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(157);
+	var _BaseRenderTextureAsset = __webpack_require__(159);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97077,156 +97546,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 159 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _log = __webpack_require__(7);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _three = __webpack_require__(10);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _PrefabAsset2 = __webpack_require__(154);
-
-	var _PrefabAsset3 = _interopRequireDefault(_PrefabAsset2);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * @class SceneAsset
-	 * @constructor
-	 */
-	var SceneAsset = function (_PrefabAsset) {
-	  _inherits(SceneAsset, _PrefabAsset);
-
-	  function SceneAsset() {
-	    _classCallCheck(this, SceneAsset);
-
-	    return _possibleConstructorReturn(this, (SceneAsset.__proto__ || Object.getPrototypeOf(SceneAsset)).apply(this, arguments));
-	  }
-
-	  _createClass(SceneAsset, [{
-	    key: 'getDataSizeGeometryDownload',
-	    value: function getDataSizeGeometryDownload() {
-	      var totalSize = 0;
-	      totalSize = _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryDownload', this).call(this);
-
-	      return totalSize;
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'getDataSizeGeometryInMemory',
-	    value: function getDataSizeGeometryInMemory() {
-	      var totalSize = 0;
-	      totalSize = _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'getDataSizeGeometryInMemory', this).call(this);
-	      return totalSize;
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'createRuntimeData',
-	    value: function createRuntimeData(callback) {
-	      this.runtimeData = new THREE.Scene();
-	      this.runtimeData.matrixAutoUpdate = false;
-	      this.runtimeData.name = this.getName();
-	      callback();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: '_applyPropertiesLoaded',
-	    value: function _applyPropertiesLoaded(changes, reason) {
-	      _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
-
-	      if (!this.getProperty('fogEnabled')) {
-	        this.runtimeData.fog = null;
-	      } else {
-	        if (!this.runtimeData.fog || changes.hasOwnProperty('fogType')) {
-
-	          if (this.getProperty('fogType') === 'FogExp2') {
-	            this.runtimeData.fog = new THREE.FogExp2(this.getProperty('fogColor'), this.getProperty('fogDensity'));
-	          } else {
-	            _log2.default.info('SceneAsset: Invalid fog type, ' + this.getProperty('fogType') + ', in scene!');
-	          }
-	        }
-
-	        if (changes.hasOwnProperty('fogColor')) {
-	          this.runtimeData.fog.color.setHex(this.getProperty('fogColor'));
-	        }
-
-	        if (changes.hasOwnProperty('fogDensity')) {
-	          this.runtimeData.fog.density = this.getProperty('fogDensity');
-	        }
-	      }
-
-	      if (changes.hasOwnProperty('fogEnabled')) {
-	        this.box3DRuntime.trigger('rebuildMaterials');
-	        this.box3DRuntime.needsRender = true;
-	      }
-	    }
-	  }, {
-	    key: 'unload',
-	    value: function unload(options) {
-	      if (this.runtimeData) {
-	        _log2.default.info('Unloading scene, ' + this.getName());
-
-	        _get(SceneAsset.prototype.__proto__ || Object.getPrototypeOf(SceneAsset.prototype), 'unload', this).call(this, options);
-	      }
-	    }
-	  }]);
-
-	  return SceneAsset;
-	}(_PrefabAsset3.default);
-
-	SceneAsset.schema = Object.assign({}, _PrefabAsset3.default.schema, {
-	  fogEnabled: {
-	    type: 'boolean',
-	    default: false
-	  },
-	  fogType: {
-	    type: 'string',
-	    default: 'FogExp2'
-	  },
-	  fogColor: {
-	    type: 'color',
-	    default: 0xbbbbbb
-	  },
-	  fogDensity: {
-	    type: 'float',
-	    default: 0.0004
-	  }
-	});
-
-
-	window.Box3D.SceneAsset = SceneAsset;
-	exports.default = SceneAsset;
-
-/***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
@@ -97244,15 +97564,15 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DEntity = __webpack_require__(15);
+	var _Box3DEntity = __webpack_require__(16);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _APIUtilities = __webpack_require__(161);
+	var _APIUtilities = __webpack_require__(162);
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
@@ -97289,12 +97609,6 @@
 
 	    /** @inheritdoc */
 
-	  }, {
-	    key: 'initializeComponents',
-	    value: function initializeComponents() {
-	      this.setState(_Box3DEntity2.default.STATE_TYPE.COMPONENTS, _Box3DEntity2.default.STATE.SUCCEEDED);
-	      return;
-	    }
 	  }, {
 	    key: 'getDefaultComponentData',
 	    value: function getDefaultComponentData() {
@@ -97392,7 +97706,7 @@
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -97466,7 +97780,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97487,11 +97801,11 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR = __webpack_require__(163);
+	var _Box3DShaderPBR = __webpack_require__(164);
 
 	var _Box3DShaderPBR2 = _interopRequireDefault(_Box3DShaderPBR);
 
@@ -97515,22 +97829,13 @@
 	  }
 
 	  _createClass(ShaderAsset, [{
-	    key: 'initialize',
-
-
-	    /** @inheritdoc */
-
-
-	    /** @inheritdoc */
-	    value: function initialize() {
-	      _get(ShaderAsset.prototype.__proto__ || Object.getPrototypeOf(ShaderAsset.prototype), 'initialize', this).call(this);
-	      this.buildParamDependencies();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
 	    key: 'createRuntimeData',
+
+
+	    /** @inheritdoc */
+
+
+	    /** @inheritdoc */
 	    value: function createRuntimeData(callback) {
 	      this.runtimeData = {};
 	      this.runtimeData.vertexShader = this.getProperty('vertexShader');
@@ -97539,6 +97844,17 @@
 	      this.buildUniformList();
 	      this.buildRenderParamList();
 	      callback();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesUnloaded',
+	    value: function _applyPropertiesUnloaded() {
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	      _get(ShaderAsset.prototype.__proto__ || Object.getPrototypeOf(ShaderAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
+	      this.buildParamDependencies();
 	    }
 
 	    /**
@@ -97758,12 +98074,12 @@
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10), __webpack_require__(164), __webpack_require__(165), __webpack_require__(166)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10), __webpack_require__(165), __webpack_require__(166), __webpack_require__(167)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -97832,7 +98148,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -98436,19 +98752,19 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n// Removed chunk from physical material <uv_pars_vertex>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n// Removed chunk from physical material <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\nvoid main() {\n\n\t// Removed chunk from physical material <uv_vertex>\n\t#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\t\tvUv = uv;\n\t\tvUv.y = 1.0 - vUv.y;\n\t#endif\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\n#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n\n\tvNormal = normalize( transformedNormal );\n\n#endif\n\n\t#include <begin_vertex>\n\t#include <displacementmap_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\n\tvViewPosition = - mvPosition.xyz;\n\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\n}"
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\tfresnel = 0.0;\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\n\t#ifdef CLEAR_COAT\n\t\tfresnel += BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\t\tfresnel = clamp(fresnel, 0.0, 1.0);\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * fresnel;\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE_ENCODING_SRGB\n\t\tenvMapColor.rgb = sRGBToLinear( envMapColor ).rgb;\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = roughness * 2.0;\n\t\t\treturn mix(mix(refRadiance, refRadianceHalf, min(interp, 1.0)), refIrradiance, max(interp - 1.0, 0.0));\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\t#ifdef ENV_MAP_RADIANCE_ENCODING_SRGB\n\t\t\tenvMapColorRadiance.rgb = sRGBToLinear( envMapColorRadiance ).rgb;\n\t\t#endif\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE_ENCODING_SRGB)\n\t\t\t\tenvMapColorIrradiance.rgb = sRGBToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS_ENCODING_SRGB)\n\t\t\t\t\tenvMapColorRadianceHalf.rgb = sRGBToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\t#endif\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel = 0.0;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
 
 /***/ },
-/* 167 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98459,11 +98775,13 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DAsset2 = __webpack_require__(14);
+	var _Box3DAsset2 = __webpack_require__(15);
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
@@ -98657,10 +98975,10 @@
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-
-	      if (changes.hasOwnProperty('inverseBindMatrices')) {
+	      _get(SkinAsset.prototype.__proto__ || Object.getPrototypeOf(SkinAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
+	      if (changes.inverseBindMatrices) {
 	        var previousAccessorId = this.getPreviousProperty('inverseBindMatrices');
 	        var accessorId = this.getProperty('inverseBindMatrices');
 	        if (previousAccessorId && previousAccessorId !== accessorId) {
@@ -98691,7 +99009,7 @@
 	  inverseBindMatrices: {
 	    type: 'string',
 	    description: '',
-	    default: ''
+	    default: null
 	  },
 	  jointNames: {
 	    type: 'array',
@@ -98705,7 +99023,7 @@
 	exports.default = SkinAsset;
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98726,15 +99044,15 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(21);
+	var _BaseTextureAsset2 = __webpack_require__(22);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _BaseImageAsset = __webpack_require__(22);
+	var _BaseImageAsset = __webpack_require__(23);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
-	var _VideoAsset = __webpack_require__(169);
+	var _VideoAsset = __webpack_require__(170);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -98875,7 +99193,7 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98892,11 +99210,11 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _BaseImageAsset2 = __webpack_require__(22);
+	var _BaseImageAsset2 = __webpack_require__(23);
 
 	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
 
-	var _Box3DEntity = __webpack_require__(15);
+	var _Box3DEntity = __webpack_require__(16);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
@@ -99160,7 +99478,7 @@
 	exports.default = VideoAsset;
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99175,7 +99493,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(21);
+	var _BaseTextureAsset2 = __webpack_require__(22);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
@@ -99263,7 +99581,7 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99288,11 +99606,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _uuid = __webpack_require__(11);
-
-	var _uuid2 = _interopRequireDefault(_uuid);
-
-	var _Box3DEntity2 = __webpack_require__(15);
+	var _Box3DEntity2 = __webpack_require__(16);
 
 	var _Box3DEntity3 = _interopRequireDefault(_Box3DEntity2);
 
@@ -99331,8 +99645,6 @@
 	      this.on('setInvisible', this.setInvisible, this);
 	      this.on('toggleVisibility', this.toggleVisibility, this);
 	      this.on('change:children', this.onChildrenChanged, this);
-
-	      this.onChildrenChanged(this.getChildren(), []);
 	    }
 
 	    /** @inheritdoc */
@@ -99349,6 +99661,23 @@
 	      this.off('change:children', this.onChildrenChanged, this);
 	      this.uninitPrefabBindings();
 	      _get(Box3DObject.prototype.__proto__ || Object.getPrototypeOf(Box3DObject.prototype), 'uninitialize', this).call(this);
+	    }
+
+	    /**
+	     * Returns the top-object (the root) of this object's hierarchy.
+	     * @method getRootObject
+	     * @public
+	     * @return {Box3DObject} The root object of this hierarchy.
+	     */
+
+	  }, {
+	    key: 'getRootObject',
+	    value: function getRootObject() {
+	      var parent = this.getParentObject();
+	      if (parent) {
+	        return parent.getRootObject();
+	      }
+	      return this;
 	    }
 	  }, {
 	    key: 'reset',
@@ -99423,58 +99752,41 @@
 	    }
 
 	    /**
-	    * Clones the object in the database as well as the threeJS data, if loaded.
-	    * @method clone
-	    * @public
-	    * @param  {Object} options The standard options object
-	    */
+	     * Clones the object.
+	     * @method clone
+	     * @public
+	     * @param  {string} id The new ID for the clone.
+	     * @param {boolean} recursive If true, clone will also clone the entire hierarchy under
+	     * this object.
+	     * @return {Box3DEntity} The newly-created clone
+	     */
 
 	  }, {
 	    key: 'clone',
-	    value: function clone() {
-	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    value: function clone(id) {
+	      var recursive = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
-	      var newObjectJSON = {};
-	      newObjectJSON.id = options.id !== undefined ? options.id : (0, _uuid2.default)();
-	      newObjectJSON.sid = options.sid !== undefined ? options.sid : this.get('sid');
-	      newObjectJSON.parentAssetId = options.parentAssetId !== undefined ? options.parentAssetId : this.get('parentAssetId');
-	      newObjectJSON.representations = options.representations !== undefined ? options.representations : this.get('representations');
-	      newObjectJSON.type = this.getType();
-	      newObjectJSON.properties = _lodash2.default.cloneDeep(this.getOwnProperties());
-	      newObjectJSON.components = _lodash2.default.cloneDeep(this.componentRegistry.getDescriptors());
-	      //Only copy the prefab links if the top-level of the instance is being copied
-	      //If the top-level is copied, set the flag so that recursive calls will copy links.
-	      if (options.keepPrefabLinks && this.isInstance() || this.isInstanceTop()) {
-	        options.keepPrefabLinks = true;
-	        newObjectJSON.prefabObjectId = this.get('prefabObjectId');
-	        newObjectJSON.prefabAssetId = this.get('prefabAssetId');
+	      var clonedObject = _get(Box3DObject.prototype.__proto__ || Object.getPrototypeOf(Box3DObject.prototype), 'clone', this).call(this);
+	      clonedObject.set('parentId', null);
+	      clonedObject.set('prefabAssetId', this.get('prefabAssetId'));
+	      clonedObject.set('prefabObjectId', this.get('prefabObjectId'));
 
-	        if (this.isInstanceTop()) {
-	          options.prefabInstanceId = newObjectJSON.id;
-	        }
-	        newObjectJSON.prefabInstanceId = options.prefabInstanceId ? options.prefabInstanceId : this.get('prefabInstanceId');
-	        //If the object isn't a prefab instance, turn off the flag so that children
-	        //don't keep their links.
-	      } else if (!this.isInstance()) {
-	        options.keepPrefabLinks = false;
-	      }
-
-	      var newObject = this.box3DRuntime.createObject(newObjectJSON);
-	      var children = this.getChildren();
-	      if (options.recursive !== false) {
+	      if (recursive) {
+	        var children = this.getChildren();
 	        children.forEach(function (child) {
-	          if (child) {
-	            var newChild = child.clone({
-	              prefabInstanceId: options.prefabInstanceId,
-	              keepPrefabLinks: options.keepPrefabLinks
-	            });
-	            newObject.addChild(newChild, {
-	              keepPrefabLinks: options.keepPrefabLinks
-	            });
-	          }
+	          var newChild = child.clone(undefined, recursive);
+	          clonedObject.addChild(newChild);
 	        });
+	        //Only copy the prefab links if the top-level of the instance is being copied
+	        //If the top-level is copied, set the flag so that recursive calls will copy links.
+	        if (this.isInstanceTop()) {
+	          clonedObject.set('prefabInstanceId', clonedObject.id);
+	          clonedObject.traverse(function (obj) {
+	            obj.set('prefabInstanceId', clonedObject.id);
+	          });
+	        }
 	      }
-	      return newObject;
+	      return clonedObject;
 	    }
 
 	    /**
@@ -99536,19 +99848,11 @@
 	        // If the object has a parent already, remove it from that parent.
 	        if (oldParent && oldParent.id !== _this3.id) {
 	          // Remove the object from previous parent
-	          oldParent.removeChildById(child.id, { silent: true });
+	          oldParent.removeChildById(child.id, true);
 	        }
 
 	        // Setting the parent id because this might not exist yet.
 	        child.set('parentId', _this3.id);
-
-	        var parentAsset = _this3.getParentAsset();
-	        if (parentAsset && child.getParentAsset() !== parentAsset) {
-	          child.set('parentAssetId', parentAsset.id, { silent: true });
-	          child.traverse(function (obj) {
-	            return obj.set('parentAssetId', parentAsset.id, { silent: true });
-	          });
-	        }
 
 	        // Listen for when the child loads so that we can attach the three.js child.
 	        // Note that we don't listen for unload because the unloading code handles the
@@ -99986,7 +100290,7 @@
 	    value: function unload() {
 	      var _this5 = this;
 
-	      var recursive = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+	      var recursive = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
 	      // Remove the object from its parent
 	      if (this.runtimeData && this.runtimeData.parent) {
@@ -100148,6 +100452,24 @@
 	    }
 
 	    /**
+	     * Returns the first object with the provided type that is in this entity's hierarchy.
+	     * Note: Care should be taken when calling this function often (such as every frame)
+	     * because it is not build for high performance.
+	     * @method getDescendantByType
+	     * @public
+	     * @param  {String} objectType The type of the object
+	     * @return {Object} The object, if found, or null if not found.
+	     */
+
+	  }, {
+	    key: 'getDescendantByType',
+	    value: function getDescendantByType(objectType) {
+	      return this.getDescendant(function (e) {
+	        return e.type === objectType;
+	      });
+	    }
+
+	    /**
 	     * Returns all objects with the provided type that are in this entity's hierarchy.
 	     * Note: Care should be taken when calling this function often (such as every frame)
 	     * because it is not build for high performance.
@@ -100284,13 +100606,14 @@
 	     * @method addChild
 	     * @public
 	     * @param  {Box3D.Box3DObject} object  The object to add as a direct child of this object.
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'addChild',
-	    value: function addChild(object) {
-	      this.addChildById(object.id);
+	    value: function addChild(object, silent) {
+	      this.addChildById(object.id, silent);
 	    }
 
 	    /**
@@ -100300,20 +100623,19 @@
 	     * @method addChildById
 	     * @public
 	     * @param  {String} objectId The ID of the object to add as a direct child of this object.
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'addChildById',
-	    value: function addChildById(objectId) {
+	    value: function addChildById(objectId, silent) {
 	      var object = this.box3DRuntime.getObjectById(objectId);
 	      if (!object) {
 	        throw new Error('Can\'t find child object with id, ' + objectId);
 	      }
 
-	      this.sharedData.previousChildren = this.sharedData.children.slice();
-	      this.sharedData.children.push(objectId);
-	      this.box3DRuntime.entityDispatcher.dispatchChildAdded(this.id, objectId);
+	      this.box3DRuntime.entityDispatcher.dispatchChildAdded(this.id, objectId, silent);
 	    }
 
 	    /**
@@ -100322,13 +100644,14 @@
 	     * @method removeChild
 	     * @public
 	     * @param  {Box3D.Box3DObject} object  The object to add as a direct child of this object.
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'removeChild',
-	    value: function removeChild(object) {
-	      this.removeChildById(object.id);
+	    value: function removeChild(object, silent) {
+	      this.removeChildById(object.id, silent);
 	    }
 
 	    /**
@@ -100343,17 +100666,12 @@
 
 	  }, {
 	    key: 'removeChildById',
-	    value: function removeChildById(childId) {
+	    value: function removeChildById(childId, silent) {
 	      var child = this.getChildById(childId);
 	      if (!child) {
 	        throw new Error('Object, ' + childId + ', is not a child of this object');
 	      }
-	      this.sharedData.previousChildren = this.sharedData.children.slice();
-	      var index = this.sharedData.children.indexOf(childId);
-	      if (index !== -1) {
-	        this.sharedData.children.splice(index, 1);
-	      }
-	      this.box3DRuntime.entityDispatcher.dispatchChildRemoved(this.id, childId);
+	      this.box3DRuntime.entityDispatcher.dispatchChildRemoved(this.id, childId, silent);
 	    }
 
 	    /**
@@ -100384,39 +100702,16 @@
 	     * @method setChildIds
 	     * @public
 	     * @param  {Array} newChildren Array of children ids to set.
-	     * @param  {Object} options      Options object. Can contain things like silent: true, etc.
+	     * @param {boolean} silent Supress change event. Defaults to false.
 	     * @return {void}
 	     */
 
 	  }, {
 	    key: 'setChildIds',
-	    value: function setChildIds(newChildren, options) {
-	      var addedChildren = [];
-	      var removedChildren = [];
-	      var lengthDiff = newChildren.length - this.sharedData.children.length;
-	      var removed = Math.abs(Math.min(0, lengthDiff));
-	      this.sharedData.previousChildren = this.sharedData.children.slice();
-	      // Resize the array.
-	      this.sharedData.children.splice(0, removed);
-	      for (var i = 0; i < newChildren.length; i++) {
-	        if (newChildren[i] !== this.id) {
-	          this.sharedData.children[i] = newChildren[i];
-	        }
-	      }
-	      if (!options || !options.silent) {
-	        //Determine differences
-	        for (var _i = 0; _i < newChildren.length; _i++) {
-	          if (this.sharedData.previousChildren.indexOf(newChildren[_i]) === -1) {
-	            addedChildren.push(newChildren[_i]);
-	          }
-	        }
-	        for (var _i2 = 0; _i2 < this.sharedData.previousChildren.length; _i2++) {
-	          if (newChildren.indexOf(this.sharedData.previousChildren[_i2]) === -1) {
-	            removedChildren.push(this.sharedData.previousChildren[_i2]);
-	          }
-	        }
-	        this.box3DRuntime.entityDispatcher.dispatchChildChanged(this.id, addedChildren, removedChildren);
-	      }
+	    value: function setChildIds(newChildren) {
+	      var silent = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+	      this.box3DRuntime.entityDispatcher.dispatchChildChanged(this.id, newChildren, silent);
 	    }
 
 	    /**
@@ -100727,7 +101022,7 @@
 	  }, {
 	    key: 'breakPrefabLink',
 	    value: function breakPrefabLink() {
-	      var recursive = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+	      var recursive = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
 	      if (!this.isInstance()) {
 	        throw new Error('breakPrefabLink: Can\'t call this on an entity that isn\'t an instance.');
@@ -100828,7 +101123,7 @@
 	exports.default = Box3DObject;
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100845,7 +101140,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(171);
+	var _Box3DObject2 = __webpack_require__(172);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -100991,7 +101286,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101012,7 +101307,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(171);
+	var _Box3DObject2 = __webpack_require__(172);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101407,7 +101702,7 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101432,7 +101727,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(171);
+	var _Box3DObject2 = __webpack_require__(172);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -101501,14 +101796,6 @@
 	      if (this.runtimeData) {
 	        // TODO: is this line needed?
 	        this.runtimeData.material = null;
-
-	        // Notify listeners on the parent asset that a mesh has been unloaded.
-	        // This is used by systems that monitor the existance of meshes inside
-	        // a prefab (e.g. a mesh-picker component)
-	        var parentAsset = this.getParentAsset();
-	        if (parentAsset) {
-	          parentAsset.trigger('meshUnloaded', this);
-	        }
 
 	        // TODO: is this line needed?
 	        this.runtimeData.geometry = null;
@@ -101596,9 +101883,9 @@
 	    value: function _applyPropertiesUnloaded() {
 	      var _this3 = this;
 
-	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-
+	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.hasOwnProperty('materials')) {
 	        // Unregister previous materials.
 	        this.getPreviousMaterials().forEach(function (material) {
@@ -101757,11 +102044,6 @@
 	      } else {
 	        this.runtimeData.geometry = geometry;
 	      }
-
-	      // Inform anyone who cares that a new mesh has been loaded.
-	      // TODO: do we still need this? Can they listen to 'loadBase' instead?
-	      var parentAsset = this.getParentAsset();
-	      parentAsset.trigger('meshLoaded', this);
 	    }
 
 	    /**
@@ -101898,8 +102180,8 @@
 	  }, {
 	    key: 'getMaterial',
 	    value: function getMaterial() {
-	      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	      var placeholder = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	      var placeholder = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
 	      // Validate the index parameter.
 	      if (index < 0 || index >= this.getMaterialCount()) {
@@ -101934,8 +102216,8 @@
 	  }, {
 	    key: 'getPreviousMaterial',
 	    value: function getPreviousMaterial() {
-	      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	      var placeholder = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	      var placeholder = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
 	      // Validate the index parameter.
 	      if (index < 0 || index >= this.getMaterialCount()) {
@@ -102007,7 +102289,7 @@
 	  }, {
 	    key: 'getMaterials',
 	    value: function getMaterials() {
-	      var placeholder = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+	      var placeholder = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
 	      var materials = [];
 	      var nMaterials = this.getMaterialCount();
@@ -102031,7 +102313,7 @@
 	  }, {
 	    key: 'getPreviousMaterials',
 	    value: function getPreviousMaterials() {
-	      var placeholder = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+	      var placeholder = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
 	      var materials = [];
 	      var nMaterials = this.getMaterialCount();
@@ -102291,7 +102573,7 @@
 	  }, {
 	    key: 'revertMaterial',
 	    value: function revertMaterial() {
-	      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
 	      // Note: we pass undefined, which unassigns the material and causes the prefab material at the
 	      // same index to be used. Passing null would override the prefab's material with an empty
@@ -102311,7 +102593,7 @@
 	  }, {
 	    key: 'setMaterial',
 	    value: function setMaterial(material) {
-	      var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	      var index = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
 	      // Validate the index parameter.
 	      if (index < 0 || index >= this.getMaterialCount()) {
@@ -102397,7 +102679,140 @@
 	exports.default = MeshObject;
 
 /***/ },
-/* 175 */
+/* 176 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _log = __webpack_require__(7);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _three = __webpack_require__(10);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _Box3DObject2 = __webpack_require__(172);
+
+	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class SceneObject
+	 * @constructor
+	 */
+	var SceneObject = function (_Box3DObject) {
+	  _inherits(SceneObject, _Box3DObject);
+
+	  function SceneObject() {
+	    _classCallCheck(this, SceneObject);
+
+	    return _possibleConstructorReturn(this, (SceneObject.__proto__ || Object.getPrototypeOf(SceneObject)).apply(this, arguments));
+	  }
+
+	  _createClass(SceneObject, [{
+	    key: 'createRuntimeData',
+
+
+	    /** @inheritdoc */
+	    value: function createRuntimeData(callback) {
+	      this.runtimeData = new THREE.Scene();
+	      this.runtimeData.matrixAutoUpdate = false;
+	      this.runtimeData.name = this.getName();
+	      callback();
+	    }
+
+	    /** @inheritdoc */
+
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: '_applyPropertiesLoaded',
+	    value: function _applyPropertiesLoaded(changes, reason) {
+	      _get(SceneObject.prototype.__proto__ || Object.getPrototypeOf(SceneObject.prototype), '_applyPropertiesLoaded', this).call(this, changes, reason);
+
+	      if (!this.getProperty('fogEnabled')) {
+	        this.runtimeData.fog = null;
+	      } else {
+	        if (!this.runtimeData.fog) {
+	          this.runtimeData.fog = new THREE.FogExp2(this.getProperty('fogColor'));
+	        }
+
+	        if (changes.hasOwnProperty('fogColor')) {
+	          this.runtimeData.fog.color.setHex(this.getProperty('fogColor'));
+	        }
+
+	        if (changes.hasOwnProperty('fogDensity')) {
+	          this.runtimeData.fog.density = this.getProperty('fogDensity');
+	        }
+	      }
+
+	      if (changes.hasOwnProperty('fogEnabled')) {
+	        this.box3DRuntime.trigger('rebuildMaterials');
+	        this.box3DRuntime.needsRender = true;
+	      }
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'unload',
+	    value: function unload(options) {
+	      if (this.runtimeData) {
+	        _log2.default.info('Unloading scene, ' + this.getName());
+	        _get(SceneObject.prototype.__proto__ || Object.getPrototypeOf(SceneObject.prototype), 'unload', this).call(this, options);
+	      }
+	    }
+	  }]);
+
+	  return SceneObject;
+	}(_Box3DObject3.default);
+
+	SceneObject.schema = _extends({}, _Box3DObject3.default.schema, {
+	  fogEnabled: {
+	    type: 'boolean',
+	    default: false
+	  },
+	  fogType: {
+	    type: 'string',
+	    default: 'FogExp2'
+	  },
+	  fogColor: {
+	    type: 'color',
+	    default: 0xbbbbbb
+	  },
+	  fogDensity: {
+	    type: 'float',
+	    default: 0.0004
+	  }
+	});
+
+
+	window.Box3D.SceneObject = SceneObject;
+	exports.default = SceneObject;
+
+/***/ },
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -102423,7 +102838,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 176 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -102891,6 +103306,39 @@
 
 	  return DevResourceLoader;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 179 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	// Polyfill for array.find from Mozilla
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+	if (!Array.prototype.find) {
+	  Array.prototype.find = function (predicate) {
+	    'use strict';
+
+	    if (this == null) {
+	      throw new TypeError('Array.prototype.find called on null or undefined');
+	    }
+	    if (typeof predicate !== 'function') {
+	      throw new TypeError('predicate must be a function');
+	    }
+	    var list = Object(this);
+	    var length = list.length >>> 0;
+	    var thisArg = arguments[1];
+	    var value;
+
+	    for (var i = 0; i < length; i++) {
+	      value = list[i];
+	      if (predicate.call(thisArg, value, i, list)) {
+	        return value;
+	      }
+	    }
+	    return undefined;
+	  };
+	}
 
 /***/ }
 /******/ ]);
