@@ -57,6 +57,8 @@ class DocBase extends Base {
 
         this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
+
+        this.scaling = false;
     }
 
     /**
@@ -507,7 +509,13 @@ class DocBase extends Base {
             /* eslint-disable no-console */
             console.error(err);
             /* eslint-enable no-console */
-            this.emit('error', err);
+
+            // Display a generic error message but log the real one
+            const error = err;
+            if (err instanceof Error) {
+                error.displayMessage = __('error_document');
+            }
+            this.emit('error', error);
         });
 
         this.bindDOMListeners();
@@ -532,6 +540,9 @@ class DocBase extends Base {
 
         // Open links in new tab
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
+
+        // Prevents referrer leak and opener hijacking, see https://mathiasbynens.github.io/rel-noopener/
+        PDFJS.externalLinkRel = 'noopener noreferrer';
 
         // Disable range requests for files smaller than the minimum size
         PDFJS.disableRange = (this.options.file && this.options.file.size) ?
@@ -587,7 +598,8 @@ class DocBase extends Base {
         this.annotator = new DocAnnotator({
             annotatedElement: this.docEl,
             annotationService,
-            fileVersionID
+            fileVersionID,
+            locale: this.options.location.locale
         });
         this.annotator.init();
         this.annotator.setScale(this.pdfViewer.currentScale);
@@ -736,6 +748,17 @@ class DocBase extends Base {
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
+
+        if (Browser.isMobile()) {
+            if (Browser.isIOS()) {
+                this.docEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
+                this.docEl.addEventListener('gestureend', this.mobileZoomEndHandler);
+            } else {
+                this.docEl.addEventListener('touchstart', this.mobileZoomStartHandler);
+                this.docEl.addEventListener('touchmove', this.mobileZoomChangeHandler);
+                this.docEl.addEventListener('touchend', this.mobileZoomEndHandler);
+            }
+        }
     }
 
     /**
@@ -750,6 +773,17 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
+
+            if (Browser.isMobile()) {
+                if (Browser.isIOS()) {
+                    this.docEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
+                    this.docEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
+                } else {
+                    this.docEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
+                    this.docEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
+                    this.docEl.removeEventListener('touchend', this.mobileZoomEndHandler);
+                }
+            }
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);

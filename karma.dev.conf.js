@@ -3,6 +3,7 @@ require('babel-polyfill');
 const baseConf = require('./karma.base.conf');
 const webpackConfig = require('./webpack.karma.config');
 const ispartaConfig = require('./isparta.config');
+
 const coverage = process.env.COVERAGE === '1';
 
 module.exports = function karmaDevConf(config) {

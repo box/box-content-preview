@@ -37,7 +37,7 @@ class Model3dLoader extends AssetLoader {
         const viewer = super.determineViewer(file, disabledViewers);
 
         if (!Browser.supportsModel3D()) {
-            throw new Error(__('error_no_box3d_preview_support'));
+            throw new Error(__('error_unsupported'));
         }
 
         return viewer;

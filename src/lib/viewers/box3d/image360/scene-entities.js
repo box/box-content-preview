@@ -3,8 +3,7 @@ import Browser from '../../../browser';
 export default [{
     id: 'CAMERA_ID',
     type: 'camera',
-    parentId: 'SCENE_ID',
-    parentAssetId: 'SCENE_ID',
+    parentId: 'SCENE_ROOT_ID',
     properties: {
         position: {
             x: 0.0,
@@ -42,8 +41,13 @@ export default [{
     }
 }, {
     id: 'SCENE_ID',
+    type: 'prefab',
+    properties: {
+        rootObjectId: 'SCENE_ROOT_ID'
+    }
+}, {
+    id: 'SCENE_ROOT_ID',
     type: 'scene',
-    parentAssetId: 'SCENE_ID',
     // The scene contains the lights and camera
     children: [
         'CAMERA_ID'
@@ -53,14 +57,13 @@ export default [{
             componentData: {
                 size: 100
             },
-            enabled: false,
-            scriptId: 'skybox_renderer'
+            scriptId: 'skybox_renderer',
+            enabled: false
         }
     }
 }, {
     id: 'APP_ASSET_ID',
     type: 'application',
-    parentAssetId: 'APP_ASSET_ID',
     properties: {
         startupScene: 'SCENE_ID' // The scene to load
     },

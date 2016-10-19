@@ -99,7 +99,7 @@ class Base extends EventEmitter {
                 return;
             }
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.emit('error', new Error(__('error_timeout')));
+                this.emit('error', new Error(__('error_refresh')));
             }
         }, this.loadTimeout);
     }
@@ -227,6 +227,86 @@ class Base extends EventEmitter {
             viewerName: this.options.viewerName,
             fileId: this.options.file.id
         });
+    }
+
+    /**
+     * Handles the beginning of a pinch to zoom event on mobile.
+     * Although W3 strongly discourages the prevention of pinch to zoom,
+     * we still meet the WCAG's requirement of a 200% zoom on text.
+     *
+     * @returns {void}
+     * @private
+     */
+    mobileZoomStartHandler(event) {
+        if (Browser.isIOS()) {
+            this._scaling = true;
+            event.preventDefault();
+            event.stopPropagation();
+        } else if (event.touches.length === 2) {
+            this._pinchScale = {
+                initial: {
+                    0: [event.touches[0].clientX, event.touches[0].clientY],
+                    1: [event.touches[1].clientX, event.touches[1].clientY]
+                },
+                end: {}
+            };
+            this._scaling = true;
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            this._scaling = false;
+            this._pinchScale = undefined;
+        }
+    }
+
+    /**
+     * Handles updates to the pinch in order to determine whether the user
+     * was pinching in or out. Used only by non iOS browsers
+     *
+     * @returns {void}
+     * @private
+     */
+    mobileZoomChangeHandler(event) {
+        if (event.touches.length !== 2 || !this._scaling) {
+            return;
+        }
+        this._pinchScale.end = {
+            0: [event.touches[0].clientX, event.touches[0].clientY],
+            1: [event.touches[1].clientX, event.touches[1].clientY]
+        };
+    }
+
+    /**
+     * Zooms the document in or out depending on the scale of the pinch
+     *
+     * @returns {void}
+     * @private
+     */
+    mobileZoomEndHandler(event) {
+        if (this._scaling) {
+            let zoomScale = 0;
+            if (Browser.isIOS()) {
+                zoomScale = event.scale - 1; // normalize to keep scale values consistant between browser events
+            } else {
+                // calculating the distances between the initial and ending pinch positions
+                const initialDistance = Math.sqrt(
+                    ((this._pinchScale.initial[0][0] - this._pinchScale.initial[1][0]) * (this._pinchScale.initial[0][0] - this._pinchScale.initial[1][0])) +
+                    ((this._pinchScale.initial[0][1] - this._pinchScale.initial[1][1]) * (this._pinchScale.initial[0][1] - this._pinchScale.initial[1][1])));
+                const finalDistance = Math.sqrt(
+                    ((this._pinchScale.end[0][0] - this._pinchScale.end[1][0]) * (this._pinchScale.end[0][0] - this._pinchScale.end[1][0])) +
+                    ((this._pinchScale.end[0][1] - this._pinchScale.end[1][1]) * (this._pinchScale.end[0][1] - this._pinchScale.end[1][1])));
+                zoomScale = finalDistance - initialDistance;
+            }
+
+            if (zoomScale > 0) {
+                this.zoomIn();
+            } else if (zoomScale < 0) {
+                this.zoomOut();
+            }
+
+            this._scaling = false;
+            this._pinchScale = undefined;
+        }
     }
 }
 

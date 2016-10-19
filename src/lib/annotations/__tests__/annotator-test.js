@@ -221,12 +221,11 @@ describe('annotator', () => {
 
             const result = annotator.fetchAnnotations();
 
-            expect(result).to.eventually.be.an.object;
-
             return threadPromise.then(() => {
                 expect(Object.keys(annotator._threads).length === 0).to.be.true;
                 expect(annotator.createAnnotationThread).to.have.been.calledTwice;
                 expect(annotator.bindCustomListenersOnThread).to.have.been.calledTwice;
+                expect(result).to.be.an.object;
             });
         });
     });

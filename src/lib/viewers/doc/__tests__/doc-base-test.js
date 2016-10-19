@@ -689,7 +689,13 @@ describe('doc-base', () => {
             expect(PDFJS.workerSrc).to.equal('asset');
         });
 
-        it('should disable range requests if the file is too big', () => {
+        it('should set external link settings', () => {
+            docBase.setupPdfjs();
+            expect(PDFJS.externalLinkTarget).to.equal(PDFJS.LinkTarget.BLANK);
+            expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer');
+        });
+
+        it('should disable range requests if the file is not too big', () => {
             stubs.browser.returns('Chrome');
 
             docBase.setupPdfjs();
@@ -754,6 +760,9 @@ describe('doc-base', () => {
                     permissions: {
                         can_annotate: true
                     }
+                },
+                location: {
+                    locale: 'en-US'
                 }
             };
             docBase.pdfViewer = {
@@ -906,33 +915,63 @@ describe('doc-base', () => {
     });
 
     describe('bindDOMListeners()', () => {
+        beforeEach(() => {
+            stubs.addEventListener = sandbox.stub(docBase.docEl, 'addEventListener');
+            stubs.addListener = sandbox.stub(fullscreen, 'addListener');
+            stubs.isMobile = sandbox.stub(Browser, 'isMobile');
+            stubs.isIOS = sandbox.stub(Browser, 'isIOS');
+        });
+
         it('should add the correct listeners', () => {
-            const addEventListenerStub = sandbox.stub(docBase.docEl, 'addEventListener');
-            const addListenerStub = sandbox.stub(fullscreen, 'addListener');
+            stubs.isMobile.returns(false);
 
             docBase.bindDOMListeners();
-            expect(addEventListenerStub).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
-            expect(addEventListenerStub).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-            expect(addEventListenerStub).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
-            expect(addEventListenerStub).to.be.calledWith('pagechange', docBase.pagechangeHandler);
+            expect(stubs.addEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
+            expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
+            expect(stubs.addEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
+            expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
 
-            expect(addListenerStub).to.be.calledWith('enter', docBase.enterfullscreenHandler);
-            expect(addListenerStub).to.be.calledWith('exit', docBase.exitfullscreenHandler);
+            expect(stubs.addEventListener).to.not.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
+            expect(stubs.addEventListener).to.not.be.calledWith('gestureend', docBase.mobileZoomEndHandler);
+
+            expect(stubs.addListener).to.be.calledWith('enter', docBase.enterfullscreenHandler);
+            expect(stubs.addListener).to.be.calledWith('exit', docBase.exitfullscreenHandler);
+        });
+
+        it('should add gesture listeners if the browser is iOS', () => {
+            stubs.isMobile.returns(true);
+            stubs.isIOS.returns(true);
+
+            docBase.bindDOMListeners();
+            expect(stubs.addEventListener).to.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
+            expect(stubs.addEventListener).to.be.calledWith('gestureend', docBase.mobileZoomEndHandler);
+        });
+
+        it('should add the touch event listeners if the browser is not iOS', () => {
+            stubs.isMobile.returns(true);
+            stubs.isIOS.returns(false);
+
+            docBase.bindDOMListeners();
+            expect(stubs.addEventListener).to.be.calledWith('touchstart', docBase.mobileZoomStartHandler);
+            expect(stubs.addEventListener).to.be.calledWith('touchmove', docBase.mobileZoomChangeHandler);
+            expect(stubs.addEventListener).to.be.calledWith('touchend', docBase.mobileZoomEndHandler);
         });
     });
 
     describe('unbindDOMListeners()', () => {
         beforeEach(() => {
-            stubs.removeEventListenerStub = sandbox.stub(docBase.docEl, 'removeEventListener');
+            stubs.removeEventListener = sandbox.stub(docBase.docEl, 'removeEventListener');
             stubs.removeFullscreenListener = sandbox.stub(fullscreen, 'removeListener');
+            stubs.isMobile = sandbox.stub(Browser, 'isMobile');
+            stubs.isIOS = sandbox.stub(Browser, 'isIOS');
         });
 
         it('should remove the doc element listeners if the doc element exists', () => {
             docBase.unbindDOMListeners();
-            expect(stubs.removeEventListenerStub).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
-            expect(stubs.removeEventListenerStub).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-            expect(stubs.removeEventListenerStub).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
-            expect(stubs.removeEventListenerStub).to.be.calledWith('pagechange', docBase.pagechangeHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
         });
 
         it('should not remove the doc element listeners if the doc element does not exist', () => {
@@ -940,7 +979,7 @@ describe('doc-base', () => {
             docBase.docEl = null;
 
             docBase.unbindDOMListeners();
-            expect(stubs.removeEventListenerStub).to.not.be.called;
+            expect(stubs.removeEventListener).to.not.be.called;
 
             docBase.docEl = docElTemp;
         });
@@ -949,6 +988,25 @@ describe('doc-base', () => {
             docBase.unbindDOMListeners();
             expect(stubs.removeFullscreenListener).to.be.calledWith('enter', docBase.enterfullscreenHandler);
             expect(stubs.removeFullscreenListener).to.be.calledWith('exit', docBase.exitfullscreenHandler);
+        });
+
+        it('should remove gesture listeners if the browser is iOS', () => {
+            stubs.isMobile.returns(true);
+            stubs.isIOS.returns(true);
+
+            docBase.unbindDOMListeners();
+            expect(stubs.removeEventListener).to.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('gestureend', docBase.mobileZoomEndHandler);
+        });
+
+        it('should remove the touch event listeners if the browser is not iOS', () => {
+            stubs.isMobile.returns(true);
+            stubs.isIOS.returns(false);
+
+            docBase.unbindDOMListeners();
+            expect(stubs.removeEventListener).to.be.calledWith('touchstart', docBase.mobileZoomStartHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('touchmove', docBase.mobileZoomChangeHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('touchend', docBase.mobileZoomEndHandler);
         });
     });
 

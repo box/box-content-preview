@@ -244,10 +244,10 @@ class Model3d extends Box3D {
 
                 const defaults = resp.response;
 
-                this.axes.up = defaults.upAxis;
-                this.axes.forward = defaults.forwardAxis;
-                this.renderMode = defaults.defaultRenderMode;
-                this.projection = defaults.cameraProjection;
+                this.axes.up = defaults.upAxis || DEFAULT_AXIS_UP;
+                this.axes.forward = defaults.forwardAxis || DEFAULT_AXIS_FORWARD;
+                this.renderMode = defaults.defaultRenderMode || RENDER_MODE_LIT;
+                this.projection = defaults.cameraProjection || CAMERA_PROJECTION_PERSPECTIVE;
 
                 const permissions = this.options.file.permissions || {};
                 this.controls.addUi(permissions.can_upload && permissions.can_delete);

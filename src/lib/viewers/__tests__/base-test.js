@@ -239,4 +239,156 @@ describe('base', () => {
             });
         });
     });
+
+    let stubs = {};
+    let event = {};
+    describe('Pinch to Zoom Handlers', () => {
+        beforeEach(() => {
+            event = {
+                preventDefault: sandbox.stub(),
+                stopPropagation: sandbox.stub(),
+                touches: [0, 0]
+            };
+            stubs.isIOS = sandbox.stub(Browser, 'isIOS');
+            stubs.sqrt = sandbox.stub(Math, 'sqrt');
+            base.zoomIn = sandbox.stub();
+            base.zoomOut = sandbox.stub();
+        });
+
+        afterEach(() => {
+            stubs = {};
+            event = {};
+            base._scaling = false;
+            base._pincScale = undefined;
+            base.destroy();
+        });
+
+        describe('mobileZoomStartHandler', () => {
+            it('should turn on scaling and prevent default behavior if on iOS', () => {
+                stubs.isIOS.returns(true);
+
+                base.mobileZoomStartHandler(event);
+                expect(base._scaling).to.equal(true);
+                expect(event.stopPropagation).to.be.called;
+                expect(event.preventDefault).to.be.called;
+            });
+
+            it('should store the event details if two touches are detected and not on iOS', () => {
+                stubs.isIOS.returns(false);
+
+                base.mobileZoomStartHandler(event);
+                expect(base._scaling).to.equal(true);
+                expect(base._pinchScale).to.not.equal(undefined);
+                expect(event.stopPropagation).to.be.called;
+                expect(event.preventDefault).to.be.called;
+            });
+
+            it('should do nothing if event did not record two touches and not on iOS', () => {
+                stubs.isIOS.returns(false);
+                event.touches = [0];
+
+                base.mobileZoomStartHandler(event);
+                expect(base._scaling).to.equal(false);
+                expect(base._pinchScale).to.equal(undefined);
+                expect(event.stopPropagation).to.not.be.called;
+                expect(event.preventDefault).to.not.be.called;
+            });
+        });
+
+        describe('mobileZoomChangeHandler', () => {
+            it('should update the end touch and prevent default if two touches are detected', () => {
+                base.mobileZoomStartHandler(event);
+
+                base.mobileZoomChangeHandler(event);
+                expect(base._pinchScale.end).to.not.equal(undefined);
+            });
+
+            it('should not do anything if two touches are not recorded', () => {
+                event.touches = [0];
+                base.mobileZoomStartHandler(event);
+
+                base.mobileZoomChangeHandler(event);
+                expect(base._pinchScale).to.equal(undefined);
+            });
+
+            it('should not do anything if scaling is not happening', () => {
+                event.touches = [0];
+                base.mobileZoomStartHandler(event);
+
+                event.touches = [0, 0];
+
+                base.mobileZoomChangeHandler(event);
+                expect(base._pinchScale).to.equal(undefined);
+            });
+        });
+
+        describe('mobileZoomEndHandler', () => {
+            it('should zoom in if on iOS and event scale is > 1', () => {
+                event.scale = 1.5;
+                stubs.isIOS.returns(true);
+                base.mobileZoomStartHandler(event);
+
+                base.mobileZoomEndHandler(event);
+                expect(base.zoomIn).to.be.called;
+            });
+
+            it('should zoom out if on iOS and event scale is < 1', () => {
+                event.scale = 0.75;
+                stubs.isIOS.returns(true);
+                base.mobileZoomStartHandler(event);
+
+                base.mobileZoomEndHandler(event);
+                expect(base.zoomOut).to.be.called;
+            });
+
+            it('should zoom in if not on iOS and the scale is > 0', () => {
+                stubs.sqrt.onCall(0).returns(0)
+                .onCall(1).returns(0.5);
+                stubs.isIOS.returns(false);
+                base.mobileZoomStartHandler(event);
+
+                event.touches = [
+                    {
+                        clientX: 0,
+                        clientY: 0
+                    },
+                    {
+                        clientX: 0,
+                        clientY: 0
+                    }
+                ];
+                base.mobileZoomChangeHandler(event);
+
+                base.mobileZoomEndHandler(event);
+                expect(base.zoomIn).to.be.called;
+                expect(base._scaling).to.equal(false);
+                expect(base._pincScale).to.equal(undefined);
+            });
+
+            it('should zoom out if not on iOS and the scale is < 0', () => {
+                stubs.sqrt.onCall(0).returns(0.5)
+                .onCall(1).returns(0);
+                stubs.isIOS.returns(false);
+                base.mobileZoomStartHandler(event);
+
+                event.touches = [
+                    {
+                        clientX: 0,
+                        clientY: 0
+                    },
+                    {
+                        clientX: 0,
+                        clientY: 0
+                    }
+                ];
+                base.mobileZoomChangeHandler(event);
+
+                base.mobileZoomEndHandler(event);
+                expect(base.zoomOut).to.be.called;
+                expect(base.zoomIn).to.not.be.called;
+                expect(base._scaling).to.equal(false);
+                expect(base._pincScale).to.equal(undefined);
+            });
+        });
+    });
 });

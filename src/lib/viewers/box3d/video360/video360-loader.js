@@ -1,6 +1,5 @@
 import Base360Loader from '../base360-loader';
 import Browser from '../../../browser';
-import autobind from 'autobind-decorator';
 
 const STATIC_URI = 'third-party/';
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
@@ -33,7 +32,6 @@ const VIEWERS = [
     }
 ];
 
-@autobind
 class Video360Loader extends Base360Loader {
 
     /**
@@ -63,7 +61,7 @@ class Video360Loader extends Base360Loader {
             // OR
             // if a 360 viewer but it is on IOS
             if (!isSupportedBrowser || isIOS) {
-                throw new Error(__('error_no_360_playback_support'));
+                throw new Error(__('error_unsupported'));
             }
         }
 

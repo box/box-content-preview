@@ -20,6 +20,8 @@ const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const RETRY_TIMEOUT = 500; // retry network request interval for a file
 const RETRY_COUNT = 5; // number of times to retry network request for a file
 const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
+const LOG_RETRY_TIMEOUT = 500; // retry interval for logging preview event
+const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 
 const Box = global.Box || {};
 
@@ -266,7 +268,7 @@ class Preview extends EventEmitter {
                 this.loadViewer();
             }
         } catch (err) {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
         }
     }
 
@@ -313,13 +315,13 @@ class Preview extends EventEmitter {
         // Load all the static assets
         const promiseToLoadStaticAssets = loader.load(viewer, this.options.location);
         promiseToLoadStaticAssets.catch((err) => {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_static_assets_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
         });
 
         // Load the representation assets
         const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
         promiseToGetRepresentationStatusSuccess.catch((err) => {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_representation_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_reupload')));
         });
 
         // Proceed only when both static and representation assets have been loaded
@@ -340,7 +342,7 @@ class Preview extends EventEmitter {
             // Load the representation into the viewer
             this.viewer.load(representation.links.content.url);
         }).catch((err) => {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_viewer_load')));
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
         });
     }
 
@@ -412,7 +414,7 @@ class Preview extends EventEmitter {
 
         // If there wasn't an error, use Events API to log a preview
         if (typeof data.error !== 'string') {
-            this.logPreviewEvent();
+            this.logPreviewEvent(this.file.id, this.options);
         }
 
         // Hookup for phantom JS health check
@@ -429,21 +431,41 @@ class Preview extends EventEmitter {
      * preview happened for access stats, unlike the Logger, which logs preview
      * errors and performance metrics.
      *
+     * @param {string} fileID File ID to log preview event for
+     * @param {Object} options File options, e.g. token, shared link
      * @returns {void}
      * @private
      */
-    logPreviewEvent() {
-        const { api, token, sharedLink, sharedLinkPassword } = this.options;
+    logPreviewEvent(fileID, options) {
+        this.logRetryCount = this.logRetryCount || 0;
+
+        const { api, token, sharedLink, sharedLinkPassword } = options;
         const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
 
         post(`${api}/2.0/events`, headers, {
             event_type: 'preview',
             source: {
                 type: 'file',
-                id: this.file.id
+                id: fileID
             }
         })
-        .catch(() => {});
+        .then(() => {
+            // Reset retry count after successfully logging
+            this.logRetryCount = 0;
+        })
+        .catch(() => {
+            // Don't retry more than the retry limit
+            this.logRetryCount += 1;
+            if (this.logRetryCount > LOG_RETRY_COUNT) {
+                this.logRetryCount = 0;
+                return;
+            }
+
+            clearTimeout(this.logRetryTimeout);
+            this.logRetryTimeout = setTimeout(() => {
+                this.logPreviewEvent(fileID, options);
+            }, LOG_RETRY_TIMEOUT * this.logRetryCount);
+        });
     }
 
     /**
@@ -464,14 +486,14 @@ class Preview extends EventEmitter {
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
-            this.triggerError(new Error(__('error_network_fetch')));
+            this.triggerError(new Error(__('error_refresh')));
             return;
         }
 
         clearTimeout(this.retryTimeout);
         this.retryTimeout = setTimeout(() => {
             this.load(this.file.id);
-        }, RETRY_TIMEOUT * RETRY_COUNT);
+        }, RETRY_TIMEOUT * this.retryCount);
     }
 
     /**
@@ -496,15 +518,17 @@ class Preview extends EventEmitter {
         // Destroy anything still showing
         this.destroy();
 
-        const reason = err instanceof Error ? err.message : __('error_default');
-        const viewer = ErrorLoader.determineViewer();
+        // Figure out what error message to log and what error message to display
+        const logMessage = err instanceof Error ? err.message : __('error_default');
+        const displayMessage = err && err.displayMessage ? err.displayMessage : logMessage;
 
+        const viewer = ErrorLoader.determineViewer();
         ErrorLoader.load(viewer, this.options.location).then(() => {
             this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
                 file: this.file
             }));
 
-            this.viewer.load('', reason);
+            this.viewer.load('', displayMessage);
             hideLoadingIndicator();
 
             // Add listeners for viewer events
@@ -519,7 +543,7 @@ class Preview extends EventEmitter {
             this.count.error += 1;
 
             this.emit('load', {
-                error: reason,
+                error: logMessage,
                 metrics: this.logger.done(this.count),
                 file: this.file
             });
@@ -897,13 +921,24 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Prefetches the viewers
+     * Prefetches the viewers. If specific viewer names are passed in, only
+     * prefetch assets for those viewers. Otherwise, prefetch assets for
+     * all viewers.
      *
      * @public
+     * @param {array} [viewerNames] Names of specific viewers to prefetch assets for
      * @returns {void}
      */
-    prefetchViewers() {
-        const viewers = this.getViewers();
+    prefetchViewers(viewerNames = []) {
+        let viewers = this.getViewers();
+
+        // Filter down to specified viewers
+        if (viewerNames.length) {
+            viewers = viewers.filter((viewer) => {
+                return viewerNames.indexOf(viewer.CONSTRUCTOR) !== -1;
+            });
+        }
+
         const loader = this.loaders[0]; // use any loader
         viewers.forEach((viewer) => {
             loader.prefetchAssets(viewer, this.location);

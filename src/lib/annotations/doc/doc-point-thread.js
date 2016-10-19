@@ -75,6 +75,7 @@ class DocPointThread extends AnnotationThread {
         this._dialog = new DocPointDialog({
             annotatedElement: this._annotatedElement,
             annotations: this._annotations,
+            locale: this._locale,
             location: this._location,
             canAnnotate: this._annotationService.canAnnotate
         });

@@ -499,5 +499,13 @@ describe('util', () => {
         it('should replace only placeholders that have custom value in the given string', () => {
             expect(replacePlaceholders('{1} highlighted {2}', ['Bob'])).to.equal('Bob highlighted {2}');
         });
+
+        it('should respect the order of placeholders when given an arbitrary order', () => {
+            expect(replacePlaceholders('{2} highlighted {1}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Bob');
+        });
+
+        it('should replace with the same value if the placeholder is repeated', () => {
+            expect(replacePlaceholders('{2} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Suzy');
+        });
     });
 });

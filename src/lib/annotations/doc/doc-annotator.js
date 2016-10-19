@@ -21,7 +21,6 @@ import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
 import * as docAnnotatorUtil from './doc-annotator-util';
 
-const IS_MOBILE = Browser.isMobile();
 const MOUSEMOVE_THROTTLE_MS = 50;
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
@@ -41,7 +40,7 @@ class DocAnnotator extends Annotator {
         // On mobile, we want to disable user-scaling since we want users to use
         // the document zoom controls
         /* Unclear whether we want this behavior or not
-        if (IS_MOBILE) {
+        if (Browser.isMobile()) {
             const metaEl = document.createElement('meta');
             metaEl.setAttribute('name', 'viewport');
             metaEl.setAttribute('content', 'user-scalable=no');
@@ -175,6 +174,7 @@ class DocAnnotator extends Annotator {
             annotations,
             annotationService: this._annotationService,
             fileVersionID: this._fileVersionID,
+            locale: this._locale,
             location,
             type
         };
@@ -288,6 +288,7 @@ class DocAnnotator extends Annotator {
      */
     _highlightMousedownHandler(event) {
         this._didMouseMove = false;
+        this._isCreatingHighlight = true;
         this._mouseX = event.clientX;
         this._mouseY = event.clientY;
 
@@ -314,6 +315,7 @@ class DocAnnotator extends Annotator {
                     constants.ANNOTATION_STATE_PENDING,
                     constants.ANNOTATION_STATE_ACTIVE,
                     constants.ANNOTATION_STATE_ACTIVE_HOVER);
+
                 if (pendingThreads.length) {
                     return;
                 }
@@ -323,6 +325,12 @@ class DocAnnotator extends Annotator {
                 if (Math.abs(event.clientX - this._mouseX) > 5 ||
                     Math.abs(event.clientY - this._mouseY) > 5) {
                     this._didMouseMove = true;
+                }
+
+                // Determine if the user is creating a new overlapping highlight
+                // and ignore hover events of any highlights below
+                if (this._isCreatingHighlight) {
+                    return;
                 }
 
                 const delayThreads = [];
@@ -343,6 +351,7 @@ class DocAnnotator extends Annotator {
                         thread.hideDialog(true);
                     });
                 }
+
                 // If we are hovering over a highlight, we should use a hand cursor
                 if (delayThreads.some((thread) => {
                     return thread.state === constants.ANNOTATION_STATE_HOVER ||
@@ -380,27 +389,16 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMouseupHandler(event) {
-        // Prevents creation of overlapping highlights, instead hovers on overlapped highlight
-        const hoverThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_ACTIVE_HOVER, constants.ANNOTATION_STATE_HOVER);
-        hoverThreads.forEach((thread) => {
-            thread.onMousemove(event);
-        });
-
-        // Unselects text and prevents click event on hovered highlight
-        if (hoverThreads.length) {
-            window.getSelection().removeAllRanges();
-            return;
-        }
-
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we double clicked text,
         // we trigger the create handler instead of the click handler
-        if (!IS_MOBILE && (this._didMouseMove || event.type === 'dblclick')) {
+        if (!Browser.isMobile() && (this._didMouseMove || event.type === 'dblclick')) {
             this._highlightCreateHandler(event);
         } else {
             this._highlightClickHandler(event);
         }
+        this._isCreatingHighlight = false;
     }
 
     /**

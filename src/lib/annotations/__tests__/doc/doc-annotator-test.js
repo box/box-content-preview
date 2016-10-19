@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Annotator from '../../annotator';
+import Browser from '../../../browser';
 import DocAnnotator from '../../doc/doc-annotator';
 import DocHighlightThread from '../../doc/doc-highlight-thread';
 import DocPointThread from '../../doc/doc-point-thread';
@@ -20,6 +21,8 @@ describe('doc-annotator', () => {
 
     beforeEach(() => {
         fixture.load('annotations/__tests__/doc/doc-annotator-test.html');
+
+        sandbox.stub(Browser, 'isMobile').returns(false);
 
         annotator = new DocAnnotator({
             annotatedElement: document.querySelector('.annotated-element'),
@@ -496,8 +499,8 @@ describe('doc-annotator', () => {
             annotator._throttledHighlightMousemoveHandler = false;
             const thread = {
                 onMousemove: sandbox.stub(),
-                show: sandbox.stub(),
-                hideDialog: sandbox.stub()
+                hideDialog: sandbox.stub(),
+                show: sandbox.stub()
             };
             const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates');
             getHighlightsStub.onCall(0).returns([]);
@@ -513,7 +516,6 @@ describe('doc-annotator', () => {
             expect(getHighlightThreadStub).to.be.called;
             expect(thread.onMousemove).to.be.calledTwice;
             expect(getHighlightsStub).to.be.called;
-            expect(thread.hideDialog).to.be.calledTwice;
         });
 
         it('should show the first delayed thread, and hide all others', () => {
@@ -539,40 +541,33 @@ describe('doc-annotator', () => {
             expect(thread.onMousemove).to.be.calledTwice;
             expect(getHighlightsStub).to.be.called;
             expect(thread.show).to.be.calledOnce;
-            expect(thread.hideDialog).to.be.calledThrice;
+            expect(thread.hideDialog).to.be.called;
         });
     });
 
     describe('_highlightMouseupHandler()', () => {
         beforeEach(() => {
-            stubs.thread = { onMousemove: () => {} };
-            stubs.threadStub = sandbox.stub(stubs.thread, 'onMousemove');
-            stubs.highlightsWithStatesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([]);
             stubs.createHandlerStub = sandbox.stub(annotator, '_highlightCreateHandler');
-            stubs.windowStub = sandbox.stub(window.getSelection(), 'removeAllRanges');
             stubs.clickHandlerStub = sandbox.stub(annotator, '_highlightClickHandler');
         });
-        it('should call the on mouse movement, remove all ranges, and return if there are active hover or hovering annotations', () => {
-            const thread = { onMousemove: sandbox.stub() };
-            stubs.highlightsWithStatesStub.returns([thread]);
 
-            annotator._highlightMouseupHandler({ x: 0, y: 0 });
-            expect(stubs.highlightsWithStatesStub).to.be.called;
-            expect(thread.onMousemove).to.be.called;
-            expect(stubs.windowStub).to.be.called;
-            expect(stubs.createHandlerStub).to.not.be.called;
+        it('should call highlightCreateHandler if not on mobile, and the user double clicked', () => {
+            annotator._highlightMouseupHandler({ type: 'dblclick' });
+
+            expect(stubs.createHandlerStub).to.be.called;
             expect(stubs.clickHandlerStub).to.not.be.called;
+            expect(annotator._isCreatingHighlight).to.be.false;
         });
 
-        it('should do nothing, call highlightClickHandler if on mobile, and the mouse did not move', () => {
+        it('should call highlightClickHandler if not on mobile, and the mouse did not move', () => {
             annotator._highlightMouseupHandler({ x: 0, y: 0 });
-            expect(stubs.highlightsWithStatesStub).to.be.called;
-            expect(stubs.windowStub).to.not.be.called;
-            expect(stubs.threadStub).to.not.be.called;
+
             expect(stubs.createHandlerStub).to.not.be.called;
             expect(stubs.clickHandlerStub).to.be.called;
+            expect(annotator._isCreatingHighlight).to.be.false;
         });
     });
+
     describe('_highlightCreateHandler()', () => {
         it('should stop event propogation', () => {
             const event = new Event({ x: 1, y: 1 });

@@ -17,9 +17,10 @@ import {
 } from '../../constants';
 
 /**
- * Create a label
- * @param {string} text The text to put in the label
- * @returns {HtmlElement} The newly created label element
+ * Create a label element.
+ *
+ * @param {string} [text] The text to be displayed
+ * @returns {HTMLElement} The newly created label element
  */
 function createLabel(text = '') {
     const label = document.createElement('div');
@@ -29,9 +30,10 @@ function createLabel(text = '') {
 }
 
 /**
- * Create a button
+ * Create a button element.
+ *
  * @param {string} [text] Optional text to be displayed inside of the button
- * @returns {HtmlElement} The newly created button element
+ * @returns {HTMLElement} The newly created button element
  */
 function createButton(text = '') {
     const button = document.createElement('button');
@@ -41,7 +43,7 @@ function createButton(text = '') {
 }
 
 /**
- * Create a checkbox
+ * Create a checkbox.
  * @returns {HtmlElement} The newly created checkbox element
  */
 function createCheckbox() {
@@ -51,11 +53,12 @@ function createCheckbox() {
 }
 
 /**
- * Create a pullup element
+ * Create a pullup element.
  * @returns {HtmlElement} The newly created pullup element
  */
 function createPullup() {
     const pullupEl = document.createElement('div');
+    // Separate add() calls for compatability
     pullupEl.classList.add(CSS_CLASS_OVERLAY);
     pullupEl.classList.add(CSS_CLASS_PULLUP);
     pullupEl.classList.add(CSS_CLASS_HIDDEN);
@@ -63,9 +66,10 @@ function createPullup() {
 }
 
 /**
- * Create an element with a label, as a row
+ * Create an element with a label, as a row.
+ *
  * @param {string} [labelText] The text to display as the row label
- * @returns {HtmlElement} The row element created
+ * @returns {HTMLElement} The row element created
  */
 function createRow(labelText) {
     const rowEl = document.createElement('div');
@@ -80,14 +84,15 @@ function createRow(labelText) {
 }
 
 /**
- * Create a dropdown for the settings panel
+ * Create a dropdown for the settings panel.
+ *
  * @param {string} labelText A label to display above the dropdown
  * @param {string} listText The default text to display inside of the dropdown, when closed and
  * no other options yet selected
  * @param {Object[]} [listContent] A list of descriptors to fill the dropdown with text and actions. { text, callback }
  * entry.text {string} Text content displayed as the dropdown item
  * entry.callback {Function} A function to be called on the 'click' event of the dropdown
- * @returns {HtmlElement} The settings dropdown that can be added to the settings panel
+ * @returns {HTMLElement} The settings dropdown that can be added to the settings panel
  */
 function createDropdown(labelText = '', listText = '', listContent = []) {
     const wrapperEl = createRow(labelText);
@@ -140,7 +145,8 @@ function createDropdown(labelText = '', listText = '', listContent = []) {
 }
 
 /**
- * Used to register HTMLElements and events for easy management and destruction later
+ * Used to register HTMLElements and events for easy management and destruction later.
+ *
  * @class
  */
 class UIRegistry {
@@ -180,7 +186,8 @@ class UIRegistry {
     }
 
     /**
-     * Unregister and remove the UI item
+     * Unregister and remove the UI item.
+     *
      * @param {Object} item The ui item created in registerUiItem()
      * @returns {void}
      */
@@ -208,7 +215,8 @@ class UIRegistry {
     }
 
     /**
-     * Unregister the entire ui registry
+     * Unregister the entire ui registry.
+     *
      * @returns {void}
      */
     unregisterUiItems() {

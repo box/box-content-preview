@@ -109,6 +109,14 @@ describe('RepStatus', () => {
             assert.isTrue(resolveStub.called);
         });
 
+        it('should resolve if the rep status is viewable', () => {
+            const resolveStub = sandbox.spy(repStatus, 'resolve');
+            repStatus.representation.status = 'viewable';
+
+            repStatus.handleResponse();
+            assert.isTrue(resolveStub.called);
+        });
+
         it('should log that file needs conversion if status is pending and logger exists', () => {
             repStatus.logger = { setUnConverted: sandbox.stub() };
             repStatus.representation.status = 'pending';

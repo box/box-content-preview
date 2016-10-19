@@ -1,4 +1,5 @@
 import AssetLoader from '../../asset-loader';
+import { requires360Viewer } from '../../util';
 
 const STATIC_URI = 'third-party/media/';
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
@@ -63,6 +64,18 @@ class MediaLoader extends AssetLoader {
     constructor() {
         super();
         this.viewers = VIEWERS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    determineViewer(file, disabledViewers = []) {
+        const viewer = super.determineViewer(file, disabledViewers);
+        if (viewer && requires360Viewer(file)) {
+            throw new Error(__('error_unsupported'));
+        }
+
+        return viewer;
     }
 }
 
