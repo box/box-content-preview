@@ -50,7 +50,6 @@ function sceneEntities(prefix) {
     }, {
         id: 'SCENE_ID',
         type: 'prefab',
-        // The scene contains the lights and camera
         properties: {
             rootObjectId: 'SCENE_ROOT_ID'
         }

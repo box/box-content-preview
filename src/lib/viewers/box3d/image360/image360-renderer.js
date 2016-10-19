@@ -35,7 +35,6 @@ class Image360Renderer extends Box3DRenderer {
      */
     destroy() {
         this.cleanupTexture();
-        this.disableVr();
         if (this.skybox) {
             this.skybox.setAttribute('skyboxTexture', null);
         }
@@ -140,7 +139,6 @@ class Image360Renderer extends Box3DRenderer {
      */
     enableVr() {
         super.enableVr();
-        this.vrEffect.scale = 0;
         this.skybox.setAttribute('stereoEnabled', true);
     }
 

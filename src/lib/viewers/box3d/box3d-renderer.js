@@ -352,7 +352,6 @@ class Box3DRenderer extends EventEmitter {
         if (!this.vrEffect) {
             return;
         }
-        this.updateVrControls();
         this.vrEffect.requestPresent();
     }
 
@@ -366,8 +365,10 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        this.vrControls.dispose();
-        this.vrControls = undefined;
+        if (this.vrControls) {
+            this.vrControls.dispose();
+            this.vrControls = undefined;
+        }
 
         this.enableCameraControls();
         this.reset();
