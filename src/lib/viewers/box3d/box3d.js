@@ -16,6 +16,9 @@ import {
     EVENT_TOGGLE_VR
 } from './box3d-constants';
 
+// Milliseconds to wait for model to load before cancelling Preview
+const LOAD_TIMEOUT = 50000;
+
 /**
  * Box3D
  * This is the entry point for Box3D Preview Base
@@ -26,6 +29,7 @@ class Box3D extends Base {
     /**
      * Provides base functionality that ties together submodules that handle things like
      * Rendering webgl, Rendering UI, and handling communication between these
+     *
      * @inheritdoc
      * @constructor
      * @param {string|HTMLElement} container node
@@ -44,10 +48,15 @@ class Box3D extends Base {
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_BOX3D;
 
-        const sdkOpts = { token: options.token, apiBase: options.api, sharedLink: options.sharedLink };
+        const sdkOpts = {
+            token: options.token,
+            apiBase: options.api,
+            sharedLink: options.sharedLink
+        };
+
         this.boxSdk = new BoxSDK(sdkOpts);
 
-        this.loadTimeout = 50000;
+        this.loadTimeout = LOAD_TIMEOUT;
 
         this.createSubModules();
         this.attachEventHandlers();
@@ -55,6 +64,7 @@ class Box3D extends Base {
 
     /**
      * Create any submodules required for previewing this document
+     *
      * @returns {void}
      */
     createSubModules() {
@@ -64,6 +74,7 @@ class Box3D extends Base {
 
     /**
      * Attaches event handlers and provides base events for controls and rendering
+     *
      * @returns {void}
      */
     attachEventHandlers() {
@@ -76,12 +87,13 @@ class Box3D extends Base {
         if (this.renderer) {
             this.renderer.on(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
-            this.renderer.on(EVENT_ERROR, this.handleRendererError);
+            this.renderer.on(EVENT_ERROR, this.handleError);
         }
     }
 
     /**
      * Detaches event handlers
+     *
      * @returns {void}
      */
     detachEventHandlers() {
@@ -94,9 +106,13 @@ class Box3D extends Base {
         if (this.renderer) {
             this.renderer.removeListener(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
+            this.renderer.removeListener(EVENT_ERROR, this.handleError);
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     @autobind
     resize() {
         super.resize();
@@ -106,26 +122,32 @@ class Box3D extends Base {
     }
 
     /**
-     * Called on preview destroy
+     * Called on preview destroy and detach communication from sub modules
+     *
      * @returns {void}
      */
     destroy() {
         super.destroy();
 
         this.detachEventHandlers();
-        this.controls.destroy();
-        this.renderer.destroy();
+
+        if (this.controls) {
+            this.controls.destroy();
+        }
+        if (this.renderer) {
+            this.renderer.destroy();
+        }
 
         this.destroyed = true;
     }
 
     /**
      * Loads a 3D Scene
+     *
      * @param {string} assetUrl The asset to load into preview
      * @returns {Promise} A promise object which will be resolved/rejected on load
      */
     load(assetUrl) {
-        // Temp hack
         this.renderer
         .load(this.appendAuthParam(assetUrl), this.options)
         .then(() => {
@@ -133,13 +155,7 @@ class Box3D extends Base {
                 return;
             }
         })
-        .catch((err) => {
-            /*eslint-disable*/
-            console.error(err.message);
-            console.error(err);
-            /*eslint-enable*/
-            this.emit(EVENT_ERROR, err.message);
-        });
+        .catch(this.handleError);
         super.load();
     }
 
@@ -153,6 +169,7 @@ class Box3D extends Base {
 
     /**
      * Handles toggle VR event
+     *
      * @returns {void}
      */
     @autobind
@@ -162,6 +179,7 @@ class Box3D extends Base {
 
     /**
      * Handle scene loaded event
+     *
      * @returns {void}
      */
     @autobind
@@ -175,6 +193,7 @@ class Box3D extends Base {
 
     /**
      * Handle show VR button event
+     *
      * @returns {void}
      */
     @autobind
@@ -184,6 +203,7 @@ class Box3D extends Base {
 
     /**
      * Handle reset event
+     *
      * @returns {void}
      */
     @autobind
@@ -191,8 +211,14 @@ class Box3D extends Base {
         this.renderer.reset();
     }
 
+    /**
+     * Handle error events and emit a message
+     *
+     * @param {Error} The error that caused this to be triggered. To be emitted.
+     * @returns {void}
+     */
     @autobind
-    handleRendererError(error) {
+    handleError(error) {
         this.emit(EVENT_ERROR, error);
     }
 }

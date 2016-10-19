@@ -2,10 +2,9 @@
 import Browser from '../../browser';
 import EventEmitter from 'events';
 import Cache from '../../cache';
-import WEBVR from './WebVR'; // TODO(jholdstock): Move this to /third-party
-import './VREffect'; // TODO(jholdstock): Move this to /third-party
-import './VRControls'; // TODO(jholdstock): Move this to /third-party
-import './VRConfig'; // For Global VR Config setup
+import '../../../third-party/model3d/WebVR/VREffect';
+import '../../../third-party/model3d/WebVR/VRControls';
+import '../../../third-party/model3d/WebVR/VRConfig';
 import {
     CACHE_KEY_BOX3D,
     EVENT_SHOW_VR_BUTTON,
@@ -26,6 +25,14 @@ const INPUT_SETTINGS = {
         position: false
     }
 };
+
+/**
+ * Detect is WebVR is available with latest API
+ * @returns {Boolean} True is we can support WebVR
+ */
+function isLatestVRAvailable() {
+    return navigator.getVRDisplays !== undefined;
+}
 
 class Box3DRenderer extends EventEmitter {
 
@@ -464,7 +471,7 @@ class Box3DRenderer extends EventEmitter {
      * @returns {void}
      */
     initVrIfPresent() {
-        if (!WEBVR.isLatestAvailable() || Box3D.isTablet()) {
+        if (!isLatestVRAvailable() || Box3D.isTablet()) {
             return;
         }
 
