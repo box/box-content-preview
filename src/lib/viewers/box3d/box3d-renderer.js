@@ -344,15 +344,14 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     * Render a single frame with the VR effect applied
+     * Request WebVR to begin rendering to the VR device.
      *
      * @returns {void}
      */
     renderVR() {
-        if (!this.vrEffect) {
-            return;
+        if (this.vrEffect) {
+            this.vrEffect.requestPresent();
         }
-        this.vrEffect.requestPresent();
     }
 
     /**
