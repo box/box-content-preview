@@ -137,7 +137,7 @@ class Model3DSettingsPullup extends EventEmitter {
         // The containing pullup element
         const pullupEl = createPullup();
         this.pullupEl = pullupEl;
-        this.uiRegistry.registerUiItem('settings-pullup-el', pullupEl);
+        this.uiRegistry.registerItem('settings-pullup-el', pullupEl);
 
         // Default Render Mode Dropdown
         const renderPanelData = [];
@@ -181,17 +181,17 @@ class Model3DSettingsPullup extends EventEmitter {
         const qualityLevelListEl = qualityPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
         this.qualityLevelListEl = qualityLevelListEl;
 
-        this.uiRegistry.registerUiItem('settings-render-mode-selector-label', this.renderModeEl, 'click', () => {
+        this.uiRegistry.registerItem('settings-render-mode-selector-label', this.renderModeEl, 'click', () => {
             projectionListEl.classList.remove(CLASS_IS_VISIBLE);
             qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
-        this.uiRegistry.registerUiItem('settings-projection-mode-selector-label', this.projectionModeEl, 'click', () => {
+        this.uiRegistry.registerItem('settings-projection-mode-selector-label', this.projectionModeEl, 'click', () => {
             renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
             qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
-        this.uiRegistry.registerUiItem('settings-quality-level-selector-label', this.qualityLevelEl, 'click', () => {
+        this.uiRegistry.registerItem('settings-quality-level-selector-label', this.qualityLevelEl, 'click', () => {
             projectionListEl.classList.remove(CLASS_IS_VISIBLE);
             renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
         });
@@ -204,7 +204,7 @@ class Model3DSettingsPullup extends EventEmitter {
         const saveRowEl = createRow();
         pullupEl.appendChild(saveRowEl);
         const saveButtonEl = createButton('Save Settings');
-        this.uiRegistry.registerUiItem('settings-save-button', saveButtonEl, 'click', this.onSaveSelected.bind(this));
+        this.uiRegistry.registerItem('settings-save-button', saveButtonEl, 'click', this.onSaveSelected.bind(this));
 
         saveButtonEl.classList.add('box-preview-btn-primary');
 
@@ -248,7 +248,7 @@ class Model3DSettingsPullup extends EventEmitter {
         const minusIconEl = document.createElement('span');
         minusIconEl.classList.add('box3d-setting-axis-rotate');
         minusIconEl.classList.add('box3d-setting-axis-rotate-left');
-        this.uiRegistry.registerUiItem(`minus-${axisLabel}-axis-icon`, minusIconEl, 'click', minusIconCallback);
+        this.uiRegistry.registerItem(`minus-${axisLabel}-axis-icon`, minusIconEl, 'click', minusIconCallback);
         axisEl.appendChild(minusIconEl);
 
         // axis label
@@ -259,7 +259,7 @@ class Model3DSettingsPullup extends EventEmitter {
         const plusIconEl = document.createElement('span');
         plusIconEl.classList.add('box3d-setting-axis-rotate');
         plusIconEl.classList.add('box3d-setting-axis-rotate-right');
-        this.uiRegistry.registerUiItem(`plus-${axisLabel}-axis-icon`, plusIconEl, 'click', plusIconCallback);
+        this.uiRegistry.registerItem(`plus-${axisLabel}-axis-icon`, plusIconEl, 'click', plusIconCallback);
         axisEl.appendChild(plusIconEl);
 
         return axisEl;
@@ -374,7 +374,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        this.uiRegistry.unregisterUiItems();
+        this.uiRegistry.unregisterAll();
         this.uiRegistry = null;
         this.projectionModeEl = null;
         this.qualityLevelEl = null;

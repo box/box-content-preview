@@ -150,7 +150,7 @@ class Box3DControls extends EventEmitter {
         }
 
         if (this.uiRegistry) {
-            this.uiRegistry.unregisterUiItems();
+            this.uiRegistry.unregisterAll();
         }
 
         this.uiRegistry = null;
