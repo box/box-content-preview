@@ -1,4 +1,4 @@
-import AssetLoader from '../../asset-loader';
+import AssetLoader from '../asset-loader';
 
 const MAX_FILE_SIZE_FOR_TEXT_VIEWER_BYTES = 250000;
 const STATIC_URI = 'third-party/text/';
@@ -60,8 +60,8 @@ class TextLoader extends AssetLoader {
         const viewer = super.determineViewer(file, disabledViewers);
 
         // Don't use text viewer if file size is greater than 250KB otherwise the browser can hang
-        if (viewer.CONSTRUCTOR === 'Text' && file.size > MAX_FILE_SIZE_FOR_TEXT_VIEWER_BYTES) {
-            return false;
+        if (viewer && viewer.CONSTRUCTOR === 'Text' && file.size > MAX_FILE_SIZE_FOR_TEXT_VIEWER_BYTES) {
+            return null;
         }
 
         return viewer;

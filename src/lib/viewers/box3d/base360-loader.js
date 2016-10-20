@@ -1,4 +1,4 @@
-import AssetLoader from '../../asset-loader';
+import AssetLoader from '../asset-loader';
 import Browser from '../../browser';
 import { requires360Viewer } from '../../util';
 

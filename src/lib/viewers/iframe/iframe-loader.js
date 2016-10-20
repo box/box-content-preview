@@ -1,4 +1,4 @@
-import AssetLoader from '../../asset-loader';
+import AssetLoader from '../asset-loader';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [

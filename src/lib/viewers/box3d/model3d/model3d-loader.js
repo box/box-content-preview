@@ -1,4 +1,4 @@
-import AssetLoader from '../../../asset-loader';
+import AssetLoader from '../../asset-loader';
 import Browser from '../../../browser';
 
 const STATIC_URI = 'third-party/model3d/';
