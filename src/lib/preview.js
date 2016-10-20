@@ -565,7 +565,7 @@ class Preview extends EventEmitter {
     getRequestHeaders(token) {
         const hints = Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4';
         const headers = {
-            'X-Rep-Hints': `3d|pdf|extracted_text|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
+            'X-Rep-Hints': `3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
         };
         return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
     }

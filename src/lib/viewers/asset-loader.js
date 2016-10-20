@@ -6,7 +6,7 @@ import {
     createAssetUrlCreator,
     getHeaders,
     get
-} from './util';
+} from '../util';
 
 class AssetLoader {
 
