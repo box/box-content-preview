@@ -22,7 +22,8 @@ const VIEWERS = [
         PREFETCH: 'xhr'
     },
     {
-        REPRESENTATION: 'extracted_text',
+        // @TODO(tjin): change this to 'text' rep once that representation is out
+        REPRESENTATION: 'original',
         EXTENSIONS: ['csv', 'tsv'],
         SCRIPTS: [`${STATIC_URI}papaparse.js`, 'csv.js'],
         STYLESHEETS: ['csv.css'],
@@ -30,7 +31,8 @@ const VIEWERS = [
         PREFETCH: 'xhr'
     },
     {
-        REPRESENTATION: 'extracted_text',
+        // @TODO(tjin): change this to 'text' rep once that representation is out
+        REPRESENTATION: 'original',
         EXTENSIONS: ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'java', 'js', 'less', 'log', 'm', 'make', 'md', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'yaml'],
         SCRIPTS: [`${STATIC_URI}highlight.min.js`, 'text.js'],
         STYLESHEETS: [`${STATIC_URI}github.css`, 'text.css'],
