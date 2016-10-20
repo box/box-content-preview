@@ -739,13 +739,9 @@ describe('doc-base', () => {
 
     describe('initPrint()', () => {
         it('should add the print notification element', () => {
-            const fetchPrintBlobStub = sandbox.stub(docBase, 'fetchPrintBlob');
-
             docBase.initPrint();
-            expect(fetchPrintBlobStub).to.be.called;
 
             const printNotificationEl = document.getElementsByClassName('box-preview-print-notification')[0];
-
             expect(printNotificationEl.parentNode).to.equal(docBase.containerEl);
         });
     });
