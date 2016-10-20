@@ -7,7 +7,6 @@ const sandbox = sinon.sandbox.create();
 const CSS_CLASS_IMAGE_360 = 'box-preview-image-360';
 
 let containerEl;
-let stubs = {};
 
 describe('image360', () => {
     before(() => {
@@ -22,7 +21,6 @@ describe('image360', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        stubs = {};
     });
 
     describe('constructor()', () => {
