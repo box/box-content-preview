@@ -43,6 +43,14 @@ describe('RepStatus', () => {
         });
     });
 
+    describe('destructor()', () => {
+        it('should clear the status timeout', () => {
+            sandbox.stub(window, 'clearTimeout');
+            repStatus.destroy();
+            expect(window.clearTimeout).to.have.been.calledWith(repStatus.statusTimeout);
+        });
+    });
+
     describe('updateStatus()', () => {
         it('should fetch latest status', () => {
             sandbox.stub(util, 'get').returns(Promise.resolve({
