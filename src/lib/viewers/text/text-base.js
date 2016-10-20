@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator';
 import Controls from '../../controls';
 import Base from '../base';
+import { CLASS_SELECTABLE } from '../../constants';
 import {
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT,
@@ -44,27 +45,45 @@ class TextBase extends Base {
     }
 
     /**
-     * Zooms in
-     * @public
+     * Zooms in.
+     *
      * @returns {void}
+     * @public
      */
     zoomIn() {
         this.zoom('in');
     }
 
     /**
-     * Zooms in
-     * @public
+     * Zooms out.
+     *
      * @returns {void}
+     * @public
      */
     zoomOut() {
         this.zoom('out');
     }
 
     /**
-     * Zooms in
-     * @private
+     * Loads content.
+     *
+     * @override
      * @returns {void}
+     */
+    load() {
+        // Enable text selection if user has download permissions
+        if (this.options.file.permissions.can_download) {
+            this.containerEl.classList.add(CLASS_SELECTABLE);
+        }
+
+        super.load();
+    }
+
+    /**
+     * Zooms in.
+     *
+     * @returns {void}
+     * @protected
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
@@ -77,9 +96,9 @@ class TextBase extends Base {
     /**
      * Handles keyboard events for media
      *
-     * @private
      * @param {string} key keydown key
      * @returns {boolean} consumed or not
+     * @protected
      */
     onKeydown(key) {
         // Return false when media controls are not ready or are focused

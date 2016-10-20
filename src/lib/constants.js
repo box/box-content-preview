@@ -24,6 +24,7 @@ export const CLASS_BOX_PREVIEW_THEME_DARK = 'box-preview-theme-dark';
 export const CLASS_FULLSCREEN = 'box-preview-is-fullscreen';
 export const CLASS_INVISIBLE = 'box-preview-is-invisible';
 export const CLASS_IS_VISIBLE = 'box-preview-is-visible';
+export const CLASS_SELECTABLE = 'box-preview-is-selectable';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;
