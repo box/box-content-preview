@@ -1,4 +1,4 @@
-import AssetLoader from '../../asset-loader';
+import AssetLoader from '../asset-loader';
 import { requires360Viewer } from '../../util';
 
 const STATIC_URI = 'third-party/media/';

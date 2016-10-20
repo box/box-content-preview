@@ -1,4 +1,4 @@
-import AssetLoader from '../../asset-loader';
+import AssetLoader from '../asset-loader';
 
 const VIEWERS = [{
     REPRESENTATION: 'original',
