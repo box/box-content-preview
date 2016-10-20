@@ -28,6 +28,15 @@ class RepStatus {
     }
 
     /**
+     * [destructor]
+     *
+     * @returns {void}
+     */
+    destroy() {
+        clearTimeout(this.statusTimeout);
+    }
+
+    /**
      * Fetches status of a representation asset
      *
      * @private
