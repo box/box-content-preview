@@ -29,8 +29,7 @@ const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const MIN_RANGE_REQUEST_SIZE_BYTES = 5242880; // 5MB
-const RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
+const RANGE_REQUEST_CHUNK_SIZE = 524288; // 512KB
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = Browser.isMobile() ? 500 : 250;
@@ -563,13 +562,8 @@ class DocBase extends Base {
         // Prevents referrer leak and opener hijacking, see https://mathiasbynens.github.io/rel-noopener/
         PDFJS.externalLinkRel = 'noopener noreferrer';
 
-        // Disable range requests for files smaller than the minimum size
-        PDFJS.disableRange = (this.options.file && this.options.file.size) ?
-            this.options.file.size < MIN_RANGE_REQUEST_SIZE_BYTES :
-            false;
-
-        // Disable range requests for Safari, see: https://github.com/mozilla/pdf.js/issues/4927
-        PDFJS.disableRange = PDFJS.disableRange || Browser.getName() === 'Safari';
+        // Disable range requests for iOS Safari - mobile Safari caches ranges incorrectly
+        PDFJS.disableRange = PDFJS.disableRange || (Browser.isIOS() && Browser.getName() === 'Safari');
 
         // Disable range requests for watermarked files since they are streamed
         PDFJS.disableRange = PDFJS.disableRange ||
