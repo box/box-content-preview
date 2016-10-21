@@ -43,9 +43,18 @@ function createButton(text = '') {
 }
 
 /**
+ * Create a checkbox.
+ * @returns {HtmlElement} The newly created checkbox element
+ */
+function createCheckbox() {
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    return checkbox;
+}
+
+/**
  * Create a pullup element.
- *
- * @returns {HTMLElement} The newly created pullup element
+ * @returns {HtmlElement} The newly created pullup element
  */
 function createPullup() {
     const pullupEl = document.createElement('div');
@@ -228,4 +237,12 @@ class UIRegistry {
     }
 }
 
-export { createButton, createDropdown, createLabel, createPullup, createRow, UIRegistry };
+export {
+    createButton,
+    createCheckbox,
+    createDropdown,
+    createLabel,
+    createPullup,
+    createRow,
+    UIRegistry
+};

@@ -2,7 +2,9 @@ import EventEmitter from 'events';
 import {
     UIRegistry,
     createButton,
+    createCheckbox,
     createDropdown,
+    createLabel,
     createPullup,
     createRow
 } from '../box3d-ui-utils';
@@ -20,12 +22,12 @@ import {
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
+    EVENT_SET_SKELETONS_VISIBLE,
+    EVENT_SET_WIREFRAMES_VISIBLE,
     RENDER_MODE_LIT,
     RENDER_MODE_UNLIT,
     RENDER_MODE_NORMALS,
     RENDER_MODE_SHAPE,
-    RENDER_MODE_WIRE,
-    RENDER_MODE_UNTEXTURED_WIRE,
     RENDER_MODE_UV,
     ROTATION_STEP
 } from './model3d-constants';
@@ -53,14 +55,6 @@ const RENDER_MODES = [
         text: RENDER_MODE_SHAPE,
         callback: 'onRenderModeSelected',
         args: [RENDER_MODE_SHAPE]
-    }, {
-        text: RENDER_MODE_WIRE,
-        callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_WIRE]
-    }, {
-        text: RENDER_MODE_UNTEXTURED_WIRE,
-        callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_UNTEXTURED_WIRE]
     }, {
         text: RENDER_MODE_UV,
         callback: 'onRenderModeSelected',
@@ -93,21 +87,22 @@ const QUALITY_LEVELS = [
 ];
 
 /**
- * The UI and events system necessary to run the Settings Panel
+ * The UI and events system necessary to run the Settings Panel.
  */
 class Model3DSettingsPullup extends EventEmitter {
-
     /**
      * @constructor
      */
     constructor() {
         super();
-        this.projectionModeEl = null;
-        this.qualityLevelEl = null;
-        this.projectionModeListEl = null;
-        this.qualityLevelListEl = null;
         this.renderModeEl = null;
         this.renderModeListEl = null;
+        this.showWireframesEl = null;
+        this.showSkeletonsEl = null;
+        this.projectionEl = null;
+        this.projectionListEl = null;
+        this.qualityLevelEl = null;
+        this.qualityLevelListEl = null;
         this.saveRowEl = null;
 
         this.uiRegistry = new UIRegistry();
@@ -115,130 +110,164 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Convert the callback property of a config callback to a valid callback function
+     * Convert the callback property of a config callback to a valid callback function.
+     * @method convertToValidCallback
+     * @private
      * @param {Object} configEntry A descriptor for the callback.
-     * @param {Function} configEntry.callback The callback function to search for and assign back to the entry
-     * @param {Array} configEntry.args Arguments to be bound to the function callback
+     * @param {Function} configEntry.callback The callback function to search for and assign back to the entry.
+     * @param {Array} configEntry.args Arguments to be bound to the function callback.
      * @returns {void}
      */
     convertToValidCallback(configEntry) {
         const entry = configEntry;
         const callback = entry.callback;
+
         if (typeof callback === 'string' && this[callback]) {
             entry.callback = this[callback].bind(this, ...entry.args);
         }
     }
 
     /**
-     * Create the ui necessary to run the Settings panel pullup
-     * @returns {HtmlElement} The pullup element for the settings panel
+     * Create the UI necessary to run the Settings panel pullup.
+     * @method createUi
+     * @private
+     * @returns {HtmlElement} The pullup element for the settings panel.
      */
     createUi() {
         // The containing pullup element
-        const pullupEl = createPullup();
-        this.pullupEl = pullupEl;
-        this.uiRegistry.registerItem('settings-pullup-el', pullupEl);
+        this.pullupEl = createPullup();
+        this.uiRegistry.registerItem('settings-pullup-el', this.pullupEl);
 
-        // Default Render Mode Dropdown
-        const renderPanelData = [];
-        RENDER_MODES.forEach((entry) => {
+        // Render Mode dropdown
+        const renderPanelData = RENDER_MODES.map((entry) => {
             const entryCopy = Object.assign({}, entry);
             this.convertToValidCallback(entryCopy);
-            renderPanelData.push(entryCopy);
+            return entryCopy;
         });
+
         const renderModeDropdownEl = createDropdown('Render Mode', 'Lit', renderPanelData);
         this.renderModeEl = renderModeDropdownEl.querySelector('button');
-        pullupEl.appendChild(renderModeDropdownEl);
+        this.pullupEl.appendChild(renderModeDropdownEl);
 
-        // Default Camera Projection Dropdown
-        const projectionPanelData = [];
-        PROJECTION_MODES.forEach((entry) => {
+        // Wireframe option
+        const wireframeRowEl = createRow();
+        this.showWireframesEl = createCheckbox();
+        const wireframeLabelEl = createLabel('Show wireframes');
+        wireframeRowEl.appendChild(this.showWireframesEl);
+        wireframeRowEl.appendChild(wireframeLabelEl);
+        this.pullupEl.appendChild(wireframeRowEl);
+
+        this.showWireframesEl.addEventListener('click', () => {
+            this.onShowWireframesToggled();
+        });
+
+        // Skeleton option
+        const skeletonRowEl = createRow();
+        this.showSkeletonsEl = createCheckbox();
+        const skeletonLabelEl = createLabel('Show skeletons');
+        skeletonRowEl.appendChild(this.showSkeletonsEl);
+        skeletonRowEl.appendChild(skeletonLabelEl);
+        this.pullupEl.appendChild(skeletonRowEl);
+
+        this.showSkeletonsEl.addEventListener('click', () => {
+            this.onShowSkeletonsToggled();
+        });
+
+        // Camera Projection dropdown
+        const projectionPanelData = PROJECTION_MODES.map((entry) => {
             const entryCopy = Object.assign({}, entry);
             this.convertToValidCallback(entryCopy);
-            projectionPanelData.push(entryCopy);
+            return entryCopy;
         });
-        const projectionPanelRowEl = createDropdown('Camera Projection',
-            'Perspective', projectionPanelData);
-        this.projectionModeEl = projectionPanelRowEl.querySelector('button');
-        pullupEl.appendChild(projectionPanelRowEl);
 
-        // Default Quality Level Dropdown
-        const qualityPanelData = [];
-        QUALITY_LEVELS.forEach((entry) => {
+        const projectionPanelRowEl = createDropdown('Camera Projection', 'Perspective',
+            projectionPanelData);
+        this.projectionEl = projectionPanelRowEl.querySelector('button');
+        this.pullupEl.appendChild(projectionPanelRowEl);
+
+        // Quality Level dropdown
+        const qualityPanelData = QUALITY_LEVELS.map((entry) => {
             const entryCopy = Object.assign({}, entry);
             this.convertToValidCallback(entryCopy);
-            qualityPanelData.push(entryCopy);
+            return entryCopy;
         });
-        const qualityPanelRowEl = createDropdown('Render Quality',
-            'Auto', qualityPanelData);
+
+        const qualityPanelRowEl = createDropdown('Render Quality', 'Auto', qualityPanelData);
         this.qualityLevelEl = qualityPanelRowEl.querySelector('button');
-        pullupEl.appendChild(qualityPanelRowEl);
+        this.pullupEl.appendChild(qualityPanelRowEl);
 
-        const renderModeListEl = renderModeDropdownEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
-        this.renderModeListEl = renderModeListEl;
-        const projectionListEl = projectionPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
-        this.projectionModeListEl = projectionListEl;
-        const qualityLevelListEl = qualityPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
-        this.qualityLevelListEl = qualityLevelListEl;
+        // Set up "click" handlers for the dropdown menus.
+        this.renderModeListEl = renderModeDropdownEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
+        this.projectionListEl = projectionPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
+        this.qualityLevelListEl = qualityPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
 
         this.uiRegistry.registerItem('settings-render-mode-selector-label', this.renderModeEl, 'click', () => {
-            projectionListEl.classList.remove(CLASS_IS_VISIBLE);
-            qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
+            this.projectionListEl.classList.remove(CLASS_IS_VISIBLE);
+            this.qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
-        this.uiRegistry.registerItem('settings-projection-mode-selector-label', this.projectionModeEl, 'click', () => {
-            renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
-            qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
+        this.uiRegistry.registerItem('settings-projection-mode-selector-label', this.projectionEl, 'click', () => {
+            this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
+            this.qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
         this.uiRegistry.registerItem('settings-quality-level-selector-label', this.qualityLevelEl, 'click', () => {
-            projectionListEl.classList.remove(CLASS_IS_VISIBLE);
-            renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
+            this.projectionListEl.classList.remove(CLASS_IS_VISIBLE);
+            this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
-        // Axis Rotation Icons
+        // Axis Rotation icons
+        const rotateRowEl = createRow('Rotate Model');
         const axisRowEl = this.createAxisWidget();
-        pullupEl.appendChild(axisRowEl);
+        this.pullupEl.appendChild(rotateRowEl);
+        this.pullupEl.appendChild(axisRowEl);
 
         // Save button
-        const saveRowEl = createRow();
-        pullupEl.appendChild(saveRowEl);
+        this.saveRowEl = createRow();
         const saveButtonEl = createButton('Save Settings');
-        this.uiRegistry.registerItem('settings-save-button', saveButtonEl, 'click', this.onSaveSelected.bind(this));
+        this.uiRegistry.registerItem('settings-save-button', saveButtonEl, 'click', () => {
+            this.onSaveSelected();
+        });
 
         saveButtonEl.classList.add('box-preview-btn-primary');
-
-        saveRowEl.appendChild(saveButtonEl);
-
-        this.saveRowEl = saveRowEl;
+        this.saveRowEl.appendChild(saveButtonEl);
+        this.pullupEl.appendChild(this.saveRowEl);
 
         return this.pullupEl;
     }
 
     /**
-     * Create the axis rotation widget
-     * @returns {HtmlElement} The newly created rotation axis widget element
+     * Create the axis rotation widget.
+     * @method createAxisWidget
+     * @private
+     * @returns {HtmlElement} The newly created rotation axis widget element.
      */
     createAxisWidget() {
-        const rowEl = createRow('Rotate Model');
+        const rowEl = createRow();
 
         rowEl.appendChild(this.createRotationAxis(AXIS_X,
-            this.onAxisRotationSelected.bind(this, AXIS_X, -1),
-            this.onAxisRotationSelected.bind(this, AXIS_X, 1)));
+            () => this.onAxisRotationSelected(AXIS_X, -1),
+            () => this.onAxisRotationSelected(AXIS_X, 1)));
+
         rowEl.appendChild(this.createRotationAxis(AXIS_Y,
-            this.onAxisRotationSelected.bind(this, AXIS_Y, -1),
-            this.onAxisRotationSelected.bind(this, AXIS_Y, 1)));
+            () => this.onAxisRotationSelected(AXIS_Y, -1),
+            () => this.onAxisRotationSelected(AXIS_Y, 1)));
+
         rowEl.appendChild(this.createRotationAxis(AXIS_Z,
-            this.onAxisRotationSelected.bind(this, AXIS_Z, 1),
-            this.onAxisRotationSelected.bind(this, AXIS_Z, -1)));
+            () => this.onAxisRotationSelected(AXIS_Z, 1),
+            () => this.onAxisRotationSelected(AXIS_Z, -1)));
 
         return rowEl;
     }
 
     /**
-     * Create a single axis rotation widget
-     * @param {string}  axisLabel The label for the axis
-     * @returns {HtmlElement}  The axis widget for the supplied axis
+     * Create a single axis rotation widget.
+     * @method createRotationAxis
+     * @private
+     * @param {String} axisLabel The label for the axis.
+     * @param {Function} minusIconCallback Called when the "minus" icon is clicked.
+     * @param {Function} plusIconCallback Called when the "plus" icon is clicked.
+     * @returns {HtmlElement} The axis widget for the supplied axis.
      */
     createRotationAxis(axisLabel, minusIconCallback, plusIconCallback) {
         const axisEl = document.createElement('div');
@@ -266,8 +295,10 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Emit a message with the render mode that has been selected
-     * @param {string} mode The render mode to emit a message about
+     * Emit a message with the render mode that has been selected.
+     * @method onRenderModeSelected
+     * @private
+     * @param {String} mode The render mode to emit a message about.
      * @returns {void}
      */
     onRenderModeSelected(mode) {
@@ -275,21 +306,24 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Emit an axis rotation event with the axis of rotation and direction to rotate
-     * @param {string} rotationAxis The axis to rotate on
-     * @param {Int} direction The direction to rotate. IE) 1 is positive rotation while -1 is negative rotation
+     * Emit an axis rotation event with the axis of rotation and direction to rotate.
+     * @method onAxisRotationSelected
+     * @private
+     * @param {String} rotationAxis The axis to rotate on.
+     * @param {Integer} direction The direction to rotate: 1 is positive rotation and -1 is negative.
      * @returns {void}
      */
     onAxisRotationSelected(rotationAxis, direction) {
         const axis = {};
         axis[rotationAxis] = direction * ROTATION_STEP;
-
         this.emit(EVENT_ROTATE_ON_AXIS, axis);
     }
 
     /**
-     * Set the current projection mode being used
-     * @param {string} mode The projection mode to use
+     * Set the current projection mode being used.
+     * @method onProjectionSelected
+     * @private
+     * @param {String} mode The projection mode to use.
      * @returns {void}
      */
     onProjectionSelected(mode) {
@@ -297,8 +331,10 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Set the current quality level used for rendering
-     * @param {string} level The quality level to use
+     * Set the current quality level used for rendering.
+     * @method onQualityLevelSelected
+     * @private
+     * @param {String} level The quality level to use.
      * @returns {void}
      */
     onQualityLevelSelected(level) {
@@ -306,17 +342,41 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Notify listeners of save event
+     * Notify listeners of save event.
+     * @method onSaveSelected
+     * @private
      * @returns {void}
      */
     onSaveSelected() {
         // We can cheat because the strings in the label match the metadata values
-        this.emit(EVENT_SAVE_SCENE_DEFAULTS, this.renderModeEl.textContent, this.projectionModeEl.textContent);
+        this.emit(EVENT_SAVE_SCENE_DEFAULTS, this.renderModeEl.textContent, this.projectionEl.textContent);
+    }
+
+    /**
+     * Notify listeners that the show skeletons checkbox was toggled.
+     * @method onShowSkeletonsToggled
+     * @private
+     * @returns {void}
+     */
+    onShowSkeletonsToggled() {
+        this.emit(EVENT_SET_SKELETONS_VISIBLE, this.showSkeletonsEl.checked);
+    }
+
+    /**
+     * Notify listeners that the show wireframes checkbox was toggled.
+     * @method onShowWireframeToggled
+     * @private
+     * @returns {void}
+     */
+    onShowWireframesToggled() {
+        this.emit(EVENT_SET_WIREFRAMES_VISIBLE, this.showWireframesEl.checked);
     }
 
     /**
      * Set the current render mode being shown, in the dropdown label
-     * @param {string} mode The render mode name to display
+     * @method setCurrentRenderMode
+     * @public
+     * @param {String} mode The render mode name to display.
      * @returns {void}
      */
     setCurrentRenderMode(mode) {
@@ -324,16 +384,20 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Set the current projection mode being used, in the dropdown label
-     * @param {string} mode The projection mode name to display
+     * Set the current projection mode being used, in the dropdown label.
+     * @method setCurrentProjectionMode
+     * @public
+     * @param {String} mode The projection mode name to display
      * @returns {void}
      */
     setCurrentProjectionMode(mode) {
-        this.projectionModeEl.textContent = mode;
+        this.projectionEl.textContent = mode;
     }
 
     /**
-     * Hide the save button
+     * Hide the save button.
+     * @method hideSaveButton
+     * @public
      * @returns {void}
      */
     hideSaveButton() {
@@ -341,7 +405,9 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Show the settings panel
+     * Show the settings panel.
+     * @method show
+     * @public
      * @returns {void}
      */
     show() {
@@ -349,40 +415,48 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Hide the settings panel, and close inner dropdowns
+     * Hide the settings panel, and close inner dropdowns.
+     * @method hide
+     * @public
      * @returns {void}
      */
     hide() {
         this.pullupEl.classList.add(CSS_CLASS_HIDDEN);
-        this.projectionModeListEl.classList.remove(CLASS_IS_VISIBLE);
+        this.projectionListEl.classList.remove(CLASS_IS_VISIBLE);
         this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
         this.qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
     }
 
     /**
-     * Toggle display of settings panel, make sure dropdowns are closed
+     * Toggle display of settings panel, make sure dropdowns are closed.
+     * @method toggle
+     * @public
+     * @returns {void}
      */
     toggle() {
         this.pullupEl.classList.toggle(CSS_CLASS_HIDDEN);
-        this.projectionModeListEl.classList.remove(CLASS_IS_VISIBLE);
+        this.projectionListEl.classList.remove(CLASS_IS_VISIBLE);
         this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
         this.qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
     }
 
     /**
-     * Destroy everything
+     * Release resources created by this pullup.
+     * @method destroy
+     * @public
      * @returns {void}
      */
     destroy() {
         this.uiRegistry.unregisterAll();
         this.uiRegistry = null;
-        this.projectionModeEl = null;
-        this.qualityLevelEl = null;
         this.renderModeEl = null;
-        this.pullupEl = null;
+        this.showWireframesEl = null;
+        this.showSkeletonsEl = null;
+        this.projectionEl = null;
+        this.qualityLevelEl = null;
         this.saveRowEl = null;
+        this.pullupEl = null;
     }
-
 }
 
 export default Model3DSettingsPullup;

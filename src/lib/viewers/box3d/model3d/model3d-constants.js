@@ -1,11 +1,14 @@
 // Events
 export const EVENT_METADATA_UPDATE_FAILURE = 'metdataUpdateFail';
 export const EVENT_METADATA_UPDATE_SUCCESS = 'metdataUpdateSuccess';
+export const EVENT_RESET_SKELETONS = 'resetSkeletons';
 export const EVENT_ROTATE_ON_AXIS = 'rotateOnAxis';
 export const EVENT_SAVE_SCENE_DEFAULTS = 'sceneSave';
 export const EVENT_SET_RENDER_MODE = 'setRenderMode';
 export const EVENT_SET_CAMERA_PROJECTION = 'setCameraProjection';
 export const EVENT_SET_QUALITY_LEVEL = 'setQualityLevel';
+export const EVENT_SET_SKELETONS_VISIBLE = 'setSkeletonsVisible';
+export const EVENT_SET_WIREFRAMES_VISIBLE = 'setWireframesVisible';
 export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 
 // 3D Scene Params
@@ -36,7 +39,5 @@ export const RENDER_MODE_LIT = 'Lit';
 export const RENDER_MODE_UNLIT = 'Unlit';
 export const RENDER_MODE_NORMALS = 'Normals';
 export const RENDER_MODE_SHAPE = 'Shape';
-export const RENDER_MODE_WIRE = 'Wireframe';
-export const RENDER_MODE_UNTEXTURED_WIRE = 'Untextured Wireframe';
 export const RENDER_MODE_UV = 'UV Overlay';
 export const ROTATION_STEP = 90;
