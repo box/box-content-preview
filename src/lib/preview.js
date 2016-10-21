@@ -15,7 +15,7 @@ import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid }
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
-const PREFETCH_COUNT = 3; // number of files to prefetch
+const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const RETRY_TIMEOUT = 500; // retry network request interval for a file
 const RETRY_COUNT = 5; // number of times to retry network request for a file
@@ -319,7 +319,8 @@ class Preview extends EventEmitter {
         });
 
         // Load the representation assets
-        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
+        this.repStatus = new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS);
+        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(this.repStatus);
         promiseToGetRepresentationStatusSuccess.catch((err) => {
             this.triggerError((err instanceof Error) ? err : new Error(__('error_reupload')));
         });
@@ -609,10 +610,18 @@ class Preview extends EventEmitter {
                     cache.set(file.id, file);
                     this.prefetchContent(file, token);
                 })
-                .catch(() => {});
+                .catch(() => {
+                    /* eslint-disable no-console */
+                    console.log(`Error prefetching file ID ${id}`);
+                    /* eslint-enable no-console */
+                });
             });
         })
-        .catch(() => {});
+        .catch(() => {
+            /* eslint-disable no-console */
+            console.log('Error prefetching files');
+            /* eslint-enable no-console */
+        });
     }
 
     /**
@@ -727,12 +736,18 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Destroys the preview
+     * Destroys the preview.
      *
      * @private
      * @returns {void}
      */
     destroy() {
+        // Stop polling for rep-status
+        if (this.repStatus) {
+            this.repStatus.destroy();
+        }
+
+        // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             this.viewer.destroy();
         }

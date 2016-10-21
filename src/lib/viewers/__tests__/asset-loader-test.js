@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import AssetLoader from '../asset-loader';
-import * as util from '../util';
+import * as util from '../../util';
 
 let loader;
 const sandbox = sinon.sandbox.create();

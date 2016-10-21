@@ -5,6 +5,7 @@ import Image360Renderer from './image360-renderer';
 
 const Box = global.Box || {};
 const CSS_CLASS_IMAGE_360 = 'box-preview-image-360';
+const LOAD_TIMEOUT = 120000;
 
 /**
  * Image360
@@ -21,7 +22,7 @@ class Image360 extends Box3D {
         // Override timeout as we're often downloading the original representation
         // to ensure that we get the maximum resolution image. On a 3G connection,
         // the default 15 seconds is often not enough.
-        this.loadTimeout = 120000;
+        this.loadTimeout = LOAD_TIMEOUT;
     }
 
     /**

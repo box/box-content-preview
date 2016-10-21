@@ -28,16 +28,28 @@ describe('office.js', () => {
     });
 
     describe('load()', () => {
-        it('should load a xlsx file and fire load event', (done) => {
+        it('should load a xlsx file and set the file ID in src url on load event when the file is not a shared link', (done) => {
             const office = new Office('.container', {
                 file: {
-                    id: '123',
-                    extension: 'xlsx'
+                    id: '123'
                 }
             });
 
             office.on('load', () => {
                 assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
+                done();
+            });
+
+            office.load();
+        });
+
+        it('should load a xlsx file and set the shared name in src url on load event when the file is a shared link', (done) => {
+            const office = new Office('.container', {
+                sharedLink: 'https://app.box.com/s/abcd'
+            });
+
+            office.on('load', () => {
+                assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd');
                 done();
             });
 

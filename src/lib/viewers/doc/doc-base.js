@@ -148,7 +148,7 @@ class DocBase extends Base {
      * @returns {void}
      */
     print() {
-        // If print blob is still not ready, explictitly fetch it
+        // If print blob is not ready, fetch it
         if (!this.printBlob) {
             this.fetchPrintBlob(this.pdfUrl).then(this.print);
             return;
@@ -573,8 +573,6 @@ class DocBase extends Base {
         printNotificationEl.classList.add('box-preview-print-notification');
         printNotificationEl.textContent = __('print_notification');
         this.containerEl.appendChild(printNotificationEl);
-
-        this.fetchPrintBlob(this.pdfUrl);
     }
 
     /**
