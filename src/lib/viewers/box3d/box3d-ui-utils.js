@@ -103,9 +103,7 @@ function createDropdown(labelText = '', listText = '', listContent = []) {
                                     </div>`;
 
     // Button for dropdown
-    const dropdownButtonEl = document.createElement('button');
-    dropdownButtonEl.textContent = listText;
-    dropdownButtonEl.classList.add(CLASS_BOX_PREVIEW_BUTTON);
+    const dropdownButtonEl = createButton(listText);
     dropdownButtonEl.addEventListener('click', () => {
         overlayWrapperEl.classList.toggle(CLASS_IS_VISIBLE);
     });
@@ -147,46 +145,59 @@ class UIRegistry {
      */
     constructor() {
         // List of registered elements and their events
-        this.eventRegistry = {};
+        this.registry = {};
     }
 
     /**
-     * Register an element for automatic event unbinding and cleanup
+     * Register an element for automatic event unbinding and cleanup.
+     *
      * @param {string} uniqueId  A unique identifier for accessing the given element
      * @param {HTMLElement} element   The element we are registering
      * @param {string} [eventName] An event we want to bind to
      * @param {Function} [callback]  A function we want to call, on the provided event happening
      * @returns {void}
      */
-    registerUiItem(uniqueId, element, eventName, callback) {
-        if (!this.eventRegistry[uniqueId]) {
-            this.eventRegistry[uniqueId] = {
+    registerItem(uniqueId, element, eventName, callback) {
+        if (!uniqueId) {
+            throw new Error('registerItem() requires a unique id');
+        }
+
+        if (!element) {
+            throw new Error('registerItem() requires an element');
+        }
+
+        // Make a new entry for events to be attached to the supplied element @ uniqueId
+        if (!this.registry[uniqueId]) {
+            this.registry[uniqueId] = {
                 el: element,
                 uuid: uniqueId,
                 events: {}
             };
         }
 
-        if (eventName && callback) {
-            element.addEventListener(eventName, callback);
-
-            const registeredEvents = this.eventRegistry[uniqueId].events;
-            registeredEvents[eventName] = registeredEvents[eventName] || [];
-            registeredEvents[eventName].push(callback);
+        if (!eventName || !callback) {
+            return;
         }
+
+        // Attach the event listener...
+        element.addEventListener(eventName, callback);
+        // ...and register its events for cleanup
+        const registeredEvents = this.registry[uniqueId].events;
+        registeredEvents[eventName] = registeredEvents[eventName] || [];
+        registeredEvents[eventName].push(callback);
     }
 
     /**
      * Unregister and remove the UI item.
      *
-     * @param {Object} item The ui item created in registerUiItem()
+     * @param {Object} item The ui item created in registerItem()
      * @returns {void}
      */
-    unregisterUiItem(item) {
+    unregisterItem(item) {
         // Assignment for modification of properties
         const uiItem = item;
 
-        if (!this.eventRegistry[uiItem.uuid]) {
+        if (!this.registry[uiItem.uuid]) {
             return;
         }
 
@@ -202,7 +213,7 @@ class UIRegistry {
             delete uiItem.el;
         });
 
-        delete this.eventRegistry[uiItem.uuid];
+        delete this.registry[uiItem.uuid];
     }
 
     /**
@@ -210,9 +221,9 @@ class UIRegistry {
      *
      * @returns {void}
      */
-    unregisterUiItems() {
-        Object.keys(this.eventRegistry).forEach((uiItem) => {
-            this.unregisterUiItem(this.eventRegistry[uiItem]);
+    unregisterAll() {
+        Object.keys(this.registry).forEach((uiItem) => {
+            this.unregisterItem(this.registry[uiItem]);
         });
     }
 }
