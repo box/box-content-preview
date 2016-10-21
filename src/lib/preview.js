@@ -29,12 +29,13 @@ const Box = global.Box || {};
 class Preview extends EventEmitter {
 
     //--------------------------------------------------------------------------
-    // Private
+    // Public
     //--------------------------------------------------------------------------
 
     /**
      * [constructor]
-     * @returns {Preview} Returns a preview
+     *
+     * @returns {Preview} Preview instance
      */
     constructor() {
         super();
@@ -71,15 +72,333 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Parses the preview options
+     * [destructor]
      *
-     * @private
-     * @param {Object} token auth token map
      * @returns {void}
      */
-    parseOptions(tokens) {
-        // Grab the options from saved preview options
-        const options = Object.assign({}, this.previewOptions);
+    destroy() {
+        // Stop polling for rep-status
+        if (this.repStatus) {
+            this.repStatus.destroy();
+        }
+
+        // Destroy viewer
+        if (this.viewer && typeof this.viewer.destroy === 'function') {
+            this.viewer.destroy();
+        }
+
+        this.viewer = undefined;
+    }
+
+    /**
+     * Primary function for showing a preview of a file.
+     *
+     * @param {string|Object} file box file object or id
+     * @param {Object} options options
+     * @returns {void}
+     */
+    show(file, options) {
+        // Save a reference to the options to be used later
+        this.previewOptions = Object.assign({}, options);
+
+        // load the preview
+        this.load(file);
+    }
+
+    /**
+     * Destroys and hides the preview.
+     *
+     * @returns {void}
+     */
+    hide() {
+        // Indicate preview is closed
+        this.open = false;
+
+        // Destroy the viewer and cleanup preview
+        this.destroy();
+
+        // Clean the UI
+        cleanup();
+
+        // Nuke the file
+        this.file = undefined;
+    }
+
+    /**
+     * Updates files to navigate between.
+     *
+     * @param {array} [collection] Updated collection of file IDs
+     * @returns {void}
+     */
+    updateCollection(collection = []) {
+        this.collection = Array.isArray(collection) ? collection : [];
+        // Also update the original collection that was saved from the initial show
+        this.previewOptions.collection = this.collection;
+        if (this.file) {
+            showNavigation(this.file.id, this.collection);
+        }
+    }
+
+    /**
+     * Updates the file cache with the provided file metadata. Can be used to
+     * improve performance if file metadata can be fetched at some point before
+     * a file is previewed. Note that we only do simple validation that the
+     * expected properties exist before caching.
+     *
+     * @param {array|Object} [fileMetadata] Array or single file metadata to cache
+     * @returns {void}
+     */
+    updateFileCache(fileMetadata = []) {
+        let files = fileMetadata;
+        if (!Array.isArray(files)) {
+            files = [fileMetadata];
+        }
+
+        files.forEach((file) => {
+            if (checkFileValid(file)) {
+                cache.set(file.id, file);
+            } else {
+                /* eslint-disable no-console */
+                console.error('[Preview SDK] Tried to cache invalid file: ', file);
+                /* eslint-enable no-console */
+            }
+        });
+    }
+
+    /**
+     * Returns the current viewer.
+     *
+     * @returns {Object|undefined} Current viewer
+     */
+    getCurrentViewer() {
+        return this.viewer;
+    }
+
+    /**
+     * Returns the current file being previewed.
+     *
+     * @returns {Object|null} Current file
+     */
+    getCurrentFile() {
+        return this.file;
+    }
+
+    /**
+     * Returns the current file being previewed.
+     *
+     * @returns {Object|null} Current collection
+     */
+    getCurrentCollection() {
+        return this.collection;
+    }
+
+    /**
+     * Returns the list of viewers that Preview supports.
+     *
+     * @returns {array} List of supported viewers
+     */
+    getViewers() {
+        let viewers = [];
+        this.loaders.forEach((loader) => {
+            viewers = viewers.concat(loader.getViewers());
+        });
+        return viewers;
+    }
+
+    /**
+     * Prefetches the viewers. If specific viewer names are passed in, only
+     * prefetch assets for those viewers. Otherwise, prefetch assets for
+     * all viewers.
+     *
+     * @param {array} [viewerNames] Names of specific viewers to prefetch assets for
+     * @returns {void}
+     */
+    prefetchViewers(viewerNames = []) {
+        let viewers = this.getViewers();
+
+        // Filter down to specified viewers
+        if (viewerNames.length) {
+            viewers = viewers.filter((viewer) => {
+                return viewerNames.indexOf(viewer.CONSTRUCTOR) !== -1;
+            });
+        }
+
+        const loader = this.loaders[0]; // use any loader
+        viewers.forEach((viewer) => {
+            loader.prefetchAssets(viewer, this.location);
+        });
+    }
+
+    /**
+     * Disables one or more viewers.
+     *
+     * @param {string|Array} viewers destroys the container contents
+     * @returns {void}
+     */
+    disableViewers(viewers) {
+        if (Array.isArray(viewers)) {
+            viewers.forEach((viewer) => {
+                this.disabledViewers[viewer] = 1;
+            });
+        } else if (viewers) {
+            this.disabledViewers[viewers] = 1;
+        }
+    }
+
+    /**
+     * Enables one or more viewers.
+     *
+     * @param {string|Array} viewers destroys the container contents
+     * @returns {void}
+     */
+    enableViewers(viewers) {
+        if (Array.isArray(viewers)) {
+            viewers.forEach((viewer) => {
+                delete this.disabledViewers[viewer];
+            });
+        } else if (viewers) {
+            delete this.disabledViewers[viewers];
+        }
+    }
+
+    /**
+     * Resizes the preview.
+     *
+     * @returns {void}
+     */
+    resize() {
+        if (this.viewer && typeof this.viewer.resize === 'function') {
+            this.viewer.resize();
+        }
+    }
+
+    /**
+     * Prints the file being previewed if the viewer supports printing.
+     *
+     * @returns {void}
+     */
+    print() {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print')) {
+            this.viewer.print();
+        }
+    }
+
+    /**
+     * Downloads the file being previewed.
+     *
+     * @returns {void}
+     */
+    download() {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
+            get(getDownloadURL(this.file.id, this.options.api), this.getRequestHeaders())
+            .then((data) => {
+                openUrlInsideIframe(data.download_url);
+            });
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * Initial method for loading a preview.
+     *
+     * @param {string|Object} file File ID or well-formed file object to preview
+     * @returns {void}
+     * @private
+     */
+    load(file) {
+        // Indicate preview is open
+        this.open = true;
+
+        // Init performance logging
+        this.logger = new Logger(this.location.locale);
+
+        // Clear any existing retry timeouts
+        clearTimeout(this.retryTimeout);
+
+        // Save reference to the currently shown file, if any
+        const current = this.file ? this.file.id : undefined;
+
+        // Check if a file id was passed in or a well formed file object
+        // Cache the file in the files array so that we don't prefetch it.
+        // If we don't have the file data, we create an empty file object.
+        // If we have the file data, we just use that.
+        if (typeof file === 'string') {
+            // String file id was passed in, check if its in the cache
+            this.file = cache.get(file) || { id: file };
+        } else {
+            // File object was passed in, treat it like cached
+            this.file = file;
+        }
+
+        // If we are trying to load the same file again, only try 5 times
+        // Don't want to try to load the file multiple times in
+        if (this.file.id === current) {
+            this.retryCount += 1;
+        } else {
+            this.retryCount = 0;
+        }
+
+        // Fetch access tokens before doing anything
+        getTokens(this.file.id, this.previewOptions.token)
+        .then(this.loadPreviewWithTokens)
+        .catch(this.triggerFetchError);
+    }
+
+    /**
+     * Loads preview for the current file given access tokens.
+     *
+     * @param {Object} tokenMap Map of file ID to access token
+     * @returns {void}
+     * @private
+     */
+    loadPreviewWithTokens(tokenMap) {
+        // Parse the preview options supplied by show()
+        this.parseOptions(this.previewOptions, tokenMap);
+
+        // Setup the shell and loading UI
+        this.container = setup(this.options, this.keydownHandler, this.navigateLeft, this.navigateRight, this.getGlobalMousemoveHandler());
+        showLoadingIndicator();
+
+        // Show download button while preview is loading
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
+            showLoadingDownloadButton(this.download);
+        }
+
+        // Update navigation
+        showNavigation(this.file.id, this.collection);
+
+        // Cache the file
+        cache.set(this.file.id, this.file);
+
+        // Normalize files array by putting current file inside it
+        // if it was is empty. If its not empty, then it is assumed
+        // that current file is already inside files array.
+        if (this.collection.length === 0) {
+            this.collection = [this.file.id];
+        }
+
+        if (checkFileValid(this.file)) {
+            // Cache hit, use that.
+            this.loadFromCache();
+        } else {
+            // Cache miss, fetch from the server.
+            this.loadFromServer();
+        }
+    }
+
+    /**
+     * Parses preview options.
+     *
+     * @param {Object} previewOptions Options specified by show()
+     * @param {Object} token Map of file ID to access token
+     * @returns {void}
+     * @private
+     */
+    parseOptions(previewOptions, tokenMap) {
+        const options = Object.assign({}, previewOptions);
 
         // Reset all options
         this.options = {};
@@ -88,7 +407,7 @@ class Preview extends EventEmitter {
         this.options.container = options.container;
 
         // Authorization token
-        this.options.token = tokens[this.file.id];
+        this.options.token = tokenMap[this.file.id];
 
         // Shared link URL
         this.options.sharedLink = options.sharedLink;
@@ -129,92 +448,10 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Loads the preview for a file.
+     * Loads a preview from the cache.
      *
-     * @param {string|Object} file File to preview
-     * @private
      * @returns {void}
-     */
-    load(file) {
-        // Indicate preview is open
-        this.open = true;
-
-        // Init performance logging
-        this.logger = new Logger(this.location.locale);
-
-        // Clear any existing retry timeouts
-        clearTimeout(this.retryTimeout);
-
-        // Save reference to the currently shown file, if any
-        const current = this.file ? this.file.id : undefined;
-
-        // Check if a file id was passed in or a well formed file object
-        // Cache the file in the files array so that we don't prefetch it.
-        // If we don't have the file data, we create an empty file object.
-        // If we have the file data, we just use that.
-        if (typeof file === 'string') {
-            // String file id was passed in, check if its in the cache
-            this.file = cache.get(file) || { id: file };
-        } else {
-            // File object was passed in, treat it like cached
-            this.file = file;
-        }
-
-        // If we are trying to load the same file again, only try 5 times
-        // Don't want to try to load the file multiple times in
-        if (this.file.id === current) {
-            this.retryCount += 1;
-        } else {
-            this.retryCount = 0;
-        }
-
-        // Fetch tokens before doing anything
-        getTokens(this.file.id, this.previewOptions.token)
-        .then(this.fetchTokensResponse)
-        .catch(this.triggerFetchError);
-    }
-
-    /**
-     * Loads the preview for a file.
-     *
-     * @param {string|Object} file File to preview
      * @private
-     * @returns {void}
-     */
-    fetchTokensResponse(tokens) {
-        // Parse the preview options
-        this.parseOptions(tokens);
-
-        // Setup the UI before anything else.
-        this.container = setup(this.options, this.keydownHandler, this.navigateLeft, this.navigateRight, this.getGlobalMousemoveHandler());
-
-        // Update navigation
-        showNavigation(this.file.id, this.collection);
-
-        // Cache the file
-        cache.set(this.file.id, this.file);
-
-        // Normalize files array by putting current file inside it
-        // if it was is empty. If its not empty, then it is assumed
-        // that current file is already inside files array.
-        if (this.collection.length === 0) {
-            this.collection = [this.file.id];
-        }
-
-        if (checkFileValid(this.file)) {
-            // Cache hit, use that.
-            this.loadFromCache();
-        } else {
-            // Cache miss, fetch from the server.
-            this.loadFromServer();
-        }
-    }
-
-    /**
-     * Loads a preview from cache.
-     *
-     * @private
-     * @returns {void}
      */
     loadFromCache() {
         // Add details to the logger
@@ -230,9 +467,8 @@ class Preview extends EventEmitter {
     /**
      * Loads a preview from the server.
      *
-     * @private
-     * @param {string} id File id to preview
      * @returns {void}
+     * @private
      */
     loadFromServer() {
         get(getURL(this.file.id, this.options.api), this.getRequestHeaders())
@@ -241,11 +477,11 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Loads the file from server response
+     * Loads the preview from server response.
      *
-     * @private
      * @param {Object} file File object
      * @returns {void}
+     * @private
      */
     handleLoadResponse(file) {
         // If preview is closed don't do anything
@@ -273,10 +509,11 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Loads a viewer.
+     * Determines a viewer to use, prepare static assets and representations
+     * needed by the viewer, and finally load that viewer.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     loadViewer() {
         // If preview is closed don't do anything
@@ -287,13 +524,6 @@ class Preview extends EventEmitter {
         // Before loading a new preview check if a prior preview was showing.
         // If it was showing make sure to destroy it to do any cleanup.
         this.destroy();
-
-        showLoadingIndicator();
-
-        // Setup download button during load
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
-            showLoadingDownloadButton(this.download);
-        }
 
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
@@ -348,10 +578,10 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Loads a viewer.
+     * Attach event listeners for viewer.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     attachViewerListeners() {
         // Node requires listener attached to 'error'
@@ -380,9 +610,9 @@ class Preview extends EventEmitter {
     /**
      * Final tasks to finish loading a viewer.
      *
-     * @private
      * @param {Object} [data] Load event data
      * @returns {void}
+     * @private
      */
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
@@ -472,9 +702,8 @@ class Preview extends EventEmitter {
     /**
      * Triggers an error due to fetch.
      *
-     * @private
-     * @param {string|null|undefined|Error} reason error
      * @returns {void}
+     * @private
      */
     triggerFetchError() {
         // If preview is closed don't do anything
@@ -498,11 +727,12 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Triggers an error.
+     * Generic error handler. Shows the error viewer with the specified error
+     * message.
      *
-     * @private
      * @param {Error} reason error
      * @returns {void}
+     * @private
      */
     triggerError(err) {
         // If preview is closed don't do anything
@@ -559,9 +789,9 @@ class Preview extends EventEmitter {
     /**
      * Builds a list of required XHR headers.
      *
-     * @private
      * @param {string} [token] auth token
      * @returns {Object} Headers
+     * @private
      */
     getRequestHeaders(token) {
         const hints = Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4';
@@ -572,10 +802,11 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Prefetches a file and preview assets
+     * Prefetches file information and content for the next few files to
+     * improve preview performance for those files.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     prefetch() {
         // Don't bother prefetching when there aren't more files
@@ -591,23 +822,25 @@ class Preview extends EventEmitter {
             return;
         }
 
-        // Get auth tokens for all files we should be prefetching
+        // Get access tokens for all files we should be prefetching
         getTokens(filesToPrefetch, this.previewOptions.token)
-        .then((tokens) => {
+        .then((tokenMap) => {
             filesToPrefetch.forEach((id) => {
-                const token = tokens[id];
-
-                // If file was already cached, just prefetch content
+                const token = tokenMap[id];
                 const cachedFile = cache.get(id);
+
                 if (checkFileValid(cachedFile)) {
                     this.prefetchContent(cachedFile, token);
                     return;
                 }
 
-                // Otherwise prefetch and cache file information and content
+                // Prefetch and cache file information and content
                 get(getURL(id, this.options.api), this.getRequestHeaders(token))
                 .then((file) => {
+                    // Cache file info
                     cache.set(file.id, file);
+
+                    // Prefetch content
                     this.prefetchContent(file, token);
                 })
                 .catch(() => {
@@ -628,23 +861,25 @@ class Preview extends EventEmitter {
      * Prefetches a file's content if possible so the browser can cache the
      * content and significantly improve preview load time.
      *
-     * @private
      * @param {Object} file File metadata
      * @param {string} token Access token to fetch content with
-     * @returns {void}
+     * @returns {Promise} Promise that resolves when content is prefetched
+     * @private
      */
     prefetchContent(file, token) {
         const loader = this.getLoader(file);
         if (loader && typeof loader.prefetch === 'function') {
-            loader.prefetch(file, token, this.location, this.options.sharedLink, this.options.sharedLinkPassword);
+            return loader.prefetch(file, token, this.location, this.options.sharedLink, this.options.sharedLinkPassword);
         }
+
+        return Promise.reject();
     }
 
     /**
-     * Mouse move handler for navigation
+     * Mousemove handler for navigation.
      *
+     * @returns {Function} Throttled mousemove handler
      * @private
-     * @returns {Function} throttled mousemove handler
      */
     getGlobalMousemoveHandler() {
         if (this.throttledMousemoveHandler) {
@@ -683,11 +918,11 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Shows the preview at an index
+     * Shows a preview of a file at the specified index in the current collection.
      *
-     * @private
-     * @param {number} index index of preview
+     * @param {number} index Index of file to preview
      * @returns {void}
+     * @private
      */
     navigateToIndex(index) {
         const file = this.collection[index];
@@ -697,10 +932,10 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Shows the prior preview
+     * Shows a preview of the previous file.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     navigateLeft() {
         const currentIndex = this.collection.indexOf(this.file.id);
@@ -711,10 +946,10 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Shows the next preview
+     * Shows a preview of the next file.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     navigateRight() {
         const currentIndex = this.collection.indexOf(this.file.id);
@@ -725,45 +960,25 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Determines a preview loader
+     * Determines the appropriate viewer loader to use based on file information.
      *
-     * @private
      * @param {Object} file File to preview
-     * @returns {Object} Loader
+     * @returns {Object} Loader to use
+     * @private
      */
     getLoader(file) {
         return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
     }
 
     /**
-     * Destroys the preview.
-     *
-     * @private
-     * @returns {void}
-     */
-    destroy() {
-        // Stop polling for rep-status
-        if (this.repStatus) {
-            this.repStatus.destroy();
-        }
-
-        // Destroy viewer
-        if (this.viewer && typeof this.viewer.destroy === 'function') {
-            this.viewer.destroy();
-        }
-
-        this.viewer = undefined;
-    }
-
-    /**
-     * Keydown handler
+     * Global keydown handler for preview.
      *
      * @TODO fix multiple preview key issue
      * @TODO fire key event
      *
-     * @private
      * @param {Event} event keydown event
      * @returns {void}
+     * @private
      */
     keydownHandler(event) {
         const target = event.target;
@@ -806,235 +1021,9 @@ class Preview extends EventEmitter {
             event.stopPropagation();
         }
     }
-
-
-    //--------------------------------------------------------------------------
-    // Public
-    //--------------------------------------------------------------------------
-
-    /**
-     * Primary function to show a preview.
-     *
-     * @public
-     * @param {string|Object} file box file object or id
-     * @param {Object} options options
-     * @returns {void}
-     */
-    show(file, options) {
-        // Save a reference to the options to be used later
-        this.previewOptions = Object.assign({}, options);
-
-        // load the preview
-        this.load(file);
-    }
-
-    /**
-     * Destroys and hides the preview
-     *
-     * @public
-     * @returns {void}
-     */
-    hide() {
-        // Indicate preview is closed
-        this.open = false;
-
-        // Destroy the viewer
-        this.destroy();
-
-        // Clean the UI
-        cleanup();
-
-        // Nuke the file
-        this.file = undefined;
-    }
-
-    /**
-     * Updates files to navigate between
-     *
-     * @public
-     * @param {Array} [collection] Updated collection of file IDs
-     * @returns {void}
-     */
-    updateCollection(collection = []) {
-        this.collection = Array.isArray(collection) ? collection : [];
-        // Also update the original collection that was saved from the initial show
-        this.previewOptions.collection = this.collection;
-        if (this.file) {
-            showNavigation(this.file.id, this.collection);
-        }
-    }
-
-    /**
-     * Updates the file cache with the provided file metadata. Can be used to
-     * improve performance if file metadata can be fetched at some point before
-     * a file is previewed. Note that we do not validate the cache, the file
-     * metadata objects must have the properties FIELDS as defined in file.js.
-     *
-     * @public
-     * @param {Array|Object} [fileMetadata] Array or single file metadata to cache
-     * @returns {void}
-     */
-    updateFileCache(fileMetadata = []) {
-        let files = fileMetadata;
-        if (!Array.isArray(files)) {
-            files = [fileMetadata];
-        }
-
-        files.forEach((file) => {
-            if (checkFileValid(file)) {
-                cache.set(file.id, file);
-            } else {
-                /* eslint-disable no-console */
-                console.error('[Preview SDK] Tried to cache invalid file: ', file);
-                /* eslint-enable no-console */
-            }
-        });
-    }
-
-    /**
-     * Returns the current viewer
-     *
-     * @public
-     * @returns {Object|undefined} current viewer
-     */
-    getCurrentViewer() {
-        return this.viewer;
-    }
-
-    /**
-     * Returns the current file being previewed
-     *
-     * @public
-     * @returns {Object|null} current viewer
-     */
-    getCurrentFile() {
-        return this.file;
-    }
-
-    /**
-     * Returns the current file being previewed
-     *
-     * @public
-     * @returns {Object|null} current viewer
-     */
-    getCurrentCollection() {
-        return this.collection;
-    }
-
-    /**
-     * Returns a list of viewers
-     *
-     * @public
-     * @returns {Array} list of supported viewers
-     */
-    getViewers() {
-        let viewers = [];
-        this.loaders.forEach((loader) => {
-            viewers = viewers.concat(loader.getViewers());
-        });
-        return viewers;
-    }
-
-    /**
-     * Prefetches the viewers. If specific viewer names are passed in, only
-     * prefetch assets for those viewers. Otherwise, prefetch assets for
-     * all viewers.
-     *
-     * @public
-     * @param {array} [viewerNames] Names of specific viewers to prefetch assets for
-     * @returns {void}
-     */
-    prefetchViewers(viewerNames = []) {
-        let viewers = this.getViewers();
-
-        // Filter down to specified viewers
-        if (viewerNames.length) {
-            viewers = viewers.filter((viewer) => {
-                return viewerNames.indexOf(viewer.CONSTRUCTOR) !== -1;
-            });
-        }
-
-        const loader = this.loaders[0]; // use any loader
-        viewers.forEach((viewer) => {
-            loader.prefetchAssets(viewer, this.location);
-        });
-    }
-
-    /**
-     * Disables one or more viewers
-     *
-     * @public
-     * @param {string|Array} viewers destroys the container contents
-     * @returns {void}
-     */
-    disableViewers(viewers) {
-        if (Array.isArray(viewers)) {
-            viewers.forEach((viewer) => {
-                this.disabledViewers[viewer] = 1;
-            });
-        } else if (viewers) {
-            this.disabledViewers[viewers] = 1;
-        }
-    }
-
-    /**
-     * Enables one or more viewers
-     *
-     * @public
-     * @param {string|Array} viewers destroys the container contents
-     * @returns {void}
-     */
-    enableViewers(viewers) {
-        if (Array.isArray(viewers)) {
-            viewers.forEach((viewer) => {
-                delete this.disabledViewers[viewer];
-            });
-        } else if (viewers) {
-            delete this.disabledViewers[viewers];
-        }
-    }
-
-    /**
-     * Resizes the preview
-     *
-     * @public
-     * @returns {void}
-     */
-    resize() {
-        if (this.viewer && typeof this.viewer.resize === 'function') {
-            this.viewer.resize();
-        }
-    }
-
-    /**
-     * Prints
-     *
-     * @public
-     * @returns {void}
-     */
-    print() {
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print')) {
-            this.viewer.print();
-        }
-    }
-
-    /**
-     * Downloads
-     *
-     * @public
-     * @returns {void}
-     */
-    download() {
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            get(getDownloadURL(this.file.id, this.options.api), this.getRequestHeaders())
-            .then((data) => {
-                openUrlInsideIframe(data.download_url);
-            });
-        }
-    }
 }
 
-// Create a singleton instance for preview.
+// Export a singleton instance for preview.
 Box.Preview = new Preview();
 global.Box = Box;
 global.Preview = Preview;
