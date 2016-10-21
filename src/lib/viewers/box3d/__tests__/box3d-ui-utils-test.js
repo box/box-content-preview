@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import {
     createButton,
+    createCheckbox,
     createDropdown,
     createLabel,
     createPullup,
@@ -88,6 +89,14 @@ describe('box3d-ui-utils', () => {
         it('should put empty text if none provided', () => {
             const el = createButton();
             expect(el.textContent).to.be.empty;
+        });
+    });
+
+    describe('createCheckbox()', () => {
+        it('should return a checkbox element', () => {
+            const el = createCheckbox();
+            expect(el.nodeName).to.equal('INPUT');
+            expect(el.type).to.equal('checkbox');
         });
     });
 
