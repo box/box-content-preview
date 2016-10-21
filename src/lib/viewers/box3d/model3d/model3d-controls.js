@@ -56,7 +56,7 @@ class Model3dControls extends Box3DControls {
 
         this.resetButtonEl = this.controls.add(__('box3d_reset_camera'), this.handleReset, '', ICON_3D_RESET);
 
-        this.addVRButton();
+        this.addVrButton();
         this.hideVrButton();
 
         this.settingsButtonEl = this.controls.add(__('box3d_settings'), this.handleToggleSettings, '', ICON_GEAR);
