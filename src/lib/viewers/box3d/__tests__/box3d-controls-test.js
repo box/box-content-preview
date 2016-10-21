@@ -19,7 +19,6 @@ const sandbox = sinon.sandbox.create();
 
 let containerEl;
 let controls;
-let stubs = {};
 
 describe('box3d-controls', () => {
     before(() => {
@@ -37,7 +36,6 @@ describe('box3d-controls', () => {
         controls.destroy();
         controls = null;
         fixture.cleanup();
-        stubs = {};
     });
 
     describe('constructor()', () => {
@@ -253,5 +251,4 @@ describe('box3d-controls', () => {
             expect(controls.uiRegistry).to.not.exist;
         });
     });
-
 });
