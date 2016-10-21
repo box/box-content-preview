@@ -6,6 +6,7 @@ import {
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
     EVENT_CLOSE_UI,
+    EVENT_RESET_SKELETONS,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
@@ -230,6 +231,9 @@ class Model3dRenderer extends Box3DRenderer {
         // Reset the camera.
         this.reset();
 
+        // Reset the skeleton visualization.
+        this.resetSkeletons();
+
         // Unload the intermediate HDR maps that are no longer needed.
         super.onSceneLoad();
 
@@ -363,6 +367,20 @@ class Model3dRenderer extends Box3DRenderer {
         });
 
         this.assets.length = 0;
+
+        this.resetSkeletons();
+    }
+
+    /**
+     * Reset the skeleton visualization, for example, if the scene changes.
+     * @method resetSkeletons
+     * @public
+     * @returns {void}
+     */
+    resetSkeletons() {
+        if (this.box3d) {
+            Box3D.globalEvents.trigger(EVENT_RESET_SKELETONS);
+        }
     }
 
     /**

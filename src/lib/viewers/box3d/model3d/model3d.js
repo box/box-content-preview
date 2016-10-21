@@ -267,6 +267,8 @@ class Model3d extends Box3D {
 
                 // Update controls ui
                 this.controls.handleSetRenderMode(defaults.defaultRenderMode);
+                this.controls.handleSetSkeletonsVisible(false);
+                this.controls.handleSetWireframesVisible(false);
                 this.showWrapper();
                 this.renderer.initVrIfPresent();
             })

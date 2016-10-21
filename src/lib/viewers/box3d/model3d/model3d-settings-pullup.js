@@ -226,7 +226,7 @@ class Model3DSettingsPullup extends EventEmitter {
         this.saveRowEl = createRow();
         const saveButtonEl = createButton('Save Settings');
         this.uiRegistry.registerItem('settings-save-button', saveButtonEl, 'click', () => {
-          this.onSaveSelected();
+            this.onSaveSelected();
         });
 
         saveButtonEl.classList.add('box-preview-btn-primary');

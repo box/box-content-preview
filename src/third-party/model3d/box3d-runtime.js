@@ -67195,6 +67195,13 @@
 	      "wireframesVisible"
 	    ],
 	    "events": {
+	      "resetSkeletons": {
+	        "scope": "local",
+	        "name": "resetSkeletons",
+	        "action": true,
+	        "category": "Rendering",
+	        "parameters": []
+	      },
 	      "setRenderMode": {
 	        "scope": "local",
 	        "name": "setRenderMode",
@@ -79849,6 +79856,12 @@
 	 *   description: 'Render mesh wireframes',
 	 *   default: false
 	 * }
+	 * @vevent local resetSkeletons {
+	 *   scope: 'local',
+	 *   action: true,
+	 *   category: 'Rendering',
+	 *   parameters: []
+	 * }
 	 * @vevent local setRenderMode {
 	 *   scope: 'local',
 	 *   action: true,
@@ -80131,6 +80144,7 @@
 	        wireframe: true
 	      });
 
+	      this.getGlobalEvents().on('resetSkeletons', this.resetSkeletons, this);
 	      this.getGlobalEvents().on('setRenderMode', this.setRenderMode, this);
 	      this.getGlobalEvents().on('setSkeletonsVisible', this.setSkeletonsVisible, this);
 	      this.getGlobalEvents().on('setWireframesVisible', this.setWireframesVisible, this);
@@ -80150,7 +80164,7 @@
 	      }
 
 	      if (changes.indexOf('skeletonsVisible') !== -1) {
-	        this.onSkeletonsVisibleChanged();
+	        this.resetSkeletons();
 	      }
 
 	      if (changes.indexOf('wireframesVisible') !== -1) {
@@ -80163,6 +80177,7 @@
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
+	      Box3D.globalEvents.off('resetSkeletons', this.resetSkeletons, this);
 	      Box3D.globalEvents.off('setRenderMode', this.setRenderMode, this);
 	      Box3D.globalEvents.off('setSkeletonsVisible', this.setSkeletonsVisible, this);
 	      Box3D.globalEvents.off('setWireframesVisible', this.setWireframesVisible, this);
@@ -80232,33 +80247,6 @@
 	      if (this.shapeTexture.isBaseUnloaded()) {
 	        this.shapeTexture.load();
 	      }
-	    }
-
-	    /**
-	     * Called when the skeleton visibility changes.
-	     * @method onSkeletonsVisibleChanged
-	     * @private
-	     * @returns {void}
-	     */
-
-	  }, {
-	    key: 'onSkeletonsVisibleChanged',
-	    value: function onSkeletonsVisibleChanged() {
-	      var _this4 = this;
-
-	      if (this.skeletonsVisible) {
-	        // Create a THREE.SkeletonHelper for each scene.
-	        var scenes = this.getRuntime().getObjectsByType('scene');
-	        scenes.forEach(function (scene) {
-	          var runtimeData = scene.getRuntimeData();
-	          _this4.skeletonHelpers[runtimeData.uuid] = runtimeData ? new THREE.SkeletonHelper(runtimeData) : undefined;
-	        });
-	      } else {
-	        // Remove all THREE.SkeletonHelper instances.
-	        this.skeletonHelpers = {};
-	      }
-
-	      this.getRuntime().needsRender = true;
 	    }
 
 	    /** @inheritdoc */
@@ -80342,6 +80330,33 @@
 	      });
 
 	      scene.overrideMaterial = oldOverrideMaterial;
+	    }
+
+	    /**
+	     * Reset the skeleton visualization, for example, if the scene changes.
+	     * @method resetSkeletons
+	     * @public
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'resetSkeletons',
+	    value: function resetSkeletons() {
+	      var _this4 = this;
+
+	      // Clear the cache.
+	      this.skeletonHelpers = {};
+
+	      if (this.skeletonsVisible) {
+	        // Create a THREE.SkeletonHelper for each scene.
+	        var scenes = this.getRuntime().getObjectsByType('scene');
+	        scenes.forEach(function (scene) {
+	          var runtimeData = scene.getRuntimeData();
+	          _this4.skeletonHelpers[runtimeData.uuid] = runtimeData ? new THREE.SkeletonHelper(runtimeData) : undefined;
+	        });
+	      }
+
+	      this.getRuntime().needsRender = true;
 	    }
 
 	    /**
