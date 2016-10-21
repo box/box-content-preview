@@ -13,6 +13,7 @@ import {
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
+    EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
@@ -78,6 +79,7 @@ class Model3d extends Box3D {
             this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             this.controls.on(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+            this.controls.on(EVENT_SET_SKELETONS_VISIBLE, this.handleShowSkeletons);
             this.controls.on(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
             this.controls.on(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
@@ -99,6 +101,7 @@ class Model3d extends Box3D {
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             this.controls.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+            this.controls.removeListener(EVENT_SET_SKELETONS_VISIBLE, this.handleShowSkeletons);
             this.controls.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
             this.controls.removeListener(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
@@ -413,6 +416,17 @@ class Model3d extends Box3D {
     @autobind
     handleSetQualityLevel(level) {
         this.renderer.setQualityLevel(level);
+    }
+
+    /**
+     * Handle setting skeleton visibility.
+     * @private
+     * @param {Boolean} visible Indicates whether or not skeletons are visible.
+     * @returns {void}
+     */
+    @autobind
+    handleShowSkeletons(visible) {
+        this.renderer.setSkeletonsVisible(visible);
     }
 
     /**

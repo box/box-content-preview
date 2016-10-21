@@ -22,13 +22,12 @@ import {
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
+    EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
     RENDER_MODE_LIT,
     RENDER_MODE_UNLIT,
     RENDER_MODE_NORMALS,
     RENDER_MODE_SHAPE,
-    RENDER_MODE_WIRE,
-    RENDER_MODE_UNTEXTURED_WIRE,
     RENDER_MODE_UV,
     ROTATION_STEP
 } from './model3d-constants';
@@ -56,14 +55,6 @@ const RENDER_MODES = [
         text: RENDER_MODE_SHAPE,
         callback: 'onRenderModeSelected',
         args: [RENDER_MODE_SHAPE]
-    }, {
-        text: RENDER_MODE_WIRE,
-        callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_WIRE]
-    }, {
-        text: RENDER_MODE_UNTEXTURED_WIRE,
-        callback: 'onRenderModeSelected',
-        args: [RENDER_MODE_UNTEXTURED_WIRE]
     }, {
         text: RENDER_MODE_UV,
         callback: 'onRenderModeSelected',
@@ -172,11 +163,15 @@ class Model3DSettingsPullup extends EventEmitter {
 
         // Skeleton option
         const skeletonRowEl = createRow();
-        this.showSkeletonEl = createCheckbox();
+        this.showSkeletonsEl = createCheckbox();
         const skeletonLabelEl = createLabel('Show skeletons');
-        skeletonRowEl.appendChild(this.showSkeletonEl);
+        skeletonRowEl.appendChild(this.showSkeletonsEl);
         skeletonRowEl.appendChild(skeletonLabelEl);
         this.pullupEl.appendChild(skeletonRowEl);
+
+        this.showSkeletonsEl.addEventListener('click', () => {
+            this.onShowSkeletonsToggled();
+        });
 
         // Camera Projection dropdown
         const projectionPanelData = PROJECTION_MODES.map((entry) => {
@@ -355,6 +350,16 @@ class Model3DSettingsPullup extends EventEmitter {
     onSaveSelected() {
         // We can cheat because the strings in the label match the metadata values
         this.emit(EVENT_SAVE_SCENE_DEFAULTS, this.renderModeEl.textContent, this.projectionEl.textContent);
+    }
+
+    /**
+     * Notify listeners that the show skeletons checkbox was toggled.
+     * @method onShowSkeletonsToggled
+     * @private
+     * @returns {void}
+     */
+    onShowSkeletonsToggled() {
+        this.emit(EVENT_SET_SKELETONS_VISIBLE, this.showSkeletonsEl.checked);
     }
 
     /**

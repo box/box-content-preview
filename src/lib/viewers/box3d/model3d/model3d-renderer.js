@@ -7,6 +7,7 @@ import {
     CAMERA_PROJECTION_ORTHOGRAPHIC,
     EVENT_CLOSE_UI,
     EVENT_SET_RENDER_MODE,
+    EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
     GRID_SIZE,
     GRID_SECTIONS,
@@ -514,6 +515,19 @@ class Model3dRenderer extends Box3DRenderer {
         // Save these values back to forward and up, for metadata save.
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
+    }
+
+    /**
+     * Set the visibility of skeletons.
+     * @method setSkeletonsVisible
+     * @private
+     * @param {Boolean} visible Indicates whether or not skeletons are visible.
+     * @returns {void}
+     */
+    setSkeletonsVisible(visible) {
+        if (this.box3d) {
+            Box3D.globalEvents.trigger(EVENT_SET_SKELETONS_VISIBLE, visible);
+        }
     }
 
     /**

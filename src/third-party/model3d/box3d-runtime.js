@@ -202,19 +202,23 @@
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _CameraObject = __webpack_require__(172);
+	var _BoneObject = __webpack_require__(172);
+
+	var _BoneObject2 = _interopRequireDefault(_BoneObject);
+
+	var _CameraObject = __webpack_require__(173);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(173);
+	var _LightObject = __webpack_require__(174);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _MeshObject = __webpack_require__(174);
+	var _MeshObject = __webpack_require__(175);
 
 	var _MeshObject2 = _interopRequireDefault(_MeshObject);
 
-	var _SceneObject = __webpack_require__(175);
+	var _SceneObject = __webpack_require__(176);
 
 	var _SceneObject2 = _interopRequireDefault(_SceneObject);
 
@@ -222,7 +226,7 @@
 
 	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
 
-	var _DOMUtilities = __webpack_require__(176);
+	var _DOMUtilities = __webpack_require__(177);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
@@ -230,11 +234,11 @@
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(177);
+	var _DevResourceLoader = __webpack_require__(178);
 
 	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
 
-	__webpack_require__(178);
+	__webpack_require__(179);
 
 	var _three = __webpack_require__(10);
 
@@ -244,16 +248,18 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// Objects
-
-
-	// Assets
 	var applicationContexts = {};
 
 	/** @global Box3D */
 
 
 	// Utilities
+
+
+	// Objects
+
+
+	// Assets
 	var Box3D = window.Box3D || {};
 
 	Object.assign(Box3D, _UserAgent2.default, {
@@ -292,6 +298,7 @@
 
 	  Box3DObject: _Box3DObject2.default,
 	  SceneObject: _SceneObject2.default,
+	  BoneObject: _BoneObject2.default,
 	  CameraObject: _CameraObject2.default,
 	  LightObject: _LightObject2.default,
 	  MeshObject: _MeshObject2.default,
@@ -57134,6 +57141,20 @@
 	      }
 
 	      /**
+	       * Create a bone object.
+	       * @method createBone
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {BoneObject}
+	       */
+
+	    }, {
+	      key: 'createBone',
+	      value: function createBone(id) {
+	        return this.createEntityByType(id, 'bone');
+	      }
+
+	      /**
 	       * Create a buffer asset.
 	       * @method createAudio
 	       * @public
@@ -57579,6 +57600,9 @@
 
 	          case 'asset':
 	            return Box3D.Box3DAsset;
+
+	          case 'bone':
+	            return Box3D.BoneObject;
 
 	          case 'buffer':
 	            return Box3D.BufferAsset;
@@ -67135,6 +67159,12 @@
 	  "properties": {
 	    "name": "Render Modes",
 	    "attributes": {
+	      "renderMode": {
+	        "name": "renderMode",
+	        "type": "s",
+	        "description": "How to render the scene",
+	        "default": "Lit"
+	      },
 	      "shapeTexture": {
 	        "name": "shapeTexture",
 	        "type": "asset",
@@ -67144,12 +67174,70 @@
 	          "renderTexture2D": true
 	        },
 	        "default": "null"
+	      },
+	      "skeletonsVisible": {
+	        "name": "skeletonsVisible",
+	        "type": "b",
+	        "description": "Render skeletons in the scene",
+	        "default": false
+	      },
+	      "wireframesVisible": {
+	        "name": "wireframesVisible",
+	        "type": "b",
+	        "description": "Render mesh wireframes",
+	        "default": false
 	      }
 	    },
 	    "attributesOrder": [
-	      "shapeTexture"
+	      "renderMode",
+	      "shapeTexture",
+	      "skeletonsVisible",
+	      "wireframesVisible"
 	    ],
-	    "events": {},
+	    "events": {
+	      "setRenderMode": {
+	        "scope": "local",
+	        "name": "setRenderMode",
+	        "action": true,
+	        "category": "Rendering",
+	        "parameters": [
+	          {
+	            "name": "renderMode",
+	            "type": "s",
+	            "description": "One of \"Lit\", \"Unlit\", etc.",
+	            "default": "Lit"
+	          }
+	        ]
+	      },
+	      "setSkeletonsVisible": {
+	        "scope": "local",
+	        "name": "setSkeletonsVisible",
+	        "action": true,
+	        "category": "Rendering",
+	        "parameters": [
+	          {
+	            "name": "visible",
+	            "type": "b",
+	            "description": "Whether or not skeletons are visible.",
+	            "default": false
+	          }
+	        ]
+	      },
+	      "setWireframesVisible": {
+	        "scope": "local",
+	        "name": "setWireframesVisible",
+	        "action": true,
+	        "category": "Rendering",
+	        "parameters": [
+	          {
+	            "name": "visible",
+	            "type": "b",
+	            "description": "Whether or not wireframes are visible.",
+	            "default": false
+	          }
+	        ]
+	      }
+	    },
 	    "externalDependencies": [],
 	    "filter": [
 	      "Application"
@@ -79741,6 +79829,10 @@
 	 * @vfilter Application
 	 * @vcategory Rendering
 	 * @vreserved
+	 * @vattr String renderMode {
+	 *   description: 'How to render the scene',
+	 *   default: 'Lit'
+	 * }
 	 * @vattr Asset shapeTexture {
 	 *   'description': '', 'type': 'asset',
 	 *   'filter': {
@@ -79748,6 +79840,47 @@
 	 *     'renderTexture2D': true,
 	 *   },
 	 *   'default': 'null'
+	 * }
+	 * @vattr Boolean skeletonsVisible {
+	 *   description: 'Render skeletons in the scene',
+	 *   default: false
+	 * }
+	 * @vattr Boolean wireframesVisible {
+	 *   description: 'Render mesh wireframes',
+	 *   default: false
+	 * }
+	 * @vevent local setRenderMode {
+	 *   scope: 'local',
+	 *   action: true,
+	 *   category: 'Rendering',
+	 *   parameters: [{
+	 *     name: 'renderMode',
+	 *     type: 's',
+	 *     description: 'One of "Lit", "Unlit", etc.',
+	 *     default: 'Lit'
+	 *   }]
+	 * }
+	 * @vevent local setSkeletonsVisible {
+	 *   scope: 'local',
+	 *   action: true,
+	 *   category: 'Rendering',
+	 *   parameters: [{
+	 *     name: 'visible',
+	 *     type: 'b',
+	 *     description: 'Whether or not skeletons are visible.',
+	 *     default: false
+	 *   }]
+	 * }
+	 * @vevent local setWireframesVisible {
+	 *   scope: 'local',
+	 *   action: true,
+	 *   category: 'Rendering',
+	 *   parameters: [{
+	 *     name: 'visible',
+	 *     type: 'b',
+	 *     description: 'Whether or not wireframes are visible.',
+	 *     default: false
+	 *   }]
 	 * }
 	 */
 
@@ -79768,6 +79901,10 @@
 	var _lodash = __webpack_require__(4);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _log = __webpack_require__(7);
+
+	var _log2 = _interopRequireDefault(_log);
 
 	var _Box3DComponent2 = __webpack_require__(27);
 
@@ -79900,25 +80037,21 @@
 
 	    _this.overrideMaterialEnabled = false;
 	    _this.lightsDisabled = false;
-	    _this.currentRenderMode = RenderModes.LIT;
 	    _this.prevMaterialProperties = {};
 	    _this.wireframeMaterial = null;
+	    _this.skeletonHelpers = {};
 
 	    _this.renderModes = {};
 	    _this.renderModes[RenderModes.LIT] = {
-	      overrideMaterial: null,
-	      wireframe: false
+	      overrideMaterial: null
 	    };
 
-	    _this.renderModes[RenderModes.UNLINT] = {
+	    _this.renderModes[RenderModes.UNLIT] = {
 	      overrideMaterial: null,
-	      disableLights: true,
-	      wireframe: false,
-	      isGlobal: true
+	      disableLights: true
 	    };
 
 	    _this.renderModes[RenderModes.SHAPE] = {
-	      wireframe: false,
 	      overrideMaterial: {
 	        skinned: new THREE.ShaderMaterial(RenderModes.SHAPE_MATERIAL),
 	        static: new THREE.ShaderMaterial(RenderModes.SHAPE_MATERIAL)
@@ -79927,7 +80060,6 @@
 	    };
 
 	    _this.renderModes[RenderModes.NORMALS] = {
-	      wireframe: false,
 	      overrideMaterial: {
 	        skinned: new THREE.ShaderMaterial(RenderModes.NORMALS_MATERIAL),
 	        static: new THREE.ShaderMaterial(RenderModes.NORMALS_MATERIAL)
@@ -79935,32 +80067,22 @@
 	      copyUniforms: ['bumpMap', 'normalMap']
 	    };
 
-	    _this.renderModes[RenderModes.WIREFRAME] = {
-	      overrideMaterial: null,
-	      wireframe: true
-	    };
-
-	    _this.renderModes[RenderModes.UNTEXTURED_WIREFRAME] = {
-	      overrideMaterial: 'flatShaded',
-	      wireframe: true,
-	      disableSkybox: false
+	    _this.renderModes[RenderModes.UNTEXTURED] = {
+	      overrideMaterial: 'flatShaded'
 	    };
 
 	    _this.renderModes[RenderModes.UV_OVERLAY] = {
 	      overrideMaterial: {
 	        skinned: undefined,
 	        static: undefined
-	      },
-	      disableSkybox: false,
-	      wireframe: false
+	      }
 	    };
 
 	    _this.renderModes[RenderModes.SKIN_WEIGHTS] = {
 	      overrideMaterial: {
 	        skinned: new THREE.ShaderMaterial(RenderModes.SKIN_WEIGHTS_MATERIAL),
 	        static: new THREE.ShaderMaterial(RenderModes.SKIN_WEIGHTS_MATERIAL)
-	      },
-	      wireframe: false
+	      }
 	    };
 	    return _this;
 	  }
@@ -80010,6 +80132,8 @@
 	      });
 
 	      this.getGlobalEvents().on('setRenderMode', this.setRenderMode, this);
+	      this.getGlobalEvents().on('setSkeletonsVisible', this.setSkeletonsVisible, this);
+	      this.getGlobalEvents().on('setWireframesVisible', this.setWireframesVisible, this);
 	    }
 
 	    /** @inheritdoc */
@@ -80017,20 +80141,20 @@
 	  }, {
 	    key: 'attributesChanged',
 	    value: function attributesChanged(changes) {
-	      var _this2 = this;
-
-	      if (changes.indexOf('shapeTexture') === -1 || !this.shapeTexture) {
-	        return;
+	      if (changes.indexOf('shapeTexture') !== -1) {
+	        this.onShapeTextureChanged();
 	      }
 
-	      this.shapeTexture.when('load', function (tex) {
-	        var material = _this2.renderModes[RenderModes.SHAPE].overrideMaterial;
-	        material.static.uniforms.matCapTexture.value = tex.runtimeData;
-	        material.skinned.uniforms.matCapTexture.value = tex.runtimeData;
-	      });
+	      if (changes.indexOf('renderMode') !== -1) {
+	        this.onRenderModeChanged();
+	      }
 
-	      if (this.shapeTexture.isBaseUnloaded()) {
-	        this.shapeTexture.load();
+	      if (changes.indexOf('skeletonsVisible') !== -1) {
+	        this.onSkeletonsVisibleChanged();
+	      }
+
+	      if (changes.indexOf('wireframesVisible') !== -1) {
+	        this.getRuntime().needsRender = true;
 	      }
 	    }
 
@@ -80040,6 +80164,8 @@
 	    key: 'shutdown',
 	    value: function shutdown() {
 	      Box3D.globalEvents.off('setRenderMode', this.setRenderMode, this);
+	      Box3D.globalEvents.off('setSkeletonsVisible', this.setSkeletonsVisible, this);
+	      Box3D.globalEvents.off('setWireframesVisible', this.setWireframesVisible, this);
 
 	      _lodash2.default.each(this.renderModes, function (mode) {
 	        if (mode.overrideMaterial) {
@@ -80052,20 +80178,137 @@
 	      });
 	    }
 
+	    /**
+	     * Called when the render mode changes.
+	     * @method onRenderModeChanged
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'onRenderModeChanged',
+	    value: function onRenderModeChanged() {
+	      var _this2 = this;
+
+	      if (!this.renderModes[this.renderMode]) {
+	        this.renderMode = RenderModes.LIT;
+	      }
+
+	      this.applyRenderModeGlobalSettings();
+
+	      // For each scene, set the render mode.
+	      var scenes = this.getRuntime().getObjectsByType('scene');
+	      scenes.forEach(function (scene) {
+	        if (scene.isDependenciesLoaded()) {
+	          _this2.applyRenderModeToScene(scene, null);
+	        }
+	      });
+
+	      this.getRuntime().needsRender = true;
+	    }
+
+	    /**
+	     * Called when the shape texture changes.
+	     * @method onShapeTextureChanged
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'onShapeTextureChanged',
+	    value: function onShapeTextureChanged() {
+	      var _this3 = this;
+
+	      if (!this.shapeTexture) {
+	        return;
+	      }
+
+	      this.shapeTexture.when('load', function (texture) {
+	        var material = _this3.renderModes[RenderModes.SHAPE].overrideMaterial;
+	        material.static.uniforms.matCapTexture.value = texture.runtimeData;
+	        material.skinned.uniforms.matCapTexture.value = texture.runtimeData;
+	      });
+
+	      if (this.shapeTexture.isBaseUnloaded()) {
+	        this.shapeTexture.load();
+	      }
+	    }
+
+	    /**
+	     * Called when the skeleton visibility changes.
+	     * @method onSkeletonsVisibleChanged
+	     * @private
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'onSkeletonsVisibleChanged',
+	    value: function onSkeletonsVisibleChanged() {
+	      var _this4 = this;
+
+	      if (this.skeletonsVisible) {
+	        // Create a THREE.SkeletonHelper for each scene.
+	        var scenes = this.getRuntime().getObjectsByType('scene');
+	        scenes.forEach(function (scene) {
+	          var runtimeData = scene.getRuntimeData();
+	          _this4.skeletonHelpers[runtimeData.uuid] = runtimeData ? new THREE.SkeletonHelper(runtimeData) : undefined;
+	        });
+	      } else {
+	        // Remove all THREE.SkeletonHelper instances.
+	        this.skeletonHelpers = {};
+	      }
+
+	      this.getRuntime().needsRender = true;
+	    }
+
 	    /** @inheritdoc */
 
 	  }, {
 	    key: 'postRenderView',
 	    value: function postRenderView(scene, camera /*, options*/) {
-	      if (!this.currentRenderMode || !this.renderModes) {
+	      if (this.wireframesVisible) {
+	        this.renderWireframes(scene, camera);
+	      }
+
+	      if (this.skeletonsVisible) {
+	        this.renderSkeletons(scene, camera);
+	      }
+	    }
+
+	    /**
+	     * Render skeletons in the scene.
+	     * @method renderSkeletons
+	     * @private
+	     * @param {THREE.Scene} scene The Three.js scene.
+	     * @param {THREE.Camera} camera The Three.js camera.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'renderSkeletons',
+	    value: function renderSkeletons(scene, camera) {
+	      if (!this.skeletonHelpers.hasOwnProperty(scene.uuid)) {
+	        _log2.default.warn('Skeleton cache out of date');
 	        return;
 	      }
 
-	      var renderMode = this.renderModes[this.currentRenderMode];
-	      if (!renderMode.wireframe) {
-	        return;
-	      }
+	      var skeletonScene = new THREE.Scene();
+	      skeletonScene.add(this.skeletonHelpers[scene.uuid]);
+	      this.getThreeRenderer().render(skeletonScene, camera);
+	    }
 
+	    /**
+	     * Render wireframes for meshes in the scene.
+	     * @method renderWireframes
+	     * @private
+	     * @param {THREE.Scene} scene The Three.js scene.
+	     * @param {THREE.Camera} camera The Three.js camera.
+	     * @returns {void}
+	     */
+
+	  }, {
+	    key: 'renderWireframes',
+	    value: function renderWireframes(scene, camera) {
 	      // First pass: render wireframes of THREE.Mesh instances.
 	      var oldVisible = {};
 	      scene.traverse(function (obj) {
@@ -80102,34 +80345,45 @@
 	    }
 
 	    /**
-	     * Set the current render mode.
+	     * Set the render mode.
 	     * @method setRenderMode
 	     * @public
-	     * @param {String} modeName One of the render mode constants (e.g., LIT, UNLIT, etc.).
+	     * @param {String} renderMode One of RenderModes.LIT, RenderModes.UNLIT, etc.
 	     * @returns {void}
 	     */
 
 	  }, {
 	    key: 'setRenderMode',
-	    value: function setRenderMode(modeName) {
-	      var _this3 = this;
+	    value: function setRenderMode(renderMode) {
+	      this.setAttribute('renderMode', renderMode);
+	    }
 
-	      if (!this.renderModes[modeName]) {
-	        modeName = RenderModes.LIT;
-	      }
+	    /**
+	     * Set the visibility of skeletons.
+	     * @method setSkeletonsVisible
+	     * @public
+	     * @param {Boolean} visible Indicates whether or not skeletons are visible.
+	     * @returns {void}
+	     */
 
-	      this.currentRenderMode = modeName;
-	      this.applyRenderModeGlobalSettings();
+	  }, {
+	    key: 'setSkeletonsVisible',
+	    value: function setSkeletonsVisible(visible) {
+	      this.setAttribute('skeletonsVisible', visible);
+	    }
 
-	      // For each scene, set the render mode.
-	      var scenes = this.getRuntime().getObjectsByType('scene');
-	      scenes.forEach(function (scene) {
-	        if (scene.isDependenciesLoaded()) {
-	          _this3.applyRenderModeToScene(scene, null);
-	        }
-	      });
+	    /**
+	     * Set the visibility of wireframes.
+	     * @method setWireframesVisible
+	     * @public
+	     * @param {Boolean} visible Indicates whether or not wireframes are visible.
+	     * @returns {void}
+	     */
 
-	      this.getRuntime().needsRender = true;
+	  }, {
+	    key: 'setWireframesVisible',
+	    value: function setWireframesVisible(visible) {
+	      this.setAttribute('wireframesVisible', visible);
 	    }
 
 	    /**
@@ -80142,9 +80396,9 @@
 	  }, {
 	    key: 'applyRenderModeGlobalSettings',
 	    value: function applyRenderModeGlobalSettings() {
-	      var renderMode = this.renderModes[this.currentRenderMode];
+	      var renderMode = this.renderModes[this.renderMode];
 
-	      // Disable lights is they should be for this render mode.
+	      // Disable lights if they should be for this render mode.
 	      if (renderMode.disableLights) {
 	        this.disableImageBasedLighting();
 	        // Re-enable lights if they were previously disabled.
@@ -80198,7 +80452,7 @@
 	  }, {
 	    key: 'applyOverrideMaterialToMesh',
 	    value: function applyOverrideMaterialToMesh(mesh, overrideMaterials, copyUniforms) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var matType = mesh.isSkinned() ? 'skinned' : 'static';
 	      var overrideMaterial = overrideMaterials[matType];
@@ -80211,7 +80465,7 @@
 	        });
 	      } else {
 	        newMaterials = materials.map(function () {
-	          return _this4.cloneMaterial(overrideMaterial);
+	          return _this5.cloneMaterial(overrideMaterial);
 	        });
 
 	        // Copy certain shader uniforms from the old materials to the new materials.
@@ -80277,13 +80531,13 @@
 	  }, {
 	    key: 'applyRenderModeToScene',
 	    value: function applyRenderModeToScene(scene) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      if (!scene) {
 	        return;
 	      }
 	      // Get the override material.
-	      var renderMode = this.renderModes[this.currentRenderMode];
+	      var renderMode = this.renderModes[this.renderMode];
 	      var overrideMaterial = void 0;
 
 	      if (_lodash2.default.isString(renderMode.overrideMaterial)) {
@@ -80302,21 +80556,21 @@
 
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
-	            _this5.applyOverrideMaterialToMesh(obj, overrideMaterial, renderMode.copyUniforms);
+	            _this6.applyOverrideMaterialToMesh(obj, overrideMaterial, renderMode.copyUniforms);
 	          }
 	        });
 	      } else if (this.overrideMaterialEnabled) {
 	        // Re-apply materials if they were previously overridden.
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
-	            _this5.removeMaterialOverrideFromMesh(obj);
+	            _this6.removeMaterialOverrideFromMesh(obj);
 	          }
 	        });
 
 	        this.overrideMaterialEnabled = false;
 	      }
 
-	      // Disable lights is they should be for this render mode.
+	      // Disable lights if they should be for this render mode.
 	      if (renderMode.disableLights) {
 	        this.lightsDisabled = true;
 
@@ -80359,18 +80613,18 @@
 	  }, {
 	    key: 'disableImageBasedLighting',
 	    value: function disableImageBasedLighting() {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      var materials = this.getRuntime().getAssetsByType('material');
 	      materials.forEach(function (material) {
 	        var matId = material.id;
-	        if (!_this6.prevMaterialProperties[matId]) {
-	          _this6.prevMaterialProperties[matId] = {};
+	        if (!_this7.prevMaterialProperties[matId]) {
+	          _this7.prevMaterialProperties[matId] = {};
 	        }
 	        var useSpecular = material.isFeatureEnabled('specular');
 	        var irradianceMap = material.getProperty('irradianceMap');
-	        _this6.prevMaterialProperties[matId].useSpecular = useSpecular;
-	        _this6.prevMaterialProperties[matId].irradianceMap = irradianceMap;
+	        _this7.prevMaterialProperties[matId].useSpecular = useSpecular;
+	        _this7.prevMaterialProperties[matId].irradianceMap = irradianceMap;
 	        material.setProperty('irradianceMap', null);
 	        material.enableFeature('specular', false);
 	      });
@@ -80386,17 +80640,17 @@
 	  }, {
 	    key: 'enableImageBasedLighting',
 	    value: function enableImageBasedLighting() {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      var materials = this.getRuntime().getAssetsByType('material');
 	      materials.forEach(function (material) {
 	        var matId = material.id;
-	        if (_this7.prevMaterialProperties[matId]) {
-	          var useSpecular = _this7.prevMaterialProperties[matId].useSpecular;
-	          var irradianceMap = _this7.prevMaterialProperties[matId].irradianceMap;
+	        if (_this8.prevMaterialProperties[matId]) {
+	          var useSpecular = _this8.prevMaterialProperties[matId].useSpecular;
+	          var irradianceMap = _this8.prevMaterialProperties[matId].irradianceMap;
 	          material.enableFeature('specular', useSpecular);
 	          material.setProperty('irradianceMap', irradianceMap);
-	          delete _this7.prevMaterialProperties[matId];
+	          delete _this8.prevMaterialProperties[matId];
 	        }
 	      });
 	    }
@@ -80410,11 +80664,10 @@
 
 
 	RenderModes.LIT = 'Lit';
-	RenderModes.UNLINT = 'Unlit';
+	RenderModes.UNLIT = 'Unlit';
 	RenderModes.SHAPE = 'Shape';
 	RenderModes.NORMALS = 'Normals';
-	RenderModes.WIREFRAME = 'Wireframe';
-	RenderModes.UNTEXTURED_WIREFRAME = 'Untextured Wireframe';
+	RenderModes.UNTEXTURED = 'Untextured';
 	RenderModes.UV_OVERLAY = 'UV Overlay';
 	RenderModes.SKIN_WEIGHTS = 'Skin Weights';
 	RenderModes.SKIN_INDICES = 'Skin Indices';
@@ -100818,6 +101071,72 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _three = __webpack_require__(10);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _Box3DObject2 = __webpack_require__(171);
+
+	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * @class BoneObject
+	 * @constructor
+	 */
+	var BoneObject = function (_Box3DObject) {
+	  _inherits(BoneObject, _Box3DObject);
+
+	  function BoneObject() {
+	    _classCallCheck(this, BoneObject);
+
+	    return _possibleConstructorReturn(this, (BoneObject.__proto__ || Object.getPrototypeOf(BoneObject)).apply(this, arguments));
+	  }
+
+	  _createClass(BoneObject, [{
+	    key: 'createRuntimeData',
+
+
+	    /** @inheritdoc */
+	    value: function createRuntimeData(callback) {
+	      this.runtimeData = new THREE.Bone();
+	      this.runtimeData.name = this.getRuntimeName();
+	      callback(this);
+	    }
+	    /** @inheritdoc */
+
+	  }]);
+
+	  return BoneObject;
+	}(_Box3DObject3.default);
+
+	BoneObject.schema = Object.assign({}, _Box3DObject3.default.schema);
+
+
+	window.Box3D.BoneObject = BoneObject;
+	exports.default = BoneObject;
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _three = __webpack_require__(10);
@@ -100970,7 +101289,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101386,7 +101705,7 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -102363,7 +102682,7 @@
 	exports.default = MeshObject;
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -102496,7 +102815,7 @@
 	exports.default = SceneObject;
 
 /***/ },
-/* 176 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -102522,7 +102841,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 177 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -102992,7 +103311,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 178 */
+/* 179 */
 /***/ function(module, exports) {
 
 	'use strict';
