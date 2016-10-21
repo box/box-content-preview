@@ -83,6 +83,10 @@ export function checkFeature(viewer, primary, secondary) {
  * @returns {boolean} Whether or not file metadata structure is valid
  */
 export function checkFileValid(file) {
+    if (!file) {
+        return false;
+    }
+
     return FILE_FIELDS.every((field) => {
         return typeof file[field] !== 'undefined';
     });
