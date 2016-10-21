@@ -25,6 +25,7 @@ class Box3DControls extends EventEmitter {
      * Base class for building 3D previews on. Contains events for VR, Fullscreen,
      * Scene Reset, and Scene Loaded. Also, used for programmatic building of control
      * bar UI.
+     *
      * @constructor
      * @param {HTMLElement} containerEl The container element to put controls ui into
      * @returns {Box3DControls} Instance of Box3DControls
@@ -40,16 +41,18 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Add and create any UI to the container element and control bar
+     *
      * @returns {void}
      */
     addUi() {
-        this.addVRButton();
+        this.addVrButton();
         this.addFullscreenButton();
         this.hideVrButton();
     }
 
     /**
      * Adds full screen button
+     *
      * @returns {void}
      */
     addFullscreenButton() {
@@ -59,14 +62,16 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Adds vr toggle button
+     *
      * @returns {void}
      */
-    addVRButton() {
+    addVrButton() {
         this.vrButtonEl = this.controls.add(__('box3d_toggle_vr'), this.handleToggleVr, '', ICON_3D_VR);
     }
 
     /**
      * Emit scene loaded message
+     *
      * @returns {void}
      */
     handleSceneLoaded() {
@@ -75,6 +80,7 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Handle a toggle of VR event, and emit a message
+     *
      * @returns {void}
      */
     handleToggleVr() {
@@ -83,7 +89,8 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Handle toggling fullscreen, and update control bar items
-     * @returns {[type]} [description]
+     *
+     * @returns {void}
      */
     handleToggleFullscreen() {
         this.emit(EVENT_TOGGLE_FULLSCREEN);
@@ -91,6 +98,7 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Send a reset event message
+     *
      * @returns {void}
      */
     handleReset() {
@@ -99,6 +107,7 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Enables the VR button
+     *
      * @returns {void}
      */
     showVrButton() {
@@ -109,6 +118,7 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Disables the VR button
+     *
      * @returns {void}
      */
     hideVrButton() {
@@ -119,6 +129,7 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Set visibility of an element
+     *
      * @param {HTMLElement} element The element we are setting visibility on
      * @param {boolean} visible True for visible, false for hidden
      * @returns {void}
@@ -133,6 +144,7 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Toggle the visibility of an elements
+     *
      * @param {HTMLElement} element The element we want to toggle visibility on
      * @returns {void}
      */
@@ -142,6 +154,7 @@ class Box3DControls extends EventEmitter {
 
     /**
      * Destroy all controls, and this module
+     *
      * @returns {void}
      */
     destroy() {
@@ -152,7 +165,8 @@ class Box3DControls extends EventEmitter {
         if (this.uiRegistry) {
             this.uiRegistry.unregisterAll();
         }
-
+        
+        this.controls = null;
         this.uiRegistry = null;
     }
 
