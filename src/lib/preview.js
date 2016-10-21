@@ -319,7 +319,8 @@ class Preview extends EventEmitter {
         });
 
         // Load the representation assets
-        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS));
+        this.repStatus = new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS);
+        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(this.repStatus);
         promiseToGetRepresentationStatusSuccess.catch((err) => {
             this.triggerError((err instanceof Error) ? err : new Error(__('error_reupload')));
         });
@@ -727,12 +728,18 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Destroys the preview
+     * Destroys the preview.
      *
      * @private
      * @returns {void}
      */
     destroy() {
+        // Stop polling for rep-status
+        if (this.repStatus) {
+            this.repStatus.destroy();
+        }
+
+        // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             this.viewer.destroy();
         }
