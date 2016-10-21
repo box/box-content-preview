@@ -1,4 +1,4 @@
-import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature } from '../file';
+import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature, checkFileValid } from '../file';
 
 describe('getURL()', () => {
     it('should return the correct api url', () => {
@@ -69,5 +69,33 @@ describe('checkFeature()', () => {
     });
     it('should return the correct values when feature and sub feature exist', () => {
         assert.ok(checkFeature({ foo: sandbox.stub().returns(true) }, 'foo', 'bar'));
+    });
+});
+
+describe('checkFileValid()', () => {
+    it('should return false if file is null', () => {
+        const file = null;
+        assert.notOk(checkFileValid(file));
+    });
+
+    it('should return false if file is null', () => {
+        const file = undefined;
+        assert.notOk(checkFileValid(file));
+    });
+
+    it('should return true if file has all the appropratie properties', () => {
+        const file = {
+            permissions: {},
+            parent: 'blah',
+            shared_link: 'blah',
+            sha1: 'blah',
+            file_version: 'blah',
+            name: 'blah',
+            size: 'blah',
+            extension: 'blah',
+            representations: {},
+            watermark_info: {}
+        };
+        assert.ok(checkFileValid(file));
     });
 });
