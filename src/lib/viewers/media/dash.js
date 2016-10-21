@@ -42,6 +42,11 @@ class Dash extends VideoBase {
         this.emit('bandwidthHistory', this.bandwidthHistory);
         this.emit('bufferingHistory', this.bufferingHistory);
 
+        // Stop polling for filmstrip
+        if (this.filmstripStatus) {
+            this.filmstripStatus.destroy();
+        }
+
         clearInterval(this.statsIntervalId);
         if (this.player) {
             this.player.destroy();
@@ -290,8 +295,8 @@ class Dash extends VideoBase {
         const filmstrip = file.representations.entries.find((entry) => entry.representation === 'filmstrip');
         if (filmstrip) {
             const url = createContentUrl(filmstrip.links.content.url, token, sharedLink, sharedLinkPassword);
-            const status = new RepStatus(filmstrip, getHeaders({}, token, sharedLink, sharedLinkPassword));
-            this.mediaControls.initFilmstrip(url, status, this.aspect);
+            this.filmstripStatus = new RepStatus(filmstrip, getHeaders({}, token, sharedLink, sharedLinkPassword));
+            this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect);
         }
     }
 
