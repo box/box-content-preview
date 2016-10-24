@@ -3,14 +3,17 @@ import autobind from 'autobind-decorator';
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
 import {
-    EVENT_CLOSE_UI,
-    EVENT_SET_RENDER_MODE,
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
-    QUALITY_LEVEL_FULL,
+    EVENT_CLOSE_UI,
+    EVENT_RESET_SKELETONS,
+    EVENT_SET_RENDER_MODE,
+    EVENT_SET_SKELETONS_VISIBLE,
+    EVENT_SET_WIREFRAMES_VISIBLE,
     GRID_SIZE,
     GRID_SECTIONS,
-    GRID_COLOR
+    GRID_COLOR,
+    QUALITY_LEVEL_FULL
 } from './model3d-constants';
 import Browser from '../../../browser';
 
@@ -228,6 +231,9 @@ class Model3dRenderer extends Box3DRenderer {
         // Reset the camera.
         this.reset();
 
+        // Reset the skeleton visualization.
+        this.resetSkeletons();
+
         // Unload the intermediate HDR maps that are no longer needed.
         super.onSceneLoad();
 
@@ -361,6 +367,20 @@ class Model3dRenderer extends Box3DRenderer {
         });
 
         this.assets.length = 0;
+
+        this.resetSkeletons();
+    }
+
+    /**
+     * Reset the skeleton visualization, for example, if the scene changes.
+     * @method resetSkeletons
+     * @public
+     * @returns {void}
+     */
+    resetSkeletons() {
+        if (this.box3d) {
+            Box3D.globalEvents.trigger(EVENT_RESET_SKELETONS);
+        }
     }
 
     /**
@@ -513,6 +533,32 @@ class Model3dRenderer extends Box3DRenderer {
         // Save these values back to forward and up, for metadata save.
         this.axisUp = upAxis;
         this.axisForward = forwardAxis;
+    }
+
+    /**
+     * Set the visibility of skeletons.
+     * @method setSkeletonsVisible
+     * @private
+     * @param {Boolean} visible Indicates whether or not skeletons are visible.
+     * @returns {void}
+     */
+    setSkeletonsVisible(visible) {
+        if (this.box3d) {
+            Box3D.globalEvents.trigger(EVENT_SET_SKELETONS_VISIBLE, visible);
+        }
+    }
+
+    /**
+     * Set the visibility of wireframes.
+     * @method setWireframesVisible
+     * @private
+     * @param {Boolean} visible Indicates whether or not wireframes are visible.
+     * @returns {void}
+     */
+    setWireframesVisible(visible) {
+        if (this.box3d) {
+            Box3D.globalEvents.trigger(EVENT_SET_WIREFRAMES_VISIBLE, visible);
+        }
     }
 
     /** @inheritdoc */

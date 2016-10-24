@@ -8,6 +8,8 @@ import {
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
+    EVENT_SET_SKELETONS_VISIBLE,
+    EVENT_SET_WIREFRAMES_VISIBLE,
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
 } from './model3d-constants';
@@ -49,6 +51,8 @@ class Model3dControls extends Box3DControls {
         }
         this.settingsPanelEl = this.settingsPullup.pullupEl;
         this.settingsPullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+        this.settingsPullup.addListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);
+        this.settingsPullup.addListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
         this.settingsPullup.addListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.settingsPullup.addListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
@@ -92,6 +96,24 @@ class Model3dControls extends Box3DControls {
     handleSetRenderMode(renderMode) {
         this.emit(EVENT_SET_RENDER_MODE, renderMode);
         this.settingsPullup.setCurrentRenderMode(renderMode);
+    }
+
+    /**
+     * Handle a change in skeleton visibility
+     * @param {boolean} visible Indicates whether or not skeletons are visible
+     * @returns {void}
+     */
+    handleSetSkeletonsVisible(visible) {
+        this.emit(EVENT_SET_SKELETONS_VISIBLE, visible);
+    }
+
+    /**
+     * Handle a change in wireframe visibility
+     * @param {boolean} visible Indicates whether or not wireframes are visible
+     * @returns {void}
+     */
+    handleSetWireframesVisible(visible) {
+        this.emit(EVENT_SET_WIREFRAMES_VISIBLE, visible);
     }
 
     /**
@@ -177,6 +199,8 @@ class Model3dControls extends Box3DControls {
         this.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
 
         this.settingsPullup.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
+        this.settingsPullup.removeListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);
+        this.settingsPullup.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
         this.settingsPullup.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.settingsPullup.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);

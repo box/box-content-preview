@@ -1,5 +1,33 @@
 # Change Log
 
+## [v0.82.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.82.0) (2016-10-22)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.81.0...v0.82.0)
+
+**Merged pull requests:**
+
+- Coxp 2812 add wireframe and skeleton checkboxes [\#703](https://gitenterprise.inside-box.net/Preview/Preview/pull/703) ([ikerr](https://gitenterprise.inside-box.net/ikerr))
+- Destroy RepStatus when dash viewer is destroyed [\#702](https://gitenterprise.inside-box.net/Preview/Preview/pull/702) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix next-file prefetching [\#701](https://gitenterprise.inside-box.net/Preview/Preview/pull/701) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Box3d controls tests and cleanup [\#700](https://gitenterprise.inside-box.net/Preview/Preview/pull/700) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Stop polling for rep-status if a preview is destroyed [\#699](https://gitenterprise.inside-box.net/Preview/Preview/pull/699) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Image360 tests [\#698](https://gitenterprise.inside-box.net/Preview/Preview/pull/698) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Box3d ui utils tests and cleanup [\#697](https://gitenterprise.inside-box.net/Preview/Preview/pull/697) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Fix text loader & add unit tests [\#696](https://gitenterprise.inside-box.net/Preview/Preview/pull/696) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Temporarily change from extracted\_text to original [\#695](https://gitenterprise.inside-box.net/Preview/Preview/pull/695) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Disabling print on demand for now [\#694](https://gitenterprise.inside-box.net/Preview/Preview/pull/694) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding a few more image unit tests + fixing flaky image.load\(\) test [\#692](https://gitenterprise.inside-box.net/Preview/Preview/pull/692) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Updated to the latest runtime and WebVR [\#691](https://gitenterprise.inside-box.net/Preview/Preview/pull/691) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Enable Text and CSV viewers [\#689](https://gitenterprise.inside-box.net/Preview/Preview/pull/689) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- added tests for box3d, removed redundant WebVR.js, moved … [\#688](https://gitenterprise.inside-box.net/Preview/Preview/pull/688) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Support 'viewable' status [\#684](https://gitenterprise.inside-box.net/Preview/Preview/pull/684) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- removing unused l18n strings [\#683](https://gitenterprise.inside-box.net/Preview/Preview/pull/683) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Updating error messages [\#681](https://gitenterprise.inside-box.net/Preview/Preview/pull/681) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Cleanup Box3D Renderer in preparation for open sourcing.  [\#680](https://gitenterprise.inside-box.net/Preview/Preview/pull/680) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Making sure entering point annotation 'mode' changes icon color to blue [\#679](https://gitenterprise.inside-box.net/Preview/Preview/pull/679) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Updating Changelog to v0.81.0 [\#677](https://gitenterprise.inside-box.net/Preview/Preview/pull/677) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Adding support for detecting shared links and sending the shared name… [\#671](https://gitenterprise.inside-box.net/Preview/Preview/pull/671) ([jedwards](https://gitenterprise.inside-box.net/jedwards))
+- changing pinch to zoom behavior to use our zoom method [\#651](https://gitenterprise.inside-box.net/Preview/Preview/pull/651) ([jpress](https://gitenterprise.inside-box.net/jpress))
+
 ## [v0.81.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.81.0) (2016-10-12)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.80.0...v0.81.0)
 
