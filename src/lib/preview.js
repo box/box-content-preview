@@ -814,10 +814,13 @@ class Preview extends EventEmitter {
             return;
         }
 
-        const currentIndex = this.collection.indexOf(this.file.id);
-        const filesToPrefetch = this.collection.slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1);
+        // Maintain collection of files we have already prefetched
+        this.prefetchedCollection = this.prefetchedCollection || [];
 
-        // Don't bother prefetching when there aren't more files
+        // Prefetch the next PREFETCH_COUNT files excluding ones we've already prefetched
+        const currentIndex = this.collection.indexOf(this.file.id);
+        const filesToPrefetch = this.collection.slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1)
+            .filter((fileID) => this.prefetchedCollection.indexOf(fileID) === -1);
         if (filesToPrefetch.length === 0) {
             return;
         }
@@ -833,6 +836,7 @@ class Preview extends EventEmitter {
                 .then((file) => {
                     // Cache file info
                     cache.set(file.id, file);
+                    this.prefetchedCollection.push(file.id);
 
                     // Prefetch content
                     this.prefetchContent(file, token);
