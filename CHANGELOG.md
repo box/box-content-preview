@@ -1,5 +1,21 @@
 # Change Log
 
+## [v0.84.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.84.0) (2016-10-25)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.83.0...v0.84.0)
+
+**Merged pull requests:**
+
+- Prefetch less files [\#707](https://gitenterprise.inside-box.net/Preview/Preview/pull/707) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Further prefetching fixes [\#706](https://gitenterprise.inside-box.net/Preview/Preview/pull/706) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
+## [v0.83.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.83.0) (2016-10-25)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.82.0...v0.83.0)
+
+**Merged pull requests:**
+
+- Preview.js cleanup [\#705](https://gitenterprise.inside-box.net/Preview/Preview/pull/705) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update changelog for v0.82.0 [\#704](https://gitenterprise.inside-box.net/Preview/Preview/pull/704) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
 ## [v0.82.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.82.0) (2016-10-22)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.81.0...v0.82.0)
 
