@@ -28,7 +28,21 @@ $crawler-blue: #2b90ef;
     }
 }
 
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
 .box-preview-loading-wrapper {
+    animation-duration: .5s;
+    animation-iteration-count: 1;
+    animation-name: fadeIn;
+
     display: flex;
     flex-direction: column;
     padding-bottom: 27px; // Match height of error viewer

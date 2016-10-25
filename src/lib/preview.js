@@ -93,8 +93,8 @@ class Preview extends EventEmitter {
     /**
      * Primary function for showing a preview of a file.
      *
-     * @param {string|Object} file box file object or id
-     * @param {Object} options options
+     * @param {string|Object} file Box File ID or well-formed file object
+     * @param {Object} options Preview options
      * @returns {void}
      */
     show(file, options) {
@@ -827,12 +827,6 @@ class Preview extends EventEmitter {
         .then((tokenMap) => {
             filesToPrefetch.forEach((id) => {
                 const token = tokenMap[id];
-                const cachedFile = cache.get(id);
-
-                if (checkFileValid(cachedFile)) {
-                    this.prefetchContent(cachedFile, token);
-                    return;
-                }
 
                 // Prefetch and cache file information and content
                 get(getURL(id, this.options.api), this.getRequestHeaders(token))
