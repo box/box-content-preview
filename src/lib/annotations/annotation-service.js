@@ -88,7 +88,8 @@ class AnnotationService {
                         location: annotation.location,
                         threadID: annotation.threadID
                     },
-                    message: annotation.text
+                    message: annotation.text,
+                    thread: annotation.thread
                 })
             })
             .then((response) => response.json())
@@ -284,6 +285,7 @@ class AnnotationService {
             fileVersionID: data.item.id,
             threadID: data.details.threadID,
             type: data.details.type,
+            thread: data.thread,
             text: data.message,
             location: data.details.location,
             user: {
@@ -306,7 +308,7 @@ class AnnotationService {
      * @returns {Promise} Promise that resolves with fetched annotations
      */
     _getReadUrl(fileVersionID, marker = null, limit = null) {
-        let apiUrl = `${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}&fields=item,details,message,created_by,created_at,modified_at,permissions`;
+        let apiUrl = `${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
         if (marker) {
             apiUrl += `&marker=${marker}`;
         }

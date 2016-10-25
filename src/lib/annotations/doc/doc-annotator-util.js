@@ -4,7 +4,6 @@
  */
 
 import * as annotatorUtil from '../annotator-util';
-import * as constants from '../annotation-constants';
 
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
@@ -93,16 +92,6 @@ export function isSelectionPresent() {
     }
 
     return true;
-}
-
-/**
- * Returns whether or not the annotation type is 'highlight' or
- * 'highlight-comment'
- * @return {boolean} Whether or not annotation is a highlight
- */
-export function isHighlightAnnotation(type) {
-    return (type === constants.ANNOTATION_TYPE_HIGHLIGHT ||
-        type === constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT);
 }
 
 //------------------------------------------------------------------------------

@@ -4,6 +4,7 @@
  */
 
 import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
+import * as constants from './annotation-constants';
 
 const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
 
@@ -190,6 +191,16 @@ export function getScale(annotatedElement) {
  */
 export function isPlainHighlight(annotations) {
     return annotations.length === 1 && annotations[0].text === '';
+}
+
+/**
+ * Returns whether or not the annotation type is 'highlight' or
+ * 'highlight-comment'
+ * @return {boolean} Whether or not annotation is a highlight
+ */
+export function isHighlightAnnotation(type) {
+    return (type === constants.ANNOTATION_TYPE_HIGHLIGHT ||
+        type === constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT);
 }
 
 //------------------------------------------------------------------------------

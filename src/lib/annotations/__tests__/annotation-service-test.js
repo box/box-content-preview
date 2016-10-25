@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import '../../polyfill';
 import Annotation from '../annotation';
 import AnnotationService from '../annotation-service';
@@ -28,11 +29,11 @@ describe('annotation-service', () => {
         it('should return a rfc4122v4-compliant GUID', () => {
             const GUID = AnnotationService.generateID();
             const regex = /^[a-z0-9]{8}-[a-z0-9]{4}-4[a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$/i;
-            assert.ok(GUID.match(regex));
+            expect(GUID.match(regex).length).to.satisfy;
         });
 
         it('should (almost always) return unique GUIDs', () => {
-            assert.ok(AnnotationService.generateID() !== AnnotationService.generateID());
+            expect(AnnotationService.generateID() === AnnotationService.generateID()).to.be.false;
         });
     });
 
@@ -41,6 +42,7 @@ describe('annotation-service', () => {
             fileVersionID: 2,
             threadID: AnnotationService.generateID(),
             type: 'point',
+            thread: '1',
             text: 'blah',
             location: { x: 0, y: 0 }
         });
@@ -58,18 +60,20 @@ describe('annotation-service', () => {
                         threadID: annotationToSave.threadID,
                         location: annotationToSave.location
                     },
+                    thread: annotationToSave.thread,
                     message: annotationToSave.text,
                     created_by: {}
                 }
             });
 
             return annotationService.create(annotationToSave).then((createdAnnotation) => {
-                assert.equal(createdAnnotation.fileVersionID, annotationToSave.fileVersionID, 'Should have saved file version ID');
-                assert.equal(createdAnnotation.threadID, annotationToSave.threadID, 'Should have saved thread ID');
-                assert.equal(createdAnnotation.type, annotationToSave.type, 'Should have saved type');
-                assert.equal(createdAnnotation.text, annotationToSave.text, 'Should have saved text');
-                assert.equal(createdAnnotation.location.x, annotationToSave.location.x, 'Should have saved location');
-                assert.equal(createdAnnotation.location.y, annotationToSave.location.y, 'Should have saved location');
+                expect(createdAnnotation.fileVersionID).to.equal(annotationToSave.fileVersionID);
+                expect(createdAnnotation.threadID).to.equal(annotationToSave.threadID);
+                expect(createdAnnotation.thread).to.equal(annotationToSave.thread);
+                expect(createdAnnotation.type).to.equal(annotationToSave.type);
+                expect(createdAnnotation.text).to.equal(annotationToSave.text);
+                expect(createdAnnotation.location.x).to.equal(annotationToSave.location.x);
+                expect(createdAnnotation.location.y).to.equal(annotationToSave.location.y);
             });
         });
 
@@ -85,13 +89,13 @@ describe('annotation-service', () => {
                     throw new Error('Annotation should not be returned');
                 },
                 (error) => {
-                    assert.equal(error.message, 'Could not create annotation');
+                    expect(error.message).to.equal('Could not create annotation');
                 });
         });
     });
 
     describe('read()', () => {
-        const url = `${API}/2.0/files/1/annotations?version=2&fields=item,details,message,created_by,created_at,modified_at,permissions`;
+        const url = `${API}/2.0/files/1/annotations?version=2&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
 
         it('should return array of annotations for the specified file and file version', () => {
             const annotation1 = new Annotation({
@@ -99,6 +103,7 @@ describe('annotation-service', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
+                thread: '1',
                 location: { x: 0, y: 0 }
             });
 
@@ -107,6 +112,7 @@ describe('annotation-service', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'highlight',
                 text: 'blah2',
+                thread: '2',
                 location: { x: 0, y: 0 }
             });
 
@@ -123,6 +129,7 @@ describe('annotation-service', () => {
                             location: annotation1.location
                         },
                         message: annotation1.text,
+                        thread: annotation1.thread,
                         created_by: {}
                     }, {
                         id: AnnotationService.generateID(),
@@ -135,18 +142,19 @@ describe('annotation-service', () => {
                             location: annotation2.location
                         },
                         message: annotation2.text,
+                        thread: annotation2.thread,
                         created_by: {}
                     }]
                 }
             });
 
             return annotationService.read(2).then((annotations) => {
-                assert.equal(annotations.length, 2, 'Two annotations should have been created');
+                expect(annotations.length).to.equal(2);
+
                 const createdAnnotation1 = annotations[0];
                 const createdAnnotation2 = annotations[1];
-
-                assert.equal(createdAnnotation1.text, annotation1.text, 'Annotations should have been created with correct params');
-                assert.equal(createdAnnotation2.text, annotation2.text, 'Annotations should have been created with correct params');
+                expect(createdAnnotation1.text).to.equal(annotation1.text);
+                expect(createdAnnotation2.text).to.equal(annotation2.text);
             });
         });
 
@@ -162,7 +170,7 @@ describe('annotation-service', () => {
                     throw new Error('Annotations should not be returned');
                 },
                 (error) => {
-                    assert.equal(error.message, 'Could not read annotations from file version with ID 2');
+                    expect(error.message).to.equal('Could not read annotations from file version with ID 2');
                 });
         });
     });
@@ -178,7 +186,7 @@ describe('annotation-service', () => {
             fetchMock.mock(url, 204);
 
             return annotationService.delete(3).then(() => {
-                assert.ok(fetchMock.called(url));
+                expect(fetchMock.called(url)).to.be.true;
             });
         });
 
@@ -190,7 +198,7 @@ describe('annotation-service', () => {
                     throw new Error('Annotation should not have been deleted');
                 },
                 (error) => {
-                    assert.equal(error.message, 'Could not delete annotation with ID 3');
+                    expect(error.message).to.equal('Could not delete annotation with ID 3');
                 });
         });
     });
@@ -202,6 +210,7 @@ describe('annotation-service', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
+                thread: '1',
                 location: { x: 0, y: 0 }
             });
 
@@ -210,6 +219,7 @@ describe('annotation-service', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah2',
+                thread: '2',
                 location: { x: 0, y: 0 }
             });
 
@@ -218,14 +228,17 @@ describe('annotation-service', () => {
                 threadID: annotation1.threadID,
                 type: 'point',
                 text: 'blah3',
+                thread: '1',
                 location: { x: 0, y: 0 }
             });
 
             sandbox.stub(annotationService, 'read').returns(Promise.resolve([annotation1, annotation2, annotation3]));
 
             return annotationService.getThreadMap(2).then((threadMap) => {
-                assert.equal(threadMap[annotation1.threadID].length, 2, 'First thread should have two annotations');
-                assert.equal(threadMap[annotation2.threadID][0], annotation2, 'Threads should have correct annotations');
+                expect(threadMap[annotation1.threadID].length).to.equal(2);
+                expect(threadMap[annotation2.threadID][0]).to.contain(annotation2);
+                expect(threadMap[annotation1.threadID][0].thread).to.equal(threadMap[annotation1.threadID][1].thread);
+                expect(threadMap[annotation1.threadID][0].thread).to.not.equal(threadMap[annotation2.threadID][0].thread);
             });
         });
     });
@@ -241,6 +254,7 @@ describe('annotation-service', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
+                thread: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
@@ -249,6 +263,7 @@ describe('annotation-service', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah2',
+                thread: '2',
                 location: { x: 0, y: 0 },
                 created: Date.now()
 
@@ -258,14 +273,17 @@ describe('annotation-service', () => {
                 threadID: annotation1.threadID,
                 type: 'point',
                 text: 'blah3',
+                thread: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
 
             });
             const threadMap = annotationService._createThreadMap([annotation1, annotation2, annotation3]);
 
-            assert.equal(threadMap[annotation1.threadID].length, 2, 'First thread should have two annotations');
-            assert.equal(threadMap[annotation1.threadID][0], annotation1, 'The first thread added should appear first in the map');
+            expect(threadMap[annotation1.threadID].length).to.equal(2);
+            expect(threadMap[annotation1.threadID][0]).to.equal(annotation1);
+            expect(threadMap[annotation1.threadID][0].thread).to.equal(threadMap[annotation1.threadID][1].thread);
+            expect(threadMap[annotation1.threadID][0].thread).to.not.equal(threadMap[annotation2.threadID][0].thread);
         });
     });
 
@@ -276,6 +294,7 @@ describe('annotation-service', () => {
                 threadID: 1,
                 type: 'point',
                 text: 'blah3',
+                thread: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now(),
                 item: { id: 1 },
@@ -284,7 +303,7 @@ describe('annotation-service', () => {
             };
             const annotation1 = annotationService._createAnnotation(data);
 
-            assert.equal(annotation1 instanceof Annotation, true);
+            expect(annotation1 instanceof Annotation).to.be.true;
         });
     });
 
@@ -297,6 +316,7 @@ describe('annotation-service', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'highlight',
                 text: 'blah2',
+                thread: '1',
                 location: { x: 0, y: 0 }
             });
 
@@ -312,6 +332,7 @@ describe('annotation-service', () => {
                             threadID: annotation2.threadID,
                             location: annotation2.location
                         },
+                        thread: annotation2.thread,
                         message: annotation2.text,
                         created_by: {}
                     }]
@@ -328,8 +349,9 @@ describe('annotation-service', () => {
             annotationService._annotations = [];
             annotationService._readFromMarker(resolve, reject, 2, 'a', 1);
             promise.then((result) => {
-                assert.equal(result.length, 1);
-                assert.equal(result[0]._text, 'blah2');
+                expect(result.length).to.equal(1);
+                expect(result[0].text).to.equal(annotation2.text);
+                expect(result[0].thread).to.equal(annotation2.thread);
             });
         });
     });
@@ -339,10 +361,10 @@ describe('annotation-service', () => {
             annotationService._api = 'box';
             annotationService._fileID = 1;
             const fileVersionID = 2;
-            const url = `${annotationService._api}/2.0/files/${annotationService._fileID}/annotations?version=${fileVersionID}&fields=item,details,message,created_by,created_at,modified_at,permissions`;
+            const url = `${annotationService._api}/2.0/files/${annotationService._fileID}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
 
             const result = annotationService._getReadUrl(fileVersionID);
-            assert.equal(result, url);
+            expect(result).to.equal(url);
         });
 
         it('should add a marker and limit if provided', () => {
@@ -351,10 +373,10 @@ describe('annotation-service', () => {
             const fileVersionID = 2;
             const marker = 'next_annotation';
             const limit = 1;
-            const url = `${annotationService._api}/2.0/files/${annotationService._fileID}/annotations?version=${fileVersionID}&fields=item,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
+            const url = `${annotationService._api}/2.0/files/${annotationService._fileID}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
 
             const result = annotationService._getReadUrl(fileVersionID, marker, limit);
-            assert.equal(result, url);
+            expect(result).to.equal(url);
         });
     });
 });

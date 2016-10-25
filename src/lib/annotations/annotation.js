@@ -19,6 +19,7 @@ class Annotation {
      * @property {string} annotationID Annotation ID
      * @property {string} fileVersionID File version ID for this annotation
      * @property {string} threadID Thread ID
+     * @property {string} thread Thread number
      * @property {string} type Annotation type, e.g. 'point' or 'highlight'
      * @property {string} text Annotation text
      * @property {Object} location Location object
@@ -42,6 +43,7 @@ class Annotation {
         this._annotationID = data.annotationID;
         this._fileVersionID = data.fileVersionID;
         this._threadID = data.threadID;
+        this._thread = data.thread;
         this._type = data.type;
         this._text = data.text;
         this._location = data.location;
@@ -80,6 +82,15 @@ class Annotation {
      */
     get threadID() {
         return this._threadID;
+    }
+
+    /**
+     * Gets thread.
+     *
+     * @returns {string} thread
+     */
+    get thread() {
+        return this._thread;
     }
 
     /**

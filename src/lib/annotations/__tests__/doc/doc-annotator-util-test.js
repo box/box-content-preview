@@ -2,14 +2,12 @@ import {
     getPageElAndPageNumber,
     isPointInPolyOpt,
     isSelectionPresent,
-    isHighlightAnnotation,
     convertPDFSpaceToDOMSpace,
     convertDOMSpaceToPDFSpace,
     getDimensionScale,
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint
 } from '../../doc/doc-annotator-util';
-import * as constants from '../../annotation-constants';
 
 describe('doc-annotator-util', () => {
     before(() => {
@@ -75,20 +73,6 @@ describe('doc-annotator-util', () => {
 
         it('should return false if there is no non-empty selection on the page', () => {
             assert.ok(!isSelectionPresent());
-        });
-    });
-
-    describe('isHighlightAnnotation()', () => {
-        it('should return true if annotation is a plain highlight annotation', () => {
-            assert.ok(isHighlightAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT));
-        });
-
-        it('should return true if annotation is a highlight comment annotation', () => {
-            assert.ok(isHighlightAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT));
-        });
-
-        it('should return false if annotation is a point annotation', () => {
-            assert.ok(!isHighlightAnnotation(constants.ANNOTATION_TYPE_POINT));
         });
     });
 

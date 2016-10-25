@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Annotator from '../../annotator';
+import Annotation from '../../annotation';
 import Browser from '../../../browser';
 import DocAnnotator from '../../doc/doc-annotator';
 import DocHighlightThread from '../../doc/doc-highlight-thread';
@@ -322,12 +323,41 @@ describe('doc-annotator', () => {
             expect(thread instanceof DocHighlightThread).to.be.true;
         });
 
+        it('should create, add highlight comment thread to internal map, and return it', () => {
+            sandbox.stub(annotator, 'addThreadToMap');
+            const thread = annotator.createAnnotationThread([], {}, 'highlight-comment');
+
+            expect(annotator.addThreadToMap).to.have.been.called;
+            expect(thread instanceof DocHighlightThread).to.be.true;
+        });
+
         it('should create, add point thread to internal map, and return it', () => {
             sandbox.stub(annotator, 'addThreadToMap');
             const thread = annotator.createAnnotationThread([], {}, 'point');
 
             expect(annotator.addThreadToMap).to.have.been.called;
             expect(thread instanceof DocPointThread).to.be.true;
+        });
+
+        it('should create, add highlight thread to internal map with appropriate parameters', () => {
+            sandbox.stub(annotator, 'addThreadToMap');
+            Object.defineProperty(Object.getPrototypeOf(DocHighlightThread.prototype), 'setup', {
+                value: sandbox.stub()
+            });
+            const annotation = new Annotation({
+                fileVersionID: 2,
+                threadID: '1',
+                type: 'point',
+                thread: '1',
+                text: 'blah',
+                location: { x: 0, y: 0 }
+            });
+            const thread = annotator.createAnnotationThread([annotation], {}, 'highlight');
+
+            expect(annotator.addThreadToMap).to.have.been.called;
+            expect(thread.threadID).to.equal(annotation.threadID);
+            expect(thread.thread).to.equal(annotation.thread);
+            expect(thread instanceof DocHighlightThread).to.be.true;
         });
     });
 
@@ -684,7 +714,7 @@ describe('doc-annotator', () => {
                 type: 'highlight'
             }];
             annotator._threads = { 0: thread };
-            const docStub = sandbox.stub(docAnnotatorUtil, 'isHighlightAnnotation').returns(thread);
+            const docStub = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(thread);
             const threads = annotator._getHighlightThreadsOnPage(0);
 
             expect(docStub).to.be.calledWith('highlight');
@@ -699,7 +729,7 @@ describe('doc-annotator', () => {
                 type: 'highlight'
             }];
             annotator._threads = { 0: thread };
-            const docStub = sandbox.stub(docAnnotatorUtil, 'isHighlightAnnotation').returns(true);
+            const docStub = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
             const threads = annotator._getHighlightThreadsWithStates('pending');
 
             expect(docStub).to.be.calledWith('highlight');
@@ -712,7 +742,7 @@ describe('doc-annotator', () => {
                 type: 'highlight'
             }];
             annotator._threads = { 0: thread };
-            const docStub = sandbox.stub(docAnnotatorUtil, 'isHighlightAnnotation').returns(true);
+            const docStub = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
             const threads = annotator._getHighlightThreadsWithStates('pending', 'active', 'deleted');
 
             expect(docStub).to.be.calledWith('highlight');
@@ -725,7 +755,7 @@ describe('doc-annotator', () => {
                 type: 'highlight'
             }];
             annotator._threads = { 0: thread };
-            const docStub = sandbox.stub(docAnnotatorUtil, 'isHighlightAnnotation').returns(true);
+            const docStub = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
             const threads = annotator._getHighlightThreadsWithStates('pending', 'active', 'deleted');
 
             expect(docStub).to.not.be.called;

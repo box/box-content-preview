@@ -22,6 +22,7 @@ describe('annotation-thread', () => {
             fileVersionID: '1',
             location: {},
             threadID: '2',
+            thread: '1',
             type: 'point'
         });
 
@@ -61,14 +62,14 @@ describe('annotation-thread', () => {
     describe('hide()', () => {
         it('should hide the thread element', () => {
             annotationThread.hide();
-            assert.ok(annotationThread._element.classList.contains('box-preview-is-hidden'), 'Thread element should be hidden');
+            expect(annotationThread._element.classList.contains('box-preview-is-hidden')).to.be.true;
         });
     });
 
     describe('reset()', () => {
         it('should set the thread state to inactive', () => {
             annotationThread.reset();
-            assert.equal(annotationThread._state, constants.ANNOTATION_STATE_INACTIVE, 'Thread state should be inactive');
+            expect(annotationThread._state).to.equal(constants.ANNOTATION_STATE_INACTIVE);
         });
     });
 
@@ -101,6 +102,7 @@ describe('annotation-thread', () => {
                 fileVersionID: '1',
                 location: {},
                 threadID: '2',
+                thread: '1',
                 type: 'point'
             });
         });
@@ -113,7 +115,8 @@ describe('annotation-thread', () => {
                 fileVersionID: '1',
                 type: 'point',
                 text: 'blah',
-                threadID: '2'
+                threadID: '2',
+                thread: '1'
             }));
         });
 
@@ -148,6 +151,7 @@ describe('annotation-thread', () => {
                 fileVersionID: '1',
                 location: {},
                 threadID: '2',
+                thread: '1',
                 type: 'point'
             });
 
@@ -256,6 +260,7 @@ describe('annotation-thread', () => {
                 fileVersionID: '1',
                 location: {},
                 threadID: '2',
+                thread: '1',
                 type: 'point'
             });
             const createDialogStub = sandbox.stub(annotationThread, 'createDialog');
@@ -365,6 +370,7 @@ describe('annotation-thread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
+                thread: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
@@ -385,6 +391,7 @@ describe('annotation-thread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
+                thread: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
@@ -402,6 +409,7 @@ describe('annotation-thread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
+                thread: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
@@ -418,6 +426,7 @@ describe('annotation-thread', () => {
 
             expect(annotationData.location).to.equal(annotationThread._location);
             expect(annotationData.fileVersionID).to.equal(annotationThread._fileVersionID);
+            expect(annotationData.thread).to.equal(annotationThread._thread);
             expect(annotationData.user.id).to.equal('1');
         });
     });

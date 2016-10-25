@@ -106,7 +106,7 @@ class DocAnnotator extends Annotator {
             };
 
             location = { x, y, page, dimensions };
-        } else if (docAnnotatorUtil.isHighlightAnnotation(annotationType)) {
+        } else if (annotatorUtil.isHighlightAnnotation(annotationType)) {
             if (!docAnnotatorUtil.isSelectionPresent()) {
                 return location;
             }
@@ -182,9 +182,10 @@ class DocAnnotator extends Annotator {
         // Set existing thread ID if created with annotations
         if (annotations.length > 0) {
             threadParams.threadID = annotations[0].threadID;
+            threadParams.thread = annotations[0]._thread;
         }
 
-        if (docAnnotatorUtil.isHighlightAnnotation(type)) {
+        if (annotatorUtil.isHighlightAnnotation(type)) {
             thread = new DocHighlightThread(threadParams);
         } else {
             thread = new DocPointThread(threadParams);
@@ -507,7 +508,7 @@ class DocAnnotator extends Annotator {
      */
     _getHighlightThreadsOnPage(page) {
         const threads = this._threads[page] || [];
-        return threads.filter((thread) => docAnnotatorUtil.isHighlightAnnotation(thread.type));
+        return threads.filter((thread) => annotatorUtil.isHighlightAnnotation(thread.type));
     }
 
     /**
@@ -528,7 +529,7 @@ class DocAnnotator extends Annotator {
                     matchedState = matchedState || (thread.state === state);
                 });
 
-                return matchedState && docAnnotatorUtil.isHighlightAnnotation(thread.type);
+                return matchedState && annotatorUtil.isHighlightAnnotation(thread.type);
             }));
         });
 

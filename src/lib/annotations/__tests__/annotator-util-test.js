@@ -11,8 +11,10 @@ import {
     getAvatarHtml,
     getScale,
     isPlainHighlight,
+    isHighlightAnnotation,
     htmlEscape
 } from '../annotator-util';
+import * as constants from '../annotation-constants';
 
 describe('annotator-util', () => {
     let childEl;
@@ -185,6 +187,20 @@ describe('annotator-util', () => {
             const annotations = [{ text: 'bleh' }];
 
             expect(isPlainHighlight(annotations)).to.be.false;
+        });
+    });
+
+    describe('isHighlightAnnotation()', () => {
+        it('should return true if annotation is a plain highlight annotation', () => {
+            assert.ok(isHighlightAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT));
+        });
+
+        it('should return true if annotation is a highlight comment annotation', () => {
+            assert.ok(isHighlightAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT));
+        });
+
+        it('should return false if annotation is a point annotation', () => {
+            assert.ok(!isHighlightAnnotation(constants.ANNOTATION_TYPE_POINT));
         });
     });
 
