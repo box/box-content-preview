@@ -60,7 +60,7 @@ class Image360Renderer extends Box3DRenderer {
             this.textureAsset = undefined;
         }
         const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
-        const skyboxComponent = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
+        const skyboxComponent = scene.getComponentByScriptId('skybox_renderer');
         skyboxComponent.setAttribute('skyboxTexture', null);
     }
 
@@ -88,7 +88,7 @@ class Image360Renderer extends Box3DRenderer {
      */
     loadPanoramaFile(fileProperties) {
         const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
-        this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
+        this.skybox = scene.getComponentByScriptId('skybox_renderer');
 
         this.imageAsset = this.box3d.createImage();
         this.imageAsset.setProperty('stream', false);

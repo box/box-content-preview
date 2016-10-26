@@ -20,13 +20,15 @@ export default [{
         far: 1200,
         fov: 70
     },
-    components: {
+    components: [
         // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.
-        renderView: {
+        {
+            name: 'Render View',
             enabled: true,
             scriptId: 'render_view_component'
         },
-        orbit_camera_controller: {
+        {
+            name: 'Orbit Camera',
             componentData: {
                 enablePan: false,
                 enableZoom: false,
@@ -38,7 +40,7 @@ export default [{
             enabled: true,
             scriptId: 'orbit_camera_controller'
         }
-    }
+    ]
 }, {
     id: 'SCENE_ID',
     type: 'prefab',
@@ -52,31 +54,40 @@ export default [{
     children: [
         'CAMERA_ID'
     ],
-    components: {
-        skybox: {
+    components: [
+        {
+            name: 'Skybox',
             componentData: {
                 size: 100
             },
-            scriptId: 'skybox_renderer'
+            scriptId: 'skybox_renderer',
+            enabled: false
         }
-    }
+    ]
 }, {
     id: 'APP_ASSET_ID',
     type: 'application',
     properties: {
         startupScene: 'SCENE_ID' // The scene to load
     },
-    components: {
-        rendererComponent: {
+    components: [
+        {
+            name: 'Renderer',
             componentData: {
                 antialias: !Browser.isMobile(),
-                renderOnDemand: false
+                renderOnDemand: true
             },
             scriptId: 'box3d_renderer',
             isBuiltIn: true,
             enabled: true
         },
-        inputController: {
+        {
+            name: 'Debug Performance',
+            scriptId: 'debug_performance',
+            enabled: false
+        },
+        {
+            name: 'Input',
             scriptId: 'input_controller_component',
             isBuiltIn: true,
             enabled: true,
@@ -118,5 +129,5 @@ export default [{
                 }
             }
         }
-    }
+    ]
 }];

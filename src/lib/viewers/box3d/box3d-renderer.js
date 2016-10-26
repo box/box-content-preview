@@ -328,7 +328,7 @@ class Box3DRenderer extends EventEmitter {
         const camera = this.getCamera();
         this.initCameraForVr(camera);
 
-        const renderView = camera.componentRegistry.getFirstByScriptId(RENDER_VIEW_COMPONENT_ID);
+        const renderView = camera.getComponentByScriptId(RENDER_VIEW_COMPONENT_ID);
         renderView.effect = this.vrEffect;
         renderView.setAttribute('enablePreRenderFunctions', false);
 
@@ -374,7 +374,7 @@ class Box3DRenderer extends EventEmitter {
 
         const camera = this.getCamera();
         if (camera) {
-            const renderViewComponent = camera.componentRegistry.getFirstByScriptId(RENDER_VIEW_COMPONENT_ID);
+            const renderViewComponent = camera.getComponentByScriptId(RENDER_VIEW_COMPONENT_ID);
             renderViewComponent.effect = null;
             renderViewComponent.setAttribute('enablePreRenderFunctions', true);
         }
@@ -432,7 +432,7 @@ class Box3DRenderer extends EventEmitter {
      */
     enableCameraControls(cameraControllerId = PREVIEW_CAMERA_CONTROLLER_ID) {
         const camera = this.getCamera();
-        const cameraControls = camera.componentRegistry.getFirstByScriptId(cameraControllerId);
+        const cameraControls = camera.getComponentByScriptId(cameraControllerId);
         if (cameraControls) {
             cameraControls.enable();
         }
@@ -445,7 +445,7 @@ class Box3DRenderer extends EventEmitter {
      */
     disableCameraControls(cameraControllerId = PREVIEW_CAMERA_CONTROLLER_ID) {
         const camera = this.getCamera();
-        const cameraControls = camera.componentRegistry.getFirstByScriptId(cameraControllerId);
+        const cameraControls = camera.getComponentByScriptId(cameraControllerId);
         if (cameraControls) {
             cameraControls.disable();
         }
