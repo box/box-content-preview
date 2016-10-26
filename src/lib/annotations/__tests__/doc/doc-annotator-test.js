@@ -548,7 +548,7 @@ describe('doc-annotator', () => {
             expect(getHighlightsStub).to.be.called;
         });
 
-        it('should show the first delayed thread, and hide all others', () => {
+        it('should show the last delayed thread, and hide all others', () => {
             annotator._throttledHighlightMousemoveHandler = false;
             const thread = {
                 onMousemove: sandbox.stub(),

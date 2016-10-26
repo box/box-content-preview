@@ -15,6 +15,7 @@ import * as docAnnotatorUtil from './doc-annotator-util';
 const IS_MOBILE = Browser.isMobile();
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
+const HOVER_TIMEOUT_MS = 75;
 
 @autobind
 class DocHighlightThread extends AnnotationThread {
@@ -181,6 +182,23 @@ class DocHighlightThread extends AnnotationThread {
     }
 
     /**
+     * Sets thread state to hover or active-hover accordingly and triggers
+     * dialog to remain open
+     *
+     * @returns {void}
+     */
+    activateDialog() {
+        if (this._state === constants.ANNOTATION_STATE_ACTIVE ||
+            this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
+            this._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
+        } else {
+            this._state = constants.ANNOTATION_STATE_HOVER;
+        }
+        this._dialog.mouseenterHandler();
+        clearTimeout(this.hoverTimeoutHandler);
+    }
+
+    /**
      * Mousemove handler for thread. If mouse is inside this highlight, set
      * state to be hover and return true. If not, set state to be inactive,
      * and reset. We don't draw hovered highlights in this method since we want
@@ -190,21 +208,18 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {boolean} Whether we should delay drawing highlight
      */
     onMousemove(event) {
+        // If mouse is in dialog, change state to hover or active-hover
+        if (this._isInDialog(event)) {
+            this.activateDialog();
+
         // Pending check should be first - do nothing if highlight is pending
-        if (this._state === constants.ANNOTATION_STATE_PENDING ||
+        } else if (this._state === constants.ANNOTATION_STATE_PENDING ||
             this._state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
             return false;
-        }
 
         // If mouse is in highlight, change state to hover or active-hover
-        if (this.isOnHighlight(event)) {
-            if (this._state === constants.ANNOTATION_STATE_ACTIVE ||
-                this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
-                this._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
-            } else {
-                this._state = constants.ANNOTATION_STATE_HOVER;
-            }
-            this._dialog.mouseenterHandler();
+        } else if (this._isInHighlight(event)) {
+            this.activateDialog();
 
         // If mouse is not in highlight, and state was previously active-hover,
         // change state back to active
@@ -217,7 +232,12 @@ class DocHighlightThread extends AnnotationThread {
 
         // If mouse is not in highlight and state is not already inactive, reset
         } else if (this._state !== constants.ANNOTATION_STATE_INACTIVE) {
-            this.reset();
+            // Add timeout before resettting highlight to inactive so
+            // hovering over line breaks doesn't cause flickering
+            this.hoverTimeoutHandler = setTimeout(() => {
+                this.reset();
+            }, HOVER_TIMEOUT_MS);
+
             return false;
 
         // If state is already inactive, don't delay or reset

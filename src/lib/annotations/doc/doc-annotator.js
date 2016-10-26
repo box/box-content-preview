@@ -24,6 +24,7 @@ import * as docAnnotatorUtil from './doc-annotator-util';
 const MOUSEMOVE_THROTTLE_MS = 50;
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
+const HOVER_TIMEOUT_MS = 75;
 
 @autobind
 class DocAnnotator extends Annotator {
@@ -359,22 +360,28 @@ class DocAnnotator extends Annotator {
                         thread.state === constants.ANNOTATION_STATE_ACTIVE_HOVER;
                 })) {
                     this._useDefaultCursor();
+                    clearTimeout(this.cursorTimeout);
                 } else {
-                    this._removeDefaultCursor();
+                    // Setting timeout on cursor change so cursor doesn't
+                    // flicker when hovering on line spacing
+                    this.cursorTimeout = setTimeout(() => {
+                        this._removeDefaultCursor();
+                    }, HOVER_TIMEOUT_MS);
                 }
 
                 // Delayed threads (threads that should be in active or hover
                 // state) should be drawn last. If multiple highlights are
-                // hovered over at the same time, only the last highlight
+                // hovered over at the same time, only the top-most highlight
                 // dialog will be displayed and the others will be hidden
                 // without delay
-                for (let i = 0; i < delayThreads.length; i++) {
-                    if (i === 0) {
-                        delayThreads[i].show();
+                const numThreads = delayThreads.length;
+                delayThreads.forEach((thread, index) => {
+                    if (index === numThreads - 1) {
+                        thread.show();
                     } else {
-                        delayThreads[i].hideDialog(true);
+                        thread.hideDialog(true);
                     }
-                }
+                });
             }, MOUSEMOVE_THROTTLE_MS);
         }
 
