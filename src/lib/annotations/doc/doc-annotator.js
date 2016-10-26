@@ -374,9 +374,8 @@ class DocAnnotator extends Annotator {
                 // hovered over at the same time, only the top-most highlight
                 // dialog will be displayed and the others will be hidden
                 // without delay
-                const numThreads = delayThreads.length;
                 delayThreads.forEach((thread, index) => {
-                    if (index === numThreads - 1) {
+                    if (index === 0) {
                         thread.show();
                     } else {
                         thread.hideDialog(true);
