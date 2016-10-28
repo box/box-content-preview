@@ -794,7 +794,7 @@ class Preview extends EventEmitter {
             // Bump up preview count
             this.count.error += 1;
 
-            this.emit('load', {
+            this.emit('error', {
                 error: logMessage,
                 metrics: this.logger.done(this.count),
                 file: this.file

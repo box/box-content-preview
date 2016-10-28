@@ -183,7 +183,10 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     resize() {
-        this.emit('resize');
+        this.emit('resize', {
+            width: document.documentElement.clientWidth,
+            height: document.documentElement.clientHeight
+        });
     }
 
     /**
@@ -204,6 +207,7 @@ class Base extends EventEmitter {
      * @returns {void}
      */
     destroy() {
+        this.emit('destroy');
         fullscreen.removeAllListeners();
         document.defaultView.removeEventListener('resize', this.resizeHandler);
         this.removeAllListeners();

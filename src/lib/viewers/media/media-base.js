@@ -51,7 +51,7 @@ class MediaBase extends Base {
                 this.mediaEl.removeEventListener('playing', this.playingHandler);
                 this.mediaEl.removeEventListener('pause', this.pauseHandler);
                 this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
-                this.mediaEl.removeEventListener('seeked', this.hideLoadingIcon);
+                this.mediaEl.removeEventListener('seeked', this.seekHandler);
                 this.mediaEl.removeEventListener('loadedmetadata', this.loadedmetadataHandler);
 
                 this.mediaEl.removeAttribute('src');
@@ -167,10 +167,12 @@ class MediaBase extends Base {
         this.mediaControls.addListener('toggleplayback', () => {
             if (this.mediaEl.paused) {
                 this.mediaEl.play();
+                this.emit('play');
                 this.handleSpeed();
                 this.handleVolume();
             } else {
                 this.mediaEl.pause();
+                this.emit('pause');
             }
         });
 
@@ -254,6 +256,17 @@ class MediaBase extends Base {
     }
 
     /**
+     * Emits the seek event and hides the loading icon.
+     *
+     * @private
+     * @returns {void}
+     */
+    seekHandler() {
+        this.hideLoadingIcon();
+        this.emit('seek', this.mediaEl.currentTime);
+    }
+
+    /**
      * Resets the play icon and time.
      *
      * @private
@@ -317,7 +330,7 @@ class MediaBase extends Base {
         this.mediaEl.addEventListener('playing', this.playingHandler);
         this.mediaEl.addEventListener('pause', this.pauseHandler);
         this.mediaEl.addEventListener('ended', this.resetPlayIcon);
-        this.mediaEl.addEventListener('seeked', this.hideLoadingIcon);
+        this.mediaEl.addEventListener('seeked', this.seekHandler);
     }
 
     /**
