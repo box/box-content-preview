@@ -27,14 +27,18 @@ describe('box3d', () => {
         fixture.load('viewers/box3d/__tests__/box3d-test.html');
         containerEl = document.querySelector('.container');
         stubs.BoxSDK = sandbox.stub(window, 'BoxSDK');
-        box3d = new Box3D(containerEl, {});
+        box3d = new Box3D(containerEl, {
+            file: {
+                id: 0
+            }
+        });
     });
 
     afterEach(() => {
-        box3d.destroy();
-        box3d = undefined;
         sandbox.verifyAndRestore();
         fixture.cleanup();
+        box3d.destroy();
+        box3d = undefined;
         stubs = {};
     });
 

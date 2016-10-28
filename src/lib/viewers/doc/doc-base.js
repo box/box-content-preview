@@ -13,6 +13,7 @@ import Controls from '../../controls';
 import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../../fullscreen';
+import throttle from 'lodash.throttle';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR
 } from '../../constants';
@@ -31,6 +32,8 @@ const MIN_SCALE = 0.1;
 const MIN_RANGE_REQUEST_SIZE_BYTES = 5242880; // 5MB
 const RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
+const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
+const SCROLL_END_TIMEOUT = Browser.isMobile() ? 500 : 250;
 
 @autobind
 class DocBase extends Base {
@@ -351,6 +354,14 @@ class DocBase extends Base {
             numTicks -= 1;
         } while (numTicks > 0 && newScale < MAX_SCALE);
 
+        if (this.pdfViewer.currentScale !== newScale) {
+            this.emit('zoom', {
+                zoom: newScale,
+                canZoomOut: true,
+                canZoomIn: newScale < MAX_SCALE
+            });
+        }
+
         this.setScale(newScale);
     }
 
@@ -369,6 +380,14 @@ class DocBase extends Base {
             newScale = Math.max(MIN_SCALE, newScale);
             numTicks -= 1;
         } while (numTicks > 0 && newScale > MIN_SCALE);
+
+        if (this.pdfViewer.currentScale !== newScale) {
+            this.emit('zoom', {
+                zoom: newScale,
+                canZoomOut: newScale > MIN_SCALE,
+                canZoomIn: true
+            });
+        }
 
         this.setScale(newScale);
     }
@@ -743,6 +762,9 @@ class DocBase extends Base {
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
+        // detects scroll so an event can be fired
+        this.docEl.addEventListener('scroll', this.scrollHandler());
+
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
@@ -771,6 +793,7 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
+            this.docEl.removeEventListener('scroll', this.scrollHandler());
 
             if (Browser.isMobile()) {
                 if (Browser.isIOS()) {
@@ -886,6 +909,18 @@ class DocBase extends Base {
      * @private
      */
     pagerenderedHandler(event) {
+        if (event.detail && event.detail.pageNumber) {
+            if (!this.isReady) {
+                this.isReady = true;
+                this.emit('ready', {
+                    page: event.detail.pageNumber
+                });
+            }
+
+            this.emit('pagerender', {
+                page: event.detail.pageNumber
+            });
+        }
         // Render annotations by page
         if (this.annotator) {
             // We should get a page number from pdfViewer most of the time
@@ -927,6 +962,10 @@ class DocBase extends Base {
      * @private
      */
     pagechangeHandler(event) {
+        this.emit('pagefocus', {
+            page: event.pageNumber,
+            numPages: this.pdfViewer.pagesCount
+        });
         const pageNum = event.pageNumber;
         this.updateCurrentPage(pageNum);
 
@@ -964,6 +1003,40 @@ class DocBase extends Base {
 
         // Force resize for annotations
         this.resize();
+    }
+
+    /**
+     * Scroll handler. Fires an event on start and stop
+     *
+     * @returns {void}
+     * @private
+     */
+    scrollHandler() {
+        this.throttledScrollHandler = throttle(() => {
+            // reset the scroll timer if we are continuing a scroll
+            if (this.scrollTimer) {
+                clearTimeout(this.scrollTimer);
+            }
+
+            // only fire the scroll start event if this is a new scroll
+            if (!this.scrollStarted) {
+                this.emit('scrollstart', {
+                    scrollTop: this.docEl.scrollTop,
+                    scrollLeft: this.docEl.scrollLeft
+                });
+                this.scrollStarted = true;
+            }
+
+            this.scrollTimer = setTimeout(() => {
+                this.emit('scrollend', {
+                    scrollTop: this.docEl.scrollTop,
+                    scrollLeft: this.docEl.scrollLeft
+                });
+                this.scrollStarted = false;
+            }, SCROLL_END_TIMEOUT);
+        }, SCROLL_EVENT_THROTTLE_INTERVAL);
+
+        return this.throttledScrollHandler;
     }
 }
 
