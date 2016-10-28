@@ -306,6 +306,7 @@ class Image extends Base {
             this.annotator.setScale(scale);
             this.annotator.renderAnnotations(rotationAngle);
         }
+
         this.emit('zoom', {
             zoom: {
                 width: newWidth,
