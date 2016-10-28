@@ -262,6 +262,24 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Disables keyboard shortcuts / hotkeys for Preview.
+     *
+     * @returns {void}
+     */
+    disableHotkeys() {
+        this.options.useHotkeys = false;
+    }
+
+    /**
+     * Enables keyboard shortcuts / hotkeys for Preview.
+     *
+     * @returns {void}
+     */
+    enableHotkeys() {
+        this.options.useHotkeys = true;
+    }
+
+    /**
      * Resizes the preview.
      *
      * @returns {void}
@@ -432,6 +450,9 @@ class Preview extends EventEmitter {
 
         // Whether annotations and annotation controls should be shown
         this.options.showAnnotations = !!options.showAnnotations;
+
+        // Enable or disable hotkeys
+        this.options.useHotkeys = options.useHotkeys !== false;
 
         // Save the files to iterate through
         this.collection = options.collection || [];
@@ -980,6 +1001,11 @@ class Preview extends EventEmitter {
      */
     keydownHandler(event) {
         const target = event.target;
+
+        // If keyboard shortcuts / hotkeys are disabled, ignore
+        if (!this.options.useHotkeys) {
+            return;
+        }
 
         // Ignore key events when we are inside certain fields
         if (!target
