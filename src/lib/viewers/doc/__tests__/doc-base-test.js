@@ -1172,18 +1172,6 @@ describe('doc-base', () => {
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
-        it('should emit the ready event if it is the first page to load', () => {
-            docBase.pagerenderedHandler(docBase.event);
-            expect(stubs.emit).to.be.calledWith('ready');
-        });
-
-        it('should not emit the ready event if it is not the first page to load', () => {
-            docBase.isReady = true;
-
-            docBase.pagerenderedHandler(docBase.event);
-            expect(stubs.emit).to.not.be.calledWith('ready');
-        });
-
         it('should emit the pagerender event', () => {
             docBase.pagerenderedHandler(docBase.event);
             expect(stubs.emit).to.be.calledWith('pagerender');

@@ -354,6 +354,8 @@ class DocBase extends Base {
             numTicks -= 1;
         } while (numTicks > 0 && newScale < MAX_SCALE);
 
+        this.setScale(newScale);
+
         if (this.pdfViewer.currentScale !== newScale) {
             this.emit('zoom', {
                 zoom: newScale,
@@ -361,8 +363,6 @@ class DocBase extends Base {
                 canZoomIn: newScale < MAX_SCALE
             });
         }
-
-        this.setScale(newScale);
     }
 
     /**
@@ -381,6 +381,8 @@ class DocBase extends Base {
             numTicks -= 1;
         } while (numTicks > 0 && newScale > MIN_SCALE);
 
+        this.setScale(newScale);
+
         if (this.pdfViewer.currentScale !== newScale) {
             this.emit('zoom', {
                 zoom: newScale,
@@ -388,8 +390,6 @@ class DocBase extends Base {
                 canZoomIn: true
             });
         }
-
-        this.setScale(newScale);
     }
 
     /**
@@ -762,7 +762,7 @@ class DocBase extends Base {
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
-        // detects scroll so an event can be fired
+        // Detects scroll so an event can be fired
         this.docEl.addEventListener('scroll', this.scrollHandler());
 
         // Fullscreen
@@ -909,23 +909,13 @@ class DocBase extends Base {
      * @private
      */
     pagerenderedHandler(event) {
-        if (event.detail && event.detail.pageNumber) {
-            if (!this.isReady) {
-                this.isReady = true;
-                this.emit('ready', {
-                    page: event.detail.pageNumber
-                });
-            }
+        const pageNumber = event.detail ? event.detail.pageNumber : undefined;
 
-            this.emit('pagerender', {
-                page: event.detail.pageNumber
-            });
-        }
         // Render annotations by page
         if (this.annotator) {
             // We should get a page number from pdfViewer most of the time
-            if (event.detail && event.detail.pageNumber) {
-                this.annotator.renderAnnotationsOnPage(event.detail.pageNumber);
+            if (pageNumber) {
+                this.annotator.renderAnnotationsOnPage(pageNumber);
                 // If not, we re-render all annotations to be safe
             } else {
                 this.annotator.renderAnnotations();
@@ -935,6 +925,12 @@ class DocBase extends Base {
         // If text layer is disabled due to permissions, we still want to show annotations
         if (PDFJS.disableTextLayer) {
             this.textlayerrenderedHandler();
+        }
+
+        if (pageNumber) {
+            this.emit('pagerender', {
+                page: pageNumber
+            });
         }
     }
 
@@ -962,10 +958,6 @@ class DocBase extends Base {
      * @private
      */
     pagechangeHandler(event) {
-        this.emit('pagefocus', {
-            page: event.pageNumber,
-            numPages: this.pdfViewer.pagesCount
-        });
         const pageNum = event.pageNumber;
         this.updateCurrentPage(pageNum);
 
@@ -975,6 +967,10 @@ class DocBase extends Base {
         if (this.loaded) {
             this.cachePage(pageNum);
         }
+
+        this.emit('pagefocus', {
+            page: pageNum
+        });
     }
 
     /**

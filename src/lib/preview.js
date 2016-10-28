@@ -794,7 +794,7 @@ class Preview extends EventEmitter {
             // Bump up preview count
             this.count.error += 1;
 
-            this.emit('error', {
+            this.emit('load', {
                 error: logMessage,
                 metrics: this.logger.done(this.count),
                 file: this.file
@@ -804,6 +804,12 @@ class Preview extends EventEmitter {
             if (typeof window.callPhantom === 'function') {
                 window.callPhantom(0);
             }
+        });
+
+        // Trigger error event at the preview level
+        this.emit('error', {
+            error: logMessage,
+            file: this.file
         });
     }
 
