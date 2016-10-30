@@ -64,6 +64,7 @@ class AnnotationService {
         this._fileID = data.fileID;
         this._headers = getHeaders({}, data.token);
         this._canAnnotate = data.canAnnotate;
+        this._canDelete = data.canDelete;
         this._user = ANONYMOUS_USER;
     }
 
