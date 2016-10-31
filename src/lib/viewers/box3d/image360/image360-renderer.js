@@ -15,7 +15,6 @@ const INPUT_SETTINGS = {
  * Runtime library.
  * @class
  */
-@autobind
 class Image360Renderer extends Box3DRenderer {
     /**
      * Handles creating and caching a Box3DRuntime, and creating a scene made for
@@ -34,34 +33,10 @@ class Image360Renderer extends Box3DRenderer {
      * @returns {void}
      */
     destroy() {
-        this.cleanupTexture();
         if (this.skybox) {
             this.skybox.setAttribute('skyboxTexture', null);
         }
-        if (this.textureAsset) {
-            this.textureAsset.destroy();
-        }
-        if (this.imageAsset) {
-            this.imageAsset.destroy();
-        }
         super.destroy();
-    }
-
-    /**
-     * Destroy the texture asset created from the Box file and unallocate any GPU memory
-     * consumed by it.
-     * @private
-     * @method cleanupTexture
-     * @returns {void}
-     */
-    cleanupTexture() {
-        if (this.textureAsset) {
-            this.textureAsset.destroy();
-            this.textureAsset = undefined;
-        }
-        const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
-        const skyboxComponent = scene.getComponentByScriptId('skybox_renderer');
-        skyboxComponent.setAttribute('skyboxTexture', null);
     }
 
     /**

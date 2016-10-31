@@ -29,7 +29,7 @@ export default [{
         },
         {
             name: 'Orbit Camera',
-            componentData: {
+            attributes: {
                 enablePan: false,
                 enableZoom: false,
                 inertialDamping: 0.2,
@@ -57,7 +57,7 @@ export default [{
     components: [
         {
             name: 'Skybox',
-            componentData: {
+            attributes: {
                 size: 100
             },
             scriptId: 'skybox_renderer',
@@ -73,7 +73,7 @@ export default [{
     components: [
         {
             name: 'Renderer',
-            componentData: {
+            attributes: {
                 antialias: !Browser.isMobile(),
                 renderOnDemand: true
             },
@@ -91,7 +91,7 @@ export default [{
             scriptId: 'input_controller_component',
             isBuiltIn: true,
             enabled: true,
-            componentData: {
+            attributes: {
                 mouseEvents: {
                     enable: true,
                     scroll: true,

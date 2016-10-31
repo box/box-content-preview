@@ -78,75 +78,75 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _UserAgent = __webpack_require__(68);
+	var _UserAgent = __webpack_require__(69);
 
 	var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
-	var _EffectComposer = __webpack_require__(69);
+	var _EffectComposer = __webpack_require__(70);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(70);
+	var _BloomPass = __webpack_require__(71);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(71);
+	var _BokehPass = __webpack_require__(72);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(72);
+	var _DotScreenPass = __webpack_require__(73);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(73);
+	var _FilmPass = __webpack_require__(74);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(74);
+	var _MaskPass = __webpack_require__(75);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(75);
+	var _RenderPass = __webpack_require__(76);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(76);
+	var _SavePass = __webpack_require__(77);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(77);
+	var _ShaderPass = __webpack_require__(78);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(116);
+	var _TexturePass = __webpack_require__(117);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(117);
+	var _AdaptiveToneMappingPass = __webpack_require__(118);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(118);
+	var _AnimationAsset = __webpack_require__(119);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(120);
+	var _ApplicationAsset = __webpack_require__(121);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(121);
+	var _AudioAsset = __webpack_require__(122);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _BufferAsset = __webpack_require__(119);
+	var _BufferAsset = __webpack_require__(120);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
-	var _DocumentAsset = __webpack_require__(122);
+	var _DocumentAsset = __webpack_require__(123);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
 
-	var _ImageAsset = __webpack_require__(153);
+	var _ImageAsset = __webpack_require__(154);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -154,27 +154,27 @@
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(154);
+	var _MeshGeometryAsset = __webpack_require__(155);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(156);
+	var _PrefabAsset = __webpack_require__(157);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(157);
+	var _PrimitiveGeometryAsset = __webpack_require__(158);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(158);
+	var _RenderTexture2DAsset = __webpack_require__(159);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(160);
+	var _RenderTextureCubeAsset = __webpack_require__(161);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _ScriptAsset = __webpack_require__(161);
+	var _ScriptAsset = __webpack_require__(162);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
@@ -222,15 +222,11 @@
 
 	var _SceneObject2 = _interopRequireDefault(_SceneObject);
 
-	var _APIUtilities = __webpack_require__(162);
-
-	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
-
 	var _DOMUtilities = __webpack_require__(178);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(123);
+	var _JSONLoader = __webpack_require__(124);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -248,11 +244,6 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var applicationContexts = {};
-
-	/** @global Box3D */
-
-
 	// Utilities
 
 
@@ -260,11 +251,14 @@
 
 
 	// Assets
+	var applicationContexts = {};
+
+	/** @global Box3D */
 	var Box3D = window.Box3D || {};
 
 	Object.assign(Box3D, _UserAgent2.default, {
 	  Engine: _Engine2.default,
-
+	  RuntimeEvents: _RuntimeEvents2.default,
 	  EffectComposer: _EffectComposer2.default,
 	  BloomPass: _BloomPass2.default,
 	  BokehPass: _BokehPass2.default,
@@ -303,7 +297,6 @@
 	  LightObject: _LightObject2.default,
 	  MeshObject: _MeshObject2.default,
 
-	  APIUtilities: _APIUtilities2.default,
 	  DOMUtilities: _DOMUtilities2.default,
 	  JSONLoader: _JSONLoader2.default,
 	  DevResourceLoader: _DevResourceLoader2.default,
@@ -13350,7 +13343,7 @@
 
 	var _mixwith = __webpack_require__(2);
 
-	var _raf = __webpack_require__(65);
+	var _raf = __webpack_require__(66);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -56606,29 +56599,14 @@
 	    }
 
 	    /**
-	     * Remove the given component attached to the given entity.
-	     * @method dispatchComponentRemoved
+	     * Change a specified component with the given changes.
+	     * @method dispatchComponentChanged
 	     * @private
-	     * @param  {string} entityId The ID of the entity that the change was made on.
-	     * @param  {Array} componentIds  Array of IDs for components that have been removed
+	     * @param {string} entityId The ID of the entity that the change was made on.
+	     * @param {number} index The index of the component to change
+	     * @param {Object} componentChanges An object containing the values to change within the component
+	     * @return {void}
 	     */
-	    // dispatchComponentsRemoved(entityId, componentIds) {
-	    //   if (!this.entities[entityId]) {
-	    //     return;
-	    //   }
-	    //   const json = this.entities[entityId];
-	    //   componentIds.forEach((componentId) => {
-	    //     json.previousComponents[componentId] = deepClone(json.components[componentId]);
-	    //     delete json.components[componentId];
-	    //   });
-	    //   this.fireExternalUpdate(entityId, {components: json.components});
-
-	    //   // Apply changes in each engine
-	    //   this.engines.forEach((engine) => {
-	    //     const entityToChange = engine.getEntityById(entityId);
-	    //     entityToChange.trigger('remove:components', componentIds);
-	    //   });
-	    // }
 
 	  }, {
 	    key: 'dispatchComponentChanged',
@@ -56641,24 +56619,35 @@
 	      if (indexToChange < 0) {
 	        return;
 	      }
-	      entityDesc.previousComponents = entityDesc.components ? entityDesc.components.slice() : [];
+	      if (!entityDesc.previousComponents) {
+	        entityDesc.previousComponents = [];
+	      }
+	      entityDesc.previousComponents[index] = (0, _deepClone2.default)(entityDesc.components[index]);
 	      var componentDesc = entityDesc.components[indexToChange];
 	      // Figure out changes
 	      var changes = (0, _deepClone2.default)(componentChanges);
+	      // Copy non-attributes
 	      Object.keys(changes).forEach(function (key) {
 	        if (key !== 'attributes') {
 	          componentDesc[key] = changes[key];
 	        }
 	      });
-	      var attributes = componentDesc.attributes || {};
+	      // Copy attributes
 	      if (changes.attributes) {
-	        Object.keys(changes.attributes).forEach(function (attribName) {
-	          attributes[attribName] = changes.attributes[attribName];
-	          // Delete the key if it has been set to undefined.
-	          if (changes.attributes[attribName] === undefined) {
-	            delete attributes[attribName];
-	          }
-	        });
+	        (function () {
+	          var attributes = componentDesc.attributes || {};
+	          Object.keys(attributes).forEach(function (attribName) {
+	            // Delete the key if it has been set to undefined.
+	            if (changes.attributes[attribName] === undefined) {
+	              changes.attributes[attribName] = undefined;
+	              delete attributes[attribName];
+	            }
+	          });
+
+	          Object.keys(changes.attributes).forEach(function (attribName) {
+	            attributes[attribName] = changes.attributes[attribName];
+	          });
+	        })();
 	      }
 
 	      this.fireExternalUpdate(entityId, { components: entityDesc.components });
@@ -56669,6 +56658,16 @@
 	        entityToChange.trigger('change:component', indexToChange, changes);
 	      });
 	    }
+
+	    /**
+	     * Remove a component from the given entity and broadcast the change to all engines.
+	     * @method dispatchComponentRemoved
+	     * @private
+	     * @param {string} entityId The ID of the entity to remove the component from.
+	     * @param {number} index The index of the component in the components list.
+	     * @return {void}
+	     */
+
 	  }, {
 	    key: 'dispatchComponentRemoved',
 	    value: function dispatchComponentRemoved(entityId, index) {
@@ -56690,6 +56689,16 @@
 	        entityToChange.trigger('remove:component', indexToRemove);
 	      });
 	    }
+
+	    /**
+	     * Add a new component to the given entity and broadcast the change to all engines.
+	     * @method dispatchComponentAdded
+	     * @private
+	     * @param {string} entityId The ID of the entity to add the component to.
+	     * @param {Object} componentDesc Descriptor for the new component including id, attributes, etc.
+	     * @return {void}
+	     */
+
 	  }, {
 	    key: 'dispatchComponentAdded',
 	    value: function dispatchComponentAdded(entityId, componentDesc) {
@@ -56699,8 +56708,10 @@
 	      }
 	      entityDesc.previousComponents = entityDesc.components ? entityDesc.components.slice() : [];
 	      var addedComponent = (0, _deepClone2.default)(componentDesc);
+	      addedComponent.id = addedComponent.id || (0, _uuid2.default)();
+	      addedComponent.name = addedComponent.name || 'unnamed component';
 	      addedComponent.attributes = addedComponent.attributes || {};
-	      addedComponent.enabled = addedComponent.enabled || true;
+	      addedComponent.enabled = addedComponent.enabled !== false ? true : false;
 	      entityDesc.components.push(addedComponent);
 	      this.fireExternalUpdate(entityId, { components: entityDesc.components });
 
@@ -59776,10 +59787,6 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _uuid = __webpack_require__(11);
-
-	var _uuid2 = _interopRequireDefault(_uuid);
-
 	var _deepClone = __webpack_require__(13);
 
 	var _deepClone2 = _interopRequireDefault(_deepClone);
@@ -59835,6 +59842,14 @@
 	      _this.components = [];
 	      return _this;
 	    }
+
+	    /**
+	     * Initialize component registery.
+	     * @method initializeComponents
+	     * @private
+	     * @return {void}
+	     */
+
 
 	    _createClass(_class, [{
 	      key: 'initializeComponents',
@@ -59933,7 +59948,6 @@
 	        var name = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
 
 	        var newComponent = {
-	          id: (0, _uuid2.default)(),
 	          scriptId: typeof script === 'string' ? script : script.id,
 	          attributes: attributeValues,
 	          enabled: true,
@@ -59975,6 +59989,38 @@
 	      key: 'getComponentByIndex',
 	      value: function getComponentByIndex(index) {
 	        return this.components[index] || null;
+	      }
+
+	      /**
+	       * Returns first component with the provided name
+	       * @method getComponentByName
+	       * @public
+	       * @param  {string} name The name of the component
+	       * @return {Box3DComponent} The first component that matches the search.
+	       */
+
+	    }, {
+	      key: 'getComponentByName',
+	      value: function getComponentByName(name) {
+	        return this.getComponent(function (comp) {
+	          return comp.getName() === name;
+	        });
+	      }
+
+	      /**
+	       * Returns all components with the provided name
+	       * @method getComponentsByName
+	       * @public
+	       * @param  {string} name The name of the component
+	       * @return {Box3DComponent[]} All components that match the search.
+	       */
+
+	    }, {
+	      key: 'getComponentsByName',
+	      value: function getComponentsByName(name) {
+	        return this.getComponents(function (comp) {
+	          return comp.getName() === name;
+	        });
 	      }
 
 	      /**
@@ -60132,10 +60178,12 @@
 	    }, {
 	      key: 'onScriptDeleted',
 	      value: function onScriptDeleted(scriptId) {
+	        var _this3 = this;
+
 	        var comps = this.getComponentsByScriptId(scriptId);
-	        for (var i = 0; i < comps.length; i++) {
-	          this.removeComponent(comps[i]);
-	        }
+	        comps.forEach(function (comp) {
+	          _this3.removeComponent(comp);
+	        });
 	      }
 
 	      /**
@@ -60180,10 +60228,10 @@
 	        var scriptAsset = component.getScriptAsset();
 	        var changedAttributes = Object.keys(scriptAsset.getProperty('attributes'));
 	        component.attributesChanged(changedAttributes);
-	        //If the entity is already loaded when the component is created,
-	        //explicitly load the component.
+	        // If the entity is already loaded when the component is created,
+	        // explicitly load the component.
 	        if (!this.isBaseUnloaded()) {
-	          this.startComponent(component);
+	          this.startComponent(component, false);
 	        }
 	      }
 
@@ -60222,7 +60270,7 @@
 	    }, {
 	      key: 'translateAttributeValue',
 	      value: function translateAttributeValue(obj, attributeName, attributeDef, attributeValue) {
-	        var _this3 = this;
+	        var _this4 = this;
 
 	        var runtime = this.box3DRuntime;
 	        switch (attributeDef.type) {
@@ -60235,7 +60283,7 @@
 	          case 'custom':
 	            obj[attributeName] = obj[attributeName] || {};
 	            Object.keys(attributeValue).forEach(function (key) {
-	              _this3.translateAttributeValue(obj[attributeName], key, attributeDef.attributes[key], attributeValue[key]);
+	              _this4.translateAttributeValue(obj[attributeName], key, attributeDef.attributes[key], attributeValue[key]);
 	            });
 	            break;
 	          case 'c':
@@ -60260,7 +60308,7 @@
 	                attributeValue.forEach(function (subObj, idx) {
 	                  obj[attributeName][idx] = obj[attributeName] || {};
 	                  Object.keys(subObj).forEach(function (key) {
-	                    _this3.translateAttributeValue(obj[attributeName][idx], key, attributeDef.subType.attributes[key], attributeValue[idx][key]);
+	                    _this4.translateAttributeValue(obj[attributeName][idx], key, attributeDef.subType.attributes[key], attributeValue[idx][key]);
 	                  });
 	                });
 	                break;
@@ -60300,29 +60348,18 @@
 	    }, {
 	      key: 'assignAttributeValues',
 	      value: function assignAttributeValues(component, attributes) {
-	        var _this4 = this;
+	        var _this5 = this;
 
 	        var all = (typeof attributes === 'undefined' ? 'undefined' : _typeof(attributes)) !== 'object';
 	        var scriptAsset = component.getScriptAsset();
 	        var scriptAttributes = scriptAsset.getProperty('attributes') || {};
 	        Object.keys(scriptAttributes).forEach(function (attribName) {
-	          if (all || attributes[attribName]) {
+	          if (all || attributes.hasOwnProperty(attribName)) {
 	            var attrDef = scriptAttributes[attribName];
 	            var attribValue = component.getAttribute(attrDef.name);
-	            _this4.translateAttributeValue(component, attrDef.name, attrDef, attribValue);
+	            _this5.translateAttributeValue(component, attrDef.name, attrDef, attribValue);
 	          }
 	        });
-	      }
-	    }, {
-	      key: 'registerComponentEvents',
-	      value: function registerComponentEvents(scriptAsset) {
-	        var _this5 = this;
-
-	        var eventList = scriptAsset.getProperty('events') || {};
-	        Object.keys(eventList).forEach(function (name) {
-	          var params = eventList[name];
-	          _this5.registerComponentEvent(name, params.parameters, params.scope, params.action, params.category, params.filter);
-	        }, this);
 	      }
 
 	      /**
@@ -60337,12 +60374,9 @@
 	      key: 'createComponentObject',
 	      value: function createComponentObject(componentDesc) {
 	        var scriptId = componentDesc.scriptId;
-	        var enabled = !!componentDesc.enabled;
-
 	        var scriptAsset = this.box3DRuntime.getAssetById(scriptId);
 	        if (!scriptAsset) {
-	          _log2.default.warn('Unable to find script asset for ' + scriptId);
-	          return;
+	          throw new Error('Unable to find script asset for ' + scriptId);
 	        }
 
 	        if (scriptAsset.isUnloaded()) {
@@ -60352,16 +60386,15 @@
 	        var component = new scriptAsset.sharedData.classConstructor();
 	        this.components.push(component);
 
-	        // TODO - Why are we making this internal structure?
-	        component.__box3d__ = {
+	        Object.assign(component, {
 	          id: componentDesc.id,
+	          name: componentDesc.name,
 	          scriptName: scriptAsset.getName(),
 	          scriptId: scriptId,
-	          enabled: enabled
-	        };
+	          enabled: !!componentDesc.enabled
+	        });
 
 	        component.box3DEntity = this;
-	        this.registerComponentEvents(scriptAsset);
 
 	        return component;
 	      }
@@ -60371,6 +60404,7 @@
 	       * @method startComponent
 	       * @private
 	       * @param {Box3DComponent} component The component to load.
+	       * @param {boolean} [assignAttribs] Initialize the attributes before starting the component.
 	       * @return {void}
 	       */
 
@@ -60378,6 +60412,17 @@
 	      key: 'startComponent',
 	      value: function startComponent(component) {
 	        var _this6 = this;
+
+	        var assignAttribs = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+
+
+	        // First, assign the attribute values and call the 'attributesChanged' function
+	        if (assignAttribs) {
+	          var scriptAsset = component.getScriptAsset();
+	          var changedAttributes = Object.keys(scriptAsset.getProperty('attributes'));
+	          this.assignAttributeValues(component);
+	          component.attributesChanged(changedAttributes);
+	        }
 
 	        // We'll call start() because we're loading the component
 	        if (typeof component.start === 'function') {
@@ -60456,7 +60501,7 @@
 
 	      /**
 	       * Stops all components on the entity.
-	       * @method startComponents
+	       * @method stopComponents
 	       * @private
 	       * @return {void}
 	       */
@@ -63703,7 +63748,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(28),__webpack_require__(47),__webpack_require__(29),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(34),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(26),__webpack_require__(48),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(62),__webpack_require__(63),__webpack_require__(64) 
+	  __webpack_require__(29),__webpack_require__(48),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(26),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(62),__webpack_require__(63),__webpack_require__(64),__webpack_require__(65) 
 	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
 	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPMREMGenerator,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderer,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
 	) { return function(Box3D) {
@@ -66428,7 +66473,7 @@
 	        "name": "orbitDistanceMin",
 	        "type": "f",
 	        "description": "The closest that the camera is allowed to get to the target.",
-	        "default": 10,
+	        "default": 1,
 	        "max": 1000,
 	        "min": 0.001
 	      },
@@ -66436,7 +66481,7 @@
 	        "name": "orbitDistanceMax",
 	        "type": "f",
 	        "description": "The furthest that the camera is allowed to get from the target.",
-	        "default": 500,
+	        "default": 50,
 	        "max": 100000,
 	        "min": 1
 	      },
@@ -67189,7 +67234,7 @@
 	          "texture2D": true,
 	          "renderTexture2D": true
 	        },
-	        "default": "null"
+	        "default": null
 	      },
 	      "skeletonsVisible": {
 	        "name": "skeletonsVisible",
@@ -68460,8 +68505,6 @@
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _RuntimeEvents = __webpack_require__(3);
@@ -68474,7 +68517,13 @@
 
 	var _deepClone2 = _interopRequireDefault(_deepClone);
 
+	var _map = __webpack_require__(28);
+
+	var _map2 = _interopRequireDefault(_map);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -68513,7 +68562,7 @@
 	  _createClass(Box3DComponent, [{
 	    key: 'getId',
 	    value: function getId() {
-	      return this.__box3d__.id;
+	      return this.id;
 	    }
 
 	    /**
@@ -68526,16 +68575,20 @@
 	  }, {
 	    key: 'getIndex',
 	    value: function getIndex() {
-	      var _this2 = this;
+	      return this.getEntity().components.indexOf(this);
+	    }
 
-	      var index = -1;
-	      this.getEntity().components.find(function (comp, idx) {
-	        if (comp === _this2) {
-	          index = idx;
-	          return true;
-	        }
-	      });
-	      return index;
+	    /**
+	     * Get the name for this component
+	     * @method getName
+	     * @public
+	     * @return {string} The name of this component
+	     */
+
+	  }, {
+	    key: 'getName',
+	    value: function getName() {
+	      return this.name;
 	    }
 
 	    /**
@@ -68574,7 +68627,7 @@
 	  }, {
 	    key: 'getScriptId',
 	    value: function getScriptId() {
-	      return this.__box3d__.scriptId;
+	      return this.scriptId;
 	    }
 
 	    /**
@@ -68588,14 +68641,12 @@
 	  }, {
 	    key: 'getAttributes',
 	    value: function getAttributes() {
-	      var _this3 = this;
+	      var _this2 = this;
 
 	      var scriptAttribs = this.getScriptAsset().getProperty('attributes');
-	      var returnVal = {};
-	      Object.keys(scriptAttribs).forEach(function (name) {
-	        return returnVal[name] = _this3.getAttribute(name);
+	      return (0, _map2.default)(scriptAttribs, function (attr, name) {
+	        return _this2.getAttribute(name);
 	      });
-	      return returnVal;
 	    }
 
 	    /**
@@ -68609,68 +68660,12 @@
 	  }, {
 	    key: 'getPreviousAttributes',
 	    value: function getPreviousAttributes() {
-	      var _this4 = this;
+	      var _this3 = this;
 
 	      var scriptAttribs = this.getScriptAsset().getProperty('attributes');
-	      var returnVal = {};
-	      Object.keys(scriptAttribs).forEach(function (name) {
-	        return returnVal[name] = _this4.getPreviousAttribute(name);
+	      return (0, _map2.default)(scriptAttribs, function (attr, name) {
+	        return _this3.getPreviousAttribute(name);
 	      });
-	      return returnVal;
-	    }
-
-	    /**
-	     * Return an object with all the default attribute values for this component,
-	     * keyed by attibute name.
-	     * @method getDefaultAttributes
-	     * @public
-	     * @return {Object} The default attribute values.
-	     */
-
-	  }, {
-	    key: 'getDefaultAttributes',
-	    value: function getDefaultAttributes() {
-	      var _this5 = this;
-
-	      var scriptAttribs = this.getScriptAsset().getProperty('attributes');
-	      var returnVal = {};
-	      Object.keys(scriptAttribs).forEach(function (name) {
-	        return returnVal[name] = _this5.getDefaultAttribute(name);
-	      });
-	      return returnVal;
-	    }
-
-	    /**
-	     * Return the default value of the specified attribute.
-	     * @method getDefaultAttribute
-	     * @public
-	     * @param {string} attribName The name of the attribute.
-	     * @return {mixed} The default attribute value.
-	     */
-
-	  }, {
-	    key: 'getDefaultAttribute',
-	    value: function getDefaultAttribute(attribName) {
-	      var scriptAttributes = this.getScriptAsset().getProperty('attributes');
-	      if (!scriptAttributes[attribName]) {
-	        return;
-	      }
-	      var attr = scriptAttributes[attribName];
-	      if (attr.hasOwnProperty('default')) {
-	        return (0, _deepClone2.default)(attr.default);
-	      } else if (attr.type === 'custom') {
-	        var _ret = function () {
-	          var returnVal = {};
-	          Object.keys(attr.attributes).forEach(function (subName) {
-	            returnVal[subName] = (0, _deepClone2.default)(attr.attributes[subName].default);
-	          });
-	          return {
-	            v: returnVal
-	          };
-	        }();
-
-	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	      }
 	    }
 
 	    /**
@@ -68686,9 +68681,8 @@
 	    key: 'setAttribute',
 	    value: function setAttribute(attrib, value, silent) {
 	      var changes = {
-	        attributes: {}
+	        attributes: _defineProperty({}, attrib, (0, _deepClone2.default)(value))
 	      };
-	      changes.attributes[attrib] = value;
 	      var dispatcher = this.getRuntime().entityDispatcher;
 	      dispatcher.dispatchComponentChanged(this.box3DEntity.id, this.getIndex(), changes, silent);
 	    }
@@ -68707,20 +68701,20 @@
 	      // Look for the attribute in this component
 	      var compDesc = this.getEntity().getComponentDescriptorById(this.getId());
 	      if (compDesc.attributes.hasOwnProperty(attribName)) {
-	        return (0, _deepClone2.default)(compDesc.attributes[attribName]);
+	        return compDesc.attributes[attribName];
 	      } else if (this.getEntity() instanceof Box3D.Box3DObject) {
 	        // Otherwise, look in the entity's prefab for the attribute value.
 	        var prefabObj = this.getEntity().getPrefabObject();
 	        if (prefabObj) {
 	          var prefComp = prefabObj.getComponentById(this.getId());
 	          if (prefComp) {
-	            return (0, _deepClone2.default)(prefComp.getAttribute(attribName));
+	            return prefComp.getAttribute(attribName);
 	          }
 	        }
 	      }
 
 	      // If we didn't find an override value, return the default for this attribute.
-	      return (0, _deepClone2.default)(this.getDefaultAttribute(attribName));
+	      return this.getScriptAsset().getAttributeDefault(attribName);
 	    }
 
 	    /**
@@ -68736,21 +68730,21 @@
 	    value: function getPreviousAttribute(attribName) {
 	      // Look for the attribute in this component
 	      var compDesc = this.getEntity().getPreviousComponentDescriptorById(this.getId());
-	      if (compDesc.attributes.hasOwnProperty(attribName)) {
-	        return (0, _deepClone2.default)(compDesc.attributes[attribName]);
+	      if (compDesc && compDesc.attributes.hasOwnProperty(attribName)) {
+	        return compDesc.attributes[attribName];
 	      } else if (this.getEntity() instanceof Box3D.Box3DObject) {
 	        // Otherwise, look in the entity's prefab for the attribute value.
 	        var prefabObj = this.getEntity().getPrefabObject();
 	        if (prefabObj) {
 	          var prefComp = prefabObj.getComponentById(this.getId());
 	          if (prefComp) {
-	            return (0, _deepClone2.default)(prefComp.getPreviousAttribute(attribName));
+	            return prefComp.getPreviousAttribute(attribName);
 	          }
 	        }
 	      }
 
 	      // If we didn't find an override value, return the default for this attribute.
-	      return (0, _deepClone2.default)(this.getDefaultAttribute(attribName));
+	      return this.getScriptAsset().getAttributeDefault(attribName);
 	    }
 
 	    /**
@@ -68765,14 +68759,6 @@
 	    value: function getEntity() {
 	      return this.box3DEntity;
 	    }
-
-	    /**
-	     * Removes this component from the attached Box3DEntity
-	     * @method remove
-	     */
-	    // remove() {
-	    //   this.getEntity().remove(this);
-	    // }
 
 	    /**
 	     * Returns the Box3DRuntime that thecomponent is running in
@@ -68796,8 +68782,8 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      if (!this.__box3d__.enabled) {
-	        this.__box3d__.enabled = true;
+	      if (!this.enabled) {
+	        this.enabled = true;
 	        this.trigger('enable');
 	      }
 	    }
@@ -68812,8 +68798,8 @@
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      if (this.__box3d__.enabled) {
-	        this.__box3d__.enabled = false;
+	      if (this.enabled) {
+	        this.enabled = false;
 	        this.trigger('disable');
 	      }
 	    }
@@ -68856,7 +68842,7 @@
 	  }, {
 	    key: 'isEnabled',
 	    value: function isEnabled() {
-	      return this.__box3d__.enabled;
+	      return this.enabled;
 	    }
 
 	    /**
@@ -69131,6 +69117,34 @@
 
 /***/ },
 /* 28 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/**
+	 * Returns a new Object with each element (el) of 'object' filled with the return
+	 * value of fn(el). This preserves the shape of 'object'. i.e. the data type and number
+	 * of elements of the return value is the same as 'object'.
+	 * @param {Object} object The object to run the mapping on. Can be an array or POJO
+	 * @return {Object} The mapped object.
+	 */
+	var map = function map(object, fn) {
+	  if (Array.isArray(object)) {
+	    return object.map(fn);
+	  }
+	  return Object.keys(object).reduce(function (newObj, key) {
+	    newObj[key] = fn(object[key], key);
+	    return newObj;
+	  }, {});
+	};
+
+	exports.default = map;
+
+/***/ },
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -69213,7 +69227,7 @@
 	exports.default = AudioListener;
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -69558,7 +69572,7 @@
 	exports.default = CubeMapCapture;
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69901,7 +69915,7 @@
 	exports.default = Curve;
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69980,7 +69994,7 @@
 	exports.default = DebugConsoleDisplay;
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70005,7 +70019,7 @@
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _stats = __webpack_require__(33);
+	var _stats = __webpack_require__(34);
 
 	var _stats2 = _interopRequireDefault(_stats);
 
@@ -70017,19 +70031,20 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var DebugConsoleDisplay = function (_Box3DComponent) {
-	  _inherits(DebugConsoleDisplay, _Box3DComponent);
+	var DebugPerformance = function (_Box3DComponent) {
+	  _inherits(DebugPerformance, _Box3DComponent);
 
-	  function DebugConsoleDisplay() {
-	    _classCallCheck(this, DebugConsoleDisplay);
+	  function DebugPerformance() {
+	    _classCallCheck(this, DebugPerformance);
 
-	    var _this = _possibleConstructorReturn(this, (DebugConsoleDisplay.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay)).call(this));
+	    var _this = _possibleConstructorReturn(this, (DebugPerformance.__proto__ || Object.getPrototypeOf(DebugPerformance)).call(this));
 
 	    _this.stats = new _stats2.default();
+	    _this.initialized = false;
 	    return _this;
 	  }
 
-	  _createClass(DebugConsoleDisplay, [{
+	  _createClass(DebugPerformance, [{
 	    key: 'start',
 	    value: function start() {
 	      this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -70051,30 +70066,33 @@
 	  }, {
 	    key: 'enable',
 	    value: function enable() {
-	      _get(DebugConsoleDisplay.prototype.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'enable', this).call(this);
+	      _get(DebugPerformance.prototype.__proto__ || Object.getPrototypeOf(DebugPerformance.prototype), 'enable', this).call(this);
 	      document.body.appendChild(this.stats.dom);
+	      this.initialized = true;
 	    }
 	  }, {
 	    key: 'disable',
 	    value: function disable() {
-	      _get(DebugConsoleDisplay.prototype.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay.prototype), 'disable', this).call(this);
-	      document.body.removeChild(this.stats.dom);
+	      _get(DebugPerformance.prototype.__proto__ || Object.getPrototypeOf(DebugPerformance.prototype), 'disable', this).call(this);
+	      if (this.initialized) {
+	        document.body.removeChild(this.stats.dom);
+	        this.initialized = false;
+	      }
 	    }
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
-	      document.body.removeChild(this.stats.dom);
-	      delete this.stats;
+	      this.disable();
 	    }
 	  }]);
 
-	  return DebugConsoleDisplay;
+	  return DebugPerformance;
 	}(_Box3DComponent3.default);
 
-	exports.default = DebugConsoleDisplay;
+	exports.default = DebugPerformance;
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	// stats.js - http://github.com/mrdoob/stats.js
@@ -70084,7 +70102,7 @@
 	v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70519,7 +70537,7 @@
 	exports.default = DebugTextureViewer;
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70705,7 +70723,7 @@
 	exports.default = DefaultFilters;
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71092,7 +71110,7 @@
 	exports.default = DynamicOptimizer;
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71253,7 +71271,7 @@
 	exports.default = EventHandler;
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71515,7 +71533,7 @@
 	exports.default = Exploder;
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72091,7 +72109,7 @@
 	exports.default = FreeCamera;
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -72209,7 +72227,7 @@
 	exports.default = Fullscreen;
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73253,7 +73271,7 @@
 	exports.default = InputController;
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73892,7 +73910,7 @@
 	exports.default = Animation;
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74046,7 +74064,7 @@
 	exports.default = LookAt;
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74210,7 +74228,7 @@
 	exports.default = MaterialCapture;
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74397,7 +74415,7 @@
 	exports.default = NormalMapGenerator;
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75071,7 +75089,7 @@
 	exports.default = ObjectAnimator;
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -75470,7 +75488,7 @@
 	exports.default = AudioSource;
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -76474,7 +76492,7 @@
 	exports.default = OrbitCamera;
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76558,8 +76576,12 @@
 	        this.unregisterDependency(this.inputTexture);
 	        this.inputTexture.off('load', this.renderToCube, this);
 	      }
-	      this.skyboxGeometry.dispose();
-	      this.equirectMaterial.dispose();
+	      if (this.skyboxGeometry) {
+	        this.skyboxGeometry.dispose();
+	      }
+	      if (this.equirectMaterial) {
+	        this.equirectMaterial.dispose();
+	      }
 	      this.skyboxScene = undefined;
 	      this.skyboxMesh = undefined;
 	      this.inputTexture = undefined;
@@ -76570,7 +76592,7 @@
 	      if (this.inputTexture) {
 	        this.inputTexture.off('load', this.renderToCube, this);
 	        this.inputTexture.when('load', this.renderToCube, this);
-	        if (this.inputTexture.isUnloaded()) {
+	        if (this.inputTexture.isBaseUnloaded()) {
 	          this.inputTexture.load();
 	        }
 	      }
@@ -76671,7 +76693,7 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -76937,7 +76959,7 @@
 	exports.default = PMREMGenerator;
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77344,7 +77366,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77410,13 +77432,13 @@
 	}
 	@vattr float orbitDistanceMin {
 	  'description' : 'The closest that the camera is allowed to get to the target.',
-	  'default' : 10,
+	  'default' : 1,
 	  'max' : 1000,
 	  'min' : 0.001
 	}
 	@vattr float orbitDistanceMax {
 	  'description' : 'The furthest that the camera is allowed to get from the target.',
-	  'default' : 500.0,
+	  'default' : 50.0,
 	  'max' : 100000,
 	  'min' : 1.0
 	}
@@ -77580,7 +77602,8 @@
 	    key: 'enable',
 	    value: function enable() {
 	      _get(PreviewCamera.prototype.__proto__ || Object.getPrototypeOf(PreviewCamera.prototype), 'enable', this).call(this);
-	      this.targetOffset = ORIGIN_VEC;
+	      this.targetOffset = new THREE.Vector3();
+	      this.targetOffset.copy(this.getAttribute('targetOffset'));
 	      this.attributesChanged(['targetOffset']);
 	      this.currentMoveSpeed.set(0, 0);
 	      this.moveStart.copy(this.currentDraggingMousePosition);
@@ -78348,7 +78371,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78625,7 +78648,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78905,7 +78928,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -79469,7 +79492,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80023,7 +80046,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -80043,7 +80066,7 @@
 	 *     'texture2D': true,
 	 *     'renderTexture2D': true,
 	 *   },
-	 *   'default': 'null'
+	 *   'default': null
 	 * }
 	 * @vattr Boolean skeletonsVisible {
 	 *   description: 'Render skeletons in the scene',
@@ -80910,7 +80933,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81267,7 +81290,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81474,7 +81497,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81582,7 +81605,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81801,7 +81824,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -81897,7 +81920,6 @@
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
-	      this.disable();
 	      if (this.skyboxGeometry) {
 	        this.skyboxGeometry.dispose();
 	      }
@@ -82237,7 +82259,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -82431,7 +82453,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -82675,10 +82697,10 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(66)
+	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(67)
 	  , root = typeof window === 'undefined' ? global : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -82754,7 +82776,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -82790,10 +82812,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(67)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(68)))
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -82959,7 +82981,7 @@
 
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -83179,7 +83201,7 @@
 	exports.default = UserAgent;
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83345,7 +83367,7 @@
 
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83527,7 +83549,7 @@
 
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83634,7 +83656,7 @@
 
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83702,7 +83724,7 @@
 
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83781,7 +83803,7 @@
 
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83875,7 +83897,7 @@
 
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83941,7 +83963,7 @@
 
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84011,12 +84033,11 @@
 
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)
-		, __webpack_require__(97)
-		, __webpack_require__(79)
+		, __webpack_require__(98)
 		, __webpack_require__(80)
 		, __webpack_require__(81)
 		, __webpack_require__(82)
@@ -84034,8 +84055,8 @@
 		, __webpack_require__(94)
 		, __webpack_require__(95)
 		, __webpack_require__(96)
-		, __webpack_require__(78)
-		, __webpack_require__(98)
+		, __webpack_require__(97)
+		, __webpack_require__(79)
 		, __webpack_require__(99)
 		, __webpack_require__(100)
 		, __webpack_require__(101)
@@ -84052,7 +84073,8 @@
 		, __webpack_require__(112)
 		, __webpack_require__(113)
 		, __webpack_require__(114)
-		, __webpack_require__(115)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(115)
+		, __webpack_require__(116)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -84137,7 +84159,7 @@
 
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84243,7 +84265,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84316,7 +84338,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84387,7 +84409,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84445,7 +84467,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84577,7 +84599,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84963,7 +84985,7 @@
 
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85028,7 +85050,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85083,7 +85105,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85139,7 +85161,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85247,7 +85269,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85300,7 +85322,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85354,7 +85376,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85419,7 +85441,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85494,7 +85516,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85595,7 +85617,7 @@
 
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85688,7 +85710,7 @@
 
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85799,7 +85821,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85897,7 +85919,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -85979,7 +86001,7 @@
 
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86017,7 +86039,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86102,7 +86124,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86171,7 +86193,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86243,7 +86265,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86319,7 +86341,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86387,7 +86409,7 @@
 
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86468,7 +86490,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86534,7 +86556,7 @@
 
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86594,7 +86616,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86658,7 +86680,7 @@
 
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -86721,7 +86743,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87018,7 +87040,7 @@
 
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87103,7 +87125,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87256,7 +87278,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87320,7 +87342,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87420,7 +87442,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87489,7 +87511,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87561,7 +87583,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87632,7 +87654,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -87687,7 +87709,7 @@
 
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -88315,7 +88337,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -88344,7 +88366,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _BufferAsset = __webpack_require__(119);
+	var _BufferAsset = __webpack_require__(120);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
@@ -88739,7 +88761,7 @@
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89065,7 +89087,7 @@
 	exports.default = BufferAsset;
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89134,7 +89156,7 @@
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 121 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89220,7 +89242,7 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 122 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89239,7 +89261,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(123);
+	var _JSONLoader = __webpack_require__(124);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -89337,12 +89359,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 123 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(4), __webpack_require__(124)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(4), __webpack_require__(125)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -89502,16 +89524,16 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 124 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(125);
-	var v1 = __webpack_require__(126);
-	var v2 = __webpack_require__(127);
-	var v3 = __webpack_require__(151);
-	var v4 = __webpack_require__(152);
+	var _ = __webpack_require__(126);
+	var v1 = __webpack_require__(127);
+	var v2 = __webpack_require__(128);
+	var v3 = __webpack_require__(152);
+	var v4 = __webpack_require__(153);
 
 	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
 	  'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
@@ -89917,7 +89939,7 @@
 	};
 
 /***/ },
-/* 125 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -91266,12 +91288,12 @@
 
 
 /***/ },
-/* 126 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(125);
+	var _ = __webpack_require__(126);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -91329,13 +91351,13 @@
 
 
 /***/ },
-/* 127 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(125);
-	var uuid = __webpack_require__(128);
+	var _ = __webpack_require__(126);
+	var uuid = __webpack_require__(129);
 
 	/**
 	 * Returns the basename of a filename (i.e., the final element in the path).
@@ -91416,7 +91438,7 @@
 
 
 /***/ },
-/* 128 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(Buffer) {//     uuid.js
@@ -91477,7 +91499,7 @@
 	    // Moderately fast, high quality
 	    if (true) {
 	      try {
-	        var _rb = __webpack_require__(133).randomBytes;
+	        var _rb = __webpack_require__(134).randomBytes;
 	        _nodeRNG = _rng = _rb && function() {return _rb(16);};
 	        _rng();
 	      } catch(e) {}
@@ -91692,10 +91714,10 @@
 	  }
 	})('undefined' !== typeof window ? window : null);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 129 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -91708,9 +91730,9 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(130)
-	var ieee754 = __webpack_require__(131)
-	var isArray = __webpack_require__(132)
+	var base64 = __webpack_require__(131)
+	var ieee754 = __webpack_require__(132)
+	var isArray = __webpack_require__(133)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -93488,10 +93510,10 @@
 	  return val !== val // eslint-disable-line no-self-compare
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 130 */
+/* 131 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -93606,7 +93628,7 @@
 
 
 /***/ },
-/* 131 */
+/* 132 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -93696,7 +93718,7 @@
 
 
 /***/ },
-/* 132 */
+/* 133 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -93707,10 +93729,10 @@
 
 
 /***/ },
-/* 133 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(134)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(135)
 
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -93721,9 +93743,9 @@
 	    ].join('\n'))
 	}
 
-	exports.createHash = __webpack_require__(136)
+	exports.createHash = __webpack_require__(137)
 
-	exports.createHmac = __webpack_require__(148)
+	exports.createHmac = __webpack_require__(149)
 
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -93744,7 +93766,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 
-	var p = __webpack_require__(149)(exports)
+	var p = __webpack_require__(150)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 
@@ -93764,16 +93786,16 @@
 	  }
 	})
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 134 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(135)
+	    g.crypto || g.msCrypto || __webpack_require__(136)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -93797,22 +93819,22 @@
 	  }
 	}())
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(129).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(130).Buffer))
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(137)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(138)
 
-	var md5 = toConstructor(__webpack_require__(145))
-	var rmd160 = toConstructor(__webpack_require__(147))
+	var md5 = toConstructor(__webpack_require__(146))
+	var rmd160 = toConstructor(__webpack_require__(148))
 
 	function toConstructor (fn) {
 	  return function () {
@@ -93840,10 +93862,10 @@
 	  return createHash(alg)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -93852,16 +93874,16 @@
 	  return new Alg()
 	}
 
-	var Buffer = __webpack_require__(129).Buffer
-	var Hash   = __webpack_require__(138)(Buffer)
+	var Buffer = __webpack_require__(130).Buffer
+	var Hash   = __webpack_require__(139)(Buffer)
 
-	exports.sha1 = __webpack_require__(139)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(143)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(144)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(140)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(144)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(145)(Buffer, Hash)
 
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -93944,7 +93966,7 @@
 
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -93956,7 +93978,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 
-	var inherits = __webpack_require__(140).inherits
+	var inherits = __webpack_require__(141).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -94088,7 +94110,7 @@
 
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -94616,7 +94638,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(141);
+	exports.isBuffer = __webpack_require__(142);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -94660,7 +94682,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(142);
+	exports.inherits = __webpack_require__(143);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -94678,10 +94700,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(67)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(68)))
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -94692,7 +94714,7 @@
 	}
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -94721,7 +94743,7 @@
 
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -94733,7 +94755,7 @@
 	 *
 	 */
 
-	var inherits = __webpack_require__(140).inherits
+	var inherits = __webpack_require__(141).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -94874,10 +94896,10 @@
 
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(140).inherits
+	var inherits = __webpack_require__(141).inherits
 
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -95124,7 +95146,7 @@
 
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -95136,7 +95158,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 
-	var helpers = __webpack_require__(146);
+	var helpers = __webpack_require__(147);
 
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -95285,7 +95307,7 @@
 
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -95323,10 +95345,10 @@
 
 	module.exports = { hash: hash };
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -95535,13 +95557,13 @@
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(136)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(137)
 
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -95585,13 +95607,13 @@
 	}
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(150)
+	var pbkdf2Export = __webpack_require__(151)
 
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -95606,7 +95628,7 @@
 
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -95694,16 +95716,16 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(125);
-	var uuid = __webpack_require__(128);
+	var _ = __webpack_require__(126);
+	var uuid = __webpack_require__(129);
 
 	/**
 	 * Map a v3 entity to v4.
@@ -95776,13 +95798,13 @@
 
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(125);
-	var uuid = __webpack_require__(128);
+	var _ = __webpack_require__(126);
+	var uuid = __webpack_require__(129);
 
 	/**
 	 * Map a v4 entity to v5.
@@ -95827,7 +95849,7 @@
 	};
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96168,7 +96190,7 @@
 	exports.default = ImageAsset;
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96193,7 +96215,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(155);
+	var _BaseGeometryAsset2 = __webpack_require__(156);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -96201,7 +96223,7 @@
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _BufferAsset = __webpack_require__(119);
+	var _BufferAsset = __webpack_require__(120);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
@@ -96535,7 +96557,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96797,7 +96819,7 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97125,7 +97147,7 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97146,7 +97168,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(155);
+	var _BaseGeometryAsset2 = __webpack_require__(156);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -97343,7 +97365,7 @@
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97358,7 +97380,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ImageAsset = __webpack_require__(153);
+	var _ImageAsset = __webpack_require__(154);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97366,7 +97388,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(159);
+	var _BaseRenderTextureAsset = __webpack_require__(160);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97421,7 +97443,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97438,7 +97460,7 @@
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _ImageAsset = __webpack_require__(153);
+	var _ImageAsset = __webpack_require__(154);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97560,7 +97582,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97577,7 +97599,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ImageAsset = __webpack_require__(153);
+	var _ImageAsset = __webpack_require__(154);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -97585,7 +97607,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(159);
+	var _BaseRenderTextureAsset = __webpack_require__(160);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -97666,7 +97688,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
@@ -97680,10 +97702,6 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _lodash = __webpack_require__(4);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _Box3DEntity = __webpack_require__(16);
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
@@ -97692,9 +97710,9 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _APIUtilities = __webpack_require__(162);
+	var _map = __webpack_require__(28);
 
-	var _APIUtilities2 = _interopRequireDefault(_APIUtilities);
+	var _map2 = _interopRequireDefault(_map);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -97727,48 +97745,64 @@
 	      this.setState(_Box3DEntity2.default.STATE_TYPE.CHILDREN, _Box3DEntity2.default.STATE.SUCCEEDED);
 	    }
 
+	    /**
+	     * Return the attribute descriptions for this script.
+	     * @method getAttributes
+	     * @public
+	     * @return {Object} Object containing attribute descriptions, keyed by attribute name.
+	     */
+
+
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'getDefaultComponentData',
-	    value: function getDefaultComponentData() {
-	      return ScriptAsset.getDefaultComponentData(this.getProperty('attributes'));
+	    key: 'getAttributes',
+	    value: function getAttributes() {
+	      return this.getProperty('attributes');
 	    }
+
+	    /**
+	     * Return the default values of all attributes.
+	     * @method getAttributeDefaults
+	     * @public
+	     * @return {Object} Object containing default attribute values, keyed by attribute name.
+	     */
+
 	  }, {
-	    key: 'loadBase',
-	    value: function loadBase() {
-	      if (this.isBaseLoaded()) {
-	        this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
-	      } else {
-	        var externalDependencies = [];
+	    key: 'getAttributeDefaults',
+	    value: function getAttributeDefaults() {
+	      var _this2 = this;
 
-	        _lodash2.default.each(this.getProperty('externalDependencies'), function (dependency) {
-	          externalDependencies.push(dependency);
-	        }, this);
-
-	        _APIUtilities2.default.loadExtensions(externalDependencies, _lodash2.default.bind(function () {
-	          this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.SUCCEEDED);
-	        }, this));
-	      }
+	      var scriptAttributes = this.getProperty('attributes');
+	      return (0, _map2.default)(scriptAttributes, function (attr, attrName) {
+	        return _this2.getAttributeDefault(attrName);
+	      });
 	    }
-	  }], [{
-	    key: 'getDefaultComponentData',
-	    value: function getDefaultComponentData(attrs) {
-	      var attributes = {};
 
-	      if (attrs) {
-	        _lodash2.default.each(attrs, function (attr, idx) {
-	          if (typeof attr.default !== 'undefined') {
-	            attributes[idx] = attr.default;
-	          } else if (attr.type === 'custom') {
-	            attributes[idx] = ScriptAsset.getDefaultComponentData(attr.attributes);
-	          } else if (attr.type === 'a') {
-	            attributes[idx] = [];
-	          }
-	        }, this);
+	    /**
+	     * Return the default value of the specified attribute.
+	     * @method getAttributeDefault
+	     * @public
+	     * @param {string} attribName The name of the attribute.
+	     * @return {mixed} The default attribute value.
+	     */
+
+	  }, {
+	    key: 'getAttributeDefault',
+	    value: function getAttributeDefault(attribName) {
+	      var scriptAttributes = this.getProperty('attributes');
+	      if (!scriptAttributes[attribName]) {
+	        return;
 	      }
 
-	      return _lodash2.default.cloneDeep(attributes);
+	      var attribute = scriptAttributes[attribName];
+	      if (attribute.hasOwnProperty('default')) {
+	        return attribute.default;
+	      } else if (attribute.type === 'custom') {
+	        return (0, _map2.default)(attribute.attributes, function (attr) {
+	          return attr.default;
+	        });
+	      }
 	    }
 	  }]);
 
@@ -97824,80 +97858,6 @@
 
 	window.Box3D.ScriptAsset = ScriptAsset;
 	exports.default = ScriptAsset;
-
-/***/ },
-/* 162 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
-
-	/**
-	 * @module Box3D
-	 */
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(4)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_) {
-	  'use strict';
-
-	  var Box3D = window.Box3D = window.Box3D || {};
-	  var define = window.define;
-
-	  var extensions = {};
-	  var nLoading = 0;
-
-	  Box3D.loadExtensions = function (paths, fn) {
-	    if (!_.isArray(paths) || !_.size(paths)) {
-	      return fn();
-	    }
-	    Promise.all(paths.map(function (path) {
-	      return new Promise(function (resolve) {
-	        Box3D.loadExtension(path, resolve);
-	      });
-	    })).then(fn);
-	  };
-
-	  Box3D.loadExtension = function (path, fn) {
-	    var script;
-
-	    if (extensions[path] && extensions[path].state === 'loaded') {
-	      return fn();
-	    } else if (extensions[path] && extensions[path].state !== 'loaded') {
-	      script = extensions[path].script;
-
-	      if (typeof fn === 'function') {
-	        script.addEventListener('load', function () {
-	          setTimeout(fn, 0);
-	        });
-	      }
-	    } else {
-	      // backup define
-	      window.define = undefined;
-	      var body = document.getElementsByTagName('body')[0];
-	      script = document.createElement('script');
-	      script.type = 'text/javascript';
-	      script.src = path;
-	      script.async = false;
-	      body.appendChild(script);
-	      extensions[path] = {
-	        script: script,
-	        state: 'loading'
-	      };
-
-	      nLoading++;
-
-	      script.addEventListener('load', function () {
-	        extensions[path].state = 'loaded';
-	        nLoading--;
-	        if (nLoading === 0) {
-	          window.define = define;
-	        }
-	        if (typeof fn === 'function') {
-	          fn();
-	        }
-	      });
-	    }
-	  };
-
-	  return Box3D;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 163 */

@@ -262,9 +262,6 @@ class Model3d extends Box3D {
                 // Update settings ui
                 this.controls.setCurrentProjectionMode(defaults.cameraProjection);
 
-                // Update renderer
-                this.handleSetCameraProjection(defaults.cameraProjection);
-
                 // Update controls ui
                 this.controls.handleSetRenderMode(defaults.defaultRenderMode);
                 this.controls.handleSetSkeletonsVisible(false);

@@ -34,7 +34,7 @@ function sceneEntities(prefix) {
             // An orbit controller for rotating around the 3D model, made for preview
             {
                 name: 'Preview Camera',
-                componentData: {
+                attributes: {
                     orbitDistanceMin: 0.02, // Minimum camera distance
                     orbitDistanceMax: 3, // Maximum camera distance
                     useKeyboard: false,
@@ -45,7 +45,7 @@ function sceneEntities(prefix) {
             },
             {
                 name: 'Preview Camera Focus',
-                componentData: {},
+                attributes: {},
                 enabled: true,
                 scriptId: 'preview_camera_focus'
             }
@@ -81,7 +81,7 @@ function sceneEntities(prefix) {
         components: [
             {
                 name: 'Renderer',
-                componentData: {
+                attributes: {
                     renderOnDemand: true,
                     maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
@@ -97,7 +97,7 @@ function sceneEntities(prefix) {
                 name: 'Dynamic Optimizer',
                 scriptId: 'dynamic_optimizer',
                 enabled: false,
-                componentData: {
+                attributes: {
                     testInterval: 4000.0
                 }
             },
@@ -110,7 +110,7 @@ function sceneEntities(prefix) {
                 name: 'Input',
                 scriptId: 'input_controller_component',
                 enabled: true,
-                componentData: {
+                attributes: {
                     mouseEvents: {
                         enable: true,
                         scroll: true,
@@ -150,7 +150,7 @@ function sceneEntities(prefix) {
             },
             {
                 name: 'Render Modes',
-                componentData: {},
+                attributes: {},
                 scriptId: 'render_modes'
             }
         ]
@@ -295,7 +295,7 @@ function sceneEntities(prefix) {
                 name: 'Convert Panorama To CubeMap',
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
-                componentData: {
+                attributes: {
                     inputTexture: 'HDR_ENV_MAP_0'
                 }
             }
@@ -318,7 +318,7 @@ function sceneEntities(prefix) {
                 name: 'Convert Panorama To CubeMap',
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
-                componentData: {
+                attributes: {
                     inputTexture: 'HDR_ENV_MAP_1'
                 }
             }
@@ -341,7 +341,7 @@ function sceneEntities(prefix) {
                 name: 'Convert Panorama To CubeMap',
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
-                componentData: {
+                attributes: {
                     inputTexture: 'HDR_ENV_MAP_2'
                 }
             }
