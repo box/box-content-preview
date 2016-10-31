@@ -234,6 +234,15 @@ class AnnotationService {
     }
 
     /**
+     * Gets canDelete.
+     *
+     * @returns {boolean} Whether or not user can create or modify annotations.
+     */
+    get canDelete() {
+        return this._canDelete;
+    }
+
+    /**
      * Gets user.
      *
      * @returns {Object} User object
