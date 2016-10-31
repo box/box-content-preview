@@ -20,6 +20,7 @@ class Image360Renderer extends Box3DRenderer {
     /**
      * Handles creating and caching a Box3DRuntime, and creating a scene made for
      * previewing 360 images
+     *
      * @constructor
      * @inheritdoc
      * @returns {Image360Renderer} Image360Renderer instance
@@ -27,68 +28,93 @@ class Image360Renderer extends Box3DRenderer {
     constructor(containerEl, boxSdk) {
         super(containerEl, boxSdk);
         this.textureAsset = null;
+        this.imageAsset = null;
+        this.skybox = null;
     }
 
     /**
      * Called on preview destroy
+     *
      * @returns {void}
      */
     destroy() {
+        super.destroy();
+
         this.cleanupTexture();
-        if (this.skybox) {
-            this.skybox.setAttribute('skyboxTexture', null);
-        }
-        if (this.textureAsset) {
-            this.textureAsset.destroy();
-        }
         if (this.imageAsset) {
             this.imageAsset.destroy();
         }
-        super.destroy();
+        this.imageAsset = null;
+        this.skybox = null;
     }
 
     /**
      * Destroy the texture asset created from the Box file and unallocate any GPU memory
      * consumed by it.
+     *
      * @private
      * @method cleanupTexture
      * @returns {void}
      */
     cleanupTexture() {
+        if(!this.box3d) {
+            return;
+        }
+
         if (this.textureAsset) {
             this.textureAsset.destroy();
-            this.textureAsset = undefined;
         }
-        const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
-        const skyboxComponent = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
-        skyboxComponent.setAttribute('skyboxTexture', null);
+        this.textureAsset = null;
+
+        // Cleanup skybox component that was using textureAsset
+        const skybox = this.getSkyboxComponent();
+        if (skybox) {
+            skybox.setAttribute('skyboxTexture', null);
+        }
+    }
+
+    /**
+     * Get the skybox renderer component that exists on the root scene.
+     *
+     * @public
+     * @method getSkyboxComponent
+     * @returns {Object} A Box3d component for skybox rendering
+     */
+    getSkyboxComponent() {
+        if (!this.skybox) {
+            const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
+            this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
+        }
+
+        return this.skybox;
     }
 
     /**
      * Load a box3d json
+     *
      * @inheritdoc
      * @param  {string} jsonUrl The url to the box3d json
      * @returns {Promise} a promise that resolves with the newly created runtime
      */
     load(jsonUrl, options = {}) {
-        /*eslint-disable*/
-        options.sceneEntities = sceneEntities;
-        options.inputSettings = INPUT_SETTINGS;
-        /*eslint-enable*/
+        const opts = options;
+        opts.sceneEntities = opts.sceneEntities || sceneEntities;
+        opts.inputSettings = opts.inputSettings || INPUT_SETTINGS;
 
-        return this.initBox3d(options)
-            .then(this.loadPanoramaFile.bind(this, options.file))
+        return this.initBox3d(opts)
+            .then(this.loadPanoramaFile.bind(this, opts.file))
             .then(this.onSceneLoad.bind(this));
     }
 
     /**
      * Parse out the proper components to assemble a threejs mesh
+     *
      * @param {object} fileProperties The Box3D file properties
      * @returns {void}
      */
     loadPanoramaFile(fileProperties) {
-        const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
-        this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
+        // getSkyboxComponent() sets this.skybox
+        this.getSkyboxComponent();
 
         this.imageAsset = this.box3d.createImage();
         this.imageAsset.setProperty('stream', false);
