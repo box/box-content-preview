@@ -16,7 +16,8 @@ describe('annotation-service', () => {
             api: API,
             fileID: 1,
             token: 'someToken',
-            canAnnotate: true
+            canAnnotate: true,
+            canDelete: true
         });
     });
 

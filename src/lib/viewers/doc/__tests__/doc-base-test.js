@@ -16,6 +16,7 @@ const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const MIN_RANGE_REQUEST_SIZE_BYTES = 5242880; // 5MB
+const SCROLL_END_TIMEOUT = 500;
 
 
 const sandbox = sinon.sandbox.create();
@@ -32,7 +33,13 @@ describe('doc-base', () => {
         fixture.load('viewers/doc/__tests__/doc-base-test.html');
 
         containerEl = document.querySelector('.container');
-        docBase = new DocBase(containerEl);
+        const options = {
+            viewerName: 'docBaseViewer',
+            file: {
+                id: 0
+            }
+        };
+        docBase = new DocBase(containerEl, options);
     });
 
     afterEach(() => {
@@ -473,6 +480,7 @@ describe('doc-base', () => {
                 currentScale: 5
             };
             stubs.setScale = sandbox.stub(docBase, 'setScale');
+            stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
         afterEach(() => {
@@ -488,6 +496,18 @@ describe('doc-base', () => {
                 docBase.zoomIn(1);
                 expect(stubs.setScale).to.be.calledWith(DEFAULT_SCALE_DELTA);
             });
+
+            it('should emit the zoom event', () => {
+                docBase.zoomIn(1);
+                expect(stubs.emit).to.be.calledWith('zoom');
+            });
+
+            it('should not emit the zoom event if we can\'t zoom in', () => {
+                docBase.pdfViewer.currentScale = MAX_SCALE;
+
+                docBase.zoomIn(1);
+                expect(stubs.emit).to.not.be.calledWith('zoom');
+            });
         });
 
         describe('zoomOut()', () => {
@@ -500,6 +520,18 @@ describe('doc-base', () => {
                 docBase.pdfViewer.currentScale = DEFAULT_SCALE_DELTA;
                 docBase.zoomOut(1);
                 expect(stubs.setScale).to.be.calledWith(1);
+            });
+
+            it('should emit the zoom event', () => {
+                docBase.zoomOut(1);
+                expect(stubs.emit).to.be.calledWith('zoom');
+            });
+
+            it('should not emit the zoom event if we can\'t zoom out', () => {
+                docBase.pdfViewer.currentScale = MIN_SCALE;
+
+                docBase.zoomOut(1);
+                expect(stubs.emit).to.not.be.calledWith('zoom');
             });
         });
     });
@@ -544,12 +576,11 @@ describe('doc-base', () => {
                     doc: {
                         annotations: true
                     }
+                },
+                file: {
+                    id: 0
                 }
             };
-        });
-
-        afterEach(() => {
-            docBase.options = undefined;
         });
 
         it('should return false if the type is not a point or a highlight', () => {
@@ -754,7 +785,8 @@ describe('doc-base', () => {
                         id: 0
                     },
                     permissions: {
-                        can_annotate: true
+                        can_annotate: true,
+                        can_delete: true
                     }
                 },
                 location: {
@@ -770,15 +802,19 @@ describe('doc-base', () => {
         it('should allow annotations based on browser and permissions', () => {
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.true;
+            expect(docBase.annotator._annotationService._canDelete).to.be.true;
 
             stubs.browser.returns(true);
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
+            expect(docBase.annotator._annotationService._canDelete).to.be.true;
 
             stubs.browser.returns(false);
             docBase.options.file.permissions.can_annotate = false;
+            docBase.options.file.permissions.can_delete = false;
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
+            expect(docBase.annotator._annotationService._canDelete).to.be.false;
         });
     });
 
@@ -926,6 +962,8 @@ describe('doc-base', () => {
             expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
+            expect(stubs.addEventListener).to.be.calledWith('scroll');
+
 
             expect(stubs.addEventListener).to.not.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
             expect(stubs.addEventListener).to.not.be.calledWith('gestureend', docBase.mobileZoomEndHandler);
@@ -968,6 +1006,7 @@ describe('doc-base', () => {
             expect(stubs.removeEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.removeEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('scroll');
         });
 
         it('should not remove the doc element listeners if the doc element does not exist', () => {
@@ -1135,6 +1174,12 @@ describe('doc-base', () => {
                 }
             };
             stubs.textlayerrenderedHandler = sandbox.stub(docBase, 'textlayerrenderedHandler');
+            stubs.emit = sandbox.stub(docBase, 'emit');
+        });
+
+        it('should emit the pagerender event', () => {
+            docBase.pagerenderedHandler(docBase.event);
+            expect(stubs.emit).to.be.calledWith('pagerender');
         });
 
         it('should render annotations on a page if the annotator and event page are specified', () => {
@@ -1189,9 +1234,19 @@ describe('doc-base', () => {
         beforeEach(() => {
             stubs.updateCurrentPage = sandbox.stub(docBase, 'updateCurrentPage');
             stubs.cachePage = sandbox.stub(docBase, 'cachePage');
+            stubs.emit = sandbox.stub(docBase, 'emit');
             docBase.event = {
                 pageNumber: 1
             };
+            docBase.pdfViewer = {
+                pageCount: 1
+            };
+        });
+
+        it('should emit the pagefocus event', () => {
+            docBase.pagechangeHandler(docBase.event);
+
+            expect(stubs.emit).to.be.calledWith('pagefocus');
         });
 
         it('should update the current page', () => {
@@ -1240,6 +1295,38 @@ describe('doc-base', () => {
             docBase.exitfullscreenHandler();
             expect(resizeStub).to.be.called;
             expect(docBase.pdfViewer.currentScaleValue).to.equal('auto');
+        });
+    });
+
+    describe('scrollHandler()', () => {
+        beforeEach(() => {
+            stubs.emit = sandbox.stub(docBase, 'emit');
+            docBase.scrollStarted = false;
+        });
+
+        it('should emit the scrollstart event on a new scroll', () => {
+            docBase.scrollHandler();
+            docBase.throttledScrollHandler();
+            expect(stubs.emit).to.be.calledWith('scrollstart');
+        });
+
+        it('should not emit the scrollstart event on a continued scroll', () => {
+            docBase.scrollStarted = true;
+
+            docBase.scrollHandler();
+            docBase.throttledScrollHandler();
+            expect(stubs.emit).to.not.be.calledWith('scrollstart');
+        });
+
+        it('should emit a scrollend event after scroll timeout', () => {
+            const clock = sinon.useFakeTimers();
+
+            docBase.scrollHandler();
+            docBase.throttledScrollHandler();
+            expect(stubs.emit).to.be.calledWith('scrollstart');
+
+            clock.tick(SCROLL_END_TIMEOUT + 1);
+            expect(stubs.emit).to.be.calledWith('scrollend');
         });
     });
 });

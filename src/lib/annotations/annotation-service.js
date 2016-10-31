@@ -64,6 +64,7 @@ class AnnotationService {
         this._fileID = data.fileID;
         this._headers = getHeaders({}, data.token);
         this._canAnnotate = data.canAnnotate;
+        this._canDelete = data.canDelete;
         this._user = ANONYMOUS_USER;
     }
 
@@ -230,6 +231,15 @@ class AnnotationService {
      */
     get canAnnotate() {
         return this._canAnnotate;
+    }
+
+    /**
+     * Gets canDelete.
+     *
+     * @returns {boolean} Whether or not user can create or modify annotations.
+     */
+    get canDelete() {
+        return this._canDelete;
     }
 
     /**

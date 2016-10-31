@@ -153,6 +153,7 @@ Box.Preview.show(FILE_ID, {
 | logoUrl | Optional |  | URL of logo to show in header |
 | showAnnotations | Optional | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. |
 | showDownload | Optional | false | Whether download button is shown |
+| useHotkeys | Optional | true | Whether hotkeys (keyboard shortcuts) are enabled |
 | viewers | Optional |  | Arguments to pass on to viewers |
 | { VIEWERNAME } |  |  | Name of the viewer, see below for more details |
 | {{ disabled }} |  | false | Disables the viewer |
@@ -215,6 +216,10 @@ Additional Methods
 `Box.Preview.enableViewers(/* String|Array[String] */ viewers)` enables one or more viewers based on VIEWERNAME.
 
 `Box.Preview.disableViewers(/* String|Array[String] */ viewers)` disables one or more viewers based on VIEWERNAME. Viewers can also be disabled by setting `disabled: true` on the specific viewer option inside options.
+
+`Box.Preview.enableHotkeys()` enables hotkeys (keyboard shortcuts).
+
+`Box.Preview.disableHotkeys()` disables hotkeys (keyboard shortcuts).
 
 `Box.Preview.print()` prints the file if printable.
 

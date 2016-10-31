@@ -27,7 +27,10 @@ describe('doc-annotator', () => {
 
         annotator = new DocAnnotator({
             annotatedElement: document.querySelector('.annotated-element'),
-            annotationService: {},
+            annotationService: {
+                canAnnotate: true,
+                canDelete: true
+            },
             fileVersionID: 1
         });
     });
@@ -385,6 +388,7 @@ describe('doc-annotator', () => {
             const element = annotator._annotatedElement;
             sandbox.stub(element, 'addEventListener');
             annotator._annotationService.canAnnotate = false;
+            annotator._annotationService.canDelete = false;
 
             annotator.bindDOMListeners();
 
@@ -401,6 +405,7 @@ describe('doc-annotator', () => {
             const element = annotator._annotatedElement;
             sandbox.stub(element, 'addEventListener');
             annotator._annotationService.canAnnotate = true;
+            annotator._annotationService.canDelete = true;
 
             annotator.bindDOMListeners();
 
@@ -417,6 +422,7 @@ describe('doc-annotator', () => {
             const element = annotator._annotatedElement;
             sandbox.stub(element, 'removeEventListener');
             annotator._annotationService.canAnnotate = false;
+            annotator._annotationService.canDelete = false;
 
             annotator.unbindDOMListeners();
 
@@ -430,6 +436,7 @@ describe('doc-annotator', () => {
             const element = annotator._annotatedElement;
             sandbox.stub(element, 'removeEventListener');
             annotator._annotationService.canAnnotate = true;
+            annotator._annotationService.canDelete = true;
 
             annotator.unbindDOMListeners();
 
@@ -607,6 +614,22 @@ describe('doc-annotator', () => {
             annotator._highlightCreateHandler(event);
             expect(eventStub).to.be.called;
             expect(threadsWithStatesStub).to.be.called;
+        });
+
+        it('should do nothing if user has view-only permissions on file', () => {
+            const event = new Event({ x: 1, y: 1 });
+            const threadsWithStatesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([]);
+            annotator._annotationService.canAnnotate = true;
+            annotator._annotationService.canDelete = false;
+
+            annotator._highlightCreateHandler(event);
+            expect(threadsWithStatesStub).to.not.be.called;
+
+            annotator._annotationService.canAnnotate = false;
+            annotator._annotationService.canDelete = true;
+
+            annotator._highlightCreateHandler(event);
+            expect(threadsWithStatesStub).to.not.be.called;
         });
 
         it('should do nothing if there are no pending threads', () => {

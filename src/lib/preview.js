@@ -13,7 +13,7 @@ import throttle from 'lodash.throttle';
 import getTokens from './tokens';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
-import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
+import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_DELETE, PERMISSION_PREVIEW, API } from './constants';
 
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
@@ -262,6 +262,24 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Disables keyboard shortcuts / hotkeys for Preview.
+     *
+     * @returns {void}
+     */
+    disableHotkeys() {
+        this.options.useHotkeys = false;
+    }
+
+    /**
+     * Enables keyboard shortcuts / hotkeys for Preview.
+     *
+     * @returns {void}
+     */
+    enableHotkeys() {
+        this.options.useHotkeys = true;
+    }
+
+    /**
      * Resizes the preview.
      *
      * @returns {void}
@@ -432,6 +450,9 @@ class Preview extends EventEmitter {
 
         // Whether annotations and annotation controls should be shown
         this.options.showAnnotations = !!options.showAnnotations;
+
+        // Enable or disable hotkeys
+        this.options.useHotkeys = options.useHotkeys !== false;
 
         // Save the files to iterate through
         this.collection = options.collection || [];
@@ -624,7 +645,7 @@ class Preview extends EventEmitter {
             }
         }
 
-        if (checkPermission(this.file, PERMISSION_ANNOTATE) && !Browser.isMobile()) {
+        if (checkPermission(this.file, PERMISSION_ANNOTATE) && checkPermission(this.file, PERMISSION_DELETE) && !Browser.isMobile()) {
             if (checkFeature(this.viewer, 'isAnnotatable', 'point')) {
                 showAnnotateButton(this.viewer.getPointModeClickHandler());
             }
@@ -783,6 +804,12 @@ class Preview extends EventEmitter {
             if (typeof window.callPhantom === 'function') {
                 window.callPhantom(0);
             }
+        });
+
+        // Trigger error event at the preview level
+        this.emit('error', {
+            error: logMessage,
+            file: this.file
         });
     }
 
@@ -980,6 +1007,11 @@ class Preview extends EventEmitter {
      */
     keydownHandler(event) {
         const target = event.target;
+
+        // If keyboard shortcuts / hotkeys are disabled, ignore
+        if (!this.options.useHotkeys) {
+            return;
+        }
 
         // Ignore key events when we are inside certain fields
         if (!target
