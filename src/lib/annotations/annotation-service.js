@@ -6,6 +6,7 @@
 
 import autobind from 'autobind-decorator';
 import Annotation from './annotation';
+import EventEmitter from 'events';
 import fetch from 'isomorphic-fetch';
 import { getHeaders } from '../util';
 
@@ -15,7 +16,7 @@ const ANONYMOUS_USER = {
 };
 
 @autobind
-class AnnotationService {
+class AnnotationService extends EventEmitter {
 
     //--------------------------------------------------------------------------
     // Static
@@ -60,6 +61,7 @@ class AnnotationService {
      * @returns {AnnotationService} AnnotationService instance
      */
     constructor(data) {
+        super();
         this._api = data.api;
         this._fileID = data.fileID;
         this._headers = getHeaders({}, data.token);
@@ -112,10 +114,16 @@ class AnnotationService {
                     resolve(createdAnnotation);
                 } else {
                     reject(new Error('Could not create annotation'));
+                    this.emit('annotationerror', {
+                        reason: 'create'
+                    });
                 }
             })
             .catch(() => {
-                reject(new Error('Could not create annotation'));
+                reject(new Error('Could not create annotation due to invalid or expired token'));
+                this.emit('annotationerror', {
+                    reason: 'authorization'
+                });
             });
         });
     }
@@ -173,10 +181,16 @@ class AnnotationService {
                     resolve();
                 } else {
                     reject(new Error(`Could not delete annotation with ID ${annotationID}`));
+                    this.emit('annotationerror', {
+                        reason: 'delete'
+                    });
                 }
             })
             .catch(() => {
-                reject(new Error(`Could not delete annotation with ID ${annotationID}`));
+                reject(new Error('Could not delete annotation due to invalid or expired token'));
+                this.emit('annotationerror', {
+                    reason: 'authorization'
+                });
             });
         });
     }
@@ -345,21 +359,27 @@ class AnnotationService {
         .then((response) => response.json())
         .then((data) => {
             if (data.type === 'error' || !Array.isArray(data.entries)) {
-                throw new Error('error');
-            }
-
-            data.entries.forEach((annotationData) => {
-                this._annotations.push(this._createAnnotation(annotationData));
-            });
-
-            if (data.next_marker) {
-                this._readFromMarker(resolve, reject, fileVersionID, data.next_marker, limit);
+                reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
+                this.emit('annotationerror', {
+                    reason: 'read'
+                });
             } else {
-                resolve(this._annotations);
+                data.entries.forEach((annotationData) => {
+                    this._annotations.push(this._createAnnotation(annotationData));
+                });
+
+                if (data.next_marker) {
+                    this._readFromMarker(resolve, reject, fileVersionID, data.next_marker, limit);
+                } else {
+                    resolve(this._annotations);
+                }
             }
         })
         .catch(() => {
-            reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
+            reject(new Error('Could not read annotations from file due to invalid or expired token'));
+            this.emit('annotationerror', {
+                reason: 'authorization'
+            });
         });
     }
 }

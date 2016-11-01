@@ -14,6 +14,7 @@ import Browser from '../browser';
 import EventEmitter from 'events';
 import LocalStorageAnnotationService from './localstorage-annotation-service';
 import Notification from '../notification';
+import AnnotationService from './annotation-service';
 import * as constants from './annotation-constants';
 import { CLASS_ACTIVE } from '../constants';
 
@@ -44,7 +45,6 @@ class Annotator extends EventEmitter {
      */
     constructor(data) {
         super();
-
         this._annotatedElement = data.annotatedElement;
         this._annotationService = data.annotationService || new LocalStorageAnnotationService();
         this._fileVersionID = data.fileVersionID;
@@ -65,6 +65,7 @@ class Annotator extends EventEmitter {
             });
         });
         this.unbindDOMListeners();
+        this.unbindCustomListenersOnService();
     }
 
     /**
@@ -248,6 +249,7 @@ class Annotator extends EventEmitter {
         // Map of page => [threads on page]
         this._threads = {};
         this.bindDOMListeners();
+        this.bindCustomListenersOnService(this._annotationService);
     }
 
     /**
@@ -295,6 +297,56 @@ class Annotator extends EventEmitter {
     unbindDOMListeners() {}
 
     /**
+     * Binds custom event listeners for the Annotation Service.
+     *
+     * @returns {void}
+     * @protected
+     */
+    bindCustomListenersOnService() {
+        const service = this._annotationService;
+        if (!service || !(service instanceof AnnotationService)) {
+            return;
+        }
+
+        service.addListener('annotationerror', (data) => {
+            let errorMessage = '';
+            switch (data.reason) {
+                case 'read':
+                    errorMessage = __('annotations_load_error');
+                    break;
+                case 'create':
+                    errorMessage = __('annotations_create_error');
+                    this.showAnnotations();
+                    break;
+                case 'delete':
+                    errorMessage = __('annotations_delete_error');
+                    this.showAnnotations();
+                    break;
+                case 'authorization':
+                    errorMessage = __('annotations_authorization_error');
+                    break;
+                default:
+
+            }
+            this.notification.show(errorMessage);
+        });
+    }
+
+    /**
+     * Unbinds custom event listeners for the Annotation Service.
+     *
+     * @returns {void}
+     * @protected
+     */
+    unbindCustomListenersOnService() {
+        const service = this._annotationService;
+        if (!service || !(service instanceof AnnotationService)) {
+            return;
+        }
+        service.removeAllListeners('annotationerror');
+    }
+
+    /**
      * Binds custom event listeners for a thread.
      *
      * @param {AnnotationThread} thread Thread to bind events to
@@ -318,18 +370,6 @@ class Annotator extends EventEmitter {
         thread.addListener('threadcleanup', () => {
             this.unbindCustomListenersOnThread(thread);
         });
-
-        thread.addListener('annotationcreateerror', () => {
-            // @TODO(tjin): Show annotation creation error
-        });
-
-        thread.addListener('annotationdeleteerror', () => {
-            // Need to re-fetch and re-render annotations since we can't easily
-            // recover an annotation removed from the client-side map
-            this.showAnnotations();
-
-            // @TODO(tjin): Show annotation deletion error
-        });
     }
 
     /**
@@ -342,8 +382,6 @@ class Annotator extends EventEmitter {
     unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners('threaddeleted');
         thread.removeAllListeners('threadcleanup');
-        thread.removeAllListeners('annotationcreateerror');
-        thread.removeAllListeners('annotationdeleteerror');
     }
 
     /**
