@@ -51,11 +51,11 @@ describe('controls', () => {
 
         it('should remove click listeners for any button references', () => {
             const button1 = { button:
-                                { removeEventListener: sandbox.stub() },
-                                handler: 'handler' };
+                { removeEventListener: sandbox.stub() },
+                handler: 'handler' };
             const button2 = { button:
-                                { removeEventListener: sandbox.stub() },
-                                handler: 'handler' };
+                { removeEventListener: sandbox.stub() },
+                handler: 'handler' };
             controls.buttonRefs = [button1, button2];
 
             controls.destroy();
