@@ -796,8 +796,7 @@ class Preview extends EventEmitter {
 
             this.emit('load', {
                 error: logMessage,
-                metrics: this.logger.done(this.count),
-                file: this.file
+                metrics: this.logger.done(this.count)
             });
 
             // Hookup for phantom JS health check
@@ -807,7 +806,7 @@ class Preview extends EventEmitter {
         });
 
         // Trigger error event at the preview level
-        this.emit('error', {
+        this.emit('previewerror', {
             error: logMessage,
             file: this.file
         });
