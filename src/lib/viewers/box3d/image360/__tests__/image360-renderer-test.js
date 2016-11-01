@@ -86,7 +86,8 @@ describe('image360', () => {
         it('should invoke textureAsset.destroy()', () => {
             const textureAsset = renderer.textureAsset = {
                 destroy: sandbox.stub()
-            }
+            };
+
             sandbox.stub(renderer, 'getSkyboxComponent');
             renderer.cleanupTexture();
 
@@ -175,7 +176,8 @@ describe('image360', () => {
                 camera: 'camera',
                 action: ':D'
             };
-            const stub = sandbox.stub(renderer, 'initBox3d', (options) => {
+
+            sandbox.stub(renderer, 'initBox3d', (options) => {
                 expect(options.sceneEntities).to.deep.equal(mySceneEntities);
                 done();
                 return new Promise(() => {});
@@ -185,7 +187,7 @@ describe('image360', () => {
         });
 
         it('should use default sceneEntities, if none provided, for initialization', (done) => {
-            const stub = sandbox.stub(renderer, 'initBox3d', (options) => {
+            sandbox.stub(renderer, 'initBox3d', (options) => {
                 expect(options.sceneEntities).to.deep.equal(sceneEntities);
                 done();
                 return new Promise(() => {});
@@ -201,7 +203,8 @@ describe('image360', () => {
                 right_click: true,
                 middle_click: 'always'
             };
-            const stub = sandbox.stub(renderer, 'initBox3d', (options) => {
+
+            sandbox.stub(renderer, 'initBox3d', (options) => {
                 expect(options.inputSettings).to.deep.equal(myInputSettings);
                 done();
                 return new Promise(() => {});
@@ -211,7 +214,7 @@ describe('image360', () => {
         });
 
         it('should use default inputSettings, if none provided, for initialization', (done) => {
-            const stub = sandbox.stub(renderer, 'initBox3d', (options) => {
+            sandbox.stub(renderer, 'initBox3d', (options) => {
                 expect(options.inputSettings).to.deep.equal(INPUT_SETTINGS);
                 done();
                 return new Promise(() => {});
@@ -227,7 +230,7 @@ describe('image360', () => {
                 even: { more: 'things' }
             };
 
-            const stub = sandbox.stub(renderer, 'initBox3d', (options) => {
+            sandbox.stub(renderer, 'initBox3d', (options) => {
                 expect(options).to.deep.equal(myOptions);
                 done();
                 return new Promise(() => {});
@@ -243,7 +246,7 @@ describe('image360', () => {
             };
 
             sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
-            const initStub = sandbox.stub(renderer, 'loadPanoramaFile', (someFile) => {
+            sandbox.stub(renderer, 'loadPanoramaFile', (someFile) => {
                 expect(someFile).to.deep.equal(file);
                 done();
                 return new Promise(() => {});
@@ -255,7 +258,7 @@ describe('image360', () => {
         it('should call onSceneLoad() when done loading file', (done) => {
             sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
             sandbox.stub(renderer, 'loadPanoramaFile').returns(Promise.resolve());
-            sandbox.stub(renderer, 'onSceneLoad', () => { done() });
+            sandbox.stub(renderer, 'onSceneLoad', () => { done(); });
 
             renderer.load();
         });

@@ -57,7 +57,7 @@ class Image360Renderer extends Box3DRenderer {
      * @returns {void}
      */
     cleanupTexture() {
-        if(!this.box3d) {
+        if (!this.box3d) {
             return;
         }
 
