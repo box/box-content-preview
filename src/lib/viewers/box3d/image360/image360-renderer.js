@@ -163,7 +163,7 @@ class Image360Renderer extends Box3DRenderer {
      */
     enableVr() {
         super.enableVr();
-        if(this.skybox) {
+        if (this.skybox) {
             this.skybox.setAttribute('stereoEnabled', true);
         }
     }
@@ -173,7 +173,7 @@ class Image360Renderer extends Box3DRenderer {
      */
     disableVr() {
         super.disableVr();
-        if(this.skybox) {
+        if (this.skybox) {
             this.skybox.setAttribute('stereoEnabled', false);
         }
     }
