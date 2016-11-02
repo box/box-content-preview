@@ -1,5 +1,4 @@
 import Box3DRenderer from '../box3d-renderer';
-import autobind from 'autobind-decorator';
 import sceneEntities from './scene-entities';
 
 const INPUT_SETTINGS = {
@@ -37,12 +36,29 @@ class Image360Renderer extends Box3DRenderer {
      * @returns {void}
      */
     destroy() {
-        if (this.skybox) {
-            this.skybox.setAttribute('skyboxTexture', null);
-        }
-        this.imageAsset = null;
-        this.skybox = null;
+        this.cleanupTexture();
         super.destroy();
+    }
+
+    /**
+     * Cleanup the image and texture for the skybox.
+     * @method cleanupTexture
+     * @private
+     * @return {void}
+     */
+    cleanupTexture() {
+        if (this.imageAsset) {
+            this.imageAsset.destroy();
+            this.imageAsset = null;
+        }
+        if (this.textureAsset) {
+            this.textureAsset.destroy();
+            this.textureAsset = null;
+        }
+        if (this.skybox) {
+            this.getSkyboxComponent().setAttribute('skyboxTexture', null);
+            this.skybox = null;
+        }
     }
 
     /**
@@ -121,9 +137,9 @@ class Image360Renderer extends Box3DRenderer {
             });
             return new Promise((resolve) => {
                 this.textureAsset.load(() => {
-                    this.skybox = this.getSkyboxComponent();
-                    this.skybox.enable();
-                    this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
+                    const skybox = this.getSkyboxComponent();
+                    skybox.enable();
+                    skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                     resolve();
                 });
             });
@@ -135,9 +151,7 @@ class Image360Renderer extends Box3DRenderer {
      */
     enableVr() {
         super.enableVr();
-        if (this.skybox) {
-            this.skybox.setAttribute('stereoEnabled', true);
-        }
+        this.getSkyboxComponent().setAttribute('stereoEnabled', true);
     }
 
     /**
@@ -145,9 +159,7 @@ class Image360Renderer extends Box3DRenderer {
      */
     disableVr() {
         super.disableVr();
-        if (this.skybox) {
-            this.skybox.setAttribute('stereoEnabled', false);
-        }
+        this.getSkyboxComponent().setAttribute('stereoEnabled', false);
     }
 
     /**
