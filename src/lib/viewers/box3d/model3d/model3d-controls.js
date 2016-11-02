@@ -158,6 +158,8 @@ class Model3dControls extends Box3DControls {
     handleReset() {
         super.handleReset();
         this.handleCloseUi();
+        this.settingsPullup.hideWireframes();
+        this.settingsPullup.hideSkeletons();
     }
 
     /**

@@ -363,13 +363,35 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
+     * Hide skeletons and uncheck check box
+     * @method hideSkeletons
+     * @public
+     * @returns {void}
+     */
+    hideSkeletons() {
+        this.showSkeletonsEl.checked = false;
+        this.onShowSkeletonsToggled();
+    }
+
+    /**
      * Notify listeners that the show wireframes checkbox was toggled.
-     * @method onShowWireframeToggled
+     * @method onShowWireframesToggled
      * @private
      * @returns {void}
      */
     onShowWireframesToggled() {
         this.emit(EVENT_SET_WIREFRAMES_VISIBLE, this.showWireframesEl.checked);
+    }
+
+    /**
+     * Hide wireframes and uncheck check box
+     * @method hideWireframes
+     * @public
+     * @returns {void}
+     */
+    hideWireframes() {
+        this.showWireframesEl.checked = false;
+        this.onShowWireframesToggled();
     }
 
     /**
