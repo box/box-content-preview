@@ -10,13 +10,12 @@ const INPUT_SETTINGS = {
     }
 };
 
-
 const sandbox = sinon.sandbox.create();
 
-let containerEl;
-let renderer;
-
 describe('image360', () => {
+    let containerEl;
+    let renderer;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -98,6 +97,7 @@ describe('image360', () => {
             renderer.textureAsset = {
                 destroy: sandbox.mock()
             };
+
             sandbox.stub(renderer, 'getSkyboxComponent');
             renderer.cleanupTexture();
 
@@ -108,6 +108,7 @@ describe('image360', () => {
             const skybox = {
                 setAttribute: sandbox.stub()
             };
+
             sandbox.stub(renderer, 'getSkyboxComponent').returns(skybox);
             renderer.cleanupTexture();
 
@@ -120,6 +121,7 @@ describe('image360', () => {
             const skybox = {
                 name: 'skybox'
             };
+
             renderer.skybox = skybox;
 
             const skyboxComponent = renderer.getSkyboxComponent();

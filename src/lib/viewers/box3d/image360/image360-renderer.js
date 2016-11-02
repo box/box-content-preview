@@ -38,14 +38,14 @@ class Image360Renderer extends Box3DRenderer {
      * @returns {void}
      */
     destroy() {
-        super.destroy();
-
         this.cleanupTexture();
         if (this.imageAsset) {
             this.imageAsset.destroy();
         }
         this.imageAsset = null;
         this.skybox = null;
+
+        super.destroy();
     }
 
     /**
@@ -113,9 +113,6 @@ class Image360Renderer extends Box3DRenderer {
      * @returns {void}
      */
     loadPanoramaFile(fileProperties) {
-        // getSkyboxComponent() sets this.skybox
-        this.getSkyboxComponent();
-
         this.imageAsset = this.box3d.createImage();
         this.imageAsset.setProperty('stream', false);
 
@@ -152,8 +149,9 @@ class Image360Renderer extends Box3DRenderer {
             });
             return new Promise((resolve) => {
                 this.textureAsset.load(() => {
-                    this.skybox.enable();
-                    this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
+                    const skybox = this.getSkyboxComponent();
+                    skybox.enable();
+                    skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                     resolve();
                 });
             });
@@ -165,7 +163,9 @@ class Image360Renderer extends Box3DRenderer {
      */
     enableVr() {
         super.enableVr();
-        this.skybox.setAttribute('stereoEnabled', true);
+        if(this.skybox) {
+            this.skybox.setAttribute('stereoEnabled', true);
+        }
     }
 
     /**
@@ -173,7 +173,9 @@ class Image360Renderer extends Box3DRenderer {
      */
     disableVr() {
         super.disableVr();
-        this.skybox.setAttribute('stereoEnabled', false);
+        if(this.skybox) {
+            this.skybox.setAttribute('stereoEnabled', false);
+        }
     }
 
     /**
