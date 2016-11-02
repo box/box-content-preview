@@ -34,7 +34,7 @@ class CSV extends TextBase {
      */
     load(csvUrl) {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
-        const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.js');
+        const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.min.js');
 
         get(papaWorkerUrl, 'blob')
         .then((papaWorkerBlob) => {

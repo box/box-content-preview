@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-expressions */
 import {
+    isPresentation,
     getPageElAndPageNumber,
     isPointInPolyOpt,
     isSelectionPresent,
@@ -6,7 +8,8 @@ import {
     convertDOMSpaceToPDFSpace,
     getDimensionScale,
     getBrowserCoordinatesFromLocation,
-    getLowerRightCornerOfLastQuadPoint
+    getLowerRightCornerOfLastQuadPoint,
+    isInDialog
 } from '../../doc/doc-annotator-util';
 
 describe('doc-annotator-util', () => {
@@ -20,6 +23,21 @@ describe('doc-annotator-util', () => {
 
     afterEach(() => {
         fixture.cleanup();
+    });
+
+    describe('isPresentation()', () => {
+        it('should return false if annotatedElement is a document', () => {
+            const docEl = document.querySelector('.annotatedElement');
+            const result = isPresentation(docEl);
+            expect(result).to.be.false;
+        });
+
+        it('should return true if annotatedElement is a presentation', () => {
+            const docEl = document.querySelector('.annotatedElement');
+            docEl.classList.add('box-preview-doc-presentation');
+            const result = isPresentation(docEl);
+            expect(result).to.be.true;
+        });
     });
 
     describe('getPageElAndPageNumber()', () => {
@@ -153,5 +171,19 @@ describe('doc-annotator-util', () => {
         ];
 
         assert.equal(getLowerRightCornerOfLastQuadPoint(quadPoints).toString(), [10, 0].toString());
+    });
+
+    describe('isInDialog()', () => {
+        it('should return true if the event is in the given dialog', () => {
+            const dialogEl = document.querySelector('.annotation-dialog');
+            const result = isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
+            expect(result).to.be.true;
+        });
+
+        it('should return false if the event is in the given dialog', () => {
+            const dialogEl = document.querySelector('.annotation-dialog');
+            const result = isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
+            expect(result).to.be.false;
+        });
     });
 });

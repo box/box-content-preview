@@ -25,7 +25,7 @@ const VIEWERS = [
         // @TODO(tjin): change this to 'text' rep once that representation is out
         REPRESENTATION: 'original',
         EXTENSIONS: ['csv', 'tsv'],
-        SCRIPTS: [`${STATIC_URI}papaparse.js`, 'csv.js'],
+        SCRIPTS: [`${STATIC_URI}papaparse.min.js`, 'csv.js'],
         STYLESHEETS: ['csv.css'],
         CONSTRUCTOR: 'CSV',
         PREFETCH: 'xhr'

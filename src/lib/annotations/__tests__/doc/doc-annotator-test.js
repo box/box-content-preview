@@ -464,6 +464,31 @@ describe('doc-annotator', () => {
         });
     });
 
+    describe('isInDialogOnPage()', () => {
+        it('should return true if mouse is hovering over an open dialog', () => {
+            const threads = [{ _dialog: { element: {} } }];
+            sandbox.stub(annotator, '_getThreadsOnPage').returns(threads);
+            sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);
+            const result = annotator.isInDialogOnPage({}, 1);
+            expect(result).to.be.true;
+        });
+
+        it('should return false if mouse is NOT hovering over an open dialog', () => {
+            const threads = [{ _dialog: { element: {} } }];
+            sandbox.stub(annotator, '_getThreadsOnPage').returns(threads);
+            sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
+            const result = annotator.isInDialogOnPage({}, 1);
+            expect(result).to.be.false;
+        });
+    });
+
+    describe('_getThreadsOnPage', () => {
+        it('should return empty array if no page number provided', () => {
+            const threads = annotator._getThreadsOnPage(-1);
+            expect(threads.length).to.equal(0);
+        });
+    });
+
     describe('_highlightMousedownHandler()', () => {
         it('should get highlights on page and call their onMouse down method', () => {
             const threadPages = { thread1: 'thread', thread: 'thread' };

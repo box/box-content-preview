@@ -5,11 +5,16 @@
 
 import * as annotatorUtil from '../annotator-util';
 
+const PREVIEW_PRESENTATION_CLASS = 'box-preview-doc-presentation';
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
+
+export function isPresentation(annotatedElement) {
+    return annotatedElement.classList.contains(PREVIEW_PRESENTATION_CLASS);
+}
 
 //------------------------------------------------------------------------------
 // DOM Utils
@@ -318,4 +323,26 @@ export function getLowerCenterPoint(quadPoints) {
 
     const x = minX + ((maxX - minX) / 2);
     return [x, minY];
+}
+
+/**
+ * Checks whether mouse is inside the dialog represented by this thread.
+ *
+ * @param {Event} event Mouse event
+ * @returns {boolean} Whether or not mouse is inside dialog
+ * @private
+ */
+export function isInDialog(event, dialogEl) {
+    // DOM coordinates with respect to the page
+    const x = event.clientX;
+    const y = event.clientY;
+
+    // Get dialog dimensions
+    const dialogDimensions = dialogEl.getBoundingClientRect();
+
+    if (y >= dialogDimensions.top && y <= dialogDimensions.bottom &&
+        x >= dialogDimensions.left && x <= dialogDimensions.right) {
+        return true;
+    }
+    return false;
 }

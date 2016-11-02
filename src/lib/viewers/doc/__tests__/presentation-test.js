@@ -204,6 +204,9 @@ describe('doc-find-bar', () => {
         beforeEach(() => {
             stubs.nextPage = sandbox.stub(presentation, 'nextPage');
             stubs.previousPage = sandbox.stub(presentation, 'previousPage');
+            presentation.annotator = {
+                isInDialogOnPage: sandbox.stub().returns(false)
+            };
             presentation.event = {
                 deltaY: 5
             };
@@ -235,6 +238,16 @@ describe('doc-find-bar', () => {
             const result = presentation.wheelHandler();
 
             expect(result).to.be.truthy;
+        });
+
+        it('should not trigger page change if mouse is over an annotation dialog', () => {
+            presentation.annotator = {
+                isInDialogOnPage: sandbox.stub().returns(true)
+            };
+            presentation.wheelHandler();
+
+            presentation.throttledWheelHandler(presentation.event);
+            expect(stubs.nextPage).to.not.be.called;
         });
     });
 });
