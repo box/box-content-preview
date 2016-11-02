@@ -59779,10 +59779,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _log = __webpack_require__(7);
-
-	var _log2 = _interopRequireDefault(_log);
-
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
@@ -59791,9 +59787,9 @@
 
 	var _deepClone2 = _interopRequireDefault(_deepClone);
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -59802,9 +59798,9 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var box3dEntityEventMap = {
-	  load: 'entityLoaded',
-	  loadBase: 'entityCreated',
-	  loadDependencies: 'dependenciesLoaded'
+	  load: 'onEntityLoaded',
+	  loadBase: 'onEntityReady',
+	  loadDependencies: 'onDependenciesLoaded'
 	};
 
 	var box3dEntityEventFunctionMap = {
@@ -59814,16 +59810,16 @@
 	};
 
 	var engineEventMap = {
-	  preUpdate: 'preUpdate',
-	  update: 'update',
-	  postUpdate: 'postUpdate',
-	  preRender: 'preRender',
-	  render: 'render',
-	  postRender: 'postRender',
-	  preRenderView: 'preRenderView',
-	  postRenderView: 'postRenderView',
-	  blur: 'suspend',
-	  focus: 'resume'
+	  preUpdate: 'onPreUpdate',
+	  update: 'onUpdate',
+	  postUpdate: 'onPostUpdate',
+	  preRender: 'onPreRender',
+	  render: 'onRender',
+	  postRender: 'onPostRender',
+	  preRenderView: 'onPreRenderView',
+	  postRenderView: 'onPostRenderView',
+	  blur: 'onSuspend',
+	  focus: 'onResume'
 	};
 
 	/**
@@ -60205,7 +60201,7 @@
 	        if (componentDescriptor.attributes) {
 	          this.assignAttributeValues(component, componentDescriptor.attributes);
 	          var changedAttributes = Object.keys(componentDescriptor.attributes);
-	          component.attributesChanged(changedAttributes);
+	          component.onAttributesChanged(changedAttributes);
 	        }
 	      }
 
@@ -60221,13 +60217,13 @@
 	      key: 'onComponentAdded',
 	      value: function onComponentAdded(componentDescriptor) {
 	        var component = this.createComponentObject(componentDescriptor);
-	        if (typeof component.awake === 'function') {
-	          component.awake();
+	        if (typeof component.onAwake === 'function') {
+	          component.onAwake();
 	        }
 	        this.assignAttributeValues(component);
 	        var scriptAsset = component.getScriptAsset();
 	        var changedAttributes = Object.keys(scriptAsset.getProperty('attributes'));
-	        component.attributesChanged(changedAttributes);
+	        component.onAttributesChanged(changedAttributes);
 	        // If the entity is already loaded when the component is created,
 	        // explicitly load the component.
 	        if (!this.isBaseUnloaded()) {
@@ -60416,19 +60412,19 @@
 	        var assignAttribs = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
 
-	        // First, assign the attribute values and call the 'attributesChanged' function
+	        // First, assign the attribute values and call the 'onAttributesChanged' function
 	        if (assignAttribs) {
 	          var scriptAsset = component.getScriptAsset();
 	          var changedAttributes = Object.keys(scriptAsset.getProperty('attributes'));
 	          this.assignAttributeValues(component);
-	          component.attributesChanged(changedAttributes);
+	          component.onAttributesChanged(changedAttributes);
 	        }
 
-	        // We'll call start() because we're loading the component
-	        if (typeof component.start === 'function') {
-	          component.start();
+	        // We'll call onStartup because we're loading the component
+	        if (typeof component.onStartup === 'function') {
+	          component.onStartup();
 	          if (component.isEnabled()) {
-	            component.enable();
+	            component.onEnable();
 	          }
 	        }
 
@@ -60455,20 +60451,20 @@
 	          }
 	        });
 
-	        // If the entity is an object, bind 'sceneLoaded' to be called when
+	        // If the entity is an object, bind 'onSceneLoaded' to be called when
 	        // the root object of the hierarchy is loaded.
 	        // TODO - is this weird if the root object isn't a scene? e.g. for a prefab
-	        if (this instanceof Box3D.Box3DObject && typeof component.sceneLoaded === 'function') {
+	        if (this instanceof Box3D.Box3DObject && typeof component.onSceneLoaded === 'function') {
 	          var scene = this.getRootObject();
 	          if (scene) {
-	            scene.when('load', component.sceneLoaded, component);
+	            scene.when('load', component.onSceneLoaded, component);
 	          }
 	        }
 	      }
 
 	      /**
 	       * Stopping a component esentially shuts it down (kills event listeners and calls
-	       * the shutdown function) but it doesn't remove it from the list.
+	       * the onShutdown function) but it doesn't remove it from the list.
 	       * @method stopComponent
 	       * @private
 	       * @param {Box3DComponent} component The component to remove.
@@ -60479,7 +60475,7 @@
 	      key: 'stopComponent',
 	      value: function stopComponent(component) {
 	        component.stopListening();
-	        component.shutdown();
+	        component.onShutdown();
 	      }
 
 	      /**
@@ -67997,19 +67993,21 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(ObjectPicker, [{
-	    key: 'awake',
-	    value: function awake() {
+	    key: 'onAwake',
+	    value: function onAwake() {
 	      this.getRuntime().once('endHover:bound', this._enableHover, this);
 	      this.getRuntime().once('beginHover:bound', this._enableHover, this);
 	    }
-	    /**
-	     * Called immediately after after component creation
-	     */
+
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      // this.box3DEntity is available
 	      this.getRuntime().on('resize', this.resize, this);
 
@@ -68024,14 +68022,11 @@
 	      this.resize();
 	    }
 
-	    /**
-	     * Called when a verold object is destroyed or this component is removed
-	     * from a verold object.
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      // make sure to clean up any events or other bindings that you have created
 	      // to avoid memory leaks
 	      this.uninitPickingEvents();
@@ -68099,9 +68094,15 @@
 	          this.getRuntime().off('mouseDown', this.pick, this);
 	        }
 	      }
+	    }
 
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'onPostRender',
+	    value: function onPostRender() {
 	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
-	        this.getRuntime().off('postRender', this.hoverUpdate, this);
+	        this.hoverUpdate();
 	      }
 	    }
 	  }, {
@@ -68147,7 +68148,6 @@
 	    key: '_enableHover',
 	    value: function _enableHover() {
 	      if (!this.hoverEnabled && !Box3D.isMobile()) {
-	        this.getRuntime().on('postRender', this.hoverUpdate, this);
 	        this.hoverEnabled = true;
 	      }
 	    }
@@ -68773,7 +68773,8 @@
 	    }
 
 	    /**
-	     * Enables the component. Fires a 'enable' event on the component.
+	     * Enables the component. Fires a 'enable' event on the component and calls
+	     * the component's 'onEnable' function.
 	     * @public
 	     * @method enable
 	     * @return {void}
@@ -68784,12 +68785,14 @@
 	    value: function enable() {
 	      if (!this.enabled) {
 	        this.enabled = true;
+	        this.onEnable();
 	        this.trigger('enable');
 	      }
 	    }
 
 	    /**
-	     * Disables the component. Fires a 'disable' event on the component.
+	     * Disables the component. Fires a 'disable' event on the component and calls
+	     * the component's 'onDisable' function.
 	     * @public
 	     * @method disable
 	     * @return {void}
@@ -68800,6 +68803,7 @@
 	    value: function disable() {
 	      if (this.enabled) {
 	        this.enabled = false;
+	        this.onDisable();
 	        this.trigger('disable');
 	      }
 	    }
@@ -68975,138 +68979,211 @@
 	    }
 
 	    /**
-	     * Called when the component is created.
-	     * @return {[type]} [description]
+	     * Called when the component is first created.
+	     * @method onAwake
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'awake',
-	    value: function awake() {}
+	    key: 'onAwake',
+	    value: function onAwake() {}
 
 	    /**
 	     * Called after the entity that this component is attached to starts to load.
-	     * @method start
+	     * @method onStartup
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'start',
-	    value: function start() {}
+	    key: 'onStartup',
+	    value: function onStartup() {}
 
 	    /**
 	     * Called when the component or entity is unloaded
-	     * @method shutdown
+	     * @method onShutdown
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {}
+	    key: 'onShutdown',
+	    value: function onShutdown() {}
+
+	    // The following update functions are intentionally left out so that they are considered
+	    // undefined until implemented by the component. This saves them from being bound to the
+	    // appropriate events unless they contain logic to execute.
 
 	    /**
-	     * Earlier version of update
+	     * Called immediately before onUpdate
 	     * @param {number} delta the amount of time since the last call
-	     * @method preUpdate
+	     * @method onPreUpdate
+	     * @private
+	     * @return {void}
 	     */
-
-	  }, {
-	    key: 'preUpdate',
-	    value: function preUpdate() {}
 
 	    /**
 	     * Main update
 	     * @param {number} delta the amount of time since the last call
-	     * @method update
+	     * @method onUpdate
+	     * @private
+	     * @return {void}
 	     */
-
-	  }, {
-	    key: 'update',
-	    value: function update() {}
 
 	    /**
-	     * Later version of update
+	     * Called immediately after onUpdate
 	     * @param {number} delta the amount of time since the last call
-	     * @method postUpdate
+	     * @method onPostUpdate
+	     * @private
+	     * @return {void}
 	     */
-
-	  }, {
-	    key: 'postUpdate',
-	    value: function postUpdate() {}
 
 	    /**
-	     * @method  render
+	     * Called just before rendering a frame.
+	     * @method onPreRender
 	     * @param {number} delta the amount of time since the last call
+	     * @private
+	     * @return {void}
 	     */
 
-	  }, {
-	    key: 'render',
-	    value: function render() {}
+	    /**
+	     * Called at the time of rendering a frame.
+	     * @method onRender
+	     * @param {number} delta the amount of time since the last call
+	     * @private
+	     * @return {void}
+	     */
+
+	    /**
+	     * Called immediately after rendering a frame.
+	     * @method onPostRender
+	     * @param {number} delta the amount of time since the last call
+	     * @private
+	     * @return {void}
+	     */
+
+	    /**
+	     * Called just before rendering a view from each camera. Use this to run view-specific logic.
+	     * @method onPreRenderView
+	     * @param {Box3D.SceneObject} scene The scene that is being rendered.
+	     * @param {Box3D.CameraObject} camera The camera that is being rendered from.
+	     * @private
+	     * @return {void}
+	     */
+
+	    /**
+	     * Called just after rendering a view from each camera. Use this to run view-specific logic.
+	     * @method onPostRenderView
+	     * @param {Box3D.SceneObject} scene The scene that is being rendered.
+	     * @param {Box3D.CameraObject} camera The camera that is being rendered from.
+	     * @private
+	     * @return {void}
+	     */
 
 	    /**
 	     * Called when the application loses focus
 	     * @method supsend
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'suspend',
-	    value: function suspend() {}
+	    key: 'onSuspend',
+	    value: function onSuspend() {}
 
 	    /**
 	     * Called when the application regains focus
-	     * @method resume
+	     * @method onResume
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'resume',
-	    value: function resume() {}
+	    key: 'onResume',
+	    value: function onResume() {}
 
 	    /**
-	     * Called when a component's attribute values change
-	     * in the editor.
-	     * @method attributesChanged
-	     * @param  {Object} attributes An object containing all of the attributes whose values
+	     * Called when a component's attribute values change.
+	     * @method onAttributesChanged
+	     * @param  {Array} changes An array containing the names of all the attributes whose values
 	     * have changed.
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged() {}
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged() {}
 
 	    /**
-	     * Called when the Three.JS object data is available
-	     * @method  entityCreated
+	     * Called when the entity's runtime data (three.js data) is created and ready to use.
+	     * Note that all of the entity's children and dependencies (like materials, textures, etc.)
+	     * may not yet be loaded.
+	     * @method  onEntityReady
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {}
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {}
 
 	    /**
-	     * Called when the Three.JS object is completely loaded, including all of it's children
+	     * Called when the entity is completely loaded, including all of its dependencies.
+	     * @method  onEntityLoaded
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'onEntityLoaded',
+	    value: function onEntityLoaded() {}
+
+	    /**
+	     * Called when all dependencies of the entity are loaded, including all of its children
 	     * and dependencies like textures, geometry, etc.
-	     * @method  entityLoaded
+	     * @method  onDependenciesLoaded
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'entityLoaded',
-	    value: function entityLoaded() {}
+	    key: 'onDependenciesLoaded',
+	    value: function onDependenciesLoaded() {}
 
 	    /**
-	     * Called when the Three.JS object is completely loaded, including all of it's children
-	     * and dependencies like textures, geometry, etc.
-	     * @method  entityLoaded
+	     * Called when the root object of the hierarchy is fully loaded.
+	     * @method onSceneLoaded
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'dependenciesLoaded',
-	    value: function dependenciesLoaded() {}
+	    key: 'onSceneLoaded',
+	    value: function onSceneLoaded() {}
 
 	    /**
-	     * Called when the parent asset is fully loaded
-	     * @method sceneLoaded
+	     * Called when component is enabled.
+	     * @method onEnable
+	     * @private
+	     * @return {void}
 	     */
 
 	  }, {
-	    key: 'sceneLoaded',
-	    value: function sceneLoaded() {}
+	    key: 'onEnable',
+	    value: function onEnable() {}
+
+	    /**
+	     * Called when component is disabled.
+	     * @method onDisable
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'onDisable',
+	    value: function onDisable() {}
 	  }]);
 
 	  return Box3DComponent;
@@ -69196,9 +69273,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(AudioListener, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.context = this.getEntity().box3DRuntime.getAudioContext();
 
 	      if (!this.context) {
@@ -69206,9 +69286,12 @@
 	        return;
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'update',
-	    value: function update() {
+	    key: 'onUpdate',
+	    value: function onUpdate() {
 	      if (this.hasRuntimeData() && this.context) {
 	        var xform = this.getRuntimeData().matrixWorld,
 	            objPos = new THREE.Vector3(0, 0, 0).applyMatrix4(xform),
@@ -69339,16 +69422,16 @@
 
 
 	  _createClass(CubeMapCapture, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.initCameras();
 	    }
 
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getRootThreeObject().remove(this.cubeCamera);
 	      this.getThreeObject().remove(this.boxMesh);
 	      this.boxMesh.geometry.dispose();
@@ -69359,8 +69442,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'entityLoaded',
-	    value: function entityLoaded() {
+	    key: 'onEntityLoaded',
+	    value: function onEntityLoaded() {
 	      var threeData = this.getRuntimeData();
 	      threeData.add(this.cubeCamera);
 	    }
@@ -69380,8 +69463,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      var _this2 = this;
 
 	      if (changes.indexOf('captureTexture') !== -1) {
@@ -69552,8 +69635,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'preRender',
-	    value: function preRender() {
+	    key: 'onPreRender',
+	    value: function onPreRender() {
 	      var scene = this.getRootObject();
 	      if (!scene.isLoaded()) {
 	        return;
@@ -69665,14 +69748,14 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(Curve, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.initCurve();
 	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {}
 	  }, {
 	    key: 'onSelected',
 	    value: function onSelected() {
@@ -69889,9 +69972,12 @@
 	        }
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged() {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged() {
 	      this.initCurve();
 	    }
 	  }, {
@@ -69955,9 +70041,12 @@
 	    return _possibleConstructorReturn(this, (DebugConsoleDisplay.__proto__ || Object.getPrototypeOf(DebugConsoleDisplay)).call(this));
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(DebugConsoleDisplay, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 
 	      var logTag = document.createElement('div');
 	      logTag.id = 'consoleLogger';
@@ -69980,9 +70069,12 @@
 	        logTag.innerHTML += text + '<br>';
 	      };
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getRuntime().off(this.renderEventName, this.renderView, this);
 	      this.getRuntime().off('resize', this.resize, this);
 	    }
@@ -70013,8 +70105,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
@@ -70044,45 +70134,53 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(DebugPerformance, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'preUpdate',
-	    value: function preUpdate() {
+	    key: 'onPreUpdate',
+	    value: function onPreUpdate() {
 	      if (this.isEnabled()) {
 	        this.stats.begin();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'postRender',
-	    value: function postRender() {
+	    key: 'onPostRender',
+	    value: function onPostRender() {
 	      if (this.isEnabled()) {
 	        this.stats.end();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      _get(DebugPerformance.prototype.__proto__ || Object.getPrototypeOf(DebugPerformance.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      document.body.appendChild(this.stats.dom);
 	      this.initialized = true;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(DebugPerformance.prototype.__proto__ || Object.getPrototypeOf(DebugPerformance.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      if (this.initialized) {
 	        document.body.removeChild(this.stats.dom);
 	        this.initialized = false;
 	      }
-	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
-	      this.disable();
 	    }
 	  }]);
 
@@ -70194,14 +70292,20 @@
 	  }
 
 	  _createClass(DebugTextureViewer, [{
-	    key: 'awake',
-	    value: function awake() {
+	    key: 'onAwake',
+
+
+	    /** @inheritdoc */
+	    value: function onAwake() {
 	      this.getRuntime().on('assetLoaded', this.registerTexture, this);
 	      this.getRuntime().on('assetUnloaded', this.unregisterTexture, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      var _this2 = this;
 
 	      this.init2dScene();
@@ -70225,9 +70329,12 @@
 
 	      this.resize();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getRuntime().off('assetLoaded', this.registerTexture, this);
 	      this.getRuntime().off('assetUnloaded', this.unregisterTexture, this);
 	      this.getRuntime().off(this.renderEventName, this.renderView, this);
@@ -70633,8 +70740,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _lodash = __webpack_require__(4);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
@@ -70660,15 +70765,21 @@
 	    return _possibleConstructorReturn(this, (DefaultFilters.__proto__ || Object.getPrototypeOf(DefaultFilters)).call(this));
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(DefaultFilters, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.getRuntime().on('getDefaultFilters', this.getDefaultFilters, this);
 	      this.updateFilters();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getRuntime().off('getDefaultFilters', this.getDefaultFilters, this);
 	    }
 	  }, {
@@ -70678,21 +70789,28 @@
 	        return callback(this);
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      _get(DefaultFilters.prototype.__proto__ || Object.getPrototypeOf(DefaultFilters.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      this.updateFilters();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(DefaultFilters.prototype.__proto__ || Object.getPrototypeOf(DefaultFilters.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      this.updateFilters();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged() {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged() {
 	      this.updateFilters();
 	    }
 	  }, {
@@ -70752,8 +70870,6 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _Box3DComponent2 = __webpack_require__(27);
 
@@ -70817,22 +70933,16 @@
 	    return _this;
 	  }
 
-	  /** @inheritdoc */
+	  /**
+	   * Assign the descriptions of the quality levels to be used by the optimizer.
+	   * @method setQualityChangeLevels
+	   * @public
+	   * @param {Array} qualityLevels Array of DynamicOptimizer.QualityChangeLevel objects in order
+	   * from loweset quality level to highest.
+	   */
 
 
 	  _createClass(DynamicOptimizer, [{
-	    key: 'shutdown',
-	    value: function shutdown() {}
-
-	    /**
-	     * Assign the descriptions of the quality levels to be used by the optimizer.
-	     * @method setQualityChangeLevels
-	     * @public
-	     * @param {Array} qualityLevels Array of DynamicOptimizer.QualityChangeLevel objects in order
-	     * from loweset quality level to highest.
-	     */
-
-	  }, {
 	    key: 'setQualityChangeLevels',
 	    value: function setQualityChangeLevels(qualityLevels) {
 	      // First, set the quality back to the top to reset all changed values.
@@ -70877,16 +70987,16 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'preRender',
-	    value: function preRender() {
+	    key: 'onPreRender',
+	    value: function onPreRender() {
 	      this.startTime = (performance || Date).now();
 	    }
 
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'preUpdate',
-	    value: function preUpdate() {
+	    key: 'onPreUpdate',
+	    value: function onPreUpdate() {
 	      if (!this.startTime) {
 	        return;
 	      }
@@ -71071,18 +71181,16 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      _get(DynamicOptimizer.prototype.__proto__ || Object.getPrototypeOf(DynamicOptimizer.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      this.autoOptimize = true;
 	    }
 
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(DynamicOptimizer.prototype.__proto__ || Object.getPrototypeOf(DynamicOptimizer.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      this.autoOptimize = false;
 	      this.setMaxQuality();
 	    }
@@ -71188,11 +71296,12 @@
 	  /**
 	   * Called immediately after after component creation
 	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(EventHandler, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      // this.box3DEntity is available
 	      var local = 'this ' + this.getEntity().getType();
 	      var sourceEvent = this.listen;
@@ -71256,10 +71365,11 @@
 	     * Called when a verold object is destroyed or this component is removed
 	     * from a verold object.
 	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      // make sure to clean up any events or other bindings that you have created
 	      // to avoid memory leaks
 	    }
@@ -71361,9 +71471,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(Exploder, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      //event listeners
 	      this.listenTo(this.getEntity(), 'playExplode', this.explode.bind(this));
 	      this.listenTo(this.getEntity(), 'playContract', this.contract.bind(this));
@@ -71373,9 +71486,12 @@
 	      this.listenTo(this.getEntity(), 'useGridExplode', this.explode.bind(this, 'Grid'));
 	      this.listenTo(this.getEntity(), 'useScaleOutExplode', this.explode.bind(this, 'Scale'));
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'update',
-	    value: function update(delta) {
+	    key: 'onUpdate',
+	    value: function onUpdate(delta) {
 	      if (this.hasRuntimeData() && this.m_fTime < this.Time) {
 	        this.m_fTime += delta;
 
@@ -71522,9 +71638,12 @@
 
 	      out.set(x, y, z);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {}
+	    key: 'onShutdown',
+	    value: function onShutdown() {}
 	  }]);
 
 	  return Exploder;
@@ -71643,14 +71762,12 @@
 	    return _this;
 	  }
 
-	  /**
-	   * Called immediately after after component creation
-	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(FreeCamera, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 
 	      if (this.usePointerLock) {
 	        this.togglePointerLock(true);
@@ -71678,10 +71795,11 @@
 	     * Called when a verold object is destroyed or this component is removed
 	     * from a verold object.
 	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      // make sure to clean up any events or other bindings that you have created
 	      // to avoid memory leaks
 	      var engine = this.getRuntime();
@@ -71756,14 +71874,11 @@
 	      }
 	    }
 
-	    /**
-	     * Called per Box3DRuntime update (per frame)
-	     * @param  {number} delta The number of seconds since the last call to `update`
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'preUpdate',
-	    value: function preUpdate(delta) {
+	    key: 'onPreUpdate',
+	    value: function onPreUpdate(delta) {
 
 	      if (this.hasRuntimeData() && this.isEnabled()) {
 
@@ -71797,9 +71912,12 @@
 	        this.updateCamera(delta);
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'postUpdate',
-	    value: function postUpdate() {
+	    key: 'onPostUpdate',
+	    value: function onPostUpdate() {
 	      this.hasChanged = false;
 	    }
 	  }, {
@@ -72132,8 +72250,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
@@ -72159,9 +72275,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(Fullscreen, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.toggle = this.toggle.bind(this);
 	      this.getEntity().on('toggleFullscreen', this.toggle, this);
 	      this.listenTo(this.getGlobalEvents(), 'fullscreen::toggle', this.toggle);
@@ -72177,10 +72296,12 @@
 	        this.enable();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      _get(Fullscreen.prototype.__proto__ || Object.getPrototypeOf(Fullscreen.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      if (!this.el) {
 	        this.attachFullscreenAPI();
 	      }
@@ -72188,10 +72309,12 @@
 	      this.el.requestFullscreen();
 	      this.fsEnabled = true;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(Fullscreen.prototype.__proto__ || Object.getPrototypeOf(Fullscreen.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      if (!this.el) {
 	        this.attachFullscreenAPI();
 	      }
@@ -72216,9 +72339,6 @@
 	      document.addEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this), false);
 	      document.addEventListener('msfullscreenchange', this.onFullscreenChange.bind(this), false);
 	    }
-	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {}
 	  }]);
 
 	  return Fullscreen;
@@ -72531,9 +72651,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(InputController, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.canvas = this.getRuntime().canvas;
 	      this.pointerLockElement = this.canvas;
 	      this.pointerLockElement.requestPointerLock = this.pointerLockElement.requestPointerLock || this.pointerLockElement.mozRequestPointerLock || this.pointerLockElement.webkitRequestPointerLock;
@@ -73035,11 +73158,11 @@
 	      return event;
 	    }
 
-	    //process input events!
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'preUpdate',
-	    value: function preUpdate() {
+	    key: 'onPreUpdate',
+	    value: function onPreUpdate() {
 	      if (this.isEnabled()) {
 	        while (this.inputQueue.length > 0) {
 	          this.getRuntime().trigger(this.inputQueue[0].name, this.inputQueue[0].event);
@@ -73047,9 +73170,12 @@
 	        }
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'postUpdate',
-	    value: function postUpdate() {
+	    key: 'onPostUpdate',
+	    value: function onPostUpdate() {
 	      if (this.isEnabled()) {
 	        if (this.keyEvents.enable) {
 	          for (var code = 0; code < this.keyState.length; code++) {
@@ -73230,9 +73356,12 @@
 	        this.disablePointerLock();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      window.removeEventListener('blur', this.onBlur, false);
 
 	      if (this.canvas) {
@@ -73427,17 +73556,12 @@
 	    return _this;
 	  }
 
-	  /**
-	   * Called when the Three.JS object data is available.
-	   * @method entityCreated
-	   * @public
-	   * @returns {void}
-	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(Animation, [{
-	    key: 'entityLoaded',
-	    value: function entityLoaded() {
+	    key: 'onEntityLoaded',
+	    value: function onEntityLoaded() {
 	      var _this2 = this;
 
 	      // Don't recreate the mixer if it already exists unless the runtime data is different.
@@ -73471,10 +73595,11 @@
 	     * @public
 	     * @returns {void}
 	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      // Listen to changes on the animation asset.
 	      if (this.asset) {
 	        this.listenTo(this.asset, 'propertyChanges', this.onAssetChanged);
@@ -73828,15 +73953,11 @@
 	      }
 	    }
 
-	    /**
-	     * Called when the Box3DEntity is unloaded or this component is removed.
-	     * @method shutdown
-	     * @returns {void}
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      // Remove the change listener from the animation asset.
 	      if (this.asset) {
 	        this.stopListening(this.asset, 'stopListening', this.onAssetChanged);
@@ -73882,16 +74003,11 @@
 	      }
 	    }
 
-	    /**
-	     * Called per Box3DRuntime update (once per frame).
-	     * @method update
-	     * @param {number} deltaTime The number of seconds since the last call to `update`.
-	     * @returns {void}
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'update',
-	    value: function update(deltaTime) {
+	    key: 'onUpdate',
+	    value: function onUpdate(deltaTime) {
 	      if (this.mixer) {
 	        this.mixer.update(deltaTime);
 	        this.getRuntime().needsRender = true;
@@ -73941,8 +74057,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
@@ -73973,21 +74087,22 @@
 	    return _this;
 	  }
 
-	  /**
-	   * Called immediately after after component creation
-	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(LookAt, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.tempVec = new THREE.Vector3();
 	      this.tempMatrix = new THREE.Matrix4();
 	      this.tempQuaternion = new THREE.Quaternion();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('showPreview') !== -1) {
 	        this.playing = this.showPreview;
 	      }
@@ -73996,29 +74111,30 @@
 	        this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      _get(LookAt.prototype.__proto__ || Object.getPrototypeOf(LookAt.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      this.playing = this.showPreview;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(LookAt.prototype.__proto__ || Object.getPrototypeOf(LookAt.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      this.playing = false;
 	      this.getRuntimeData().position.copy(this.getEntity().getPosition());
 	      this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
 	    }
 
-	    /**
-	     * Called per Box3DRuntime update (per frame)
-	     * @param  {number} delta The number of seconds since the last call to `update`
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'postUpdate',
-	    value: function postUpdate() {
+	    key: 'onPostUpdate',
+	    value: function onPostUpdate() {
 	      var runtimeData;
 	      if (this.hasRuntimeData() && this.playing && this.isEnabled()) {
 
@@ -74049,10 +74165,11 @@
 	     * Called when a verold object is destroyed or this component is removed
 	     * from a verold object.
 	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      // make sure to clean up any events or other bindings that you have created
 	      // to avoid memory leaks
 	    }
@@ -74184,8 +74301,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      var _this2 = this;
 
 	      if (changes.indexOf('captureTexture') !== -1) {
@@ -74298,9 +74415,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(NormalMapGenerator, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.getEntity().on('renderNormalMap', this.renderNormalMap, this);
 	      this.m_Uniforms = {
 	        bumpTexture: {
@@ -74342,9 +74462,12 @@
 	      this.quadRTT.position.z = -5;
 	      this.sceneRTT.add(this.quadRTT);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getEntity().off('renderNormalMap', this.renderNormalMap, this);
 	      this.sceneRTT.remove(this.cameraRTT);
 	      this.sceneRTT.remove(this.quadRTT);
@@ -74354,9 +74477,12 @@
 	      this.normalMaterial.dispose();
 	      this.m_Uniforms = undefined;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 
 	      var that = this;
 	      this.updateUniforms(function () {
@@ -74375,9 +74501,12 @@
 	      renderer.render(this.sceneRTT, this.cameraRTT, this.getEntity().runtimeData, true);
 	      this.getThreeRenderer().setRenderTarget(null);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged() {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged() {
 	      var that = this;
 	      this.updateUniforms(function () {
 	        that.renderNormalMap();
@@ -74544,11 +74673,12 @@
 	  /**
 	   * Called immediately after after component creation
 	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(ObjectAnimator, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.getEntity().on('playAnimateAlongCurve', this.animateAlongCurve, this);
 	      this.getEntity().on('playAnimateToObject', this.animateToObject, this);
 	      this.getEntity().on('playAnimateTranslation', this.animateTranslation, this);
@@ -74558,9 +74688,12 @@
 	      this.getEntity().on('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
 	      this.getEntity().on('stopCurveAnimation', this.stopCurveAnimation, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getEntity().off('playAnimateAlongCurve', this.animateAlongCurve, this);
 	      this.getEntity().off('playAnimateToObject', this.animateToObject, this);
 	      this.getEntity().off('playAnimateTranslation', this.animateTranslation, this);
@@ -74570,9 +74703,12 @@
 	      this.getEntity().off('unpauseCurveAnimation', this.onUnpauseCurveAnimation, this);
 	      this.getEntity().off('stopCurveAnimation', this.stopCurveAnimation, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      _get(ObjectAnimator.prototype.__proto__ || Object.getPrototypeOf(ObjectAnimator.prototype), 'disable', this).call(this);
 	      this.getRuntimeData().position.copy(this.getEntity().getPosition());
 	      this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
@@ -75222,9 +75358,12 @@
 	    value: function getState() {
 	      return this.state;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.context = this.getEntity().box3DRuntime.getAudioContext();
 
 	      if (this.context) {
@@ -75468,9 +75607,12 @@
 	        this.play();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'update',
-	    value: function update() {
+	    key: 'onUpdate',
+	    value: function onUpdate() {
 	      if (this.hasRuntimeData() && this.positional) {
 	        var xform = this.getRuntimeData().matrixWorld,
 	            objPos = new THREE.Vector3(0, 0, 0).applyMatrix4(xform),
@@ -75618,8 +75760,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
@@ -75711,27 +75851,34 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(OrbitCamera, [{
-	    key: 'enable',
-	    value: function enable() {
-	      _get(OrbitCamera.prototype.__proto__ || Object.getPrototypeOf(OrbitCamera.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      this.getEntity().reset();
 	      this.targetOffset = new THREE.Vector3();
 	      var offset = this.getAttribute('targetOffset');
 	      this.targetOffset.copy(offset);
-	      this.attributesChanged(['targetOffset']);
+	      this.onAttributesChanged(['targetOffset']);
 	      this.currentMoveSpeed.set(0, 0);
 	      this.moveStart.copy(this.currentMousePosition);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(OrbitCamera.prototype.__proto__ || Object.getPrototypeOf(OrbitCamera.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      this.getEntity().reset();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('targetObject') !== -1) {
 	        this.targetMoved = true;
 	        this.initTarget();
@@ -75740,9 +75887,12 @@
 	        // this.setTargetOffset(this.targetOffset);
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 
 	      var engine = this.getRuntime();
 
@@ -75772,9 +75922,12 @@
 	      this.getEntity().on('setTarget', this.setTarget, this);
 	      this.getEntity().on('focusOnTarget', this.focusOnTarget, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      // make sure to clean up any events or other bindings that you have created
 	      // to avoid memory leaks
 	      var engine = this.getRuntime();
@@ -75799,9 +75952,12 @@
 	      this.getEntity().off('setTarget', this.setTarget, this);
 	      this.getEntity().off('focusOnTarget', this.focusOnTarget, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.quaternionStart.copy(this.getRuntimeData().quaternion);
 	      this.eulerStart.setFromQuaternion(this.quaternionStart, 'YXZ');
 	    }
@@ -75912,14 +76068,11 @@
 	      }
 	    }
 
-	    /**
-	     * Called per Box3DRuntime update (per frame)
-	     * @param  {number} delta The number of seconds since the last call to `update`
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'preUpdate',
-	    value: function preUpdate(delta) {
+	    key: 'onPreUpdate',
+	    value: function onPreUpdate(delta) {
 
 	      // Don't let frame delta being used for camera behaviour drop below a certain frame rate.
 	      // This will mitigate all sorts of potential issues if there are momentary spikes in frame time.
@@ -75957,9 +76110,12 @@
 	        this.updateCamera(delta);
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'postUpdate',
-	    value: function postUpdate() {
+	    key: 'onPostUpdate',
+	    value: function onPostUpdate() {
 	      this.hasChanged = false;
 	    }
 	  }, {
@@ -76546,9 +76702,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(PanoramaToCubeMap, [{
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('inputTexture') !== -1) {
 	        var prevTex = this.getPreviousAttribute('inputTexture');
 	        this.unregisterDependency(prevTex);
@@ -76556,22 +76715,31 @@
 	        this.updateTexture();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.skyboxScene = new THREE.Scene();
 	      this.registerDependency(this.inputTexture);
 	      this.initCameras();
 	      this.createSkybox();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.updateTexture();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      if (this.inputTexture) {
 	        this.unregisterDependency(this.inputTexture);
 	        this.inputTexture.off('load', this.renderToCube, this);
@@ -76750,9 +76918,12 @@
 	    return _possibleConstructorReturn(this, (PMREMGenerator.__proto__ || Object.getPrototypeOf(PMREMGenerator)).call(this));
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(PMREMGenerator, [{
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('inputTexture') !== -1) {
 	        var prevTex = this.getPreviousAttribute('inputTexture');
 	        this.unregisterDependency(prevTex);
@@ -76761,14 +76932,17 @@
 	      }
 	    }
 
-	    // start() {
+	    // /** @inheritdoc */
+	    // onStartup() {
 	    //   this.registerDependency(this.inputTexture);
 	    //   // this.updateTexture();
 	    // }
 
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      var _this2 = this;
 
 	      if (this.inputTexture) {
@@ -76781,9 +76955,12 @@
 	        }
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      if (this.inputTexture) {
 	        this.unregisterDependency(this.inputTexture);
 	        this.inputTexture.off('load', this.renderToCube, this);
@@ -77112,9 +77289,12 @@
 	      matrix.elements[9] = vector.y;
 	      matrix.elements[10] = vector.z;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.listenTo(this.getRuntime(), 'rotate_to', this.rotateToEuler);
 	      this.listenTo(this.getRuntime(), 'rotate_on_axis', this.rotateOnWorldAxis);
 	      this.listenTo(this.getRuntime(), 'set_local_rotation', this.setLocalRotation);
@@ -77334,13 +77514,11 @@
 	      return axes;
 	    }
 
-	    /**
-	     * @inheritdoc
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'update',
-	    value: function update(dt) {
+	    key: 'onUpdate',
+	    value: function onUpdate(dt) {
 	      if (this.time >= 0 && this.hasRuntimeData()) {
 	        this.time -= dt;
 
@@ -77497,8 +77675,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
@@ -77598,19 +77774,24 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(PreviewCamera, [{
-	    key: 'enable',
-	    value: function enable() {
-	      _get(PreviewCamera.prototype.__proto__ || Object.getPrototypeOf(PreviewCamera.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      this.targetOffset = new THREE.Vector3();
 	      this.targetOffset.copy(this.getAttribute('targetOffset'));
-	      this.attributesChanged(['targetOffset']);
+	      this.onAttributesChanged(['targetOffset']);
 	      this.currentMoveSpeed.set(0, 0);
 	      this.moveStart.copy(this.currentDraggingMousePosition);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('targetObject') !== -1) {
 	        this.targetMoved = true;
 	        this.initTarget();
@@ -77618,9 +77799,12 @@
 	        this.setTargetOffset(this.targetOffset);
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      if (this.usePointerLock) {
 	        this.togglePointerLock(true);
 	      }
@@ -77648,16 +77832,22 @@
 	      this.listenTo(this.getEntity(), 'setTarget', this.setTarget, this);
 	      this.listenTo(this.getEntity(), 'focusOnTarget', this.focusOnTarget, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.togglePointerLock(false);
 
 	      this.stopListening();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.resetOrbitRotation();
 	    }
 
@@ -77775,14 +77965,11 @@
 	      }
 	    }
 
-	    /**
-	     * Called per Box3DRuntime update (per frame)
-	     * @param  {number} delta The number of seconds since the last call to `update`
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'preUpdate',
-	    value: function preUpdate(delta) {
+	    key: 'onPreUpdate',
+	    value: function onPreUpdate(delta) {
 
 	      if (this.hasRuntimeData() && this.isEnabled()) {
 
@@ -77816,9 +78003,12 @@
 	        this.updateCamera(delta);
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'postUpdate',
-	    value: function postUpdate() {
+	    key: 'onPostUpdate',
+	    value: function onPostUpdate() {
 	      this.hasChanged = false;
 	    }
 	  }, {
@@ -78441,9 +78631,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(PreviewCameraFocus, [{
-	    key: 'sceneLoaded',
-	    value: function sceneLoaded() {
+	    key: 'onSceneLoaded',
+	    value: function onSceneLoaded() {
 	      var _this2 = this;
 
 	      this.previewCamControl = this.getEntity().getComponentByScriptName('Preview Camera Controller');
@@ -78473,9 +78666,12 @@
 	      this.listenTo(this.previewCamControl, 'enable', this.enable, this);
 	      this.listenTo(this.previewCamControl, 'disable', this.disable, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      _get(PreviewCameraFocus.prototype.__proto__ || Object.getPrototypeOf(PreviewCameraFocus.prototype), 'disable', this).call(this);
 	      this.interrupt();
 	    }
@@ -78588,9 +78784,12 @@
 	      diff.normalize().multiplyScalar(distance);
 	      return diff.add(targetLook);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'update',
-	    value: function update(dt) {
+	    key: 'onUpdate',
+	    value: function onUpdate(dt) {
 
 	      if (this.isEnabled() && this.time > 0) {
 
@@ -78722,11 +78921,12 @@
 	  }
 
 	  /** @inheritdoc */
+	  /** @inheritdoc */
 
 
 	  _createClass(ReflectionCapture, [{
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.initCameras();
 	      this.initTexture();
 	    }
@@ -78746,8 +78946,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('captureTexture') !== -1) {
 	        this.initTexture();
 	      }
@@ -78908,8 +79108,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'preRenderView',
-	    value: function preRenderView(scene, camera) {
+	    key: 'onPreRenderView',
+	    value: function onPreRenderView(scene, camera) {
 	      if (this.isEnabled()) {
 	        if (this.framesElapsed >= this.updateFrameInterval) {
 	          //render reflection
@@ -79105,9 +79305,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(DefaultRenderer, [{
-	    key: 'awake',
-	    value: function awake() {
+	    key: 'onAwake',
+	    value: function onAwake() {
 	      this.canvas = this.getRuntime().canvas;
 	      this.initDefaultRenderer();
 
@@ -79118,9 +79321,12 @@
 	      renderer.gammaInput = false;
 	      renderer.gammaOutput = true;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.getRuntime().on('resize', this.resize, this);
 	      this.getRuntime().renderOnDemand = this.renderOnDemand;
 	      if (!this.shadowsEnabledMobile) {
@@ -79129,17 +79335,13 @@
 	      this.applyRenderSettings();
 	    }
 
-	    /**
-	     * Called when a verold object is destroyed or this component is removed
-	     * from a verold object.
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 
 	      this.getRuntime().off('resize', this.resize, this);
-	      this.getRuntime().off('postRender', this.postRender, this);
 
 	      if (this.threeRenderer) {
 	        this.threeRenderer.context = null;
@@ -79147,14 +79349,20 @@
 	      this.threeRenderer = null;
 	      this.canvas = undefined;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.getRuntime().trigger('resize');
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      var rebuildMaterials = false;
 	      if (changes.indexOf('shadowsEnabledMobile') !== -1) {
 	        rebuildMaterials = true;
@@ -79361,9 +79569,12 @@
 	      }
 	      return Math.min(this.maxTextureSizeCube, this.getGPUCapability('MAX_CUBE_MAP_TEXTURE_SIZE'));
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'preRender',
-	    value: function preRender() {
+	    key: 'onPreRender',
+	    value: function onPreRender() {
 	      // this.newRenderStarted = true;
 	      this.threeRenderer.setRenderTarget(null);
 	      this.threeRenderer.clear(true, true, true);
@@ -79596,8 +79807,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
@@ -79673,9 +79882,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(RenderFilters, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      var that = this;
 	      this.getRuntime().trigger('getDefaultFilters', function (filters) {
 	        that.defaultFilters = filters;
@@ -79684,9 +79896,12 @@
 	      this.getRuntime().on('resize', this.resize, this);
 	      this.getRuntime().on('defaultFiltersChanged', this.updateFilters, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getRuntime().off('resize', this.resize, this);
 	      if (this.toneMappingPass) {
 	        this.toneMappingPass.dispose();
@@ -79723,28 +79938,38 @@
 	        this.depthMaterial.skinned.dispose();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      _get(RenderFilters.prototype.__proto__ || Object.getPrototypeOf(RenderFilters.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      this.composer.enabled = true;
 	      this.updateFilters();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(RenderFilters.prototype.__proto__ || Object.getPrototypeOf(RenderFilters.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      this.composer.enabled = false;
 	      this.updateFilters();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.resize();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (!this.getEntity().isBaseLoaded()) {
 	        return;
 	      }
@@ -79975,9 +80200,12 @@
 
 	      this.getRuntime().needsRender = true;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'preRenderView',
-	    value: function preRenderView(scene, camera) {
+	    key: 'onPreRenderView',
+	    value: function onPreRenderView(scene, camera) {
 	      if (camera === this.getRuntimeData() && scene && this.needsDepthPass && this.isEnabled()) {
 	        var that = this;
 	        var threeRenderer = this.getThreeRenderer();
@@ -80324,8 +80552,8 @@
 
 
 	  _createClass(RenderModes, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      // Create a UV overlay material.
 	      var uvTexture = new THREE.Texture(generateUvGrid());
 	      uvTexture.anisotropy = 8;
@@ -80373,8 +80601,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('shapeTexture') !== -1) {
 	        this.onShapeTextureChanged();
 	      }
@@ -80395,8 +80623,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      Box3D.globalEvents.off('resetSkeletons', this.resetSkeletons, this);
 	      Box3D.globalEvents.off('setRenderMode', this.setRenderMode, this);
 	      Box3D.globalEvents.off('setSkeletonsVisible', this.setSkeletonsVisible, this);
@@ -80472,8 +80700,8 @@
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'postRenderView',
-	    value: function postRenderView(scene, camera /*, options*/) {
+	    key: 'onPostRenderView',
+	    value: function onPostRenderView(scene, camera) {
 	      if (this.wireframesVisible) {
 	        this.renderWireframes(scene, camera);
 	      }
@@ -80787,7 +81015,7 @@
 	      // Apply override material for this render mode.
 	      if (overrideMaterial) {
 	        this.overrideMaterialEnabled = true;
-	        overrideMaterial.skinned.skinning = true; // TODO: this should be done in start()
+	        overrideMaterial.skinned.skinning = true; // TODO: this should be done in onStartup()
 
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
@@ -81014,9 +81242,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(RenderView, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      var that = this;
 	      var renderEvent = parseInt(this.renderGroup, 10);
 	      if (renderEvent) {
@@ -81034,16 +81265,22 @@
 	      this.listenTo(this.getEntity(), 'toggleRenderView', this.toggleRenderView);
 	      this.listenTo(this.getEntity(), 'setViewport', this.setViewport);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getRuntime().off(this.renderEventName, this.renderView, this);
 	      this.getRuntime().off('resize', this.resize, this);
 	      this.stopListening();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.filters = this.getEntity().getComponentByScriptId('camera_filters_script');
 	    }
 	  }, {
@@ -81357,8 +81594,6 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
@@ -81397,40 +81632,53 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(Rotate, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.rotate = this.autoRotate;
 
 	      this.getEntity().on('startRotate', this.onStartRotate, this);
 	      this.getEntity().on('stopRotate', this.onStopRotate, this);
 	      this.getEntity().on('toggleRotate', this.onToggleRotate, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getEntity().off('startRotate', this.onStartRotate, this);
 	      this.getEntity().off('stopRotate', this.onStopRotate, this);
 	      this.getEntity().off('toggleRotate', this.onToggleRotate, this);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      _get(Rotate.prototype.__proto__ || Object.getPrototypeOf(Rotate.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      this.rotate = this.autoRotate;
 	      this.initRotation();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(Rotate.prototype.__proto__ || Object.getPrototypeOf(Rotate.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      this.getRuntimeData().position.copy(this.getEntity().getPosition());
 	      this.getRuntimeData().quaternion.copy(this.getEntity().getQuaternion());
 	      this.rotate = false;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('rotation') && !_lodash2.default.isEmpty(this.rotation)) {
 	        this.initRotation();
 	      }
@@ -81439,9 +81687,12 @@
 	        this.initRotation();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.initialQuaternion = new THREE.Quaternion();
 	      this.initialQuaternion.copy(this.getRuntimeData().quaternion);
 	      this.initRotation();
@@ -81456,9 +81707,12 @@
 	        this.currentGlobalQuaternion.set(0, 0, 0, 1);
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'update',
-	    value: function update(delta) {
+	    key: 'onUpdate',
+	    value: function onUpdate(delta) {
 	      if (this.rotate && this.isEnabled()) {
 	        this.getRuntime().needsRender = true;
 	        if (this.getRuntimeData() && this.rotation) {
@@ -81550,19 +81804,22 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(SceneLoader, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      if (this.scene) {
 	        this.scene.once('load', this.onLoadComplete, this);
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {}
-	  }, {
-	    key: 'update',
-	    value: function update(delta) {
+	    key: 'onUpdate',
+	    value: function onUpdate(delta) {
 	      this.loadTime += delta;
 	    }
 
@@ -81710,9 +81967,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(SimplexNoiseRenderer, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 
 	      this.getEntity().on('changeNoiseValues', this.changeNoiseValues, this);
 	      this.getEntity().on('renderNoise', this.renderNoise, this);
@@ -81756,9 +82016,12 @@
 	      this.quadRTT.position.z = -5;
 	      this.sceneRTT.add(this.quadRTT);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.getEntity().off('changeNoiseValues', this.changeNoiseValues, this);
 	      this.getEntity().off('renderNoise', this.renderNoise, this);
 	      this.sceneRTT.remove(this.cameraRTT);
@@ -81769,9 +82032,12 @@
 	      this.m_NoiseMat.dispose();
 	      this.m_Uniforms = undefined;
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      if (this.autoLoad) {
 	        this.renderNoise();
 	      }
@@ -81783,8 +82049,11 @@
 	      this.getThreeRenderer().setRenderTarget(null);
 	    }
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(attributes) {
+	    key: 'onAttributesChanged',
+
+
+	    /** @inheritdoc */
+	    value: function onAttributesChanged(attributes) {
 	      if (attributes.indexOf('scale') !== -1 && this.scale.x !== undefined) {
 	        this.m_Uniforms.scale.value.x = this.scale.x;
 	        this.m_Uniforms.scale.value.y = this.scale.y;
@@ -81814,7 +82083,7 @@
 	      this.layerScale = layerScale;
 	      this.scale = scale;
 	      this.offset = offset;
-	      this.attributesChanged(['layerAmplitude', 'layerScale', 'scale', 'offset']);
+	      this.onAttributesChanged(['layerAmplitude', 'layerScale', 'scale', 'offset']);
 	    }
 	  }]);
 
@@ -81854,8 +82123,6 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _three = __webpack_require__(10);
 
@@ -81902,24 +82169,20 @@
 	    return _this;
 	  }
 
-	  /**
-	   * @inheritdoc
-	   */
+	  /** @inheritdoc */
 
 
 	  _createClass(SkyboxRenderer, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.initMaterials();
 	    }
 
-	    /**
-	     * @inheritdoc
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      if (this.skyboxGeometry) {
 	        this.skyboxGeometry.dispose();
 	      }
@@ -81942,13 +82205,11 @@
 	      this.currentTexLayout = null;
 	    }
 
-	    /**
-	     * @inheritdoc
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changed) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changed) {
 	      if (!this.getEntity().isBaseLoaded()) {
 	        return;
 	      }
@@ -81964,17 +82225,11 @@
 	      }
 	    }
 
-	    /**
-	     * Enable the skybox rendering.
-	     * @method enable
-	     * @private
-	     * @returns {void}
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'enable',
-	    value: function enable() {
-	      _get(SkyboxRenderer.prototype.__proto__ || Object.getPrototypeOf(SkyboxRenderer.prototype), 'enable', this).call(this);
+	    key: 'onEnable',
+	    value: function onEnable() {
 	      if (this.getRuntimeData()) {
 	        this.getRuntimeData().add(this.skyboxMesh);
 	        if (this.isStereo()) {
@@ -81986,17 +82241,11 @@
 	      }
 	    }
 
-	    /**
-	     * Disable the skybox from rendering.
-	     * @method disable
-	     * @private
-	     * @returns {void}
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'disable',
-	    value: function disable() {
-	      _get(SkyboxRenderer.prototype.__proto__ || Object.getPrototypeOf(SkyboxRenderer.prototype), 'disable', this).call(this);
+	    key: 'onDisable',
+	    value: function onDisable() {
 	      if (this.getRuntimeData()) {
 	        this.getRuntimeData().remove(this.skyboxMesh);
 	        if (this.isStereo()) {
@@ -82005,13 +82254,11 @@
 	      }
 	    }
 
-	    /**
-	     * @inheritdoc
-	     */
+	    /** @inheritdoc */
 
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.initSkybox();
 	    }
 
@@ -82317,19 +82564,28 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(TextRenderer, [{
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.createLabel();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
 	    key: 'sceneLoaded',
 	    value: function sceneLoaded() {
 	      this.renderText();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      this.m_Material.dispose();
 	      this.m_Geom.dispose();
 	      this.m_Mesh = null;
@@ -82405,9 +82661,12 @@
 
 	      this.m_RTScene.add(this.m_Mesh);
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'attributesChanged',
-	    value: function attributesChanged() {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged() {
 	      this.createLabel();
 	      this.renderText();
 	    }
@@ -82516,9 +82775,12 @@
 	    return _this;
 	  }
 
+	  /** @inheritdoc */
+
+
 	  _createClass(Texture2dToCubeMap, [{
-	    key: 'attributesChanged',
-	    value: function attributesChanged(changes) {
+	    key: 'onAttributesChanged',
+	    value: function onAttributesChanged(changes) {
 	      if (changes.indexOf('inputTexture') !== -1) {
 	        var prevTex = this.getPreviousAttribute('inputTexture');
 	        this.unregisterDependency(prevTex);
@@ -82526,22 +82788,31 @@
 	        this.updateTexture();
 	      }
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'start',
-	    value: function start() {
+	    key: 'onStartup',
+	    value: function onStartup() {
 	      this.registerDependency(this.inputTexture);
 	      this.skyboxScene = new THREE.Scene();
 	      this.initCameras();
 	      this.createSkybox();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'entityCreated',
-	    value: function entityCreated() {
+	    key: 'onEntityReady',
+	    value: function onEntityReady() {
 	      this.updateTexture();
 	    }
+
+	    /** @inheritdoc */
+
 	  }, {
-	    key: 'shutdown',
-	    value: function shutdown() {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
 	      if (this.inputTexture) {
 	        this.unregisterDependency(this.inputTexture);
 	        this.inputTexture.off('load', this.renderToCube, this);

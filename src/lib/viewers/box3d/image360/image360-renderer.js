@@ -19,6 +19,7 @@ class Image360Renderer extends Box3DRenderer {
     /**
      * Handles creating and caching a Box3DRuntime, and creating a scene made for
      * previewing 360 images
+     *
      * @constructor
      * @inheritdoc
      * @returns {Image360Renderer} Image360Renderer instance
@@ -26,45 +27,64 @@ class Image360Renderer extends Box3DRenderer {
     constructor(containerEl, boxSdk) {
         super(containerEl, boxSdk);
         this.textureAsset = null;
+        this.imageAsset = null;
+        this.skybox = null;
     }
 
     /**
      * Called on preview destroy
+     *
      * @returns {void}
      */
     destroy() {
         if (this.skybox) {
             this.skybox.setAttribute('skyboxTexture', null);
         }
+        this.imageAsset = null;
+        this.skybox = null;
         super.destroy();
     }
 
     /**
+     * Get the skybox renderer component that exists on the root scene.
+     *
+     * @public
+     * @method getSkyboxComponent
+     * @returns {Object} A Box3d component for skybox rendering
+     */
+    getSkyboxComponent() {
+        if (!this.skybox) {
+            const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
+            this.skybox = scene.getComponentByScriptId('skybox_renderer');
+        }
+
+        return this.skybox;
+    }
+
+    /**
      * Load a box3d json
+     *
      * @inheritdoc
      * @param  {string} jsonUrl The url to the box3d json
      * @returns {Promise} a promise that resolves with the newly created runtime
      */
     load(jsonUrl, options = {}) {
-        /*eslint-disable*/
-        options.sceneEntities = sceneEntities;
-        options.inputSettings = INPUT_SETTINGS;
-        /*eslint-enable*/
+        const opts = options;
+        opts.sceneEntities = opts.sceneEntities || sceneEntities;
+        opts.inputSettings = opts.inputSettings || INPUT_SETTINGS;
 
-        return this.initBox3d(options)
-            .then(this.loadPanoramaFile.bind(this, options.file))
+        return this.initBox3d(opts)
+            .then(this.loadPanoramaFile.bind(this, opts.file))
             .then(this.onSceneLoad.bind(this));
     }
 
     /**
      * Parse out the proper components to assemble a threejs mesh
+     *
      * @param {object} fileProperties The Box3D file properties
      * @returns {void}
      */
     loadPanoramaFile(fileProperties) {
-        const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
-        this.skybox = scene.getComponentByScriptId('skybox_renderer');
-
         this.imageAsset = this.box3d.createImage();
         this.imageAsset.setProperty('stream', false);
 
@@ -101,6 +121,7 @@ class Image360Renderer extends Box3DRenderer {
             });
             return new Promise((resolve) => {
                 this.textureAsset.load(() => {
+                    this.skybox = this.getSkyboxComponent();
                     this.skybox.enable();
                     this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                     resolve();
@@ -114,7 +135,9 @@ class Image360Renderer extends Box3DRenderer {
      */
     enableVr() {
         super.enableVr();
-        this.skybox.setAttribute('stereoEnabled', true);
+        if (this.skybox) {
+            this.skybox.setAttribute('stereoEnabled', true);
+        }
     }
 
     /**
@@ -122,7 +145,9 @@ class Image360Renderer extends Box3DRenderer {
      */
     disableVr() {
         super.disableVr();
-        this.skybox.setAttribute('stereoEnabled', false);
+        if (this.skybox) {
+            this.skybox.setAttribute('stereoEnabled', false);
+        }
     }
 
     /**

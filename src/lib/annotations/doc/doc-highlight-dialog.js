@@ -48,15 +48,6 @@ class DocHighlightDialog extends AnnotationDialog {
         super.addAnnotation(annotation);
     }
 
-    /**
-     * Provides the current dimensions of the highlight dialog in display
-     *
-     * @returns {DOMRect} dimensions of the highlight annotations dialog element
-     */
-    getDimensions() {
-        return this._element.getBoundingClientRect();
-    }
-
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -99,6 +90,21 @@ class DocHighlightDialog extends AnnotationDialog {
 
         this._element.style.left = `${dialogX}px`;
         this._element.style.top = `${dialogY + PAGE_PADDING_TOP}px`;
+
+        // Set max height for dialog on powerpoint previews to prevent the
+        // dialog from being cut off since the presentation viewer doesn't allow
+        // the annotations dialog to overflow below the file
+        if (docAnnotatorUtil.isPresentation(this._annotatedElement)) {
+            const wrapperHeight = this._annotatedElement.clientHeight;
+            const topPadding = (wrapperHeight - pageDimensions.height) / 2;
+            const maxHeight = wrapperHeight - dialogY - topPadding - HIGHLIGHT_DIALOG_HEIGHT;
+
+            const annotationsEl = this._element.querySelector('.annotation-container');
+            annotationsEl.style.maxHeight = `${maxHeight}px`;
+            annotationsEl.style.overflow = 'scroll';
+            annotationsEl.scrollTop = annotationsEl.scrollHeight;
+        }
+
         annotatorUtil.showElement(this._element);
     }
 

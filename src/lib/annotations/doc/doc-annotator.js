@@ -273,9 +273,40 @@ class DocAnnotator extends Annotator {
         });
     }
 
+    /**
+     * Checks whether mouse is inside any dialog on the current page
+     *
+     * @param {Event} event Mouse event
+     * @param {number} page Current page number
+     * @returns {boolean} Whether or not mouse is inside a dialog on the page
+     * @protected
+     */
+    isInDialogOnPage(event, page) {
+        const threads = this._getThreadsOnPage(page);
+        let mouseInDialog = false;
+
+        threads.some((thread) => {
+            mouseInDialog = docAnnotatorUtil.isInDialog(event, thread._dialog.element);
+            return mouseInDialog;
+        });
+        return mouseInDialog;
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * Gets threads on page
+     *
+     * @param {number} page Current page number
+     * @returns {[]} Threads on page
+     * @private
+     */
+    _getThreadsOnPage(page) {
+        const threads = this._threads ? this._threads[page] : [];
+        return threads;
+    }
 
     /**
      * Mousedown handler on annotated element. Initializes didDrag to false -

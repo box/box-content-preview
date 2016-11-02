@@ -62,15 +62,6 @@ describe('doc-highlight-dialog', () => {
         });
     });
 
-    describe('getDimensions()', () => {
-        it('should return dialog dimensions', () => {
-            sandbox.stub(highlightDialog._element, 'getBoundingClientRect');
-            highlightDialog.getDimensions();
-
-            expect(highlightDialog._element.getBoundingClientRect).to.have.been.called;
-        });
-    });
-
     describe('position()', () => {
         it('should position the plain highlight dialog at the right place and show it', () => {
             highlightDialog._hasComments = false;
@@ -79,6 +70,7 @@ describe('doc-highlight-dialog', () => {
             sandbox.stub(highlightDialog, '_getDialogWidth').returns(100);
             sandbox.stub(highlightDialog, '_repositionCaret').returns(10);
             sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(false);
 
             highlightDialog.position();
 
@@ -96,6 +88,7 @@ describe('doc-highlight-dialog', () => {
             sandbox.stub(highlightDialog, '_getDialogWidth');
             sandbox.stub(highlightDialog, '_repositionCaret').returns(10);
             sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(false);
 
             highlightDialog.position();
 
@@ -113,6 +106,7 @@ describe('doc-highlight-dialog', () => {
             sandbox.stub(highlightDialog, '_getDialogWidth');
             sandbox.stub(highlightDialog, '_repositionCaret');
             sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(false);
 
             highlightDialog.position();
 
@@ -128,6 +122,7 @@ describe('doc-highlight-dialog', () => {
             sandbox.stub(highlightDialog, '_getDialogWidth');
             sandbox.stub(highlightDialog, '_repositionCaret');
             sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(false);
 
             highlightDialog.position();
 
@@ -135,6 +130,22 @@ describe('doc-highlight-dialog', () => {
 
             // pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM = -30
             expect(highlightDialog._element.style.top).to.equal(`${pageHeight - HIGHLIGHT_DIALOG_HEIGHT + PAGE_PADDING_TOP}px`);
+        });
+
+        it('should allow scrolling on annotations dialog if file is a powerpoint', () => {
+            highlightDialog._hasComments = false;
+
+            sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
+            sandbox.stub(highlightDialog, '_getDialogWidth').returns(100);
+            sandbox.stub(highlightDialog, '_repositionCaret').returns(10);
+            sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(true);
+
+            highlightDialog.position();
+
+            const annotationsEl = highlightDialog._element.querySelector('.annotation-container');
+            expect(annotationsEl.style.maxHeight).to.not.be.undefined;
+            expect(annotationsEl.style.overflow).to.equal('scroll');
         });
     });
 
