@@ -178,7 +178,7 @@ class DocHighlightThread extends AnnotationThread {
      * the annotations dialog
      */
     isOnHighlight(event) {
-        return this._isInDialog(event) || this._isInHighlight(event);
+        return docAnnotatorUtil.isInDialog(event, this._dialog.element) || this._isInHighlight(event);
     }
 
     /**
@@ -209,7 +209,7 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // If mouse is in dialog, change state to hover or active-hover
-        if (this._isInDialog(event)) {
+        if (docAnnotatorUtil.isInDialog(event, this._dialog.element)) {
             this.activateDialog();
 
         // Pending check should be first - do nothing if highlight is pending
@@ -474,28 +474,6 @@ class DocHighlightThread extends AnnotationThread {
                 [x4, y4]
             ], x, y);
         });
-    }
-
-    /**
-     * Checks whether mouse is inside the dialog represented by this thread.
-     *
-     * @param {Event} event Mouse event
-     * @returns {boolean} Whether or not mouse is inside dialog
-     * @private
-     */
-    _isInDialog(event) {
-        // DOM coordinates with respect to the page
-        const x = event.clientX;
-        const y = event.clientY;
-
-        // Get dialog dimensions
-        const dialogDimensions = this._dialog.getDimensions();
-
-        if (y >= dialogDimensions.top && y <= dialogDimensions.bottom &&
-            x >= dialogDimensions.left && x <= dialogDimensions.right) {
-            return true;
-        }
-        return false;
     }
 
     /**

@@ -10,6 +10,7 @@ import * as annotatorUtil from '../annotator-util';
 import * as docAnnotatorUtil from './doc-annotator-util';
 
 const PAGE_PADDING_TOP = 15;
+const HIGHLIGHT_DIALOG_HEIGHT = 38;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
 @autobind
@@ -74,6 +75,19 @@ class DocPointDialog extends AnnotationDialog {
         // Position the dialog
         this._element.style.left = `${dialogLeftX}px`;
         this._element.style.top = `${dialogTopY + PAGE_PADDING_TOP}px`;
+
+        // Set max height for dialog on powerpoint previews to prevent the
+        // dialog from being cut off since the presentation viewer doesn't allow
+        // the annotations dialog to overflow below the file
+        if (docAnnotatorUtil.isPresentation(this._annotatedElement)) {
+            const wrapperHeight = this._annotatedElement.clientHeight;
+            const topPadding = (wrapperHeight - pageDimensions.height) / 2;
+            const maxHeight = wrapperHeight - dialogTopY - topPadding - HIGHLIGHT_DIALOG_HEIGHT;
+
+            const annotationsEl = this._element.querySelector('.annotation-container');
+            annotationsEl.style.maxHeight = `${maxHeight}px`;
+            annotationsEl.style.overflow = 'scroll';
+        }
     }
 }
 
