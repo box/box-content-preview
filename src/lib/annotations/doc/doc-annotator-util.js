@@ -78,8 +78,8 @@ export function hasActiveDialog(currentDialogEl, pageEl) {
 
     if (dialogEl || highlightDialogEl) {
         // If the current dialog is the active dialog
-        if (currentDialogEl.isSameNode(dialogEl) ||
-            currentDialogEl.isSameNode(highlightDialogEl)) {
+        if (currentDialogEl === dialogEl ||
+            currentDialogEl === highlightDialogEl) {
             return false;
         }
         return true;

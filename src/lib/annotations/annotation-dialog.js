@@ -518,6 +518,8 @@ class AnnotationDialog extends EventEmitter {
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const cancelDeleteButtonEl = annotationEl.querySelector('.cancel-delete-btn');
+        const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
+        annotatorUtil.hideElement(deleteButtonEl);
         annotatorUtil.showElement(deleteConfirmationEl);
         cancelDeleteButtonEl.focus();
     }
@@ -533,6 +535,7 @@ class AnnotationDialog extends EventEmitter {
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
+        annotatorUtil.showElement(deleteButtonEl);
         annotatorUtil.hideElement(deleteConfirmationEl);
         deleteButtonEl.focus();
     }
