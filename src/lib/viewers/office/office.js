@@ -35,7 +35,7 @@ class Office extends Base {
     load() {
         let src = `${deduceBoxUrl(this.options.api)}/integrations/officeonline/openExcelOnlinePreviewer`;
         if (this.options.sharedLink) {
-            src += `?s=${this.options.sharedLink.split('/s/')[1]}`;
+            src += `?s=${this.options.sharedLink.split('/s/')[1]}&fileId=${this.options.file.id}`;
         } else {
             src += `?fileId=${this.options.file.id}`;
         }
