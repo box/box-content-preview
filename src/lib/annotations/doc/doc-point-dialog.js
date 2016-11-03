@@ -10,7 +10,6 @@ import * as annotatorUtil from '../annotator-util';
 import * as docAnnotatorUtil from './doc-annotator-util';
 
 const PAGE_PADDING_TOP = 15;
-const HIGHLIGHT_DIALOG_HEIGHT = 38;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
 @autobind
@@ -36,58 +35,20 @@ class DocPointDialog extends AnnotationDialog {
         const dialogDimensions = this._element.getBoundingClientRect();
         const dialogWidth = dialogDimensions.width;
         const pageDimensions = pageEl.getBoundingClientRect();
-        const pageWidth = pageDimensions.width;
 
         // Center middle of dialog with point - this coordinate is with respect to the page
         let dialogLeftX = browserX - (dialogWidth / 2);
         const dialogTopY = browserY - (POINT_ANNOTATION_ICON_DOT_HEIGHT / 2) - 10;
 
-        // Reposition to avoid sides - left side of page is 0px, right side is ${pageWidth}px
-        const dialogPastLeft = dialogLeftX < 0;
-        const dialogPastRight = dialogLeftX + dialogWidth > pageWidth;
-
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
         // else we can do
-        const annotationCaretEl = this._element.querySelector('.box-preview-annotation-caret');
-        if (dialogPastLeft && !dialogPastRight) {
-            // Leave a minimum of 10 pixels so caret doesn't go off edge
-            const caretLeftX = Math.max(10, browserX);
-            annotationCaretEl.style.left = `${caretLeftX}px`;
-
-            dialogLeftX = 0;
-
-        // Fix the dialog and move caret appropriately
-        } else if (dialogPastRight && !dialogPastLeft) {
-            // Leave a minimum of 10 pixels so caret doesn't go off edge
-            const caretRightX = Math.max(10, pageWidth - browserX);
-
-            // We set the 'left' property even when we have caretRightX for IE10/11
-            annotationCaretEl.style.left = `${dialogWidth - caretRightX}px`;
-
-            dialogLeftX = pageWidth - dialogWidth;
-
-        // Reset caret to center
-        } else {
-            annotationCaretEl.style.left = '50%';
-        }
+        dialogLeftX = annotatorUtil.repositionCaret(this._element, dialogLeftX, dialogWidth, browserX, pageDimensions.width);
 
         // Position the dialog
         this._element.style.left = `${dialogLeftX}px`;
         this._element.style.top = `${dialogTopY + PAGE_PADDING_TOP}px`;
-
-        // Set max height for dialog on powerpoint previews to prevent the
-        // dialog from being cut off since the presentation viewer doesn't allow
-        // the annotations dialog to overflow below the file
-        if (docAnnotatorUtil.isPresentation(this._annotatedElement)) {
-            const wrapperHeight = this._annotatedElement.clientHeight;
-            const topPadding = (wrapperHeight - pageDimensions.height) / 2;
-            const maxHeight = wrapperHeight - dialogTopY - topPadding - HIGHLIGHT_DIALOG_HEIGHT;
-
-            const annotationsEl = this._element.querySelector('.annotation-container');
-            annotationsEl.style.maxHeight = `${maxHeight}px`;
-            annotationsEl.style.overflow = 'scroll';
-        }
+        docAnnotatorUtil.fitDialogHeightInPage(this._annotatedElement, this._element, pageDimensions.height, dialogTopY);
     }
 }
 

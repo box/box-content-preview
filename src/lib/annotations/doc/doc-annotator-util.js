@@ -11,6 +11,7 @@ const PAGE_PADDING_TOP = 15;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
+const HIGHLIGHT_DIALOG_HEIGHT = 38;
 
 export function isPresentation(annotatedElement) {
     return annotatedElement.classList.contains(PREVIEW_PRESENTATION_CLASS);
@@ -38,6 +39,75 @@ export function getPageElAndPageNumber(element) {
         pageEl: null,
         page: -1
     };
+}
+
+/**
+ * Checks whether mouse is inside the dialog represented by this thread.
+ *
+ * @param {Event} event Mouse event
+ * @returns {boolean} Whether or not mouse is inside dialog
+ * @private
+ */
+export function isInDialog(event, dialogEl) {
+    // DOM coordinates with respect to the page
+    const x = event.clientX;
+    const y = event.clientY;
+
+    // Get dialog dimensions
+    const dialogDimensions = dialogEl.getBoundingClientRect();
+
+    if (y >= dialogDimensions.top && y <= dialogDimensions.bottom &&
+        x >= dialogDimensions.left && x <= dialogDimensions.right) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Checks if there is an active annotation on the current page that doesn't
+ * match the current dialog being hovered on
+ *
+ * @param {HTMLElement} currentDialogEl Current dialog being hovered on
+ * @param {HTMLElement} pageEl Current page
+ * @returns {boolean} Whether or not a different dialog is active
+ * @private
+ */
+export function hasActiveDialog(currentDialogEl, pageEl) {
+    const dialogEl = pageEl.querySelector('.box-preview-annotation-dialog:not(.box-preview-is-hidden)');
+    const highlightDialogEl = pageEl.querySelector('.box-preview-highlight-dialog:not(.box-preview-is-hidden)');
+
+    if (dialogEl || highlightDialogEl) {
+        // If the current dialog is the active dialog
+        if (currentDialogEl.isSameNode(dialogEl) ||
+            currentDialogEl.isSameNode(highlightDialogEl)) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Set max height for dialog on powerpoint previews to prevent the
+ * dialog from being cut off since the presentation viewer doesn't allow
+ * the annotations dialog to overflow below the file
+ *
+ * @param {HTMLElement} annotatedElement Annotated element
+ * @param {HTMLElement} dialogEl Annotations dialog element
+ * @param {number} pageHeight Page height
+ * @returns {void}
+ * @private
+ */
+export function fitDialogHeightInPage(annotatedElement, dialogEl, pageHeight, dialogY) {
+    if (isPresentation(annotatedElement)) {
+        const wrapperHeight = annotatedElement.clientHeight;
+        const topPadding = (wrapperHeight - pageHeight) / 2;
+        const maxHeight = wrapperHeight - dialogY - topPadding - HIGHLIGHT_DIALOG_HEIGHT;
+
+        const annotationsEl = dialogEl.querySelector('.annotation-container');
+        annotationsEl.style.maxHeight = `${maxHeight}px`;
+        annotationsEl.style.overflow = 'scroll';
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -296,50 +366,4 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
         Math.max(x1, x2, x3, x4),
         Math.min(y1, y2, y3, y4)
     ];
-}
-
-/**
- * Checks whether mouse is inside the dialog represented by this thread.
- *
- * @param {Event} event Mouse event
- * @returns {boolean} Whether or not mouse is inside dialog
- * @private
- */
-export function isInDialog(event, dialogEl) {
-    // DOM coordinates with respect to the page
-    const x = event.clientX;
-    const y = event.clientY;
-
-    // Get dialog dimensions
-    const dialogDimensions = dialogEl.getBoundingClientRect();
-
-    if (y >= dialogDimensions.top && y <= dialogDimensions.bottom &&
-        x >= dialogDimensions.left && x <= dialogDimensions.right) {
-        return true;
-    }
-    return false;
-}
-
-/**
- * Checks if there is an active annotation on the current page that doesn't
- * match the current dialog being hovered on
- *
- * @param {HTMLElement} currentDialogEl Current dialog being hovered on
- * @param {HTMLElement} pageEl Current page
- * @returns {boolean} Whether or not a different dialog is active
- * @private
- */
-export function hasActiveDialog(currentDialogEl, pageEl) {
-    const dialogEl = pageEl.querySelector('.box-preview-annotation-dialog:not(.box-preview-is-hidden)');
-    const highlightDialogEl = pageEl.querySelector('.box-preview-highlight-dialog:not(.box-preview-is-hidden)');
-
-    if (dialogEl || highlightDialogEl) {
-        // If the current dialog is the active dialog
-        if (currentDialogEl.isSameNode(dialogEl) ||
-            currentDialogEl.isSameNode(highlightDialogEl)) {
-            return false;
-        }
-        return true;
-    }
-    return false;
 }

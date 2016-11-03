@@ -30,23 +30,12 @@ describe('doc-point-dialog', () => {
         it('should position the dialog at the right place and show it', () => {
             sandbox.stub(docAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([1, 2]);
             sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
 
             pointDialog.position();
 
             expect(docAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.called;
             expect(annotatorUtil.showElement).to.have.been.called;
-        });
-
-        it('should allow scrolling on annotations dialog if file is a powerpoint', () => {
-            sandbox.stub(docAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([1, 2]);
-            sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(true);
-
-            pointDialog.position();
-
-            const annotationsEl = pointDialog._element.querySelector('.annotation-container');
-            expect(annotationsEl.style.maxHeight).to.not.be.undefined;
-            expect(annotationsEl.style.overflow).to.equal('scroll');
         });
     });
 });

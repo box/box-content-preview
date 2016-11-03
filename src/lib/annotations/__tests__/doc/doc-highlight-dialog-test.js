@@ -9,7 +9,6 @@ let highlightDialog;
 const sandbox = sinon.sandbox.create();
 
 const CLASS_HIGHLIGHT_DIALOG = 'box-preview-highlight-dialog';
-const HIGHLIGHT_BUTTONS_DIALOG_WIDTH = 81;
 const PAGE_PADDING_TOP = 15;
 
 describe('doc-highlight-dialog', () => {
@@ -66,15 +65,15 @@ describe('doc-highlight-dialog', () => {
 
             sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
             sandbox.stub(highlightDialog, '_getDialogWidth').returns(100);
-            sandbox.stub(highlightDialog, '_repositionCaret').returns(10);
+            sandbox.stub(annotatorUtil, 'repositionCaret').returns(10);
             sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
 
             highlightDialog.position();
 
             expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
             expect(highlightDialog._getDialogWidth).to.have.been.called;
-            expect(highlightDialog._repositionCaret).to.have.been.called;
+            expect(annotatorUtil.repositionCaret).to.have.been.called;
             expect(annotatorUtil.showElement).to.have.been.called;
             expect(highlightDialog._element.style.left).to.equal('10px');
         });
@@ -84,15 +83,15 @@ describe('doc-highlight-dialog', () => {
 
             sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
             sandbox.stub(highlightDialog, '_getDialogWidth');
-            sandbox.stub(highlightDialog, '_repositionCaret').returns(10);
+            sandbox.stub(annotatorUtil, 'repositionCaret').returns(10);
             sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
 
             highlightDialog.position();
 
             expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
             expect(highlightDialog._getDialogWidth).to.have.been.called;
-            expect(highlightDialog._repositionCaret).to.have.been.called;
+            expect(annotatorUtil.repositionCaret).to.have.been.called;
             expect(annotatorUtil.showElement).to.have.been.called;
             expect(highlightDialog._element.style.left).to.equal('10px');
         });
@@ -102,9 +101,9 @@ describe('doc-highlight-dialog', () => {
 
             sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, -1]);
             sandbox.stub(highlightDialog, '_getDialogWidth');
-            sandbox.stub(highlightDialog, '_repositionCaret');
+            sandbox.stub(annotatorUtil, 'repositionCaret');
             sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
 
             highlightDialog.position();
 
@@ -117,31 +116,15 @@ describe('doc-highlight-dialog', () => {
 
             sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
             sandbox.stub(highlightDialog, '_getDialogWidth');
-            sandbox.stub(highlightDialog, '_repositionCaret');
+            sandbox.stub(annotatorUtil, 'repositionCaret');
             sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
 
             highlightDialog.position();
 
             expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
 
             expect(highlightDialog._element.style.top).to.equal(`${PAGE_PADDING_TOP}px`);
-        });
-
-        it('should allow scrolling on annotations dialog if file is a powerpoint', () => {
-            highlightDialog._hasComments = false;
-
-            sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
-            sandbox.stub(highlightDialog, '_getDialogWidth').returns(100);
-            sandbox.stub(highlightDialog, '_repositionCaret').returns(10);
-            sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'isPresentation').returns(true);
-
-            highlightDialog.position();
-
-            const annotationsEl = highlightDialog._element.querySelector('.annotation-container');
-            expect(annotationsEl.style.maxHeight).to.not.be.undefined;
-            expect(annotationsEl.style.overflow).to.equal('scroll');
         });
     });
 
@@ -283,44 +266,6 @@ describe('doc-highlight-dialog', () => {
             const width = highlightDialog._getDialogWidth();
 
             expect(width).to.equal(252); // Default comments dialog width
-        });
-    });
-
-    describe('_repositionCaret()', () => {
-        it('should position the dialog on the left edge of the page and adjust caret location accordingly', () => {
-            const browserX = 1;
-            const pageWidth = 100;
-            const initX = browserX - (HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2);
-
-            const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
-
-            const annotationCaretEl = highlightDialog._element.querySelector('.box-preview-annotation-caret');
-            expect(dialogX).to.equal(0); // dialog aligned to the left
-            expect(annotationCaretEl.style.left).to.equal('10px'); // caret aligned to the left
-        });
-
-        it('should position the dialog on the right edge of the page and adjust caret location accordingly', () => {
-            const browserX = 400;
-            const pageWidth = 100;
-            const initX = browserX - (HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2);
-
-            const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
-
-            const annotationCaretEl = highlightDialog._element.querySelector('.box-preview-annotation-caret');
-            expect(dialogX).to.equal(19); // dialog aligned to the right
-            expect(annotationCaretEl.style.left).to.equal('71px'); // caret aligned to the right
-        });
-
-        it('should position the caret in the center of the dialog and return top left corner coordinate', () => {
-            const browserX = 100;
-            const pageWidth = 1000;
-            const initX = browserX - (HIGHLIGHT_BUTTONS_DIALOG_WIDTH / 2);
-
-            const dialogX = highlightDialog._repositionCaret(initX, HIGHLIGHT_BUTTONS_DIALOG_WIDTH, browserX, pageWidth);
-
-            const annotationCaretEl = highlightDialog._element.querySelector('.box-preview-annotation-caret');
-            expect(dialogX).to.equal(initX); // dialog x unchanged
-            expect(annotationCaretEl.style.left).to.equal('50%'); // caret centered with dialog
         });
     });
 
