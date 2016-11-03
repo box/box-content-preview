@@ -208,9 +208,14 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {boolean} Whether we should delay drawing highlight
      */
     onMousemove(event) {
+        const pageEl = this._getPageEl();
+
         // If mouse is in dialog, change state to hover or active-hover
         if (docAnnotatorUtil.isInDialog(event, this._dialog.element)) {
             this.activateDialog();
+        } else if (docAnnotatorUtil.hasActiveDialog(this._dialog.element, pageEl)) {
+            this.hideDialog();
+            return false;
 
         // Pending check should be first - do nothing if highlight is pending
         } else if (this._state === constants.ANNOTATION_STATE_PENDING ||

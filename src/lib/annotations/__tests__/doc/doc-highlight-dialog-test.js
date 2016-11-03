@@ -10,8 +10,6 @@ const sandbox = sinon.sandbox.create();
 
 const CLASS_HIGHLIGHT_DIALOG = 'box-preview-highlight-dialog';
 const HIGHLIGHT_BUTTONS_DIALOG_WIDTH = 81;
-const HIGHLIGHT_DIALOG_HEIGHT = 38;
-const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 
 describe('doc-highlight-dialog', () => {
@@ -115,7 +113,6 @@ describe('doc-highlight-dialog', () => {
         });
 
         it('should adjust the dialog if the dialog will run below the page', () => {
-            const pageHeight = 0 - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
             highlightDialog._hasComments = false;
 
             sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
@@ -128,8 +125,7 @@ describe('doc-highlight-dialog', () => {
 
             expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
 
-            // pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM = -30
-            expect(highlightDialog._element.style.top).to.equal(`${pageHeight - HIGHLIGHT_DIALOG_HEIGHT + PAGE_PADDING_TOP}px`);
+            expect(highlightDialog._element.style.top).to.equal(`${PAGE_PADDING_TOP}px`);
         });
 
         it('should allow scrolling on annotations dialog if file is a powerpoint', () => {
@@ -329,23 +325,10 @@ describe('doc-highlight-dialog', () => {
     });
 
     describe('_getScaledPDFCoordinates()', () => {
-        it('should lower center coordinates of dialog when a highlight has comments', () => {
-            highlightDialog._hasComments = true;
-
-            sandbox.stub(annotatorUtil, 'getScale').returns(1);
-            sandbox.stub(docAnnotatorUtil, 'getLowerCenterPoint').returns([141, 2]);
-            sandbox.stub(docAnnotatorUtil, 'getDimensionScale');
-
-            highlightDialog._getScaledPDFCoordinates({}, 100);
-
-            expect(docAnnotatorUtil.getLowerCenterPoint).to.have.been.called;
-        });
-
         it('should lower right corner coordinates of dialog when a highlight does not have comments', () => {
             highlightDialog._hasComments = false;
 
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
-            sandbox.stub(docAnnotatorUtil, 'getLowerCenterPoint');
             sandbox.stub(docAnnotatorUtil, 'getLowerRightCornerOfLastQuadPoint').returns([200, 2]);
             sandbox.stub(docAnnotatorUtil, 'getDimensionScale');
 

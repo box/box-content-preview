@@ -76,6 +76,7 @@ class DocHighlightDialog extends AnnotationDialog {
         let dialogX = browserX - (highlightDialogWidth / 2); // Center dialog
         // Shorten extra transparent border top if showing comments dialog
         let dialogY = this._hasComments ? browserY - 10 : browserY;
+        dialogY -= 10;
 
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
@@ -464,8 +465,7 @@ class DocHighlightDialog extends AnnotationDialog {
     _getScaledPDFCoordinates(pageDimensions, pageHeight) {
         const zoomScale = annotatorUtil.getScale(this._annotatedElement);
 
-        let [x, y] = this._hasComments ? docAnnotatorUtil.getLowerCenterPoint(this._location.quadPoints) :
-            docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
+        let [x, y] = docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
 
         // If needed, scale coordinates comparing current dimensions with saved dimensions
         const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale);

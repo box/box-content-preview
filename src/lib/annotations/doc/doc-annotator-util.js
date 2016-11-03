@@ -299,33 +299,6 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
 }
 
 /**
- * Gets coordinates representing lower center point of the annotation
- * represented by the provided quad points. We define lower center point
- * as the bottom center of the rectangle representing the bottom-most
- * annotation. Note that these coordinates are in PDF default user space, with
- * the origin at the bottom left corner of the document.
- * @param {number[]} quadPoints Quad points of annotation to get lower
- * center for in PDF space in PDF units
- * @returns {number[]} [x,y] of lower center of quad points in PDF
- * space in PDF units
- * @param {number[]} quadPoints Quad points in PDF space in PDF units
- * @returns {number[]} [x,y] of lower center of last quad point
- */
-export function getLowerCenterPoint(quadPoints) {
-    let [maxX, minX, minY] = [0, 99999, 99999];
-    quadPoints.forEach((quadPoint) => {
-        const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoint;
-
-        maxX = Math.max(x1, x2, x3, x4, maxX);
-        minX = Math.min(x1, x2, x3, x4, minX);
-        minY = Math.min(y1, y2, y3, y4, minY);
-    });
-
-    const x = minX + ((maxX - minX) / 2);
-    return [x, minY];
-}
-
-/**
  * Checks whether mouse is inside the dialog represented by this thread.
  *
  * @param {Event} event Mouse event
@@ -342,6 +315,30 @@ export function isInDialog(event, dialogEl) {
 
     if (y >= dialogDimensions.top && y <= dialogDimensions.bottom &&
         x >= dialogDimensions.left && x <= dialogDimensions.right) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Checks if there is an active annotation on the current page that doesn't
+ * match the current dialog being hovered on
+ *
+ * @param {HTMLElement} currentDialogEl Current dialog being hovered on
+ * @param {HTMLElement} pageEl Current page
+ * @returns {boolean} Whether or not a different dialog is active
+ * @private
+ */
+export function hasActiveDialog(currentDialogEl, pageEl) {
+    const dialogEl = pageEl.querySelector('.box-preview-annotation-dialog:not(.box-preview-is-hidden)');
+    const highlightDialogEl = pageEl.querySelector('.box-preview-highlight-dialog:not(.box-preview-is-hidden)');
+
+    if (dialogEl || highlightDialogEl) {
+        // If the current dialog is the active dialog
+        if (currentDialogEl.isSameNode(dialogEl) ||
+            currentDialogEl.isSameNode(highlightDialogEl)) {
+            return false;
+        }
         return true;
     }
     return false;

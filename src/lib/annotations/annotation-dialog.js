@@ -15,7 +15,6 @@ import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { decodeKeydown } from '../util';
 import { ICON_DELETE } from '../icons/icons';
 
-const DIALOG_HIDE_TIMEOUT = 500;
 
 @autobind
 class AnnotationDialog extends EventEmitter {
@@ -107,17 +106,8 @@ class AnnotationDialog extends EventEmitter {
      * @param {boolean} [noDelay] Whether or not to have a timeout delay
      * @returns {void}
      */
-    hide(noDelay = false) {
-        if (noDelay) {
-            annotatorUtil.hideElement(this._element);
-            clearTimeout(this._timeoutHandler);
-            this._timeoutHandler = null;
-        } else if (!this._timeoutHandler) {
-            this._timeoutHandler = setTimeout(() => {
-                annotatorUtil.hideElement(this._element);
-                this._timeoutHandler = null;
-            }, DIALOG_HIDE_TIMEOUT);
-        }
+    hide() {
+        annotatorUtil.hideElement(this._element);
     }
 
     /**
@@ -274,7 +264,7 @@ class AnnotationDialog extends EventEmitter {
 
         const key = decodeKeydown(event);
         if (key === 'Escape') {
-            this.hide(true); // hide without delay
+            this.hide(); // hide without delay
         } else {
             const dataType = annotatorUtil.findClosestDataType(event.target);
             if (dataType === 'reply-textarea') {
@@ -302,9 +292,7 @@ class AnnotationDialog extends EventEmitter {
      * @protected
      */
     mouseenterHandler() {
-        // Reset hide timeout handler
-        clearTimeout(this._timeoutHandler);
-        this._timeoutHandler = null;
+        this.show();
     }
 
     /**

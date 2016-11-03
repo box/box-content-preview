@@ -9,8 +9,11 @@ import {
     getDimensionScale,
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint,
-    isInDialog
+    isInDialog,
+    hasActiveDialog
 } from '../../doc/doc-annotator-util';
+
+const DIALOG_CLASS = '.box-preview-annotation-dialog';
 
 describe('doc-annotator-util', () => {
     before(() => {
@@ -175,15 +178,43 @@ describe('doc-annotator-util', () => {
 
     describe('isInDialog()', () => {
         it('should return true if the event is in the given dialog', () => {
-            const dialogEl = document.querySelector('.annotation-dialog');
+            const dialogEl = document.querySelector(DIALOG_CLASS);
             const result = isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
             expect(result).to.be.true;
         });
 
         it('should return false if the event is in the given dialog', () => {
-            const dialogEl = document.querySelector('.annotation-dialog');
+            const dialogEl = document.querySelector(DIALOG_CLASS);
             const result = isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
             expect(result).to.be.false;
+        });
+    });
+
+    describe('hasActiveDialog()', () => {
+        // it('should return false if no annotation dialog is open', () => {
+        //     const currDialogEl = document.querySelector(DIALOG_CLASS);
+        //     currDialogEl.classList.add('box-preview-is-hidden');
+        //     const result = hasActiveDialog(currDialogEl, document);
+        //     expect(result).to.be.false;
+        // });
+        //
+        // it('should return false if the current annotation dialog is open', () => {
+        //     const currDialogEl = document.querySelector(DIALOG_CLASS);
+        //     const result = hasActiveDialog(currDialogEl, document);
+        //     expect(result).to.be.false;
+        // });
+
+        it('should return true if a different annotation dialog is open that is not the current annotation dialog', () => {
+            const docEl = document.querySelector('.annotatedElement');
+            const currDialogEl = document.querySelector(DIALOG_CLASS);
+            currDialogEl.classList.add('box-preview-is-hidden');
+
+            const openDialogEl = document.createElement('div');
+            openDialogEl.classList.add('box-preview-annotation-dialog');
+            docEl.appendChild(openDialogEl);
+
+            const result = hasActiveDialog(currDialogEl, docEl);
+            expect(result).to.be.true;
         });
     });
 });

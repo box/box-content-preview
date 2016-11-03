@@ -1,3 +1,4 @@
+
 /* eslint-disable no-unused-expressions */
 import AnnotationDialog from '../annotation-dialog';
 import * as annotatorUtil from '../annotator-util';
@@ -60,20 +61,10 @@ describe('annotation-dialog', () => {
     });
 
     describe('hide()', () => {
-        it('should hide dialog immediately if noDelay is true', () => {
-            const clearTimeoutStub = sandbox.stub(window, 'clearTimeout');
-            annotationDialog.hide(true);
+        it('should hide dialog immediately', () => {
+            annotationDialog.hide();
 
             expect(annotationDialog._element.classList.contains('box-preview-is-hidden')).to.be.true;
-            expect(clearTimeoutStub).to.have.been.called;
-            expect(annotationDialog._timeoutHandler).to.be.null;
-        });
-
-        it('should start a hide timeout if noDelay is false', () => {
-            const setTimeoutStub = sandbox.stub(window, 'setTimeout');
-            annotationDialog.hide();
-            expect(setTimeoutStub).to.have.been.called;
-            expect(annotationDialog._timeoutHandler).to.not.be.null;
         });
     });
 
@@ -180,7 +171,7 @@ describe('annotation-dialog', () => {
                 stopPropagation: () => {}
             });
 
-            expect(hideStub).to.have.been.calledWith(true);
+            expect(hideStub).to.have.been.called;
         });
 
         it('should activate the reply area when user presses another key inside the reply area', () => {
@@ -211,12 +202,9 @@ describe('annotation-dialog', () => {
 
     describe('mouseenterHandler()', () => {
         it('should clear the hide timeout', () => {
-            const clearTimeoutStub = sandbox.stub(window, 'clearTimeout');
-
+            sandbox.stub(annotationDialog, 'show');
             annotationDialog.mouseenterHandler();
-
-            expect(clearTimeoutStub).to.have.been.called;
-            expect(annotationDialog._timeoutHandler).to.be.null;
+            expect(annotationDialog.show).to.have.been.called;
         });
     });
 

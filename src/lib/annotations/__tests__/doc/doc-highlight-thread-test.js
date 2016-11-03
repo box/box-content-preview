@@ -345,6 +345,7 @@ describe('doc-highlight-thread', () => {
 
     describe('onMousemove()', () => {
         it('should delay drawing highlight if mouse is hovering over a highlight dialog', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);
             sandbox.stub(highlightThread, 'activateDialog');
 
@@ -354,8 +355,22 @@ describe('doc-highlight-thread', () => {
             expect(result).to.be.true;
         });
 
-        it('should not delay drawing highlight if highlight is pending', () => {
+        it('should not delay drawing highlight if a different dialog is currently active', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
+            sandbox.stub(highlightThread, 'hideDialog');
+            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(true);
+
+            const result = highlightThread.onMousemove({});
+
+            expect(highlightThread.hideDialog).to.have.been.called;
+            expect(result).to.be.false;
+        });
+
+        it('should not delay drawing highlight if highlight is pending', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
+            sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_PENDING;
 
             const result = highlightThread.onMousemove({});
@@ -364,7 +379,9 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should not delay drawing highlight if highlight is pending active', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
 
             const result = highlightThread.onMousemove({});
@@ -373,9 +390,11 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should delay drawing highlight if mouse is hovering over a highlight', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
             sandbox.stub(highlightThread, '_isInHighlight').returns(true);
             sandbox.stub(highlightThread, 'activateDialog');
+            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
 
             const result = highlightThread.onMousemove({});
@@ -385,8 +404,10 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should delay drawing highlight if mouse is not in highlight previously in the active-hover state', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
             sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
 
             const result = highlightThread.onMousemove({});
@@ -396,8 +417,10 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should delay drawing highlight if mouse is not in highlight and the state is active', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
             sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_ACTIVE;
 
             const result = highlightThread.onMousemove({});
@@ -407,8 +430,10 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should not delay drawing highlight if mouse is not in highlight and the state is not already inactive', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
             sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_HOVER;
 
             const result = highlightThread.onMousemove({});
@@ -418,8 +443,10 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should not delay drawing highlight if the state is already inactive', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
             sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_INACTIVE;
 
             const result = highlightThread.onMousemove({});

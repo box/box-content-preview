@@ -105,7 +105,7 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 
 .box-preview-annotation-dialog {
-    border-top: 20px solid transparent; // Transparent border for hover detection
+    border-top: 30px solid transparent; // Transparent border for hover detection
     cursor: default; // Overrides cursor: none from annotation mode
     position: absolute;
     text-align: left;
@@ -332,7 +332,7 @@ $avatar-color-9: #f22c44;
 }
 
 .box-preview-highlight-dialog {
-    border-top: 10px solid transparent; // Transparent border for hover detection
+    border-top: 20px solid transparent; // Transparent border for hover detection
     display: table;
     position: absolute;
     z-index: 9999;
