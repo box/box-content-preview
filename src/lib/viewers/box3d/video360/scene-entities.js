@@ -20,14 +20,16 @@ export default [{
         far: 1200,
         fov: 70
     },
-    components: {
+    components: [
         // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.
-        renderView: {
+        {
+            name: 'Render View',
             enabled: true,
             scriptId: 'render_view_component'
         },
-        orbit_camera_controller: {
-            componentData: {
+        {
+            name: 'Orbit Camera',
+            attributes: {
                 enablePan: false,
                 enableZoom: false,
                 inertialDamping: 0.2,
@@ -38,7 +40,7 @@ export default [{
             enabled: true,
             scriptId: 'orbit_camera_controller'
         }
-    }
+    ]
 }, {
     id: 'SCENE_ID',
     type: 'prefab',
@@ -52,35 +54,44 @@ export default [{
     children: [
         'CAMERA_ID'
     ],
-    components: {
-        skybox: {
-            componentData: {
+    components: [
+        {
+            name: 'Skybox',
+            attributes: {
                 size: 100
             },
-            scriptId: 'skybox_renderer'
+            scriptId: 'skybox_renderer',
+            enabled: false
         }
-    }
+    ]
 }, {
     id: 'APP_ASSET_ID',
     type: 'application',
     properties: {
         startupScene: 'SCENE_ID' // The scene to load
     },
-    components: {
-        rendererComponent: {
-            componentData: {
+    components: [
+        {
+            name: 'Renderer',
+            attributes: {
                 antialias: !Browser.isMobile(),
-                renderOnDemand: false
+                renderOnDemand: true
             },
             scriptId: 'box3d_renderer',
             isBuiltIn: true,
             enabled: true
         },
-        inputController: {
+        {
+            name: 'Debug Performance',
+            scriptId: 'debug_performance',
+            enabled: false
+        },
+        {
+            name: 'Input',
             scriptId: 'input_controller_component',
             isBuiltIn: true,
             enabled: true,
-            componentData: {
+            attributes: {
                 mouseEvents: {
                     enable: true,
                     scroll: true,
@@ -118,5 +129,5 @@ export default [{
                 }
             }
         }
-    }
+    ]
 }];

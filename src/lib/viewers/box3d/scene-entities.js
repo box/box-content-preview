@@ -31,7 +31,7 @@ function sceneEntities() {
             },
             // An orbit controller for rotating around the 3D model, made for preview
             previewCameraController: {
-                componentData: {
+                attributes: {
                     orbitDistanceMin: 0.02, // Minimum camera distance
                     orbitDistanceMax: 3, // Maximum camera distance
                     useKeyboard: false,
@@ -41,7 +41,7 @@ function sceneEntities() {
                 scriptId: 'preview_camera_controller'
             },
             previewCameraFocus: {
-                componentData: {},
+                attributes: {},
                 enabled: true,
                 scriptId: 'preview_camera_focus'
             }
@@ -76,7 +76,7 @@ function sceneEntities() {
         },
         components: {
             rendererComponent: {
-                componentData: {
+                attributes: {
                     renderOnDemand: true,
                     maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
@@ -91,7 +91,7 @@ function sceneEntities() {
             dynamicOptimizer: {
                 scriptId: 'dynamic_optimizer',
                 enabled: false,
-                componentData: {
+                attributes: {
                     testInterval: 4000.0
                 }
             },
@@ -102,7 +102,7 @@ function sceneEntities() {
             inputController: {
                 scriptId: 'input_controller_component',
                 enabled: true,
-                componentData: {
+                attributes: {
                     mouseEvents: {
                         enable: true,
                         scroll: true,
@@ -141,7 +141,7 @@ function sceneEntities() {
                 }
             },
             renderModesComponent: {
-                componentData: {},
+                attributes: {},
                 scriptId: 'render_modes'
             }
         }

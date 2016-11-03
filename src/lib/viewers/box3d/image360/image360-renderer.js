@@ -1,5 +1,4 @@
 import Box3DRenderer from '../box3d-renderer';
-import autobind from 'autobind-decorator';
 import sceneEntities from './scene-entities';
 
 const INPUT_SETTINGS = {
@@ -15,7 +14,6 @@ const INPUT_SETTINGS = {
  * Runtime library.
  * @class
  */
-@autobind
 class Image360Renderer extends Box3DRenderer {
     /**
      * Handles creating and caching a Box3DRuntime, and creating a scene made for
@@ -39,37 +37,27 @@ class Image360Renderer extends Box3DRenderer {
      */
     destroy() {
         this.cleanupTexture();
-        if (this.imageAsset) {
-            this.imageAsset.destroy();
-        }
-        this.imageAsset = null;
-        this.skybox = null;
-
         super.destroy();
     }
 
     /**
-     * Destroy the texture asset created from the Box file and unallocate any GPU memory
-     * consumed by it.
-     *
-     * @private
+     * Cleanup the image and texture for the skybox.
      * @method cleanupTexture
-     * @returns {void}
+     * @private
+     * @return {void}
      */
     cleanupTexture() {
-        if (!this.box3d) {
-            return;
+        if (this.imageAsset) {
+            this.imageAsset.destroy();
+            this.imageAsset = null;
         }
-
         if (this.textureAsset) {
             this.textureAsset.destroy();
+            this.textureAsset = null;
         }
-        this.textureAsset = null;
-
-        // Cleanup skybox component that was using textureAsset
-        const skybox = this.getSkyboxComponent();
-        if (skybox) {
-            skybox.setAttribute('skyboxTexture', null);
+        if (this.skybox) {
+            this.getSkyboxComponent().setAttribute('skyboxTexture', null);
+            this.skybox = null;
         }
     }
 
@@ -83,7 +71,7 @@ class Image360Renderer extends Box3DRenderer {
     getSkyboxComponent() {
         if (!this.skybox) {
             const scene = this.box3d.getEntityById('SCENE_ROOT_ID');
-            this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
+            this.skybox = scene.getComponentByScriptId('skybox_renderer');
         }
 
         return this.skybox;
@@ -163,9 +151,7 @@ class Image360Renderer extends Box3DRenderer {
      */
     enableVr() {
         super.enableVr();
-        if (this.skybox) {
-            this.skybox.setAttribute('stereoEnabled', true);
-        }
+        this.getSkyboxComponent().setAttribute('stereoEnabled', true);
     }
 
     /**
@@ -173,9 +159,7 @@ class Image360Renderer extends Box3DRenderer {
      */
     disableVr() {
         super.disableVr();
-        if (this.skybox) {
-            this.skybox.setAttribute('stereoEnabled', false);
-        }
+        this.getSkyboxComponent().setAttribute('stereoEnabled', false);
     }
 
     /**

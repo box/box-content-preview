@@ -130,7 +130,7 @@ class Video360 extends Dash {
      */
     create360Environment() {
         const scene = this.renderer.getBox3D().getEntityById('SCENE_ROOT_ID');
-        this.skybox = scene.componentRegistry.getFirstByScriptId('skybox_renderer');
+        this.skybox = scene.getComponentByScriptId('skybox_renderer');
 
         this.videoAsset = this.renderer.getBox3D().createVideo('VIDEO_ID');
         this.videoAsset.setProperties({

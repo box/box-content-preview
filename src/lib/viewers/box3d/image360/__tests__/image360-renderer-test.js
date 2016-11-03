@@ -108,7 +108,7 @@ describe('image360', () => {
             const skybox = {
                 setAttribute: sandbox.stub()
             };
-
+            renderer.skybox = skybox;
             sandbox.stub(renderer, 'getSkyboxComponent').returns(skybox);
             renderer.cleanupTexture();
 
@@ -117,9 +117,10 @@ describe('image360', () => {
     });
 
     describe('getSkyboxComponent()', () => {
-        it('should return the .skybox instance of available', () => {
+        it('should return the .skybox instance if available', () => {
             const skybox = {
-                name: 'skybox'
+                name: 'skybox',
+                setAttribute: sandbox.stub()
             };
 
             renderer.skybox = skybox;
@@ -154,9 +155,7 @@ describe('image360', () => {
             };
 
             const scene = {
-                componentRegistry: {
-                    getFirstByScriptId: sandbox.stub().returns(skybox)
-                }
+                getComponentByScriptId: sandbox.stub().returns(skybox)
             };
 
             renderer.box3d = {

@@ -24,15 +24,17 @@ function sceneEntities(prefix) {
             near: 0.01, // Camera near-plane distance
             far: 6
         },
-        components: {
+        components: [
             // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.
-            renderView: {
+            {
+                name: 'Render View',
                 enabled: true,
                 scriptId: 'render_view_component'
             },
             // An orbit controller for rotating around the 3D model, made for preview
-            previewCameraController: {
-                componentData: {
+            {
+                name: 'Preview Camera',
+                attributes: {
                     orbitDistanceMin: 0.02, // Minimum camera distance
                     orbitDistanceMax: 3, // Maximum camera distance
                     useKeyboard: false,
@@ -41,12 +43,13 @@ function sceneEntities(prefix) {
                 enabled: true,
                 scriptId: 'preview_camera_controller'
             },
-            previewCameraFocus: {
-                componentData: {},
+            {
+                name: 'Preview Camera Focus',
+                attributes: {},
                 enabled: true,
                 scriptId: 'preview_camera_focus'
             }
-        }
+        ]
     }, {
         id: 'SCENE_ID',
         type: 'prefab',
@@ -75,9 +78,10 @@ function sceneEntities(prefix) {
         properties: {
             startupScene: 'SCENE_ID' // The scene to load
         },
-        components: {
-            rendererComponent: {
-                componentData: {
+        components: [
+            {
+                name: 'Renderer',
+                attributes: {
                     renderOnDemand: true,
                     maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
@@ -89,21 +93,24 @@ function sceneEntities(prefix) {
                 scriptId: 'box3d_renderer',
                 enabled: true
             },
-            dynamicOptimizer: {
+            {
+                name: 'Dynamic Optimizer',
                 scriptId: 'dynamic_optimizer',
                 enabled: false,
-                componentData: {
+                attributes: {
                     testInterval: 4000.0
                 }
             },
-            debugPerformance: {
+            {
+                name: 'Debug Performance',
                 scriptId: 'debug_performance',
                 enabled: false
             },
-            inputController: {
+            {
+                name: 'Input',
                 scriptId: 'input_controller_component',
                 enabled: true,
-                componentData: {
+                attributes: {
                     mouseEvents: {
                         enable: true,
                         scroll: true,
@@ -141,11 +148,12 @@ function sceneEntities(prefix) {
                     }
                 }
             },
-            renderModesComponent: {
-                componentData: {},
+            {
+                name: 'Render Modes',
+                attributes: {},
                 scriptId: 'render_modes'
             }
-        }
+        ]
     }, {
         id: 'MAT_CAP_TEX',
         type: 'texture2D',
@@ -282,15 +290,16 @@ function sceneEntities(prefix) {
             uMapping: 'clamp',
             encoding: 'linear'
         },
-        components: {
-            equirectToCubemap: {
+        components: [
+            {
+                name: 'Convert Panorama To CubeMap',
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
-                componentData: {
+                attributes: {
                     inputTexture: 'HDR_ENV_MAP_0'
                 }
             }
-        }
+        ]
     }, {
         id: 'HDR_ENV_MAP_CUBE_1',
         type: 'renderTextureCube',
@@ -304,15 +313,16 @@ function sceneEntities(prefix) {
             uMapping: 'clamp',
             encoding: 'linear'
         },
-        components: {
-            equirectToCubemap: {
+        components: [
+            {
+                name: 'Convert Panorama To CubeMap',
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
-                componentData: {
+                attributes: {
                     inputTexture: 'HDR_ENV_MAP_1'
                 }
             }
-        }
+        ]
     }, {
         id: 'HDR_ENV_MAP_CUBE_2',
         type: 'renderTextureCube',
@@ -326,15 +336,16 @@ function sceneEntities(prefix) {
             uMapping: 'clamp',
             encoding: 'linear'
         },
-        components: {
-            equirectToCubemap: {
+        components: [
+            {
+                name: 'Convert Panorama To CubeMap',
                 scriptId: 'panorama_to_cubemap_script',
                 enabled: true,
-                componentData: {
+                attributes: {
                     inputTexture: 'HDR_ENV_MAP_2'
                 }
             }
-        }
+        ]
     }];
 }
 

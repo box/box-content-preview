@@ -116,8 +116,7 @@ class Model3dRenderer extends Box3DRenderer {
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
 
         // Set MatCap texture for the 'Shape' render mode
-        const renderModes = this.box3d.getApplication().componentRegistry
-            .getFirstByScriptId('render_modes');
+        const renderModes = this.box3d.getApplication().getComponentByScriptId('render_modes');
 
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
 
@@ -204,7 +203,7 @@ class Model3dRenderer extends Box3DRenderer {
         instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
 
         // Attach PreviewAxisRotation component to the instance.
-        instance.componentRegistry.add('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
+        instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
 
         // Add the instance to the scene.
         scene.getRootObject().addChild(instance);
@@ -262,8 +261,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     startOptimizer() {
-        this.dynamicOptimizer = this.box3d.getApplication().componentRegistry
-          .getFirstByScriptId('dynamic_optimizer');
+        this.dynamicOptimizer = this.box3d.getApplication().getComponentByScriptId('dynamic_optimizer');
 
         if (this.dynamicOptimizer) {
             this.createRegularQualityChangeLevels();
