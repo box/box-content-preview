@@ -44,7 +44,6 @@ export const SELECTOR_BOX_PREVIEW_LOGO_DEFAULT = `.${CLASS_BOX_PREVIEW_LOGO_DEFA
 
 export const PERMISSION_DOWNLOAD = 'can_download';
 export const PERMISSION_ANNOTATE = 'can_annotate';
-export const PERMISSION_DELETE = 'can_delete';
 export const PERMISSION_PREVIEW = 'can_preview';
 
 export const API = 'https://api.box.com';

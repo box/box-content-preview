@@ -143,7 +143,7 @@ class ImageAnnotator extends Annotator {
 
         // Only show/hide point annotation button if user has the appropriate
         // permissions
-        if (this._annotationService.canAnnotate && this._annotationService.canDelete) {
+        if (this._annotationService.canAnnotate) {
             // Hide create annotations button if image is rotated
             // TODO(@spramod) actually adjust getLocationFromEvent method in
             // annotator to get correct location rather than disabling the creation
